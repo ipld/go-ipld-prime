@@ -1,0 +1,3 @@
+[submodule ".gopath/src/github.com/polydawn/refmt"]
+	path = .gopath/src/github.com/polydawn/refmt
+	url = https://github.com/polydawn/refmt
