@@ -11,6 +11,16 @@ type Node interface {
 	// a link to it for embedding in other objects (you'd have to make
 	// a new RootNode with the same content first, then store that).
 	GetField(path []string) (interface{}, error)
+
+	// Distinctly suspecting a GetField(string)(iface,err) API would be better.
+	// And a GetIndex(int)(iface,err) for arrays and int-keyed maps.
+	// Much easier to code.
+	// And traversals are apparently going to require a type schema parameter!
+	// Main counterargument: might be more efficient to let nodes take part,
+	// so they can do work without generating intermediate nodes.
+	// That logic applies to some but not all impls.  e.g. freenode always
+	// already has the intermediates.  ipldcbor.Node prob will too.
+	// Hrm.  I guess ipldbind.Node is the only one that can get usefully fancy there.
 }
 
 type SerializableNode interface {
