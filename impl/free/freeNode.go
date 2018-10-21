@@ -1,6 +1,10 @@
 package ipldfree
 
 import (
+	"fmt"
+	"strconv"
+
+	"github.com/ipfs/go-cid"
 	"github.com/ipld/go-ipld-prime"
 )
 
@@ -25,22 +29,24 @@ var (
 type Node struct {
 	typ typ
 
-	_map   map[string]interface{} // Value union.  Only one of these has meaning, depending on the value of 'Type'.
-	_map2  map[int]interface{}    // Value union.  Only one of these has meaning, depending on the value of 'Type'.
-	_arr   []interface{}          // Value union.  Only one of these has meaning, depending on the value of 'Type'.
-	_str   string                 // Value union.  Only one of these has meaning, depending on the value of 'Type'.
-	_bytes []byte                 // Value union.  Only one of these has meaning, depending on the value of 'Type'.
-	_bool  bool                   // Value union.  Only one of these has meaning, depending on the value of 'Type'.
-	_int   int64                  // Value union.  Only one of these has meaning, depending on the value of 'Type'.
-	_uint  uint64                 // Value union.  Only one of these has meaning, depending on the value of 'Type'.
-	_float float64                // Value union.  Only one of these has meaning, depending on the value of 'Type'.
+	// n.b. maps values are all ptr so the returned node interface can be mutable.
+
+	_map   map[string]*Node // Value union.  Only one of these has meaning, depending on the value of 'Type'.
+	_map2  map[int]*Node    // Value union.  Only one of these has meaning, depending on the value of 'Type'.
+	_arr   []Node           // Value union.  Only one of these has meaning, depending on the value of 'Type'.
+	_str   string           // Value union.  Only one of these has meaning, depending on the value of 'Type'.
+	_bytes []byte           // Value union.  Only one of these has meaning, depending on the value of 'Type'.
+	_bool  bool             // Value union.  Only one of these has meaning, depending on the value of 'Type'.
+	_int   int              // Value union.  Only one of these has meaning, depending on the value of 'Type'.
+	_uint  uint             // Value union.  Only one of these has meaning, depending on the value of 'Type'.
+	_float float64          // Value union.  Only one of these has meaning, depending on the value of 'Type'.
 
 }
 
 type typ struct{ t byte }
 
 var (
-	tZero  = typ{} // treat as tMap
+	tNil   = typ{}
 	tMap   = typ{'{'}
 	tArr   = typ{'['}
 	tStr   = typ{'s'}
@@ -49,8 +55,65 @@ var (
 	tInt   = typ{'i'}
 	tUint  = typ{'u'}
 	tFloat = typ{'f'}
+	tLink  = typ{'/'}
 )
 
-func (n *Node) GetField(pth []string) (v interface{}, _ error) {
-	return v, traverse(n.bound, pth, n.atlas, reflect.ValueOf(v))
+func (n *Node) AsBool() (v bool, _ error) {
+	return n._bool, expectTyp(tBool, n.typ)
+}
+func (n *Node) AsString() (v string, _ error) {
+	return n._str, expectTyp(tStr, n.typ)
+}
+func (n *Node) AsInt() (v int, _ error) {
+	return n._int, expectTyp(tInt, n.typ)
+}
+func (n *Node) AsLink() (v cid.Cid, _ error) {
+	return cid.Cid{}, expectTyp(tLink, n.typ) // TODO ??
+}
+
+func (n *Node) TraverseField(pth string) (ipld.Node, error) {
+	switch n.typ {
+	case tNil:
+		return nil, fmt.Errorf("cannot traverse terminals")
+	case tMap:
+		switch {
+		case n._map != nil:
+			v, _ := n._map[pth]
+			return v, nil
+		case n._map2 != nil:
+			i, err := strconv.Atoi(pth)
+			if err != nil {
+				return nil, fmt.Errorf("404")
+			}
+			v, _ := n._map2[i]
+			return v, nil
+		default:
+			panic("unreachable")
+		}
+	case tArr:
+		i, err := strconv.Atoi(pth)
+		if err != nil {
+			return nil, fmt.Errorf("404")
+		}
+		if i >= len(n._arr) {
+			return nil, fmt.Errorf("404")
+		}
+		v := &n._arr[i]
+		return v, nil
+	case tStr, tBytes, tBool, tInt, tUint, tFloat, tLink:
+		return nil, fmt.Errorf("cannot traverse terminals")
+	default:
+		panic("unreachable")
+	}
+}
+
+func (n *Node) TraverseIndex(idx int) (ipld.Node, error) {
+	panic("NYI")
+}
+
+func expectTyp(expect, actual typ) error {
+	if expect == actual {
+		return nil
+	}
+	return fmt.Errorf("woof")
 }

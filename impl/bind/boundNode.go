@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	_ ipld.Node = &Node{}
+	_ ipld.Node = Node{}
 )
 
 /*
@@ -22,7 +22,7 @@ var (
 	If you're not sure which kind serializable node to use, try `ipldcbor.Node`.
 */
 type Node struct {
-	bound reflect.Value
+	bound reflect.Value // should already be ptr-unwrapped
 	atlas atlas.Atlas
 }
 
@@ -31,54 +31,40 @@ type Node struct {
 	atlas to understand how to traverse it.
 */
 func Bind(bindme interface{}, atl atlas.Atlas) ipld.Node {
-	return &Node{
-		bound: reflect.ValueOf(bindme),
+	rv := reflect.ValueOf(bindme)
+	for rv.Kind() == reflect.Ptr {
+		rv = rv.Elem()
+	}
+	return Node{
+		bound: rv,
 		atlas: atl,
 	}
 }
 
-func (n *Node) GetField(pth string) (v interface{}, _ error) {
-	return v, traverseField(n.bound, pth, n.atlas, reflect.ValueOf(v))
+func (n Node) AsBool() (v bool, _ error) {
+	reflect.ValueOf(&v).Elem().Set(n.bound)
+	return
 }
-func (n *Node) GetFieldBool(pth string) (v bool, _ error) {
-	return v, traverseField(n.bound, pth, n.atlas, reflect.ValueOf(&v).Elem())
+func (n Node) AsString() (v string, _ error) {
+	reflect.ValueOf(&v).Elem().Set(n.bound)
+	return
 }
-func (n *Node) GetFieldString(pth string) (v string, _ error) {
-	return v, traverseField(n.bound, pth, n.atlas, reflect.ValueOf(&v).Elem())
+func (n Node) AsInt() (v int, _ error) {
+	reflect.ValueOf(&v).Elem().Set(n.bound)
+	return
 }
-func (n *Node) GetFieldInt(pth string) (v int, _ error) {
-	return v, traverseField(n.bound, pth, n.atlas, reflect.ValueOf(&v).Elem())
-}
-func (n *Node) GetFieldLink(pth string) (v cid.Cid, _ error) {
-	return v, traverseField(n.bound, pth, n.atlas, reflect.ValueOf(&v).Elem())
-}
-
-func (n *Node) GetIndex(pth int) (v interface{}, _ error) {
-	return v, traverseIndex(n.bound, pth, n.atlas, reflect.ValueOf(v))
-}
-func (n *Node) GetIndexBool(pth int) (v bool, _ error) {
-	return v, traverseIndex(n.bound, pth, n.atlas, reflect.ValueOf(&v).Elem())
-}
-func (n *Node) GetIndexString(pth int) (v string, _ error) {
-	return v, traverseIndex(n.bound, pth, n.atlas, reflect.ValueOf(&v).Elem())
-}
-func (n *Node) GetIndexInt(pth int) (v int, _ error) {
-	return v, traverseIndex(n.bound, pth, n.atlas, reflect.ValueOf(&v).Elem())
-}
-func (n *Node) GetIndexLink(pth int) (v cid.Cid, _ error) {
-	return v, traverseIndex(n.bound, pth, n.atlas, reflect.ValueOf(&v).Elem())
+func (n Node) AsLink() (v cid.Cid, _ error) {
+	reflect.ValueOf(&v).Elem().Set(n.bound)
+	return
 }
 
-func traverseField(v reflect.Value, pth string, atl atlas.Atlas, assignTo reflect.Value) error {
-	// Unwrap any pointers.
-	for v.Kind() == reflect.Ptr {
-		v = v.Elem()
-	}
+func (n Node) TraverseField(pth string) (ipld.Node, error) {
+	v := n.bound
 
 	// Traverse.
 	//  Honor any atlent overrides if present;
 	//  Use kind-based fallbacks if necessary.
-	atlent, exists := atl.Get(reflect.ValueOf(v.Type()).Pointer())
+	atlent, exists := n.atlas.Get(reflect.ValueOf(v.Type()).Pointer())
 	if exists {
 		switch {
 		case atlent.MarshalTransformFunc != nil:
@@ -90,7 +76,7 @@ func traverseField(v reflect.Value, pth string, atl atlas.Atlas, assignTo reflec
 					break
 				}
 			}
-			return fmt.Errorf("traverse failed: type %q has no field named %q", v.Type().Name(), pth)
+			return Node{}, fmt.Errorf("traverse failed: type %q has no field named %q", v.Type().Name(), pth)
 		case atlent.UnionKeyedMorphism != nil:
 			panic(fmt.Errorf("invalid ipldbind.Node: type %q atlas specifies union, but ipld doesn't know how to make sense of this", v.Type().Name()))
 		case atlent.MapMorphism != nil:
@@ -114,7 +100,7 @@ func traverseField(v reflect.Value, pth string, atl atlas.Atlas, assignTo reflec
 			reflect.Map,
 			reflect.Struct,
 			reflect.Interface:
-			assignTo.Set(reflect.ValueOf(Node{v, atl}))
+			return Node{v, n.atlas}, nil
 		case // esotera: reject with panic
 			reflect.Chan,
 			reflect.Func,
@@ -136,23 +122,21 @@ func traverseField(v reflect.Value, pth string, atl atlas.Atlas, assignTo reflec
 	//  Or wrap with a Node and assign that (for recursives).
 	// TODO decide what to do with typedef'd primitives.
 	switch v.Type().Kind() {
-	case // primitives: set them
+	case // primitives: wrap in node
 		reflect.Bool,
 		reflect.String,
 		reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64,
 		reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr,
 		reflect.Float32, reflect.Float64,
 		reflect.Complex64, reflect.Complex128:
-		assignTo.Set(v)
-		return nil
+		return Node{v, n.atlas}, nil
 	case // recursives: wrap in node
 		reflect.Array,
 		reflect.Slice,
 		reflect.Map,
 		reflect.Struct,
 		reflect.Interface:
-		assignTo.Set(reflect.ValueOf(Node{v, atl}))
-		return nil
+		return Node{v, n.atlas}, nil
 	case // esotera: reject with panic
 		reflect.Chan,
 		reflect.Func,
@@ -166,6 +150,6 @@ func traverseField(v reflect.Value, pth string, atl atlas.Atlas, assignTo reflec
 	}
 }
 
-func traverseIndex(v reflect.Value, pth int, atl atlas.Atlas, assignTo reflect.Value) error {
+func (n Node) TraverseIndex(idx int) (ipld.Node, error) {
 	panic("NYI")
 }
