@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"reflect"
 
+	"github.com/ipfs/go-cid"
 	"github.com/ipld/go-ipld-prime"
 	"github.com/polydawn/refmt/obj/atlas"
 )
@@ -36,19 +37,68 @@ func Bind(bindme interface{}, atl atlas.Atlas) ipld.Node {
 	}
 }
 
-func (n *Node) GetField(pth []string) (v interface{}, _ error) {
-	return v, traverse(n.bound, pth, n.atlas, reflect.ValueOf(v))
+func (n *Node) GetField(pth string) (v interface{}, _ error) {
+	return v, traverseField(n.bound, pth, n.atlas, reflect.ValueOf(v))
 }
-func (n *Node) GetFieldString(pth []string) (v string, _ error) {
-	return v, traverse(n.bound, pth, n.atlas, reflect.ValueOf(&v).Elem())
+func (n *Node) GetFieldBool(pth string) (v bool, _ error) {
+	return v, traverseField(n.bound, pth, n.atlas, reflect.ValueOf(&v).Elem())
+}
+func (n *Node) GetFieldString(pth string) (v string, _ error) {
+	return v, traverseField(n.bound, pth, n.atlas, reflect.ValueOf(&v).Elem())
+}
+func (n *Node) GetFieldInt(pth string) (v int, _ error) {
+	return v, traverseField(n.bound, pth, n.atlas, reflect.ValueOf(&v).Elem())
+}
+func (n *Node) GetFieldLink(pth string) (v cid.Cid, _ error) {
+	return v, traverseField(n.bound, pth, n.atlas, reflect.ValueOf(&v).Elem())
 }
 
-// traverse is the internal impl behind GetField.
-// It's preferable to have this function for recursing because the defn of
-// the GetField function is more for caller-friendliness than performance.
-func traverse(v reflect.Value, pth []string, atl atlas.Atlas, assignTo reflect.Value) error {
-	// Handle the terminating case of expected leaf nodes first.
-	if len(pth) == 0 {
+func (n *Node) GetIndex(pth int) (v interface{}, _ error) {
+	return v, traverseIndex(n.bound, pth, n.atlas, reflect.ValueOf(v))
+}
+func (n *Node) GetIndexBool(pth int) (v bool, _ error) {
+	return v, traverseIndex(n.bound, pth, n.atlas, reflect.ValueOf(&v).Elem())
+}
+func (n *Node) GetIndexString(pth int) (v string, _ error) {
+	return v, traverseIndex(n.bound, pth, n.atlas, reflect.ValueOf(&v).Elem())
+}
+func (n *Node) GetIndexInt(pth int) (v int, _ error) {
+	return v, traverseIndex(n.bound, pth, n.atlas, reflect.ValueOf(&v).Elem())
+}
+func (n *Node) GetIndexLink(pth int) (v cid.Cid, _ error) {
+	return v, traverseIndex(n.bound, pth, n.atlas, reflect.ValueOf(&v).Elem())
+}
+
+func traverseField(v reflect.Value, pth string, atl atlas.Atlas, assignTo reflect.Value) error {
+	// Unwrap any pointers.
+	for v.Kind() == reflect.Ptr {
+		v = v.Elem()
+	}
+
+	// Traverse.
+	//  Honor any atlent overrides if present;
+	//  Use kind-based fallbacks if necessary.
+	atlent, exists := atl.Get(reflect.ValueOf(v.Type()).Pointer())
+	if exists {
+		switch {
+		case atlent.MarshalTransformFunc != nil:
+			panic(fmt.Errorf("invalid ipldbind.Node: type %q atlas specifies transform, but ipld doesn't support this power level", v.Type().Name()))
+		case atlent.StructMap != nil:
+			for _, fe := range atlent.StructMap.Fields {
+				if fe.SerialName == pth {
+					v = fe.ReflectRoute.TraverseToValue(v)
+					break
+				}
+			}
+			return fmt.Errorf("traverse failed: type %q has no field named %q", v.Type().Name(), pth)
+		case atlent.UnionKeyedMorphism != nil:
+			panic(fmt.Errorf("invalid ipldbind.Node: type %q atlas specifies union, but ipld doesn't know how to make sense of this", v.Type().Name()))
+		case atlent.MapMorphism != nil:
+			v = v.MapIndex(reflect.ValueOf(pth))
+		default:
+			panic("unreachable")
+		}
+	} else {
 		switch v.Type().Kind() {
 		case // primitives: set them
 			reflect.Bool,
@@ -57,52 +107,65 @@ func traverse(v reflect.Value, pth []string, atl atlas.Atlas, assignTo reflect.V
 			reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr,
 			reflect.Float32, reflect.Float64,
 			reflect.Complex64, reflect.Complex128:
-			assignTo.Set(v)
-			return nil
-		case reflect.Array: // array: ... REVIEW, like map, is it acceptable to leak concrete types?
-		case reflect.Slice: // slice: same as array
-		case reflect.Map: // map: ... REVIEW: can we just return this?  it might have more concrete types in it, and that's kind of unstandard.
-		case reflect.Struct: // struct: wrap in Node
-			// TODO
-		case reflect.Interface: // interface: ... REVIEW: i don't know what to do with this
-		case reflect.Chan: // chan: not acceptable in ipld objects
-		case reflect.Func: // func: not acceptable in ipld objects
-		case reflect.Ptr: // ptr: TODO needs an unwrap round
-		case reflect.UnsafePointer: // unsafe: not acceptable in ipld objects
+			panic(fmt.Errorf("invalid ipldbind.Node: atlas for type %q is union; ipld doesn't know how to make sense of this", v.Type().Name()))
+		case // recursives: wrap in node
+			reflect.Array,
+			reflect.Slice,
+			reflect.Map,
+			reflect.Struct,
+			reflect.Interface:
+			assignTo.Set(reflect.ValueOf(Node{v, atl}))
+		case // esotera: reject with panic
+			reflect.Chan,
+			reflect.Func,
+			reflect.UnsafePointer:
+			panic(fmt.Errorf("invalid ipldbind.Node: cannot atlas over type %q; it's a %v", v.Type().Name(), v.Kind()))
+		case // pointers: should've already been unwrapped
+			reflect.Ptr:
+			panic("unreachable")
 		}
 	}
-	// Handle traversal to deeper nodes.
-	//  If we get a primitive here, it's an error, because we haven't handled all path segments yet.
 
-	atlent, exists := atl.Get(reflect.ValueOf(v.Type()).Pointer())
-	if !exists {
-		panic(fmt.Errorf("invalid ipldbind.Node: atlas missing entry for type %q", v.Type().Name()))
+	// Unwrap any pointers.
+	for v.Kind() == reflect.Ptr {
+		v = v.Elem()
 	}
-	errIfPathNonEmpty := func() error {
-		if len(pth) > 1 {
-			return fmt.Errorf("getField reached leaf before following all path segements")
-		}
-		return nil
-	}
-	// TODO all these cases
-	switch atlent.Type.Kind() {
-	case // primitives found when expecting to path deeper cause an error return.
+
+	// Assign into the result.
+	//  Either assign the result directly (for primitives)
+	//  Or wrap with a Node and assign that (for recursives).
+	// TODO decide what to do with typedef'd primitives.
+	switch v.Type().Kind() {
+	case // primitives: set them
 		reflect.Bool,
 		reflect.String,
 		reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64,
 		reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr,
 		reflect.Float32, reflect.Float64,
 		reflect.Complex64, reflect.Complex128:
-		return errIfPathNonEmpty()
-	case reflect.Array:
-	case reflect.Slice:
-	case reflect.Map:
-	case reflect.Struct:
-	case reflect.Interface:
-	case reflect.Chan:
-	case reflect.Func:
-	case reflect.Ptr:
-	case reflect.UnsafePointer:
+		assignTo.Set(v)
+		return nil
+	case // recursives: wrap in node
+		reflect.Array,
+		reflect.Slice,
+		reflect.Map,
+		reflect.Struct,
+		reflect.Interface:
+		assignTo.Set(reflect.ValueOf(Node{v, atl}))
+		return nil
+	case // esotera: reject with panic
+		reflect.Chan,
+		reflect.Func,
+		reflect.UnsafePointer:
+		panic(fmt.Errorf("invalid ipldbind.Node: cannot atlas over type %q; it's a %v", v.Type().Name(), v.Kind()))
+	case // pointers: should've already been unwrapped
+		reflect.Ptr:
+		panic("unreachable")
+	default:
+		panic("unreachable")
 	}
-	return nil
+}
+
+func traverseIndex(v reflect.Value, pth int, atl atlas.Atlas, assignTo reflect.Value) error {
+	panic("NYI")
 }

@@ -1,12 +1,12 @@
 package ipldcbor
 
-import (
-	"github.com/ipld/go-ipld-prime"
-)
+//import (
+//	"github.com/ipld/go-ipld-prime"
+//)
 
 var (
-	_ ipld.Node             = &Node{}
-	_ ipld.SerializableNode = &Node{}
+//_ ipld.Node             = &Node{}
+//_ ipld.SerializableNode = &Node{}
 )
 
 /*
