@@ -34,12 +34,11 @@ type Node struct {
 	_map   map[string]*Node // Value union.  Only one of these has meaning, depending on the value of 'Type'.
 	_map2  map[int]*Node    // Value union.  Only one of these has meaning, depending on the value of 'Type'.
 	_arr   []Node           // Value union.  Only one of these has meaning, depending on the value of 'Type'.
-	_str   string           // Value union.  Only one of these has meaning, depending on the value of 'Type'.
-	_bytes []byte           // Value union.  Only one of these has meaning, depending on the value of 'Type'.
 	_bool  bool             // Value union.  Only one of these has meaning, depending on the value of 'Type'.
+	_str   string           // Value union.  Only one of these has meaning, depending on the value of 'Type'.
 	_int   int              // Value union.  Only one of these has meaning, depending on the value of 'Type'.
-	_uint  uint             // Value union.  Only one of these has meaning, depending on the value of 'Type'.
 	_float float64          // Value union.  Only one of these has meaning, depending on the value of 'Type'.
+	_bytes []byte           // Value union.  Only one of these has meaning, depending on the value of 'Type'.
 
 }
 
@@ -49,12 +48,11 @@ var (
 	tNil   = typ{}
 	tMap   = typ{'{'}
 	tArr   = typ{'['}
-	tStr   = typ{'s'}
-	tBytes = typ{'x'}
 	tBool  = typ{'b'}
+	tStr   = typ{'s'}
 	tInt   = typ{'i'}
-	tUint  = typ{'u'}
 	tFloat = typ{'f'}
+	tBytes = typ{'x'}
 	tLink  = typ{'/'}
 )
 
@@ -100,7 +98,7 @@ func (n *Node) TraverseField(pth string) (ipld.Node, error) {
 		}
 		v := &n._arr[i]
 		return v, nil
-	case tStr, tBytes, tBool, tInt, tUint, tFloat, tLink:
+	case tStr, tBytes, tBool, tInt, tFloat, tLink:
 		return nil, fmt.Errorf("cannot traverse terminals")
 	default:
 		panic("unreachable")
