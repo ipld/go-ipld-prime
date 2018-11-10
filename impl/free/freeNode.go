@@ -39,7 +39,7 @@ type Node struct {
 	_int   int              // Value union.  Only one of these has meaning, depending on the value of 'Type'.
 	_float float64          // Value union.  Only one of these has meaning, depending on the value of 'Type'.
 	_bytes []byte           // Value union.  Only one of these has meaning, depending on the value of 'Type'.
-
+	_link  cid.Cid          // Value union.  Only one of these has meaning, depending on the value of 'Type'.
 }
 
 type typ struct{ t byte }
@@ -66,7 +66,7 @@ func (n *Node) AsInt() (v int, _ error) {
 	return n._int, expectTyp(tInt, n.typ)
 }
 func (n *Node) AsLink() (v cid.Cid, _ error) {
-	return cid.Cid{}, expectTyp(tLink, n.typ) // TODO ??
+	return n._link, expectTyp(tLink, n.typ)
 }
 
 func (n *Node) TraverseField(pth string) (ipld.Node, error) {
