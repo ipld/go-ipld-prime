@@ -37,6 +37,10 @@ type Error struct {
 	Err error
 }
 
+func (e Error) Error() string {
+	return e.Err.Error()
+}
+
 func (n node) GetError() error {
 	return n.err
 }

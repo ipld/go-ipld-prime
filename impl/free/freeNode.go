@@ -29,17 +29,15 @@ var (
 type Node struct {
 	typ typ
 
-	// n.b. maps values are all ptr so the returned node interface can be mutable.
-
-	_map   map[string]*Node // Value union.  Only one of these has meaning, depending on the value of 'Type'.
-	_map2  map[int]*Node    // Value union.  Only one of these has meaning, depending on the value of 'Type'.
-	_arr   []Node           // Value union.  Only one of these has meaning, depending on the value of 'Type'.
-	_bool  bool             // Value union.  Only one of these has meaning, depending on the value of 'Type'.
-	_str   string           // Value union.  Only one of these has meaning, depending on the value of 'Type'.
-	_int   int              // Value union.  Only one of these has meaning, depending on the value of 'Type'.
-	_float float64          // Value union.  Only one of these has meaning, depending on the value of 'Type'.
-	_bytes []byte           // Value union.  Only one of these has meaning, depending on the value of 'Type'.
-	_link  cid.Cid          // Value union.  Only one of these has meaning, depending on the value of 'Type'.
+	_map   map[string]ipld.Node // Value union.  Only one of these has meaning, depending on the value of 'Type'.
+	_map2  map[int]ipld.Node    // Value union.  Only one of these has meaning, depending on the value of 'Type'.
+	_arr   []ipld.Node          // Value union.  Only one of these has meaning, depending on the value of 'Type'.
+	_bool  bool                 // Value union.  Only one of these has meaning, depending on the value of 'Type'.
+	_str   string               // Value union.  Only one of these has meaning, depending on the value of 'Type'.
+	_int   int                  // Value union.  Only one of these has meaning, depending on the value of 'Type'.
+	_float float64              // Value union.  Only one of these has meaning, depending on the value of 'Type'.
+	_bytes []byte               // Value union.  Only one of these has meaning, depending on the value of 'Type'.
+	_link  cid.Cid              // Value union.  Only one of these has meaning, depending on the value of 'Type'.
 }
 
 type typ struct{ t byte }
@@ -96,8 +94,7 @@ func (n *Node) TraverseField(pth string) (ipld.Node, error) {
 		if i >= len(n._arr) {
 			return nil, fmt.Errorf("404")
 		}
-		v := &n._arr[i]
-		return v, nil
+		return n._arr[i], nil
 	case tStr, tBytes, tBool, tInt, tFloat, tLink:
 		return nil, fmt.Errorf("cannot traverse terminals")
 	default:
@@ -106,12 +103,30 @@ func (n *Node) TraverseField(pth string) (ipld.Node, error) {
 }
 
 func (n *Node) TraverseIndex(idx int) (ipld.Node, error) {
-	panic("NYI")
+	switch n.typ {
+	case tNil:
+		return nil, fmt.Errorf("cannot traverse terminals")
+	case tMap:
+		return nil, fmt.Errorf("cannot traverse map by numeric index")
+		// REVIEW: there's an argument that maybe we should support this; would be '_map2' code.
+	case tArr:
+		if idx >= len(n._arr) {
+			return nil, fmt.Errorf("404")
+		}
+		if n._arr[idx] == nil {
+			return nil, fmt.Errorf("404")
+		}
+		return n._arr[idx], nil
+	case tStr, tBytes, tBool, tInt, tFloat, tLink:
+		return nil, fmt.Errorf("cannot traverse terminals")
+	default:
+		panic("unreachable")
+	}
 }
 
 func expectTyp(expect, actual typ) error {
 	if expect == actual {
 		return nil
 	}
-	return fmt.Errorf("woof")
+	return fmt.Errorf("type assertion rejected: node is %q, assertion was for %q", actual, expect)
 }
