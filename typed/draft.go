@@ -18,7 +18,7 @@ var (
 		Fields: []ObjectField{
 			{"f1", tString, false, true},
 			{"f2", TypeList{
-				Name:          "[nullable String]",
+				Name:          "", // "[nullable String]" can be calculated.
 				Anon:          true,
 				ValueType:     tString,
 				ValueNullable: true,
