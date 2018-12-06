@@ -25,7 +25,7 @@ type TypeFloat struct {
 type TypeMap struct {
 	Name          TypeName
 	Anon          bool
-	KeyType       Type
+	KeyType       Type // must be ReprKind==string (e.g. Type==String|Enum).
 	ValueType     Type
 	ValueNullable bool
 }
@@ -70,5 +70,6 @@ type ObjectField struct {
 }
 
 type TypeEnum struct {
-	// TODO
+	Name   string
+	Values []string
 }
