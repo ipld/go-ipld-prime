@@ -3,9 +3,23 @@ package typed
 type TypeName string
 
 type Type interface {
-	// Name() TypeName
-	// ReprKind() ReprKind
+	// Name() TypeName // annoying name collision.
+	ReprKind() ReprKind
 }
+
+var (
+	_ Type = TypeBool{}
+	_ Type = TypeString{}
+	_ Type = TypeBytes{}
+	_ Type = TypeInt{}
+	_ Type = TypeFloat{}
+	_ Type = TypeMap{}
+	_ Type = TypeList{}
+	_ Type = TypeLink{}
+	_ Type = TypeUnion{}
+	_ Type = TypeObject{}
+	_ Type = TypeEnum{}
+)
 
 type TypeBool struct {
 	Name TypeName
