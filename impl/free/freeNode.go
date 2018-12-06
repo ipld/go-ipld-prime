@@ -27,7 +27,7 @@ var (
 	If you're not sure which kind serializable node to use, try `ipldcbor.Node`.
 */
 type Node struct {
-	typ typ
+	kind ipld.ReprKind
 
 	_map   map[string]ipld.Node // Value union.  Only one of these has meaning, depending on the value of 'Type'.
 	_map2  map[int]ipld.Node    // Value union.  Only one of these has meaning, depending on the value of 'Type'.
@@ -40,38 +40,33 @@ type Node struct {
 	_link  cid.Cid              // Value union.  Only one of these has meaning, depending on the value of 'Type'.
 }
 
-type typ struct{ t byte }
-
-var (
-	tNil   = typ{}
-	tMap   = typ{'{'}
-	tArr   = typ{'['}
-	tBool  = typ{'b'}
-	tStr   = typ{'s'}
-	tInt   = typ{'i'}
-	tFloat = typ{'f'}
-	tBytes = typ{'x'}
-	tLink  = typ{'/'}
-)
+func (n *Node) Kind() ipld.ReprKind {
+	return n.kind
+}
 
 func (n *Node) AsBool() (v bool, _ error) {
-	return n._bool, expectTyp(tBool, n.typ)
+	return n._bool, expectTyp(ipld.ReprKind_Bool, n.kind)
 }
 func (n *Node) AsString() (v string, _ error) {
-	return n._str, expectTyp(tStr, n.typ)
+	return n._str, expectTyp(ipld.ReprKind_String, n.kind)
 }
 func (n *Node) AsInt() (v int, _ error) {
-	return n._int, expectTyp(tInt, n.typ)
+	return n._int, expectTyp(ipld.ReprKind_Int, n.kind)
 }
 func (n *Node) AsLink() (v cid.Cid, _ error) {
-	return n._link, expectTyp(tLink, n.typ)
+	return n._link, expectTyp(ipld.ReprKind_Link, n.kind)
+}
+
+func (n *Node) Keys() ([]string, int) {
+	return nil, 0 // FIXME
+	// TODO need to maintain map order now, apparently, sigh
 }
 
 func (n *Node) TraverseField(pth string) (ipld.Node, error) {
-	switch n.typ {
-	case tNil:
+	switch n.kind {
+	case ipld.ReprKind_Null:
 		return nil, fmt.Errorf("cannot traverse terminals")
-	case tMap:
+	case ipld.ReprKind_Map:
 		switch {
 		case n._map != nil:
 			v, _ := n._map[pth]
@@ -86,7 +81,7 @@ func (n *Node) TraverseField(pth string) (ipld.Node, error) {
 		default:
 			panic("unreachable")
 		}
-	case tArr:
+	case ipld.ReprKind_List:
 		i, err := strconv.Atoi(pth)
 		if err != nil {
 			return nil, fmt.Errorf("404")
@@ -95,7 +90,12 @@ func (n *Node) TraverseField(pth string) (ipld.Node, error) {
 			return nil, fmt.Errorf("404")
 		}
 		return n._arr[i], nil
-	case tStr, tBytes, tBool, tInt, tFloat, tLink:
+	case ipld.ReprKind_Bool,
+		ipld.ReprKind_String,
+		ipld.ReprKind_Bytes,
+		ipld.ReprKind_Int,
+		ipld.ReprKind_Float,
+		ipld.ReprKind_Link:
 		return nil, fmt.Errorf("cannot traverse terminals")
 	default:
 		panic("unreachable")
@@ -103,13 +103,13 @@ func (n *Node) TraverseField(pth string) (ipld.Node, error) {
 }
 
 func (n *Node) TraverseIndex(idx int) (ipld.Node, error) {
-	switch n.typ {
-	case tNil:
+	switch n.kind {
+	case ipld.ReprKind_Null:
 		return nil, fmt.Errorf("cannot traverse terminals")
-	case tMap:
+	case ipld.ReprKind_Map:
 		return nil, fmt.Errorf("cannot traverse map by numeric index")
 		// REVIEW: there's an argument that maybe we should support this; would be '_map2' code.
-	case tArr:
+	case ipld.ReprKind_List:
 		if idx >= len(n._arr) {
 			return nil, fmt.Errorf("404")
 		}
@@ -117,14 +117,19 @@ func (n *Node) TraverseIndex(idx int) (ipld.Node, error) {
 			return nil, fmt.Errorf("404")
 		}
 		return n._arr[idx], nil
-	case tStr, tBytes, tBool, tInt, tFloat, tLink:
+	case ipld.ReprKind_Bool,
+		ipld.ReprKind_String,
+		ipld.ReprKind_Bytes,
+		ipld.ReprKind_Int,
+		ipld.ReprKind_Float,
+		ipld.ReprKind_Link:
 		return nil, fmt.Errorf("cannot traverse terminals")
 	default:
 		panic("unreachable")
 	}
 }
 
-func expectTyp(expect, actual typ) error {
+func expectTyp(expect, actual ipld.ReprKind) error {
 	if expect == actual {
 		return nil
 	}

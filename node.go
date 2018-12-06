@@ -3,6 +3,11 @@ package ipld
 import "github.com/ipfs/go-cid"
 
 type Node interface {
+	// Kind returns a value from the ReprKind enum describing what the
+	// essential serializable kind of this node is (map, list, int, etc).
+	// Most other handling of a node requires first switching upon the kind.
+	Kind() ReprKind
+
 	// GetField resolves a path in the the object and returns
 	// either a primitive (e.g. string, int, etc), a link (type CID),
 	// or another Node.
@@ -13,6 +18,13 @@ type Node interface {
 	// either a primitive (e.g. string, int, etc), a link (type CID),
 	// or another Node.
 	TraverseIndex(idx int) (Node, error)
+
+	// Keys returns instructions for traversing the node.
+	// If the node kind is a map, the keys slice has content;
+	// if it's a list, the length int will be positive
+	// (and if it's a zero length list, there's not to traverse, right?);
+	// and if it's a primitive type the returned values are nil and zero.
+	Keys() ([]string, int)
 
 	AsBool() (bool, error)
 	AsString() (string, error)

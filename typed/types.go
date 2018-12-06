@@ -1,10 +1,14 @@
 package typed
 
+import (
+	"github.com/ipld/go-ipld-prime"
+)
+
 type TypeName string
 
 type Type interface {
 	// Name() TypeName // annoying name collision.
-	ReprKind() ReprKind
+	ReprKind() ipld.ReprKind
 }
 
 var (
@@ -57,10 +61,10 @@ type TypeLink struct {
 type TypeUnion struct {
 	Name         TypeName
 	Style        UnionStyle
-	ValuesKinded map[ReprKind]Type // for Style==Kinded
-	Values       map[TypeName]Type // for Style!=Kinded
-	TypeHintKey  string            // for Style==Envelope|Inline
-	ContentKey   string            // for Style==Envelope
+	ValuesKinded map[ipld.ReprKind]Type // for Style==Kinded
+	Values       map[TypeName]Type      // for Style!=Kinded
+	TypeHintKey  string                 // for Style==Envelope|Inline
+	ContentKey   string                 // for Style==Envelope
 }
 type UnionStyle struct{ x string }
 

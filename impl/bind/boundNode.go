@@ -22,6 +22,7 @@ var (
 	If you're not sure which kind serializable node to use, try `ipldcbor.Node`.
 */
 type Node struct {
+	kind  ipld.ReprKind // compute during bind
 	bound reflect.Value // should already be ptr-unwrapped
 	atlas atlas.Atlas
 }
@@ -36,9 +37,42 @@ func Bind(bindme interface{}, atl atlas.Atlas) ipld.Node {
 		rv = rv.Elem()
 	}
 	return Node{
+		kind:  determineReprKind(rv),
 		bound: rv,
 		atlas: atl,
 	}
+}
+
+func determineReprKind(rv reflect.Value) ipld.ReprKind {
+	switch rv.Type().Kind() {
+	case reflect.Bool:
+		return ipld.ReprKind_Bool
+	case reflect.String:
+		return ipld.ReprKind_String
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64,
+		reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr:
+		return ipld.ReprKind_Int
+	case reflect.Float32, reflect.Float64:
+		return ipld.ReprKind_Float
+	case reflect.Complex64, reflect.Complex128:
+		panic(fmt.Errorf("invalid ipldbind.Node: ipld has no concept for complex numbers"))
+	case reflect.Array, reflect.Slice:
+		return ipld.ReprKind_List
+	case reflect.Map, reflect.Struct:
+		return ipld.ReprKind_Map
+	case reflect.Interface:
+		determineReprKind(rv.Elem())
+	case reflect.Chan, reflect.Func, reflect.UnsafePointer:
+		panic(fmt.Errorf("invalid ipldbind.Node: cannot atlas over type %q; it's a %v", rv.Type().Name(), rv.Kind()))
+	case reflect.Ptr:
+		// might've already been traversed during bind, but interface path can find more.
+		determineReprKind(rv.Elem())
+	}
+	panic("unreachable")
+}
+
+func (n Node) Kind() ipld.ReprKind {
+	return n.kind
 }
 
 func (n Node) AsBool() (v bool, _ error) {
@@ -56,6 +90,11 @@ func (n Node) AsInt() (v int, _ error) {
 func (n Node) AsLink() (v cid.Cid, _ error) {
 	reflect.ValueOf(&v).Elem().Set(n.bound)
 	return
+}
+
+func (n Node) Keys() ([]string, int) {
+	return nil, 0 // FIXME
+	// TODO: REVIEW: structs have clear key order; maps do not.  what do?
 }
 
 func (n Node) TraverseField(pth string) (ipld.Node, error) {
@@ -100,7 +139,7 @@ func (n Node) TraverseField(pth string) (ipld.Node, error) {
 			reflect.Map,
 			reflect.Struct,
 			reflect.Interface:
-			return Node{v, n.atlas}, nil
+			return Node{determineReprKind(v), v, n.atlas}, nil
 		case // esotera: reject with panic
 			reflect.Chan,
 			reflect.Func,
@@ -129,14 +168,14 @@ func (n Node) TraverseField(pth string) (ipld.Node, error) {
 		reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr,
 		reflect.Float32, reflect.Float64,
 		reflect.Complex64, reflect.Complex128:
-		return Node{v, n.atlas}, nil
+		return Node{determineReprKind(v), v, n.atlas}, nil
 	case // recursives: wrap in node
 		reflect.Array,
 		reflect.Slice,
 		reflect.Map,
 		reflect.Struct,
 		reflect.Interface:
-		return Node{v, n.atlas}, nil
+		return Node{determineReprKind(v), v, n.atlas}, nil
 	case // esotera: reject with panic
 		reflect.Chan,
 		reflect.Func,

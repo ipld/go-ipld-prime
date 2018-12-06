@@ -1,44 +1,48 @@
 package typed
 
-func (TypeBool) ReprKind() ReprKind {
-	return ReprKind_Bool
+import (
+	"github.com/ipld/go-ipld-prime"
+)
+
+func (TypeBool) ReprKind() ipld.ReprKind {
+	return ipld.ReprKind_Bool
 }
-func (TypeString) ReprKind() ReprKind {
-	return ReprKind_String
+func (TypeString) ReprKind() ipld.ReprKind {
+	return ipld.ReprKind_String
 }
-func (TypeBytes) ReprKind() ReprKind {
-	return ReprKind_Bytes
+func (TypeBytes) ReprKind() ipld.ReprKind {
+	return ipld.ReprKind_Bytes
 }
-func (TypeInt) ReprKind() ReprKind {
-	return ReprKind_Int
+func (TypeInt) ReprKind() ipld.ReprKind {
+	return ipld.ReprKind_Int
 }
-func (TypeFloat) ReprKind() ReprKind {
-	return ReprKind_Float
+func (TypeFloat) ReprKind() ipld.ReprKind {
+	return ipld.ReprKind_Float
 }
-func (TypeMap) ReprKind() ReprKind {
-	return ReprKind_Map
+func (TypeMap) ReprKind() ipld.ReprKind {
+	return ipld.ReprKind_Map
 }
-func (TypeList) ReprKind() ReprKind {
-	return ReprKind_List
+func (TypeList) ReprKind() ipld.ReprKind {
+	return ipld.ReprKind_List
 }
-func (TypeLink) ReprKind() ReprKind {
-	return ReprKind_Link
+func (TypeLink) ReprKind() ipld.ReprKind {
+	return ipld.ReprKind_Link
 }
-func (tv TypeUnion) ReprKind() ReprKind {
+func (tv TypeUnion) ReprKind() ipld.ReprKind {
 	// REVIEW: this may fib; has the bizarre property of being dependent on the *concrete value* for kinded unions!
 	if tv.Style == UnionStyle_Kinded {
-		return ReprKind_Invalid
+		return ipld.ReprKind_Invalid
 	} else {
-		return ReprKind_Map
+		return ipld.ReprKind_Map
 	}
 }
-func (tv TypeObject) ReprKind() ReprKind {
+func (tv TypeObject) ReprKind() ipld.ReprKind {
 	if tv.TupleStyle {
-		return ReprKind_List
+		return ipld.ReprKind_List
 	} else {
-		return ReprKind_Map
+		return ipld.ReprKind_Map
 	}
 }
-func (TypeEnum) ReprKind() ReprKind {
-	return ReprKind_String
+func (TypeEnum) ReprKind() ipld.ReprKind {
+	return ipld.ReprKind_String
 }
