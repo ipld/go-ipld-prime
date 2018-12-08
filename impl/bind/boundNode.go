@@ -44,6 +44,7 @@ func Bind(bindme interface{}, atl atlas.Atlas) ipld.Node {
 }
 
 func determineReprKind(rv reflect.Value) ipld.ReprKind {
+	// TODO also handle nils
 	switch rv.Type().Kind() {
 	case reflect.Bool:
 		return ipld.ReprKind_Bool
@@ -75,6 +76,9 @@ func (n Node) Kind() ipld.ReprKind {
 	return n.kind
 }
 
+func (n Node) IsNull() bool {
+	return n.bound.IsNil()
+}
 func (n Node) AsBool() (v bool, _ error) {
 	reflect.ValueOf(&v).Elem().Set(n.bound)
 	return

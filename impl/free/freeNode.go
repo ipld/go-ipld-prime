@@ -44,6 +44,9 @@ func (n *Node) Kind() ipld.ReprKind {
 	return n.kind
 }
 
+func (n *Node) IsNull() bool {
+	return n.kind == ipld.ReprKind_Null
+}
 func (n *Node) AsBool() (v bool, _ error) {
 	return n._bool, expectTyp(ipld.ReprKind_Bool, n.kind)
 }

@@ -26,6 +26,7 @@ type Node interface {
 	// and if it's a primitive type the returned values are nil and zero.
 	Keys() ([]string, int)
 
+	IsNull() bool
 	AsBool() (bool, error)
 	AsString() (string, error)
 	AsInt() (int, error)
