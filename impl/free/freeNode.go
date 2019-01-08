@@ -20,7 +20,7 @@ var (
 	only be produced by its own builder patterns (and thus it requires much
 	less reflection and in particular does not depend on refmt for object mapping).
 
-	The "zero" value of this struct is interpreted as an empty map.
+	The "zero" value of this struct has a kind of ReprKind_Invalid.
 
 	This binding does not provide a serialization valid for hashing; to
 	compute a CID, you'll have to convert to another kind of node.
@@ -67,6 +67,8 @@ func (n *Node) Keys() ([]string, int) {
 
 func (n *Node) TraverseField(pth string) (ipld.Node, error) {
 	switch n.kind {
+	case ipld.ReprKind_Invalid:
+		return nil, fmt.Errorf("cannot traverse a node that is undefined")
 	case ipld.ReprKind_Null:
 		return nil, fmt.Errorf("cannot traverse terminals")
 	case ipld.ReprKind_Map:
@@ -107,6 +109,8 @@ func (n *Node) TraverseField(pth string) (ipld.Node, error) {
 
 func (n *Node) TraverseIndex(idx int) (ipld.Node, error) {
 	switch n.kind {
+	case ipld.ReprKind_Invalid:
+		return nil, fmt.Errorf("cannot traverse a node that is undefined")
 	case ipld.ReprKind_Null:
 		return nil, fmt.Errorf("cannot traverse terminals")
 	case ipld.ReprKind_Map:
