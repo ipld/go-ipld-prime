@@ -26,6 +26,14 @@ type Node interface {
 	// and if it's a primitive type the returned values are nil and zero.
 	Keys() ([]string, int)
 
+	// Undefined nodes are returned when traversing a struct field that is
+	// defined by a schema but unset in the data.  (Undefined nodes are not
+	// possible otherwise; you'll only see them from `typed.Node`.)
+	//
+	// REVIEW: unsure if this should use ReprKind_Invalid or another enum.
+	// Since ReprKind_Invalid is returned for UnionStyle_Kinded, confusing.
+	//IsUndefined() bool
+
 	IsNull() bool
 	AsBool() (bool, error)
 	AsString() (string, error)
