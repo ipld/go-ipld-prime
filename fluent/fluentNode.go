@@ -17,9 +17,12 @@ import (
 type Node interface {
 	TraverseField(path string) Node
 	TraverseIndex(idx int) Node
+	IsNull() bool
 	AsBool() bool
-	AsString() string
 	AsInt() int
+	AsFloat() float64
+	AsString() string
+	AsBytes() []byte
 	AsLink() cid.Cid
 	GetError() error
 }
@@ -64,11 +67,37 @@ func (n node) TraverseIndex(idx int) Node {
 	}
 	return node{v, nil}
 }
+func (n node) IsNull() bool {
+	if n.err != nil {
+		panic(Error{n.err})
+	}
+	return n.n.IsNull()
+}
 func (n node) AsBool() bool {
 	if n.err != nil {
 		panic(Error{n.err})
 	}
 	v, err := n.n.AsBool()
+	if err != nil {
+		panic(Error{err})
+	}
+	return v
+}
+func (n node) AsInt() int {
+	if n.err != nil {
+		panic(Error{n.err})
+	}
+	v, err := n.n.AsInt()
+	if err != nil {
+		panic(Error{err})
+	}
+	return v
+}
+func (n node) AsFloat() float64 {
+	if n.err != nil {
+		panic(Error{n.err})
+	}
+	v, err := n.n.AsFloat()
 	if err != nil {
 		panic(Error{err})
 	}
@@ -84,11 +113,11 @@ func (n node) AsString() string {
 	}
 	return v
 }
-func (n node) AsInt() int {
+func (n node) AsBytes() []byte {
 	if n.err != nil {
 		panic(Error{n.err})
 	}
-	v, err := n.n.AsInt()
+	v, err := n.n.AsBytes()
 	if err != nil {
 		panic(Error{err})
 	}

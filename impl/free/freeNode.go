@@ -33,9 +33,9 @@ type Node struct {
 	_map2  map[int]ipld.Node    // Value union.  Only one of these has meaning, depending on the value of 'Type'.
 	_arr   []ipld.Node          // Value union.  Only one of these has meaning, depending on the value of 'Type'.
 	_bool  bool                 // Value union.  Only one of these has meaning, depending on the value of 'Type'.
-	_str   string               // Value union.  Only one of these has meaning, depending on the value of 'Type'.
 	_int   int                  // Value union.  Only one of these has meaning, depending on the value of 'Type'.
 	_float float64              // Value union.  Only one of these has meaning, depending on the value of 'Type'.
+	_str   string               // Value union.  Only one of these has meaning, depending on the value of 'Type'.
 	_bytes []byte               // Value union.  Only one of these has meaning, depending on the value of 'Type'.
 	_link  cid.Cid              // Value union.  Only one of these has meaning, depending on the value of 'Type'.
 }
@@ -50,11 +50,17 @@ func (n *Node) IsNull() bool {
 func (n *Node) AsBool() (v bool, _ error) {
 	return n._bool, expectTyp(ipld.ReprKind_Bool, n.kind)
 }
+func (n *Node) AsInt() (v int, _ error) {
+	return n._int, expectTyp(ipld.ReprKind_Int, n.kind)
+}
+func (n *Node) AsFloat() (v float64, _ error) {
+	return n._float, expectTyp(ipld.ReprKind_Float, n.kind)
+}
 func (n *Node) AsString() (v string, _ error) {
 	return n._str, expectTyp(ipld.ReprKind_String, n.kind)
 }
-func (n *Node) AsInt() (v int, _ error) {
-	return n._int, expectTyp(ipld.ReprKind_Int, n.kind)
+func (n *Node) AsBytes() (v []byte, _ error) {
+	return n._bytes, expectTyp(ipld.ReprKind_Bytes, n.kind)
 }
 func (n *Node) AsLink() (v cid.Cid, _ error) {
 	return n._link, expectTyp(ipld.ReprKind_Link, n.kind)

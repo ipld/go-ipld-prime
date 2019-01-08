@@ -11,13 +11,13 @@ type ReprKind uint8
 
 const (
 	ReprKind_Invalid = 0
-	ReprKind_Bool    = 'b'
-	ReprKind_String  = 's'
-	ReprKind_Bytes   = 'x'
-	ReprKind_Int     = 'i'
-	ReprKind_Float   = 'f'
 	ReprKind_Map     = '{'
 	ReprKind_List    = '['
 	ReprKind_Null    = '0'
+	ReprKind_Bool    = 'b'
+	ReprKind_Int     = 'i'
+	ReprKind_Float   = 'f'
+	ReprKind_String  = 's'
+	ReprKind_Bytes   = 'x'
 	ReprKind_Link    = '/'
 )

@@ -83,11 +83,19 @@ func (n Node) AsBool() (v bool, _ error) {
 	reflect.ValueOf(&v).Elem().Set(n.bound)
 	return
 }
+func (n Node) AsInt() (v int, _ error) {
+	reflect.ValueOf(&v).Elem().Set(n.bound)
+	return
+}
+func (n Node) AsFloat() (v float64, _ error) {
+	reflect.ValueOf(&v).Elem().Set(n.bound)
+	return
+}
 func (n Node) AsString() (v string, _ error) {
 	reflect.ValueOf(&v).Elem().Set(n.bound)
 	return
 }
-func (n Node) AsInt() (v int, _ error) {
+func (n Node) AsBytes() (v []byte, _ error) {
 	reflect.ValueOf(&v).Elem().Set(n.bound)
 	return
 }

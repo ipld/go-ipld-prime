@@ -32,12 +32,16 @@ type Node interface {
 	//
 	// REVIEW: unsure if this should use ReprKind_Invalid or another enum.
 	// Since ReprKind_Invalid is returned for UnionStyle_Kinded, confusing.
+	// (But since this is only relevant for `typed.Node`, we can make that
+	// choice locally to that package.)
 	//IsUndefined() bool
 
 	IsNull() bool
 	AsBool() (bool, error)
-	AsString() (string, error)
 	AsInt() (int, error)
+	AsFloat() (float64, error)
+	AsString() (string, error)
+	AsBytes() ([]byte, error)
 	AsLink() (cid.Cid, error)
 }
 
@@ -57,8 +61,27 @@ type MutableNode interface {
 	Node
 	SetField(k string, v Node) // SetField coerces the node to a map kind and sets a key:val pair.
 	SetIndex(k int, v Node)    // SetIndex coerces the node to an array kind and sets an index:val pair.  (It will implicitly increase the size to include the index.)
+	SetNull()
 	SetBool(v bool)
-	SetString(v string)
 	SetInt(v int)
+	SetFloat(v float64)
+	SetString(v string)
+	SetBytes(v []byte)
 	SetLink(v cid.Cid)
 }
+
+// REVIEW: having a an immediate-mode Keys() method rather than iterator
+// might actually be a bad idea.  We're aiming to reuse this interface
+// for *advanced layouts as well*, and those can be *large*.
+//
+// Similar goes for AsBytes().
+//
+// Probable solution is having both immediate and iterator return methods.
+// Returning a reader for bytes when you know you want a slice already
+// is going to be high friction without purpose in many common uses.
+//
+// Unclear what SetByteStream() would look like for advanced layouts.
+// One could try to encapsulate the chunking entirely within the advlay
+// node impl... but would it be graceful?  Not sure.  Maybe.  Hopefully!
+// Yes?  The advlay impl would still tend to use SetBytes for the raw
+// data model layer nodes its composing, so overall, it shakes out nicely.

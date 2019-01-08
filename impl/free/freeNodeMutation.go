@@ -5,6 +5,13 @@ import (
 	"github.com/ipld/go-ipld-prime"
 )
 
+var (
+	_ ipld.MutableNode = &Node{}
+)
+
+func (n *Node) SetNull() {
+	n.coerceType(ipld.ReprKind_Null)
+}
 func (n *Node) SetField(k string, v ipld.Node) {
 	n.coerceType(ipld.ReprKind_Map)
 	n._map[k] = v
@@ -54,14 +61,6 @@ func (n *Node) SetBool(v bool) {
 	n.coerceType(ipld.ReprKind_Bool)
 	n._bool = v
 }
-func (n *Node) SetString(v string) {
-	n.coerceType(ipld.ReprKind_String)
-	n._str = v
-}
-func (n *Node) SetBytes(v []byte) {
-	n.coerceType(ipld.ReprKind_Bytes)
-	n._bytes = v
-}
 func (n *Node) SetInt(v int) {
 	n.coerceType(ipld.ReprKind_Int)
 	n._int = v
@@ -69,6 +68,14 @@ func (n *Node) SetInt(v int) {
 func (n *Node) SetFloat(v float64) {
 	n.coerceType(ipld.ReprKind_Float)
 	n._float = v
+}
+func (n *Node) SetString(v string) {
+	n.coerceType(ipld.ReprKind_String)
+	n._str = v
+}
+func (n *Node) SetBytes(v []byte) {
+	n.coerceType(ipld.ReprKind_Bytes)
+	n._bytes = v
 }
 func (n *Node) SetLink(v cid.Cid) {
 	n.coerceType(ipld.ReprKind_Link)
