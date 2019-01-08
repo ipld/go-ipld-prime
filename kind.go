@@ -10,14 +10,14 @@ package ipld
 type ReprKind uint8
 
 const (
-	ReprKind_Invalid = 0
-	ReprKind_Map     = '{'
-	ReprKind_List    = '['
-	ReprKind_Null    = '0'
-	ReprKind_Bool    = 'b'
-	ReprKind_Int     = 'i'
-	ReprKind_Float   = 'f'
-	ReprKind_String  = 's'
-	ReprKind_Bytes   = 'x'
-	ReprKind_Link    = '/'
+	ReprKind_Invalid ReprKind = 0
+	ReprKind_Map     ReprKind = '{'
+	ReprKind_List    ReprKind = '['
+	ReprKind_Null    ReprKind = '0'
+	ReprKind_Bool    ReprKind = 'b'
+	ReprKind_Int     ReprKind = 'i'
+	ReprKind_Float   ReprKind = 'f'
+	ReprKind_String  ReprKind = 's'
+	ReprKind_Bytes   ReprKind = 'x'
+	ReprKind_Link    ReprKind = '/'
 )
