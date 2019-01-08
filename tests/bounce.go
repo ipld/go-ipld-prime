@@ -13,15 +13,30 @@ type MutableNodeFactory func() ipld.MutableNode
 
 func TestNodes(t *testing.T, newNode MutableNodeFactory) {
 	t.Run("string node bounce", func(t *testing.T) {
-		n1 := newNode()
-		n1.SetString("asdf")
-		Wish(t, fluent.WrapNode(n1).AsString(), ShouldEqual, "asdf")
+		n0 := newNode()
+		n0.SetString("asdf")
+		Wish(t, fluent.WrapNode(n0).AsString(), ShouldEqual, "asdf")
 	})
-	t.Run("short array node bounce", func(t *testing.T) {
-		n1 := newNode()
-		n10 := newNode()
-		n10.SetString("asdf")
-		n1.SetIndex(0, n10)
-		Wish(t, fluent.WrapNode(n1).TraverseIndex(0).AsString(), ShouldEqual, "asdf")
+	t.Run("short list node bounce", func(t *testing.T) {
+		n0 := newNode()
+		n00 := newNode()
+		n00.SetString("asdf")
+		n0.SetIndex(0, n00)
+		Wish(t, fluent.WrapNode(n0).TraverseIndex(0).AsString(), ShouldEqual, "asdf")
+	})
+	t.Run("nested list node bounce", func(t *testing.T) {
+		n0 := newNode()
+		n00 := newNode()
+		n0.SetIndex(0, n00)
+		n000 := newNode()
+		n000.SetString("asdf")
+		n00.SetIndex(0, n000)
+		n01 := newNode()
+		n01.SetString("quux")
+		n0.SetIndex(1, n01)
+		nf := fluent.WrapNode(n0)
+		Wish(t, nf.Kind(), ShouldEqual, ipld.ReprKind_List)
+		Wish(t, nf.TraverseIndex(0).TraverseIndex(0).AsString(), ShouldEqual, "asdf")
+		Wish(t, nf.TraverseIndex(1).AsString(), ShouldEqual, "quux")
 	})
 }
