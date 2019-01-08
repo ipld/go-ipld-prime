@@ -8,7 +8,7 @@ import (
 )
 
 func Test(t *testing.T) {
-	tests.TestNodes(t, func() ipld.MutableNode {
-		return &Node{}
-	})
+	mutNodeFac := func() ipld.MutableNode { return &Node{} }
+	tests.TestScalars(t, mutNodeFac)
+	tests.TestRecursives(t, mutNodeFac)
 }

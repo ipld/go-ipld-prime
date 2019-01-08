@@ -11,12 +11,58 @@ import (
 
 type MutableNodeFactory func() ipld.MutableNode
 
-func TestNodes(t *testing.T, newNode MutableNodeFactory) {
+func TestScalars(t *testing.T, newNode MutableNodeFactory) {
+	t.Run("null node bounce", func(t *testing.T) {
+		n0 := newNode()
+		n0.SetNull()
+		Wish(t, n0.Kind(), ShouldEqual, ipld.ReprKind_Null)
+		Wish(t, n0.IsNull(), ShouldEqual, true)
+	})
+	t.Run("bool node bounce", func(t *testing.T) {
+		n0 := newNode()
+		n0.SetBool(true)
+		Wish(t, n0.Kind(), ShouldEqual, ipld.ReprKind_Bool)
+		Wish(t, n0.IsNull(), ShouldEqual, false)
+		Wish(t, fluent.WrapNode(n0).AsBool(), ShouldEqual, true)
+	})
+	t.Run("int node bounce", func(t *testing.T) {
+		n0 := newNode()
+		n0.SetInt(17)
+		Wish(t, n0.Kind(), ShouldEqual, ipld.ReprKind_Int)
+		Wish(t, n0.IsNull(), ShouldEqual, false)
+		Wish(t, fluent.WrapNode(n0).AsInt(), ShouldEqual, 17)
+	})
+	t.Run("float node bounce", func(t *testing.T) {
+		n0 := newNode()
+		n0.SetFloat(0.122)
+		Wish(t, n0.Kind(), ShouldEqual, ipld.ReprKind_Float)
+		Wish(t, n0.IsNull(), ShouldEqual, false)
+		Wish(t, fluent.WrapNode(n0).AsFloat(), ShouldEqual, 0.122)
+	})
 	t.Run("string node bounce", func(t *testing.T) {
 		n0 := newNode()
 		n0.SetString("asdf")
+		Wish(t, n0.Kind(), ShouldEqual, ipld.ReprKind_String)
+		Wish(t, n0.IsNull(), ShouldEqual, false)
 		Wish(t, fluent.WrapNode(n0).AsString(), ShouldEqual, "asdf")
 	})
+	t.Run("bytes node bounce", func(t *testing.T) {
+		n0 := newNode()
+		n0.SetBytes([]byte{65, 66})
+		Wish(t, n0.Kind(), ShouldEqual, ipld.ReprKind_Bytes)
+		Wish(t, n0.IsNull(), ShouldEqual, false)
+		Wish(t, fluent.WrapNode(n0).AsBytes(), ShouldEqual, []byte{65, 66})
+	})
+	t.Run("link node bounce", func(t *testing.T) {
+		n0 := newNode()
+		n0.SetBool(true)
+		Wish(t, n0.Kind(), ShouldEqual, ipld.ReprKind_Bool)
+		Wish(t, n0.IsNull(), ShouldEqual, false)
+		Wish(t, fluent.WrapNode(n0).AsBool(), ShouldEqual, true)
+	})
+}
+
+func TestRecursives(t *testing.T, newNode MutableNodeFactory) {
 	t.Run("short list node bounce", func(t *testing.T) {
 		n0 := newNode()
 		n00 := newNode()
