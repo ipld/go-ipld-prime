@@ -57,6 +57,7 @@ func validate(ts Universe, t Type, node ipld.Node, pth string) []error {
 		keys, _ := node.Keys()
 		errs := []error(nil)
 		for _, k := range keys {
+			// FUTURE: if KeyType is an enum rather than string, do membership check.
 			child, _ := node.TraverseField(k)
 			if child.IsNull() {
 				if !t2.ValueNullable {
@@ -69,9 +70,20 @@ func validate(ts Universe, t Type, node ipld.Node, pth string) []error {
 		return errs
 	case TypeList:
 	case TypeLink:
+		// TODO interesting case: would need resolver to keep checking.
 	case TypeUnion:
 		// TODO *several* interesting errors
 	case TypeObject:
+		switch t2.TupleStyle {
+		case false: // as map!
+			if node.Kind() != ipld.ReprKind_Map {
+				return []error{fmt.Errorf("Schema match failed: expected type %q (which is kind %v) at path %q, but found kind %v", t2.Name, t.ReprKind(), pth, node.Kind())}
+			}
+			// TODO loop over em
+			// TODO REVIEW order strictness questions?
+		case true: // as array!
+
+		}
 	case TypeEnum:
 		// TODO another interesting error
 	}
