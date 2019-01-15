@@ -35,32 +35,43 @@ import (
 // methods are equivalent to their Create* counterparts.  As there's no
 // "existing" node for them to refer to, it's treated the same as amending
 // an empty node.)
+//
+// NodeBuilder instances obtained from Node.GetBuilder may carry some of the
+// additional logic of their parent with them to the new Node they produce.
+// For example, the NodeBuilder from typed.Node.GetBuilder may keep the type
+// info and type constraints of their parent with them!
+// (Continuing the typed.Node example: if you have a typed.Node that is
+// constrained to be of some `type Foo = {Bar:Baz}` type, then any new Node
+// produced from its NodeBuilder will still answer
+// `n.(typed.Node).Type().Name()` as `Foo`; and if
+// `n.GetBuilder().AmendMap().Insert(...)` is called with nodes of unmatching
+// type given to the insertion, the builder will error!)
 type NodeBuilder interface {
 	CreateMap() MapBuilder
 	AmendMap() MapBuilder
 	CreateList() ListBuilder
 	AmendList() ListBuilder
-	CreateNull() Node
-	CreateBool(bool) Node
-	CreateInt() Node
-	CreateFloat(float64) Node
-	CreateString(string) Node
-	CreateBytes([]byte) Node
-	CreateLink(cid.Cid) Node
+	CreateNull() (Node, error)
+	CreateBool(bool) (Node, error)
+	CreateInt() (Node, error)
+	CreateFloat(float64) (Node, error)
+	CreateString(string) (Node, error)
+	CreateBytes([]byte) (Node, error)
+	CreateLink(cid.Cid) (Node, error)
 }
 
 type MapBuilder interface {
 	InsertAll(map[Node]Node) MapBuilder
 	Insert(k, v Node) MapBuilder
 	Delete(k Node) MapBuilder
-	Build() Node
+	Build() (Node, error)
 }
 
 type ListBuilder interface {
 	AppendAll([]Node) ListBuilder
 	Append(v Node) ListBuilder
 	Set(idx int, v Node) ListBuilder
-	Build() Node
+	Build() (Node, error)
 }
 
 // future: add AppendIterator() methods (when we've implemented iterators!)
