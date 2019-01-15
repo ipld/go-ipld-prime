@@ -1,4 +1,4 @@
-package typed
+package typesystem
 
 import (
 	"testing"

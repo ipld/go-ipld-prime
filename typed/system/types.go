@@ -1,8 +1,14 @@
-package typed
+package typesystem
 
 import (
-	"github.com/ipld/go-ipld-prime"
+	ipld "github.com/ipld/go-ipld-prime"
 )
+
+// FIXME make everything exported in this file a read-only accessor.
+
+// TODO make most references to `Type` into `*Type`.
+
+// TODO rename `TypeObject` into `TypeStruct`.
 
 type TypeName string
 

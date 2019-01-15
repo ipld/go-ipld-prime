@@ -1,4 +1,4 @@
-package typed
+package typesystem
 
 import (
 	"github.com/ipld/go-ipld-prime"
