@@ -13,7 +13,7 @@ func TestSimpleTypes(t *testing.T) {
 		n1 := &ipldfree.Node{}
 		n1.SetString("asdf")
 		t1 := TypeString{
-			Name: "Foo",
+			anyType{name: "Foo"},
 		}
 		Wish(t,
 			Validate(nil, t1, n1),
