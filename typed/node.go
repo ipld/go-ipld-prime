@@ -18,6 +18,11 @@ import (
 // defers to the typesystem validation checking to fields that are accessed;
 // and when using code generation tools, all of the generated native Golang
 // types produced by the codegen will each individually implement typed.Node.
+//
+// Note that typed.Node can wrap *other* typed.Node instances.
+// Imagine you have two parts of a very large code base which have codegen'd
+// components which are from different versions of a schema.  Smooth migrations
+// and zero-copy type-safe data sharing between them: We can accommodate that!
 type Node interface {
 	ipld.Node
 
