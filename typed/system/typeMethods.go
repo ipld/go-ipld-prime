@@ -99,10 +99,17 @@ func (t TypeList) ValueIsNullable() bool {
 }
 
 // UnionMembers returns a set of all the types that can inhabit this Union.
-func (t TypeUnion) UnionMembers() map[TypeName]Type {
-	m := make(map[TypeName]Type, len(t.values))
-	for k, v := range t.values {
-		m[k] = v
+func (t TypeUnion) UnionMembers() map[Type]struct{} {
+	m := make(map[Type]struct{}, len(t.values)+len(t.valuesKinded))
+	switch t.style {
+	case UnionStyle_Kinded:
+		for _, v := range t.valuesKinded {
+			m[v] = struct{}{}
+		}
+	default:
+		for _, v := range t.values {
+			m[v] = struct{}{}
+		}
 	}
 	return m
 }

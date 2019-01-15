@@ -125,7 +125,7 @@ type TypeUnion struct {
 	anyType
 	style        UnionStyle
 	valuesKinded map[ipld.ReprKind]Type // for Style==Kinded
-	values       map[TypeName]Type      // for Style!=Kinded (always defined, just not used in Kinded lookups)
+	values       map[string]Type        // for Style!=Kinded (note, key is freetext, not necessarily TypeName of the value)
 	typeHintKey  string                 // for Style==Envelope|Inline
 	contentKey   string                 // for Style==Envelope
 }
