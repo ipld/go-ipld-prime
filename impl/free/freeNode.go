@@ -30,7 +30,6 @@ type Node struct {
 	kind ipld.ReprKind
 
 	_map   map[string]ipld.Node // Value union.  Only one of these has meaning, depending on the value of 'Type'.
-	_map2  map[int]ipld.Node    // Value union.  Only one of these has meaning, depending on the value of 'Type'.
 	_arr   []ipld.Node          // Value union.  Only one of these has meaning, depending on the value of 'Type'.
 	_bool  bool                 // Value union.  Only one of these has meaning, depending on the value of 'Type'.
 	_int   int                  // Value union.  Only one of these has meaning, depending on the value of 'Type'.
@@ -78,20 +77,11 @@ func (n *Node) TraverseField(pth string) (ipld.Node, error) {
 	case ipld.ReprKind_Null:
 		return nil, fmt.Errorf("cannot traverse terminals")
 	case ipld.ReprKind_Map:
-		switch {
-		case n._map != nil:
-			v, _ := n._map[pth]
-			return v, nil
-		case n._map2 != nil:
-			i, err := strconv.Atoi(pth)
-			if err != nil {
-				return nil, fmt.Errorf("404")
-			}
-			v, _ := n._map2[i]
-			return v, nil
-		default:
-			panic("unreachable")
+		v, exists := n._map[pth]
+		if !exists {
+			return nil, fmt.Errorf("404")
 		}
+		return v, nil
 	case ipld.ReprKind_List:
 		i, err := strconv.Atoi(pth)
 		if err != nil {
