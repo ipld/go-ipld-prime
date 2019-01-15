@@ -21,3 +21,30 @@ const (
 	ReprKind_Bytes   ReprKind = 'x'
 	ReprKind_Link    ReprKind = '/'
 )
+
+func (k ReprKind) String() string {
+	switch k {
+	case ReprKind_Invalid:
+		return "Invalid"
+	case ReprKind_Map:
+		return "Map"
+	case ReprKind_List:
+		return "List"
+	case ReprKind_Null:
+		return "Null"
+	case ReprKind_Bool:
+		return "Bool"
+	case ReprKind_Int:
+		return "Int"
+	case ReprKind_Float:
+		return "Float"
+	case ReprKind_String:
+		return "String"
+	case ReprKind_Bytes:
+		return "Bytes"
+	case ReprKind_Link:
+		return "Link"
+	default:
+		panic("invalid enumeration value!")
+	}
+}
