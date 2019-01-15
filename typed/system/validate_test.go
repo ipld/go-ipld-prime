@@ -16,7 +16,7 @@ func TestSimpleTypes(t *testing.T) {
 			anyType{name: "Foo"},
 		}
 		Wish(t,
-			Validate(nil, t1, n1),
+			Validate(Universe{}, t1, n1),
 			ShouldEqual, []error(nil))
 	})
 }
