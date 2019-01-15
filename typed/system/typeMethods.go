@@ -41,7 +41,7 @@ func (t TypeUnion) ReprKind() ipld.ReprKind {
 		return ipld.ReprKind_Map
 	}
 }
-func (t TypeObject) ReprKind() ipld.ReprKind {
+func (t TypeStruct) ReprKind() ipld.ReprKind {
 	if t.tupleStyle {
 		return ipld.ReprKind_List
 	} else {
@@ -115,8 +115,8 @@ func (t TypeUnion) UnionMembers() map[Type]struct{} {
 }
 
 // Fields returns a slice of descriptions of the object's fields.
-func (t TypeObject) Fields() []ObjectField {
-	a := make([]ObjectField, len(t.fields))
+func (t TypeStruct) Fields() []StructField {
+	a := make([]StructField, len(t.fields))
 	for i := range t.fields {
 		a[i] = t.fields[i]
 	}
@@ -126,11 +126,11 @@ func (t TypeObject) Fields() []ObjectField {
 // Name returns the string name of this field.  The name is the string that
 // will be used as a map key if the structure this field is a member of is
 // serialized as a map representation.
-func (f ObjectField) Name() string { return f.name }
+func (f StructField) Name() string { return f.name }
 
 // Type returns the Type of this field's value.  Note the field may
 // also be unset if it is either Optional or Nullable.
-func (f ObjectField) Type() Type { return f.typ }
+func (f StructField) Type() Type { return f.typ }
 
 // IsOptional returns true if the field is allowed to be absent from the object.
 // If IsOptional is false, the field may be absent from the serial representation
@@ -138,7 +138,7 @@ func (f ObjectField) Type() Type { return f.typ }
 //
 // Note being optional is different than saying the value is permitted to be null!
 // A field may be both nullable and optional simultaneously, or either, or neither.
-func (f ObjectField) IsOptional() bool { return f.optional }
+func (f StructField) IsOptional() bool { return f.optional }
 
 // IsNullable returns true if the field value is allowed to be null.
 //
@@ -148,7 +148,7 @@ func (f ObjectField) IsOptional() bool { return f.optional }
 //
 // Note that a field may be both nullable and optional simultaneously,
 // or either, or neither.
-func (f ObjectField) IsNullable() bool { return f.nullable }
+func (f StructField) IsNullable() bool { return f.nullable }
 
 // Members returns a slice the strings which are valid inhabitants of this enum.
 func (t TypeEnum) Members() []string {

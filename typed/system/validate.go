@@ -62,7 +62,7 @@ func validate(ts Universe, t Type, node ipld.Node, pth string) []error {
 		// TODO interesting case: would need resolver to keep checking.
 	case TypeUnion:
 		// TODO *several* interesting errors
-	case TypeObject:
+	case TypeStruct:
 		switch t2.tupleStyle {
 		case false: // as map!
 			if node.Kind() != ipld.ReprKind_Map {

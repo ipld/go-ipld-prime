@@ -20,7 +20,7 @@ type TypeName string
 // 	TypeList
 // 	TypeLink
 // 	TypeUnion
-// 	TypeObject
+// 	TypeStruct
 // 	TypeEnum
 //
 // are all of the kinds of Type.
@@ -72,7 +72,7 @@ var (
 	_ Type = TypeList{}
 	_ Type = TypeLink{}
 	_ Type = TypeUnion{}
-	_ Type = TypeObject{}
+	_ Type = TypeStruct{}
 	_ Type = TypeEnum{}
 )
 
@@ -139,12 +139,12 @@ var (
 	UnionStyle_Inline   = UnionStyle{"inline"}
 )
 
-type TypeObject struct {
+type TypeStruct struct {
 	anyType
 	tupleStyle bool // if true, ReprKind=Array instead of map (and optional fields are invalid!)
-	fields     []ObjectField
+	fields     []StructField
 }
-type ObjectField struct {
+type StructField struct {
 	name     string
 	typ      Type
 	optional bool
