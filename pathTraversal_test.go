@@ -10,7 +10,7 @@ import (
 	ipldfree "github.com/ipld/go-ipld-prime/impl/free"
 )
 
-func TestTraversal(t *testing.T) {
+func TestPathTraversal(t *testing.T) {
 	t.Run("traversing list", func(t *testing.T) {
 		n := &ipldfree.Node{}
 		n0 := &ipldfree.Node{}
