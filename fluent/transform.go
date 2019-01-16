@@ -24,10 +24,11 @@ import (
 // E.g. if have a large Node graph which contains a 100-element list, and
 // you want to replace elements 12, 32, and 95 of that list:
 // then you should Transform to the list first, and inside that applicative
-// function's body, you can use replace the entire list with
-// a new one that's copies of everything but those elements -- including
-// using more Transform calls as desired if some of those elements are easiest
-// to handle as if the new values are updates to their current contents.
+// function's body, you can replace the entire list with a new one
+// that is composed of copies of everything but those elements -- including
+// using more Transform calls as desired to produce the replacement elements
+// if it so happens that those replacement elements are easiest to construct
+// by regarding them as incremental updates to the previous values.
 //
 // Transform will panic with a fluent.Error if any intermediate operations
 // error.  (We are in the fluent package, after all.)
