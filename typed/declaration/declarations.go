@@ -85,15 +85,15 @@ type TypeFloat struct {
 type TypeMap struct {
 	Name          TypeName
 	Anon          bool
-	KeyType       TypeName
-	ValueType     TypeName
+	KeyType       TypeName // FIXME we want to allow inline anon recursive type defns.  This should be some sort of `Either<TypeName,InlineDefn>`.
+	ValueType     TypeName // FIXME we want to allow inline anon recursive type defns.  This should be some sort of `Either<TypeName,InlineDefn>`.
 	ValueNullable bool
 }
 
 type TypeList struct {
 	Name          TypeName
 	Anon          bool
-	ValueType     TypeName
+	ValueType     TypeName // FIXME we want to allow inline anon recursive type defns.  This should be some sort of `Either<TypeName,InlineDefn>`.
 	ValueNullable bool
 }
 
@@ -128,7 +128,7 @@ type TypeStruct struct {
 
 type StructField struct {
 	Name     string
-	Type     TypeName
+	Type     TypeName // FIXME we want to allow inline anon recursive type defns.  This should be some sort of `Either<TypeName,InlineDefn>`.
 	Optional bool
 	Nullable bool
 }

@@ -2,9 +2,10 @@ package typesystem
 
 import (
 	ipld "github.com/ipld/go-ipld-prime"
+	typedeclaration "github.com/ipld/go-ipld-prime/typed/declaration"
 )
 
-type TypeName string
+type TypeName = typedeclaration.TypeName
 
 // typesystem.Type is an union interface; each of the `Type*` concrete types
 // in this package are one of its members.
