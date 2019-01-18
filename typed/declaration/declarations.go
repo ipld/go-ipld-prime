@@ -134,8 +134,8 @@ type StructField struct {
 }
 
 type TypeEnum struct {
-	Name   TypeName
-	Values []string
+	Name    TypeName
+	Members []string
 }
 
 func (TypeBool) _Type()   {}
