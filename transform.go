@@ -1,8 +1,4 @@
-package fluent
-
-import (
-	ipld "github.com/ipld/go-ipld-prime"
-)
+package ipld
 
 // Transform traverses an ipld.Node graph and applies a function
 // to the reached node.
@@ -30,13 +26,15 @@ import (
 // if it so happens that those replacement elements are easiest to construct
 // by regarding them as incremental updates to the previous values.
 //
-// Transform will panic with a fluent.Error if any intermediate operations
-// error.  (We are in the fluent package, after all.)
+// Note that anything you can do with the Transform function, you can also
+// do with regular Node and NodeBuilder usage directly.  Transform just
+// does a large amount of the intermediate bookkeeping that's useful when
+// creating new values which are partial updates to existing values.
 func Transform(
-	node ipld.Node,
-	path ipld.Path,
-	applicative func(targetNode ipld.Node) (targetReplacement ipld.Node),
-) (nodeReplacement ipld.Node) {
+	node Node,
+	path Path,
+	applicative func(reachedNode Node, reachedPath Path) (reachedNodeReplacement Node),
+) (nodeReplacement Node, err error) {
 	return TransformUsingTraversal(node, path.Traverse, applicative)
 }
 
@@ -44,9 +42,9 @@ func Transform(
 // ipld.Traversal function instead of an ipld.Path for guiding its selection
 // of a node to transform.
 func TransformUsingTraversal(
-	node ipld.Node,
-	traversal ipld.Traversal,
-	applicative func(targetNode ipld.Node) (targetReplacement ipld.Node),
-) (nodeReplacement ipld.Node) {
-	return nil // TODO
+	node Node,
+	traversal Traversal,
+	applicative func(reachedNode Node, reachedPath Path) (reachedNodeReplacement Node),
+) (nodeReplacement Node, err error) {
+	panic("TODO") // TODO
 }
