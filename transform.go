@@ -48,3 +48,36 @@ func TransformUsingTraversal(
 ) (nodeReplacement Node, err error) {
 	panic("TODO") // TODO
 }
+
+// ContinueTransform is similar to Transform, but takes an additional parameter
+// in order to keep Path information complete when doing nested Transforms.
+//
+// Use ContinueTransform in the body of the applicative function of a Transform
+// (or ContinueTransform) call: providing the so-far reachedPath as the nodePath
+// to the ContinueTransform call will make sure the next, deeper applicative
+// call will get a reachedPath which is the complete path all the way from the
+// root node of the outermost transform.
+//
+// (Or, ignore all this and use Transform nested bare.  It's your own Path
+// information you're messing with; if you feel like your algorithm would
+// work better seeing a locally scoped path rather than a more globally
+// rooted one, that's absolutely fine.)
+func FurtherTransform(
+	node Node,
+	nodePath Path,
+	path Path,
+	applicative func(reachedNode Node, reachedPath Path) (reachedNodeReplacement Node),
+) (nodeReplacement Node, err error) {
+	tfn := ContinuedTraversal(path.Traverse, nodePath)
+	// REVIEW: so do we *need* ContinuedTraversal?  Much less exported?
+	//  I don't have a huge argument against it other than that it seems this
+	//   is the only place we'd use it, and it does *all* the work, surprisingly.
+	return TransformUsingTraversal(node, tfn, applicative)
+}
+
+// Note that another way to write this would be using some sort of
+// `StartTransform() TransformController` pattern...
+// But the arity and placement of things that have to carry information
+// is basically identical.  The only win would be keeping the number of
+// parameters of type Path down to one instead of sometimes two.
+// Is that worth it?  Maybe.  I'm unconvinced.

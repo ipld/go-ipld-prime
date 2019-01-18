@@ -18,3 +18,21 @@ package ipld
 // and path in addition to the error.  It is thus not generally correct to
 // use the finish node reference until having checked for an error.
 type Traversal func(start Node) (finish Node, path Path, err error)
+
+func ContinuedTraversal(tfn Traversal, alreadyReachedPath Path) Traversal {
+	return func(start Node) (finish Node, path Path, err error) {
+		n, p, e := tfn(start)
+		combinedSegments := make([]string, len(alreadyReachedPath.segments)+len(p.segments))
+		copy(combinedSegments, alreadyReachedPath.segments)
+		copy(combinedSegments[len(alreadyReachedPath.segments):], p.segments)
+		return n, Path{combinedSegments}, e
+		// REVIEW: this composition is imperfect!  the error might embed a copy of of a shorter less global path in it.
+		//  We have two options for dealing with this:
+		//   1) Errors become strongly typed and we make sure we can reach in and fix it up;
+		//   2) We replace Traversal with something that already can do the "continued" stuff;
+		//   3) (we ignore it.)
+		//  Option 2 is probably pretty defensible; we don't need Traversal to be simple to implement since
+		//   the vast, vast majority of users will simply use Path.
+		//  (We should also pursue Option 1 *regardless*, of course; it's just an implementation dependency/order question.)
+	}
+}
