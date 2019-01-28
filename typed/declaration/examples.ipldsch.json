@@ -1,0 +1,57 @@
+{
+	"schema": {
+		"ExampleWithNullable": {
+			"kind": "map",
+			"keyType": "String",
+			"valueType": "String",
+			"valueNullable": true
+		},
+		"ExampleWithAnonDefns": {
+			"kind": "struct",
+			"fields": {
+				"fooField": {
+					"valueType": {
+						"type": "map",
+						"keyType": "String",
+						"valueType": "String"
+					},
+					"optional": true
+				},
+				"barField": {
+					"valueType": {
+						"type": "map",
+						"keyType": "String",
+						"valueType": "String"
+					},
+					"nullable": true
+				},
+				"bazField": {
+					"valueType": {
+						"type": "map",
+						"keyType": "String",
+						"valueType": "String",
+						"valueNullable": true
+					}
+				},
+				"wozField": {
+					"valueType": {
+						"type": "map",
+						"keyType": "String",
+						"valueType": {
+							"type": "list",
+							"valueType": "String",
+							"valueNullable": true
+						}
+					}
+				}
+			},
+			"representation": {
+				"map": {
+					"fieldAliases": {
+						"fooField": "foo_field"
+					}
+				}
+			}
+		}
+	}
+}
