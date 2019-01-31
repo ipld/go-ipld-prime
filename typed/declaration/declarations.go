@@ -62,54 +62,58 @@ var (
 	_ Type = TypeEnum{}
 )
 
-type TypeBool struct {
-	Name TypeName
-}
+type TypeBool struct{}
 
-type TypeString struct {
-	Name TypeName
-}
+type TypeString struct{}
 
-type TypeBytes struct {
-	Name TypeName
-}
+type TypeBytes struct{}
 
-type TypeInt struct {
-	Name TypeName
-}
+type TypeInt struct{}
 
-type TypeFloat struct {
-	Name TypeName
-}
+type TypeFloat struct{}
 
 type TypeMap struct {
-	Name          TypeName
-	Anon          bool
-	KeyType       TypeName // FIXME we want to allow inline anon recursive type defns.  This should be some sort of `Either<TypeName,InlineDefn>`.
-	ValueType     TypeName // FIXME we want to allow inline anon recursive type defns.  This should be some sort of `Either<TypeName,InlineDefn>`.
+	KeyType       TypeName
+	ValueType     TypeTerm
 	ValueNullable bool
 }
 
 type TypeList struct {
-	Name          TypeName
-	Anon          bool
-	ValueType     TypeName // FIXME we want to allow inline anon recursive type defns.  This should be some sort of `Either<TypeName,InlineDefn>`.
+	ValueType     TypeTerm
 	ValueNullable bool
 }
 
 type TypeLink struct {
-	Name TypeName
 	// ...?
 }
 
 type TypeUnion struct {
-	Name         TypeName
-	Style        UnionStyle
-	ValuesKinded map[ipld.ReprKind]TypeName // for Style==Kinded
-	Values       map[string]TypeName        // for Style!=Kinded
-	TypeHintKey  string                     // for Style==Envelope|Inline
-	ContentKey   string                     // for Style==Envelope
+	Representation UnionRepresentation
 }
+
+type UnionRepresentation interface {
+	_UnionRepresentation()
+}
+
+type UnionRepresentation_Kinded map[ipld.ReprKind]TypeName
+
+type UnionRepresentation_Keyed map[string]TypeName
+
+type UnionRepresentation_Envelope struct {
+	DiscriminatorKey  string
+	ContentKey        string
+	DiscriminantTable map[string]TypeName
+}
+
+type UnionRepresentation_Inline struct {
+	DiscriminatorKey  string
+	DiscriminantTable map[string]TypeName
+}
+
+func (UnionRepresentation_Kinded) _UnionRepresentation()   {}
+func (UnionRepresentation_Keyed) _UnionRepresentation()    {}
+func (UnionRepresentation_Envelope) _UnionRepresentation() {}
+func (UnionRepresentation_Inline) _UnionRepresentation()   {}
 
 type UnionStyle struct{ x string }
 
@@ -121,21 +125,22 @@ var (
 )
 
 type TypeStruct struct {
-	Name       TypeName
-	TupleStyle bool // if true, ReprKind=Array instead of map (and optional fields are invalid!)
-	Fields     []StructField
+	Fields         map[string]StructField
+	Representation StructRepresentation
 }
 
 type StructField struct {
-	Name     string
-	Type     TypeName // FIXME we want to allow inline anon recursive type defns.  This should be some sort of `Either<TypeName,InlineDefn>`.
+	Type     TypeTerm
 	Optional bool
 	Nullable bool
 }
 
+type TypeTerm interface{} // TODO finish.  not sure where we'll hit this in bootstrap.
+
+type StructRepresentation interface{} // TODO finish.  will be a union.  can assume 'map' for now.
+
 type TypeEnum struct {
-	Name    TypeName
-	Members []string
+	Members map[string]struct{}
 }
 
 func (TypeBool) _Type()   {}
