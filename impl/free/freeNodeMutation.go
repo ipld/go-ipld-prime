@@ -14,6 +14,9 @@ func (n *Node) SetNull() {
 }
 func (n *Node) SetField(k string, v ipld.Node) {
 	n.coerceType(ipld.ReprKind_Map)
+	if _, exists := n._map[k]; !exists {
+		n._mapOrd = append(n._mapOrd, k)
+	}
 	n._map[k] = v
 }
 func (n *Node) SetIndex(k int, v ipld.Node) {
@@ -98,6 +101,7 @@ func (n *Node) coerceType(newKind ipld.ReprKind) {
 			return
 		default:
 			n._map = nil
+			n._mapOrd = nil
 		}
 	case ipld.ReprKind_List:
 		switch newKind {

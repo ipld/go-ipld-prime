@@ -104,9 +104,16 @@ func (n Node) AsLink() (v cid.Cid, _ error) {
 	return
 }
 
-func (n Node) Keys() ([]string, int) {
-	return nil, 0 // FIXME
-	// TODO: REVIEW: structs have clear key order; maps do not.  what do?
+func (n Node) Keys() ipld.KeyIterator {
+	panic("NYI")
+}
+
+func (n Node) KeysImmediate() ([]string, error) {
+	panic("NYI")
+}
+
+func (n Node) Length() int {
+	panic("NYI")
 }
 
 func (n Node) TraverseField(pth string) (ipld.Node, error) {

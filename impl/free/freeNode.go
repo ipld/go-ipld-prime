@@ -29,14 +29,15 @@ var (
 type Node struct {
 	kind ipld.ReprKind
 
-	_map   map[string]ipld.Node // Value union.  Only one of these has meaning, depending on the value of 'Type'.
-	_arr   []ipld.Node          // Value union.  Only one of these has meaning, depending on the value of 'Type'.
-	_bool  bool                 // Value union.  Only one of these has meaning, depending on the value of 'Type'.
-	_int   int                  // Value union.  Only one of these has meaning, depending on the value of 'Type'.
-	_float float64              // Value union.  Only one of these has meaning, depending on the value of 'Type'.
-	_str   string               // Value union.  Only one of these has meaning, depending on the value of 'Type'.
-	_bytes []byte               // Value union.  Only one of these has meaning, depending on the value of 'Type'.
-	_link  cid.Cid              // Value union.  Only one of these has meaning, depending on the value of 'Type'.
+	_map    map[string]ipld.Node // Value union.  Only one of these has meaning, depending on the value of 'Type'.
+	_mapOrd []string             // Conjugate to _map, only has meaning depending on the value of 'Type'.
+	_arr    []ipld.Node          // Value union.  Only one of these has meaning, depending on the value of 'Type'.
+	_bool   bool                 // Value union.  Only one of these has meaning, depending on the value of 'Type'.
+	_int    int                  // Value union.  Only one of these has meaning, depending on the value of 'Type'.
+	_float  float64              // Value union.  Only one of these has meaning, depending on the value of 'Type'.
+	_str    string               // Value union.  Only one of these has meaning, depending on the value of 'Type'.
+	_bytes  []byte               // Value union.  Only one of these has meaning, depending on the value of 'Type'.
+	_link   cid.Cid              // Value union.  Only one of these has meaning, depending on the value of 'Type'.
 }
 
 func (n *Node) Kind() ipld.ReprKind {
@@ -65,9 +66,38 @@ func (n *Node) AsLink() (v cid.Cid, _ error) {
 	return n._link, expectTyp(ipld.ReprKind_Link, n.kind)
 }
 
-func (n *Node) Keys() ([]string, int) {
-	return nil, 0 // FIXME
-	// TODO need to maintain map order now, apparently, sigh
+func (n *Node) Keys() ipld.KeyIterator {
+	return &KeyIterator{n, 0}
+}
+
+type KeyIterator struct {
+	node *Node
+	idx  int
+}
+
+func (ki *KeyIterator) Next() (string, error) {
+	// TODO kind check and safer range handling.
+	v := ki.node._mapOrd[ki.idx]
+	ki.idx++
+	return v, nil
+}
+func (ki *KeyIterator) HasNext() bool {
+	return len(ki.node._mapOrd) > ki.idx
+}
+
+func (n *Node) KeysImmediate() ([]string, error) {
+	return n._mapOrd, expectTyp(ipld.ReprKind_Map, n.kind)
+}
+
+func (n *Node) Length() int {
+	switch n.Kind() {
+	case ipld.ReprKind_Map:
+		return len(n._mapOrd)
+	case ipld.ReprKind_List:
+		return len(n._arr)
+	default:
+		return -1
+	}
 }
 
 func (n *Node) TraverseField(pth string) (ipld.Node, error) {

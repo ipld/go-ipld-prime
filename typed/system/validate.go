@@ -43,7 +43,7 @@ func validate(ts Universe, t Type, node ipld.Node, pth string) []error {
 		if node.Kind() != ipld.ReprKind_Map {
 			return []error{fmt.Errorf("Schema match failed: expected type %q (which is kind %v) at path %q, but found kind %v", t2.Name(), t.ReprKind(), pth, node.Kind())}
 		}
-		keys, _ := node.Keys()
+		keys, _ := node.KeysImmediate()
 		errs := []error(nil)
 		for _, k := range keys {
 			// FUTURE: if KeyType is an enum rather than string, do membership check.

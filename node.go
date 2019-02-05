@@ -31,12 +31,24 @@ type Node interface {
 	// If idx is out of range, a nil node and an error will be returned.
 	TraverseIndex(idx int) (Node, error)
 
-	// Keys returns instructions for traversing the node.
-	// If the node kind is a map, the keys slice has content;
-	// if it's a list, the length int will be positive
-	// (and if it's a zero length list, there's not to traverse, right?);
-	// and if it's a primitive type the returned values are nil and zero.
-	Keys() ([]string, int)
+	// Keys returns an iterator which will yield keys for traversing the node.
+	// If the node kind is anything other than a map, the iterator will
+	// yield error values.
+	Keys() KeyIterator
+
+	// KeysImmediate returns a slice containing all keys for traversing the node.
+	// The semantics are otherwise identical to using the Keys() iterator.
+	//
+	// KeysImmediate is for convenience of usage; callers should prefer to use
+	// the iterator approach where possible, as it continues to behave well
+	// even when using collections of extremely large size (and even when
+	// the collection is split between multiple serial nodes, as with
+	// Advanced Layouts, etc).
+	KeysImmediate() ([]string, error)
+
+	// Length returns the length of a list, or the number of entries in a map,
+	// or -1 if the node is not of list nor map kind.
+	Length() int
 
 	// Undefined nodes are returned when traversing a struct field that is
 	// defined by a schema but unset in the data.  (Undefined nodes are not
@@ -55,6 +67,23 @@ type Node interface {
 	AsString() (string, error)
 	AsBytes() ([]byte, error)
 	AsLink() (cid.Cid, error)
+}
+
+// KeyIterator is an interface for traversing nodes of kind map.
+// Sequential calls to Next() will yield keys; HasNext() describes whether
+// iteration should continue.
+//
+// Iteration order is defined to be stable.
+//
+// REVIEW: should Next return error?
+// Other parts of the Node interface use that for kind mismatch rejection;
+// so on those grounds, I'd say "no", because we know what the key kind is
+// (but then Node.Keys should return error).
+// In big nodes (composites using an AdvLayout), where do we return errors?
+// Since we might be streaming, there are questions here.
+type KeyIterator interface {
+	Next() (string, error)
+	HasNext() bool
 }
 
 type SerializableNode interface {
@@ -82,11 +111,9 @@ type MutableNode interface {
 	SetLink(v cid.Cid)
 }
 
-// REVIEW: having a an immediate-mode Keys() method rather than iterator
-// might actually be a bad idea.  We're aiming to reuse this interface
-// for *advanced layouts as well*, and those can be *large*.
-//
-// Similar goes for AsBytes().
+// REVIEW: immediate-mode AsBytes() method (as opposed to e.g. returning
+// an io.Reader instance) might be problematic, esp. if we introduce
+// AdvancedLayouts which support large bytes natively.
 //
 // Probable solution is having both immediate and iterator return methods.
 // Returning a reader for bytes when you know you want a slice already
