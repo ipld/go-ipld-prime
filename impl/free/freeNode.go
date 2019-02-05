@@ -67,21 +67,21 @@ func (n *Node) AsLink() (v cid.Cid, _ error) {
 }
 
 func (n *Node) Keys() ipld.KeyIterator {
-	return &KeyIterator{n, 0}
+	return &keyIterator{n, 0}
 }
 
-type KeyIterator struct {
+type keyIterator struct {
 	node *Node
 	idx  int
 }
 
-func (ki *KeyIterator) Next() (string, error) {
+func (ki *keyIterator) Next() (string, error) {
 	// TODO kind check and safer range handling.
 	v := ki.node._mapOrd[ki.idx]
 	ki.idx++
 	return v, nil
 }
-func (ki *KeyIterator) HasNext() bool {
+func (ki *keyIterator) HasNext() bool {
 	return len(ki.node._mapOrd) > ki.idx
 }
 

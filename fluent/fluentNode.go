@@ -18,6 +18,9 @@ type Node interface {
 	Kind() ipld.ReprKind
 	TraverseField(path string) Node
 	TraverseIndex(idx int) Node
+	Keys() KeyIterator
+	KeysImmediate() []string
+	Length() int
 	IsNull() bool
 	AsBool() bool
 	AsInt() int
@@ -73,6 +76,25 @@ func (n node) TraverseIndex(idx int) Node {
 		return node{nil, err}
 	}
 	return node{v, nil}
+}
+func (n node) Keys() KeyIterator {
+	return &keyIterator{n.n.Keys()}
+}
+func (n node) KeysImmediate() []string {
+	if n.err != nil {
+		panic(Error{n.err})
+	}
+	v, err := n.n.KeysImmediate()
+	if err != nil {
+		panic(Error{err})
+	}
+	return v
+}
+func (n node) Length() int {
+	if n.err != nil {
+		panic(Error{n.err})
+	}
+	return n.n.Length()
 }
 func (n node) IsNull() bool {
 	if n.err != nil {
@@ -139,4 +161,24 @@ func (n node) AsLink() cid.Cid {
 		panic(Error{err})
 	}
 	return v
+}
+
+type KeyIterator interface {
+	Next() string
+	HasNext() bool
+}
+
+type keyIterator struct {
+	d ipld.KeyIterator
+}
+
+func (ki *keyIterator) Next() string {
+	v, err := ki.d.Next()
+	if err != nil {
+		panic(Error{err})
+	}
+	return v
+}
+func (ki *keyIterator) HasNext() bool {
+	return ki.d.HasNext()
 }

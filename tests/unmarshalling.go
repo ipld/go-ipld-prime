@@ -84,7 +84,7 @@ func TestRecursiveUnmarshal(t *testing.T, unmarshalFn ipld.NodeUnmarshaller) {
 		Require(t, n.Kind(), ShouldEqual, ipld.ReprKind_List)
 		Wish(t, n.Length(), ShouldEqual, 2)
 		Require(t, fluent.WrapNode(n).TraverseIndex(0).Kind(), ShouldEqual, ipld.ReprKind_List)
-		//Wish(t, fluent.WrapNode(n).TraverseIndex(0).Length(), ShouldEqual, 1) // FIXME fluent.Node needs the latest in iterators.
+		Wish(t, fluent.WrapNode(n).TraverseIndex(0).Length(), ShouldEqual, 1)
 		Wish(t, fluent.WrapNode(n).TraverseIndex(0).TraverseIndex(0).Kind(), ShouldEqual, ipld.ReprKind_String)
 		Wish(t, fluent.WrapNode(n).TraverseIndex(0).TraverseIndex(0).AsString(), ShouldEqual, "asdf")
 		Wish(t, tb.read, ShouldEqual, 6)
@@ -100,7 +100,7 @@ func TestRecursiveUnmarshal(t *testing.T, unmarshalFn ipld.NodeUnmarshaller) {
 		Require(t, err, ShouldEqual, nil)
 		Require(t, n.Kind(), ShouldEqual, ipld.ReprKind_Map)
 		Require(t, n.Length(), ShouldEqual, 1)
-		// Require(t, fluent.WrapNode(n).KeysImmediate(), ShouldEqual, []string{"asdf"}) // FIXME fluent.Node needs the latest in iterators.
+		Require(t, fluent.WrapNode(n).KeysImmediate(), ShouldEqual, []string{"asdf"})
 		Wish(t, fluent.WrapNode(n).TraverseField("asdf").Kind(), ShouldEqual, ipld.ReprKind_String)
 		Wish(t, fluent.WrapNode(n).TraverseField("asdf").AsString(), ShouldEqual, "zomzom")
 		Wish(t, tb.read, ShouldEqual, 4)
