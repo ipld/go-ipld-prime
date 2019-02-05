@@ -105,4 +105,26 @@ func TestRecursiveUnmarshal(t *testing.T, unmarshalFn ipld.NodeUnmarshaller) {
 		Wish(t, fluent.WrapNode(n).TraverseField("asdf").AsString(), ShouldEqual, "zomzom")
 		Wish(t, tb.read, ShouldEqual, 4)
 	})
+	t.Run("nested map node", func(t *testing.T) {
+		tb := &TokenSourceBucket{tokens: []tok.Token{
+			{Type: tok.TMapOpen, Length: 2},
+			{Type: tok.TString, Str: "asdf"},
+			{Type: tok.TMapOpen, Length: 1},
+			{Type: tok.TString, Str: "awoo"},
+			{Type: tok.TString, Str: "gah"},
+			{Type: tok.TMapClose},
+			{Type: tok.TString, Str: "zyzzy"},
+			{Type: tok.TInt, Int: 9},
+			{Type: tok.TMapClose},
+		}}
+		n, err := unmarshalFn(tb)
+		Require(t, err, ShouldEqual, nil)
+		Require(t, n.Kind(), ShouldEqual, ipld.ReprKind_Map)
+		Require(t, n.Length(), ShouldEqual, 2)
+		Require(t, fluent.WrapNode(n).KeysImmediate(), ShouldEqual, []string{"asdf", "zyzzy"})
+		Wish(t, fluent.WrapNode(n).TraverseField("asdf").Kind(), ShouldEqual, ipld.ReprKind_Map)
+		Wish(t, fluent.WrapNode(n).TraverseField("asdf").TraverseField("awoo").AsString(), ShouldEqual, "gah")
+		Wish(t, fluent.WrapNode(n).TraverseField("zyzzy").AsInt(), ShouldEqual, 9)
+		Wish(t, tb.read, ShouldEqual, 9)
+	})
 }
