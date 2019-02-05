@@ -32,8 +32,13 @@ func (n *Node) PushTokens(sink shared.TokenSink) error {
 			if _, err := sink.Step(&tk); err != nil {
 				return err
 			}
-			if err := v.PushTokens(sink); err != nil {
-				return err
+			switch v2 := v.(type) {
+			case ipld.TokenizableNode:
+				if err := v2.PushTokens(sink); err != nil {
+					return err
+				}
+			default:
+				panic("todo generic node tokenizer fallback")
 			}
 		}
 		// Emit map close.
@@ -49,8 +54,13 @@ func (n *Node) PushTokens(sink shared.TokenSink) error {
 		}
 		// Emit list contents (and recurse).
 		for _, v := range n._arr {
-			if err := v.PushTokens(sink); err != nil {
-				return err
+			switch v2 := v.(type) {
+			case ipld.TokenizableNode:
+				if err := v2.PushTokens(sink); err != nil {
+					return err
+				}
+			default:
+				panic("todo generic node tokenizer fallback")
 			}
 		}
 		// Emit list close.

@@ -1,8 +1,6 @@
 package ipld
 
 import (
-	"github.com/polydawn/refmt/shared"
-
 	"github.com/ipfs/go-cid"
 )
 
@@ -57,13 +55,6 @@ type Node interface {
 	AsString() (string, error)
 	AsBytes() ([]byte, error)
 	AsLink() (cid.Cid, error)
-
-	// PushTokens converts this node and its children into a stream of refmt Tokens
-	// and push them sequentially into the given TokenSink.
-	// This is useful for serializing, or hashing, or feeding to any other
-	// TokenSink (for example, converting to other ipld.Node implementations
-	// which can construct themselves from a token stream).
-	PushTokens(sink shared.TokenSink) error
 }
 
 type SerializableNode interface {

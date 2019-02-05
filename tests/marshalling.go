@@ -5,6 +5,8 @@ import (
 
 	"github.com/polydawn/refmt/tok"
 	. "github.com/warpfork/go-wish"
+
+	"github.com/ipld/go-ipld-prime"
 )
 
 // TokenBucket acts as a TokenSink; you can dump data into it and then
@@ -55,7 +57,7 @@ func TestScalarMarshal(t *testing.T, newNode MutableNodeFactory) {
 		n0 := newNode()
 		n0.SetNull()
 		var tb TokenBucket
-		n0.PushTokens(&tb)
+		(n0.(ipld.TokenizableNode)).PushTokens(&tb)
 		Wish(t, tb, ShouldEqual, TokenBucket{
 			{Type: tok.TNull},
 		})
@@ -69,7 +71,7 @@ func TestRecursiveMarshal(t *testing.T, newNode MutableNodeFactory) {
 		n00.SetString("asdf")
 		n0.SetIndex(0, n00)
 		var tb TokenBucket
-		n0.PushTokens(&tb)
+		(n0.(ipld.TokenizableNode)).PushTokens(&tb)
 		Wish(t, tb.Minimalize(), ShouldEqual, TokenBucket{
 			{Type: tok.TArrOpen, Length: 1},
 			{Type: tok.TString, Str: "asdf"},
@@ -87,7 +89,7 @@ func TestRecursiveMarshal(t *testing.T, newNode MutableNodeFactory) {
 		n01.SetString("quux")
 		n0.SetIndex(1, n01)
 		var tb TokenBucket
-		n0.PushTokens(&tb)
+		(n0.(ipld.TokenizableNode)).PushTokens(&tb)
 		Wish(t, tb.Minimalize(), ShouldEqual, TokenBucket{
 			{Type: tok.TArrOpen, Length: 2},
 			{Type: tok.TArrOpen, Length: 1},
