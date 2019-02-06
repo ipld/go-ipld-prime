@@ -81,3 +81,18 @@ func FurtherTransform(
 // is basically identical.  The only win would be keeping the number of
 // parameters of type Path down to one instead of sometimes two.
 // Is that worth it?  Maybe.  I'm unconvinced.
+//
+// Revisit, with fresh mind: yes, it's worth it.  Do it.
+// Having two same-typed Path params is a footgun, but there's more:
+// We should have a Context for cancellation in here too.
+// It's not *always* needed, but if it's a traversal that's spanning implicit
+// block loading, hooboy, *yes*, we definitely need it available.
+// The Transform method should start without one; and all applicatives
+// (which absolutely do need a typed name, uufdah) should take it as a param.
+// The TransformController object then has a Transform method which you should
+// use for continued transforms (also saving us from a second pkg method).
+//
+// ... Huh.  Maybe we can use this as our place to carry a BlockLoader func too.
+// The idea: Implicit loading doesn't work on Node.Traverse; just when using the
+// big-picture functional traverse/transform funcs.  Nice?
+// Needs more thought.  Unclear how this should compose with typed nodes, etc.
