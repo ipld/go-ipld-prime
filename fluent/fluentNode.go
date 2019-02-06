@@ -78,6 +78,9 @@ func (n node) TraverseIndex(idx int) Node {
 	return node{v, nil}
 }
 func (n node) Keys() KeyIterator {
+	if n.err != nil {
+		panic(Error{n.err})
+	}
 	return &keyIterator{n.n.Keys()}
 }
 func (n node) KeysImmediate() []string {
