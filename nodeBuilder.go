@@ -53,7 +53,7 @@ type NodeBuilder interface {
 	AmendList() ListBuilder
 	CreateNull() (Node, error)
 	CreateBool(bool) (Node, error)
-	CreateInt() (Node, error)
+	CreateInt(int) (Node, error)
 	CreateFloat(float64) (Node, error)
 	CreateString(string) (Node, error)
 	CreateBytes([]byte) (Node, error)
@@ -81,3 +81,8 @@ type ListBuilder interface {
 
 // future: define key ordering semantics during map insertion.
 //  methods for re-ordering will probably be wanted someday.
+
+// review: MapBuilder.Delete as an API is dangerously prone to usage which is accidentally quadratic.
+//  https://accidentallyquadratic.tumblr.com/post/157496054437/ruby-reject describes a similar issue.
+//   an internal implementation which accumulates oplogs is one fix, but not a joy either (not alloc free).
+//   a totally different API -- say, `NodeBuilder.AmendMapWithout(...)` -- might be the best approach.

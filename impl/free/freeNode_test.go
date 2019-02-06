@@ -7,7 +7,13 @@ import (
 	"github.com/ipld/go-ipld-prime/tests"
 )
 
-func Test(t *testing.T) {
+func TestNodeBuilder(t *testing.T) {
+	tests.TestBuildingScalars(t, NodeBuilder())
+	tests.TestBuildingRecursives(t, NodeBuilder())
+}
+
+func TestMutableNode(t *testing.T) {
+	// this should likely become legacy stuff and go away
 	mutNodeFac := func() ipld.MutableNode { return &Node{} }
 	tests.TestScalars(t, mutNodeFac)
 	tests.TestRecursives(t, mutNodeFac)
