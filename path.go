@@ -14,7 +14,8 @@ var (
 //
 // IPLD Paths can only go down: that is, each segment must traverse one node.
 // There is no ".." which means "go up";
-// and there is no "." which means "stay here".
+// and there is no "." which means "stay here";
+// and it is not valid to have an empty path segment.
 //
 // (Note: path strings as interpreted by UnixFS may certainly have concepts
 // of ".." and "."!  But UnixFS is built upon IPLD; IPLD has no idea of this.)
@@ -28,8 +29,6 @@ var (
 // to an integer when traversing a node of list kind.
 // (If a path segment string cannot be parsed to an int when traversing a node
 // of list kind, then traversal will error.)
-//
-// It is not valid to have an empty path segment.
 type Path struct {
 	segments []string
 }
@@ -57,8 +56,20 @@ func (p Path) String() string {
 }
 
 // Segements returns a slice of the path segment strings.
+//
+// It is not lawful to mutate the returned slice.
 func (p Path) Segments() []string {
 	return p.segments
+}
+
+// Join creates a new path composed of the concatenation of this and the
+// given path's segments.
+func (p Path) Join(p2 Path) Path {
+	combinedSegments := make([]string, len(p.segments)+len(p2.segments))
+	copy(combinedSegments, p.segments)
+	copy(combinedSegments[len(p.segments):], p2.segments)
+	p.segments = combinedSegments
+	return p
 }
 
 // Path.Traverse is an implementation of Traversal that makes a simple
@@ -67,31 +78,31 @@ func (p Path) Segments() []string {
 //
 // If one of the node traverse steps returns an error, that node and the
 // path so far including that node will be returned, as well as the error.
-func (p Path) Traverse(start Node) (finish Node, path Path, err error) {
-	finish = start
+func (p Path) Traverse(tp TraversalProgress, start Node) (_ TraversalProgress, reached Node, err error) {
 	for i, seg := range p.segments {
-		switch finish.Kind() {
+		switch start.Kind() {
 		case ReprKind_Invalid:
-			return finish, Path{p.segments[0:i]}, fmt.Errorf("cannot traverse node at %q: it is undefined", Path{p.segments[0:i]})
+			return TraversalProgress{}, nil, fmt.Errorf("cannot traverse node at %q: it is undefined", Path{p.segments[0:i]})
 		case ReprKind_Map:
-			next, err := finish.TraverseField(seg)
+			next, err := start.TraverseField(seg)
 			if err != nil {
-				return finish, Path{p.segments[0:i]}, fmt.Errorf("error traversing node at %q: %s", Path{p.segments[0:i]}, err)
+				return TraversalProgress{}, nil, fmt.Errorf("error traversing node at %q: %s", Path{p.segments[0:i]}, err)
 			}
-			finish = next
+			start = next
 		case ReprKind_List:
 			intSeg, err := strconv.Atoi(seg)
 			if err != nil {
-				return finish, Path{p.segments[0:i]}, fmt.Errorf("cannot traverse node at %q: the next path segment (%q) cannot be parsed as a number and the node is a list", Path{p.segments[0:i]}, seg)
+				return TraversalProgress{}, nil, fmt.Errorf("cannot traverse node at %q: the next path segment (%q) cannot be parsed as a number and the node is a list", Path{p.segments[0:i]}, seg)
 			}
-			next, err := finish.TraverseIndex(intSeg)
+			next, err := start.TraverseIndex(intSeg)
 			if err != nil {
-				return finish, Path{p.segments[0:i]}, fmt.Errorf("error traversing node at %q: %s", Path{p.segments[0:i]}, err)
+				return TraversalProgress{}, nil, fmt.Errorf("error traversing node at %q: %s", Path{p.segments[0:i]}, err)
 			}
-			finish = next
+			start = next
 		default:
-			return finish, Path{p.segments[0:i]}, fmt.Errorf("error traversing node at %q: %s", Path{p.segments[0:i]}, fmt.Errorf("cannot traverse terminals"))
+			return TraversalProgress{}, nil, fmt.Errorf("error traversing node at %q: %s", Path{p.segments[0:i]}, fmt.Errorf("cannot traverse terminals"))
 		}
 	}
-	return finish, p, nil
+	tp.Path = tp.Path.Join(p)
+	return tp, start, nil
 }
