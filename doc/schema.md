@@ -130,6 +130,13 @@ Because data is immutable, and producing updated versions of it doesn't make
 the older version of the data go away, migration is less a thing that you do;
 and more a state of mind.  Migration has to be seamless at any time.
 
+Migration comes in two parts:
+
+1. Understand what data we have;
+2. and having a process to map it into the format of data we want.
+
+We'll spend a few sections on part 1, and then get on to part 2.
+
 ### Using Schema Match checking as Version Detection
 
 We don't include any built-in/blessed concepts of versioning in IPLD Schemas.
@@ -143,22 +150,38 @@ for version detection!
 
 There are a handful of recognizable patterns that are used frequently:
 
-- Using a union to get nominative typing at the document root.
+- Using a dummy union to get nominative typing at the document root.
   - e.g. `{"foo": {...}}`, using "foo" as the type+version hint.
-  - See the schema-schema for an example of this!
+    The union is has only single member, and we use this in concert with
+    multiple schemas and probing: it returns quickly in the case of a non-match.
   - Any union representation will do.
-- Using a "version" field, plus manual unpacking.
+    - Keyed unions: `{"foo-v2": {...}}`
+    - Envelope unions: `{"version": "2", "content":{...}}`
+	- Inline unions: `{"version": "2", ...}`
+	- A single-member struct would also fit the pattern, being functionally
+      equivalent to a keyed union.
+  - See the schema-schema for an example of this!
+- Using a "version" union (with multiple members).
   - e.g. `{"version": "1.2.3", "data":{...}}`
-  - This can be implemented using unions of either envelope or inline representation!
-    - However, it might not be best to do so: this requires that the multiple
-	  versions be implemented *within* your one schema!  Typically it's more
-	  composable and maintainable to have a separate schema per version.
-  - This can be implemented by double-unpacking.  E.g., match once with a struct
-    with fields for version (keep it) and content (dev/null it); and match again
-	with a more complete schema chosen based on the version.
+  - Any union representation will do.
+  - This might not be the best approach: in this approach, the multiple versions
+    are implemented *within* one schema!  Typically it's considered easier to
+    work with and more maintainable to use a separate schema per version.
+- Using a struct with "version" field(s), then a second unpacking.
+  - Two phases of matching allow user-specified decisions in the middle:
+    - First a simple schema is used, containing some struct fields for version
+      info, plus some ignored fields which will contain the further content.
+      This simple schema is assumed to match completely.
+    - Secondly, using information from that first pass, user-specified logic
+	  selects a complete schema, which is then used to handle the full data.
 
 (Currently, this probing is left to the library user.  More built-in features
 around this are expected to come in the future.)
+
+Any of these approaches may also be composed.  For example, you might choose
+to use a dummy union at the root of a document to sanity-check what general
+type of data you're processing; and use an inline union inside that for more
+specific version matching, and so forth.
 
 (In the future, we may also be able to construct some specialized schemas that
 suggest jumping to another schema specifically and directly (rather than
@@ -167,18 +190,26 @@ regardless of the ordering of fields in the arriving data, but there's some
 tension between that and performance.)  It might also be possible to construct
 these as a user already!)
 
+NOTE that these conventions are easy to adopt even by systems not implemented
+using IPLD Schemas!  If you're working on a system which hasn't started using
+IPLD Schemas yet, and you aim to in the future, *start using version hinting*
+based on these designs *now*; the benefits can be reaped later.
+
 ### Some comments on versioning-theory
 
 There are different philosophies of versioning: namely, explicit versioning
- which to use is a choice.
+labels and version detection; which to use is a choice.
 
-In short, explicit versioning tends towards fragility and is not particularly
-fork/community/decentralization-friendly.  Version detection -- also known as
-its generalized cousin, *Feature* detection -- is strictly more powerful, but
-tends to require more thought to deploy effectively.
+In short, explicit versioning with labels takes a prescriptive approach,
+requiring coordinated labelling choices up front, and thus tends towards
+fragility and is not particularly fork/community/decentralization-friendly.
+Version detection -- also known as its generalized cousin, *Feature* detection
+-- is strictly more powerful, but can be more complex.
+Neither can be deployed to reliable effect without a plan.
 
-Explicit versioning tends to treat version numbers as a junk drawer, upon
-which we can heap unbounded amounts of not-necessarily-related semantics.
+Explicit versioning labelling is prone to treating the version label as a
+semantic junk drawer, upon which we can heap unbounded amounts of
+not-necessarily-related semantics.
 This is a temptation which can be migitated through diligence, but the
 fundamental incentive is always there: like global variables in programming,
 a document-global explicit version allows lazy coding and fosters presumptions.
@@ -190,7 +221,8 @@ trade-offs in complexity tend to be make themselves fairly pronounced and
 as such are relatively easily communicated.
 
 It's impossible to make a blanket prescription of how to associate version
-information with data; IPLD Schemas makes either choice viable.
+information with data.  Different choices have different tradeoffs.
+IPLD Schemas aim to make either choice (or hybrids of approach!) viable.
 
 ### Strongly linked Schemas
 
@@ -199,14 +231,16 @@ Since IPLD Schemas are themselves representable in IPLD, it's outright trivial
 to make an object containing a CID linking to a Schema.
 
 This may be useful -- in particular, it certainly solves any issue of chosing
-unique version strings in using explicit versioning! -- but it is also useless,
-by definion, to *migration*.
+unique version strings in using explicit versioning! -- but it is also worth
+noting that is is not a solution to *migration*: while having a specific schema
+explicitly linked is certainly one way to address the need to
+"understand what data we have", remember that the definition of migration has a
+second half: "having a process to map data into the format we want".
 
-Migration means wanting to treat old data as new data matching a new schema.
-Knowing which other schema is stated to match the data can be a useful input
-to deciding how to treat that data, but -- unless you're okay using that *exact*
-schema, and it's what your application logic is already built against -- that
-knowledge doesn't fully specify what to do to turn that data into what you want.
+Unless it just so *happens* that this exact schema is the one you want, and have
+already build your application logic against, etc... an explicitly linked schema
+doesn't necessarily provide more value in terms of migration than any of the
+other forms of versioning; it's essentially the same as using explicit labels.
 
 ### Actually Migrating!
 
