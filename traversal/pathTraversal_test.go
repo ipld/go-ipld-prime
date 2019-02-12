@@ -1,4 +1,4 @@
-package ipld_test
+package traversal
 
 import (
 	"fmt"
@@ -6,7 +6,6 @@ import (
 
 	. "github.com/warpfork/go-wish"
 
-	ipld "github.com/ipld/go-ipld-prime"
 	ipldfree "github.com/ipld/go-ipld-prime/impl/free"
 )
 
@@ -17,10 +16,10 @@ func TestPathTraversal(t *testing.T) {
 		n0.SetString("asdf")
 		n.SetIndex(0, n0)
 
-		tp, nn, e := ipld.ParsePath("0").Traverse(ipld.TraversalProgress{}, n)
+		tp, nn, e := ParsePath("0").traverse(TraversalProgress{}, n)
 
 		Wish(t, nn, ShouldEqual, n0)
-		Wish(t, tp.Path, ShouldEqual, ipld.ParsePath("0"))
+		Wish(t, tp.Path, ShouldEqual, ParsePath("0"))
 		Wish(t, e, ShouldEqual, nil)
 	})
 	t.Run("traversing map", func(t *testing.T) {
@@ -29,10 +28,10 @@ func TestPathTraversal(t *testing.T) {
 		n0.SetString("asdf")
 		n.SetField("foo", n0)
 
-		tp, nn, e := ipld.ParsePath("foo").Traverse(ipld.TraversalProgress{}, n)
+		tp, nn, e := ParsePath("foo").traverse(TraversalProgress{}, n)
 
 		Wish(t, nn, ShouldEqual, n0)
-		Wish(t, tp.Path, ShouldEqual, ipld.ParsePath("foo"))
+		Wish(t, tp.Path, ShouldEqual, ParsePath("foo"))
 		Wish(t, e, ShouldEqual, nil)
 	})
 	t.Run("traversing deeper", func(t *testing.T) {
@@ -45,10 +44,10 @@ func TestPathTraversal(t *testing.T) {
 		n0.SetIndex(1, n01)
 		n.SetField("foo", n0)
 
-		tp, nn, e := ipld.ParsePath("foo/1/bar").Traverse(ipld.TraversalProgress{}, n)
+		tp, nn, e := ParsePath("foo/1/bar").traverse(TraversalProgress{}, n)
 
 		Wish(t, nn, ShouldEqual, n010)
-		Wish(t, tp.Path, ShouldEqual, ipld.ParsePath("foo/1/bar"))
+		Wish(t, tp.Path, ShouldEqual, ParsePath("foo/1/bar"))
 		Wish(t, e, ShouldEqual, nil)
 	})
 	t.Run("traversal error on unexpected terminals", func(t *testing.T) {
@@ -62,17 +61,17 @@ func TestPathTraversal(t *testing.T) {
 		n.SetField("foo", n0)
 
 		t.Run("deep terminal", func(t *testing.T) {
-			tp, nn, e := ipld.ParsePath("foo/1/bar/drat").Traverse(ipld.TraversalProgress{}, n)
+			tp, nn, e := ParsePath("foo/1/bar/drat").traverse(TraversalProgress{}, n)
 
 			Wish(t, nn, ShouldEqual, nil)
-			Wish(t, tp.Path, ShouldEqual, ipld.Path{})
+			Wish(t, tp.Path, ShouldEqual, Path{})
 			Wish(t, e, ShouldEqual, fmt.Errorf(`error traversing node at "foo/1/bar": cannot traverse terminals`))
 		})
 		t.Run("immediate terminal", func(t *testing.T) {
-			tp, nn, e := ipld.ParsePath("drat").Traverse(ipld.TraversalProgress{}, n010)
+			tp, nn, e := ParsePath("drat").traverse(TraversalProgress{}, n010)
 
 			Wish(t, nn, ShouldEqual, nil)
-			Wish(t, tp.Path, ShouldEqual, ipld.Path{})
+			Wish(t, tp.Path, ShouldEqual, Path{})
 			Wish(t, e, ShouldEqual, fmt.Errorf(`error traversing node at "": cannot traverse terminals`))
 		})
 	})
@@ -86,10 +85,10 @@ func TestPathTraversal(t *testing.T) {
 		n0.SetIndex(1, n01)
 		n.SetField("foo", n0)
 
-		tp, nn, e := ipld.ParsePath("foo/1/drat").Traverse(ipld.TraversalProgress{}, n)
+		tp, nn, e := ParsePath("foo/1/drat").traverse(TraversalProgress{}, n)
 
 		Wish(t, nn, ShouldEqual, nil)
-		Wish(t, tp.Path, ShouldEqual, ipld.Path{})
+		Wish(t, tp.Path, ShouldEqual, Path{})
 		Wish(t, e, ShouldEqual, fmt.Errorf(`error traversing node at "foo/1": 404`))
 	})
 }

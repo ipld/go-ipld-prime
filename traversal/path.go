@@ -1,16 +1,17 @@
-package ipld
+package traversal
 
 import (
 	"fmt"
 	"strconv"
 	"strings"
-)
 
-var (
-	_ Traversal = Path{}.Traverse // (type assertion)
+	ipld "github.com/ipld/go-ipld-prime"
 )
 
 // Path represents a MerklePath.  TODO:standards-doc-link.
+//
+// Paths are used in describing progress in a traversal;
+// and can also be used as an instruction for a specific traverse.
 //
 // IPLD Paths can only go down: that is, each segment must traverse one node.
 // There is no ".." which means "go up";
@@ -72,24 +73,33 @@ func (p Path) Join(p2 Path) Path {
 	return p
 }
 
-// Path.Traverse is an implementation of Traversal that makes a simple
-// direct walk over a sequence of nodes, using each segment of the path
-// to get the next node until all path segments have been consumed.
+// Parent returns a path with the last of its segments popped off (or
+// the zero path if it's already empty).
+func (p Path) Parent() Path {
+	if len(p.segments) == 0 {
+		return Path{}
+	}
+	return Path{p.segments[0 : len(p.segments)-1]}
+}
+
+// traverse makes a simple direct walk over a sequence of nodes,
+// using each segment of the path to get the next node,
+// proceding until all path segments have been consumed.
 //
-// If one of the node traverse steps returns an error, that node and the
-// path so far including that node will be returned, as well as the error.
-func (p Path) Traverse(tp TraversalProgress, start Node) (_ TraversalProgress, reached Node, err error) {
+// This method may be removed.  It doesn't know about link loading;
+// and this limits its usefulness.
+func (p Path) traverse(tp TraversalProgress, start ipld.Node) (_ TraversalProgress, reached ipld.Node, err error) {
 	for i, seg := range p.segments {
 		switch start.Kind() {
-		case ReprKind_Invalid:
+		case ipld.ReprKind_Invalid:
 			return TraversalProgress{}, nil, fmt.Errorf("cannot traverse node at %q: it is undefined", Path{p.segments[0:i]})
-		case ReprKind_Map:
+		case ipld.ReprKind_Map:
 			next, err := start.TraverseField(seg)
 			if err != nil {
 				return TraversalProgress{}, nil, fmt.Errorf("error traversing node at %q: %s", Path{p.segments[0:i]}, err)
 			}
 			start = next
-		case ReprKind_List:
+		case ipld.ReprKind_List:
 			intSeg, err := strconv.Atoi(seg)
 			if err != nil {
 				return TraversalProgress{}, nil, fmt.Errorf("cannot traverse node at %q: the next path segment (%q) cannot be parsed as a number and the node is a list", Path{p.segments[0:i]}, seg)
