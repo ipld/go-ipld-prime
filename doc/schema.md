@@ -244,3 +244,36 @@ other forms of versioning; it's essentially the same as using explicit labels.
 
 ### Actually Migrating!
 
+... Okay, this was a little bit of bait-and-switch.
+IPLD Schemas aren't completely magic.
+
+Some part of migration is inevitably left up to application logic.
+Almost by definition, "a process to map data into the format of data we want"
+is at its most general going to be a turing-complete operation.
+
+However, IPLD can still help: the relationship between the Data Model versus
+the Schema provides a foundation for writing maintainable migrations.
+
+Any migration logic can be expressed as a function from `Node` to `Node`.
+These nodes may each be checking Schema validity -- against two different
+schemas! -- but the code for transposing data from one node to the other
+can operate entirely within Data Model.  The result is the ability to write
+code that's effectively handling multiple disjoin type systems... without
+any real issues.
+
+Thus, a valid strategy for longlived application design is to handle each
+major change to a schema by copying/forking the current one; keeping it
+around for use as a recognizer for old versions of data; and writing a
+quick function that can flip data from the old schema format to the new one.
+When parsing data, try the newer schema first; if it's rejected, try the old
+one, and use the migration function as necessary.
+
+If you're using codegen based on the schema, note that you'll probably only
+need to use codegen for the most recent / most preferred version of the schema.
+(This is a good thing!  We wouldn't want tons of generated code per version
+to start stacking up in our repos.)
+Parsing of data for other versions can be handled by ipldcbor.Node or other
+such implementations which are optimized for handling serial data; the
+migration function is a natural place to build the codegenerated native typed
+Nodes, and so each half of the process can easily use the Node implementation
+that is best suited.
