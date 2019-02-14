@@ -37,10 +37,19 @@ type LinkBuilder func(
 
 func ComposeLinkLoader(
 	actualLoader ActualLoader,
+	nodeBuilderChooser NodeBuilderChooser,
 	multicodecTable MulticodecDecodeTable,
 	// there is no multihashTable, because those are effectively hardcoded in advance.
 ) LinkLoader {
 	return func(ctx context.Context, lnk cid.Cid, lnkCtx LinkContext) (ipld.Node, error) {
+		// Pick what kind of ipld.Node implementation we want to produce.
+		//  (In some cases, this may be a nearly constant choice; in case of use
+		//   with schema types, this might return complex information based on
+		//    the LinkContext, which can be read for type system hints..!)
+		nb, err := nodeBuilderChooser(ctx, lnkCtx)
+		if err != nil {
+			return nil, err
+		}
 		// Open the byte reader.
 		r, err := actualLoader(ctx, lnk, lnkCtx)
 		if err != nil {
@@ -52,7 +61,7 @@ func ComposeLinkLoader(
 			return nil, fmt.Errorf("no decoder registered for multicodec %d", lnk.Prefix().Codec)
 		}
 		var hasher bytes.Buffer // multihash only exports bulk use, which is... really inefficient and should be fixed.
-		node, decodeErr := mcDecoder(io.TeeReader(r, &hasher))
+		node, decodeErr := mcDecoder(nb, io.TeeReader(r, &hasher))
 		// Error checking order here is tricky.
 		//  If decoding errored out, we should still run the reader to the end, to check the hash.
 		//  (We still don't implement this by running the hash to the end first, because that would increase the high-water memory requirement.)
@@ -77,6 +86,8 @@ func ComposeLinkLoader(
 		return node, nil
 	}
 }
+
+type NodeBuilderChooser func(context.Context, LinkContext) (ipld.NodeBuilder, error)
 
 type ActualLoader func(context.Context, cid.Cid, LinkContext) (io.Reader, error)
 
