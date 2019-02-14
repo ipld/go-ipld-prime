@@ -14,7 +14,7 @@ type VisitFn func(TraversalProgress, ipld.Node) error
 type TransformFn func(TraversalProgress, ipld.Node) (ipld.Node, error)
 
 // AdvVisitFn is like VisitFn, but for use with AdvTraversal: it gets additional arguments describing *why* this node is visited.
-type AdvVisitFn func(TraversalProgress, ipld.Node, TraversalReason) (ipld.Node, error)
+type AdvVisitFn func(TraversalProgress, ipld.Node, TraversalReason) error
 
 // TraversalReason provides additional information to traversals using AdvVisitFn.
 type TraversalReason byte // enum = SelectionMatch | SelectionParent | SelectionCandidate // probably only pointful for block edges?
@@ -30,4 +30,6 @@ type TraversalProgress struct {
 
 type TraversalConfig struct {
 	Ctx context.Context // Context carried through a traversal.  Optional; use it if you need cancellation.
+	// `linkLoader func(Context, CID, Path, parent Node) (Node, error)` probably belongs here.
+	// `blockWriter func(Context, Node, multicodec(?)) (CID, error)` probably belongs here.
 }
