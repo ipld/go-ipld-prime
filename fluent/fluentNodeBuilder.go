@@ -20,7 +20,6 @@ type NodeBuilder interface {
 }
 
 type MapBuilder interface {
-	InsertAll(map[ipld.Node]ipld.Node) MapBuilder
 	Insert(k, v ipld.Node) MapBuilder
 	Delete(k ipld.Node) MapBuilder
 	Build() ipld.Node
@@ -43,16 +42,32 @@ type nodeBuilder struct {
 }
 
 func (nb *nodeBuilder) CreateMap() MapBuilder {
-	return mapBuilder{nb.nb.CreateMap()}
+	mb, err := nb.nb.CreateMap()
+	if err != nil {
+		panic(Error{err})
+	}
+	return mapBuilder{mb}
 }
 func (nb *nodeBuilder) AmendMap() MapBuilder {
-	return mapBuilder{nb.nb.AmendMap()}
+	mb, err := nb.nb.AmendMap()
+	if err != nil {
+		panic(Error{err})
+	}
+	return mapBuilder{mb}
 }
 func (nb *nodeBuilder) CreateList() ListBuilder {
-	return listBuilder{nb.nb.CreateList()}
+	lb, err := nb.nb.CreateList()
+	if err != nil {
+		panic(Error{err})
+	}
+	return listBuilder{lb}
 }
 func (nb *nodeBuilder) AmendList() ListBuilder {
-	return listBuilder{nb.nb.AmendList()}
+	lb, err := nb.nb.AmendList()
+	if err != nil {
+		panic(Error{err})
+	}
+	return listBuilder{lb}
 }
 func (nb *nodeBuilder) CreateNull() ipld.Node {
 	n, err := nb.nb.CreateNull()
@@ -108,10 +123,6 @@ type mapBuilder struct {
 	ipld.MapBuilder
 }
 
-func (mb mapBuilder) InsertAll(vs map[ipld.Node]ipld.Node) MapBuilder {
-	mb.MapBuilder.InsertAll(vs)
-	return mb
-}
 func (mb mapBuilder) Insert(k, v ipld.Node) MapBuilder {
 	mb.MapBuilder.Insert(k, v)
 	return mb
