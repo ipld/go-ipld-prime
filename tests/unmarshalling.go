@@ -7,6 +7,7 @@ import (
 	. "github.com/warpfork/go-wish"
 
 	ipld "github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/encoding"
 	"github.com/ipld/go-ipld-prime/fluent"
 )
 
@@ -23,12 +24,12 @@ func (tb *TokenSourceBucket) Step(yield *tok.Token) (done bool, err error) {
 	return tb.read > len(tb.tokens), nil
 }
 
-func TestScalarUnmarshal(t *testing.T, unmarshalFn ipld.NodeUnmarshaller) {
+func TestScalarUnmarshal(t *testing.T, nb ipld.NodeBuilder) {
 	t.Run("null node", func(t *testing.T) {
 		tb := &TokenSourceBucket{tokens: []tok.Token{
 			{Type: tok.TNull},
 		}}
-		n, err := unmarshalFn(tb)
+		n, err := encoding.Unmarshal(nb, tb)
 		Wish(t, err, ShouldEqual, nil)
 		Wish(t, n.Kind(), ShouldEqual, ipld.ReprKind_Null)
 		Wish(t, tb.read, ShouldEqual, 1)
@@ -37,7 +38,7 @@ func TestScalarUnmarshal(t *testing.T, unmarshalFn ipld.NodeUnmarshaller) {
 		tb := &TokenSourceBucket{tokens: []tok.Token{
 			{Type: tok.TInt, Int: 1400},
 		}}
-		n, err := unmarshalFn(tb)
+		n, err := encoding.Unmarshal(nb, tb)
 		Wish(t, err, ShouldEqual, nil)
 		Wish(t, n.Kind(), ShouldEqual, ipld.ReprKind_Int)
 		Wish(t, fluent.WrapNode(n).AsInt(), ShouldEqual, 1400)
@@ -47,7 +48,7 @@ func TestScalarUnmarshal(t *testing.T, unmarshalFn ipld.NodeUnmarshaller) {
 		tb := &TokenSourceBucket{tokens: []tok.Token{
 			{Type: tok.TString, Str: "zooooom"},
 		}}
-		n, err := unmarshalFn(tb)
+		n, err := encoding.Unmarshal(nb, tb)
 		Wish(t, err, ShouldEqual, nil)
 		Wish(t, n.Kind(), ShouldEqual, ipld.ReprKind_String)
 		Wish(t, fluent.WrapNode(n).AsString(), ShouldEqual, "zooooom")
@@ -55,14 +56,14 @@ func TestScalarUnmarshal(t *testing.T, unmarshalFn ipld.NodeUnmarshaller) {
 	})
 }
 
-func TestRecursiveUnmarshal(t *testing.T, unmarshalFn ipld.NodeUnmarshaller) {
+func TestRecursiveUnmarshal(t *testing.T, nb ipld.NodeBuilder) {
 	t.Run("short list node", func(t *testing.T) {
 		tb := &TokenSourceBucket{tokens: []tok.Token{
 			{Type: tok.TArrOpen, Length: 1},
 			{Type: tok.TString, Str: "asdf"},
 			{Type: tok.TArrClose},
 		}}
-		n, err := unmarshalFn(tb)
+		n, err := encoding.Unmarshal(nb, tb)
 		Require(t, err, ShouldEqual, nil)
 		Require(t, n.Kind(), ShouldEqual, ipld.ReprKind_List)
 		Require(t, n.Length(), ShouldEqual, 1)
@@ -79,7 +80,7 @@ func TestRecursiveUnmarshal(t *testing.T, unmarshalFn ipld.NodeUnmarshaller) {
 			{Type: tok.TString, Str: "quux"},
 			{Type: tok.TArrClose},
 		}}
-		n, err := unmarshalFn(tb)
+		n, err := encoding.Unmarshal(nb, tb)
 		Require(t, err, ShouldEqual, nil)
 		Require(t, n.Kind(), ShouldEqual, ipld.ReprKind_List)
 		Wish(t, n.Length(), ShouldEqual, 2)
@@ -96,7 +97,7 @@ func TestRecursiveUnmarshal(t *testing.T, unmarshalFn ipld.NodeUnmarshaller) {
 			{Type: tok.TString, Str: "zomzom"},
 			{Type: tok.TMapClose},
 		}}
-		n, err := unmarshalFn(tb)
+		n, err := encoding.Unmarshal(nb, tb)
 		Require(t, err, ShouldEqual, nil)
 		Require(t, n.Kind(), ShouldEqual, ipld.ReprKind_Map)
 		Require(t, n.Length(), ShouldEqual, 1)
@@ -117,7 +118,7 @@ func TestRecursiveUnmarshal(t *testing.T, unmarshalFn ipld.NodeUnmarshaller) {
 			{Type: tok.TInt, Int: 9},
 			{Type: tok.TMapClose},
 		}}
-		n, err := unmarshalFn(tb)
+		n, err := encoding.Unmarshal(nb, tb)
 		Require(t, err, ShouldEqual, nil)
 		Require(t, n.Kind(), ShouldEqual, ipld.ReprKind_Map)
 		Require(t, n.Length(), ShouldEqual, 2)

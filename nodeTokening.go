@@ -22,5 +22,3 @@ type TokenizableNode interface {
 	// which can construct themselves from a token stream).
 	PushTokens(sink shared.TokenSink) error
 }
-
-type NodeUnmarshaller func(src shared.TokenSource) (Node, error)

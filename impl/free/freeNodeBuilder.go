@@ -21,7 +21,7 @@ type nodeBuilder struct {
 }
 
 func (nb nodeBuilder) CreateMap() (ipld.MapBuilder, error) {
-	return &mapBuilder{n: &Node{kind: ipld.ReprKind_Map}}, nil
+	return &mapBuilder{n: &Node{kind: ipld.ReprKind_Map, _map: make(map[string]ipld.Node)}}, nil
 }
 func (nb nodeBuilder) AmendMap() (ipld.MapBuilder, error) {
 	if nb.predecessor == nil {
