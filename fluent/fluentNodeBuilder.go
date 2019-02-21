@@ -22,14 +22,12 @@ type NodeBuilder interface {
 type MapBuilder interface {
 	Insert(k, v ipld.Node)
 	Delete(k ipld.Node)
-	Build() ipld.Node // REVIEW could remove from view in light of the MapBuildingClosure contract
 }
 
 type ListBuilder interface {
 	AppendAll([]ipld.Node)
 	Append(v ipld.Node)
 	Set(idx int, v ipld.Node)
-	Build() ipld.Node // REVIEW could remove from view in light of the ListBuildingClosure contract
 }
 
 // MapBuildingClosure is the signiture of a function which builds a Node of kind map.
@@ -85,36 +83,48 @@ func (nb *nodeBuilder) CreateMap(fn MapBuildingClosure) ipld.Node {
 	if err != nil {
 		panic(Error{err})
 	}
-	fmb := mapBuilder{mb}
-	fn(fmb, nb, nb) // FUTURE: check for typed.NodeBuilder; need to specialize latter params before calling down if so.
-	return fmb.Build()
+	fn(mapBuilder{mb}, nb, nb) // FUTURE: check for typed.NodeBuilder; need to specialize latter params before calling down if so.
+	n, err := mb.Build()
+	if err != nil {
+		panic(Error{err})
+	}
+	return n
 }
 func (nb *nodeBuilder) AmendMap(fn MapBuildingClosure) ipld.Node {
 	mb, err := nb.nb.AmendMap()
 	if err != nil {
 		panic(Error{err})
 	}
-	fmb := mapBuilder{mb}
-	fn(fmb, nb, nb) // FUTURE: check for typed.NodeBuilder; need to specialize latter params before calling down if so.
-	return fmb.Build()
+	fn(mapBuilder{mb}, nb, nb) // FUTURE: check for typed.NodeBuilder; need to specialize latter params before calling down if so.
+	n, err := mb.Build()
+	if err != nil {
+		panic(Error{err})
+	}
+	return n
 }
 func (nb *nodeBuilder) CreateList(fn ListBuildingClosure) ipld.Node {
 	lb, err := nb.nb.CreateList()
 	if err != nil {
 		panic(Error{err})
 	}
-	flb := listBuilder{lb}
-	fn(flb, nb) // FUTURE: check for typed.NodeBuilder; need to specialize latter params before calling down if so.
-	return flb.Build()
+	fn(listBuilder{lb}, nb) // FUTURE: check for typed.NodeBuilder; need to specialize latter params before calling down if so.
+	n, err := lb.Build()
+	if err != nil {
+		panic(Error{err})
+	}
+	return n
 }
 func (nb *nodeBuilder) AmendList(fn ListBuildingClosure) ipld.Node {
 	lb, err := nb.nb.AmendList()
 	if err != nil {
 		panic(Error{err})
 	}
-	flb := listBuilder{lb}
-	fn(flb, nb) // FUTURE: check for typed.NodeBuilder; need to specialize latter params before calling down if so.
-	return flb.Build()
+	fn(listBuilder{lb}, nb) // FUTURE: check for typed.NodeBuilder; need to specialize latter params before calling down if so.
+	n, err := lb.Build()
+	if err != nil {
+		panic(Error{err})
+	}
+	return n
 }
 func (nb *nodeBuilder) CreateNull() ipld.Node {
 	n, err := nb.nb.CreateNull()
@@ -176,13 +186,6 @@ func (mb mapBuilder) Insert(k, v ipld.Node) {
 func (mb mapBuilder) Delete(k ipld.Node) {
 	mb.MapBuilder.Delete(k)
 }
-func (mb mapBuilder) Build() ipld.Node {
-	n, err := mb.MapBuilder.Build()
-	if err != nil {
-		panic(Error{err})
-	}
-	return n
-}
 
 type listBuilder struct {
 	ipld.ListBuilder
@@ -196,11 +199,4 @@ func (lb listBuilder) Append(v ipld.Node) {
 }
 func (lb listBuilder) Set(idx int, v ipld.Node) {
 	lb.ListBuilder.Set(idx, v)
-}
-func (lb listBuilder) Build() ipld.Node {
-	n, err := lb.ListBuilder.Build()
-	if err != nil {
-		panic(Error{err})
-	}
-	return n
 }
