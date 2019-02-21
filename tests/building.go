@@ -50,19 +50,19 @@ func TestBuildingScalars(t *testing.T, nb ipld.NodeBuilder) {
 func TestBuildingRecursives(t *testing.T, nb ipld.NodeBuilder) {
 	t.Run("short list node", func(t *testing.T) {
 		nb := fluent.WrapNodeBuilder(nb)
-		n := nb.CreateList().
-			Append(nb.CreateString("asdf")).
-			Build()
+		n := nb.CreateList(func(lb fluent.ListBuilder, vnb fluent.NodeBuilder) {
+			lb.Append(vnb.CreateString("asdf"))
+		})
 		Wish(t, fluent.WrapNode(n).TraverseIndex(0).AsString(), ShouldEqual, "asdf")
 	})
 	t.Run("nested list node", func(t *testing.T) {
 		nb := fluent.WrapNodeBuilder(nb)
-		n := nb.CreateList().
-			Append(nb.CreateList().
-				Append(nb.CreateString("asdf")).
-				Build()).
-			Append(nb.CreateString("quux")).
-			Build()
+		n := nb.CreateList(func(lb fluent.ListBuilder, vnb fluent.NodeBuilder) {
+			lb.Append(vnb.CreateList(func(lb fluent.ListBuilder, vnb fluent.NodeBuilder) {
+				lb.Append(vnb.CreateString("asdf"))
+			}))
+			lb.Append(vnb.CreateString("quux"))
+		})
 		nf := fluent.WrapNode(n)
 		Wish(t, nf.Kind(), ShouldEqual, ipld.ReprKind_List)
 		Wish(t, nf.TraverseIndex(0).TraverseIndex(0).AsString(), ShouldEqual, "asdf")
@@ -70,10 +70,10 @@ func TestBuildingRecursives(t *testing.T, nb ipld.NodeBuilder) {
 	})
 	t.Run("long list node", func(t *testing.T) {
 		nb := fluent.WrapNodeBuilder(nb)
-		n := nb.CreateList().
-			Set(9, nb.CreateString("quux")).
-			Set(19, nb.CreateString("quuux")).
-			Build()
+		n := nb.CreateList(func(lb fluent.ListBuilder, vnb fluent.NodeBuilder) {
+			lb.Set(9, vnb.CreateString("quux"))
+			lb.Set(19, vnb.CreateString("quuux"))
+		})
 		nf := fluent.WrapNode(n)
 		Wish(t, nf.Kind(), ShouldEqual, ipld.ReprKind_List)
 		Wish(t, nf.Length(), ShouldEqual, 20)

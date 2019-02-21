@@ -20,15 +20,15 @@ type nodeBuilder struct {
 	predecessor *Node // optional; only relevant for "Amend*" methods.
 }
 
-func (nb nodeBuilder) CreateMap() ipld.MapBuilder {
-	return &mapBuilder{n: &Node{kind: ipld.ReprKind_Map}}
+func (nb nodeBuilder) CreateMap() (ipld.MapBuilder, error) {
+	return &mapBuilder{n: &Node{kind: ipld.ReprKind_Map, _map: make(map[string]ipld.Node)}}, nil
 }
-func (nb nodeBuilder) AmendMap() ipld.MapBuilder {
+func (nb nodeBuilder) AmendMap() (ipld.MapBuilder, error) {
 	if nb.predecessor == nil {
 		return nb.CreateMap()
 	}
 	if nb.predecessor.kind != ipld.ReprKind_List {
-		return &mapBuilder{err: fmt.Errorf("AmendMap cannot be used when predecessor was not a map")}
+		return nil, fmt.Errorf("AmendMap cannot be used when predecessor was not a map")
 	}
 	newMap := make(map[string]ipld.Node, len(nb.predecessor._map))
 	for k, v := range nb.predecessor._map {
@@ -36,21 +36,21 @@ func (nb nodeBuilder) AmendMap() ipld.MapBuilder {
 	}
 	newArr := make([]string, len(nb.predecessor._mapOrd))
 	copy(newArr, nb.predecessor._mapOrd)
-	return &mapBuilder{n: &Node{kind: ipld.ReprKind_Map, _map: newMap, _mapOrd: newArr}}
+	return &mapBuilder{n: &Node{kind: ipld.ReprKind_Map, _map: newMap, _mapOrd: newArr}}, nil
 }
-func (nb nodeBuilder) CreateList() ipld.ListBuilder {
-	return &listBuilder{n: &Node{kind: ipld.ReprKind_List}}
+func (nb nodeBuilder) CreateList() (ipld.ListBuilder, error) {
+	return &listBuilder{n: &Node{kind: ipld.ReprKind_List}}, nil
 }
-func (nb nodeBuilder) AmendList() ipld.ListBuilder {
+func (nb nodeBuilder) AmendList() (ipld.ListBuilder, error) {
 	if nb.predecessor == nil {
 		return nb.CreateList()
 	}
 	if nb.predecessor.kind != ipld.ReprKind_List {
-		return &listBuilder{err: fmt.Errorf("AmendList cannot be used when predecessor was not a list")}
+		return nil, fmt.Errorf("AmendList cannot be used when predecessor was not a list")
 	}
 	newArr := make([]ipld.Node, len(nb.predecessor._arr))
 	copy(newArr, nb.predecessor._arr)
-	return &listBuilder{n: &Node{kind: ipld.ReprKind_List, _arr: newArr}}
+	return &listBuilder{n: &Node{kind: ipld.ReprKind_List, _arr: newArr}}, nil
 }
 func (nb nodeBuilder) CreateNull() (ipld.Node, error) {
 	return &Node{kind: ipld.ReprKind_Null}, nil
@@ -75,15 +75,8 @@ func (nb nodeBuilder) CreateLink(v cid.Cid) (ipld.Node, error) {
 }
 
 type mapBuilder struct {
-	n   *Node // a wip node; initialized at construction.
-	err error // gathered until the end (so we can have call chaining).
+	n *Node // a wip node; initialized at construction.
 	// whole builder object nil'd after terminal `Build()` call to prevent reuse.
-}
-
-func (mb *mapBuilder) InsertAll(map[ipld.Node]ipld.Node) ipld.MapBuilder {
-	// TODO needs to be sorted to be sane, i suspect.
-	// depends on the node implementation, but then, that's why there's a builder per implementation.
-	panic("NYI")
 }
 
 // Insert adds a k:v pair to the map.
@@ -92,70 +85,47 @@ func (mb *mapBuilder) InsertAll(map[ipld.Node]ipld.Node) ipld.MapBuilder {
 //
 // Keys not already present in the map will be appened to the end of the
 // iteration order; keys already present retain their original order.
-func (mb *mapBuilder) Insert(k, v ipld.Node) ipld.MapBuilder {
-	if mb.err != nil {
-		return mb
-	}
+func (mb *mapBuilder) Insert(k, v ipld.Node) error {
 	ks, err := k.AsString()
 	if err != nil {
-		mb.err = fmt.Errorf("invalid node for map key: %s", err)
-		return mb
+		return fmt.Errorf("invalid node for map key: %s", err)
 	}
 	_, exists := mb.n._map[ks]
-	mb.n._map[ks] = v
 	if exists {
-		return mb
+		return fmt.Errorf("repeated map key: %s", ks)
 	}
+	mb.n._map[ks] = v
 	mb.n._mapOrd = append(mb.n._mapOrd, ks)
-	return mb
+	return nil
 }
-func (mb *mapBuilder) Delete(k ipld.Node) ipld.MapBuilder {
+func (mb *mapBuilder) Delete(k ipld.Node) error {
 	panic("NYI") // and see the "review: MapBuilder.Delete" comment in the interface defn file.
 }
 func (mb *mapBuilder) Build() (ipld.Node, error) {
-	if mb.err != nil {
-		return nil, mb.err
-	}
 	v := mb.n
 	mb = nil
 	return v, nil
 }
 
 type listBuilder struct {
-	n   *Node // a wip node; initialized at construction.
-	err error // gathered until the end (so we can have call chaining).
+	n *Node // a wip node; initialized at construction.
 	// whole builder object nil'd after terminal `Build()` call to prevent reuse.
 }
 
-func (lb *listBuilder) AppendAll(vs []ipld.Node) ipld.ListBuilder {
-	if lb.err != nil {
-		return lb
-	}
+func (lb *listBuilder) AppendAll(vs []ipld.Node) {
 	off := len(lb.n._arr)
 	new := off + len(vs)
 	growList(&lb.n._arr, new-1)
 	copy(lb.n._arr[off:new], vs)
-	return lb
 }
-func (lb *listBuilder) Append(v ipld.Node) ipld.ListBuilder {
-	if lb.err != nil {
-		return lb
-	}
+func (lb *listBuilder) Append(v ipld.Node) {
 	lb.n._arr = append(lb.n._arr, v)
-	return lb
 }
-func (lb *listBuilder) Set(idx int, v ipld.Node) ipld.ListBuilder {
-	if lb.err != nil {
-		return lb
-	}
+func (lb *listBuilder) Set(idx int, v ipld.Node) {
 	growList(&lb.n._arr, idx)
 	lb.n._arr[idx] = v
-	return lb
 }
 func (lb *listBuilder) Build() (ipld.Node, error) {
-	if lb.err != nil {
-		return nil, lb.err
-	}
 	v := lb.n
 	lb = nil
 	return v, nil

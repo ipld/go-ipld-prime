@@ -47,10 +47,10 @@ import (
 // `n.GetBuilder().AmendMap().Insert(...)` is called with nodes of unmatching
 // type given to the insertion, the builder will error!)
 type NodeBuilder interface {
-	CreateMap() MapBuilder
-	AmendMap() MapBuilder
-	CreateList() ListBuilder
-	AmendList() ListBuilder
+	CreateMap() (MapBuilder, error)
+	AmendMap() (MapBuilder, error)
+	CreateList() (ListBuilder, error)
+	AmendList() (ListBuilder, error)
 	CreateNull() (Node, error)
 	CreateBool(bool) (Node, error)
 	CreateInt(int) (Node, error)
@@ -60,17 +60,29 @@ type NodeBuilder interface {
 	CreateLink(cid.Cid) (Node, error)
 }
 
+// MapBuilder is an interface for creating new Node instances of kind map.
+//
+// A MapBuilder is generally obtained by getting a NodeBuilder first,
+// and then using CreateMap or AmendMap to begin.
+//
+// Methods mutate the builder's internal state; when done, call Build to
+// produce a new immutable Node from the internal state.
+// (After calling Build, future mutations may be rejected.)
+//
+// Insertion methods error if the key already exists.
+//
+// You may be interested in the fluent package's fluent.MapBuilder equivalent
+// for common usage with less error-handling boilerplate requirements.
 type MapBuilder interface {
-	InsertAll(map[Node]Node) MapBuilder
-	Insert(k, v Node) MapBuilder
-	Delete(k Node) MapBuilder
+	Insert(k, v Node) error
+	Delete(k Node) error
 	Build() (Node, error)
 }
 
 type ListBuilder interface {
-	AppendAll([]Node) ListBuilder
-	Append(v Node) ListBuilder
-	Set(idx int, v Node) ListBuilder
+	AppendAll([]Node)
+	Append(v Node)
+	Set(idx int, v Node)
 	Build() (Node, error)
 }
 
