@@ -70,12 +70,11 @@ type MapBuildingClosure func(mb MapBuilder, knb NodeBuilder, vnb NodeBuilder)
 type ListBuildingClosure func(lb ListBuilder, vnb NodeBuilder)
 
 func WrapNodeBuilder(nb ipld.NodeBuilder) NodeBuilder {
-	return &nodeBuilder{nb, nil}
+	return &nodeBuilder{nb}
 }
 
 type nodeBuilder struct {
-	nb  ipld.NodeBuilder
-	err error
+	nb ipld.NodeBuilder
 }
 
 func (nb *nodeBuilder) CreateMap(fn MapBuildingClosure) ipld.Node {
