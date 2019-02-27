@@ -7,6 +7,8 @@ import (
 	. "github.com/warpfork/go-wish"
 
 	"github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/encoding"
+	"github.com/ipld/go-ipld-prime/fluent"
 )
 
 // TokenBucket acts as a TokenSink; you can dump data into it and then
@@ -52,26 +54,26 @@ func (tb TokenBucket) Minimalize() TokenBucket {
 	return tb
 }
 
-func TestScalarMarshal(t *testing.T, newNode MutableNodeFactory) {
+func TestScalarMarshal(t *testing.T, nb ipld.NodeBuilder) {
 	t.Run("null node", func(t *testing.T) {
-		n0 := newNode()
-		n0.SetNull()
+		n, _ := nb.CreateNull()
 		var tb TokenBucket
-		(n0.(ipld.TokenizableNode)).PushTokens(&tb)
+		err := encoding.Marshal(n, &tb)
+		Wish(t, err, ShouldEqual, nil)
 		Wish(t, tb, ShouldEqual, TokenBucket{
 			{Type: tok.TNull},
 		})
 	})
 }
 
-func TestRecursiveMarshal(t *testing.T, newNode MutableNodeFactory) {
+func TestRecursiveMarshal(t *testing.T, nb ipld.NodeBuilder) {
 	t.Run("short list node", func(t *testing.T) {
-		n0 := newNode()
-		n00 := newNode()
-		n00.SetString("asdf")
-		n0.SetIndex(0, n00)
+		n := fluent.WrapNodeBuilder(nb).CreateList(func(lb fluent.ListBuilder, vnb fluent.NodeBuilder) {
+			lb.Append(vnb.CreateString("asdf"))
+		})
 		var tb TokenBucket
-		(n0.(ipld.TokenizableNode)).PushTokens(&tb)
+		err := encoding.Marshal(n, &tb)
+		Wish(t, err, ShouldEqual, nil)
 		Wish(t, tb.Minimalize(), ShouldEqual, TokenBucket{
 			{Type: tok.TArrOpen, Length: 1},
 			{Type: tok.TString, Str: "asdf"},
@@ -79,17 +81,15 @@ func TestRecursiveMarshal(t *testing.T, newNode MutableNodeFactory) {
 		})
 	})
 	t.Run("nested list node", func(t *testing.T) {
-		n0 := newNode()
-		n00 := newNode()
-		n0.SetIndex(0, n00)
-		n000 := newNode()
-		n000.SetString("asdf")
-		n00.SetIndex(0, n000)
-		n01 := newNode()
-		n01.SetString("quux")
-		n0.SetIndex(1, n01)
+		n := fluent.WrapNodeBuilder(nb).CreateList(func(lb fluent.ListBuilder, vnb fluent.NodeBuilder) {
+			lb.Append(vnb.CreateList(func(lb fluent.ListBuilder, vnb fluent.NodeBuilder) {
+				lb.Append(vnb.CreateString("asdf"))
+			}))
+			lb.Append(vnb.CreateString("quux"))
+		})
 		var tb TokenBucket
-		(n0.(ipld.TokenizableNode)).PushTokens(&tb)
+		err := encoding.Marshal(n, &tb)
+		Wish(t, err, ShouldEqual, nil)
 		Wish(t, tb.Minimalize(), ShouldEqual, TokenBucket{
 			{Type: tok.TArrOpen, Length: 2},
 			{Type: tok.TArrOpen, Length: 1},
