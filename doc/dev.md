@@ -1,59 +1,6 @@
 Developer Docs
 ==============
 
-Core Concepts
--------------
-
-### IPLD Big Picture
-
-IPLD is a system for describing, storing, sharing, and hashing data.
-
-IPLD comes in several layers:
-
-1. The IPLD Data Model
-2. The IPLD Schema system
-3. "IPFN"
-
-The IPLD Data Model is a specification of the core serializable types of data.
-You can think of it as roughly isomorphic to the familiar JSON and CBOR
-serialization systems (and yes, those parsers usually work "out of the box").
-You can read more about
-[the Data Model specification in the Specs repo](https://github.com/ipld/specs/blob/master/IPLD-Data-Model-v1.md).
-
-The IPLD Schema system builds atop the IPLD Data Model to add a system of
-user-defined types.  These type schema are meant to be easy to write, easy to
-read, and easy for the machine to parse and check efficiently.
-IPLD Schema bring common concepts like "structs" with named "fields", as well
-as "enums" and even "unions" -- and make clear definitions of how to map all of
-these concepts onto the basic serializable types of the Data Model.
-
-You can use IPLD at any of these levels you choose.  We recommend having a
-schema for your data, because it makes validity checking, sanitization,
-migration, and documentation all easier in the long run -- but the Data Model
-is also absolutely usable stand-alone.
-
-IPFN is mentioned here as an intent to design something between "dependent types"
-and a full network and host agnostic computation platform.  It is not part of
-this repo.
-
-### IPLD Nodes
-
-Everything is a Node.  Maps are a node.  Arrays are node.  Ints are a node.
-Everything in the IPLD Data Model is a Node.
-
-Nodes are traversable.  Given a node which is one of the recursive kinds
-(e.g. map or array), you can list child indexes, and you can traverse that
-index to get another Node.
-
-Nodes are trees.  It is not permissible to make a cycle of Node references.
-
-Everything in the IPLD *Schema* layer is *also* a node.
-This sometimes means you'll jump over *several* nodes in the raw Data Model
-representation of the data when traversing one link in the Schema layer.
-
-(Go programmers already familiar with the standard library `reflect` package
-may find it useful to think of `ipld.Node` as similar to `reflect.Value`.)
-
 Code Layout
 -----------
 

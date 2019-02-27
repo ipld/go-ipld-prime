@@ -1,0 +1,19 @@
+- [IPLD Big Picture](./big-picture.md)
+- Nodes
+	- Node interface overview
+	- Node implementation diversity
+	- how to use NodeBuilder
+	- intro to typed nodes
+- using the fluent API
+- operationals
+	- focus & paths
+	- traverse & selectors
+	- transform
+	- constructing other operations
+- storing, loading, and linking
+	- encoding
+		- (this covers only cbor and json builtins)
+		- (brief description of how to build-your-own (either with refmt tokens or nodewalking))
+	- cids are links
+	- linkloader and linkbuilder
+	- automatical link loading in operationals
