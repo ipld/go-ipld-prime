@@ -23,7 +23,7 @@ func DecoderDagCbor(nb ipld.NodeBuilder, r io.Reader) (ipld.Node, error) {
 		return nb2.DecodeCbor(r)
 	}
 	// Okay, generic builder path.
-	return encoding.Unmarshal(nb, cbor.NewDecoder(r))
+	return encoding.Unmarshal(nb, cbor.NewDecoder(cbor.DecodeOptions{}, r))
 }
 
 func EncoderDagCbor(n ipld.Node, w io.Writer) error {
