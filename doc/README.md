@@ -17,3 +17,8 @@
 	- cids are links
 	- linkloader and linkbuilder
 	- automatical link loading in operationals
+- [IPLD Schemas](./schema.md)
+	- [Goals](./schema.md#goals)
+	- [Features](./schema.md#features)
+	- [Implementation](./schema.md#implementation)
+	- [Migration Techniques](./schema.md#schemas-and-migration)
