@@ -22,3 +22,4 @@
 	- [Features](./schema.md#features)
 	- [Implementation](./schema.md#implementation)
 	- [Migration Techniques](./schema.md#schemas-and-migration)
+- [Advanced Data Layouts](./advLayout.md)
