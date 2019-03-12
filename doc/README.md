@@ -1,10 +1,10 @@
 - [IPLD Big Picture](./big-picture.md)
-- Nodes
-	- Node interface overview
-	- Node implementation diversity
-	- how to use NodeBuilder
-	- intro to typed nodes
-- using the fluent API
+- [Nodes](./nodes.md)
+	- [Node interface overview](./nodes.md#the-node-interface)
+	- [Node implementation diversity](./nodes.md#node-implementations)
+	- [how to use NodeBuilder](./nodes.md#using-nodebuilder)
+	- [intro to typed nodes](./nodes.md#typed-nodes)
+- [using the fluent API](./fluent.md)
 - operationals
 	- focus & paths
 	- traverse & selectors
