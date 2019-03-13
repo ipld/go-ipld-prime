@@ -48,7 +48,7 @@ Strings are nodes; ints are nodes; maps are nodes; etc.
 [Nodes have their own full chapter of the documentation](./nodes.md).
 
 Operations: some basic computation we can do *on* a node is an operation.
-Traversals and simply updates have built-in functions; more advanced operations
+Traversals and simple updates have built-in functions; more advanced operations
 can be built with some use of callbacks.
 [Operations have their own full chapter of the documentation](./operations.md).
 
