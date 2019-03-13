@@ -7,6 +7,29 @@ import (
 	ipld "github.com/ipld/go-ipld-prime"
 )
 
+// An example use of LinkContext in LinkLoader logic might be inspecting the
+// LinkNode, and if it's using the type system, inspecting its Type property;
+// then deciding on whether or not we want to load objects of that Type.
+// This might be used to do a traversal which looks at all directory objects,
+// but not file contents, for example.
+type LinkContext struct {
+	LinkPath   Path      // whoops, nice cycle
+	LinkNode   ipld.Node // has the cid again, but also might have type info // always zero for writing new nodes, for obvi reasons.
+	ParentNode ipld.Node
+}
+
+type LinkLoader func(context.Context, cid.Cid, LinkContext) (ipld.Node, error)
+
+// One presumes implementations will also *save* the content somewhere.
+// The LinkContext parameter is a nod to this -- none of those parameters
+// are relevant to the generation of the Cid itself, but perhaps one might
+// want to use them when deciding where to store some files, etc.
+type LinkBuilder func(
+	ctx context.Context,
+	node ipld.Node, lnkCtx LinkContext,
+	multicodecType uint64, multihashType uint64, multihashLength int,
+) (cid.Cid, error)
+
 // VisitFn is a read-only visitor.
 type VisitFn func(TraversalProgress, ipld.Node) error
 
@@ -29,7 +52,7 @@ type TraversalProgress struct {
 }
 
 type TraversalConfig struct {
-	Ctx context.Context // Context carried through a traversal.  Optional; use it if you need cancellation.
-	// `linkLoader func(Context, CID, Path, parent Node) (Node, error)` probably belongs here.
+	Ctx        context.Context // Context carried through a traversal.  Optional; use it if you need cancellation.
+	LinkLoader LinkLoader
 	// `blockWriter func(Context, Node, multicodec(?)) (CID, error)` probably belongs here.
 }

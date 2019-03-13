@@ -12,36 +12,13 @@ import (
 	multihash "github.com/multiformats/go-multihash"
 )
 
-// An example use of LinkContext in LinkLoader logic might be inspecting the
-// LinkNode, and if it's using the type system, inspecting its Type property;
-// then deciding on whether or not we want to load objects of that Type.
-// This might be used to do a traversal which looks at all directory objects,
-// but not file contents, for example.
-type LinkContext struct {
-	LinkPath   traversal.Path // whoops, nice cycle
-	LinkNode   ipld.Node      // has the cid again, but also might have type info // always zero for writing new nodes, for obvi reasons.
-	ParentNode ipld.Node
-}
-
-type LinkLoader func(context.Context, cid.Cid, LinkContext) (ipld.Node, error)
-
-// One presumes implementations will also *save* the content somewhere.
-// The LinkContext parameter is a nod to this -- none of those parameters
-// are relevant to the generation of the Cid itself, but perhaps one might
-// want to use them when deciding where to store some files, etc.
-type LinkBuilder func(
-	ctx context.Context,
-	node ipld.Node, lnkCtx LinkContext,
-	multicodecType uint64, multihashType uint64, multihashLength int,
-) (cid.Cid, error)
-
 func ComposeLinkLoader(
 	actualLoader ActualLoader,
 	nodeBuilderChooser NodeBuilderChooser,
 	multicodecTable MulticodecDecodeTable,
 	// there is no multihashTable, because those are effectively hardcoded in advance.
-) LinkLoader {
-	return func(ctx context.Context, lnk cid.Cid, lnkCtx LinkContext) (ipld.Node, error) {
+) traversal.LinkLoader {
+	return func(ctx context.Context, lnk cid.Cid, lnkCtx traversal.LinkContext) (ipld.Node, error) {
 		// Pick what kind of ipld.Node implementation we want to produce.
 		//  (In some cases, this may be a nearly constant choice; in case of use
 		//   with schema types, this might return complex information based on
@@ -87,18 +64,18 @@ func ComposeLinkLoader(
 	}
 }
 
-type NodeBuilderChooser func(context.Context, LinkContext) (ipld.NodeBuilder, error)
+type NodeBuilderChooser func(context.Context, traversal.LinkContext) (ipld.NodeBuilder, error)
 
-type ActualLoader func(context.Context, cid.Cid, LinkContext) (io.Reader, error)
+type ActualLoader func(context.Context, cid.Cid, traversal.LinkContext) (io.Reader, error)
 
 func ComposeLinkBuilder(
 	actualStorer ActualStorer,
 	multicodecTable MulticodecEncodeTable,
 	// there is no multihashTable, because those are effectively hardcoded in advance.
-) LinkBuilder {
+) traversal.LinkBuilder {
 	return func(
 		ctx context.Context,
-		node ipld.Node, lnkCtx LinkContext,
+		node ipld.Node, lnkCtx traversal.LinkContext,
 		multicodecType uint64, multihashType uint64, multihashLength int,
 	) (cid.Cid, error) {
 		// Open the byte writer.
@@ -128,6 +105,6 @@ func ComposeLinkBuilder(
 	}
 }
 
-type ActualStorer func(context.Context, LinkContext) (io.Writer, StoreCommitter, error)
+type ActualStorer func(context.Context, traversal.LinkContext) (io.Writer, StoreCommitter, error)
 
 type StoreCommitter func(cid.Cid) error
