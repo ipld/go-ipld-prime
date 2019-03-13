@@ -31,9 +31,9 @@
 [submodule ".gopath/src/github.com/spaolacci/murmur3"]
 	path = .gopath/src/github.com/spaolacci/murmur3
 	url = https://github.com/spaolacci/murmur3
-[submodule ".gopath/src/github.com/whyrusleeping/base32"]
-	path = .gopath/src/github.com/whyrusleeping/base32
-	url = https://github.com/whyrusleeping/base32
+[submodule ".gopath/src/github.com/multiformats/go-base32"]
+	path = .gopath/src/github.com/multiformats/go-base32
+	url = https://github.com/multiformats/go-base32
 [submodule ".gopath/src/github.com/warpfork/go-wish"]
 	path = .gopath/src/github.com/warpfork/go-wish
 	url = https://github.com/warpfork/go-wish
