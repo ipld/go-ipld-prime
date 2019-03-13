@@ -7,11 +7,10 @@ IPLD is a system for describing, storing, sharing, and hashing data.
 Layers
 ------
 
-IPLD comes in several layers:
+IPLD comes in two distinct layers:
 
 1. The IPLD Data Model
 2. The IPLD Schema system
-3. "IPFN"
 
 The IPLD Data Model is a specification of the core serializable types of data.
 You can think of it as roughly isomorphic to the familiar JSON and CBOR
@@ -26,15 +25,18 @@ IPLD Schema bring common concepts like "structs" with named "fields", as well
 as "enums" and even "unions" -- and make clear definitions of how to map all of
 these concepts onto the basic serializable types of the Data Model.
 
-You can use IPLD at any of these levels you choose.  We recommend having a
+You can use IPLD at either of these levels as you prefer.  We recommend having a
 schema for your data, because it makes validity checking, sanitization,
 migration, and documentation all easier in the long run -- but the Data Model
 is also absolutely usable stand-alone.
 
-IPFN is mentioned here as an intent to design something between "dependent types"
-and a full network and host agnostic computation platform.  It is more of an
-outline of a research direction than a particular project; the mention here is
-mostly to make it clear what *not* to expect from this repo.
+Some of the most exciting features of IPLD come from the crossover between
+the two layers: for example, it's possible to create two distinct Schema specs,
+and easily flip data between them since all the data on both sides consistently
+fits in the Data Model; migration logic can be written as functions operating
+purely on the Data Model layer to handle even complex structural changes.
+The ability to freely mix and match strong validation with generic data handling
+makes programs possible which would otherwise be cumbersome with either alone.
 
 
 Nodes, operations, encoding, & linking
