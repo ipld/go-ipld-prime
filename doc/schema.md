@@ -5,6 +5,7 @@ IPLD Schema system
 It's currently incubating here in the same repo as the first implementation
 for practical developmental flow reasons.
 
+
 Goals
 -----
 
@@ -17,6 +18,7 @@ Goals
   checker tools should exist, as well as bindings for every language.
 5. Assist rather than obstruct migration.  (We expect data to exist from
   *before* the current schemas; we need to work well on this case.)
+
 
 Features
 --------
@@ -54,19 +56,38 @@ schema.  This doesn't mean you can't have nominative-style behaviors: it's
 just that you get them by using features like typed unions, which effectively
 give you a nominative-style behavior while leaving the configuration of it
 clearly in the hands of your schema.
+(See the "Using Schema Match checking" section below for more discussion of how
+to produce nominative-style behaviors.)
+
+
+Syntax
+------
+
+Schemas can be represented in multiple isomorphic ways: there is both a schema
+DSL (for human reading and writing), and a canonical representation in IPLD itself.
+(The canonical IPLD representation is also self-describing!)
+
+See the [Schema Syntax](./schema-syntax.md) document for more details as well
+as fully-worked examples.
+
 
 Implementation
 --------------
 
 There are three major components of the implementation:
-the schema representation,
+the schema declaration,
 the reified schema,
 and schema adjuncts.
 
-### Schema Representation
+### Schema Declaration
 
-// n.b. sometimes called `ast.*` -- but unsure if "AST" is really the best
-term for something that's a full serializable thing itself, not just an IR.
+The schema declaration implementation lives in `go-ipld-prime//typed/declaration`,
+and includes all of the golang types for containing the schema declaration itself.
+Subpackages of this package include the mechanisms for parsing the schema DSL.
+
+All of the types in the schema declaration implementation are serializable by
+nature.  (This implies that all references to other types are by name, not by
+pointer... which brings us to why there's a Reified Schema implementation.)
 
 ### Reified Schema
 
@@ -74,17 +95,32 @@ Reified schema refers to parts of the code which handle the fully processed
 schema info -- it's distinct from the Schema Representation code because it's
 allowed to contain pointers (including cyclic references), etc.
 
-The Reified schema can be computed purely from the schema representation.
+The reified schema can be computed purely from the schema declaration.
 
-### Schema Amendments/Adjuncts
+The reified schema implementation lives in `go-ipld-prime//typed/system`,
+and `go-ipld-prime//typed.Node` notably has a `Type() typesystem.Type` method
+which provides the reified schema information for any typed node.
+
+Note that multiple disjoint `typesystem.Universe` instances can exist in the
+same program that's manipulating IPLD data and types!  Types with the same names
+may exist in separate universes.  Nodes of such types are not interchangable...
+but you can move data from one node type to another by handling it at the
+Data Model layer!
+
+### Schema Adjuncts
 
 Schema Adjuncts are more properties which can be attached to a Reified schema.
 Adjuncts are -- as the name suggests -- adjoined to the schema, but technically
-not entirely a part of it.
+not entirely a part of it.  Adjunct data includes anything which changes how we
+interact with the schema (including generating code, etc) but doesn't change the
+essential cardinality of any schema data definitions.  Adjunct data can include
+language-specific details (e.g., overriding the names of fields in generated
+code for a specific language falls under the umbrella of adjunct data.)
 
 // todo: document behavior tree patterns for handling concepts like "defaults",
 schema stack probing, options for programmatic callbacks (for fancy migrations),
 etc
+
 
 Excursions
 ----------
@@ -111,6 +147,7 @@ There are also some optional ways to use the library which
 defer the open->closed mapping until midway through your handling of data,
 in exchange for the schema mismatch error becoming something that needs handling
 at that point in your code rather than up front.
+
 
 Schemas and Migration
 ---------------------
