@@ -23,8 +23,7 @@ func TestRecover(t *testing.T) {
 	t.Run("correct traversal should return nil", func(t *testing.T) {
 		Wish(t,
 			Recover(func() {
-				n := &ipldfree.Node{}
-				n.SetString("foo")
+				n, _ := ipldfree.NodeBuilder().CreateString("foo")
 				WrapNode(n).AsString()
 			}),
 			ShouldEqual,

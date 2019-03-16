@@ -82,27 +82,6 @@ type KeyIterator interface {
 	HasNext() bool
 }
 
-// MutableNode is an interface which allows setting its value.
-// MutableNode can be all the same kinds as Node can, and can also
-// be freely coerced between kinds.
-//
-// Using a method which coerces a Mutable node to a new kind can
-// discard data; the SetField and SetIndex methods are concatenative,
-// but using any of the Set{Scalar} methods will result in any map or
-// array content being discarded(!).
-type MutableNode interface {
-	Node
-	SetField(k string, v Node) // SetField coerces the node to a map kind and sets a key:val pair.
-	SetIndex(k int, v Node)    // SetIndex coerces the node to an array kind and sets an index:val pair.  (It will implicitly increase the size to include the index.)
-	SetNull()
-	SetBool(v bool)
-	SetInt(v int)
-	SetFloat(v float64)
-	SetString(v string)
-	SetBytes(v []byte)
-	SetLink(v Link)
-}
-
 // REVIEW: immediate-mode AsBytes() method (as opposed to e.g. returning
 // an io.Reader instance) might be problematic, esp. if we introduce
 // AdvancedLayouts which support large bytes natively.
