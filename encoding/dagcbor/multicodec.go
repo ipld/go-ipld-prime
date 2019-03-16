@@ -6,7 +6,6 @@ import (
 	"github.com/polydawn/refmt/cbor"
 
 	ipld "github.com/ipld/go-ipld-prime"
-	"github.com/ipld/go-ipld-prime/encoding"
 	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
 )
 
@@ -30,7 +29,7 @@ func Decoder(nb ipld.NodeBuilder, r io.Reader) (ipld.Node, error) {
 		return nb2.DecodeDagCbor(r)
 	}
 	// Okay, generic builder path.
-	return encoding.Unmarshal(nb, cbor.NewDecoder(cbor.DecodeOptions{}, r))
+	return Unmarshal(nb, cbor.NewDecoder(cbor.DecodeOptions{}, r))
 }
 
 func Encoder(n ipld.Node, w io.Writer) error {
@@ -43,5 +42,5 @@ func Encoder(n ipld.Node, w io.Writer) error {
 		return n2.EncodeDagCbor(w)
 	}
 	// Okay, generic inspection path.
-	return encoding.Marshal(n, cbor.NewEncoder(w))
+	return Marshal(n, cbor.NewEncoder(w))
 }

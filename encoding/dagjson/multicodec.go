@@ -20,6 +20,9 @@ func init() {
 	cidlink.RegisterMulticodecEncoder(0x0129, Encoder)
 }
 
+// FIXME: technically these are NOT dag-json; they're just regular json.
+// We need to get encoder logic that handles the special links cases.
+
 func Decoder(nb ipld.NodeBuilder, r io.Reader) (ipld.Node, error) {
 	// Shell out directly to generic builder path.
 	//  (There's not really any fastpaths of note for json.)
