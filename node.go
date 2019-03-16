@@ -63,6 +63,20 @@ type Node interface {
 	AsString() (string, error)
 	AsBytes() ([]byte, error)
 	AsLink() (Link, error)
+
+	// NodeBuilder returns a NodeBuilder which can be used to build
+	// new nodes of the same implementation type as this one.
+	//
+	// For map and list nodes, the NodeBuilder's append-oriented methods
+	// will work using this node's values as a base.
+	// If this is a typed node, the NodeBuilder will carry the same
+	// typesystem constraints as this Node.
+	//
+	// (This feature is used by the traversal package, especially in
+	// e.g. traversal.Transform, for doing tree updates while keeping the
+	// existing implementation preferences and doing as many operations
+	// in copy-on-write fashions as possible.)
+	NodeBuilder() NodeBuilder
 }
 
 // KeyIterator is an interface for traversing nodes of kind map.
@@ -80,27 +94,6 @@ type Node interface {
 type KeyIterator interface {
 	Next() (string, error)
 	HasNext() bool
-}
-
-// MutableNode is an interface which allows setting its value.
-// MutableNode can be all the same kinds as Node can, and can also
-// be freely coerced between kinds.
-//
-// Using a method which coerces a Mutable node to a new kind can
-// discard data; the SetField and SetIndex methods are concatenative,
-// but using any of the Set{Scalar} methods will result in any map or
-// array content being discarded(!).
-type MutableNode interface {
-	Node
-	SetField(k string, v Node) // SetField coerces the node to a map kind and sets a key:val pair.
-	SetIndex(k int, v Node)    // SetIndex coerces the node to an array kind and sets an index:val pair.  (It will implicitly increase the size to include the index.)
-	SetNull()
-	SetBool(v bool)
-	SetInt(v int)
-	SetFloat(v float64)
-	SetString(v string)
-	SetBytes(v []byte)
-	SetLink(v Link)
 }
 
 // REVIEW: immediate-mode AsBytes() method (as opposed to e.g. returning

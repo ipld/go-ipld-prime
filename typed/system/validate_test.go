@@ -10,8 +10,7 @@ import (
 
 func TestSimpleTypes(t *testing.T) {
 	t.Run("string alone", func(t *testing.T) {
-		n1 := &ipldfree.Node{}
-		n1.SetString("asdf")
+		n1, _ := ipldfree.NodeBuilder().CreateString("asdf")
 		t1 := TypeString{
 			anyType{name: "Foo"},
 		}
