@@ -10,14 +10,14 @@ import (
 // Focus is a shortcut for kicking off
 // TraversalProgress.Focus with an empty initial state
 // (e.g. the Node given here is the "root" node of your operation).
-func Focus(n ipld.Node, p Path, fn VisitFn) error {
+func Focus(n ipld.Node, p ipld.Path, fn VisitFn) error {
 	return TraversalProgress{}.Focus(n, p, fn)
 }
 
 // FocusedTransform is a shortcut for kicking off
 // TraversalProgress.FocusedTransform with an empty initial state
 // (e.g. the Node given here is the "root" node of your operation).
-func FocusedTransform(n ipld.Node, p Path, fn TransformFn) (ipld.Node, error) {
+func FocusedTransform(n ipld.Node, p ipld.Path, fn TransformFn) (ipld.Node, error) {
 	return TraversalProgress{}.FocusedTransform(n, p, fn)
 }
 
@@ -31,32 +31,33 @@ func FocusedTransform(n ipld.Node, p Path, fn TransformFn) (ipld.Node, error) {
 // By using the TraversalProgress handed to the VisitFn, the traversal Path
 // so far will continue to be extended, so continued nested uses of Focus
 // will see a fully contextualized Path.
-func (tp TraversalProgress) Focus(n ipld.Node, p Path, fn VisitFn) error {
-	for i, seg := range p.segments {
+func (tp TraversalProgress) Focus(n ipld.Node, p ipld.Path, fn VisitFn) error {
+	segments := p.Segments()
+	for i, seg := range segments {
 		switch n.Kind() {
 		case ipld.ReprKind_Invalid:
-			return fmt.Errorf("cannot traverse node at %q: it is undefined", Path{p.segments[0:i]})
+			return fmt.Errorf("cannot traverse node at %q: it is undefined", p.Truncate(i))
 		case ipld.ReprKind_Map:
 			next, err := n.TraverseField(seg)
 			if err != nil {
-				return fmt.Errorf("error traversing node at %q: %s", Path{p.segments[0:i]}, err)
+				return fmt.Errorf("error traversing node at %q: %s", p.Truncate(i), err)
 			}
 			n = next
 		case ipld.ReprKind_List:
 			intSeg, err := strconv.Atoi(seg)
 			if err != nil {
-				return fmt.Errorf("cannot traverse node at %q: the next path segment (%q) cannot be parsed as a number and the node is a list", Path{p.segments[0:i]}, seg)
+				return fmt.Errorf("cannot traverse node at %q: the next path segment (%q) cannot be parsed as a number and the node is a list", p.Truncate(i), seg)
 			}
 			next, err := n.TraverseIndex(intSeg)
 			if err != nil {
-				return fmt.Errorf("error traversing node at %q: %s", Path{p.segments[0:i]}, err)
+				return fmt.Errorf("error traversing node at %q: %s", p.Truncate(i), err)
 			}
 			n = next
 		case ipld.ReprKind_Link:
 			panic("NYI link loading") // TODO
 			// this would set a progress marker in `tp` as well
 		default:
-			return fmt.Errorf("error traversing node at %q: %s", Path{p.segments[0:i]}, fmt.Errorf("cannot traverse terminals"))
+			return fmt.Errorf("error traversing node at %q: %s", p.Truncate(i), fmt.Errorf("cannot traverse terminals"))
 		}
 	}
 	tp.Path = tp.Path.Join(p)
@@ -91,6 +92,6 @@ func (tp TraversalProgress) Focus(n ipld.Node, p Path, fn VisitFn) error {
 // do with regular Node and NodeBuilder usage directly.  Transform just
 // does a large amount of the intermediate bookkeeping that's useful when
 // creating new values which are partial updates to existing values.
-func (tp TraversalProgress) FocusedTransform(n ipld.Node, p Path, fn TransformFn) (ipld.Node, error) {
+func (tp TraversalProgress) FocusedTransform(n ipld.Node, p ipld.Path, fn TransformFn) (ipld.Node, error) {
 	panic("TODO") // TODO surprisingly different from Focus -- need to store nodes we traversed, and able do building.
 }

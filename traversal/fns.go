@@ -13,7 +13,7 @@ import (
 // This might be used to do a traversal which looks at all directory objects,
 // but not file contents, for example.
 type LinkContext struct {
-	LinkPath   Path      // whoops, nice cycle
+	LinkPath   ipld.Path
 	LinkNode   ipld.Node // has the cid again, but also might have type info // always zero for writing new nodes, for obvi reasons.
 	ParentNode ipld.Node
 }
@@ -44,9 +44,9 @@ type TraversalReason byte // enum = SelectionMatch | SelectionParent | Selection
 
 type TraversalProgress struct {
 	*TraversalConfig
-	Path      Path     // Path is how we reached the current point in the traversal.
-	LastBlock struct { // LastBlock stores the Path and CID of the last block edge we had to load.  (It will always be zero in traversals with no linkloader.)
-		Path
+	Path      ipld.Path // Path is how we reached the current point in the traversal.
+	LastBlock struct {  // LastBlock stores the Path and CID of the last block edge we had to load.  (It will always be zero in traversals with no linkloader.)
+		ipld.Path
 		cid.Cid
 	}
 }

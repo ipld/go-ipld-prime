@@ -1,4 +1,4 @@
-package traversal
+package ipld
 
 import (
 	"testing"
