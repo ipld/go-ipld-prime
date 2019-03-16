@@ -63,6 +63,20 @@ type Node interface {
 	AsString() (string, error)
 	AsBytes() ([]byte, error)
 	AsLink() (Link, error)
+
+	// NodeBuilder returns a NodeBuilder which can be used to build
+	// new nodes of the same implementation type as this one.
+	//
+	// For map and list nodes, the NodeBuilder's append-oriented methods
+	// will work using this node's values as a base.
+	// If this is a typed node, the NodeBuilder will carry the same
+	// typesystem constraints as this Node.
+	//
+	// (This feature is used by the traversal package, especially in
+	// e.g. traversal.Transform, for doing tree updates while keeping the
+	// existing implementation preferences and doing as many operations
+	// in copy-on-write fashions as possible.)
+	NodeBuilder() NodeBuilder
 }
 
 // KeyIterator is an interface for traversing nodes of kind map.

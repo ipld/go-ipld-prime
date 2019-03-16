@@ -65,6 +65,10 @@ func (n *Node) AsLink() (v ipld.Link, _ error) {
 	return n._link, expectTyp(ipld.ReprKind_Link, n.kind)
 }
 
+func (n *Node) NodeBuilder() ipld.NodeBuilder {
+	return nodeBuilder{n}
+}
+
 func (n *Node) Keys() ipld.KeyIterator {
 	return &keyIterator{n, 0}
 }

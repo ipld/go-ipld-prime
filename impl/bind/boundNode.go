@@ -103,6 +103,10 @@ func (n Node) AsLink() (v ipld.Link, _ error) {
 	return
 }
 
+func (n Node) NodeBuilder() ipld.NodeBuilder {
+	panic("NYI")
+}
+
 func (n Node) Keys() ipld.KeyIterator {
 	panic("NYI")
 }
