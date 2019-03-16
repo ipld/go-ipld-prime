@@ -36,7 +36,7 @@ type Link interface {
 	// The provided Loader function is used to get a reader for the raw
 	// serialized content; the Link contains an understanding of how to
 	// select a decoder (and hasher for verification, etc).
-	Load(context.Context, Loader) (Node, error)
+	Load(context.Context, LinkContext, NodeBuilder, Loader) (Node, error)
 
 	// LinkBuilder returns a handle to any parameters of the Link which
 	// are needed to create a new Link of the same style but with new content.
@@ -66,7 +66,7 @@ type Link interface {
 // If using CIDs as an implementation, LinkBuilder will encapsulate things
 // like multihashType, multicodecType, and cidVersion, for example.
 type LinkBuilder interface {
-	Build(ctx context.Context, content Node, storer Storer) (Link, error)
+	Build(context.Context, LinkContext, Node, Storer) (Link, error)
 }
 
 // Loader functions are used to get a reader for raw serialized content

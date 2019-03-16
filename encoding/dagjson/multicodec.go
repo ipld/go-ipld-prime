@@ -1,25 +1,32 @@
-package repose
+package dagjson
 
 import (
 	"io"
 
+	"github.com/polydawn/refmt/json"
+
 	ipld "github.com/ipld/go-ipld-prime"
 	"github.com/ipld/go-ipld-prime/encoding"
-	"github.com/polydawn/refmt/json"
+	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
 )
 
 var (
-	_ MulticodecDecoder = DecoderDagJson
-	_ MulticodecEncoder = EncoderDagJson
+	_ cidlink.MulticodecDecoder = Decoder
+	_ cidlink.MulticodecEncoder = Encoder
 )
 
-func DecoderDagJson(nb ipld.NodeBuilder, r io.Reader) (ipld.Node, error) {
+func init() {
+	cidlink.RegisterMulticodecDecoder(0x0129, Decoder)
+	cidlink.RegisterMulticodecEncoder(0x0129, Encoder)
+}
+
+func Decoder(nb ipld.NodeBuilder, r io.Reader) (ipld.Node, error) {
 	// Shell out directly to generic builder path.
 	//  (There's not really any fastpaths of note for json.)
 	return encoding.Unmarshal(nb, json.NewDecoder(r))
 }
 
-func EncoderDagJson(n ipld.Node, w io.Writer) error {
+func Encoder(n ipld.Node, w io.Writer) error {
 	// Shell out directly to generic inspection path.
 	//  (There's not really any fastpaths of note for json.)
 	// Write another function if you need to tune encoding options about whitespace.
