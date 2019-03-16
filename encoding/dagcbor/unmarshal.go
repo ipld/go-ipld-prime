@@ -2,12 +2,13 @@ package dagcbor
 
 import (
 	"fmt"
+	"math"
 
-	"github.com/ipfs/go-cid"
+	cid "github.com/ipfs/go-cid"
 	"github.com/polydawn/refmt/shared"
 	"github.com/polydawn/refmt/tok"
 
-	"github.com/ipld/go-ipld-prime"
+	ipld "github.com/ipld/go-ipld-prime"
 	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
 )
 
@@ -34,6 +35,13 @@ func unmarshal(nb ipld.NodeBuilder, tokSrc shared.TokenSource, tk *tok.Token) (i
 		if err != nil {
 			return nil, err
 		}
+		expectLen := tk.Length
+		if tk.Length == -1 {
+			expectLen = math.MaxInt32
+		}
+		observedLen := 0
+		var k string
+		var v ipld.Node
 		for {
 			done, err := tokSrc.Step(tk)
 			if done {
@@ -44,15 +52,22 @@ func unmarshal(nb ipld.NodeBuilder, tokSrc shared.TokenSource, tk *tok.Token) (i
 			}
 			switch tk.Type {
 			case tok.TMapClose:
+				if expectLen != math.MaxInt32 && observedLen != expectLen {
+					return nil, fmt.Errorf("unexpected mapClose before declared length")
+				}
 				return mb.Build()
 			case tok.TString:
 				// continue
 			default:
 				return nil, fmt.Errorf("unexpected %s token while expecting map key", tk.Type)
 			}
-			k := tk.Str
+			observedLen++
+			if observedLen > expectLen {
+				return nil, fmt.Errorf("unexpected continuation of map elements beyond declared length")
+			}
+			k = tk.Str
 			// FUTURE: check for typed.NodeBuilder; need to specialize before recursing if so.
-			v, err := Unmarshal(nb, tokSrc)
+			v, err = Unmarshal(nb, tokSrc)
 			if err != nil {
 				return nil, err
 			}
@@ -71,6 +86,11 @@ func unmarshal(nb ipld.NodeBuilder, tokSrc shared.TokenSource, tk *tok.Token) (i
 		if err != nil {
 			return nil, err
 		}
+		expectLen := tk.Length
+		if tk.Length == -1 {
+			expectLen = math.MaxInt32
+		}
+		observedLen := 0
 		for {
 			done, err := tokSrc.Step(tk)
 			if done {
@@ -81,8 +101,15 @@ func unmarshal(nb ipld.NodeBuilder, tokSrc shared.TokenSource, tk *tok.Token) (i
 			}
 			switch tk.Type {
 			case tok.TArrClose:
+				if expectLen != math.MaxInt32 && observedLen != expectLen {
+					return nil, fmt.Errorf("unexpected arrClose before declared length")
+				}
 				return lb.Build()
 			default:
+				observedLen++
+				if observedLen > expectLen {
+					return nil, fmt.Errorf("unexpected continuation of array elements beyond declared length")
+				}
 				// FUTURE: check for typed.NodeBuilder; need to specialize before recursing if so.
 				//  N.B. when considering optionals for tuple-represented structs, keep in mind how murky that will get here.
 				v, err := unmarshal(nb, tokSrc, tk)
