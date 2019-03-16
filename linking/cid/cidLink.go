@@ -78,18 +78,16 @@ func (lb LinkBuilder) Build(ctx context.Context, lnkCtx ipld.LinkContext, node i
 	if !exists {
 		return nil, fmt.Errorf("no encoder registered for multicodec %d", lb.Prefix.MhType)
 	}
-	var hasher bytes.Buffer // multihash only exports bulk use, which is... really inefficient and should be fixed.
+	var hasher bytes.Buffer // multihash-via-cid only exports bulk use, which is... really inefficient and should be fixed.
 	w = io.MultiWriter(&hasher, w)
 	err = mcEncoder(node, w)
 	if err != nil {
 		return nil, err
 	}
-	hash, err := multihash.Sum(hasher.Bytes(), lb.Prefix.MhType, lb.Prefix.MhLength)
-	// FIXME finish making a CID out of this.
-	// the cid package is a maze of twisty little passages all alike and I don't honestly know what's up where why.
-	_ = hash
-	if err := commit(nil); err != nil {
-		return nil, err
+	cid, err := lb.Prefix.Sum(hasher.Bytes())
+	lnk := Link{cid}
+	if err := commit(lnk); err != nil {
+		return lnk, err
 	}
-	panic("TODO")
+	return lnk, nil
 }
