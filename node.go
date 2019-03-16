@@ -1,9 +1,5 @@
 package ipld
 
-import (
-	"github.com/ipfs/go-cid"
-)
-
 type Node interface {
 	// Kind returns a value from the ReprKind enum describing what the
 	// essential serializable kind of this node is (map, list, int, etc).
@@ -66,7 +62,7 @@ type Node interface {
 	AsFloat() (float64, error)
 	AsString() (string, error)
 	AsBytes() ([]byte, error)
-	AsLink() (cid.Cid, error)
+	AsLink() (Link, error)
 }
 
 // KeyIterator is an interface for traversing nodes of kind map.
@@ -84,10 +80,6 @@ type Node interface {
 type KeyIterator interface {
 	Next() (string, error)
 	HasNext() bool
-}
-
-type SerializableNode interface {
-	CID() cid.Cid
 }
 
 // MutableNode is an interface which allows setting its value.
@@ -108,7 +100,7 @@ type MutableNode interface {
 	SetFloat(v float64)
 	SetString(v string)
 	SetBytes(v []byte)
-	SetLink(v cid.Cid)
+	SetLink(v Link)
 }
 
 // REVIEW: immediate-mode AsBytes() method (as opposed to e.g. returning

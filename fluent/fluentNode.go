@@ -1,7 +1,6 @@
 package fluent
 
 import (
-	"github.com/ipfs/go-cid"
 	"github.com/ipld/go-ipld-prime"
 )
 
@@ -27,7 +26,7 @@ type Node interface {
 	AsFloat() float64
 	AsString() string
 	AsBytes() []byte
-	AsLink() cid.Cid
+	AsLink() ipld.Link
 	GetError() error
 }
 
@@ -155,7 +154,7 @@ func (n node) AsBytes() []byte {
 	}
 	return v
 }
-func (n node) AsLink() cid.Cid {
+func (n node) AsLink() ipld.Link {
 	if n.err != nil {
 		panic(Error{n.err})
 	}

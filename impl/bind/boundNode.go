@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/ipfs/go-cid"
 	"github.com/ipld/go-ipld-prime"
 	"github.com/polydawn/refmt/obj/atlas"
 )
@@ -99,7 +98,7 @@ func (n Node) AsBytes() (v []byte, _ error) {
 	reflect.ValueOf(&v).Elem().Set(n.bound)
 	return
 }
-func (n Node) AsLink() (v cid.Cid, _ error) {
+func (n Node) AsLink() (v ipld.Link, _ error) {
 	reflect.ValueOf(&v).Elem().Set(n.bound)
 	return
 }

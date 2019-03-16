@@ -1,4 +1,4 @@
-package encoding
+package dagjson
 
 import (
 	"fmt"
@@ -6,19 +6,14 @@ import (
 	"github.com/polydawn/refmt/shared"
 	"github.com/polydawn/refmt/tok"
 
-	"github.com/ipld/go-ipld-prime"
+	ipld "github.com/ipld/go-ipld-prime"
+	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
 )
 
-// FUTURE there are very open questions on how to handle detection and special-track'ing for advLayout nodes when we get to that feature.
+// This should be identical to the general feature in the parent package,
+// except for the `case ipld.ReprKind_Link` block,
+// which is dag-json's special sauce for schemafree links.
 
-// Marshal provides a very general node-to-tokens marshalling feature.
-// It can handle either cbor or json by being combined with a refmt TokenSink.
-//
-// It is valid for all the data model types except links, which are only
-// supported if the nodes are typed and provide additional information
-// to clarify how links should be encoded through their type info.
-// (The dag-cbor and dag-json formats can be used if links are of CID
-// implementation and need to be encoded in a schemafree way.)
 func Marshal(n ipld.Node, sink shared.TokenSink) error {
 	var tk tok.Token
 	switch n.Kind() {
@@ -126,7 +121,35 @@ func Marshal(n ipld.Node, sink shared.TokenSink) error {
 		_, err = sink.Step(&tk)
 		return err
 	case ipld.ReprKind_Link:
-		return fmt.Errorf("link emission not supported by this codec without a schema!  (maybe you want dag-cbor or dag-json)")
+		v, err := n.AsLink()
+		if err != nil {
+			return err
+		}
+		switch lnk := v.(type) {
+		case cidlink.Link:
+			// Precisely four tokens to emit:
+			tk.Type = tok.TMapOpen
+			tk.Length = 1
+			if _, err = sink.Step(&tk); err != nil {
+				return err
+			}
+			tk.Type = tok.TString
+			tk.Str = "/"
+			if _, err = sink.Step(&tk); err != nil {
+				return err
+			}
+			tk.Str = lnk.Cid.String()
+			if _, err = sink.Step(&tk); err != nil {
+				return err
+			}
+			tk.Type = tok.TMapClose
+			if _, err = sink.Step(&tk); err != nil {
+				return err
+			}
+			return nil
+		default:
+			return fmt.Errorf("schemafree link emission only supported by this codec for CID type links!")
+		}
 	default:
 		panic("unreachable")
 	}

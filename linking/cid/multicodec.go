@@ -1,4 +1,4 @@
-package repose
+package cidlink
 
 import (
 	"io"
@@ -6,20 +6,15 @@ import (
 	ipld "github.com/ipld/go-ipld-prime"
 )
 
-type MulticodecDecodeTable struct {
-	Table map[uint64]MulticodecDecoder
-}
+type MulticodecDecodeTable map[uint64]MulticodecDecoder
 
-type MulticodecEncodeTable struct {
-	Table map[uint64]MulticodecEncoder
-}
+type MulticodecEncodeTable map[uint64]MulticodecEncoder
 
 // MulticodecDecoder builds an ipld.Node by unmarshalling bytes and applying
 // an ipld.NodeBuilder.
 //
-// MulticodecDecoder are most frequently used by registering them in a
-// MulticodecDecoderTable, and providing that to ComposeLinkLoader,
-// then using the resulting LinkLoader as part of traversal.TraversalConfig.
+// MulticodecDecoder are used by registering them in a MulticodecDecoderTable,
+// which makes them available to be used internally by cidlink.Link.Load.
 //
 // Consider implementing decoders to probe their NodeBuilder to see if it
 // has special features that may be able to do the job more efficiently.
@@ -32,10 +27,8 @@ type MulticodecDecoder func(ipld.NodeBuilder, io.Reader) (ipld.Node, error)
 // MulticodecEncoder marshals and ipld.Node into bytes and sends them to
 // an io.Writer.
 //
-// MulticodecEncoder are most frequently used by registering them in a
-// MulticodecEncoderTable, and providing that to ComposeLinkBuilder,
-// then using the resulting LinkBuilder either directly
-// or as part of traversal.TraversalConfig.
+// MulticodecEncoder are used by registering them in a MulticodecEncoderTable,
+// which makes them available to be used internally by cidlink.LinkBuilder.
 //
 // Tends to be implemented by probing the node to see if it matches a special
 // interface that we know can do this particular kind of encoding

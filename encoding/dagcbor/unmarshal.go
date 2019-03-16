@@ -1,32 +1,21 @@
-package encoding
+package dagcbor
 
 import (
 	"fmt"
 	"math"
 
+	cid "github.com/ipfs/go-cid"
 	"github.com/polydawn/refmt/shared"
 	"github.com/polydawn/refmt/tok"
 
-	"github.com/ipld/go-ipld-prime"
+	ipld "github.com/ipld/go-ipld-prime"
+	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
 )
 
-// wishlist: if we could reconstruct the ipld.Path of an error while
-//  *unwinding* from that error... that'd be nice.
-//   (trying to build it proactively would waste tons of allocs on the happy path.)
-//  we can do this; it just requires well-typed errors and a bunch of work.
+// This should be identical to the general feature in the parent package,
+// except for the `case tok.TBytes` block,
+// which has dag-cbor's special sauce for detecting schemafree links.
 
-// Tests for all this are in the ipld.Node impl tests!
-//  They're effectively doing double duty: testing the builders, too.
-//   (Is that sensible?  Should it be refactored?  Not sure; maybe!)
-
-// Unmarshal provides a very general tokens-to-node unmarshalling feature.
-// It can handle either cbor or json by being combined with a refmt TokenSink.
-//
-// It is valid for all the data model types except links, which are only
-// supported if the nodes are typed and provide additional information
-// to clarify how links should be decoded through their type info.
-// (The dag-cbor and dag-json formats can be used if links are of CID
-// implementation and need to be decoded in a schemafree way.)
 func Unmarshal(nb ipld.NodeBuilder, tokSrc shared.TokenSource) (ipld.Node, error) {
 	var tk tok.Token
 	done, err := tokSrc.Step(&tk)
@@ -137,7 +126,19 @@ func unmarshal(nb ipld.NodeBuilder, tokSrc shared.TokenSource, tk *tok.Token) (i
 	case tok.TString:
 		return nb.CreateString(tk.Str)
 	case tok.TBytes:
-		return nb.CreateBytes(tk.Bytes)
+		if !tk.Tagged {
+			return nb.CreateBytes(tk.Bytes)
+		}
+		switch tk.Tag {
+		case linkTag:
+			elCid, err := cid.Cast(tk.Bytes)
+			if err != nil {
+				return nil, err
+			}
+			return nb.CreateLink(cidlink.Link{elCid})
+		default:
+			return nil, fmt.Errorf("unhandled cbor tag %d", tk.Tag)
+		}
 	case tok.TBool:
 		return nb.CreateBool(tk.Bool)
 	case tok.TInt:
