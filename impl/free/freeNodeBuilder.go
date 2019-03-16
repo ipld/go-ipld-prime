@@ -3,7 +3,6 @@ package ipldfree
 import (
 	"fmt"
 
-	cid "github.com/ipfs/go-cid"
 	ipld "github.com/ipld/go-ipld-prime"
 )
 
@@ -70,7 +69,7 @@ func (nb nodeBuilder) CreateString(v string) (ipld.Node, error) {
 func (nb nodeBuilder) CreateBytes(v []byte) (ipld.Node, error) {
 	return &Node{kind: ipld.ReprKind_Bytes, _bytes: v}, nil
 }
-func (nb nodeBuilder) CreateLink(v cid.Cid) (ipld.Node, error) {
+func (nb nodeBuilder) CreateLink(v ipld.Link) (ipld.Node, error) {
 	return &Node{kind: ipld.ReprKind_Link, _link: v}, nil
 }
 

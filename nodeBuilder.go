@@ -1,9 +1,5 @@
 package ipld
 
-import (
-	cid "github.com/ipfs/go-cid"
-)
-
 // NodeBuilder is an interface that describes creating new Node instances.
 //
 // The Node interface is entirely read-only methods; a Node is immutable.
@@ -57,7 +53,7 @@ type NodeBuilder interface {
 	CreateFloat(float64) (Node, error)
 	CreateString(string) (Node, error)
 	CreateBytes([]byte) (Node, error)
-	CreateLink(cid.Cid) (Node, error)
+	CreateLink(Link) (Node, error)
 }
 
 // MapBuilder is an interface for creating new Node instances of kind map.

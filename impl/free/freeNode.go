@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/ipfs/go-cid"
 	"github.com/ipld/go-ipld-prime"
 )
 
@@ -37,7 +36,7 @@ type Node struct {
 	_float  float64              // Value union.  Only one of these has meaning, depending on the value of 'Type'.
 	_str    string               // Value union.  Only one of these has meaning, depending on the value of 'Type'.
 	_bytes  []byte               // Value union.  Only one of these has meaning, depending on the value of 'Type'.
-	_link   cid.Cid              // Value union.  Only one of these has meaning, depending on the value of 'Type'.
+	_link   ipld.Link            // Value union.  Only one of these has meaning, depending on the value of 'Type'.
 }
 
 func (n *Node) Kind() ipld.ReprKind {
@@ -62,7 +61,7 @@ func (n *Node) AsString() (v string, _ error) {
 func (n *Node) AsBytes() (v []byte, _ error) {
 	return n._bytes, expectTyp(ipld.ReprKind_Bytes, n.kind)
 }
-func (n *Node) AsLink() (v cid.Cid, _ error) {
+func (n *Node) AsLink() (v ipld.Link, _ error) {
 	return n._link, expectTyp(ipld.ReprKind_Link, n.kind)
 }
 

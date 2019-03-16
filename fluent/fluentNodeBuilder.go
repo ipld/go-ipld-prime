@@ -1,7 +1,6 @@
 package fluent
 
 import (
-	"github.com/ipfs/go-cid"
 	"github.com/ipld/go-ipld-prime"
 )
 
@@ -16,7 +15,7 @@ type NodeBuilder interface {
 	CreateFloat(float64) ipld.Node
 	CreateString(string) ipld.Node
 	CreateBytes([]byte) ipld.Node
-	CreateLink(cid.Cid) ipld.Node
+	CreateLink(ipld.Link) ipld.Node
 }
 
 type MapBuilder interface {
@@ -167,7 +166,7 @@ func (nb *nodeBuilder) CreateBytes(v []byte) ipld.Node {
 	}
 	return n
 }
-func (nb *nodeBuilder) CreateLink(v cid.Cid) ipld.Node {
+func (nb *nodeBuilder) CreateLink(v ipld.Link) ipld.Node {
 	n, err := nb.nb.CreateLink(v)
 	if err != nil {
 		panic(Error{err})

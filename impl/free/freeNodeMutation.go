@@ -1,7 +1,6 @@
 package ipldfree
 
 import (
-	"github.com/ipfs/go-cid"
 	"github.com/ipld/go-ipld-prime"
 )
 
@@ -80,7 +79,7 @@ func (n *Node) SetBytes(v []byte) {
 	n.coerceType(ipld.ReprKind_Bytes)
 	n._bytes = v
 }
-func (n *Node) SetLink(v cid.Cid) {
+func (n *Node) SetLink(v ipld.Link) {
 	n.coerceType(ipld.ReprKind_Link)
 	n._link = v
 }
@@ -129,7 +128,7 @@ func (n *Node) coerceType(newKind ipld.ReprKind) {
 		case ipld.ReprKind_Link:
 			return
 		default:
-			n._link = cid.Undef
+			n._link = nil
 		}
 	}
 	// Set new type union marker.
