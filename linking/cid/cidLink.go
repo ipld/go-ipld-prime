@@ -74,9 +74,9 @@ func (lb LinkBuilder) Build(ctx context.Context, lnkCtx ipld.LinkContext, node i
 		return nil, err
 	}
 	// Marshal, teeing into the storage writer and the hasher.
-	mcEncoder, exists := multicodecEncodeTable[lb.Prefix.MhType]
+	mcEncoder, exists := multicodecEncodeTable[lb.Prefix.Codec]
 	if !exists {
-		return nil, fmt.Errorf("no encoder registered for multicodec %d", lb.Prefix.MhType)
+		return nil, fmt.Errorf("no encoder registered for multicodec %d", lb.Prefix.Codec)
 	}
 	var hasher bytes.Buffer // multihash-via-cid only exports bulk use, which is... really inefficient and should be fixed.
 	w = io.MultiWriter(&hasher, w)
