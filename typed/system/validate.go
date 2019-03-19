@@ -15,33 +15,33 @@ func Validate(ts Universe, t Type, node ipld.Node) []error {
 func validate(ts Universe, t Type, node ipld.Node, pth string) []error {
 	switch t2 := t.(type) {
 	case TypeBool:
-		if node.Kind() != ipld.ReprKind_Bool {
-			return []error{fmt.Errorf("Schema match failed: expected type %q (which is kind %v) at path %q, but found kind %v", t2.Name(), t.ReprKind(), pth, node.Kind())}
+		if node.ReprKind() != ipld.ReprKind_Bool {
+			return []error{fmt.Errorf("Schema match failed: expected type %q (which is kind %v) at path %q, but found kind %v", t2.Name(), t.ReprKind(), pth, node.ReprKind())}
 		}
 		return nil
 	case TypeString:
-		if node.Kind() != ipld.ReprKind_String {
-			return []error{fmt.Errorf("Schema match failed: expected type %q (which is kind %v) at path %q, but found kind %v", t2.Name(), t.ReprKind(), pth, node.Kind())}
+		if node.ReprKind() != ipld.ReprKind_String {
+			return []error{fmt.Errorf("Schema match failed: expected type %q (which is kind %v) at path %q, but found kind %v", t2.Name(), t.ReprKind(), pth, node.ReprKind())}
 		}
 		return nil
 	case TypeBytes:
-		if node.Kind() != ipld.ReprKind_Bytes {
-			return []error{fmt.Errorf("Schema match failed: expected type %q (which is kind %v) at path %q, but found kind %v", t2.Name(), t.ReprKind(), pth, node.Kind())}
+		if node.ReprKind() != ipld.ReprKind_Bytes {
+			return []error{fmt.Errorf("Schema match failed: expected type %q (which is kind %v) at path %q, but found kind %v", t2.Name(), t.ReprKind(), pth, node.ReprKind())}
 		}
 		return nil
 	case TypeInt:
-		if node.Kind() != ipld.ReprKind_Int {
-			return []error{fmt.Errorf("Schema match failed: expected type %q (which is kind %v) at path %q, but found kind %v", t2.Name(), t.ReprKind(), pth, node.Kind())}
+		if node.ReprKind() != ipld.ReprKind_Int {
+			return []error{fmt.Errorf("Schema match failed: expected type %q (which is kind %v) at path %q, but found kind %v", t2.Name(), t.ReprKind(), pth, node.ReprKind())}
 		}
 		return nil
 	case TypeFloat:
-		if node.Kind() != ipld.ReprKind_Float {
-			return []error{fmt.Errorf("Schema match failed: expected type %q (which is kind %v) at path %q, but found kind %v", t2.Name(), t.ReprKind(), pth, node.Kind())}
+		if node.ReprKind() != ipld.ReprKind_Float {
+			return []error{fmt.Errorf("Schema match failed: expected type %q (which is kind %v) at path %q, but found kind %v", t2.Name(), t.ReprKind(), pth, node.ReprKind())}
 		}
 		return nil
 	case TypeMap:
-		if node.Kind() != ipld.ReprKind_Map {
-			return []error{fmt.Errorf("Schema match failed: expected type %q (which is kind %v) at path %q, but found kind %v", t2.Name(), t.ReprKind(), pth, node.Kind())}
+		if node.ReprKind() != ipld.ReprKind_Map {
+			return []error{fmt.Errorf("Schema match failed: expected type %q (which is kind %v) at path %q, but found kind %v", t2.Name(), t.ReprKind(), pth, node.ReprKind())}
 		}
 		keys, _ := node.KeysImmediate()
 		errs := []error(nil)
@@ -65,8 +65,8 @@ func validate(ts Universe, t Type, node ipld.Node, pth string) []error {
 	case TypeStruct:
 		switch t2.tupleStyle {
 		case false: // as map!
-			if node.Kind() != ipld.ReprKind_Map {
-				return []error{fmt.Errorf("Schema match failed: expected type %q (which is kind %v) at path %q, but found kind %v", t2.Name(), t.ReprKind(), pth, node.Kind())}
+			if node.ReprKind() != ipld.ReprKind_Map {
+				return []error{fmt.Errorf("Schema match failed: expected type %q (which is kind %v) at path %q, but found kind %v", t2.Name(), t.ReprKind(), pth, node.ReprKind())}
 			}
 			// TODO loop over em
 			// TODO REVIEW order strictness questions?

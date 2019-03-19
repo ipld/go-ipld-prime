@@ -34,7 +34,7 @@ func FocusedTransform(n ipld.Node, p ipld.Path, fn TransformFn) (ipld.Node, erro
 func (tp TraversalProgress) Focus(n ipld.Node, p ipld.Path, fn VisitFn) error {
 	segments := p.Segments()
 	for i, seg := range segments {
-		switch n.Kind() {
+		switch n.ReprKind() {
 		case ipld.ReprKind_Invalid:
 			return fmt.Errorf("cannot traverse node at %q: it is undefined", p.Truncate(i))
 		case ipld.ReprKind_Map:

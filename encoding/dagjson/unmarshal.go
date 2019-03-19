@@ -57,7 +57,7 @@ func unmarshal(nb ipld.NodeBuilder, tokSrc shared.TokenSource, tk *tok.Token) (i
 				}
 				if observedLen == 1 {
 					// Here's our divergence for dag-json special sauce:
-					if k == "/" && v.Kind() == ipld.ReprKind_String {
+					if k == "/" && v.ReprKind() == ipld.ReprKind_String {
 						// *Abandon* the mapbuilder!  We've got a link instead!
 						str, _ := v.AsString()
 						elCid, err := cid.Decode(str)
