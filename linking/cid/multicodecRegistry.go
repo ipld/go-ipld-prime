@@ -7,6 +7,11 @@ var (
 	multicodecEncodeTable MulticodecEncodeTable
 )
 
+func init() {
+	multicodecEncodeTable = make(MulticodecEncodeTable)
+	multicodecDecodeTable = make(MulticodecDecodeTable)
+}
+
 // RegisterMulticodecDecoder is used to register multicodec features.
 // It adjusts a global registry and may only be used at program init time;
 // it is meant to provide a plugin system, not a configuration mechanism.
