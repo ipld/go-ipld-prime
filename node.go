@@ -4,7 +4,7 @@ type Node interface {
 	// Kind returns a value from the ReprKind enum describing what the
 	// essential serializable kind of this node is (map, list, int, etc).
 	// Most other handling of a node requires first switching upon the kind.
-	Kind() ReprKind
+	ReprKind() ReprKind
 
 	// GetField resolves a path in the the object and returns
 	// either a primitive (e.g. string, int, etc), a link (type CID),

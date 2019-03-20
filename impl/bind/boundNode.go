@@ -71,7 +71,7 @@ func determineReprKind(rv reflect.Value) ipld.ReprKind {
 	panic("unreachable")
 }
 
-func (n Node) Kind() ipld.ReprKind {
+func (n Node) ReprKind() ipld.ReprKind {
 	return n.kind
 }
 

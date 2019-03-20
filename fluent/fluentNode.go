@@ -14,7 +14,7 @@ import (
 // Any of the terminal scalar-returning methods will panic if an error is stored.
 // (The fluent.Recover function can be used to nicely gather these panics.)
 type Node interface {
-	Kind() ipld.ReprKind
+	ReprKind() ipld.ReprKind
 	TraverseField(path string) Node
 	TraverseIndex(idx int) Node
 	Keys() KeyIterator
@@ -50,11 +50,11 @@ func (e Error) Error() string {
 func (n node) GetError() error {
 	return n.err
 }
-func (n node) Kind() ipld.ReprKind {
+func (n node) ReprKind() ipld.ReprKind {
 	if n.err != nil {
 		panic(Error{n.err})
 	}
-	return n.n.Kind()
+	return n.n.ReprKind()
 }
 func (n node) TraverseField(path string) Node {
 	if n.err != nil {

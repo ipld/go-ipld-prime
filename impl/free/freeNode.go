@@ -39,7 +39,7 @@ type Node struct {
 	_link   ipld.Link            // Value union.  Only one of these has meaning, depending on the value of 'Type'.
 }
 
-func (n *Node) Kind() ipld.ReprKind {
+func (n *Node) ReprKind() ipld.ReprKind {
 	return n.kind
 }
 
@@ -93,7 +93,7 @@ func (n *Node) KeysImmediate() ([]string, error) {
 }
 
 func (n *Node) Length() int {
-	switch n.Kind() {
+	switch n.ReprKind() {
 	case ipld.ReprKind_Map:
 		return len(n._mapOrd)
 	case ipld.ReprKind_List:

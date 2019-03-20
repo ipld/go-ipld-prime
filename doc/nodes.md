@@ -41,12 +41,12 @@ See the [godocs for Node](https://godoc.org/github.com/ipld/go-ipld-prime#Node).
 
 ### kinds
 
-The `Node.Kind()` method returns an `ipld.ReprKind` enum value describing what
+The `Node.ReprKind()` method returns an `ipld.ReprKind` enum value describing what
 kind of data this node contains in terms of the IPLD Data Model.
 
 The validity of many other methods can be anticipated by switching on the kind:
-for example, `AsString` is definitely going to error if `Kind() == ipld.ReprKind_Map`,
-and `TraverseField` is definitely going to error if `Kind() == ipld.ReprKind_String`.
+for example, `AsString` is definitely going to error if `ReprKind() == ipld.ReprKind_Map`,
+and `TraverseField` is definitely going to error if `ReprKind() == ipld.ReprKind_String`.
 
 See the [godocs for ReprKind](https://godoc.org/github.com/ipld/go-ipld-prime#ReprKind).
 
