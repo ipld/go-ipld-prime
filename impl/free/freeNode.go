@@ -12,18 +12,13 @@ var (
 )
 
 /*
-	Node has some internal
+	Node is an implementatin of `ipld.Node` that can contain any content.
 
-	This implementation of `ipld.Node` is pretty comparable to `ipldbind.Node`,
-	but is somewhat simpler in implementation because values of this type can
-	only be produced by its own builder patterns (and thus it requires much
-	less reflection and in particular does not depend on refmt for object mapping).
+	This implementation is extremely simple; it is general-purpose,
+	but not optimized for any particular purpose.
 
 	The "zero" value of this struct has a kind of ReprKind_Invalid.
-
-	This binding does not provide a serialization valid for hashing; to
-	compute a CID, you'll have to convert to another kind of node.
-	If you're not sure which kind serializable node to use, try `ipldcbor.Node`.
+	NodeBuilder must be used to produce valid instances of Node.
 */
 type Node struct {
 	kind ipld.ReprKind
