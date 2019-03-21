@@ -107,11 +107,11 @@ func (n Node) NodeBuilder() ipld.NodeBuilder {
 	panic("NYI")
 }
 
-func (n Node) Keys() ipld.KeyIterator {
+func (n Node) MapIterator() ipld.MapIterator {
 	panic("NYI")
 }
 
-func (n Node) KeysImmediate() ([]string, error) {
+func (n Node) ListIterator() ipld.ListIterator {
 	panic("NYI")
 }
 

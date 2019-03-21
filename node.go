@@ -27,20 +27,25 @@ type Node interface {
 	// If idx is out of range, a nil node and an error will be returned.
 	TraverseIndex(idx int) (Node, error)
 
-	// Keys returns an iterator which will yield keys for traversing the node.
+	// MapIterator returns an iterator which yields key-value pairs
+	// traversing the node.
 	// If the node kind is anything other than a map, the iterator will
 	// yield error values.
-	Keys() KeyIterator
-
-	// KeysImmediate returns a slice containing all keys for traversing the node.
-	// The semantics are otherwise identical to using the Keys() iterator.
 	//
-	// KeysImmediate is for convenience of usage; callers should prefer to use
-	// the iterator approach where possible, as it continues to behave well
-	// even when using collections of extremely large size (and even when
-	// the collection is split between multiple serial nodes, as with
-	// Advanced Layouts, etc).
-	KeysImmediate() ([]string, error)
+	// The iterator will yield every entry in the map; that is, it
+	// can be expected that itr.Next will be called node.Length times
+	// before itr.Done becomes true.
+	MapIterator() MapIterator
+
+	// ListIterator returns an iterator which yields key-value pairs
+	// traversing the node.
+	// If the node kind is anything other than a list, the iterator will
+	// yield error values.
+	//
+	// The iterator will yield every entry in the list; that is, it
+	// can be expected that itr.Next will be called node.Length times
+	// before itr.Done becomes true.
+	ListIterator() ListIterator
 
 	// Length returns the length of a list, or the number of entries in a map,
 	// or -1 if the node is not of list nor map kind.
@@ -79,21 +84,64 @@ type Node interface {
 	NodeBuilder() NodeBuilder
 }
 
-// KeyIterator is an interface for traversing nodes of kind map.
-// Sequential calls to Next() will yield keys; HasNext() describes whether
-// iteration should continue.
+// MapIterator is an interface for traversing map nodes.
+// Sequential calls to Next() will yield key-value pairs;
+// Done() describes whether iteration should continue.
 //
-// Iteration order is defined to be stable.
+// Iteration order is defined to be stable: two separate MapIterator
+// created to iterate the same Node will yield the same key-value pairs
+// in the same order.
+// The order itself may be defined by the Node implementation: some
+// Nodes may retain insertion order, and some may return iterators which
+// always yield data in sorted order, for example.
+type MapIterator interface {
+	// Next returns the next key-value pair.
+	//
+	// An error value can also be returned at any step: in the case of advanced
+	// data structures with incremental loading, it's possible to encounter
+	// cancellation or I/O errors at any point in iteration.
+	// If an error is returned, the boolean will always be false (so it's
+	// correct to check the bool first and short circuit to continuing if true).
+	// If an error is returned, the key and value may be nil.
+	Next() (key Node, value Node, err error)
+
+	// Done returns false as long as there's at least one more entry to iterate.
+	// When Done returns false, iteration can stop.
+	//
+	// Implementers of iterators for advanced data layouts (e.g. more than
+	// one chunk of backing data, which is loaded incrementally), if your
+	// implementation does any I/O during the Done method, and it encounters
+	// an error, it must return 'true', so that the following Next call
+	// has an opportunity to return the error.
+	Done() bool
+}
+
+// ListIterator is an interface for traversing list nodes.
+// Sequential calls to Next() will yield index-value pairs;
+// Done() describes whether iteration should continue.
 //
-// REVIEW: should Next return error?
-// Other parts of the Node interface use that for kind mismatch rejection;
-// so on those grounds, I'd say "no", because we know what the key kind is
-// (but then Node.Keys should return error).
-// In big nodes (composites using an AdvLayout), where do we return errors?
-// Since we might be streaming, there are questions here.
-type KeyIterator interface {
-	Next() (string, error)
-	HasNext() bool
+// A loop which iterates from 0 to Node.Length is a valid
+// alternative to using a ListIterator.
+type ListIterator interface {
+	// Next returns the next index and value.
+	//
+	// An error value can also be returned at any step: in the case of advanced
+	// data structures with incremental loading, it's possible to encounter
+	// cancellation or I/O errors at any point in iteration.
+	// If an error is returned, the boolean will always be false (so it's
+	// correct to check the bool first and short circuit to continuing if true).
+	// If an error is returned, the key and value may be nil.
+	Next() (idx int, value Node, err error)
+
+	// Done returns false as long as there's at least one more entry to iterate.
+	// When Done returns false, iteration can stop.
+	//
+	// Implementers of iterators for advanced data layouts (e.g. more than
+	// one chunk of backing data, which is loaded incrementally), if your
+	// implementation does any I/O during the Done method, and it encounters
+	// an error, it must return 'true', so that the following Next call
+	// has an opportunity to return the error.
+	Done() bool
 }
 
 // REVIEW: immediate-mode AsBytes() method (as opposed to e.g. returning

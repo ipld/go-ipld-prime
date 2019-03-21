@@ -31,18 +31,17 @@ func Marshal(n ipld.Node, sink shared.TokenSink) error {
 			return err
 		}
 		// Emit map contents (and recurse).
-		for itr := n.Keys(); itr.HasNext(); {
-			k, err := itr.Next()
+		for itr := n.MapIterator(); !itr.Done(); {
+			k, v, err := itr.Next()
 			if err != nil {
 				return err
 			}
 			tk.Type = tok.TString
-			tk.Str = k
-			if _, err := sink.Step(&tk); err != nil {
+			tk.Str, err = k.AsString()
+			if err != nil {
 				return err
 			}
-			v, err := n.TraverseField(k)
-			if err != nil {
+			if _, err := sink.Step(&tk); err != nil {
 				return err
 			}
 			if err := Marshal(v, sink); err != nil {
