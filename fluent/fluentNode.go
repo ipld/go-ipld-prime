@@ -17,8 +17,8 @@ type Node interface {
 	ReprKind() ipld.ReprKind
 	TraverseField(path string) Node
 	TraverseIndex(idx int) Node
-	Keys() KeyIterator
-	KeysImmediate() []string
+	MapIterator() MapIterator
+	ListIterator() ListIterator
 	Length() int
 	IsNull() bool
 	AsBool() bool
@@ -76,21 +76,17 @@ func (n node) TraverseIndex(idx int) Node {
 	}
 	return node{v, nil}
 }
-func (n node) Keys() KeyIterator {
+func (n node) MapIterator() MapIterator {
 	if n.err != nil {
 		panic(Error{n.err})
 	}
-	return &keyIterator{n.n.Keys()}
+	return &mapIterator{n.n.MapIterator()}
 }
-func (n node) KeysImmediate() []string {
+func (n node) ListIterator() ListIterator {
 	if n.err != nil {
 		panic(Error{n.err})
 	}
-	v, err := n.n.KeysImmediate()
-	if err != nil {
-		panic(Error{err})
-	}
-	return v
+	return &listIterator{n.n.ListIterator()}
 }
 func (n node) Length() int {
 	if n.err != nil {
@@ -165,22 +161,42 @@ func (n node) AsLink() ipld.Link {
 	return v
 }
 
-type KeyIterator interface {
-	Next() string
-	HasNext() bool
+type MapIterator interface {
+	Next() (key Node, value Node)
+	Done() bool
 }
 
-type keyIterator struct {
-	d ipld.KeyIterator
+type mapIterator struct {
+	d ipld.MapIterator
 }
 
-func (ki *keyIterator) Next() string {
-	v, err := ki.d.Next()
+func (itr *mapIterator) Next() (Node, Node) {
+	k, v, err := itr.d.Next()
 	if err != nil {
 		panic(Error{err})
 	}
-	return v
+	return node{k, nil}, node{v, nil}
 }
-func (ki *keyIterator) HasNext() bool {
-	return ki.d.HasNext()
+func (itr *mapIterator) Done() bool {
+	return itr.d.Done()
+}
+
+type ListIterator interface {
+	Next() (idx int, value Node)
+	Done() bool
+}
+
+type listIterator struct {
+	d ipld.ListIterator
+}
+
+func (itr *listIterator) Next() (int, Node) {
+	idx, v, err := itr.d.Next()
+	if err != nil {
+		panic(Error{err})
+	}
+	return idx, node{v, nil}
+}
+func (itr *listIterator) Done() bool {
+	return itr.d.Done()
 }

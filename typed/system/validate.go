@@ -43,17 +43,20 @@ func validate(ts Universe, t Type, node ipld.Node, pth string) []error {
 		if node.ReprKind() != ipld.ReprKind_Map {
 			return []error{fmt.Errorf("Schema match failed: expected type %q (which is kind %v) at path %q, but found kind %v", t2.Name(), t.ReprKind(), pth, node.ReprKind())}
 		}
-		keys, _ := node.KeysImmediate()
 		errs := []error(nil)
-		for _, k := range keys {
+		for itr := node.MapIterator(); !itr.Done(); {
+			k, v, err := itr.Next()
+			if err != nil {
+				return []error{err}
+			}
 			// FUTURE: if KeyType is an enum rather than string, do membership check.
-			child, _ := node.TraverseField(k)
-			if child.IsNull() {
+			ks, _ := k.AsString()
+			if v.IsNull() {
 				if !t2.ValueIsNullable() {
-					errs = append(errs, fmt.Errorf("Schema match failed: map at path %q contains unpermitted null in key %q", pth, k))
+					errs = append(errs, fmt.Errorf("Schema match failed: map at path %q contains unpermitted null in key %q", pth, ks))
 				}
 			} else {
-				errs = append(errs, validate(ts, t2.ValueType(), child, path.Join(pth, k))...)
+				errs = append(errs, validate(ts, t2.ValueType(), v, path.Join(pth, ks))...)
 			}
 		}
 		return errs

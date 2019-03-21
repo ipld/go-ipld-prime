@@ -69,27 +69,56 @@ func (n *Node) NodeBuilder() ipld.NodeBuilder {
 	return nodeBuilder{n}
 }
 
-func (n *Node) Keys() ipld.KeyIterator {
-	return &keyIterator{n, 0}
+func (n *Node) MapIterator() ipld.MapIterator {
+	return &mapIterator{n, 0, expectTyp(ipld.ReprKind_Map, n.kind)}
 }
 
-type keyIterator struct {
+type mapIterator struct {
 	node *Node
 	idx  int
+	err  error
 }
 
-func (ki *keyIterator) Next() (string, error) {
-	// TODO kind check and safer range handling.
-	v := ki.node._mapOrd[ki.idx]
-	ki.idx++
-	return v, nil
+func (itr *mapIterator) Next() (ipld.Node, ipld.Node, error) {
+	if itr.err != nil {
+		return nil, nil, itr.err
+	}
+	k := itr.node._mapOrd[itr.idx]
+	v := itr.node._map[k]
+	itr.idx++
+	return &Node{kind: ipld.ReprKind_String, _str: k}, v, nil
 }
-func (ki *keyIterator) HasNext() bool {
-	return len(ki.node._mapOrd) > ki.idx
+func (itr *mapIterator) Done() bool {
+	if itr.err != nil {
+		return false
+	}
+	return itr.idx >= len(itr.node._mapOrd)
 }
 
-func (n *Node) KeysImmediate() ([]string, error) {
-	return n._mapOrd, expectTyp(ipld.ReprKind_Map, n.kind)
+func (n *Node) ListIterator() ipld.ListIterator {
+	return &listIterator{n, 0, expectTyp(ipld.ReprKind_List, n.kind)}
+}
+
+type listIterator struct {
+	node *Node
+	idx  int
+	err  error
+}
+
+func (itr *listIterator) Next() (int, ipld.Node, error) {
+	if itr.err != nil {
+		return -1, nil, itr.err
+	}
+	v := itr.node._arr[itr.idx]
+	idx := itr.idx
+	itr.idx++
+	return idx, v, nil
+}
+func (itr *listIterator) Done() bool {
+	if itr.err != nil {
+		return false
+	}
+	return itr.idx >= len(itr.node._arr)
 }
 
 func (n *Node) Length() int {
