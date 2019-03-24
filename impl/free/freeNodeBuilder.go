@@ -20,7 +20,7 @@ type nodeBuilder struct {
 }
 
 func (nb nodeBuilder) CreateMap() (ipld.MapBuilder, error) {
-	return &mapBuilder{n: &Node{kind: ipld.ReprKind_Map, _map: make(map[string]ipld.Node)}}, nil
+	return &mapBuilder{n: Node{kind: ipld.ReprKind_Map, _map: make(map[string]ipld.Node)}}, nil
 }
 func (nb nodeBuilder) AmendMap() (ipld.MapBuilder, error) {
 	if nb.predecessor == nil {
@@ -35,10 +35,10 @@ func (nb nodeBuilder) AmendMap() (ipld.MapBuilder, error) {
 	}
 	newArr := make([]string, len(nb.predecessor._mapOrd))
 	copy(newArr, nb.predecessor._mapOrd)
-	return &mapBuilder{n: &Node{kind: ipld.ReprKind_Map, _map: newMap, _mapOrd: newArr}}, nil
+	return &mapBuilder{n: Node{kind: ipld.ReprKind_Map, _map: newMap, _mapOrd: newArr}}, nil
 }
 func (nb nodeBuilder) CreateList() (ipld.ListBuilder, error) {
-	return &listBuilder{n: &Node{kind: ipld.ReprKind_List}}, nil
+	return &listBuilder{n: Node{kind: ipld.ReprKind_List}}, nil
 }
 func (nb nodeBuilder) AmendList() (ipld.ListBuilder, error) {
 	if nb.predecessor == nil {
@@ -49,7 +49,7 @@ func (nb nodeBuilder) AmendList() (ipld.ListBuilder, error) {
 	}
 	newArr := make([]ipld.Node, len(nb.predecessor._arr))
 	copy(newArr, nb.predecessor._arr)
-	return &listBuilder{n: &Node{kind: ipld.ReprKind_List, _arr: newArr}}, nil
+	return &listBuilder{n: Node{kind: ipld.ReprKind_List, _arr: newArr}}, nil
 }
 func (nb nodeBuilder) CreateNull() (ipld.Node, error) {
 	return &Node{kind: ipld.ReprKind_Null}, nil
@@ -74,7 +74,7 @@ func (nb nodeBuilder) CreateLink(v ipld.Link) (ipld.Node, error) {
 }
 
 type mapBuilder struct {
-	n *Node // a wip node; initialized at construction.
+	n Node // a wip node; initialized at construction.
 	// whole builder object nil'd after terminal `Build()` call to prevent reuse.
 }
 
@@ -103,11 +103,11 @@ func (mb *mapBuilder) Delete(k ipld.Node) error {
 func (mb *mapBuilder) Build() (ipld.Node, error) {
 	v := mb.n
 	mb = nil
-	return v, nil
+	return &v, nil
 }
 
 type listBuilder struct {
-	n *Node // a wip node; initialized at construction.
+	n Node // a wip node; initialized at construction.
 	// whole builder object nil'd after terminal `Build()` call to prevent reuse.
 }
 
@@ -127,7 +127,7 @@ func (lb *listBuilder) Set(idx int, v ipld.Node) {
 func (lb *listBuilder) Build() (ipld.Node, error) {
 	v := lb.n
 	lb = nil
-	return v, nil
+	return &v, nil
 }
 
 func growList(l *[]ipld.Node, k int) {
