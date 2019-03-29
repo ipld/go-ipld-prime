@@ -8,7 +8,6 @@ import (
 
 	cid "github.com/ipfs/go-cid"
 	ipld "github.com/ipld/go-ipld-prime"
-	multihash "github.com/multiformats/go-multihash"
 )
 
 var (
@@ -44,12 +43,12 @@ func (lnk Link) Load(ctx context.Context, lnkCtx ipld.LinkContext, nb ipld.NodeB
 			return nil, err
 		}
 	}
-	hash, err := multihash.Sum(hasher.Bytes(), lnk.Prefix().MhType, lnk.Prefix().MhLength)
+	cid, err := lnk.Prefix().Sum(hasher.Bytes())
 	if err != nil {
 		return nil, err
 	}
-	if hash.B58String() != lnk.Hash().B58String() {
-		return nil, fmt.Errorf("hash mismatch!  %q != %q", lnk.Hash().B58String(), hash.B58String())
+	if cid != lnk.Cid {
+		return nil, fmt.Errorf("hash mismatch!  %q (actual) != %q (expected)", cid, lnk.Cid)
 	}
 	if decodeErr != nil {
 		return nil, decodeErr
