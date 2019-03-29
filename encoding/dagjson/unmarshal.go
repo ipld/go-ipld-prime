@@ -43,10 +43,7 @@ func unmarshal(nb ipld.NodeBuilder, tokSrc shared.TokenSource, tk *tok.Token) (i
 		var k string
 		var v ipld.Node
 		for {
-			done, err := tokSrc.Step(tk)
-			if done {
-				return nil, fmt.Errorf("unexpected EOF")
-			}
+			_, err := tokSrc.Step(tk)
 			if err != nil {
 				return nil, err
 			}
@@ -104,10 +101,7 @@ func unmarshal(nb ipld.NodeBuilder, tokSrc shared.TokenSource, tk *tok.Token) (i
 		}
 		observedLen := 0
 		for {
-			done, err := tokSrc.Step(tk)
-			if done {
-				return nil, fmt.Errorf("unexpected EOF")
-			}
+			_, err := tokSrc.Step(tk)
 			if err != nil {
 				return nil, err
 			}
