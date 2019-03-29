@@ -49,7 +49,7 @@ func (lnk Link) Load(ctx context.Context, lnkCtx ipld.LinkContext, nb ipld.NodeB
 		return nil, err
 	}
 	if hash.B58String() != lnk.Hash().B58String() {
-		return nil, fmt.Errorf("hash mismatch!")
+		return nil, fmt.Errorf("hash mismatch!  %q != %q", lnk.Hash().B58String(), hash.B58String())
 	}
 	if decodeErr != nil {
 		return nil, decodeErr
