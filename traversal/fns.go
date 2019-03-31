@@ -22,11 +22,11 @@ type AdvVisitFn func(TraversalProgress, ipld.Node, TraversalReason) error
 type TraversalReason byte // enum = SelectionMatch | SelectionParent | SelectionCandidate // probably only pointful for block edges?
 
 type TraversalProgress struct {
-	*TraversalConfig
+	Cfg       *TraversalConfig
 	Path      ipld.Path // Path is how we reached the current point in the traversal.
 	LastBlock struct {  // LastBlock stores the Path and Link of the last block edge we had to load.  (It will always be zero in traversals with no linkloader.)
-		ipld.Path
-		ipld.Link
+		Path ipld.Path
+		Link ipld.Link
 	}
 }
 

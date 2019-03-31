@@ -70,10 +70,10 @@ func (tp TraversalProgress) Focus(n ipld.Node, p ipld.Path, fn VisitFn) error {
 			}
 			// Load link!
 			next, err := lnk.Load(
-				tp.Ctx,
+				tp.Cfg.Ctx,
 				lnkCtx,
-				tp.LinkNodeBuilderChooser(lnk, lnkCtx),
-				tp.LinkLoader,
+				tp.Cfg.LinkNodeBuilderChooser(lnk, lnkCtx),
+				tp.Cfg.LinkLoader,
 			)
 			if err != nil {
 				return fmt.Errorf("error traversing node at %q: could not load link %q: %s", p.Truncate(i+1), lnk, err)

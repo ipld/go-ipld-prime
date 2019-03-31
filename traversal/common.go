@@ -33,8 +33,8 @@ func (tc *TraversalConfig) init() {
 }
 
 func (tp *TraversalProgress) init() {
-	if tp.TraversalConfig == nil {
-		tp.TraversalConfig = &TraversalConfig{}
+	if tp.Cfg == nil {
+		tp.Cfg = &TraversalConfig{}
 	}
-	tp.TraversalConfig.init()
+	tp.Cfg.init()
 }

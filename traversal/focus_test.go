@@ -142,7 +142,7 @@ func TestFocusWithLinkLoading(t *testing.T) {
 	})
 	t.Run("link traversal with loader should work", func(t *testing.T) {
 		err := traversal.TraversalProgress{
-			TraversalConfig: &traversal.TraversalConfig{
+			Cfg: &traversal.TraversalConfig{
 				LinkLoader: func(lnk ipld.Link, _ ipld.LinkContext) (io.Reader, error) {
 					return bytes.NewBuffer(storage[lnk]), nil
 				},
