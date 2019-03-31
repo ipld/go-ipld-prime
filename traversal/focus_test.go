@@ -150,6 +150,8 @@ func TestFocusWithLinkLoading(t *testing.T) {
 		}.Focus(rootNode, ipld.ParsePath("linkedMap/nested/nonlink"), func(tp traversal.TraversalProgress, n ipld.Node) error {
 			Wish(t, n, ShouldEqual, fnb.CreateString("zoo"))
 			Wish(t, tp.Path, ShouldEqual, ipld.ParsePath("linkedMap/nested/nonlink"))
+			Wish(t, tp.LastBlock.Link, ShouldEqual, middleMapNodeLnk)
+			Wish(t, tp.LastBlock.Path, ShouldEqual, ipld.ParsePath("linkedMap"))
 			return nil
 		})
 		Wish(t, err, ShouldEqual, nil)

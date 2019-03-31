@@ -78,6 +78,8 @@ func (tp TraversalProgress) Focus(n ipld.Node, p ipld.Path, fn VisitFn) error {
 			if err != nil {
 				return fmt.Errorf("error traversing node at %q: could not load link %q: %s", p.Truncate(i+1), lnk, err)
 			}
+			tp.LastBlock.Path = p.Truncate(i + 1)
+			tp.LastBlock.Link = lnk
 			prev, n = n, next
 		}
 	}
