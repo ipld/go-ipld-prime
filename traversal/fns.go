@@ -6,6 +6,9 @@ import (
 	ipld "github.com/ipld/go-ipld-prime"
 )
 
+// This file defines interfaces for things users provide.
+//------------------------------------------------
+
 // VisitFn is a read-only visitor.
 type VisitFn func(TraversalProgress, ipld.Node) error
 
@@ -28,7 +31,19 @@ type TraversalProgress struct {
 }
 
 type TraversalConfig struct {
-	Ctx        context.Context // Context carried through a traversal.  Optional; use it if you need cancellation.
-	LinkLoader ipld.Loader     // Loader used for automatic link traversal.
-	LinkStorer ipld.Storer     // Storer used if any mutation features (e.g. traversal.Transform) are used.
+	Ctx                    context.Context    // Context carried through a traversal.  Optional; use it if you need cancellation.
+	LinkLoader             ipld.Loader        // Loader used for automatic link traversal.
+	LinkNodeBuilderChooser NodeBuilderChooser // Chooser for Node implementations to produce during automatic link traversal.
+	LinkStorer             ipld.Storer        // Storer used if any mutation features (e.g. traversal.Transform) are used.
 }
+
+// NodeBuilderChooser is a function that returns a NodeBuilder based on
+// the information in a Link its LinkContext.
+//
+// A NodeBuilderChooser can be used in a TraversalConfig to be clear about
+// what kind of Node implementation to use when loading a Link.
+// In a simple example, it could constantly return an `ipldfree.NodeBuilder`.
+// In a more complex example, a program using `bind` over native Go types
+// could decide what kind of native type is expected, and return a
+// `bind.NodeBuilder` for that specific concrete native type.
+type NodeBuilderChooser func(ipld.Link, ipld.LinkContext) ipld.NodeBuilder
