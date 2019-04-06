@@ -32,32 +32,55 @@ func FocusedTransform(n ipld.Node, p ipld.Path, fn TransformFn) (ipld.Node, erro
 // so far will continue to be extended, so continued nested uses of Focus
 // will see a fully contextualized Path.
 func (tp TraversalProgress) Focus(n ipld.Node, p ipld.Path, fn VisitFn) error {
+	tp.init()
 	segments := p.Segments()
+	var prev ipld.Node // for LinkContext
 	for i, seg := range segments {
+		// Traverse the segment.
 		switch n.ReprKind() {
 		case ipld.ReprKind_Invalid:
 			return fmt.Errorf("cannot traverse node at %q: it is undefined", p.Truncate(i))
 		case ipld.ReprKind_Map:
 			next, err := n.TraverseField(seg)
 			if err != nil {
-				return fmt.Errorf("error traversing node at %q: %s", p.Truncate(i), err)
+				return fmt.Errorf("error traversing segment %q on node at %q: %s", seg, p.Truncate(i), err)
 			}
-			n = next
+			prev, n = n, next
 		case ipld.ReprKind_List:
 			intSeg, err := strconv.Atoi(seg)
 			if err != nil {
-				return fmt.Errorf("cannot traverse node at %q: the next path segment (%q) cannot be parsed as a number and the node is a list", p.Truncate(i), seg)
+				return fmt.Errorf("error traversing segment %q on node at %q: the segment cannot be parsed as a number and the node is a list", seg, p.Truncate(i))
 			}
 			next, err := n.TraverseIndex(intSeg)
 			if err != nil {
-				return fmt.Errorf("error traversing node at %q: %s", p.Truncate(i), err)
+				return fmt.Errorf("error traversing segment %q on node at %q: %s", seg, p.Truncate(i), err)
 			}
-			n = next
-		case ipld.ReprKind_Link:
-			panic("NYI link loading") // TODO
-			// this would set a progress marker in `tp` as well
+			prev, n = n, next
 		default:
-			return fmt.Errorf("error traversing node at %q: %s", p.Truncate(i), fmt.Errorf("cannot traverse terminals"))
+			return fmt.Errorf("cannot traverse node at %q: %s", p.Truncate(i), fmt.Errorf("cannot traverse terminals"))
+		}
+		// Dereference any links.
+		for n.ReprKind() == ipld.ReprKind_Link {
+			lnk, _ := n.AsLink()
+			// Assemble the LinkContext in case the Loader or NBChooser want it.
+			lnkCtx := ipld.LinkContext{
+				LinkPath:   p.Truncate(i),
+				LinkNode:   n,
+				ParentNode: prev,
+			}
+			// Load link!
+			next, err := lnk.Load(
+				tp.Cfg.Ctx,
+				lnkCtx,
+				tp.Cfg.LinkNodeBuilderChooser(lnk, lnkCtx),
+				tp.Cfg.LinkLoader,
+			)
+			if err != nil {
+				return fmt.Errorf("error traversing node at %q: could not load link %q: %s", p.Truncate(i+1), lnk, err)
+			}
+			tp.LastBlock.Path = p.Truncate(i + 1)
+			tp.LastBlock.Link = lnk
+			prev, n = n, next
 		}
 	}
 	tp.Path = tp.Path.Join(p)

@@ -18,6 +18,7 @@ func TraverseTransform(n ipld.Node, s selector.Selector, fn TransformFn) (ipld.N
 }
 
 func (tp TraversalProgress) Traverse(n ipld.Node, s selector.Selector, fn VisitFn) error {
+	tp.init()
 	return tp.TraverseInformatively(n, s, func(tp TraversalProgress, n ipld.Node, tr TraversalReason) error {
 		if tr != 1 {
 			return nil
