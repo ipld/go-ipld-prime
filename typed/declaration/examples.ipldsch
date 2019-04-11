@@ -1,4 +1,3 @@
-
 type ExampleWithNullable map {String : nullable String}
 
 type ExampleWithAnonDefns struct {
@@ -6,6 +5,4 @@ type ExampleWithAnonDefns struct {
 	barField nullable {String:String}
 	bazField {String : nullable String}
 	wozField {String:[nullable String]}
-} representation map (
-	fooField: alias="foo_field"
-)
+}

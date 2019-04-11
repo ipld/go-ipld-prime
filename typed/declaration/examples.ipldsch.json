@@ -4,53 +4,51 @@
 			"kind": "map",
 			"keyType": "String",
 			"valueType": "String",
-			"valueNullable": true
+			"nullable": true,
+			"representation": {
+				"map": {}
+			}
 		},
 		"ExampleWithAnonDefns": {
 			"kind": "struct",
 			"fields": {
 				"fooField": {
-					"valueType": {
-						"type": "map",
+					"type": {
+						"kind": "map",
 						"keyType": "String",
 						"valueType": "String"
 					},
 					"optional": true
 				},
 				"barField": {
-					"valueType": {
-						"type": "map",
+					"type": {
+						"kind": "map",
 						"keyType": "String",
 						"valueType": "String"
-					},
-					"nullable": true
+					}
 				},
 				"bazField": {
-					"valueType": {
-						"type": "map",
+					"type": {
+						"kind": "map",
 						"keyType": "String",
 						"valueType": "String",
-						"valueNullable": true
+						"nullable": true
 					}
 				},
 				"wozField": {
-					"valueType": {
-						"type": "map",
+					"type": {
+						"kind": "map",
 						"keyType": "String",
 						"valueType": {
-							"type": "list",
+							"kind": "list",
 							"valueType": "String",
-							"valueNullable": true
+							"nullable": true
 						}
 					}
 				}
 			},
 			"representation": {
-				"map": {
-					"fieldAliases": {
-						"fooField": "foo_field"
-					}
-				}
+				"map": {}
 			}
 		}
 	}
