@@ -337,8 +337,8 @@ type StructField struct {
 ## time, as well as for the sake of error messaging during typechecking).
 ##
 type TypeTerm union {
-	| TypeName string
-	| InlineDefn map
+	| TypeName "string"
+	| InlineDefn "map"
 } representation kinded
 
 ## InlineDefn represents a declaration of an anonymous type of one of the simple

@@ -1,12 +1,18 @@
 {
 	"schema": {
 		"TypeName": {
-			"kind": "string"
+			"kind": "string",
+			"representation": {
+				"map": {}
+			}
 		},
 		"SchemaMap": {
 			"kind": "map",
 			"keyType": "TypeName",
-			"valueType": "Type"
+			"valueType": "Type",
+			"representation": {
+				"map": {}
+			}
 		},
 		"Schema": {
 			"kind": "union",
@@ -37,6 +43,25 @@
 				}
 			}
 		},
+		"TypeKind": {
+			"kind": "enum",
+			"members": {
+				"bool": null,
+				"string": null,
+				"bytes": null,
+				"int": null,
+				"float": null,
+				"map": null,
+				"list": null,
+				"link": null,
+				"union": null,
+				"struct": null,
+				"enum": null
+			},
+			"representation": {
+				"map": {}
+			}
+		},
 		"RepresentationKind": {
 			"kind": "enum",
 			"members": {
@@ -48,6 +73,9 @@
 				"map": null,
 				"list": null,
 				"link": null
+			},
+			"representation": {
+				"map": {}
 			}
 		},
 		"TypeBool": {
@@ -128,6 +156,13 @@
 				}
 			}
 		},
+		"TypeLink": {
+			"kind": "struct",
+			"fields": {},
+			"representation": {
+				"map": {}
+			}
+		},
 		"TypeUnion": {
 			"kind": "struct",
 			"fields": {
@@ -153,12 +188,18 @@
 		"UnionRepresentation_Kinded": {
 			"kind": "map",
 			"keyType": "RepresentationKind",
-			"valueType": "TypeName"
+			"valueType": "TypeName",
+			"representation": {
+				"map": {}
+			}
 		},
 		"UnionRepresentation_Keyed": {
 			"kind": "map",
 			"keyType": "String",
-			"valueType": "TypeName"
+			"valueType": "TypeName",
+			"representation": {
+				"map": {}
+			}
 		},
 		"UnionRepresentation_Envelope": {
 			"kind": "struct",
@@ -176,6 +217,9 @@
 						"valueType": "TypeName"
 					}
 				}
+			},
+			"representation": {
+				"map": {}
 			}
 		},
 		"UnionRepresentation_Inline": {
@@ -191,6 +235,9 @@
 						"valueType": "TypeName"
 					}
 				}
+			},
+			"representation": {
+				"map": {}
 			}
 		},
 		"TypeStruct": {
