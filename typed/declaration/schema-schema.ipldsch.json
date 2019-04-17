@@ -1,10 +1,7 @@
 {
 	"schema": {
 		"TypeName": {
-			"kind": "string",
-			"representation": {
-				"map": {}
-			}
+			"kind": "string"
 		},
 		"SchemaMap": {
 			"kind": "map",
@@ -57,9 +54,6 @@
 				"union": null,
 				"struct": null,
 				"enum": null
-			},
-			"representation": {
-				"map": {}
 			}
 		},
 		"RepresentationKind": {
@@ -73,9 +67,6 @@
 				"map": null,
 				"list": null,
 				"link": null
-			},
-			"representation": {
-				"map": {}
 			}
 		},
 		"TypeBool": {
@@ -214,7 +205,10 @@
 					"type": {
 						"kind": "map",
 						"keyType": "String",
-						"valueType": "TypeName"
+						"valueType": "TypeName",
+						"representation": {
+							"map": {}
+						}
 					}
 				}
 			},
@@ -232,7 +226,10 @@
 					"type": {
 						"kind": "map",
 						"keyType": "String",
-						"valueType": "TypeName"
+						"valueType": "TypeName",
+						"representation": {
+							"map": {}
+						}
 					}
 				}
 			},
@@ -247,7 +244,10 @@
 					"type": {
 						"kind": "map",
 						"keyType": "String",
-						"valueType": "StructField"
+						"valueType": "StructField",
+						"representation": {
+							"map": {}
+						}
 					}
 				},
 				"representation": {
@@ -321,7 +321,10 @@
 					"type": {
 						"kind": "map",
 						"keyType": "String",
-						"valueType": "StructRepresentation_Map_FieldDetails"
+						"valueType": "StructRepresentation_Map_FieldDetails",
+						"representation": {
+							"map": {}
+						}
 					},
 					"optional": true
 				}
@@ -368,7 +371,10 @@
 					"type": {
 						"kind": "map",
 						"keyType": "String",
-						"valueType": "Null"
+						"valueType": "Null",
+						"representation": {
+							"map": {}
+						}
 					}
 				}
 			},
