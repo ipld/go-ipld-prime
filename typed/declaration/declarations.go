@@ -4,6 +4,19 @@ import (
 	ipld "github.com/ipld/go-ipld-prime"
 )
 
+// Interesting jibblybit: docs actually shouldn't be part of the schema.
+// Do the affect the cardinality of any of the members?  Change any behavior?  No.
+// Therefore I shouldn't want them to change the CID of the schema as a whole.
+//
+// Now, obviously this is in dispute with what I want for the AST.
+// What shall we do about this?
+//
+// It's exercise for two schemas applying to the same data, I guess.
+// Hopefully we can get it to do something sane when it comes to codegen:
+// having double the code for this would be undesirable.
+// (I think this is probably a gimme, though.  We'll just use a generic
+// typed.Node wrapper (with limited view) around the even-more-typed codegen types.)
+
 type TypeName string
 
 // typedeclaration.Type is a union interface; each of the `Type*` concrete types
