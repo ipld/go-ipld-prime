@@ -27,6 +27,18 @@ func Test(t *testing.T) {
 			KeyType:   "String",
 			ValueType: declaration.TypeName("TypeName"),
 		}},
+		{"AnonMap__TypeStruct__fields", declaration.TypeMap{ // hacky placeholder name; avoiding using power of TypeTerm for now.
+			KeyType:   "String",
+			ValueType: declaration.TypeName("StructField"),
+		}},
+		{"StructField", declaration.TypeStruct{
+			// TODO TypeStruct is gonna be a barrel of laughs: `Fields: AnonMap__TypeStruct_fields{}` -- you're gonna need nodebuilders to even hardcode this.
+			//   ahaha and the fields are unexported so we literally really do need a builder.
+			Fields: declaration.AnonMap__TypeStruct__fields{}, //__Build ?
+			// Type:     declaration.TypeName("TypeTerm"),
+			// Optional: declaration.TypeName("Bool"),
+			// Nullable: declaration.TypeName("Bool"),
+		}},
 	}
 	os.Mkdir("test", 0755)
 	openOrPanic := func(filename string) *os.File {

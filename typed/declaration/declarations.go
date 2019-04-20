@@ -125,7 +125,7 @@ var (
 )
 
 type TypeStruct struct {
-	Fields         map[string]StructField
+	Fields         AnonMap__TypeStruct__fields // map order things are the main reason it's tempting to do bilgey generation mixing.  do gen 1 and gen 2.  just *ignore* map order in gen 1 -- it's only relevant to determinstic generation, and *we can skip that* until generation 2!
 	Representation StructRepresentation
 }
 
