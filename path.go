@@ -67,6 +67,16 @@ func (p Path) Join(p2 Path) Path {
 	return p
 }
 
+// AppendSegment is as per Join, but a shortcut when appending single segments.
+func (p Path) AppendSegment(ps string) Path {
+	l := len(p.segments)
+	combinedSegments := make([]string, l+1)
+	copy(combinedSegments, p.segments)
+	combinedSegments[l] = ps
+	p.segments = combinedSegments
+	return p
+}
+
 // Parent returns a path with the last of its segments popped off (or
 // the zero path if it's already empty).
 func (p Path) Parent() Path {
