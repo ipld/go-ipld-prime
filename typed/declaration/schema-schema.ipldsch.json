@@ -37,6 +37,25 @@
 				}
 			}
 		},
+		"TypeKind": {
+			"kind": "enum",
+			"members": {
+				"bool": null,
+				"string": null,
+				"bytes": null,
+				"int": null,
+				"float": null,
+				"map": null,
+				"list": null,
+				"link": null,
+				"union": null,
+				"struct": null,
+				"enum": null
+			},
+			"representation": {
+				"string": {}
+			}
+		},
 		"RepresentationKind": {
 			"kind": "enum",
 			"members": {
@@ -48,42 +67,30 @@
 				"map": null,
 				"list": null,
 				"link": null
+			},
+			"representation": {
+				"string": {}
 			}
 		},
 		"TypeBool": {
 			"kind": "struct",
-			"fields": {},
-			"representation": {
-				"map": {}
-			}
+			"fields": {}
 		},
 		"TypeString": {
 			"kind": "struct",
-			"fields": {},
-			"representation": {
-				"map": {}
-			}
+			"fields": {}
 		},
 		"TypeBytes": {
 			"kind": "struct",
-			"fields": {},
-			"representation": {
-				"map": {}
-			}
+			"fields": {}
 		},
 		"TypeInt": {
 			"kind": "struct",
-			"fields": {},
-			"representation": {
-				"map": {}
-			}
+			"fields": {}
 		},
 		"TypeFloat": {
 			"kind": "struct",
-			"fields": {},
-			"representation": {
-				"map": {}
-			}
+			"fields": {}
 		},
 		"TypeMap": {
 			"kind": "struct",
@@ -128,15 +135,16 @@
 				}
 			}
 		},
+		"TypeLink": {
+			"kind": "struct",
+			"fields": {}
+		},
 		"TypeUnion": {
 			"kind": "struct",
 			"fields": {
 				"representation": {
 					"type": "UnionRepresentation"
 				}
-			},
-			"representation": {
-				"map": {}
 			}
 		},
 		"UnionRepresentation": {
@@ -206,9 +214,6 @@
 				"representation": {
 					"type": "StructRepresentation"
 				}
-			},
-			"representation": {
-				"map": {}
 			}
 		},
 		"StructField": {
@@ -278,9 +283,6 @@
 					},
 					"optional": true
 				}
-			},
-			"representation": {
-				"map": {}
 			}
 		},
 		"StructRepresentation_Map_FieldDetails": {
@@ -294,9 +296,6 @@
 					"type": "Any",
 					"optional": true
 				}
-			},
-			"representation": {
-				"map": {}
 			}
 		},
 		"StructRepresentation_Tuple": {
@@ -309,9 +308,6 @@
 					},
 					"optional": true
 				}
-			},
-			"representation": {
-				"map": {}
 			}
 		},
 		"TypeEnum": {
@@ -324,9 +320,6 @@
 						"valueType": "Null"
 					}
 				}
-			},
-			"representation": {
-				"map": {}
 			}
 		}
 	}

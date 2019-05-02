@@ -6,6 +6,4 @@ type ExampleWithAnonDefns struct {
 	barField nullable {String:String}
 	bazField {String : nullable String}
 	wozField {String:[nullable String]}
-} representation map (
-	fooField: alias="foo_field"
-)
+} representation map
