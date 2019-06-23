@@ -106,7 +106,7 @@ type MapIterator interface {
 	Next() (key Node, value Node, err error)
 
 	// Done returns false as long as there's at least one more entry to iterate.
-	// When Done returns false, iteration can stop.
+	// When Done returns true, iteration can stop.
 	//
 	// Implementers of iterators for advanced data layouts (e.g. more than
 	// one chunk of backing data, which is loaded incrementally), if your
