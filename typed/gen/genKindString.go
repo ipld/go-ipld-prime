@@ -10,7 +10,9 @@ import (
 
 type generateKindString struct {
 	Name declaration.TypeName
-	Type declaration.Type
+	Type declaration.Type // TODO this should be switched to schema.Type asap.
+	// FUTURE: probably some adjunct config data should come with here as well.
+	// FUTURE: perhaps both a global one (e.g. output package name) and a per-type one.
 }
 
 func (gk generateKindString) EmitNodeMethodTraverseField(w io.Writer) {
