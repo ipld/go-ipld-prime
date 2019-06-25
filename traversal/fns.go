@@ -6,8 +6,9 @@ import (
 	ipld "github.com/ipld/go-ipld-prime"
 )
 
-// This file defines interfaces for things users provide.
-//------------------------------------------------
+// This file defines interfaces for things users provide,
+//  plus a few of the parameters they'll need to receieve.
+//--------------------------------------------------------
 
 // VisitFn is a read-only visitor.
 type VisitFn func(TraversalProgress, ipld.Node) error
@@ -19,7 +20,13 @@ type TransformFn func(TraversalProgress, ipld.Node) (ipld.Node, error)
 type AdvVisitFn func(TraversalProgress, ipld.Node, TraversalReason) error
 
 // TraversalReason provides additional information to traversals using AdvVisitFn.
-type TraversalReason byte // enum = SelectionMatch | SelectionParent | SelectionCandidate // probably only pointful for block edges?
+type TraversalReason byte
+
+const (
+	TraversalReason_SelectionMatch     TraversalReason = 'm' // Tells AdvVisitFn that this node was explicitly selected.  (This is the set of nodes that VisitFn is called for.)
+	TraversalReason_SelectionParent    TraversalReason = 'p' // Tells AdvVisitFn that this node is a parent of one that will be explicitly selected.  (These calls only happen if the feature is enabled -- enabling parent detection requires a different algorithm and adds some overhead.)
+	TraversalReason_SelectionCandidate TraversalReason = 'x' // Tells AdvVisitFn that this node was visited while searching for selection matches.  It is not necessarily implied that any explicit match will be a child of this node; only that we had to consider it.  (Merkle-proofs generally need to include any node in this group.)
+)
 
 type TraversalProgress struct {
 	Cfg       *TraversalConfig
