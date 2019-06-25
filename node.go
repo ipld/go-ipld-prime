@@ -108,10 +108,10 @@ type MapIterator interface {
 	// Done returns false as long as there's at least one more entry to iterate.
 	// When Done returns true, iteration can stop.
 	//
-	// Implementers of iterators for advanced data layouts (e.g. more than
-	// one chunk of backing data, which is loaded incrementally), if your
+	// Note when implementing iterators for advanced data layouts (e.g. more than
+	// one chunk of backing data, which is loaded incrementally): if your
 	// implementation does any I/O during the Done method, and it encounters
-	// an error, it must return 'true', so that the following Next call
+	// an error, it must return 'false', so that the following Next call
 	// has an opportunity to return the error.
 	Done() bool
 }
@@ -136,10 +136,10 @@ type ListIterator interface {
 	// Done returns false as long as there's at least one more entry to iterate.
 	// When Done returns false, iteration can stop.
 	//
-	// Implementers of iterators for advanced data layouts (e.g. more than
-	// one chunk of backing data, which is loaded incrementally), if your
+	// Note when implementing iterators for advanced data layouts (e.g. more than
+	// one chunk of backing data, which is loaded incrementally): if your
 	// implementation does any I/O during the Done method, and it encounters
-	// an error, it must return 'true', so that the following Next call
+	// an error, it must return 'false', so that the following Next call
 	// has an opportunity to return the error.
 	Done() bool
 }
