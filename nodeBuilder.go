@@ -54,6 +54,20 @@ type NodeBuilder interface {
 	CreateString(string) (Node, error)
 	CreateBytes([]byte) (Node, error)
 	CreateLink(Link) (Node, error)
+
+	//ForField(string) NodeBuilder // works on maps (degenerately) and structs and (overloaded name) unions
+	//ForValues() NodeBuilder      // works on maps, lists, enums, *not* structs and *not* unions
+	//ForKeys() NodeBuilder        // works on maps
+
+	// need an ChildrenAreDiscriminated bool for whether to use per-field or all-values on maps.
+	// unmarshalling will only ever know it has a NodeBuilder and it has map tokens coming in.
+	//
+	// ... what do structs of string repr do?
+	//   nbd, must've already been picked.
+	//
+	// ... can we just assume everything is discriminated?  what's the perf cost?
+	//   one func call with a constant return, in the unhappy path.
+	//    main question is whether the compiler can optimize that (and the boxing) out correctly.
 }
 
 // MapBuilder is an interface for creating new Node instances of kind map.

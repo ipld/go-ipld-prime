@@ -76,6 +76,7 @@ func unmarshal(nb ipld.NodeBuilder, tokSrc shared.TokenSource, tk *tok.Token) (i
 			}
 			k = tk.Str
 			// FUTURE: check for typed.NodeBuilder; need to specialize before recursing if so.
+			// FUTURE: similar specialization needed for bind.Node as well -- perhaps this actually needs to live on NodeBuilder.
 			v, err = Unmarshal(nb, tokSrc)
 			if err != nil {
 				return nil, err
