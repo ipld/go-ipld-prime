@@ -2,12 +2,12 @@ package typed
 
 import (
 	"github.com/ipld/go-ipld-prime"
-	"github.com/ipld/go-ipld-prime/typed/system"
+	"github.com/ipld/go-ipld-prime/schema"
 )
 
 // typed.Node is a superset of the ipld.Node interface, and has additional behaviors.
 //
-// A typed.Node can be inspected for its typesystem.Type and typesystem.Kind,
+// A typed.Node can be inspected for its schema.Type and schema.Kind,
 // which conveys much more and richer information than the Data Model layer
 // ipld.ReprKind.
 //
@@ -26,5 +26,13 @@ import (
 type Node interface {
 	ipld.Node
 
-	Type() typesystem.Type
+	Type() schema.Type
 }
+
+// unboxing is... ugh, we probably should codegen an unbox method per concrete type.
+//  (or, attach them to the non-pointer type, which would namespace in an alloc-free way, but i don't know if that's anything but confusing.)
+//  there are notes about this from way back at 2019.01; reread to see if any remain relevant and valid.
+// main important point is: it's not gonna be casting.
+//  if casting was sufficient to unbox, it'd mean every method on the Node interface would be difficult to use as a field name on a struct type.  undesirable.
+//   okay, or, alternative, we flip this to `superapi.Footype{}.Fields().FrobFieldName()`.  that strikes me as unlikely to be pleasing, though.
+//    istm we can safely expect direct use of field names much, much more often that flipping back and forth to hypergeneric node; so we should optimize syntax for that accordingly.

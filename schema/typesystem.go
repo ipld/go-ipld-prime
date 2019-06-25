@@ -1,6 +1,6 @@
-package typesystem
+package schema
 
-type Universe struct {
+type TypeSystem struct {
 	// namedTypes is the set of all named types in this universe.
 	// The map's key is the value's Name() property and must be unique.
 	//

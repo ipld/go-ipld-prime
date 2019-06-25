@@ -1,4 +1,4 @@
-package typesystem
+package schema
 
 import (
 	"testing"
@@ -15,7 +15,7 @@ func TestSimpleTypes(t *testing.T) {
 			anyType{name: "Foo"},
 		}
 		Wish(t,
-			Validate(Universe{}, t1, n1),
+			Validate(TypeSystem{}, t1, n1),
 			ShouldEqual, []error(nil))
 	})
 }

@@ -1,4 +1,4 @@
-package typesystem
+package schema
 
 import (
 	"github.com/ipld/go-ipld-prime"
@@ -6,9 +6,9 @@ import (
 
 /* cookie-cutter standard interface stuff */
 
-func (anyType) _Type()                {}
-func (t anyType) Universe() *Universe { return t.universe }
-func (t anyType) Name() TypeName      { return t.name }
+func (anyType) _Type()                    {}
+func (t anyType) TypeSystem() *TypeSystem { return t.universe }
+func (t anyType) Name() TypeName          { return t.name }
 
 func (TypeBool) ReprKind() ipld.ReprKind {
 	return ipld.ReprKind_Bool

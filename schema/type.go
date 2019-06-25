@@ -1,11 +1,10 @@
-package typesystem
+package schema
 
 import (
 	ipld "github.com/ipld/go-ipld-prime"
-	typedeclaration "github.com/ipld/go-ipld-prime/typed/declaration"
 )
 
-type TypeName = typedeclaration.TypeName
+type TypeName string // = ast.TypeName
 
 // typesystem.Type is an union interface; each of the `Type*` concrete types
 // in this package are one of its members.
@@ -45,7 +44,7 @@ type Type interface {
 	_Type()
 
 	// Returns a pointer to the typesystem.Universe this type is a member of.
-	Universe() *Universe
+	TypeSystem() *TypeSystem
 
 	// Returns the string name of the Type.  This name is unique within the
 	// universe this type is a member of, *unless* this type is Anonymous,
@@ -79,7 +78,7 @@ var (
 
 type anyType struct {
 	name     TypeName
-	universe *Universe
+	universe *TypeSystem
 }
 
 type TypeBool struct {
