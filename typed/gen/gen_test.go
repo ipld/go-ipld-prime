@@ -9,7 +9,7 @@ import (
 )
 
 func TestNuevo(t *testing.T) {
-	os.Mkdir("test", 0755)
+	os.Mkdir("_test", 0755)
 	openOrPanic := func(filename string) *os.File {
 		y, err := os.OpenFile(filename, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
 		if err != nil {
@@ -17,7 +17,7 @@ func TestNuevo(t *testing.T) {
 		}
 		return y
 	}
-	f := openOrPanic("test/neu.go")
+	f := openOrPanic("_test/neu.go")
 	emitFileHeader(f)
 	emitType := func(tg typeGenerator, w io.Writer) {
 		tg.EmitNodeType(w)
