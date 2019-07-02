@@ -42,22 +42,40 @@ func (n *Node) IsNull() bool {
 	return n.kind == ipld.ReprKind_Null
 }
 func (n *Node) AsBool() (v bool, _ error) {
-	return n._bool, expectTyp(ipld.ReprKind_Bool, n.kind)
+	if n.kind != ipld.ReprKind_Bool {
+		return false, ipld.ErrWrongKind{MethodName: "AsBool", AppropriateKind: ipld.ReprKindSet_JustBool, ActualKind: n.kind}
+	}
+	return n._bool, nil
 }
 func (n *Node) AsInt() (v int, _ error) {
-	return n._int, expectTyp(ipld.ReprKind_Int, n.kind)
+	if n.kind != ipld.ReprKind_Int {
+		return 0, ipld.ErrWrongKind{MethodName: "AsInt", AppropriateKind: ipld.ReprKindSet_JustInt, ActualKind: n.kind}
+	}
+	return n._int, nil
 }
 func (n *Node) AsFloat() (v float64, _ error) {
-	return n._float, expectTyp(ipld.ReprKind_Float, n.kind)
+	if n.kind != ipld.ReprKind_Float {
+		return 0, ipld.ErrWrongKind{MethodName: "AsFloat", AppropriateKind: ipld.ReprKindSet_JustFloat, ActualKind: n.kind}
+	}
+	return n._float, nil
 }
 func (n *Node) AsString() (v string, _ error) {
-	return n._str, expectTyp(ipld.ReprKind_String, n.kind)
+	if n.kind != ipld.ReprKind_String {
+		return "", ipld.ErrWrongKind{MethodName: "AsString", AppropriateKind: ipld.ReprKindSet_JustString, ActualKind: n.kind}
+	}
+	return n._str, nil
 }
 func (n *Node) AsBytes() (v []byte, _ error) {
-	return n._bytes, expectTyp(ipld.ReprKind_Bytes, n.kind)
+	if n.kind != ipld.ReprKind_Bytes {
+		return nil, ipld.ErrWrongKind{MethodName: "AsBytes", AppropriateKind: ipld.ReprKindSet_JustBytes, ActualKind: n.kind}
+	}
+	return n._bytes, nil
 }
 func (n *Node) AsLink() (v ipld.Link, _ error) {
-	return n._link, expectTyp(ipld.ReprKind_Link, n.kind)
+	if n.kind != ipld.ReprKind_Link {
+		return nil, ipld.ErrWrongKind{MethodName: "AsLink", AppropriateKind: ipld.ReprKindSet_JustLink, ActualKind: n.kind}
+	}
+	return n._link, nil
 }
 
 func (n *Node) NodeBuilder() ipld.NodeBuilder {
@@ -65,7 +83,10 @@ func (n *Node) NodeBuilder() ipld.NodeBuilder {
 }
 
 func (n *Node) MapIterator() ipld.MapIterator {
-	return &mapIterator{n, 0, expectTyp(ipld.ReprKind_Map, n.kind)}
+	if n.kind != ipld.ReprKind_Map {
+		return &mapIterator{n, 0, ipld.ErrWrongKind{MethodName: "MapIterator", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: n.kind}}
+	}
+	return &mapIterator{n, 0, nil}
 }
 
 type mapIterator struct {
@@ -91,7 +112,10 @@ func (itr *mapIterator) Done() bool {
 }
 
 func (n *Node) ListIterator() ipld.ListIterator {
-	return &listIterator{n, 0, expectTyp(ipld.ReprKind_List, n.kind)}
+	if n.kind != ipld.ReprKind_List {
+		return &listIterator{n, 0, ipld.ErrWrongKind{MethodName: "ListIterator", AppropriateKind: ipld.ReprKindSet_JustList, ActualKind: n.kind}}
+	}
+	return &listIterator{n, 0, nil}
 }
 
 type listIterator struct {
@@ -129,10 +153,6 @@ func (n *Node) Length() int {
 
 func (n *Node) TraverseField(pth string) (ipld.Node, error) {
 	switch n.kind {
-	case ipld.ReprKind_Invalid:
-		return nil, fmt.Errorf("cannot traverse a node that is undefined")
-	case ipld.ReprKind_Null:
-		return nil, fmt.Errorf("cannot traverse terminals")
 	case ipld.ReprKind_Map:
 		v, exists := n._map[pth]
 		if !exists {
@@ -148,13 +168,14 @@ func (n *Node) TraverseField(pth string) (ipld.Node, error) {
 			return nil, fmt.Errorf("404")
 		}
 		return n._arr[i], nil
-	case ipld.ReprKind_Bool,
+	case ipld.ReprKind_Invalid,
+		ipld.ReprKind_Null,
 		ipld.ReprKind_String,
 		ipld.ReprKind_Bytes,
 		ipld.ReprKind_Int,
 		ipld.ReprKind_Float,
 		ipld.ReprKind_Link:
-		return nil, fmt.Errorf("cannot traverse terminals")
+		return nil, ipld.ErrWrongKind{MethodName: "TraverseField", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: n.kind}
 	default:
 		panic("unreachable")
 	}
@@ -162,13 +183,6 @@ func (n *Node) TraverseField(pth string) (ipld.Node, error) {
 
 func (n *Node) TraverseIndex(idx int) (ipld.Node, error) {
 	switch n.kind {
-	case ipld.ReprKind_Invalid:
-		return nil, fmt.Errorf("cannot traverse a node that is undefined")
-	case ipld.ReprKind_Null:
-		return nil, fmt.Errorf("cannot traverse terminals")
-	case ipld.ReprKind_Map:
-		return nil, fmt.Errorf("cannot traverse map by numeric index")
-		// REVIEW: there's an argument that maybe we should support this; would be '_map2' code.
 	case ipld.ReprKind_List:
 		if idx >= len(n._arr) {
 			return nil, fmt.Errorf("404")
@@ -177,21 +191,17 @@ func (n *Node) TraverseIndex(idx int) (ipld.Node, error) {
 			return nil, fmt.Errorf("404")
 		}
 		return n._arr[idx], nil
-	case ipld.ReprKind_Bool,
+	case ipld.ReprKind_Invalid,
+		ipld.ReprKind_Null,
+		ipld.ReprKind_Map,
+		ipld.ReprKind_Bool,
 		ipld.ReprKind_String,
 		ipld.ReprKind_Bytes,
 		ipld.ReprKind_Int,
 		ipld.ReprKind_Float,
 		ipld.ReprKind_Link:
-		return nil, fmt.Errorf("cannot traverse terminals")
+		return nil, ipld.ErrWrongKind{MethodName: "TraverseIndex", AppropriateKind: ipld.ReprKindSet_JustList, ActualKind: n.kind}
 	default:
 		panic("unreachable")
 	}
-}
-
-func expectTyp(expect, actual ipld.ReprKind) error {
-	if expect == actual {
-		return nil
-	}
-	return fmt.Errorf("type assertion rejected: node is %q, assertion was for %q", actual, expect)
 }
