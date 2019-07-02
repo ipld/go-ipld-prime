@@ -1,11 +1,11 @@
-package typegen
+package gengo
 
 import (
 	"io"
 	"os"
 	"testing"
 
-	declaration "github.com/ipld/go-ipld-prime/typed/declaration"
+	"github.com/ipld/go-ipld-prime/schema"
 )
 
 func TestNuevo(t *testing.T) {
@@ -36,5 +36,5 @@ func TestNuevo(t *testing.T) {
 		tg.EmitNodeMethodAsLink(w)
 		tg.EmitNodeMethodNodeBuilder(w)
 	}
-	emitType(generateKindString{"Strang", declaration.TypeString{}}, f)
+	emitType(generateKindString{"Strang", schema.TypeString{}}, f)
 }

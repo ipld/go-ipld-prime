@@ -1,16 +1,18 @@
-package typegen
+package gengo
 
 import (
 	"io"
 	"text/template"
 
-	declaration "github.com/ipld/go-ipld-prime/typed/declaration"
+	"github.com/ipld/go-ipld-prime/schema"
 	wish "github.com/warpfork/go-wish"
 )
 
 type generateKindString struct {
-	Name declaration.TypeName
-	Type declaration.Type
+	Name schema.TypeName
+	Type schema.Type
+	// FUTURE: probably some adjunct config data should come with here as well.
+	// FUTURE: perhaps both a global one (e.g. output package name) and a per-type one.
 }
 
 func (gk generateKindString) EmitNodeMethodTraverseField(w io.Writer) {
