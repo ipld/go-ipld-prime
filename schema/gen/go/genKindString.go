@@ -110,11 +110,3 @@ func (gk generateKindString) EmitNodeMethodAsLink(w io.Writer) {
 		}
 	`, w, gk)
 }
-
-func (gk generateKindString) EmitNodeMethodNodeBuilder(w io.Writer) {
-	doTemplate(`
-		func ({{ .Name }}) NodeBuilder() ipld.NodeBuilder {
-			return {{ .Name }}__NodeBuilder{}
-		}
-	`, w, gk)
-}
