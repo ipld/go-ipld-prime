@@ -15,20 +15,15 @@ type ErrWrongKind struct {
 	// "AsString".
 	MethodName string
 
-	// ApprorpriateKind is used to describe the Kind which the erroring method
-	// would make sense for.
+	// ApprorpriateKind describes which ReprKinds the erroring method would
+	// make sense for.
+	AppropriateKind ReprKindSet
+
+	// ActualKind describes the ReprKind of the node the method was called on.
 	//
 	// In the case of typed nodes, this will typically refer to the 'natural'
 	// data-model kind for such a type (e.g., structs will say 'map' here).
-	AppropriateKind ReprKind
-
-	ActualKind ReprKind // FIXME okay just no, this really needs to say what it knows.
-
-	// REVIEW this is almost certainly wrong.  Maybe you need some short enums
-	//  for things like "the kinds you can traverse by name" e.g. map+struct.
-	//  And I'm really sparse for reasons not to put schema-level Kind in the root package.
-	//   All the counter-arguments are similar to the ones about Path, and they
-	//    just flat out lose when up against "errors matter".
+	ActualKind ReprKind
 }
 
 func (e ErrWrongKind) Error() string {

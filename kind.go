@@ -48,3 +48,31 @@ func (k ReprKind) String() string {
 		panic("invalid enumeration value!")
 	}
 }
+
+// ReprKindSet is a type with a few enumerated consts that are commonly used
+// (mostly, in error messages).
+type ReprKindSet []ReprKind
+
+var (
+	ReprKindSet_Recursive = ReprKindSet{ReprKind_Map, ReprKind_List}
+	ReprKindSet_Scalar    = ReprKindSet{ReprKind_Null, ReprKind_Bool, ReprKind_Int, ReprKind_Float, ReprKind_String, ReprKind_Bytes, ReprKind_Link}
+
+	ReprKindSet_JustMap    = ReprKindSet{ReprKind_Map}
+	ReprKindSet_JustList   = ReprKindSet{ReprKind_List}
+	ReprKindSet_JustNull   = ReprKindSet{ReprKind_Null}
+	ReprKindSet_JustBool   = ReprKindSet{ReprKind_Bool}
+	ReprKindSet_JustInt    = ReprKindSet{ReprKind_Int}
+	ReprKindSet_JustFloat  = ReprKindSet{ReprKind_Float}
+	ReprKindSet_JustString = ReprKindSet{ReprKind_String}
+	ReprKindSet_JustBytes  = ReprKindSet{ReprKind_Bytes}
+	ReprKindSet_JustLink   = ReprKindSet{ReprKind_Link}
+)
+
+func (x ReprKindSet) String() string {
+	s := ""
+	for i := 0; i < len(x)-1; i++ {
+		s += x[i].String() + " or "
+	}
+	s += x[len(x)-1].String()
+	return s
+}
