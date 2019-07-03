@@ -8,7 +8,8 @@ func (gk generateKindString) EmitNodeType(w io.Writer) {
 	doTemplate(`
 		var _ ipld.Node = {{ .Name }}{}
 
-		type {{ .Name }} struct { x string }
+		type {{ .Name }} struct{ x string }
+
 	`, w, gk)
 }
 
