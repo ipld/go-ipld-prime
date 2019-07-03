@@ -44,7 +44,7 @@ func (gk generateKindString) EmitNodeMethodListIterator(w io.Writer) {
 		func ({{ .Name }}) ListIterator() ipld.ListIterator {
 			return listIteratorReject{ipld.ErrWrongKind{MethodName: "ListIterator", AppropriateKind: ipld.ReprKindSet_JustList, ActualKind: ipld.ReprKind_String}}
 		}
-	`, w, gk) // REVIEW: maybe that rejection thunk should be in main package?  don't really want to flash it at folks though.  very impl detail.
+	`, w, gk)
 }
 
 func (gk generateKindString) EmitNodeMethodLength(w io.Writer) {
