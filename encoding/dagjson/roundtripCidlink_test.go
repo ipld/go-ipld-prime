@@ -15,7 +15,7 @@ import (
 )
 
 func TestRoundtripCidlink(t *testing.T) {
-	lb := cidlink.LinkBuilder{cid.Prefix{
+	lb := cidlink.LinkBuilder{Prefix: cid.Prefix{
 		Version:  1,
 		Codec:    0x0129,
 		MhType:   0x17,

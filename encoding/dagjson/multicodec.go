@@ -49,7 +49,6 @@ func Decoder(nb ipld.NodeBuilder, r io.Reader) (ipld.Node, error) {
 			return n, err
 		}
 	}
-	return n, err
 }
 
 func Encoder(n ipld.Node, w io.Writer) error {

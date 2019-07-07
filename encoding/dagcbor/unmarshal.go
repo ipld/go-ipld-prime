@@ -130,7 +130,7 @@ func unmarshal(nb ipld.NodeBuilder, tokSrc shared.TokenSource, tk *tok.Token) (i
 			if err != nil {
 				return nil, err
 			}
-			return nb.CreateLink(cidlink.Link{elCid})
+			return nb.CreateLink(cidlink.Link{Cid: elCid})
 		default:
 			return nil, fmt.Errorf("unhandled cbor tag %d", tk.Tag)
 		}

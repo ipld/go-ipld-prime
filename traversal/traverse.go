@@ -58,7 +58,7 @@ func (tp TraversalProgress) traverseInformatively(n ipld.Node, s selector.Select
 			return err
 		}
 		kstr, _ := k.AsString()
-		sNext := s.Explore(n, selector.PathSegmentString{kstr})
+		sNext := s.Explore(n, selector.PathSegmentString{S: kstr})
 		if sNext != nil {
 			// TODO when link load is implemented, it should go roughly here.
 			tpNext := tp
