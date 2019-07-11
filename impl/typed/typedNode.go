@@ -24,9 +24,28 @@ import (
 // components which are from different versions of a schema.  Smooth migrations
 // and zero-copy type-safe data sharing between them: We can accommodate that!
 type Node interface {
+	// typed.Node acts just like a regular Node for almost all purposes;
+	// which ReprKind it acts as is determined by the TypeKind.
+	// (Note that the representation strategy of the type does *not* affect
+	// the ReprKind of typed.Node -- rather, the representation strategy
+	// affects the `.Representation().ReprKind()`.)
+	//
+	// For example: if the `.Type().Kind()` of this node is "struct",
+	// it will act like ReprKind() == "map"
+	// (even if Type().(Struct).ReprStrategy() is "tuple").
 	ipld.Node
 
+	// Type returns a reference to the reified schema.Type value.
 	Type() schema.Type
+
+	// Representation returns an ipld.Node which sees the data in this node
+	// in its representation form.
+	//
+	// For example: if the `.Type().Kind()` of this node is "struct",
+	// `.Representation().Kind()` may vary based on its representation strategy:
+	// if the representation strategy is "map", then it will be ReprKind=="map";
+	// if the streatgy is "tuple", then it will be ReprKind=="list".
+	Representation() ipld.Node
 }
 
 // unboxing is... ugh, we probably should codegen an unbox method per concrete type.

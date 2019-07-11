@@ -1,12 +1,12 @@
 package fluent
 
 import (
-	"fmt"
 	"testing"
 
 	. "github.com/warpfork/go-wish"
 
-	"github.com/ipld/go-ipld-prime/impl/free"
+	ipld "github.com/ipld/go-ipld-prime"
+	ipldfree "github.com/ipld/go-ipld-prime/impl/free"
 )
 
 func TestRecover(t *testing.T) {
@@ -17,7 +17,7 @@ func TestRecover(t *testing.T) {
 				t.Fatal("should not be reached")
 			}),
 			ShouldEqual,
-			Error{fmt.Errorf("cannot traverse a node that is undefined")},
+			Error{ipld.ErrWrongKind{MethodName: "TraverseIndex", AppropriateKind: ipld.ReprKindSet_JustList, ActualKind: ipld.ReprKind_Invalid}},
 		)
 	})
 	t.Run("correct traversal should return nil", func(t *testing.T) {

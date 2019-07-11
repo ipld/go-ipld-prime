@@ -61,7 +61,7 @@ func emitFileHeader(w io.Writer) {
 	fmt.Fprintf(w, "package whee\n\n")
 	fmt.Fprintf(w, "import (\n")
 	fmt.Fprintf(w, "\tipld \"github.com/ipld/go-ipld-prime\"\n")
-	fmt.Fprintf(w, ")\n")
+	fmt.Fprintf(w, ")\n\n")
 }
 
 // enums will have special methods
