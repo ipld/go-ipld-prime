@@ -36,18 +36,8 @@ func TestNuevo(t *testing.T) {
 		tg.EmitNodeMethodNodeBuilder(w)
 	}
 
-	f := openOrPanic("_test/thunks.go")
-	emitFileHeader(f)
-	doTemplate(`
-		type mapIteratorReject struct{ err error }
-		type listIteratorReject struct{ err error }
-
-		func (itr mapIteratorReject) Next() (ipld.Node, ipld.Node, error) { return nil, nil, itr.err }
-		func (itr mapIteratorReject) Done() bool                          { return false }
-
-		func (itr listIteratorReject) Next() (int, ipld.Node, error) { return -1, nil, itr.err }
-		func (itr listIteratorReject) Done() bool                    { return false }
-	`, f, nil)
+	f := openOrPanic("_test/minima.go")
+	emitMinima(f)
 
 	f = openOrPanic("_test/tStrang.go")
 	emitFileHeader(f)
