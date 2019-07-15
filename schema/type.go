@@ -43,7 +43,7 @@ type Type interface {
 	// Unexported marker method to force the union closed.
 	_Type()
 
-	// Returns a pointer to the typesystem.Universe this type is a member of.
+	// Returns a pointer to the TypeSystem this Type is a member of.
 	TypeSystem() *TypeSystem
 
 	// Returns the string name of the Type.  This name is unique within the
