@@ -52,14 +52,24 @@ type Type interface {
 	// that string will not be required to be unique.
 	Name() TypeName
 
-	// Returns the Representation Kind in the IPLD Data Model that this type
-	// is expected to be serialized as.
+	// Returns the Kind of this Type.
 	//
-	// Note that in one case, this will return `ipld.ReprKind_Invalid` --
-	// TypeUnion with Style=Kinded may be serialized as different kinds
-	// depending on their value, so we can't say from the type definition
-	// alone what kind we expect.
-	ReprKind() ipld.ReprKind
+	// The returned value is a 1:1 association with which of the concrete
+	// "schema.Type*" structs this interface can be cast to.
+	//
+	// Note that a schema.Kind is a different enum than ipld.ReprKind;
+	// and furthermore, there's no strict relationship between them.
+	// typed.Node values can be described by *two* distinct ReprKinds:
+	// one which describes how the Node itself will act,
+	// and another which describes how the Node presents for serialization.
+	// For some combinations of Type and representation strategy, one or both
+	// of the ReprKinds can be determined statically; but not always:
+	// it can sometimes be necessary to inspect the value quite concretely
+	// (e.g., `typed.Node{}.Representation().ReprKind()`) in order to find
+	// out exactly how a node will be serialized!  This is because some types
+	// can vary in representation kind based on their value (specifically,
+	// kinded-representation unions have this property).
+	Kind() Kind
 }
 
 var (
