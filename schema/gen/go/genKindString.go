@@ -7,8 +7,7 @@ import (
 )
 
 type generateKindString struct {
-	Name schema.TypeName
-	Type schema.Type
+	schema.Type
 	// FUTURE: probably some adjunct config data should come with here as well.
 	// FUTURE: perhaps both a global one (e.g. output package name) and a per-type one.
 }
