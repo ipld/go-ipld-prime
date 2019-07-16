@@ -22,6 +22,9 @@ func (s ExploreRange) Interests() []PathSegment {
 // Explore returns the node's selector if
 // the path matches an index in the range of this selector
 func (s ExploreRange) Explore(n ipld.Node, p PathSegment) Selector {
+	if n.ReprKind() != ipld.ReprKind_List {
+		return nil
+	}
 	index, err := p.Index()
 	if err != nil {
 		return nil
@@ -44,20 +47,23 @@ func ParseExploreRange(n ipld.Node) (Selector, error) {
 		return nil, fmt.Errorf("selector spec parse rejected: selector body must be a map")
 	}
 	startNode, err := n.TraverseField(startKey)
-	if err != nil || startNode.ReprKind() != ipld.ReprKind_Int {
-		return nil, fmt.Errorf("selector spec parse rejected: start field must an int in ExploreRange selector")
+	if err != nil {
+		return nil, fmt.Errorf("selector spec parse rejected: start field must be present in ExploreRange selector")
 	}
 	startValue, err := startNode.AsInt()
 	if err != nil {
-		return nil, fmt.Errorf("selector spec parse rejected: start field must an int in ExploreRange selector")
+		return nil, fmt.Errorf("selector spec parse rejected: start field must be a number in ExploreRange selector")
 	}
 	endNode, err := n.TraverseField(endKey)
-	if err != nil || endNode.ReprKind() != ipld.ReprKind_Int {
-		return nil, fmt.Errorf("selector spec parse rejected: end field must an int in ExploreRange selector")
+	if err != nil {
+		return nil, fmt.Errorf("selector spec parse rejected: end field must be present in ExploreRange selector")
 	}
 	endValue, err := endNode.AsInt()
 	if err != nil {
-		return nil, fmt.Errorf("selector spec parse rejected: end field must an int in ExploreRange selector")
+		return nil, fmt.Errorf("selector spec parse rejected: end field must be a number in ExploreRange selector")
+	}
+	if startValue >= endValue {
+		return nil, fmt.Errorf("selector spec parse rejected: end field must be greater than start field in ExploreRange selector")
 	}
 	next, err := n.TraverseField(nextSelectorKey)
 	if err != nil {

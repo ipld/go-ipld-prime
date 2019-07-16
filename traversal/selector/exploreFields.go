@@ -45,7 +45,10 @@ func ParseExploreFields(n ipld.Node) (Selector, error) {
 		return nil, fmt.Errorf("selector spec parse rejected: selector body must be a map")
 	}
 	fields, err := n.TraverseField(fieldsKey)
-	if err != nil || fields.ReprKind() != ipld.ReprKind_Map {
+	if err != nil {
+		return nil, fmt.Errorf("selector spec parse rejected: fields in ExploreFields selector must be present")
+	}
+	if fields.ReprKind() != ipld.ReprKind_Map {
 		return nil, fmt.Errorf("selector spec parse rejected: fields in ExploreFields selector must be a map")
 	}
 	x := ExploreFields{

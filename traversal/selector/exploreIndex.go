@@ -21,12 +21,15 @@ func (s ExploreIndex) Interests() []PathSegment {
 // Explore returns the node's selector if
 // the path matches the index the index for this selector or nil if not
 func (s ExploreIndex) Explore(n ipld.Node, p PathSegment) Selector {
+	if n.ReprKind() != ipld.ReprKind_List {
+		return nil
+	}
 	expectedIndex, expectedErr := p.Index()
 	actualIndex, actualErr := s.interest[0].Index()
-	if expectedErr == nil && actualErr == nil && expectedIndex == actualIndex {
-		return s.next
+	if expectedErr != nil || actualErr != nil || expectedIndex != actualIndex {
+		return nil
 	}
-	return nil
+	return s.next
 }
 
 // Decide always returns false because this is not a matcher
@@ -41,12 +44,12 @@ func ParseExploreIndex(n ipld.Node) (Selector, error) {
 		return nil, fmt.Errorf("selector spec parse rejected: selector body must be a map")
 	}
 	indexNode, err := n.TraverseField(indexKey)
-	if err != nil || indexNode.ReprKind() != ipld.ReprKind_Int {
-		return nil, fmt.Errorf("selector spec parse rejected: index field must an int in ExploreIndex selector")
+	if err != nil {
+		return nil, fmt.Errorf("selector spec parse rejected: index field must be present in ExploreIndex selector")
 	}
 	indexValue, err := indexNode.AsInt()
 	if err != nil {
-		return nil, fmt.Errorf("selector spec parse rejected: index field must an int in ExploreIndex selector")
+		return nil, fmt.Errorf("selector spec parse rejected: index field must be a number in ExploreIndex selector")
 	}
 	next, err := n.TraverseField(nextSelectorKey)
 	if err != nil {

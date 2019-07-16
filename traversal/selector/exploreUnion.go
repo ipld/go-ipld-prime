@@ -48,7 +48,7 @@ func (s ExploreUnion) Explore(n ipld.Node, p PathSegment) Selector {
 	for _, member := range s.Members {
 		resultSelector := member.Explore(n, p)
 		if resultSelector != nil {
-			nonNilResults = append(nonNilResults, member)
+			nonNilResults = append(nonNilResults, resultSelector)
 		}
 	}
 	if len(nonNilResults) == 0 {
