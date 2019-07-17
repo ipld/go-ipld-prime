@@ -7,7 +7,7 @@ import (
 
 	ipld "github.com/ipld/go-ipld-prime"
 	_ "github.com/ipld/go-ipld-prime/encoding/dagjson"
-	"github.com/ipld/go-ipld-prime/fluent"
+	ipldfree "github.com/ipld/go-ipld-prime/impl/free"
 	"github.com/ipld/go-ipld-prime/traversal"
 	"github.com/ipld/go-ipld-prime/traversal/selector"
 )
@@ -42,6 +42,7 @@ var (
 // covers traverse using a variety of selectors.
 // all cases here use one already-loaded Node; no link-loading exercised.
 func TestTraverse(t *testing.T) {
+	ssb := selector.NewSelectorSpecBuilder(ipldfree.NodeBuilder())
 	t.Run("traverse selecting true should visit the root", func(t *testing.T) {
 		err := traversal.Traverse(fnb.CreateString("x"), selector.Matcher{}, func(tp traversal.TraversalProgress, n ipld.Node) error {
 			Wish(t, n, ShouldEqual, fnb.CreateString("x"))
@@ -59,19 +60,11 @@ func TestTraverse(t *testing.T) {
 		Wish(t, err, ShouldEqual, nil)
 	})
 	t.Run("traverse selecting fields should work", func(t *testing.T) {
-		sn := fnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-			mb.Insert(knb.CreateString("f"), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-				mb.Insert(knb.CreateString("f>"), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-					mb.Insert(knb.CreateString("foo"), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-						mb.Insert(knb.CreateString("."), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {}))
-					}))
-					mb.Insert(knb.CreateString("bar"), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-						mb.Insert(knb.CreateString("."), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {}))
-					}))
-				}))
-			}))
+		ss := ssb.ExploreFields(func(efsb selector.ExploreFieldsSpecBuilder) {
+			efsb.Insert("foo", ssb.Matcher())
+			efsb.Insert("bar", ssb.Matcher())
 		})
-		s, err := selector.ParseSelector(sn)
+		s, err := ss.Selector()
 		Require(t, err, ShouldEqual, nil)
 		var order int
 		err = traversal.Traverse(middleMapNode, s, func(tp traversal.TraversalProgress, n ipld.Node) error {
@@ -90,25 +83,13 @@ func TestTraverse(t *testing.T) {
 		Wish(t, order, ShouldEqual, 2)
 	})
 	t.Run("traverse selecting fields recursively should work", func(t *testing.T) {
-		sn := fnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-			mb.Insert(knb.CreateString("f"), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-				mb.Insert(knb.CreateString("f>"), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-					mb.Insert(knb.CreateString("foo"), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-						mb.Insert(knb.CreateString("."), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {}))
-					}))
-					mb.Insert(knb.CreateString("nested"), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-						mb.Insert(knb.CreateString("f"), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-							mb.Insert(knb.CreateString("f>"), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-								mb.Insert(knb.CreateString("nonlink"), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-									mb.Insert(knb.CreateString("."), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {}))
-								}))
-							}))
-						}))
-					}))
-				}))
+		ss := ssb.ExploreFields(func(efsb selector.ExploreFieldsSpecBuilder) {
+			efsb.Insert("foo", ssb.Matcher())
+			efsb.Insert("nested", ssb.ExploreFields(func(efsb selector.ExploreFieldsSpecBuilder) {
+				efsb.Insert("nonlink", ssb.Matcher())
 			}))
 		})
-		s, err := selector.ParseSelector(sn)
+		s, err := ss.Selector()
 		Require(t, err, ShouldEqual, nil)
 		var order int
 		err = traversal.Traverse(middleMapNode, s, func(tp traversal.TraversalProgress, n ipld.Node) error {
