@@ -38,6 +38,10 @@ func ParseSelector(n ipld.Node) (Selector, error) {
 		return ParseExploreRange(v)
 	case exploreUnionKey:
 		return ParseExploreUnion(v)
+	case exploreRecursiveKey:
+		return ParseExploreRecursive(v)
+	case exploreRecursiveEdgeKey:
+		return ParseExploreRecursiveEdge(v)
 	case matcherKey:
 		return ParseMatcher(v)
 	default:
