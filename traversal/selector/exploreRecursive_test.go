@@ -1,9 +1,11 @@
 package selector
 
 import (
+	"bytes"
 	"fmt"
 	"testing"
 
+	"github.com/ipld/go-ipld-prime/encoding/dagjson"
 	"github.com/ipld/go-ipld-prime/fluent"
 	ipldfree "github.com/ipld/go-ipld-prime/impl/free"
 	. "github.com/warpfork/go-wish"
@@ -50,6 +52,25 @@ func TestParseExploreRecursive(t *testing.T) {
 		_, err := ParseExploreRecursive(sn)
 		Wish(t, err, ShouldEqual, fmt.Errorf("selector spec parse rejected: selector is a keyed union and thus must be a map"))
 	})
+	t.Run("parsing map node with sequence field with valid selector w/o ExploreRecursiveEdge should not parse", func(t *testing.T) {
+		sn := fnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
+			mb.Insert(knb.CreateString(maxDepthKey), vnb.CreateInt(2))
+			mb.Insert(knb.CreateString(sequenceKey), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
+				mb.Insert(knb.CreateString(exploreAllKey), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
+					mb.Insert(knb.CreateString(nextSelectorKey), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
+						mb.Insert(knb.CreateString(matcherKey), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {}))
+					}))
+				}))
+			}))
+		})
+		_, err := ParseExploreRecursive(sn)
+		Wish(t, err, ShouldEqual, fmt.Errorf("selector spec parse rejected: ExploreRecursive must have at least one ExploreRecursiveEdge"))
+	})
+	t.Run("parsing map node that is ExploreRecursiveEdge without ExploreRecursive parent should not parse", func(t *testing.T) {
+		sn := fnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {})
+		_, err := ParseExploreRecursiveEdge(sn)
+		Wish(t, err, ShouldEqual, fmt.Errorf("selector spec parse rejected: ExploreRecursiveEdge must be beneath ExploreRecursive"))
+	})
 	t.Run("parsing map node with sequence field with valid selector node should parse", func(t *testing.T) {
 		sn := fnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
 			mb.Insert(knb.CreateString(maxDepthKey), vnb.CreateInt(2))
@@ -65,6 +86,7 @@ func TestParseExploreRecursive(t *testing.T) {
 		Wish(t, err, ShouldEqual, nil)
 		Wish(t, s, ShouldEqual, ExploreRecursive{ExploreAll{ExploreRecursiveEdge{}}, ExploreAll{ExploreRecursiveEdge{}}, 2})
 	})
+
 }
 
 /*
@@ -89,30 +111,31 @@ func TestParseExploreRecursive(t *testing.T) {
 */
 
 func TestExploreRecursiveExplore(t *testing.T) {
-	fnb := fluent.WrapNodeBuilder(ipldfree.NodeBuilder()) // just for the other fixture building
 	recursiveEdge := ExploreRecursiveEdge{}
 	maxDepth := 3
-	var err error
 	var rs Selector
 	t.Run("exploring should traverse until we get to maxDepth", func(t *testing.T) {
 		parentsSelector := ExploreAll{recursiveEdge}
 		subTree := ExploreFields{map[string]Selector{"Parents": parentsSelector}, []PathSegment{PathSegmentString{S: "Parents"}}}
 		rs = ExploreRecursive{subTree, subTree, maxDepth}
-		rn := fnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-			mb.Insert(knb.CreateString("Parents"), vnb.CreateList(func(lb fluent.ListBuilder, vnb fluent.NodeBuilder) {
-				lb.Append(vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-					mb.Insert(knb.CreateString("Parents"), vnb.CreateList(func(lb fluent.ListBuilder, vnb fluent.NodeBuilder) {
-						lb.Append(vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-							mb.Insert(knb.CreateString("Parents"), vnb.CreateList(func(lb fluent.ListBuilder, vnb fluent.NodeBuilder) {
-								lb.Append(vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-									mb.Insert(knb.CreateString("Parents"), vnb.CreateList(func(lb fluent.ListBuilder, vnb fluent.NodeBuilder) {}))
-								}))
-							}))
-						}))
-					}))
-				}))
-			}))
-		})
+		nodeString := `{
+			"Parents": [
+				{
+					"Parents": [
+						{
+							"Parents": [
+								{
+									"Parents": []
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+		`
+		rn, err := dagjson.Decoder(ipldfree.NodeBuilder(), bytes.NewBufferString(nodeString))
+		Wish(t, err, ShouldEqual, nil)
 		rs = rs.Explore(rn, PathSegmentString{S: "Parents"})
 		rn, err = rn.TraverseField("Parents")
 		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, parentsSelector, maxDepth})
@@ -122,6 +145,7 @@ func TestExploreRecursiveExplore(t *testing.T) {
 		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, subTree, maxDepth - 1})
 		Wish(t, err, ShouldEqual, nil)
 		rs = rs.Explore(rn, PathSegmentString{S: "Parents"})
+
 		rn, err = rn.TraverseField("Parents")
 		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, parentsSelector, maxDepth - 1})
 		Wish(t, err, ShouldEqual, nil)
@@ -142,11 +166,13 @@ func TestExploreRecursiveExplore(t *testing.T) {
 		parentsSelector := ExploreIndex{recursiveEdge, [1]PathSegment{PathSegmentInt{I: 1}}}
 		subTree := ExploreFields{map[string]Selector{"Parents": parentsSelector}, []PathSegment{PathSegmentString{S: "Parents"}}}
 		rs = ExploreRecursive{subTree, subTree, maxDepth}
-		rn := fnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-			mb.Insert(knb.CreateString("Parents"), vnb.CreateList(func(lb fluent.ListBuilder, vnb fluent.NodeBuilder) {
-				lb.Append(vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {}))
-			}))
-		})
+		nodeString := `{
+			"Parents": {
+			}
+		}
+		`
+		rn, err := dagjson.Decoder(ipldfree.NodeBuilder(), bytes.NewBufferString(nodeString))
+		Wish(t, err, ShouldEqual, nil)
 		rs = rs.Explore(rn, PathSegmentString{S: "Parents"})
 		rn, err = rn.TraverseField("Parents")
 		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, parentsSelector, maxDepth})
@@ -166,25 +192,32 @@ func TestExploreRecursiveExplore(t *testing.T) {
 		},
 		}
 		s := ExploreRecursive{subTree, subTree, maxDepth}
-		n := fnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-			mb.Insert(knb.CreateString("Parents"), vnb.CreateList(func(lb fluent.ListBuilder, vnb fluent.NodeBuilder) {
-				lb.Append(vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-					mb.Insert(knb.CreateString("Parents"), vnb.CreateList(func(lb fluent.ListBuilder, vnb fluent.NodeBuilder) {}))
-					mb.Insert(knb.CreateString("Side"), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-						mb.Insert(knb.CreateString("cheese"), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-							mb.Insert(knb.CreateString("whiz"), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {}))
-						}))
-					}))
-				}))
-			}))
-			mb.Insert(knb.CreateString("Side"), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-				mb.Insert(knb.CreateString("real"), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-					mb.Insert(knb.CreateString("apple"), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-						mb.Insert(knb.CreateString("sauce"), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {}))
-					}))
-				}))
-			}))
-		})
+		nodeString := `{
+			"Parents": [
+				{
+					"Parents": [],
+					"Side": {
+						"cheese": {
+							"whiz": {
+							}
+						}
+					}
+				}
+			],
+			"Side": {
+				"real": {
+					"apple": {
+						"sauce": {
+						}
+					}
+				}
+			}
+		}
+		`
+		n, err := dagjson.Decoder(ipldfree.NodeBuilder(), bytes.NewBufferString(nodeString))
+		Wish(t, err, ShouldEqual, nil)
+
+		// traverse down Parent nodes
 		rn := n
 		rs = s
 		rs = rs.Explore(rn, PathSegmentString{S: "Parents"})
@@ -199,6 +232,8 @@ func TestExploreRecursiveExplore(t *testing.T) {
 		rn, err = rn.TraverseField("Parents")
 		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, parentsSelector, maxDepth - 1})
 		Wish(t, err, ShouldEqual, nil)
+
+		// traverse down top level Side tree (nested recursion)
 		rn = n
 		rs = s
 		rs = rs.Explore(rn, PathSegmentString{S: "Side"})
@@ -217,6 +252,8 @@ func TestExploreRecursiveExplore(t *testing.T) {
 		rn, err = rn.TraverseField("sauce")
 		Wish(t, rs, ShouldEqual, nil)
 		Wish(t, err, ShouldEqual, nil)
+
+		// traverse once down Parent (top level recursion) then down Side tree (nested recursion)
 		rn = n
 		rs = s
 		rs = rs.Explore(rn, PathSegmentString{S: "Parents"})

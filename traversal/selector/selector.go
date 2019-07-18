@@ -15,8 +15,12 @@ type Selector interface {
 	Decide(ipld.Node) bool
 }
 
+type SelectorContext interface {
+	Link(s Selector) bool
+}
+
 // ParseSelector creates a Selector that can be traversed from an IPLD Selector node
-func ParseSelector(n ipld.Node) (Selector, error) {
+func ParseSelector(n ipld.Node, selectorContexts ...SelectorContext) (Selector, error) {
 	if n.ReprKind() != ipld.ReprKind_Map {
 		return nil, fmt.Errorf("selector spec parse rejected: selector is a keyed union and thus must be a map")
 	}
@@ -29,21 +33,21 @@ func ParseSelector(n ipld.Node) (Selector, error) {
 	//  (This switch is where the keyed union discriminators concretely happen.)
 	switch kstr {
 	case exploreFieldsKey:
-		return ParseExploreFields(v)
+		return ParseExploreFields(v, selectorContexts...)
 	case exploreAllKey:
-		return ParseExploreAll(v)
+		return ParseExploreAll(v, selectorContexts...)
 	case exploreIndexKey:
-		return ParseExploreIndex(v)
+		return ParseExploreIndex(v, selectorContexts...)
 	case exploreRangeKey:
-		return ParseExploreRange(v)
+		return ParseExploreRange(v, selectorContexts...)
 	case exploreUnionKey:
-		return ParseExploreUnion(v)
+		return ParseExploreUnion(v, selectorContexts...)
 	case exploreRecursiveKey:
-		return ParseExploreRecursive(v)
+		return ParseExploreRecursive(v, selectorContexts...)
 	case exploreRecursiveEdgeKey:
-		return ParseExploreRecursiveEdge(v)
+		return ParseExploreRecursiveEdge(v, selectorContexts...)
 	case matcherKey:
-		return ParseMatcher(v)
+		return ParseMatcher(v, selectorContexts...)
 	default:
 		return nil, fmt.Errorf("selector spec parse rejected: %q is not a known member of the selector union", kstr)
 	}
