@@ -18,24 +18,30 @@ type ExploreRecursiveEdge struct{}
 
 // Interests should ultimately never get called for an ExploreRecursiveEdge selector
 func (s ExploreRecursiveEdge) Interests() []PathSegment {
-	return []PathSegment{}
+	panic("Traversed Explore Recursive Edge Node With No Parent")
 }
 
 // Explore should ultimately never get called for an ExploreRecursiveEdge selector
 func (s ExploreRecursiveEdge) Explore(n ipld.Node, p PathSegment) Selector {
-	return nil
+	panic("Traversed Explore Recursive Edge Node With No Parent")
 }
 
 // Decide should ultimately never get called for an ExploreRecursiveEdge selector
 func (s ExploreRecursiveEdge) Decide(n ipld.Node) bool {
-	return false
+	panic("Traversed Explore Recursive Edge Node With No Parent")
 }
 
 // ParseExploreRecursiveEdge assembles a Selector
 // from a exploreRecursiveEdge selector node
-func ParseExploreRecursiveEdge(n ipld.Node) (Selector, error) {
+func ParseExploreRecursiveEdge(n ipld.Node, selectorContexts ...SelectorContext) (Selector, error) {
 	if n.ReprKind() != ipld.ReprKind_Map {
 		return nil, fmt.Errorf("selector spec parse rejected: selector body must be a map")
 	}
-	return ExploreRecursiveEdge{}, nil
+	s := ExploreRecursiveEdge{}
+	for _, selectorContext := range selectorContexts {
+		if selectorContext.Link(s) {
+			return s, nil
+		}
+	}
+	return nil, fmt.Errorf("selector spec parse rejected: ExploreRecursiveEdge must be beneath ExploreRecursive")
 }

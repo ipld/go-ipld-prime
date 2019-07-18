@@ -39,7 +39,7 @@ func (s ExploreIndex) Decide(n ipld.Node) bool {
 
 // ParseExploreIndex assembles a Selector
 // from a ExploreIndex selector node
-func ParseExploreIndex(n ipld.Node) (Selector, error) {
+func ParseExploreIndex(n ipld.Node, selectorContexts ...SelectorContext) (Selector, error) {
 	if n.ReprKind() != ipld.ReprKind_Map {
 		return nil, fmt.Errorf("selector spec parse rejected: selector body must be a map")
 	}
@@ -55,7 +55,7 @@ func ParseExploreIndex(n ipld.Node) (Selector, error) {
 	if err != nil {
 		return nil, fmt.Errorf("selector spec parse rejected: next field must be present in ExploreIndex selector")
 	}
-	selector, err := ParseSelector(next)
+	selector, err := ParseSelector(next, selectorContexts...)
 	if err != nil {
 		return nil, err
 	}

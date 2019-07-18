@@ -63,8 +63,20 @@ func (s ExploreRecursive) Decide(n ipld.Node) bool {
 	return s.current.Decide(n)
 }
 
+type exploreRecursiveContext struct {
+	edgesFound int
+}
+
+func (erc *exploreRecursiveContext) Link(s Selector) bool {
+	_, ok := s.(ExploreRecursiveEdge)
+	if ok {
+		erc.edgesFound++
+	}
+	return ok
+}
+
 // ParseExploreRecursive assembles a Selector from a ExploreRecursive selector node
-func ParseExploreRecursive(n ipld.Node) (Selector, error) {
+func ParseExploreRecursive(n ipld.Node, selectorContexts ...SelectorContext) (Selector, error) {
 	if n.ReprKind() != ipld.ReprKind_Map {
 		return nil, fmt.Errorf("selector spec parse rejected: selector body must be a map")
 	}
@@ -81,9 +93,13 @@ func ParseExploreRecursive(n ipld.Node) (Selector, error) {
 	if err != nil {
 		return nil, fmt.Errorf("selector spec parse rejected: sequence field must be present in ExploreRecursive selector")
 	}
-	selector, err := ParseSelector(sequence)
+	erc := &exploreRecursiveContext{}
+	selector, err := ParseSelector(sequence, append([]SelectorContext{erc}, selectorContexts...)...)
 	if err != nil {
 		return nil, err
+	}
+	if erc.edgesFound == 0 {
+		return nil, fmt.Errorf("selector spec parse rejected: ExploreRecursive must have at least one ExploreRecursiveEdge")
 	}
 	return ExploreRecursive{selector, selector, maxDepthValue}, nil
 }

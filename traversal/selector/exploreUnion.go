@@ -73,7 +73,7 @@ func (s ExploreUnion) Decide(n ipld.Node) bool {
 
 // ParseExploreUnion assembles a Selector
 // from an ExploreUnion selector node
-func ParseExploreUnion(n ipld.Node) (Selector, error) {
+func ParseExploreUnion(n ipld.Node, selectorContexts ...SelectorContext) (Selector, error) {
 	if n.ReprKind() != ipld.ReprKind_List {
 		return nil, fmt.Errorf("selector spec parse rejected: explore union selector must be a list")
 	}
@@ -85,7 +85,7 @@ func ParseExploreUnion(n ipld.Node) (Selector, error) {
 		if err != nil {
 			return nil, fmt.Errorf("error during selector spec parse: %s", err)
 		}
-		member, err := ParseSelector(v)
+		member, err := ParseSelector(v, selectorContexts...)
 		if err != nil {
 			return nil, err
 		}
