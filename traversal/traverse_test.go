@@ -14,7 +14,6 @@ import (
 	"github.com/ipld/go-ipld-prime/traversal"
 	"github.com/ipld/go-ipld-prime/traversal/selector"
 	"github.com/ipld/go-ipld-prime/traversal/selector/builder"
-
 )
 
 /* Remember, we've got the following fixtures in scope:
@@ -155,5 +154,81 @@ func TestTraverse(t *testing.T) {
 		})
 		Wish(t, err, ShouldEqual, nil)
 		Wish(t, order, ShouldEqual, 6)
+	})
+	t.Run("traversing lists should work", func(t *testing.T) {
+		ss := ssb.ExploreRange(0, 3, ssb.Matcher())
+		s, err := ss.Selector()
+		var order int
+		err = traversal.TraversalProgress{
+			Cfg: &traversal.TraversalConfig{
+				LinkLoader: func(lnk ipld.Link, _ ipld.LinkContext) (io.Reader, error) {
+					return bytes.NewBuffer(storage[lnk]), nil
+				},
+			},
+		}.Traverse(middleListNode, s, func(tp traversal.TraversalProgress, n ipld.Node) error {
+			switch order {
+			case 0:
+				Wish(t, n, ShouldEqual, fnb.CreateString("alpha"))
+				Wish(t, tp.Path.String(), ShouldEqual, "0")
+			case 1:
+				Wish(t, n, ShouldEqual, fnb.CreateString("alpha"))
+				Wish(t, tp.Path.String(), ShouldEqual, "1")
+			case 2:
+				Wish(t, n, ShouldEqual, fnb.CreateString("beta"))
+				Wish(t, tp.Path.String(), ShouldEqual, "2")
+			}
+			order++
+			return nil
+		})
+		Wish(t, err, ShouldEqual, nil)
+		Wish(t, order, ShouldEqual, 3)
+	})
+	t.Run("multiple layers of link traversal should work", func(t *testing.T) {
+		ss := ssb.ExploreFields(func(efsb builder.ExploreFieldsSpecBuilder) {
+			efsb.Insert("linkedList", ssb.ExploreAll(ssb.Matcher()))
+			efsb.Insert("linkedMap", ssb.ExploreRecursive(3, ssb.ExploreFields(func(efsb builder.ExploreFieldsSpecBuilder) {
+				efsb.Insert("foo", ssb.Matcher())
+				efsb.Insert("nonlink", ssb.Matcher())
+				efsb.Insert("alink", ssb.Matcher())
+				efsb.Insert("nested", ssb.ExploreRecursiveEdge())
+			})))
+		})
+		s, err := ss.Selector()
+		var order int
+		err = traversal.TraversalProgress{
+			Cfg: &traversal.TraversalConfig{
+				LinkLoader: func(lnk ipld.Link, _ ipld.LinkContext) (io.Reader, error) {
+					return bytes.NewBuffer(storage[lnk]), nil
+				},
+			},
+		}.Traverse(rootNode, s, func(tp traversal.TraversalProgress, n ipld.Node) error {
+			switch order {
+			case 0:
+				Wish(t, n, ShouldEqual, fnb.CreateString("alpha"))
+				Wish(t, tp.Path.String(), ShouldEqual, "linkedList/0")
+			case 1:
+				Wish(t, n, ShouldEqual, fnb.CreateString("alpha"))
+				Wish(t, tp.Path.String(), ShouldEqual, "linkedList/1")
+			case 2:
+				Wish(t, n, ShouldEqual, fnb.CreateString("beta"))
+				Wish(t, tp.Path.String(), ShouldEqual, "linkedList/2")
+			case 3:
+				Wish(t, n, ShouldEqual, fnb.CreateString("alpha"))
+				Wish(t, tp.Path.String(), ShouldEqual, "linkedList/3")
+			case 4:
+				Wish(t, n, ShouldEqual, fnb.CreateBool(true))
+				Wish(t, tp.Path.String(), ShouldEqual, "linkedMap/foo")
+			case 5:
+				Wish(t, n, ShouldEqual, fnb.CreateString("zoo"))
+				Wish(t, tp.Path.String(), ShouldEqual, "linkedMap/nested/nonlink")
+			case 6:
+				Wish(t, n, ShouldEqual, fnb.CreateString("alpha"))
+				Wish(t, tp.Path.String(), ShouldEqual, "linkedMap/nested/alink")
+			}
+			order++
+			return nil
+		})
+		Wish(t, err, ShouldEqual, nil)
+		Wish(t, order, ShouldEqual, 7)
 	})
 }

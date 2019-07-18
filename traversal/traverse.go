@@ -50,45 +50,66 @@ func (tp TraversalProgress) traverseInformatively(n ipld.Node, s selector.Select
 	default:
 		return nil
 	}
-	// TODO: should only do this full loop if high-cardinality indicated.
-	//   attn := s.Interests()
-	//   if attn == nil {
-	// FIXME need another kind switch here, and list support!
-	for itr := n.MapIterator(); !itr.Done(); {
-		k, v, err := itr.Next()
-		if err != nil {
-			return err
-		}
-		kstr, _ := k.AsString()
-		sNext := s.Explore(n, selector.PathSegmentString{kstr})
-		if sNext != nil {
-			tpNext := tp
-			tpNext.Path = tp.Path.AppendSegment(kstr)
-			if v.ReprKind() == ipld.ReprKind_Link {
-				lnk, _ := v.AsLink()
-				// Assemble the LinkContext in case the Loader or NBChooser want it.
-				lnkCtx := ipld.LinkContext{
-					LinkPath:   tpNext.Path,
-					LinkNode:   v,
-					ParentNode: n,
-				}
-				// Load link!
-				v, err = lnk.Load(
-					tpNext.Cfg.Ctx,
-					lnkCtx,
-					tpNext.Cfg.LinkNodeBuilderChooser(lnk, lnkCtx),
-					tpNext.Cfg.LinkLoader,
-				)
-				if err != nil {
-					return fmt.Errorf("error traversing node at %q: could not load link %q: %s", tpNext.Path, lnk, err)
-				}
-			}
-			// TODO when link load is implemented, it should go roughly here.
-
-			if err := tpNext.traverseInformatively(v, sNext, fn); err != nil {
+	attn := s.Interests()
+	if attn == nil {
+		for itr := selector.NewSegmentIterator(n); !itr.Done(); {
+			ps, v, err := itr.Next()
+			if err != nil {
 				return err
 			}
+			sNext := s.Explore(n, ps)
+			if sNext != nil {
+				err = tp.traverseChild(n, v, ps, sNext, fn)
+				if err != nil {
+					return err
+				}
+			}
 		}
+	} else {
+		for _, ps := range attn {
+			// TODO: Probably not the most efficient way to be doing this...
+			v, err := n.TraverseField(ps.String())
+			if err != nil {
+				continue
+			}
+			sNext := s.Explore(n, ps)
+			if sNext != nil {
+				err = tp.traverseChild(n, v, ps, sNext, fn)
+				if err != nil {
+					return err
+				}
+			}
+		}
+	}
+	return nil
+}
+
+func (tp TraversalProgress) traverseChild(n ipld.Node, v ipld.Node, ps selector.PathSegment, sNext selector.Selector, fn AdvVisitFn) error {
+	var err error
+	tpNext := tp
+	tpNext.Path = tp.Path.AppendSegment(ps.String())
+	if v.ReprKind() == ipld.ReprKind_Link {
+		lnk, _ := v.AsLink()
+		// Assemble the LinkContext in case the Loader or NBChooser want it.
+		lnkCtx := ipld.LinkContext{
+			LinkPath:   tpNext.Path,
+			LinkNode:   v,
+			ParentNode: n,
+		}
+		// Load link!
+		v, err = lnk.Load(
+			tpNext.Cfg.Ctx,
+			lnkCtx,
+			tpNext.Cfg.LinkNodeBuilderChooser(lnk, lnkCtx),
+			tpNext.Cfg.LinkLoader,
+		)
+		if err != nil {
+			return fmt.Errorf("error traversing node at %q: could not load link %q: %s", tpNext.Path, lnk, err)
+		}
+	}
+
+	if err := tpNext.traverseInformatively(v, sNext, fn); err != nil {
+		return err
 	}
 	return nil
 }
