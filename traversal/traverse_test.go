@@ -43,7 +43,7 @@ var (
 // all cases here use one already-loaded Node; no link-loading exercised.
 func TestTraverse(t *testing.T) {
 	t.Run("traverse selecting true should visit the root", func(t *testing.T) {
-		err := traversal.Traverse(fnb.CreateString("x"), selector.SelectTrue{}, func(tp traversal.TraversalProgress, n ipld.Node) error {
+		err := traversal.Traverse(fnb.CreateString("x"), selector.Matcher{}, func(tp traversal.TraversalProgress, n ipld.Node) error {
 			Wish(t, n, ShouldEqual, fnb.CreateString("x"))
 			Wish(t, tp.Path.String(), ShouldEqual, ipld.Path{}.String())
 			return nil
@@ -51,7 +51,7 @@ func TestTraverse(t *testing.T) {
 		Wish(t, err, ShouldEqual, nil)
 	})
 	t.Run("traverse selecting true should visit only the root and no deeper", func(t *testing.T) {
-		err := traversal.Traverse(middleMapNode, selector.SelectTrue{}, func(tp traversal.TraversalProgress, n ipld.Node) error {
+		err := traversal.Traverse(middleMapNode, selector.Matcher{}, func(tp traversal.TraversalProgress, n ipld.Node) error {
 			Wish(t, n, ShouldEqual, middleMapNode)
 			Wish(t, tp.Path.String(), ShouldEqual, ipld.Path{}.String())
 			return nil
@@ -61,8 +61,14 @@ func TestTraverse(t *testing.T) {
 	t.Run("traverse selecting fields should work", func(t *testing.T) {
 		sn := fnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
 			mb.Insert(knb.CreateString("f"), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-				mb.Insert(knb.CreateString("foo"), vnb.CreateBool(true))
-				mb.Insert(knb.CreateString("bar"), vnb.CreateBool(true))
+				mb.Insert(knb.CreateString("f>"), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
+					mb.Insert(knb.CreateString("foo"), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
+						mb.Insert(knb.CreateString("."), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {}))
+					}))
+					mb.Insert(knb.CreateString("bar"), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
+						mb.Insert(knb.CreateString("."), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {}))
+					}))
+				}))
 			}))
 		})
 		s, err := selector.ParseSelector(sn)
@@ -86,10 +92,18 @@ func TestTraverse(t *testing.T) {
 	t.Run("traverse selecting fields recursively should work", func(t *testing.T) {
 		sn := fnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
 			mb.Insert(knb.CreateString("f"), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-				mb.Insert(knb.CreateString("foo"), vnb.CreateBool(true))
-				mb.Insert(knb.CreateString("nested"), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-					mb.Insert(knb.CreateString("f"), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-						mb.Insert(knb.CreateString("nonlink"), vnb.CreateBool(true))
+				mb.Insert(knb.CreateString("f>"), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
+					mb.Insert(knb.CreateString("foo"), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
+						mb.Insert(knb.CreateString("."), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {}))
+					}))
+					mb.Insert(knb.CreateString("nested"), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
+						mb.Insert(knb.CreateString("f"), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
+							mb.Insert(knb.CreateString("f>"), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
+								mb.Insert(knb.CreateString("nonlink"), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
+									mb.Insert(knb.CreateString("."), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {}))
+								}))
+							}))
+						}))
 					}))
 				}))
 			}))
