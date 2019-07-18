@@ -9,13 +9,13 @@ import (
 // ExploreIndex traverses a specific index in a list, and applies a next
 // selector to the reached node.
 type ExploreIndex struct {
-	next     Selector      // selector for element we're interested in
-	interest []PathSegment // index of element we're interested in
+	next     Selector       // selector for element we're interested in
+	interest [1]PathSegment // index of element we're interested in
 }
 
 // Interests for ExploreIndex is just the index specified by the selector node
 func (s ExploreIndex) Interests() []PathSegment {
-	return s.interest
+	return s.interest[:]
 }
 
 // Explore returns the node's selector if
@@ -59,5 +59,5 @@ func ParseExploreIndex(n ipld.Node) (Selector, error) {
 	if err != nil {
 		return nil, err
 	}
-	return ExploreIndex{selector, []PathSegment{PathSegmentInt{I: indexValue}}}, nil
+	return ExploreIndex{selector, [1]PathSegment{PathSegmentInt{I: indexValue}}}, nil
 }

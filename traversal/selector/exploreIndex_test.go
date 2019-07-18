@@ -60,13 +60,13 @@ func TestParseExploreIndex(t *testing.T) {
 		})
 		s, err := ParseExploreIndex(sn)
 		Wish(t, err, ShouldEqual, nil)
-		Wish(t, s, ShouldEqual, ExploreIndex{Matcher{}, []PathSegment{PathSegmentInt{I: 2}}})
+		Wish(t, s, ShouldEqual, ExploreIndex{Matcher{}, [1]PathSegment{PathSegmentInt{I: 2}}})
 	})
 }
 
 func TestExploreIndexExplore(t *testing.T) {
 	fnb := fluent.WrapNodeBuilder(ipldfree.NodeBuilder()) // just for the other fixture building
-	s := ExploreIndex{Matcher{}, []PathSegment{PathSegmentInt{I: 3}}}
+	s := ExploreIndex{Matcher{}, [1]PathSegment{PathSegmentInt{I: 3}}}
 	t.Run("exploring should return nil unless node is a list", func(t *testing.T) {
 		n := fnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {})
 		returnedSelector := s.Explore(n, PathSegmentInt{I: 3})

@@ -44,7 +44,7 @@ func TestParseExploreUnion(t *testing.T) {
 		})
 		s, err := ParseExploreUnion(sn)
 		Wish(t, err, ShouldEqual, nil)
-		Wish(t, s, ShouldEqual, ExploreUnion{[]Selector{Matcher{}, ExploreIndex{Matcher{}, []PathSegment{PathSegmentInt{I: 2}}}}})
+		Wish(t, s, ShouldEqual, ExploreUnion{[]Selector{Matcher{}, ExploreIndex{Matcher{}, [1]PathSegment{PathSegmentInt{I: 2}}}}})
 	})
 }
 
@@ -54,13 +54,13 @@ func TestExploreUnionExplore(t *testing.T) {
 		lb.AppendAll([]ipld.Node{fnb.CreateInt(0), fnb.CreateInt(1), fnb.CreateInt(2), fnb.CreateInt(3)})
 	})
 	t.Run("exploring should return nil if all member selectors return nil when explored", func(t *testing.T) {
-		s := ExploreUnion{[]Selector{Matcher{}, ExploreIndex{Matcher{}, []PathSegment{PathSegmentInt{I: 2}}}}}
+		s := ExploreUnion{[]Selector{Matcher{}, ExploreIndex{Matcher{}, [1]PathSegment{PathSegmentInt{I: 2}}}}}
 		returnedSelector := s.Explore(n, PathSegmentInt{I: 3})
 		Wish(t, returnedSelector, ShouldEqual, nil)
 	})
 
 	t.Run("if exactly one member selector returns a non-nil selector when explored, exploring should return that value", func(t *testing.T) {
-		s := ExploreUnion{[]Selector{Matcher{}, ExploreIndex{Matcher{}, []PathSegment{PathSegmentInt{I: 2}}}}}
+		s := ExploreUnion{[]Selector{Matcher{}, ExploreIndex{Matcher{}, [1]PathSegment{PathSegmentInt{I: 2}}}}}
 
 		returnedSelector := s.Explore(n, PathSegmentInt{I: 2})
 		Wish(t, returnedSelector, ShouldEqual, Matcher{})
@@ -68,8 +68,8 @@ func TestExploreUnionExplore(t *testing.T) {
 	t.Run("exploring should return a new union selector if more than one member selector returns a non nil selector when explored", func(t *testing.T) {
 		s := ExploreUnion{[]Selector{
 			Matcher{},
-			ExploreIndex{Matcher{}, []PathSegment{PathSegmentInt{I: 2}}},
-			ExploreRange{Matcher{}, map[int]struct{}{2: struct{}{}}, []PathSegment{PathSegmentInt{I: 2}}},
+			ExploreIndex{Matcher{}, [1]PathSegment{PathSegmentInt{I: 2}}},
+			ExploreRange{Matcher{}, 2, 3, []PathSegment{PathSegmentInt{I: 2}}},
 			ExploreFields{map[string]Selector{"applesauce": Matcher{}}, []PathSegment{PathSegmentString{S: "applesauce"}}},
 		}}
 
@@ -83,7 +83,7 @@ func TestExploreUnionInterests(t *testing.T) {
 		s := ExploreUnion{[]Selector{
 			ExploreAll{Matcher{}},
 			Matcher{},
-			ExploreIndex{Matcher{}, []PathSegment{PathSegmentInt{I: 2}}},
+			ExploreIndex{Matcher{}, [1]PathSegment{PathSegmentInt{I: 2}}},
 		}}
 		Wish(t, s.Interests(), ShouldEqual, []PathSegment(nil))
 	})
@@ -91,7 +91,7 @@ func TestExploreUnionInterests(t *testing.T) {
 		s := ExploreUnion{[]Selector{
 			ExploreFields{map[string]Selector{"applesauce": Matcher{}}, []PathSegment{PathSegmentString{S: "applesauce"}}},
 			Matcher{},
-			ExploreIndex{Matcher{}, []PathSegment{PathSegmentInt{I: 2}}},
+			ExploreIndex{Matcher{}, [1]PathSegment{PathSegmentInt{I: 2}}},
 		}}
 		Wish(t, s.Interests(), ShouldEqual, []PathSegment{PathSegmentString{S: "applesauce"}, PathSegmentInt{I: 2}})
 	})
@@ -104,7 +104,7 @@ func TestExploreUnionDecide(t *testing.T) {
 		s := ExploreUnion{[]Selector{
 			ExploreAll{Matcher{}},
 			Matcher{},
-			ExploreIndex{Matcher{}, []PathSegment{PathSegmentInt{I: 2}}},
+			ExploreIndex{Matcher{}, [1]PathSegment{PathSegmentInt{I: 2}}},
 		}}
 		Wish(t, s.Decide(n), ShouldEqual, true)
 	})
@@ -112,7 +112,7 @@ func TestExploreUnionDecide(t *testing.T) {
 		s := ExploreUnion{[]Selector{
 			ExploreFields{map[string]Selector{"applesauce": Matcher{}}, []PathSegment{PathSegmentString{S: "applesauce"}}},
 			ExploreAll{Matcher{}},
-			ExploreIndex{Matcher{}, []PathSegment{PathSegmentInt{I: 2}}},
+			ExploreIndex{Matcher{}, [1]PathSegment{PathSegmentInt{I: 2}}},
 		}}
 		Wish(t, s.Decide(n), ShouldEqual, false)
 	})

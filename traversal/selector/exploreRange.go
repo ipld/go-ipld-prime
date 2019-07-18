@@ -9,9 +9,10 @@ import (
 // ExploreRange traverses a list, and for each element in the range specified,
 // will apply a next selector to those reached nodes.
 type ExploreRange struct {
-	next        Selector         // selector for element we're interested in
-	hasSelector map[int]struct{} // a quick check whether to return the selector
-	interest    []PathSegment    // index of element we're interested in
+	next     Selector // selector for element we're interested in
+	start    int
+	end      int
+	interest []PathSegment // index of element we're interested in
 }
 
 // Interests for ExploreRange are all path segments within the iteration range
@@ -29,7 +30,7 @@ func (s ExploreRange) Explore(n ipld.Node, p PathSegment) Selector {
 	if err != nil {
 		return nil
 	}
-	if _, ok := s.hasSelector[index]; !ok {
+	if index < s.start || index >= s.end {
 		return nil
 	}
 	return s.next
@@ -75,12 +76,12 @@ func ParseExploreRange(n ipld.Node) (Selector, error) {
 	}
 	x := ExploreRange{
 		selector,
-		make(map[int]struct{}, endValue-startValue),
+		startValue,
+		endValue,
 		make([]PathSegment, 0, endValue-startValue),
 	}
 	for i := startValue; i < endValue; i++ {
 		x.interest = append(x.interest, PathSegmentInt{I: i})
-		x.hasSelector[i] = struct{}{}
 	}
 	return x, nil
 }

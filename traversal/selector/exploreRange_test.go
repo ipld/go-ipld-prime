@@ -98,13 +98,13 @@ func TestParseExploreRange(t *testing.T) {
 		})
 		s, err := ParseExploreRange(sn)
 		Wish(t, err, ShouldEqual, nil)
-		Wish(t, s, ShouldEqual, ExploreRange{Matcher{}, map[int]struct{}{2: struct{}{}}, []PathSegment{PathSegmentInt{I: 2}}})
+		Wish(t, s, ShouldEqual, ExploreRange{Matcher{}, 2, 3, []PathSegment{PathSegmentInt{I: 2}}})
 	})
 }
 
 func TestExploreRangeExplore(t *testing.T) {
 	fnb := fluent.WrapNodeBuilder(ipldfree.NodeBuilder()) // just for the other fixture building
-	s := ExploreRange{Matcher{}, map[int]struct{}{3: struct{}{}}, []PathSegment{PathSegmentInt{I: 3}}}
+	s := ExploreRange{Matcher{}, 3, 4, []PathSegment{PathSegmentInt{I: 3}}}
 	t.Run("exploring should return nil unless node is a list", func(t *testing.T) {
 		n := fnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {})
 		returnedSelector := s.Explore(n, PathSegmentInt{I: 3})
