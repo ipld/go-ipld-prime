@@ -12,7 +12,7 @@ type ExploreAll struct {
 	next Selector // selector for element we're interested in
 }
 
-// Interests for ExploreAll is empty (meaning traverse everything)
+// Interests for ExploreAll is nil (meaning traverse everything)
 func (s ExploreAll) Interests() []PathSegment {
 	return nil
 }
