@@ -1,12 +1,15 @@
 package traversal_test
 
 import (
+	"bytes"
+	"io"
 	"testing"
 
 	. "github.com/warpfork/go-wish"
 
 	ipld "github.com/ipld/go-ipld-prime"
 	_ "github.com/ipld/go-ipld-prime/encoding/dagjson"
+	"github.com/ipld/go-ipld-prime/fluent"
 	ipldfree "github.com/ipld/go-ipld-prime/impl/free"
 	"github.com/ipld/go-ipld-prime/traversal"
 	"github.com/ipld/go-ipld-prime/traversal/selector"
@@ -43,6 +46,7 @@ var (
 
 // covers traverse using a variety of selectors.
 // all cases here use one already-loaded Node; no link-loading exercised.
+
 func TestTraverse(t *testing.T) {
 	ssb := builder.NewSelectorSpecBuilder(ipldfree.NodeBuilder())
 	t.Run("traverse selecting true should visit the root", func(t *testing.T) {
@@ -108,5 +112,48 @@ func TestTraverse(t *testing.T) {
 		})
 		Wish(t, err, ShouldEqual, nil)
 		Wish(t, order, ShouldEqual, 2)
+	})
+	t.Run("traversing across nodes should work", func(t *testing.T) {
+		ss := ssb.ExploreRecursive(3, ssb.ExploreUnion(
+			ssb.Matcher(),
+			ssb.ExploreAll(ssb.ExploreRecursiveEdge()),
+		))
+		s, err := ss.Selector()
+		var order int
+		err = traversal.TraversalProgress{
+			Cfg: &traversal.TraversalConfig{
+				LinkLoader: func(lnk ipld.Link, _ ipld.LinkContext) (io.Reader, error) {
+					return bytes.NewBuffer(storage[lnk]), nil
+				},
+			},
+		}.Traverse(middleMapNode, s, func(tp traversal.TraversalProgress, n ipld.Node) error {
+			switch order {
+			case 0:
+				Wish(t, n, ShouldEqual, middleMapNode)
+				Wish(t, tp.Path.String(), ShouldEqual, "")
+			case 1:
+				Wish(t, n, ShouldEqual, fnb.CreateBool(true))
+				Wish(t, tp.Path.String(), ShouldEqual, "foo")
+			case 2:
+				Wish(t, n, ShouldEqual, fnb.CreateBool(false))
+				Wish(t, tp.Path.String(), ShouldEqual, "bar")
+			case 3:
+				Wish(t, n, ShouldEqual, fnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
+					mb.Insert(knb.CreateString("alink"), vnb.CreateLink(leafAlphaLnk))
+					mb.Insert(knb.CreateString("nonlink"), vnb.CreateString("zoo"))
+				}))
+				Wish(t, tp.Path.String(), ShouldEqual, "nested")
+			case 4:
+				Wish(t, n, ShouldEqual, fnb.CreateString("alpha"))
+				Wish(t, tp.Path.String(), ShouldEqual, "nested/alink")
+			case 5:
+				Wish(t, n, ShouldEqual, fnb.CreateString("zoo"))
+				Wish(t, tp.Path.String(), ShouldEqual, "nested/nonlink")
+			}
+			order++
+			return nil
+		})
+		Wish(t, err, ShouldEqual, nil)
+		Wish(t, order, ShouldEqual, 6)
 	})
 }

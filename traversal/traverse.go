@@ -1,6 +1,8 @@
 package traversal
 
 import (
+	"fmt"
+
 	ipld "github.com/ipld/go-ipld-prime"
 	"github.com/ipld/go-ipld-prime/traversal/selector"
 )
@@ -60,9 +62,29 @@ func (tp TraversalProgress) traverseInformatively(n ipld.Node, s selector.Select
 		kstr, _ := k.AsString()
 		sNext := s.Explore(n, selector.PathSegmentString{kstr})
 		if sNext != nil {
-			// TODO when link load is implemented, it should go roughly here.
 			tpNext := tp
 			tpNext.Path = tp.Path.AppendSegment(kstr)
+			if v.ReprKind() == ipld.ReprKind_Link {
+				lnk, _ := v.AsLink()
+				// Assemble the LinkContext in case the Loader or NBChooser want it.
+				lnkCtx := ipld.LinkContext{
+					LinkPath:   tpNext.Path,
+					LinkNode:   v,
+					ParentNode: n,
+				}
+				// Load link!
+				v, err = lnk.Load(
+					tpNext.Cfg.Ctx,
+					lnkCtx,
+					tpNext.Cfg.LinkNodeBuilderChooser(lnk, lnkCtx),
+					tpNext.Cfg.LinkLoader,
+				)
+				if err != nil {
+					return fmt.Errorf("error traversing node at %q: could not load link %q: %s", tpNext.Path, lnk, err)
+				}
+			}
+			// TODO when link load is implemented, it should go roughly here.
+
 			if err := tpNext.traverseInformatively(v, sNext, fn); err != nil {
 				return err
 			}
