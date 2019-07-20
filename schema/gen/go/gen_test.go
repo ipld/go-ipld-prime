@@ -49,7 +49,7 @@ func TestNuevo(t *testing.T) {
 
 	f = openOrPanic("_test/tStrang.go")
 	emitFileHeader(f)
-	emitType(generateKindString{tStrang}, f)
+	emitType(NewGeneratorForKindString(tStrang), f)
 
 	_ = generateKindStruct{tStract}
 	//f = openOrPanic("_test/tStract.go")
