@@ -106,7 +106,7 @@ func (generateKindedRejections) emitNodeMethodAsLink(w io.Writer, t schema.Type)
 
 // Embeddable to do all the "nope" methods at once.
 type generateKindedRejections_String struct {
-	schema.Type // used so we can generate error messages with the type name.
+	Type schema.Type // used so we can generate error messages with the type name.
 }
 
 func (gk generateKindedRejections_String) EmitNodeMethodTraverseField(w io.Writer) {
