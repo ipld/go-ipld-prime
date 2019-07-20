@@ -46,13 +46,32 @@ func TestNuevo(t *testing.T) {
 		)},
 		schema.StructRepresentation_Map{},
 	)
+	tStract2 := schema.SpawnStruct("Stract2",
+		[]schema.StructField{schema.SpawnStructField(
+			"nulble", tStrang, false, true,
+		)},
+		schema.StructRepresentation_Map{},
+	)
+	tStract3 := schema.SpawnStruct("Stract3",
+		[]schema.StructField{schema.SpawnStructField(
+			"noptble", tStrang, true, true,
+		)},
+		schema.StructRepresentation_Map{},
+	)
 
 	f = openOrPanic("_test/tStrang.go")
 	emitFileHeader(f)
 	emitType(NewGeneratorForKindString(tStrang), f)
 
-	_ = generateKindStruct{tStract}
-	//f = openOrPanic("_test/tStract.go")
-	//emitFileHeader(f)
-	//emitType(generateKindStruct{tStract}, f)
+	f = openOrPanic("_test/Stract.go")
+	emitFileHeader(f)
+	emitType(NewGeneratorForKindStruct(tStract), f)
+
+	f = openOrPanic("_test/Stract2.go")
+	emitFileHeader(f)
+	emitType(NewGeneratorForKindStruct(tStract2), f)
+
+	f = openOrPanic("_test/Stract3.go")
+	emitFileHeader(f)
+	emitType(NewGeneratorForKindStruct(tStract3), f)
 }
