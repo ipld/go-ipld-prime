@@ -82,9 +82,55 @@ func (gk generateKindStruct) EmitNodeMethodTraverseField(w io.Writer) {
 
 func (gk generateKindStruct) EmitNodeMethodMapIterator(w io.Writer) {
 	doTemplate(`
-		func ({{ .Type.Name }}) MapIterator() ipld.MapIterator {
-			return nil // TODO EmitNodeMethodMapIterator
+		func (x {{ .Type.Name }}) MapIterator() ipld.MapIterator {
+			return &_{{ .Type.Name }}__itr{&x, 0}
 		}
+
+		type _{{ .Type.Name }}__itr struct {
+			node *{{ .Type.Name }}
+			idx  int
+		}
+
+		func (itr *_{{ .Type.Name }}__itr) Next() (k ipld.Node, v ipld.Node, _ error) {
+			if itr.idx >= {{ len .Type.Fields }} {
+				return nil, nil, ipld.ErrIteratorOverread{}
+			}
+			switch itr.idx {
+			{{- range $i, $field := .Type.Fields }}
+			case {{ $i }}:
+				k = String{"{{ $field.Name }}"}
+				{{- if and $field.IsOptional $field.IsNullable }}
+				if !itr.node.{{ $field.Name }}__exists {
+					v = ipld.Undef
+					break
+				}
+				if itr.node.{{ $field.Name }} == nil {
+					v = ipld.Null
+					break
+				}
+				{{- else if $field.IsOptional }}
+				if itr.node.{{ $field.Name }} == nil {
+					v = ipld.Undef
+					break
+				}
+				{{- else if $field.IsNullable }}
+				if itr.node.{{ $field.Name }} == nil {
+					v = ipld.Null
+					break
+				}
+				{{- end}}
+				v = itr.node.{{ $field.Name }}
+			{{- end}}
+			default:
+				panic("unreachable")
+			}
+			itr.idx++
+			return
+		}
+		func (itr *_{{ .Type.Name }}__itr) Done() bool {
+			return itr.idx >= {{ len .Type.Fields }}
+		}
+
 	`, w, gk)
 }
 

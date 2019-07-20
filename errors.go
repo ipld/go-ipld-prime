@@ -45,3 +45,11 @@ type ErrNotExists struct {
 func (e ErrNotExists) Error() string {
 	return fmt.Sprintf("key not found: %q", e.Segment)
 }
+
+// ErrIteratorOverread is returned when calling 'Next' on a MapIterator or
+// ListIterator when it is already done.
+type ErrIteratorOverread struct{}
+
+func (e ErrIteratorOverread) Error() string {
+	return "iterator overread"
+}

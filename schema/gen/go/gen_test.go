@@ -40,29 +40,29 @@ func TestNuevo(t *testing.T) {
 	f := openOrPanic("_test/minima.go")
 	emitMinima(f)
 
-	tStrang := schema.SpawnString("Strang")
+	tString := schema.SpawnString("String")
 	tStract := schema.SpawnStruct("Stract",
 		[]schema.StructField{schema.SpawnStructField(
-			"aField", tStrang, false, false,
+			"aField", tString, false, false,
 		)},
 		schema.StructRepresentation_Map{},
 	)
 	tStract2 := schema.SpawnStruct("Stract2",
 		[]schema.StructField{schema.SpawnStructField(
-			"nulble", tStrang, false, true,
+			"nulble", tString, false, true,
 		)},
 		schema.StructRepresentation_Map{},
 	)
 	tStract3 := schema.SpawnStruct("Stract3",
 		[]schema.StructField{schema.SpawnStructField(
-			"noptble", tStrang, true, true,
+			"noptble", tString, true, true,
 		)},
 		schema.StructRepresentation_Map{},
 	)
 
-	f = openOrPanic("_test/tStrang.go")
+	f = openOrPanic("_test/tString.go")
 	emitFileHeader(f)
-	emitType(NewGeneratorForKindString(tStrang), f)
+	emitType(NewGeneratorForKindString(tString), f)
 
 	f = openOrPanic("_test/Stract.go")
 	emitFileHeader(f)

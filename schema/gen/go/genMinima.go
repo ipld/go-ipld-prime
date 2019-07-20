@@ -23,4 +23,11 @@ func (itr mapIteratorReject) Done() bool                          { return false
 func (itr listIteratorReject) Next() (int, ipld.Node, error) { return -1, nil, itr.err }
 func (itr listIteratorReject) Done() bool                    { return false }
 `))
+
+	// Box type for map keys.
+	// f.Write([]byte(`
+	// type boxedString struct { x string }
+	// `))
+	//
+	// ... nevermind; we already need strings in the prelude.  Use em.
 }
