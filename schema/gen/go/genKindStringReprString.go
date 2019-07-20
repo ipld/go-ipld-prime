@@ -7,6 +7,7 @@ import (
 func (gk generateKindString) EmitNodeType(w io.Writer) {
 	doTemplate(`
 		var _ ipld.Node = {{ .Type.Name }}{}
+		var _ typed.Node = typed.Node(nil) // TODO
 
 		type {{ .Type.Name }} struct{ x string }
 

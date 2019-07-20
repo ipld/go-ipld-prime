@@ -29,3 +29,19 @@ type ErrWrongKind struct {
 func (e ErrWrongKind) Error() string {
 	return fmt.Sprintf("func called on wrong kind: %s called on a %s node, but only makes sense on %s", e.MethodName, e.ActualKind, e.AppropriateKind)
 }
+
+// ErrNotExists may be returned from the traversal functions of the Node
+// interface to indicate a missing value.
+//
+// Note that typed.ErrNoSuchField is another type of error which sometimes
+// occurs in similar places as ErrNotExists.  ErrNoSuchField is preferred
+// when handling data with constraints provided by a schema that mean that
+// a field can *never* exist (as differentiated from a map key which is
+// simply absent in some data).
+type ErrNotExists struct {
+	Segment string // REVIEW: might be better to use PathSegment, but depends on another refactor.
+}
+
+func (e ErrNotExists) Error() string {
+	return fmt.Sprintf("key not found: %q", e.Segment)
+}

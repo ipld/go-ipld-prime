@@ -25,6 +25,7 @@ func (gk generateKindStruct) EmitNodeType(w io.Writer) {
 	//  and we get an extra bool for the second cardinality +1'er if both are true.
 	doTemplate(`
 		var _ ipld.Node = {{ .Type.Name }}{}
+		var _ typed.Node = typed.Node(nil) // TODO
 
 		type {{ .Type.Name }} struct{
 			{{- range $field := .Type.Fields }}
@@ -73,7 +74,7 @@ func (gk generateKindStruct) EmitNodeMethodTraverseField(w io.Writer) {
 				return x.{{ $field.Name }}, nil
 			{{- end}}
 			default:
-				return nil, ipld.ErrNoSuchField{FieldName: key} /* FIXME would this belong in the typed package?  or..? */
+				return nil, typed.ErrNoSuchField{Type: nil /*TODO*/, FieldName: key}
 			}
 		}
 	`, w, gk)

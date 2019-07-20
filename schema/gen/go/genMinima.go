@@ -7,6 +7,11 @@ import (
 func emitMinima(f io.Writer) {
 	emitFileHeader(f)
 
+	// Avoid moderate annoyance keeping track of imports.
+	f.Write([]byte(`
+var _ typed.Node = typed.Node(nil)
+`))
+
 	// Iterator rejection thunks.
 	f.Write([]byte(`
 type mapIteratorReject struct{ err error }
