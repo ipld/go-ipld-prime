@@ -75,6 +75,9 @@ func (n Node) ReprKind() ipld.ReprKind {
 	return n.kind
 }
 
+func (Node) IsUndefined() bool {
+	return false
+}
 func (n Node) IsNull() bool {
 	return n.bound.IsNil()
 }

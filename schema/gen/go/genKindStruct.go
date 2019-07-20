@@ -57,18 +57,18 @@ func (gk generateKindStruct) EmitNodeMethodTraverseField(w io.Writer) {
 			case "{{ $field.Name }}":
 				{{- if and $field.IsOptional $field.IsNullable }}
 				if !x.{{ $field.Name }}__exists {
-					return ipld.Undefined, nil
+					return ipld.Undef, nil
 				}
 				if x.{{ $field.Name }} == nil {
-					return ipld.Nil, nil
+					return ipld.Null, nil
 				}
 				{{- else if $field.IsOptional }}
 				if x.{{ $field.Name }} == nil {
-					return ipld.Undefined, nil
+					return ipld.Undef, nil
 				}
 				{{- else if $field.IsNullable }}
 				if x.{{ $field.Name }} == nil {
-					return ipld.Nil, nil
+					return ipld.Null, nil
 				}
 				{{- end}}
 				return x.{{ $field.Name }}, nil

@@ -26,6 +26,7 @@ func TestNuevo(t *testing.T) {
 		tg.EmitNodeMethodMapIterator(w)
 		tg.EmitNodeMethodListIterator(w)
 		tg.EmitNodeMethodLength(w)
+		tg.EmitNodeMethodIsUndefined(w)
 		tg.EmitNodeMethodIsNull(w)
 		tg.EmitNodeMethodAsBool(w)
 		tg.EmitNodeMethodAsInt(w)

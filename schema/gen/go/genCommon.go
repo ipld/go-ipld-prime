@@ -48,6 +48,14 @@ func (generateKindedRejections) emitNodeMethodLength(w io.Writer, t schema.Type)
 	`, w, t)
 }
 
+func (generateKindedRejections) emitNodeMethodIsUndefined(w io.Writer, t schema.Type) {
+	doTemplate(`
+		func ({{ .Name }}) IsUndefined() bool {
+			return false
+		}
+	`, w, t)
+}
+
 func (generateKindedRejections) emitNodeMethodIsNull(w io.Writer, t schema.Type) {
 	doTemplate(`
 		func ({{ .Name }}) IsNull() bool {
@@ -124,6 +132,9 @@ func (gk generateKindedRejections_String) EmitNodeMethodListIterator(w io.Writer
 func (gk generateKindedRejections_String) EmitNodeMethodLength(w io.Writer) {
 	generateKindedRejections{}.emitNodeMethodLength(w, gk.Type)
 }
+func (gk generateKindedRejections_String) EmitNodeMethodIsUndefined(w io.Writer) {
+	generateKindedRejections{}.emitNodeMethodIsUndefined(w, gk.Type)
+}
 func (gk generateKindedRejections_String) EmitNodeMethodIsNull(w io.Writer) {
 	generateKindedRejections{}.emitNodeMethodIsNull(w, gk.Type)
 }
@@ -155,6 +166,9 @@ func (gk generateKindedRejections_Map) EmitNodeMethodTraverseIndex(w io.Writer) 
 }
 func (gk generateKindedRejections_Map) EmitNodeMethodListIterator(w io.Writer) {
 	generateKindedRejections{}.emitNodeMethodListIterator(w, gk.Type)
+}
+func (gk generateKindedRejections_Map) EmitNodeMethodIsUndefined(w io.Writer) {
+	generateKindedRejections{}.emitNodeMethodIsUndefined(w, gk.Type)
 }
 func (gk generateKindedRejections_Map) EmitNodeMethodIsNull(w io.Writer) {
 	generateKindedRejections{}.emitNodeMethodIsNull(w, gk.Type)

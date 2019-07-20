@@ -43,6 +43,7 @@ type typeGenerator interface {
 	EmitNodeMethodMapIterator(io.Writer)
 	EmitNodeMethodListIterator(io.Writer)
 	EmitNodeMethodLength(io.Writer)
+	EmitNodeMethodIsUndefined(io.Writer)
 	EmitNodeMethodIsNull(io.Writer)
 	EmitNodeMethodAsBool(io.Writer)
 	EmitNodeMethodAsInt(io.Writer)
