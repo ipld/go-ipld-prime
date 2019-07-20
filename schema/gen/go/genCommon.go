@@ -82,8 +82,8 @@ func (generateKindedRejections) emitNodeMethodAsFloat(w io.Writer, t schema.Type
 
 func (generateKindedRejections) emitNodeMethodAsString(w io.Writer, t schema.Type) {
 	doTemplate(`
-		func ({{ .Name }}) AsBytes() ([]byte, error) {
-			return nil, ipld.ErrWrongKind{MethodName: "{{ .Name }}.AsBytes", AppropriateKind: ipld.ReprKindSet_JustString, ActualKind: {{ .Kind.ActsLike | ReprKindConst }}}
+		func ({{ .Name }}) AsString() (string, error) {
+			return "", ipld.ErrWrongKind{MethodName: "{{ .Name }}.AsString", AppropriateKind: ipld.ReprKindSet_JustString, ActualKind: {{ .Kind.ActsLike | ReprKindConst }}}
 		}
 	`, w, t)
 }
@@ -140,5 +140,40 @@ func (gk generateKindedRejections_String) EmitNodeMethodAsBytes(w io.Writer) {
 	generateKindedRejections{}.emitNodeMethodAsBytes(w, gk.Type)
 }
 func (gk generateKindedRejections_String) EmitNodeMethodAsLink(w io.Writer) {
+	generateKindedRejections{}.emitNodeMethodAsLink(w, gk.Type)
+}
+
+// Embeddable to do all the "nope" methods at once.
+//
+// Used for anything that "acts like" map (so, also struct).
+type generateKindedRejections_Map struct {
+	Type schema.Type // used so we can generate error messages with the type name.
+}
+
+func (gk generateKindedRejections_Map) EmitNodeMethodTraverseIndex(w io.Writer) {
+	generateKindedRejections{}.emitNodeMethodTraverseIndex(w, gk.Type)
+}
+func (gk generateKindedRejections_Map) EmitNodeMethodListIterator(w io.Writer) {
+	generateKindedRejections{}.emitNodeMethodListIterator(w, gk.Type)
+}
+func (gk generateKindedRejections_Map) EmitNodeMethodIsNull(w io.Writer) {
+	generateKindedRejections{}.emitNodeMethodIsNull(w, gk.Type)
+}
+func (gk generateKindedRejections_Map) EmitNodeMethodAsBool(w io.Writer) {
+	generateKindedRejections{}.emitNodeMethodAsBool(w, gk.Type)
+}
+func (gk generateKindedRejections_Map) EmitNodeMethodAsInt(w io.Writer) {
+	generateKindedRejections{}.emitNodeMethodAsInt(w, gk.Type)
+}
+func (gk generateKindedRejections_Map) EmitNodeMethodAsFloat(w io.Writer) {
+	generateKindedRejections{}.emitNodeMethodAsFloat(w, gk.Type)
+}
+func (gk generateKindedRejections_Map) EmitNodeMethodAsString(w io.Writer) {
+	generateKindedRejections{}.emitNodeMethodAsString(w, gk.Type)
+}
+func (gk generateKindedRejections_Map) EmitNodeMethodAsBytes(w io.Writer) {
+	generateKindedRejections{}.emitNodeMethodAsBytes(w, gk.Type)
+}
+func (gk generateKindedRejections_Map) EmitNodeMethodAsLink(w io.Writer) {
 	generateKindedRejections{}.emitNodeMethodAsLink(w, gk.Type)
 }
