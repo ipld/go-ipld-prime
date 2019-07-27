@@ -69,6 +69,9 @@ func (tp TraversalProgress) traverseAll(n ipld.Node, s selector.Selector, fn Adv
 			tpNext := tp
 			tpNext.Path = tp.Path.AppendSegment(ps.String())
 			if v.ReprKind() == ipld.ReprKind_Link {
+				lnk, _ := v.AsLink()
+				tpNext.LastBlock.Path = tpNext.Path
+				tpNext.LastBlock.Link = lnk
 				v, err = tpNext.loadLink(v, n)
 				if err != nil {
 					return err
@@ -96,6 +99,9 @@ func (tp TraversalProgress) traverseSelective(n ipld.Node, attn []selector.PathS
 			tpNext := tp
 			tpNext.Path = tp.Path.AppendSegment(ps.String())
 			if v.ReprKind() == ipld.ReprKind_Link {
+				lnk, _ := v.AsLink()
+				tpNext.LastBlock.Path = tpNext.Path
+				tpNext.LastBlock.Link = lnk
 				v, err = tpNext.loadLink(v, n)
 				if err != nil {
 					return err

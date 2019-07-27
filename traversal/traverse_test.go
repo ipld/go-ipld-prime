@@ -145,6 +145,9 @@ func TestTraverse(t *testing.T) {
 			case 4:
 				Wish(t, n, ShouldEqual, fnb.CreateString("alpha"))
 				Wish(t, tp.Path.String(), ShouldEqual, "nested/alink")
+				Wish(t, tp.LastBlock.Path.String(), ShouldEqual, "nested/alink")
+				Wish(t, tp.LastBlock.Link.String(), ShouldEqual, leafAlphaLnk.String())
+
 			case 5:
 				Wish(t, n, ShouldEqual, fnb.CreateString("zoo"))
 				Wish(t, tp.Path.String(), ShouldEqual, "nested/nonlink")
@@ -170,12 +173,18 @@ func TestTraverse(t *testing.T) {
 			case 0:
 				Wish(t, n, ShouldEqual, fnb.CreateString("alpha"))
 				Wish(t, tp.Path.String(), ShouldEqual, "0")
+				Wish(t, tp.LastBlock.Path.String(), ShouldEqual, "0")
+				Wish(t, tp.LastBlock.Link.String(), ShouldEqual, leafAlphaLnk.String())
 			case 1:
 				Wish(t, n, ShouldEqual, fnb.CreateString("alpha"))
 				Wish(t, tp.Path.String(), ShouldEqual, "1")
+				Wish(t, tp.LastBlock.Path.String(), ShouldEqual, "1")
+				Wish(t, tp.LastBlock.Link.String(), ShouldEqual, leafAlphaLnk.String())
 			case 2:
 				Wish(t, n, ShouldEqual, fnb.CreateString("beta"))
 				Wish(t, tp.Path.String(), ShouldEqual, "2")
+				Wish(t, tp.LastBlock.Path.String(), ShouldEqual, "2")
+				Wish(t, tp.LastBlock.Link.String(), ShouldEqual, leafBetaLnk.String())
 			}
 			order++
 			return nil
@@ -206,24 +215,38 @@ func TestTraverse(t *testing.T) {
 			case 0:
 				Wish(t, n, ShouldEqual, fnb.CreateString("alpha"))
 				Wish(t, tp.Path.String(), ShouldEqual, "linkedList/0")
+				Wish(t, tp.LastBlock.Path.String(), ShouldEqual, "linkedList/0")
+				Wish(t, tp.LastBlock.Link.String(), ShouldEqual, leafAlphaLnk.String())
 			case 1:
 				Wish(t, n, ShouldEqual, fnb.CreateString("alpha"))
 				Wish(t, tp.Path.String(), ShouldEqual, "linkedList/1")
+				Wish(t, tp.LastBlock.Path.String(), ShouldEqual, "linkedList/1")
+				Wish(t, tp.LastBlock.Link.String(), ShouldEqual, leafAlphaLnk.String())
 			case 2:
 				Wish(t, n, ShouldEqual, fnb.CreateString("beta"))
 				Wish(t, tp.Path.String(), ShouldEqual, "linkedList/2")
+				Wish(t, tp.LastBlock.Path.String(), ShouldEqual, "linkedList/2")
+				Wish(t, tp.LastBlock.Link.String(), ShouldEqual, leafBetaLnk.String())
 			case 3:
 				Wish(t, n, ShouldEqual, fnb.CreateString("alpha"))
 				Wish(t, tp.Path.String(), ShouldEqual, "linkedList/3")
+				Wish(t, tp.LastBlock.Path.String(), ShouldEqual, "linkedList/3")
+				Wish(t, tp.LastBlock.Link.String(), ShouldEqual, leafAlphaLnk.String())
 			case 4:
 				Wish(t, n, ShouldEqual, fnb.CreateBool(true))
 				Wish(t, tp.Path.String(), ShouldEqual, "linkedMap/foo")
+				Wish(t, tp.LastBlock.Path.String(), ShouldEqual, "linkedMap")
+				Wish(t, tp.LastBlock.Link.String(), ShouldEqual, middleMapNodeLnk.String())
 			case 5:
 				Wish(t, n, ShouldEqual, fnb.CreateString("zoo"))
 				Wish(t, tp.Path.String(), ShouldEqual, "linkedMap/nested/nonlink")
+				Wish(t, tp.LastBlock.Path.String(), ShouldEqual, "linkedMap")
+				Wish(t, tp.LastBlock.Link.String(), ShouldEqual, middleMapNodeLnk.String())
 			case 6:
 				Wish(t, n, ShouldEqual, fnb.CreateString("alpha"))
 				Wish(t, tp.Path.String(), ShouldEqual, "linkedMap/nested/alink")
+				Wish(t, tp.LastBlock.Path.String(), ShouldEqual, "linkedMap/nested/alink")
+				Wish(t, tp.LastBlock.Link.String(), ShouldEqual, leafAlphaLnk.String())
 			}
 			order++
 			return nil
