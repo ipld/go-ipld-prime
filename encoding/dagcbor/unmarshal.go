@@ -1,6 +1,7 @@
 package dagcbor
 
 import (
+	"errors"
 	"fmt"
 	"math"
 
@@ -10,6 +11,10 @@ import (
 
 	ipld "github.com/ipld/go-ipld-prime"
 	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
+)
+
+var (
+	ErrInvalidMultibase = errors.New("invalid multibase on IPLD link")
 )
 
 // This should be identical to the general feature in the parent package,
@@ -126,7 +131,10 @@ func unmarshal(nb ipld.NodeBuilder, tokSrc shared.TokenSource, tk *tok.Token) (i
 		}
 		switch tk.Tag {
 		case linkTag:
-			elCid, err := cid.Cast(tk.Bytes)
+			if tk.Bytes[0] != 0 {
+				return nil, ErrInvalidMultibase
+			}
+			elCid, err := cid.Cast(tk.Bytes[1:])
 			if err != nil {
 				return nil, err
 			}
