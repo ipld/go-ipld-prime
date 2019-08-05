@@ -79,6 +79,30 @@ type Node interface {
 	// e.g. traversal.Transform, for doing tree updates while keeping the
 	// existing implementation preferences and doing as many operations
 	// in copy-on-write fashions as possible.)
+	//
+	// ---
+	//
+	// More specifically, the contract of a NodeBuilder returned by this method
+	// is that it should be able to "replace" this node with a new one of
+	// similar properties.
+	// E.g., for a string, the builder must be able to build a new string.
+	// For a map, the builder must be able to build a new map.
+	// For a *struct* (when using typed nodes), the builder must be able to
+	// build new structs of the name type.
+	// Note that the promise doesn't extend further: there's no requirement
+	// that the builder be able to build maps if this node's kind is "string"
+	// (you can see why this lack-of-contract is important when considering
+	// typed nodes: if this node has a struct type, then should the builder
+	// be able to build other structs of different types?  Of course not;
+	// there'd be no way to define which other types to build!).
+	// For nulls, this means the builder doesn't have to do much at all!
+	//
+	// (Some Nodes may return a NodeBuilder that can be used for much more
+	// than replacing their own kind: for example, Node implementations from
+	// the ipldfree package tend to return a NodeBuilder than can build any
+	// other ipldfree.Node (e.g. even the builder obtained from a string node
+	// will be able to build maps).  This is not required by the contract;
+	// such packages only do so out of internal implementation convenience.)
 	NodeBuilder() NodeBuilder
 }
 
