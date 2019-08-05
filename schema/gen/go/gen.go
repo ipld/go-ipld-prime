@@ -43,6 +43,7 @@ type typeGenerator interface {
 	EmitNodeMethodMapIterator(io.Writer)
 	EmitNodeMethodListIterator(io.Writer)
 	EmitNodeMethodLength(io.Writer)
+	EmitNodeMethodIsUndefined(io.Writer)
 	EmitNodeMethodIsNull(io.Writer)
 	EmitNodeMethodAsBool(io.Writer)
 	EmitNodeMethodAsInt(io.Writer)
@@ -61,6 +62,7 @@ func emitFileHeader(w io.Writer) {
 	fmt.Fprintf(w, "package whee\n\n")
 	fmt.Fprintf(w, "import (\n")
 	fmt.Fprintf(w, "\tipld \"github.com/ipld/go-ipld-prime\"\n")
+	fmt.Fprintf(w, "\t\"github.com/ipld/go-ipld-prime/impl/typed\"\n")
 	fmt.Fprintf(w, ")\n\n")
 }
 

@@ -43,7 +43,7 @@ type Type interface {
 	// Unexported marker method to force the union closed.
 	_Type()
 
-	// Returns a pointer to the typesystem.Universe this type is a member of.
+	// Returns a pointer to the TypeSystem this Type is a member of.
 	TypeSystem() *TypeSystem
 
 	// Returns the string name of the Type.  This name is unique within the
@@ -52,14 +52,24 @@ type Type interface {
 	// that string will not be required to be unique.
 	Name() TypeName
 
-	// Returns the Representation Kind in the IPLD Data Model that this type
-	// is expected to be serialized as.
+	// Returns the Kind of this Type.
 	//
-	// Note that in one case, this will return `ipld.ReprKind_Invalid` --
-	// TypeUnion with Style=Kinded may be serialized as different kinds
-	// depending on their value, so we can't say from the type definition
-	// alone what kind we expect.
-	ReprKind() ipld.ReprKind
+	// The returned value is a 1:1 association with which of the concrete
+	// "schema.Type*" structs this interface can be cast to.
+	//
+	// Note that a schema.Kind is a different enum than ipld.ReprKind;
+	// and furthermore, there's no strict relationship between them.
+	// typed.Node values can be described by *two* distinct ReprKinds:
+	// one which describes how the Node itself will act,
+	// and another which describes how the Node presents for serialization.
+	// For some combinations of Type and representation strategy, one or both
+	// of the ReprKinds can be determined statically; but not always:
+	// it can sometimes be necessary to inspect the value quite concretely
+	// (e.g., `typed.Node{}.Representation().ReprKind()`) in order to find
+	// out exactly how a node will be serialized!  This is because some types
+	// can vary in representation kind based on their value (specifically,
+	// kinded-representation unions have this property).
+	Kind() Kind
 }
 
 var (
@@ -141,8 +151,11 @@ var (
 
 type TypeStruct struct {
 	anyType
-	tupleStyle bool // if true, ReprKind=Array instead of map (and optional fields are invalid!)
-	fields     []StructField
+	// n.b. `Fields` is an (order-preserving!) map in the schema-schema;
+	//  but it's a list here, with the keys denormalized into the value,
+	//   because that's typically how we use it.
+	fields         []StructField
+	representation StructRepresentation
 }
 type StructField struct {
 	name     string
@@ -150,6 +163,21 @@ type StructField struct {
 	optional bool
 	nullable bool
 }
+
+type StructRepresentation interface{ _StructRepresentation() }
+
+func (StructRepresentation_Map) _StructRepresentation()         {}
+func (StructRepresentation_Tuple) _StructRepresentation()       {}
+func (StructRepresentation_StringPairs) _StructRepresentation() {}
+func (StructRepresentation_StringJoin) _StructRepresentation()  {}
+
+type StructRepresentation_Map struct {
+	renames   map[string]string
+	implicits map[string]interface{}
+}
+type StructRepresentation_Tuple struct{}
+type StructRepresentation_StringPairs struct{ sep1, sep2 string }
+type StructRepresentation_StringJoin struct{ sep string }
 
 type TypeEnum struct {
 	anyType

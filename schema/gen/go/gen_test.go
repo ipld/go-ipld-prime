@@ -26,6 +26,7 @@ func TestNuevo(t *testing.T) {
 		tg.EmitNodeMethodMapIterator(w)
 		tg.EmitNodeMethodListIterator(w)
 		tg.EmitNodeMethodLength(w)
+		tg.EmitNodeMethodIsUndefined(w)
 		tg.EmitNodeMethodIsNull(w)
 		tg.EmitNodeMethodAsBool(w)
 		tg.EmitNodeMethodAsInt(w)
@@ -36,20 +37,55 @@ func TestNuevo(t *testing.T) {
 		tg.EmitNodeMethodNodeBuilder(w)
 	}
 
-	f := openOrPanic("_test/thunks.go")
+	f := openOrPanic("_test/minima.go")
+	emitMinima(f)
+
+	tString := schema.SpawnString("String")
+	tStract := schema.SpawnStruct("Stract",
+		[]schema.StructField{schema.SpawnStructField(
+			"aField", tString, false, false,
+		)},
+		schema.StructRepresentation_Map{},
+	)
+	tStract2 := schema.SpawnStruct("Stract2",
+		[]schema.StructField{schema.SpawnStructField(
+			"nulble", tString, false, true,
+		)},
+		schema.StructRepresentation_Map{},
+	)
+	tStract3 := schema.SpawnStruct("Stract3",
+		[]schema.StructField{schema.SpawnStructField(
+			"noptble", tString, true, true,
+		)},
+		schema.StructRepresentation_Map{},
+	)
+	tStroct := schema.SpawnStruct("Stroct",
+		[]schema.StructField{
+			schema.SpawnStructField("f1", tString, false, false),
+			schema.SpawnStructField("f2", tString, true, false),
+			schema.SpawnStructField("f3", tString, true, true),
+			schema.SpawnStructField("f4", tString, false, false),
+		},
+		schema.StructRepresentation_Map{},
+	)
+
+	f = openOrPanic("_test/tString.go")
 	emitFileHeader(f)
-	doTemplate(`
-		type mapIteratorReject struct{ err error }
-		type listIteratorReject struct{ err error }
+	emitType(NewGeneratorForKindString(tString), f)
 
-		func (itr mapIteratorReject) Next() (ipld.Node, ipld.Node, error) { return nil, nil, itr.err }
-		func (itr mapIteratorReject) Done() bool                          { return false }
-
-		func (itr listIteratorReject) Next() (int, ipld.Node, error) { return -1, nil, itr.err }
-		func (itr listIteratorReject) Done() bool                    { return false }
-	`, f, nil)
-
-	f = openOrPanic("_test/tStrang.go")
+	f = openOrPanic("_test/Stract.go")
 	emitFileHeader(f)
-	emitType(generateKindString{"Strang", schema.TypeString{}}, f)
+	emitType(NewGeneratorForKindStruct(tStract), f)
+
+	f = openOrPanic("_test/Stract2.go")
+	emitFileHeader(f)
+	emitType(NewGeneratorForKindStruct(tStract2), f)
+
+	f = openOrPanic("_test/Stract3.go")
+	emitFileHeader(f)
+	emitType(NewGeneratorForKindStruct(tStract3), f)
+
+	f = openOrPanic("_test/Stroct.go")
+	emitFileHeader(f)
+	emitType(NewGeneratorForKindStruct(tStroct), f)
 }

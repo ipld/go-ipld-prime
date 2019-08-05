@@ -54,12 +54,10 @@ type Node interface {
 	// Undefined nodes are returned when traversing a struct field that is
 	// defined by a schema but unset in the data.  (Undefined nodes are not
 	// possible otherwise; you'll only see them from `typed.Node`.)
-	//
-	// REVIEW: unsure if this should use ReprKind_Invalid or another enum.
-	// Since ReprKind_Invalid is returned for UnionStyle_Kinded, confusing.
-	// (But since this is only relevant for `typed.Node`, we can make that
-	// choice locally to that package.)
-	//IsUndefined() bool
+	// The undefined flag is necessary so iterating over structs can
+	// unambiguously make the distinction between values that are
+	// present-and-null versus values that are absent.
+	IsUndefined() bool
 
 	IsNull() bool
 	AsBool() (bool, error)

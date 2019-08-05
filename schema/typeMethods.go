@@ -1,56 +1,22 @@
 package schema
 
-import (
-	"github.com/ipld/go-ipld-prime"
-)
-
 /* cookie-cutter standard interface stuff */
 
 func (anyType) _Type()                    {}
 func (t anyType) TypeSystem() *TypeSystem { return t.universe }
 func (t anyType) Name() TypeName          { return t.name }
 
-func (TypeBool) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Bool
-}
-func (TypeString) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_String
-}
-func (TypeBytes) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Bytes
-}
-func (TypeInt) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Int
-}
-func (TypeFloat) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Float
-}
-func (TypeMap) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
-}
-func (TypeList) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_List
-}
-func (TypeLink) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Link
-}
-func (t TypeUnion) ReprKind() ipld.ReprKind {
-	if t.style == UnionStyle_Kinded {
-		return ipld.ReprKind_Invalid
-	} else {
-		return ipld.ReprKind_Map
-	}
-}
-func (t TypeStruct) ReprKind() ipld.ReprKind {
-	if t.tupleStyle {
-		return ipld.ReprKind_List
-	} else {
-		return ipld.ReprKind_Map
-	}
-}
-func (TypeEnum) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_String
-}
+func (TypeBool) Kind() Kind   { return Kind_Bool }
+func (TypeString) Kind() Kind { return Kind_String }
+func (TypeBytes) Kind() Kind  { return Kind_Bytes }
+func (TypeInt) Kind() Kind    { return Kind_Int }
+func (TypeFloat) Kind() Kind  { return Kind_Float }
+func (TypeMap) Kind() Kind    { return Kind_Map }
+func (TypeList) Kind() Kind   { return Kind_List }
+func (TypeLink) Kind() Kind   { return Kind_Link }
+func (TypeUnion) Kind() Kind  { return Kind_Union }
+func (TypeStruct) Kind() Kind { return Kind_Struct }
+func (TypeEnum) Kind() Kind   { return Kind_Enum }
 
 /* interesting methods per Type type */
 

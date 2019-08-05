@@ -29,7 +29,7 @@ func TestScalarUnmarshal(t *testing.T) {
 		tb := &TokenSourceBucket{tokens: []tok.Token{
 			{Type: tok.TString, Str: "zooooom"},
 		}}
-		nb := Strang__NodeBuilder{}
+		nb := String__NodeBuilder{}
 		n, err := encoding.Unmarshal(nb, tb)
 		Wish(t, err, ShouldEqual, nil)
 		Wish(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_String)
