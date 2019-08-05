@@ -103,6 +103,12 @@ type Node interface {
 	// other ipldfree.Node (e.g. even the builder obtained from a string node
 	// will be able to build maps).  This is not required by the contract;
 	// such packages only do so out of internal implementation convenience.)
+	//
+	// This "able to replace" behavior also has a specific application regarding
+	// nodes implementing Advanced Data Layouts: it means that the NodeBuilder
+	// returned by this method must produce a new Node using that same ADL.
+	// For example, if a Node is a map implemented by some sort of HAMT, its
+	// NodeBuilder must also produce a new HAMT.
 	NodeBuilder() NodeBuilder
 }
 
