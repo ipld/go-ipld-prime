@@ -15,14 +15,14 @@ func TestParseExploreRecursive(t *testing.T) {
 	fnb := fluent.WrapNodeBuilder(ipldfree.NodeBuilder()) // just for the other fixture building
 	t.Run("parsing non map node should error", func(t *testing.T) {
 		sn := fnb.CreateInt(0)
-		_, err := ParseExploreRecursive(sn)
+		_, err := ParseContext{}.ParseExploreRecursive(sn)
 		Wish(t, err, ShouldEqual, fmt.Errorf("selector spec parse rejected: selector body must be a map"))
 	})
 	t.Run("parsing map node without sequence field should error", func(t *testing.T) {
 		sn := fnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
 			mb.Insert(knb.CreateString(maxDepthKey), vnb.CreateInt(2))
 		})
-		_, err := ParseExploreRecursive(sn)
+		_, err := ParseContext{}.ParseExploreRecursive(sn)
 		Wish(t, err, ShouldEqual, fmt.Errorf("selector spec parse rejected: sequence field must be present in ExploreRecursive selector"))
 	})
 	t.Run("parsing map node without maxDepth field should error", func(t *testing.T) {
@@ -31,7 +31,7 @@ func TestParseExploreRecursive(t *testing.T) {
 				mb.Insert(knb.CreateString(matcherKey), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {}))
 			}))
 		})
-		_, err := ParseExploreRecursive(sn)
+		_, err := ParseContext{}.ParseExploreRecursive(sn)
 		Wish(t, err, ShouldEqual, fmt.Errorf("selector spec parse rejected: maxDepth field must be present in ExploreRecursive selector"))
 	})
 	t.Run("parsing map node with maxDepth field that is not an int should error", func(t *testing.T) {
@@ -41,7 +41,7 @@ func TestParseExploreRecursive(t *testing.T) {
 				mb.Insert(knb.CreateString(matcherKey), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {}))
 			}))
 		})
-		_, err := ParseExploreRecursive(sn)
+		_, err := ParseContext{}.ParseExploreRecursive(sn)
 		Wish(t, err, ShouldEqual, fmt.Errorf("selector spec parse rejected: maxDepth field must be a number in ExploreRecursive selector"))
 	})
 	t.Run("parsing map node with sequence field with invalid selector node should return child's error", func(t *testing.T) {
@@ -49,7 +49,7 @@ func TestParseExploreRecursive(t *testing.T) {
 			mb.Insert(knb.CreateString(maxDepthKey), vnb.CreateInt(2))
 			mb.Insert(knb.CreateString(sequenceKey), vnb.CreateInt(0))
 		})
-		_, err := ParseExploreRecursive(sn)
+		_, err := ParseContext{}.ParseExploreRecursive(sn)
 		Wish(t, err, ShouldEqual, fmt.Errorf("selector spec parse rejected: selector is a keyed union and thus must be a map"))
 	})
 	t.Run("parsing map node with sequence field with valid selector w/o ExploreRecursiveEdge should not parse", func(t *testing.T) {
@@ -63,12 +63,12 @@ func TestParseExploreRecursive(t *testing.T) {
 				}))
 			}))
 		})
-		_, err := ParseExploreRecursive(sn)
+		_, err := ParseContext{}.ParseExploreRecursive(sn)
 		Wish(t, err, ShouldEqual, fmt.Errorf("selector spec parse rejected: ExploreRecursive must have at least one ExploreRecursiveEdge"))
 	})
 	t.Run("parsing map node that is ExploreRecursiveEdge without ExploreRecursive parent should not parse", func(t *testing.T) {
 		sn := fnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {})
-		_, err := ParseExploreRecursiveEdge(sn)
+		_, err := ParseContext{}.ParseExploreRecursiveEdge(sn)
 		Wish(t, err, ShouldEqual, fmt.Errorf("selector spec parse rejected: ExploreRecursiveEdge must be beneath ExploreRecursive"))
 	})
 	t.Run("parsing map node with sequence field with valid selector node should parse", func(t *testing.T) {
@@ -82,7 +82,7 @@ func TestParseExploreRecursive(t *testing.T) {
 				}))
 			}))
 		})
-		s, err := ParseExploreRecursive(sn)
+		s, err := ParseContext{}.ParseExploreRecursive(sn)
 		Wish(t, err, ShouldEqual, nil)
 		Wish(t, s, ShouldEqual, ExploreRecursive{ExploreAll{ExploreRecursiveEdge{}}, ExploreAll{ExploreRecursiveEdge{}}, 2})
 	})

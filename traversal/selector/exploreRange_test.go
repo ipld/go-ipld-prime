@@ -14,7 +14,7 @@ func TestParseExploreRange(t *testing.T) {
 	fnb := fluent.WrapNodeBuilder(ipldfree.NodeBuilder()) // just for the other fixture building
 	t.Run("parsing non map node should error", func(t *testing.T) {
 		sn := fnb.CreateInt(0)
-		_, err := ParseExploreRange(sn)
+		_, err := ParseContext{}.ParseExploreRange(sn)
 		Wish(t, err, ShouldEqual, fmt.Errorf("selector spec parse rejected: selector body must be a map"))
 	})
 	t.Run("parsing map node without next field should error", func(t *testing.T) {
@@ -22,7 +22,7 @@ func TestParseExploreRange(t *testing.T) {
 			mb.Insert(knb.CreateString(startKey), vnb.CreateInt(2))
 			mb.Insert(knb.CreateString(endKey), vnb.CreateInt(3))
 		})
-		_, err := ParseExploreRange(sn)
+		_, err := ParseContext{}.ParseExploreRange(sn)
 		Wish(t, err, ShouldEqual, fmt.Errorf("selector spec parse rejected: next field must be present in ExploreRange selector"))
 	})
 	t.Run("parsing map node without start field should error", func(t *testing.T) {
@@ -32,7 +32,7 @@ func TestParseExploreRange(t *testing.T) {
 				mb.Insert(knb.CreateString(matcherKey), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {}))
 			}))
 		})
-		_, err := ParseExploreRange(sn)
+		_, err := ParseContext{}.ParseExploreRange(sn)
 		Wish(t, err, ShouldEqual, fmt.Errorf("selector spec parse rejected: start field must be present in ExploreRange selector"))
 	})
 	t.Run("parsing map node with start field that is not an int should error", func(t *testing.T) {
@@ -43,7 +43,7 @@ func TestParseExploreRange(t *testing.T) {
 				mb.Insert(knb.CreateString(matcherKey), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {}))
 			}))
 		})
-		_, err := ParseExploreRange(sn)
+		_, err := ParseContext{}.ParseExploreRange(sn)
 		Wish(t, err, ShouldEqual, fmt.Errorf("selector spec parse rejected: start field must be a number in ExploreRange selector"))
 	})
 	t.Run("parsing map node without end field should error", func(t *testing.T) {
@@ -53,7 +53,7 @@ func TestParseExploreRange(t *testing.T) {
 				mb.Insert(knb.CreateString(matcherKey), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {}))
 			}))
 		})
-		_, err := ParseExploreRange(sn)
+		_, err := ParseContext{}.ParseExploreRange(sn)
 		Wish(t, err, ShouldEqual, fmt.Errorf("selector spec parse rejected: end field must be present in ExploreRange selector"))
 	})
 	t.Run("parsing map node with end field that is not an int should error", func(t *testing.T) {
@@ -64,7 +64,7 @@ func TestParseExploreRange(t *testing.T) {
 				mb.Insert(knb.CreateString(matcherKey), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {}))
 			}))
 		})
-		_, err := ParseExploreRange(sn)
+		_, err := ParseContext{}.ParseExploreRange(sn)
 		Wish(t, err, ShouldEqual, fmt.Errorf("selector spec parse rejected: end field must be a number in ExploreRange selector"))
 	})
 	t.Run("parsing map node where end is not greater than start should error", func(t *testing.T) {
@@ -75,7 +75,7 @@ func TestParseExploreRange(t *testing.T) {
 				mb.Insert(knb.CreateString(matcherKey), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {}))
 			}))
 		})
-		_, err := ParseExploreRange(sn)
+		_, err := ParseContext{}.ParseExploreRange(sn)
 		Wish(t, err, ShouldEqual, fmt.Errorf("selector spec parse rejected: end field must be greater than start field in ExploreRange selector"))
 	})
 	t.Run("parsing map node with next field with invalid selector node should return child's error", func(t *testing.T) {
@@ -84,7 +84,7 @@ func TestParseExploreRange(t *testing.T) {
 			mb.Insert(knb.CreateString(endKey), vnb.CreateInt(3))
 			mb.Insert(knb.CreateString(nextSelectorKey), vnb.CreateInt(0))
 		})
-		_, err := ParseExploreRange(sn)
+		_, err := ParseContext{}.ParseExploreRange(sn)
 		Wish(t, err, ShouldEqual, fmt.Errorf("selector spec parse rejected: selector is a keyed union and thus must be a map"))
 	})
 
@@ -96,7 +96,7 @@ func TestParseExploreRange(t *testing.T) {
 				mb.Insert(knb.CreateString(matcherKey), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {}))
 			}))
 		})
-		s, err := ParseExploreRange(sn)
+		s, err := ParseContext{}.ParseExploreRange(sn)
 		Wish(t, err, ShouldEqual, nil)
 		Wish(t, s, ShouldEqual, ExploreRange{Matcher{}, 2, 3, []PathSegment{PathSegmentInt{I: 2}}})
 	})

@@ -14,14 +14,14 @@ func TestParseExploreIndex(t *testing.T) {
 	fnb := fluent.WrapNodeBuilder(ipldfree.NodeBuilder()) // just for the other fixture building
 	t.Run("parsing non map node should error", func(t *testing.T) {
 		sn := fnb.CreateInt(0)
-		_, err := ParseExploreIndex(sn)
+		_, err := ParseContext{}.ParseExploreIndex(sn)
 		Wish(t, err, ShouldEqual, fmt.Errorf("selector spec parse rejected: selector body must be a map"))
 	})
 	t.Run("parsing map node without next field should error", func(t *testing.T) {
 		sn := fnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
 			mb.Insert(knb.CreateString(indexKey), vnb.CreateInt(2))
 		})
-		_, err := ParseExploreIndex(sn)
+		_, err := ParseContext{}.ParseExploreIndex(sn)
 		Wish(t, err, ShouldEqual, fmt.Errorf("selector spec parse rejected: next field must be present in ExploreIndex selector"))
 	})
 	t.Run("parsing map node without index field should error", func(t *testing.T) {
@@ -30,7 +30,7 @@ func TestParseExploreIndex(t *testing.T) {
 				mb.Insert(knb.CreateString(matcherKey), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {}))
 			}))
 		})
-		_, err := ParseExploreIndex(sn)
+		_, err := ParseContext{}.ParseExploreIndex(sn)
 		Wish(t, err, ShouldEqual, fmt.Errorf("selector spec parse rejected: index field must be present in ExploreIndex selector"))
 	})
 	t.Run("parsing map node with index field that is not an int should error", func(t *testing.T) {
@@ -40,7 +40,7 @@ func TestParseExploreIndex(t *testing.T) {
 				mb.Insert(knb.CreateString(matcherKey), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {}))
 			}))
 		})
-		_, err := ParseExploreIndex(sn)
+		_, err := ParseContext{}.ParseExploreIndex(sn)
 		Wish(t, err, ShouldEqual, fmt.Errorf("selector spec parse rejected: index field must be a number in ExploreIndex selector"))
 	})
 	t.Run("parsing map node with next field with invalid selector node should return child's error", func(t *testing.T) {
@@ -48,7 +48,7 @@ func TestParseExploreIndex(t *testing.T) {
 			mb.Insert(knb.CreateString(indexKey), vnb.CreateInt(2))
 			mb.Insert(knb.CreateString(nextSelectorKey), vnb.CreateInt(0))
 		})
-		_, err := ParseExploreIndex(sn)
+		_, err := ParseContext{}.ParseExploreIndex(sn)
 		Wish(t, err, ShouldEqual, fmt.Errorf("selector spec parse rejected: selector is a keyed union and thus must be a map"))
 	})
 	t.Run("parsing map node with next field with valid selector node should parse", func(t *testing.T) {
@@ -58,7 +58,7 @@ func TestParseExploreIndex(t *testing.T) {
 				mb.Insert(knb.CreateString(matcherKey), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {}))
 			}))
 		})
-		s, err := ParseExploreIndex(sn)
+		s, err := ParseContext{}.ParseExploreIndex(sn)
 		Wish(t, err, ShouldEqual, nil)
 		Wish(t, s, ShouldEqual, ExploreIndex{Matcher{}, [1]PathSegment{PathSegmentInt{I: 2}}})
 	})

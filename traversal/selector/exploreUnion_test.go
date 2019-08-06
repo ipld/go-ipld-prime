@@ -14,7 +14,7 @@ func TestParseExploreUnion(t *testing.T) {
 	fnb := fluent.WrapNodeBuilder(ipldfree.NodeBuilder()) // just for the other fixture building
 	t.Run("parsing non list node should error", func(t *testing.T) {
 		sn := fnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {})
-		_, err := ParseExploreUnion(sn)
+		_, err := ParseContext{}.ParseExploreUnion(sn)
 		Wish(t, err, ShouldEqual, fmt.Errorf("selector spec parse rejected: explore union selector must be a list"))
 	})
 	t.Run("parsing list node where one node is invalid should return child's error", func(t *testing.T) {
@@ -24,7 +24,7 @@ func TestParseExploreUnion(t *testing.T) {
 			}))
 			lb.Append(vnb.CreateInt(2))
 		})
-		_, err := ParseExploreUnion(sn)
+		_, err := ParseContext{}.ParseExploreUnion(sn)
 		Wish(t, err, ShouldEqual, fmt.Errorf("selector spec parse rejected: selector is a keyed union and thus must be a map"))
 	})
 
@@ -42,7 +42,7 @@ func TestParseExploreUnion(t *testing.T) {
 				}))
 			}))
 		})
-		s, err := ParseExploreUnion(sn)
+		s, err := ParseContext{}.ParseExploreUnion(sn)
 		Wish(t, err, ShouldEqual, nil)
 		Wish(t, s, ShouldEqual, ExploreUnion{[]Selector{Matcher{}, ExploreIndex{Matcher{}, [1]PathSegment{PathSegmentInt{I: 2}}}}})
 	})

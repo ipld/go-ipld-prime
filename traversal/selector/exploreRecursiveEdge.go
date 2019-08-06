@@ -33,13 +33,13 @@ func (s ExploreRecursiveEdge) Decide(n ipld.Node) bool {
 
 // ParseExploreRecursiveEdge assembles a Selector
 // from a exploreRecursiveEdge selector node
-func ParseExploreRecursiveEdge(n ipld.Node, selectorContexts ...SelectorContext) (Selector, error) {
+func (pc ParseContext) ParseExploreRecursiveEdge(n ipld.Node) (Selector, error) {
 	if n.ReprKind() != ipld.ReprKind_Map {
 		return nil, fmt.Errorf("selector spec parse rejected: selector body must be a map")
 	}
 	s := ExploreRecursiveEdge{}
-	for _, selectorContext := range selectorContexts {
-		if selectorContext.Link(s) {
+	for _, parent := range pc.parentStack {
+		if parent.Link(s) {
 			return s, nil
 		}
 	}

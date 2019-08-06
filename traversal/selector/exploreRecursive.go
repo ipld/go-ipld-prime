@@ -76,7 +76,7 @@ func (erc *exploreRecursiveContext) Link(s Selector) bool {
 }
 
 // ParseExploreRecursive assembles a Selector from a ExploreRecursive selector node
-func ParseExploreRecursive(n ipld.Node, selectorContexts ...SelectorContext) (Selector, error) {
+func (pc ParseContext) ParseExploreRecursive(n ipld.Node) (Selector, error) {
 	if n.ReprKind() != ipld.ReprKind_Map {
 		return nil, fmt.Errorf("selector spec parse rejected: selector body must be a map")
 	}
@@ -94,7 +94,7 @@ func ParseExploreRecursive(n ipld.Node, selectorContexts ...SelectorContext) (Se
 		return nil, fmt.Errorf("selector spec parse rejected: sequence field must be present in ExploreRecursive selector")
 	}
 	erc := &exploreRecursiveContext{}
-	selector, err := ParseSelector(sequence, append([]SelectorContext{erc}, selectorContexts...)...)
+	selector, err := pc.PushParent(erc).ParseSelector(sequence)
 	if err != nil {
 		return nil, err
 	}
