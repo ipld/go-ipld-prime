@@ -1,15 +1,16 @@
-package selector
+package builder
 
 import (
 	ipld "github.com/ipld/go-ipld-prime"
 	"github.com/ipld/go-ipld-prime/fluent"
+	selector "github.com/ipld/go-ipld-prime/traversal/selector"
 )
 
 // SelectorSpec is a specification for a selector that can build
 // a selector ipld.Node or an actual parsed Selector
 type SelectorSpec interface {
 	Node() ipld.Node
-	Selector() (Selector, error)
+	Selector() (selector.Selector, error)
 }
 
 // SelectorSpecBuilder is a utility interface to build selector ipld nodes
@@ -56,8 +57,8 @@ func (ss selectorSpec) Node() ipld.Node {
 	return ss.n
 }
 
-func (ss selectorSpec) Selector() (Selector, error) {
-	return ParseSelector(ss.n)
+func (ss selectorSpec) Selector() (selector.Selector, error) {
+	return selector.ParseSelector(ss.n)
 }
 
 // NewSelectorSpecBuilder creates a SelectorSpecBuilder from an underlying ipld NodeBuilder
@@ -69,7 +70,7 @@ func NewSelectorSpecBuilder(nb ipld.NodeBuilder) SelectorSpecBuilder {
 func (ssb *selectorSpecBuilder) ExploreRecursiveEdge() SelectorSpec {
 	return selectorSpec{
 		ssb.fnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-			mb.Insert(knb.CreateString(exploreRecursiveEdgeKey), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {}))
+			mb.Insert(knb.CreateString(selector.SelectorKey_ExploreRecursiveEdge), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {}))
 		}),
 	}
 }
@@ -77,9 +78,9 @@ func (ssb *selectorSpecBuilder) ExploreRecursiveEdge() SelectorSpec {
 func (ssb *selectorSpecBuilder) ExploreRecursive(maxDepth int, sequence SelectorSpec) SelectorSpec {
 	return selectorSpec{
 		ssb.fnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-			mb.Insert(knb.CreateString(exploreRecursiveKey), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-				mb.Insert(knb.CreateString(maxDepthKey), vnb.CreateInt(maxDepth))
-				mb.Insert(knb.CreateString(sequenceKey), sequence.Node())
+			mb.Insert(knb.CreateString(selector.SelectorKey_ExploreRecursive), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
+				mb.Insert(knb.CreateString(selector.SelectorKey_MaxDepth), vnb.CreateInt(maxDepth))
+				mb.Insert(knb.CreateString(selector.SelectorKey_Sequence), sequence.Node())
 			}))
 		}),
 	}
@@ -88,8 +89,8 @@ func (ssb *selectorSpecBuilder) ExploreRecursive(maxDepth int, sequence Selector
 func (ssb *selectorSpecBuilder) ExploreAll(next SelectorSpec) SelectorSpec {
 	return selectorSpec{
 		ssb.fnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-			mb.Insert(knb.CreateString(exploreAllKey), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-				mb.Insert(knb.CreateString(nextSelectorKey), next.Node())
+			mb.Insert(knb.CreateString(selector.SelectorKey_ExploreAll), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
+				mb.Insert(knb.CreateString(selector.SelectorKey_Next), next.Node())
 			}))
 		}),
 	}
@@ -97,9 +98,9 @@ func (ssb *selectorSpecBuilder) ExploreAll(next SelectorSpec) SelectorSpec {
 func (ssb *selectorSpecBuilder) ExploreIndex(index int, next SelectorSpec) SelectorSpec {
 	return selectorSpec{
 		ssb.fnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-			mb.Insert(knb.CreateString(exploreIndexKey), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-				mb.Insert(knb.CreateString(indexKey), vnb.CreateInt(index))
-				mb.Insert(knb.CreateString(nextSelectorKey), next.Node())
+			mb.Insert(knb.CreateString(selector.SelectorKey_ExploreIndex), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
+				mb.Insert(knb.CreateString(selector.SelectorKey_Index), vnb.CreateInt(index))
+				mb.Insert(knb.CreateString(selector.SelectorKey_Next), next.Node())
 			}))
 		}),
 	}
@@ -108,10 +109,10 @@ func (ssb *selectorSpecBuilder) ExploreIndex(index int, next SelectorSpec) Selec
 func (ssb *selectorSpecBuilder) ExploreRange(start int, end int, next SelectorSpec) SelectorSpec {
 	return selectorSpec{
 		ssb.fnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-			mb.Insert(knb.CreateString(exploreRangeKey), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-				mb.Insert(knb.CreateString(startKey), vnb.CreateInt(start))
-				mb.Insert(knb.CreateString(endKey), vnb.CreateInt(end))
-				mb.Insert(knb.CreateString(nextSelectorKey), next.Node())
+			mb.Insert(knb.CreateString(selector.SelectorKey_ExploreRange), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
+				mb.Insert(knb.CreateString(selector.SelectorKey_Start), vnb.CreateInt(start))
+				mb.Insert(knb.CreateString(selector.SelectorKey_End), vnb.CreateInt(end))
+				mb.Insert(knb.CreateString(selector.SelectorKey_Next), next.Node())
 			}))
 		}),
 	}
@@ -120,11 +121,10 @@ func (ssb *selectorSpecBuilder) ExploreRange(start int, end int, next SelectorSp
 func (ssb *selectorSpecBuilder) ExploreUnion(members ...SelectorSpec) SelectorSpec {
 	return selectorSpec{
 		ssb.fnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-			mb.Insert(knb.CreateString(exploreUnionKey), vnb.CreateList(func(lb fluent.ListBuilder, vnb fluent.NodeBuilder) {
+			mb.Insert(knb.CreateString(selector.SelectorKey_ExploreUnion), vnb.CreateList(func(lb fluent.ListBuilder, vnb fluent.NodeBuilder) {
 				for _, member := range members {
 					lb.Append(member.Node())
 				}
-
 			}))
 		}),
 	}
@@ -133,8 +133,8 @@ func (ssb *selectorSpecBuilder) ExploreUnion(members ...SelectorSpec) SelectorSp
 func (ssb *selectorSpecBuilder) ExploreFields(specBuilder ExploreFieldsSpecBuildingClosure) SelectorSpec {
 	return selectorSpec{
 		ssb.fnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-			mb.Insert(knb.CreateString(exploreFieldsKey), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-				mb.Insert(knb.CreateString(fieldsKey), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
+			mb.Insert(knb.CreateString(selector.SelectorKey_ExploreFields), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
+				mb.Insert(knb.CreateString(selector.SelectorKey_Fields), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
 					specBuilder(exploreFieldsSpecBuilder{mb, knb})
 				}))
 			}))
@@ -145,7 +145,7 @@ func (ssb *selectorSpecBuilder) ExploreFields(specBuilder ExploreFieldsSpecBuild
 func (ssb *selectorSpecBuilder) Matcher() SelectorSpec {
 	return selectorSpec{
 		ssb.fnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-			mb.Insert(knb.CreateString(matcherKey), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {}))
+			mb.Insert(knb.CreateString(selector.SelectorKey_Matcher), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {}))
 		}),
 	}
 }

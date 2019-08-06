@@ -10,6 +10,8 @@ import (
 	ipldfree "github.com/ipld/go-ipld-prime/impl/free"
 	"github.com/ipld/go-ipld-prime/traversal"
 	"github.com/ipld/go-ipld-prime/traversal/selector"
+	"github.com/ipld/go-ipld-prime/traversal/selector/builder"
+
 )
 
 /* Remember, we've got the following fixtures in scope:
@@ -42,7 +44,7 @@ var (
 // covers traverse using a variety of selectors.
 // all cases here use one already-loaded Node; no link-loading exercised.
 func TestTraverse(t *testing.T) {
-	ssb := selector.NewSelectorSpecBuilder(ipldfree.NodeBuilder())
+	ssb := builder.NewSelectorSpecBuilder(ipldfree.NodeBuilder())
 	t.Run("traverse selecting true should visit the root", func(t *testing.T) {
 		err := traversal.Traverse(fnb.CreateString("x"), selector.Matcher{}, func(tp traversal.TraversalProgress, n ipld.Node) error {
 			Wish(t, n, ShouldEqual, fnb.CreateString("x"))
@@ -60,7 +62,7 @@ func TestTraverse(t *testing.T) {
 		Wish(t, err, ShouldEqual, nil)
 	})
 	t.Run("traverse selecting fields should work", func(t *testing.T) {
-		ss := ssb.ExploreFields(func(efsb selector.ExploreFieldsSpecBuilder) {
+		ss := ssb.ExploreFields(func(efsb builder.ExploreFieldsSpecBuilder) {
 			efsb.Insert("foo", ssb.Matcher())
 			efsb.Insert("bar", ssb.Matcher())
 		})
@@ -83,9 +85,9 @@ func TestTraverse(t *testing.T) {
 		Wish(t, order, ShouldEqual, 2)
 	})
 	t.Run("traverse selecting fields recursively should work", func(t *testing.T) {
-		ss := ssb.ExploreFields(func(efsb selector.ExploreFieldsSpecBuilder) {
+		ss := ssb.ExploreFields(func(efsb builder.ExploreFieldsSpecBuilder) {
 			efsb.Insert("foo", ssb.Matcher())
-			efsb.Insert("nested", ssb.ExploreFields(func(efsb selector.ExploreFieldsSpecBuilder) {
+			efsb.Insert("nested", ssb.ExploreFields(func(efsb builder.ExploreFieldsSpecBuilder) {
 				efsb.Insert("nonlink", ssb.Matcher())
 			}))
 		})

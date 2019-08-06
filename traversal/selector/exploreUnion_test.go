@@ -20,7 +20,7 @@ func TestParseExploreUnion(t *testing.T) {
 	t.Run("parsing list node where one node is invalid should return child's error", func(t *testing.T) {
 		sn := fnb.CreateList(func(lb fluent.ListBuilder, vnb fluent.NodeBuilder) {
 			lb.Append(vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-				mb.Insert(knb.CreateString(matcherKey), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {}))
+				mb.Insert(knb.CreateString(SelectorKey_Matcher), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {}))
 			}))
 			lb.Append(vnb.CreateInt(2))
 		})
@@ -31,13 +31,13 @@ func TestParseExploreUnion(t *testing.T) {
 	t.Run("parsing map node with next field with valid selector node should parse", func(t *testing.T) {
 		sn := fnb.CreateList(func(lb fluent.ListBuilder, vnb fluent.NodeBuilder) {
 			lb.Append(vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-				mb.Insert(knb.CreateString(matcherKey), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {}))
+				mb.Insert(knb.CreateString(SelectorKey_Matcher), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {}))
 			}))
 			lb.Append(vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-				mb.Insert(knb.CreateString(exploreIndexKey), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-					mb.Insert(knb.CreateString(indexKey), vnb.CreateInt(2))
-					mb.Insert(knb.CreateString(nextSelectorKey), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-						mb.Insert(knb.CreateString(matcherKey), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {}))
+				mb.Insert(knb.CreateString(SelectorKey_ExploreIndex), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
+					mb.Insert(knb.CreateString(SelectorKey_Index), vnb.CreateInt(2))
+					mb.Insert(knb.CreateString(SelectorKey_Next), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
+						mb.Insert(knb.CreateString(SelectorKey_Matcher), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {}))
 					}))
 				}))
 			}))

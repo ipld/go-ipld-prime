@@ -19,17 +19,17 @@ func TestParseExploreRange(t *testing.T) {
 	})
 	t.Run("parsing map node without next field should error", func(t *testing.T) {
 		sn := fnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-			mb.Insert(knb.CreateString(startKey), vnb.CreateInt(2))
-			mb.Insert(knb.CreateString(endKey), vnb.CreateInt(3))
+			mb.Insert(knb.CreateString(SelectorKey_Start), vnb.CreateInt(2))
+			mb.Insert(knb.CreateString(SelectorKey_End), vnb.CreateInt(3))
 		})
 		_, err := ParseContext{}.ParseExploreRange(sn)
 		Wish(t, err, ShouldEqual, fmt.Errorf("selector spec parse rejected: next field must be present in ExploreRange selector"))
 	})
 	t.Run("parsing map node without start field should error", func(t *testing.T) {
 		sn := fnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-			mb.Insert(knb.CreateString(endKey), vnb.CreateInt(3))
-			mb.Insert(knb.CreateString(nextSelectorKey), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-				mb.Insert(knb.CreateString(matcherKey), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {}))
+			mb.Insert(knb.CreateString(SelectorKey_End), vnb.CreateInt(3))
+			mb.Insert(knb.CreateString(SelectorKey_Next), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
+				mb.Insert(knb.CreateString(SelectorKey_Matcher), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {}))
 			}))
 		})
 		_, err := ParseContext{}.ParseExploreRange(sn)
@@ -37,10 +37,10 @@ func TestParseExploreRange(t *testing.T) {
 	})
 	t.Run("parsing map node with start field that is not an int should error", func(t *testing.T) {
 		sn := fnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-			mb.Insert(knb.CreateString(startKey), vnb.CreateString("cheese"))
-			mb.Insert(knb.CreateString(endKey), vnb.CreateInt(3))
-			mb.Insert(knb.CreateString(nextSelectorKey), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-				mb.Insert(knb.CreateString(matcherKey), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {}))
+			mb.Insert(knb.CreateString(SelectorKey_Start), vnb.CreateString("cheese"))
+			mb.Insert(knb.CreateString(SelectorKey_End), vnb.CreateInt(3))
+			mb.Insert(knb.CreateString(SelectorKey_Next), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
+				mb.Insert(knb.CreateString(SelectorKey_Matcher), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {}))
 			}))
 		})
 		_, err := ParseContext{}.ParseExploreRange(sn)
@@ -48,9 +48,9 @@ func TestParseExploreRange(t *testing.T) {
 	})
 	t.Run("parsing map node without end field should error", func(t *testing.T) {
 		sn := fnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-			mb.Insert(knb.CreateString(startKey), vnb.CreateInt(2))
-			mb.Insert(knb.CreateString(nextSelectorKey), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-				mb.Insert(knb.CreateString(matcherKey), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {}))
+			mb.Insert(knb.CreateString(SelectorKey_Start), vnb.CreateInt(2))
+			mb.Insert(knb.CreateString(SelectorKey_Next), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
+				mb.Insert(knb.CreateString(SelectorKey_Matcher), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {}))
 			}))
 		})
 		_, err := ParseContext{}.ParseExploreRange(sn)
@@ -58,10 +58,10 @@ func TestParseExploreRange(t *testing.T) {
 	})
 	t.Run("parsing map node with end field that is not an int should error", func(t *testing.T) {
 		sn := fnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-			mb.Insert(knb.CreateString(startKey), vnb.CreateInt(2))
-			mb.Insert(knb.CreateString(endKey), vnb.CreateString("cheese"))
-			mb.Insert(knb.CreateString(nextSelectorKey), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-				mb.Insert(knb.CreateString(matcherKey), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {}))
+			mb.Insert(knb.CreateString(SelectorKey_Start), vnb.CreateInt(2))
+			mb.Insert(knb.CreateString(SelectorKey_End), vnb.CreateString("cheese"))
+			mb.Insert(knb.CreateString(SelectorKey_Next), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
+				mb.Insert(knb.CreateString(SelectorKey_Matcher), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {}))
 			}))
 		})
 		_, err := ParseContext{}.ParseExploreRange(sn)
@@ -69,10 +69,10 @@ func TestParseExploreRange(t *testing.T) {
 	})
 	t.Run("parsing map node where end is not greater than start should error", func(t *testing.T) {
 		sn := fnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-			mb.Insert(knb.CreateString(startKey), vnb.CreateInt(3))
-			mb.Insert(knb.CreateString(endKey), vnb.CreateInt(2))
-			mb.Insert(knb.CreateString(nextSelectorKey), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-				mb.Insert(knb.CreateString(matcherKey), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {}))
+			mb.Insert(knb.CreateString(SelectorKey_Start), vnb.CreateInt(3))
+			mb.Insert(knb.CreateString(SelectorKey_End), vnb.CreateInt(2))
+			mb.Insert(knb.CreateString(SelectorKey_Next), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
+				mb.Insert(knb.CreateString(SelectorKey_Matcher), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {}))
 			}))
 		})
 		_, err := ParseContext{}.ParseExploreRange(sn)
@@ -80,9 +80,9 @@ func TestParseExploreRange(t *testing.T) {
 	})
 	t.Run("parsing map node with next field with invalid selector node should return child's error", func(t *testing.T) {
 		sn := fnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-			mb.Insert(knb.CreateString(startKey), vnb.CreateInt(2))
-			mb.Insert(knb.CreateString(endKey), vnb.CreateInt(3))
-			mb.Insert(knb.CreateString(nextSelectorKey), vnb.CreateInt(0))
+			mb.Insert(knb.CreateString(SelectorKey_Start), vnb.CreateInt(2))
+			mb.Insert(knb.CreateString(SelectorKey_End), vnb.CreateInt(3))
+			mb.Insert(knb.CreateString(SelectorKey_Next), vnb.CreateInt(0))
 		})
 		_, err := ParseContext{}.ParseExploreRange(sn)
 		Wish(t, err, ShouldEqual, fmt.Errorf("selector spec parse rejected: selector is a keyed union and thus must be a map"))
@@ -90,10 +90,10 @@ func TestParseExploreRange(t *testing.T) {
 
 	t.Run("parsing map node with next field with valid selector node should parse", func(t *testing.T) {
 		sn := fnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-			mb.Insert(knb.CreateString(startKey), vnb.CreateInt(2))
-			mb.Insert(knb.CreateString(endKey), vnb.CreateInt(3))
-			mb.Insert(knb.CreateString(nextSelectorKey), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-				mb.Insert(knb.CreateString(matcherKey), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {}))
+			mb.Insert(knb.CreateString(SelectorKey_Start), vnb.CreateInt(2))
+			mb.Insert(knb.CreateString(SelectorKey_End), vnb.CreateInt(3))
+			mb.Insert(knb.CreateString(SelectorKey_Next), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
+				mb.Insert(knb.CreateString(SelectorKey_Matcher), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {}))
 			}))
 		})
 		s, err := ParseContext{}.ParseExploreRange(sn)
