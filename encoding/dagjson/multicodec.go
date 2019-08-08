@@ -37,7 +37,7 @@ func Decoder(nb ipld.NodeBuilder, r io.Reader) (ipld.Node, error) {
 	for {
 		_, err := r.Read(buf[:])
 		switch buf[0] {
-		case ' ', '\t', '\r', '\n': // continue
+		case ' ', 0x0, '\t', '\r', '\n': // continue
 		default:
 			return n, fmt.Errorf("unexpected content after end of json object")
 		}

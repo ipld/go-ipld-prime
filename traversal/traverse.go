@@ -1,6 +1,8 @@
 package traversal
 
 import (
+	"fmt"
+
 	ipld "github.com/ipld/go-ipld-prime"
 	"github.com/ipld/go-ipld-prime/traversal/selector"
 )
@@ -48,27 +50,95 @@ func (tp TraversalProgress) traverseInformatively(n ipld.Node, s selector.Select
 	default:
 		return nil
 	}
-	// TODO: should only do this full loop if high-cardinality indicated.
-	//   attn := s.Interests()
-	//   if attn == nil {
-	// FIXME need another kind switch here, and list support!
-	for itr := n.MapIterator(); !itr.Done(); {
-		k, v, err := itr.Next()
+	attn := s.Interests()
+	if attn == nil {
+		return tp.traverseAll(n, s, fn)
+	}
+	return tp.traverseSelective(n, attn, s, fn)
+
+}
+
+func (tp TraversalProgress) traverseAll(n ipld.Node, s selector.Selector, fn AdvVisitFn) error {
+	for itr := selector.NewSegmentIterator(n); !itr.Done(); {
+		ps, v, err := itr.Next()
 		if err != nil {
 			return err
 		}
-		kstr, _ := k.AsString()
-		sNext := s.Explore(n, selector.PathSegmentString{kstr})
+		sNext := s.Explore(n, ps)
 		if sNext != nil {
-			// TODO when link load is implemented, it should go roughly here.
 			tpNext := tp
-			tpNext.Path = tp.Path.AppendSegment(kstr)
-			if err := tpNext.traverseInformatively(v, sNext, fn); err != nil {
+			tpNext.Path = tp.Path.AppendSegment(ps.String())
+			if v.ReprKind() == ipld.ReprKind_Link {
+				lnk, _ := v.AsLink()
+				tpNext.LastBlock.Path = tpNext.Path
+				tpNext.LastBlock.Link = lnk
+				v, err = tpNext.loadLink(v, n)
+				if err != nil {
+					return err
+				}
+			}
+
+			err = tpNext.traverseInformatively(v, sNext, fn)
+			if err != nil {
 				return err
 			}
 		}
 	}
 	return nil
+}
+
+func (tp TraversalProgress) traverseSelective(n ipld.Node, attn []selector.PathSegment, s selector.Selector, fn AdvVisitFn) error {
+	for _, ps := range attn {
+		// TODO: Probably not the most efficient way to be doing this...
+		v, err := n.TraverseField(ps.String())
+		if err != nil {
+			continue
+		}
+		sNext := s.Explore(n, ps)
+		if sNext != nil {
+			tpNext := tp
+			tpNext.Path = tp.Path.AppendSegment(ps.String())
+			if v.ReprKind() == ipld.ReprKind_Link {
+				lnk, _ := v.AsLink()
+				tpNext.LastBlock.Path = tpNext.Path
+				tpNext.LastBlock.Link = lnk
+				v, err = tpNext.loadLink(v, n)
+				if err != nil {
+					return err
+				}
+			}
+
+			err = tpNext.traverseInformatively(v, sNext, fn)
+			if err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
+func (tp TraversalProgress) loadLink(v ipld.Node, parent ipld.Node) (ipld.Node, error) {
+	lnk, err := v.AsLink()
+	if err != nil {
+		return nil, err
+	}
+	// Assemble the LinkContext in case the Loader or NBChooser want it.
+	lnkCtx := ipld.LinkContext{
+		LinkPath:   tp.Path,
+		LinkNode:   v,
+		ParentNode: parent,
+	}
+	// Load link!
+	v, err = lnk.Load(
+		tp.Cfg.Ctx,
+		lnkCtx,
+		tp.Cfg.LinkNodeBuilderChooser(lnk, lnkCtx),
+		tp.Cfg.LinkLoader,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error traversing node at %q: could not load link %q: %s", tp.Path, lnk, err)
+	}
+	return v, nil
 }
 
 func (tp TraversalProgress) TraverseTransform(n ipld.Node, s selector.Selector, fn TransformFn) (ipld.Node, error) {

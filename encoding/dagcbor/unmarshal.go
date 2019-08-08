@@ -24,7 +24,10 @@ var (
 func Unmarshal(nb ipld.NodeBuilder, tokSrc shared.TokenSource) (ipld.Node, error) {
 	var tk tok.Token
 	done, err := tokSrc.Step(&tk)
-	if done || err != nil {
+	if err != nil {
+		return nil, err
+	}
+	if done && !tk.Type.IsValue() {
 		return nil, err
 	}
 	return unmarshal(nb, tokSrc, &tk)

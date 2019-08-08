@@ -107,3 +107,48 @@ func (ps PathSegmentInt) String() string {
 func (ps PathSegmentInt) Index() (int, error) {
 	return ps.I, nil
 }
+
+// SegmentIterator iterates either a list or a map, generating PathSegments
+// instead of indexes or keys
+type SegmentIterator interface {
+	Next() (pathSegment PathSegment, value ipld.Node, err error)
+	Done() bool
+}
+
+// NewSegmentIterator generates a new iterator based on the node type
+func NewSegmentIterator(n ipld.Node) SegmentIterator {
+	if n.ReprKind() == ipld.ReprKind_List {
+		return listSegmentIterator{n.ListIterator()}
+	}
+	return mapSegmentIterator{n.MapIterator()}
+}
+
+type listSegmentIterator struct {
+	ipld.ListIterator
+}
+
+func (lsi listSegmentIterator) Next() (pathSegment PathSegment, value ipld.Node, err error) {
+	i, v, err := lsi.ListIterator.Next()
+	return PathSegmentInt{i}, v, err
+}
+
+func (lsi listSegmentIterator) Done() bool {
+	return lsi.ListIterator.Done()
+}
+
+type mapSegmentIterator struct {
+	ipld.MapIterator
+}
+
+func (msi mapSegmentIterator) Next() (pathSegment PathSegment, value ipld.Node, err error) {
+	k, v, err := msi.MapIterator.Next()
+	if err != nil {
+		return nil, v, err
+	}
+	kstr, _ := k.AsString()
+	return PathSegmentString{kstr}, v, err
+}
+
+func (msi mapSegmentIterator) Done() bool {
+	return msi.MapIterator.Done()
+}

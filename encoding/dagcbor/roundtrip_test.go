@@ -43,3 +43,19 @@ func TestRoundtrip(t *testing.T) {
 		Wish(t, n2, ShouldEqual, n)
 	})
 }
+
+func TestRoundtripSimple(t *testing.T) {
+	simple := fnb.CreateString("applesauce")
+	t.Run("encoding", func(t *testing.T) {
+		var buf bytes.Buffer
+		err := Encoder(simple, &buf)
+		Wish(t, err, ShouldEqual, nil)
+		Wish(t, buf.String(), ShouldEqual, `japplesauce`)
+	})
+	t.Run("decoding", func(t *testing.T) {
+		buf := bytes.NewBufferString(`japplesauce`)
+		simple2, err := Decoder(ipldfree.NodeBuilder(), buf)
+		Wish(t, err, ShouldEqual, nil)
+		Wish(t, simple2, ShouldEqual, simple)
+	})
+}
