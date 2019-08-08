@@ -81,7 +81,7 @@ func (pc ParseContext) ParseExploreRecursive(n ipld.Node) (Selector, error) {
 		return nil, fmt.Errorf("selector spec parse rejected: selector body must be a map")
 	}
 
-	maxDepthNode, err := n.TraverseField(maxDepthKey)
+	maxDepthNode, err := n.TraverseField(SelectorKey_MaxDepth)
 	if err != nil {
 		return nil, fmt.Errorf("selector spec parse rejected: maxDepth field must be present in ExploreRecursive selector")
 	}
@@ -89,7 +89,7 @@ func (pc ParseContext) ParseExploreRecursive(n ipld.Node) (Selector, error) {
 	if err != nil {
 		return nil, fmt.Errorf("selector spec parse rejected: maxDepth field must be a number in ExploreRecursive selector")
 	}
-	sequence, err := n.TraverseField(sequenceKey)
+	sequence, err := n.TraverseField(SelectorKey_Sequence)
 	if err != nil {
 		return nil, fmt.Errorf("selector spec parse rejected: sequence field must be present in ExploreRecursive selector")
 	}

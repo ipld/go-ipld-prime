@@ -24,15 +24,15 @@ func TestParseExploreAll(t *testing.T) {
 
 	t.Run("parsing map node without next field with invalid selector node should return child's error", func(t *testing.T) {
 		sn := fnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-			mb.Insert(knb.CreateString(nextSelectorKey), vnb.CreateInt(0))
+			mb.Insert(knb.CreateString(SelectorKey_Next), vnb.CreateInt(0))
 		})
 		_, err := ParseContext{}.ParseExploreAll(sn)
 		Wish(t, err, ShouldEqual, fmt.Errorf("selector spec parse rejected: selector is a keyed union and thus must be a map"))
 	})
 	t.Run("parsing map node with next field with valid selector node should parse", func(t *testing.T) {
 		sn := fnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-			mb.Insert(knb.CreateString(nextSelectorKey), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-				mb.Insert(knb.CreateString(matcherKey), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {}))
+			mb.Insert(knb.CreateString(SelectorKey_Next), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
+				mb.Insert(knb.CreateString(SelectorKey_Matcher), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {}))
 			}))
 		})
 		s, err := ParseContext{}.ParseExploreAll(sn)

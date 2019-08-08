@@ -23,14 +23,14 @@ func TestParseExploreFields(t *testing.T) {
 	})
 	t.Run("parsing map node with fields value that is not a map should error", func(t *testing.T) {
 		sn := fnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-			mb.Insert(knb.CreateString(fieldsKey), vnb.CreateString("cheese"))
+			mb.Insert(knb.CreateString(SelectorKey_Fields), vnb.CreateString("cheese"))
 		})
 		_, err := ParseContext{}.ParseExploreFields(sn)
 		Wish(t, err, ShouldEqual, fmt.Errorf("selector spec parse rejected: fields in ExploreFields selector must be a map"))
 	})
 	t.Run("parsing map node with selector node in fields that is invalid should return child's error", func(t *testing.T) {
 		sn := fnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-			mb.Insert(knb.CreateString(fieldsKey), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
+			mb.Insert(knb.CreateString(SelectorKey_Fields), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
 				mb.Insert(knb.CreateString("applesauce"), vnb.CreateInt(0))
 			}))
 		})
@@ -39,9 +39,9 @@ func TestParseExploreFields(t *testing.T) {
 	})
 	t.Run("parsing map node with fields value that is map of only valid selector node should parse", func(t *testing.T) {
 		sn := fnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-			mb.Insert(knb.CreateString(fieldsKey), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
+			mb.Insert(knb.CreateString(SelectorKey_Fields), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
 				mb.Insert(knb.CreateString("applesauce"), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-					mb.Insert(knb.CreateString(matcherKey), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {}))
+					mb.Insert(knb.CreateString(SelectorKey_Matcher), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {}))
 				}))
 			}))
 		})

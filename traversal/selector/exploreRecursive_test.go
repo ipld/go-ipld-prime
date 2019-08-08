@@ -20,15 +20,15 @@ func TestParseExploreRecursive(t *testing.T) {
 	})
 	t.Run("parsing map node without sequence field should error", func(t *testing.T) {
 		sn := fnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-			mb.Insert(knb.CreateString(maxDepthKey), vnb.CreateInt(2))
+			mb.Insert(knb.CreateString(SelectorKey_MaxDepth), vnb.CreateInt(2))
 		})
 		_, err := ParseContext{}.ParseExploreRecursive(sn)
 		Wish(t, err, ShouldEqual, fmt.Errorf("selector spec parse rejected: sequence field must be present in ExploreRecursive selector"))
 	})
 	t.Run("parsing map node without maxDepth field should error", func(t *testing.T) {
 		sn := fnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-			mb.Insert(knb.CreateString(sequenceKey), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-				mb.Insert(knb.CreateString(matcherKey), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {}))
+			mb.Insert(knb.CreateString(SelectorKey_Sequence), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
+				mb.Insert(knb.CreateString(SelectorKey_Matcher), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {}))
 			}))
 		})
 		_, err := ParseContext{}.ParseExploreRecursive(sn)
@@ -36,9 +36,9 @@ func TestParseExploreRecursive(t *testing.T) {
 	})
 	t.Run("parsing map node with maxDepth field that is not an int should error", func(t *testing.T) {
 		sn := fnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-			mb.Insert(knb.CreateString(maxDepthKey), vnb.CreateString("cheese"))
-			mb.Insert(knb.CreateString(sequenceKey), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-				mb.Insert(knb.CreateString(matcherKey), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {}))
+			mb.Insert(knb.CreateString(SelectorKey_MaxDepth), vnb.CreateString("cheese"))
+			mb.Insert(knb.CreateString(SelectorKey_Sequence), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
+				mb.Insert(knb.CreateString(SelectorKey_Matcher), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {}))
 			}))
 		})
 		_, err := ParseContext{}.ParseExploreRecursive(sn)
@@ -46,19 +46,19 @@ func TestParseExploreRecursive(t *testing.T) {
 	})
 	t.Run("parsing map node with sequence field with invalid selector node should return child's error", func(t *testing.T) {
 		sn := fnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-			mb.Insert(knb.CreateString(maxDepthKey), vnb.CreateInt(2))
-			mb.Insert(knb.CreateString(sequenceKey), vnb.CreateInt(0))
+			mb.Insert(knb.CreateString(SelectorKey_MaxDepth), vnb.CreateInt(2))
+			mb.Insert(knb.CreateString(SelectorKey_Sequence), vnb.CreateInt(0))
 		})
 		_, err := ParseContext{}.ParseExploreRecursive(sn)
 		Wish(t, err, ShouldEqual, fmt.Errorf("selector spec parse rejected: selector is a keyed union and thus must be a map"))
 	})
 	t.Run("parsing map node with sequence field with valid selector w/o ExploreRecursiveEdge should not parse", func(t *testing.T) {
 		sn := fnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-			mb.Insert(knb.CreateString(maxDepthKey), vnb.CreateInt(2))
-			mb.Insert(knb.CreateString(sequenceKey), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-				mb.Insert(knb.CreateString(exploreAllKey), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-					mb.Insert(knb.CreateString(nextSelectorKey), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-						mb.Insert(knb.CreateString(matcherKey), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {}))
+			mb.Insert(knb.CreateString(SelectorKey_MaxDepth), vnb.CreateInt(2))
+			mb.Insert(knb.CreateString(SelectorKey_Sequence), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
+				mb.Insert(knb.CreateString(SelectorKey_ExploreAll), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
+					mb.Insert(knb.CreateString(SelectorKey_Next), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
+						mb.Insert(knb.CreateString(SelectorKey_Matcher), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {}))
 					}))
 				}))
 			}))
@@ -73,11 +73,11 @@ func TestParseExploreRecursive(t *testing.T) {
 	})
 	t.Run("parsing map node with sequence field with valid selector node should parse", func(t *testing.T) {
 		sn := fnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-			mb.Insert(knb.CreateString(maxDepthKey), vnb.CreateInt(2))
-			mb.Insert(knb.CreateString(sequenceKey), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-				mb.Insert(knb.CreateString(exploreAllKey), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-					mb.Insert(knb.CreateString(nextSelectorKey), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-						mb.Insert(knb.CreateString(exploreRecursiveEdgeKey), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {}))
+			mb.Insert(knb.CreateString(SelectorKey_MaxDepth), vnb.CreateInt(2))
+			mb.Insert(knb.CreateString(SelectorKey_Sequence), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
+				mb.Insert(knb.CreateString(SelectorKey_ExploreAll), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
+					mb.Insert(knb.CreateString(SelectorKey_Next), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
+						mb.Insert(knb.CreateString(SelectorKey_ExploreRecursiveEdge), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {}))
 					}))
 				}))
 			}))

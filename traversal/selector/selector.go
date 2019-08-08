@@ -44,21 +44,21 @@ func (pc ParseContext) ParseSelector(n ipld.Node) (Selector, error) {
 	// Switch over the single key to determine which selector body comes next.
 	//  (This switch is where the keyed union discriminators concretely happen.)
 	switch kstr {
-	case exploreFieldsKey:
+	case SelectorKey_ExploreFields:
 		return pc.ParseExploreFields(v)
-	case exploreAllKey:
+	case SelectorKey_ExploreAll:
 		return pc.ParseExploreAll(v)
-	case exploreIndexKey:
+	case SelectorKey_ExploreIndex:
 		return pc.ParseExploreIndex(v)
-	case exploreRangeKey:
+	case SelectorKey_ExploreRange:
 		return pc.ParseExploreRange(v)
-	case exploreUnionKey:
+	case SelectorKey_ExploreUnion:
 		return pc.ParseExploreUnion(v)
-	case exploreRecursiveKey:
+	case SelectorKey_ExploreRecursive:
 		return pc.ParseExploreRecursive(v)
-	case exploreRecursiveEdgeKey:
+	case SelectorKey_ExploreRecursiveEdge:
 		return pc.ParseExploreRecursiveEdge(v)
-	case matcherKey:
+	case SelectorKey_Matcher:
 		return pc.ParseMatcher(v)
 	default:
 		return nil, fmt.Errorf("selector spec parse rejected: %q is not a known member of the selector union", kstr)
