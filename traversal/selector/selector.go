@@ -15,8 +15,24 @@ type Selector interface {
 	Decide(ipld.Node) bool
 }
 
+// ParsedParent is created whenever you are parsing a selector node that may have
+// child selectors nodes that need to know it
+type ParsedParent interface {
+	Link(s Selector) bool
+}
+
+// ParseContext tracks the progress when parsing a selector
+type ParseContext struct {
+	parentStack []ParsedParent
+}
+
 // ParseSelector creates a Selector that can be traversed from an IPLD Selector node
 func ParseSelector(n ipld.Node) (Selector, error) {
+	return ParseContext{}.ParseSelector(n)
+}
+
+// ParseSelector creates a Selector from an IPLD Selector Node with the given context
+func (pc ParseContext) ParseSelector(n ipld.Node) (Selector, error) {
 	if n.ReprKind() != ipld.ReprKind_Map {
 		return nil, fmt.Errorf("selector spec parse rejected: selector is a keyed union and thus must be a map")
 	}
@@ -29,20 +45,33 @@ func ParseSelector(n ipld.Node) (Selector, error) {
 	//  (This switch is where the keyed union discriminators concretely happen.)
 	switch kstr {
 	case exploreFieldsKey:
-		return ParseExploreFields(v)
+		return pc.ParseExploreFields(v)
 	case exploreAllKey:
-		return ParseExploreAll(v)
+		return pc.ParseExploreAll(v)
 	case exploreIndexKey:
-		return ParseExploreIndex(v)
+		return pc.ParseExploreIndex(v)
 	case exploreRangeKey:
-		return ParseExploreRange(v)
+		return pc.ParseExploreRange(v)
 	case exploreUnionKey:
-		return ParseExploreUnion(v)
+		return pc.ParseExploreUnion(v)
+	case exploreRecursiveKey:
+		return pc.ParseExploreRecursive(v)
+	case exploreRecursiveEdgeKey:
+		return pc.ParseExploreRecursiveEdge(v)
 	case matcherKey:
-		return ParseMatcher(v)
+		return pc.ParseMatcher(v)
 	default:
 		return nil, fmt.Errorf("selector spec parse rejected: %q is not a known member of the selector union", kstr)
 	}
+}
+
+// PushParent puts a parent onto the stack of parents for a parse context
+func (pc ParseContext) PushParent(parent ParsedParent) ParseContext {
+	l := len(pc.parentStack)
+	parents := make([]ParsedParent, 0, l+1)
+	parents = append(parents, parent)
+	parents = append(parents, pc.parentStack...)
+	return ParseContext{parents}
 }
 
 // PathSegment can describe either an index in a list or a key in a map, as either int or a string

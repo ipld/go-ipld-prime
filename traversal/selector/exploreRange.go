@@ -43,7 +43,7 @@ func (s ExploreRange) Decide(n ipld.Node) bool {
 
 // ParseExploreRange assembles a Selector
 // from a ExploreRange selector node
-func ParseExploreRange(n ipld.Node) (Selector, error) {
+func (pc ParseContext) ParseExploreRange(n ipld.Node) (Selector, error) {
 	if n.ReprKind() != ipld.ReprKind_Map {
 		return nil, fmt.Errorf("selector spec parse rejected: selector body must be a map")
 	}
@@ -70,7 +70,7 @@ func ParseExploreRange(n ipld.Node) (Selector, error) {
 	if err != nil {
 		return nil, fmt.Errorf("selector spec parse rejected: next field must be present in ExploreRange selector")
 	}
-	selector, err := ParseSelector(next)
+	selector, err := pc.ParseSelector(next)
 	if err != nil {
 		return nil, err
 	}

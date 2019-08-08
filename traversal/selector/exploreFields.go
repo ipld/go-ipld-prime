@@ -40,7 +40,7 @@ func (s ExploreFields) Decide(n ipld.Node) bool {
 
 // ParseExploreFields assembles a Selector
 // from a ExploreFields selector node
-func ParseExploreFields(n ipld.Node) (Selector, error) {
+func (pc ParseContext) ParseExploreFields(n ipld.Node) (Selector, error) {
 	if n.ReprKind() != ipld.ReprKind_Map {
 		return nil, fmt.Errorf("selector spec parse rejected: selector body must be a map")
 	}
@@ -63,7 +63,7 @@ func ParseExploreFields(n ipld.Node) (Selector, error) {
 
 		kstr, _ := kn.AsString()
 		x.interests = append(x.interests, PathSegmentString{kstr})
-		x.selections[kstr], err = ParseSelector(v)
+		x.selections[kstr], err = pc.ParseSelector(v)
 		if err != nil {
 			return nil, err
 		}
