@@ -277,4 +277,44 @@ func TestExploreRecursiveExplore(t *testing.T) {
 		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, ExploreRecursive{sideSelector, sideSelector, maxDepth - 2}, maxDepth - 1})
 		Wish(t, err, ShouldEqual, nil)
 	})
+	t.Run("exploring should work with explore union and recursion", func(t *testing.T) {
+		parentsSelector := ExploreUnion{[]Selector{ExploreAll{Matcher{}}, ExploreIndex{recursiveEdge, [1]PathSegment{PathSegmentInt{0}}}}}
+		subTree := ExploreFields{map[string]Selector{"Parents": parentsSelector}, []PathSegment{PathSegmentString{S: "Parents"}}}
+		rs = ExploreRecursive{subTree, subTree, maxDepth}
+		nodeString := `{
+			"Parents": [
+				{
+					"Parents": [
+						{
+							"Parents": [
+								{
+									"Parents": []
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+		`
+		rn, err := dagjson.Decoder(ipldfree.NodeBuilder(), bytes.NewBufferString(nodeString))
+		Wish(t, err, ShouldEqual, nil)
+		rs = rs.Explore(rn, PathSegmentString{S: "Parents"})
+		rn, err = rn.TraverseField("Parents")
+		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, parentsSelector, maxDepth})
+		Wish(t, err, ShouldEqual, nil)
+		rs = rs.Explore(rn, PathSegmentInt{I: 0})
+		rn, err = rn.TraverseIndex(0)
+		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, ExploreUnion{[]Selector{Matcher{}, subTree}}, maxDepth - 1})
+		Wish(t, err, ShouldEqual, nil)
+		rs = rs.Explore(rn, PathSegmentString{S: "Parents"})
+
+		rn, err = rn.TraverseField("Parents")
+		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, parentsSelector, maxDepth - 1})
+		Wish(t, err, ShouldEqual, nil)
+		rs = rs.Explore(rn, PathSegmentInt{I: 0})
+		rn, err = rn.TraverseIndex(0)
+		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, ExploreUnion{[]Selector{Matcher{}, subTree}}, maxDepth - 2})
+		Wish(t, err, ShouldEqual, nil)
+	})
 }

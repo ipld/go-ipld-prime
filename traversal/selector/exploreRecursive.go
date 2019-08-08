@@ -45,17 +45,58 @@ func (s ExploreRecursive) Interests() []PathSegment {
 // Explore returns the node's selector for all fields
 func (s ExploreRecursive) Explore(n ipld.Node, p PathSegment) Selector {
 	nextSelector := s.current.Explore(n, p)
+	maxDepth := s.maxDepth
 	if nextSelector == nil {
 		return nil
 	}
-	_, ok := nextSelector.(ExploreRecursiveEdge)
-	if !ok {
-		return ExploreRecursive{s.sequence, nextSelector, s.maxDepth}
+	if !s.hasRecursiveEdge(nextSelector) {
+		return ExploreRecursive{s.sequence, nextSelector, maxDepth}
 	}
-	if s.maxDepth < 2 {
-		return nil
+	if maxDepth < 2 {
+		return s.replaceRecursiveEdge(nextSelector, nil)
 	}
-	return ExploreRecursive{s.sequence, s.sequence, s.maxDepth - 1}
+	return ExploreRecursive{s.sequence, s.replaceRecursiveEdge(nextSelector, s.sequence), s.maxDepth - 1}
+}
+
+func (s ExploreRecursive) hasRecursiveEdge(nextSelector Selector) bool {
+	_, isRecursiveEdge := nextSelector.(ExploreRecursiveEdge)
+	if isRecursiveEdge {
+		return true
+	}
+	exploreUnion, isUnion := nextSelector.(ExploreUnion)
+	if isUnion {
+		for _, selector := range exploreUnion.Members {
+			if s.hasRecursiveEdge(selector) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func (s ExploreRecursive) replaceRecursiveEdge(nextSelector Selector, replacement Selector) Selector {
+	_, isRecursiveEdge := nextSelector.(ExploreRecursiveEdge)
+	if isRecursiveEdge {
+		return replacement
+	}
+	exploreUnion, isUnion := nextSelector.(ExploreUnion)
+	if isUnion {
+		replacementMembers := make([]Selector, 0, len(exploreUnion.Members))
+		for _, selector := range exploreUnion.Members {
+			newSelector := s.replaceRecursiveEdge(selector, replacement)
+			if newSelector != nil {
+				replacementMembers = append(replacementMembers, newSelector)
+			}
+		}
+		if len(replacementMembers) == 0 {
+			return nil
+		}
+		if len(replacementMembers) == 1 {
+			return replacementMembers[0]
+		}
+		return ExploreUnion{replacementMembers}
+	}
+	return nextSelector
 }
 
 // Decide always returns false because this is not a matcher
