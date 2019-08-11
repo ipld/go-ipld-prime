@@ -16,6 +16,11 @@ func doTemplate(tmplstr string, w io.Writer, data interface{}) {
 			"ReprKindConst": func(k ipld.ReprKind) string {
 				return "ipld.ReprKind_" + k.String() // happens to be fairly trivial.
 			},
+
+			// 'Add' does what it says on the tin.
+			"Add": func(a, b int) int {
+				return a + b
+			},
 		}).
 		Parse(wish.Dedent(tmplstr)))
 	if err := tmpl.Execute(w, data); err != nil {

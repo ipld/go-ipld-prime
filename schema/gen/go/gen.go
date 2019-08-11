@@ -58,6 +58,24 @@ type typeGenerator interface {
 	// TODO
 }
 
+type nodebuilderGenerator interface {
+	EmitNodeBuilderType(io.Writer)
+
+	EmitNodeBuilderMethodCreateMap(io.Writer)
+	EmitNodeBuilderMethodAmendMap(io.Writer)
+	EmitNodeBuilderMethodCreateList(io.Writer)
+	EmitNodeBuilderMethodAmendList(io.Writer)
+	EmitNodeBuilderMethodCreateNull(io.Writer)
+	EmitNodeBuilderMethodCreateBool(io.Writer)
+	EmitNodeBuilderMethodCreateInt(io.Writer)
+	EmitNodeBuilderMethodCreateFloat(io.Writer)
+	EmitNodeBuilderMethodCreateString(io.Writer)
+	EmitNodeBuilderMethodCreateBytes(io.Writer)
+	EmitNodeBuilderMethodCreateLink(io.Writer)
+
+	// TODO we'll soon also need all the child-nb-getters here too.
+}
+
 func emitFileHeader(w io.Writer) {
 	fmt.Fprintf(w, "package whee\n\n")
 	fmt.Fprintf(w, "import (\n")

@@ -155,6 +155,7 @@ type TypeStruct struct {
 	//  but it's a list here, with the keys denormalized into the value,
 	//   because that's typically how we use it.
 	fields         []StructField
+	fieldsMap      map[string]StructField // same content, indexed for lookup.
 	representation StructRepresentation
 }
 type StructField struct {

@@ -7,8 +7,8 @@ import (
 )
 
 // ErrNoSuchField may be returned from traversal functions on the Node
-// interface when a field is requested which doesn't exist; it may also be
-// returned during MapBuilder
+// interface when a field is requested which doesn't exist, or from Insert
+// on a MapBuilder when a key doesn't match a field name in the structure.
 type ErrNoSuchField struct {
 	Type schema.Type
 

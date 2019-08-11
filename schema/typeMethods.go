@@ -89,6 +89,14 @@ func (t TypeStruct) Fields() []StructField {
 	return a
 }
 
+// Field looks up a StructField by name, or returns nil if no such field.
+func (t TypeStruct) Field(name string) *StructField {
+	if v, ok := t.fieldsMap[name]; ok {
+		return &v
+	}
+	return nil
+}
+
 // Name returns the string name of this field.  The name is the string that
 // will be used as a map key if the structure this field is a member of is
 // serialized as a map representation.
@@ -115,6 +123,10 @@ func (f StructField) IsOptional() bool { return f.optional }
 // Note that a field may be both nullable and optional simultaneously,
 // or either, or neither.
 func (f StructField) IsNullable() bool { return f.nullable }
+
+func (t TypeStruct) RepresentationStrategy() StructRepresentation {
+	return t.representation
+}
 
 // Members returns a slice the strings which are valid inhabitants of this enum.
 func (t TypeEnum) Members() []string {
