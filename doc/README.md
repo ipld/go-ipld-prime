@@ -23,3 +23,7 @@
 	- [Implementation](./schema.md#implementation)
 	- [Migration Techniques](./schema.md#schemas-and-migration)
 - [Advanced Data Layouts](./advLayout.md)
+
+---
+
+- [Development notes: on Node implementations](./dev/node-implementations.md)
