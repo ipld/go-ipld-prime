@@ -14,7 +14,11 @@ func SpawnString(name TypeName) TypeString {
 }
 
 func SpawnStruct(name TypeName, fields []StructField, repr StructRepresentation) TypeStruct {
-	return TypeStruct{anyType{name, nil}, fields, repr}
+	fieldsMap := make(map[string]StructField, len(fields))
+	for _, field := range fields {
+		fieldsMap[field.name] = field
+	}
+	return TypeStruct{anyType{name, nil}, fields, fieldsMap, repr}
 }
 func SpawnStructField(name string, typ Type, optional bool, nullable bool) StructField {
 	return StructField{name, typ, optional, nullable}
