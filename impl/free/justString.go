@@ -6,23 +6,16 @@ import (
 )
 
 func String(value string) ipld.Node {
-	return justString{value}
+	return justString(value)
 }
 
 // justString is a simple boxed string that complies with ipld.Node.
-// It doesn't actually contain type info or comply with typed.Node
-// (which makes it cheaper: this struct doesn't trigger 'convt2e').
-// justString is particularly useful for boxing things like struct keys.
-type justString struct {
-	x string
-}
-
-// FUTURE: we'll also want a typed string, of course.
-//  Looking forward to benchmarking how that shakes out: it will almost
-//   certainly add cost in the form of 'convt2e', but we'll see how much.
-//    It'll also be particularly interesting to find out if common patterns of
-//     usage around map iterators will get the compiler to skip that cost if
-//      the key is unused by the caller.
+// It's useful for many things, such as boxing map keys.
+//
+// The implementation is a simple typedef of a string;
+// handling it as a Node incurs 'runtime.convTstring',
+// which is about the best we can do.
+type justString string
 
 func (justString) ReprKind() ipld.ReprKind {
 	return ipld.ReprKind_String
@@ -58,7 +51,7 @@ func (justString) AsFloat() (float64, error) {
 	return 0, ipld.ErrWrongKind{MethodName: "AsFloat", AppropriateKind: ipld.ReprKindSet_JustFloat, ActualKind: ipld.ReprKind_String}
 }
 func (x justString) AsString() (string, error) {
-	return x.x, nil
+	return string(x), nil
 }
 func (justString) AsBytes() ([]byte, error) {
 	return nil, ipld.ErrWrongKind{MethodName: "AsBytes", AppropriateKind: ipld.ReprKindSet_JustBytes, ActualKind: ipld.ReprKind_String}
@@ -97,7 +90,7 @@ func (nb justStringNodeBuilder) CreateFloat(v float64) (ipld.Node, error) {
 	return nil, ipld.ErrWrongKind{MethodName: "CreateFloat", AppropriateKind: ipld.ReprKindSet_JustFloat, ActualKind: ipld.ReprKind_String}
 }
 func (nb justStringNodeBuilder) CreateString(v string) (ipld.Node, error) {
-	return justString{v}, nil
+	return justString(v), nil
 }
 func (nb justStringNodeBuilder) CreateBytes(v []byte) (ipld.Node, error) {
 	return nil, ipld.ErrWrongKind{MethodName: "CreateBytes", AppropriateKind: ipld.ReprKindSet_JustBytes, ActualKind: ipld.ReprKind_String}
