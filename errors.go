@@ -11,6 +11,12 @@ import (
 // For example, calling AsString on a map will return ErrWrongKind.
 // Calling TraverseField on an int will similarly return ErrWrongKind.
 type ErrWrongKind struct {
+	// CONSIDER: if we should add a `TypeName string` here as well?
+	// It seems to be useful information, and in many places we've shoved it
+	// along with the MethodName; but while that's fine for the printed message,
+	// we could do better internally (and it would enable `typed.wrapnode*` to
+	// touch this field on its way out in a nice reusable way).
+
 	// MethodName is literally the string for the operation attempted, e.g.
 	// "AsString".
 	MethodName string
