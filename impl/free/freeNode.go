@@ -154,7 +154,7 @@ func (n *Node) Length() int {
 	}
 }
 
-func (n *Node) TraverseField(pth string) (ipld.Node, error) {
+func (n *Node) LookupString(pth string) (ipld.Node, error) {
 	switch n.kind {
 	case ipld.ReprKind_Map:
 		v, exists := n._map[pth]
@@ -178,13 +178,13 @@ func (n *Node) TraverseField(pth string) (ipld.Node, error) {
 		ipld.ReprKind_Int,
 		ipld.ReprKind_Float,
 		ipld.ReprKind_Link:
-		return nil, ipld.ErrWrongKind{MethodName: "TraverseField", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: n.kind}
+		return nil, ipld.ErrWrongKind{MethodName: "LookupString", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: n.kind}
 	default:
 		panic("unreachable")
 	}
 }
 
-func (n *Node) TraverseIndex(idx int) (ipld.Node, error) {
+func (n *Node) LookupIndex(idx int) (ipld.Node, error) {
 	switch n.kind {
 	case ipld.ReprKind_List:
 		if idx >= len(n._arr) {
@@ -203,7 +203,7 @@ func (n *Node) TraverseIndex(idx int) (ipld.Node, error) {
 		ipld.ReprKind_Int,
 		ipld.ReprKind_Float,
 		ipld.ReprKind_Link:
-		return nil, ipld.ErrWrongKind{MethodName: "TraverseIndex", AppropriateKind: ipld.ReprKindSet_JustList, ActualKind: n.kind}
+		return nil, ipld.ErrWrongKind{MethodName: "LookupIndex", AppropriateKind: ipld.ReprKindSet_JustList, ActualKind: n.kind}
 	default:
 		panic("unreachable")
 	}

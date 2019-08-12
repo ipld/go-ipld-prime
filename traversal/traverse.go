@@ -90,7 +90,7 @@ func (tp TraversalProgress) traverseAll(n ipld.Node, s selector.Selector, fn Adv
 func (tp TraversalProgress) traverseSelective(n ipld.Node, attn []selector.PathSegment, s selector.Selector, fn AdvVisitFn) error {
 	for _, ps := range attn {
 		// TODO: Probably not the most efficient way to be doing this...
-		v, err := n.TraverseField(ps.String())
+		v, err := n.LookupString(ps.String())
 		if err != nil {
 			continue
 		}

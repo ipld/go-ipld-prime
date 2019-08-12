@@ -15,8 +15,8 @@ import (
 // (The fluent.Recover function can be used to nicely gather these panics.)
 type Node interface {
 	ReprKind() ipld.ReprKind
-	TraverseField(path string) Node
-	TraverseIndex(idx int) Node
+	LookupString(path string) Node
+	LookupIndex(idx int) Node
 	MapIterator() MapIterator
 	ListIterator() ListIterator
 	Length() int
@@ -56,21 +56,21 @@ func (n node) ReprKind() ipld.ReprKind {
 	}
 	return n.n.ReprKind()
 }
-func (n node) TraverseField(path string) Node {
+func (n node) LookupString(path string) Node {
 	if n.err != nil {
 		return n
 	}
-	v, err := n.n.TraverseField(path)
+	v, err := n.n.LookupString(path)
 	if err != nil {
 		return node{nil, err}
 	}
 	return node{v, nil}
 }
-func (n node) TraverseIndex(idx int) Node {
+func (n node) LookupIndex(idx int) Node {
 	if n.err != nil {
 		return n
 	}
-	v, err := n.n.TraverseIndex(idx)
+	v, err := n.n.LookupIndex(idx)
 	if err != nil {
 		return node{nil, err}
 	}

@@ -122,7 +122,7 @@ func (n Node) Length() int {
 	panic("NYI")
 }
 
-func (n Node) TraverseField(pth string) (ipld.Node, error) {
+func (n Node) LookupString(pth string) (ipld.Node, error) {
 	v := n.bound
 
 	// Traverse.
@@ -214,6 +214,6 @@ func (n Node) TraverseField(pth string) (ipld.Node, error) {
 	}
 }
 
-func (n Node) TraverseIndex(idx int) (ipld.Node, error) {
+func (n Node) LookupIndex(idx int) (ipld.Node, error) {
 	panic("NYI")
 }

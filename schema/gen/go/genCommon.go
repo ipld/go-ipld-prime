@@ -8,18 +8,18 @@ import (
 
 type generateKindedRejections struct{}
 
-func (generateKindedRejections) emitNodeMethodTraverseField(w io.Writer, t schema.Type) {
+func (generateKindedRejections) emitNodeMethodLookupString(w io.Writer, t schema.Type) {
 	doTemplate(`
-		func ({{ .Name }}) TraverseField(string) (ipld.Node, error) {
-			return nil, ipld.ErrWrongKind{MethodName: "{{ .Name }}.TraverseField", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: {{ .Kind.ActsLike | ReprKindConst }}}
+		func ({{ .Name }}) LookupString(string) (ipld.Node, error) {
+			return nil, ipld.ErrWrongKind{MethodName: "{{ .Name }}.LookupString", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: {{ .Kind.ActsLike | ReprKindConst }}}
 		}
 	`, w, t)
 }
 
-func (generateKindedRejections) emitNodeMethodTraverseIndex(w io.Writer, t schema.Type) {
+func (generateKindedRejections) emitNodeMethodLookupIndex(w io.Writer, t schema.Type) {
 	doTemplate(`
-		func ({{ .Name }}) TraverseIndex(idx int) (ipld.Node, error) {
-			return nil, ipld.ErrWrongKind{MethodName: "{{ .Name }}.TraverseIndex", AppropriateKind: ipld.ReprKindSet_JustList, ActualKind: {{ .Kind.ActsLike | ReprKindConst }}}
+		func ({{ .Name }}) LookupIndex(idx int) (ipld.Node, error) {
+			return nil, ipld.ErrWrongKind{MethodName: "{{ .Name }}.LookupIndex", AppropriateKind: ipld.ReprKindSet_JustList, ActualKind: {{ .Kind.ActsLike | ReprKindConst }}}
 		}
 	`, w, t)
 }
@@ -117,11 +117,11 @@ type generateKindedRejections_String struct {
 	Type schema.Type // used so we can generate error messages with the type name.
 }
 
-func (gk generateKindedRejections_String) EmitNodeMethodTraverseField(w io.Writer) {
-	generateKindedRejections{}.emitNodeMethodTraverseField(w, gk.Type)
+func (gk generateKindedRejections_String) EmitNodeMethodLookupString(w io.Writer) {
+	generateKindedRejections{}.emitNodeMethodLookupString(w, gk.Type)
 }
-func (gk generateKindedRejections_String) EmitNodeMethodTraverseIndex(w io.Writer) {
-	generateKindedRejections{}.emitNodeMethodTraverseIndex(w, gk.Type)
+func (gk generateKindedRejections_String) EmitNodeMethodLookupIndex(w io.Writer) {
+	generateKindedRejections{}.emitNodeMethodLookupIndex(w, gk.Type)
 }
 func (gk generateKindedRejections_String) EmitNodeMethodMapIterator(w io.Writer) {
 	generateKindedRejections{}.emitNodeMethodMapIterator(w, gk.Type)
@@ -161,8 +161,8 @@ type generateKindedRejections_Map struct {
 	Type schema.Type // used so we can generate error messages with the type name.
 }
 
-func (gk generateKindedRejections_Map) EmitNodeMethodTraverseIndex(w io.Writer) {
-	generateKindedRejections{}.emitNodeMethodTraverseIndex(w, gk.Type)
+func (gk generateKindedRejections_Map) EmitNodeMethodLookupIndex(w io.Writer) {
+	generateKindedRejections{}.emitNodeMethodLookupIndex(w, gk.Type)
 }
 func (gk generateKindedRejections_Map) EmitNodeMethodListIterator(w io.Writer) {
 	generateKindedRejections{}.emitNodeMethodListIterator(w, gk.Type)

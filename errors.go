@@ -9,7 +9,7 @@ import (
 // that node concretely contains.
 //
 // For example, calling AsString on a map will return ErrWrongKind.
-// Calling TraverseField on an int will similarly return ErrWrongKind.
+// Calling LookupString on an int will similarly return ErrWrongKind.
 type ErrWrongKind struct {
 	// CONSIDER: if we should add a `TypeName string` here as well?
 	// It seems to be useful information, and in many places we've shoved it

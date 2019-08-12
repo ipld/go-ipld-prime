@@ -53,7 +53,7 @@ func TestBuildingRecursives(t *testing.T, nb ipld.NodeBuilder) {
 		n := nb.CreateList(func(lb fluent.ListBuilder, vnb fluent.NodeBuilder) {
 			lb.Append(vnb.CreateString("asdf"))
 		})
-		Wish(t, fluent.WrapNode(n).TraverseIndex(0).AsString(), ShouldEqual, "asdf")
+		Wish(t, fluent.WrapNode(n).LookupIndex(0).AsString(), ShouldEqual, "asdf")
 	})
 	t.Run("nested list node", func(t *testing.T) {
 		nb := fluent.WrapNodeBuilder(nb)
@@ -65,8 +65,8 @@ func TestBuildingRecursives(t *testing.T, nb ipld.NodeBuilder) {
 		})
 		nf := fluent.WrapNode(n)
 		Wish(t, nf.ReprKind(), ShouldEqual, ipld.ReprKind_List)
-		Wish(t, nf.TraverseIndex(0).TraverseIndex(0).AsString(), ShouldEqual, "asdf")
-		Wish(t, nf.TraverseIndex(1).AsString(), ShouldEqual, "quux")
+		Wish(t, nf.LookupIndex(0).LookupIndex(0).AsString(), ShouldEqual, "asdf")
+		Wish(t, nf.LookupIndex(1).AsString(), ShouldEqual, "quux")
 	})
 	t.Run("long list node", func(t *testing.T) {
 		nb := fluent.WrapNodeBuilder(nb)
@@ -77,8 +77,8 @@ func TestBuildingRecursives(t *testing.T, nb ipld.NodeBuilder) {
 		nf := fluent.WrapNode(n)
 		Wish(t, nf.ReprKind(), ShouldEqual, ipld.ReprKind_List)
 		Wish(t, nf.Length(), ShouldEqual, 20)
-		Wish(t, nf.TraverseIndex(9).AsString(), ShouldEqual, "quux")
-		Wish(t, nf.TraverseIndex(19).AsString(), ShouldEqual, "quuux")
+		Wish(t, nf.LookupIndex(9).AsString(), ShouldEqual, "quux")
+		Wish(t, nf.LookupIndex(19).AsString(), ShouldEqual, "quuux")
 	})
 
 	// todo map tests
