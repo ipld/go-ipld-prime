@@ -8,17 +8,17 @@ import (
 )
 
 // Focus is a shortcut for kicking off
-// TraversalProgress.Focus with an empty initial state
+// traversal.Progress.Focus with an empty initial state
 // (e.g. the Node given here is the "root" node of your operation).
 func Focus(n ipld.Node, p ipld.Path, fn VisitFn) error {
-	return TraversalProgress{}.Focus(n, p, fn)
+	return Progress{}.Focus(n, p, fn)
 }
 
 // FocusedTransform is a shortcut for kicking off
-// TraversalProgress.FocusedTransform with an empty initial state
+// traversal.Progress.FocusedTransform with an empty initial state
 // (e.g. the Node given here is the "root" node of your operation).
 func FocusedTransform(n ipld.Node, p ipld.Path, fn TransformFn) (ipld.Node, error) {
-	return TraversalProgress{}.FocusedTransform(n, p, fn)
+	return Progress{}.FocusedTransform(n, p, fn)
 }
 
 // Focus traverses an ipld.Node graph, reaches a single Node,
@@ -28,10 +28,10 @@ func FocusedTransform(n ipld.Node, p ipld.Path, fn TransformFn) (ipld.Node, erro
 // See FocusedTransform if looking for a way to do an "update" to a Node.
 //
 // Focus can be used again again inside the applied VisitFn!
-// By using the TraversalProgress handed to the VisitFn, the traversal Path
-// so far will continue to be extended, so continued nested uses of Focus
-// will see a fully contextualized Path.
-func (tp TraversalProgress) Focus(n ipld.Node, p ipld.Path, fn VisitFn) error {
+// By using the traversal.Progress handed to the VisitFn, the Path recorded
+// of the traversal so far will continue to be extended, and thus continued
+// nested uses of Focus will see a fully contextualized Path.
+func (tp Progress) Focus(n ipld.Node, p ipld.Path, fn VisitFn) error {
 	tp.init()
 	segments := p.Segments()
 	var prev ipld.Node // for LinkContext
@@ -115,6 +115,6 @@ func (tp TraversalProgress) Focus(n ipld.Node, p ipld.Path, fn VisitFn) error {
 // do with regular Node and NodeBuilder usage directly.  Transform just
 // does a large amount of the intermediate bookkeeping that's useful when
 // creating new values which are partial updates to existing values.
-func (tp TraversalProgress) FocusedTransform(n ipld.Node, p ipld.Path, fn TransformFn) (ipld.Node, error) {
+func (tp Progress) FocusedTransform(n ipld.Node, p ipld.Path, fn TransformFn) (ipld.Node, error) {
 	panic("TODO") // TODO surprisingly different from Focus -- need to store nodes we traversed, and able do building.
 }

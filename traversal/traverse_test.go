@@ -46,10 +46,10 @@ var (
 // covers traverse using a variety of selectors.
 // all cases here use one already-loaded Node; no link-loading exercised.
 
-func TestTraverse(t *testing.T) {
+func TestWalkMatching(t *testing.T) {
 	ssb := builder.NewSelectorSpecBuilder(ipldfree.NodeBuilder())
 	t.Run("traverse selecting true should visit the root", func(t *testing.T) {
-		err := traversal.Traverse(fnb.CreateString("x"), selector.Matcher{}, func(tp traversal.TraversalProgress, n ipld.Node) error {
+		err := traversal.WalkMatching(fnb.CreateString("x"), selector.Matcher{}, func(tp traversal.Progress, n ipld.Node) error {
 			Wish(t, n, ShouldEqual, fnb.CreateString("x"))
 			Wish(t, tp.Path.String(), ShouldEqual, ipld.Path{}.String())
 			return nil
@@ -57,7 +57,7 @@ func TestTraverse(t *testing.T) {
 		Wish(t, err, ShouldEqual, nil)
 	})
 	t.Run("traverse selecting true should visit only the root and no deeper", func(t *testing.T) {
-		err := traversal.Traverse(middleMapNode, selector.Matcher{}, func(tp traversal.TraversalProgress, n ipld.Node) error {
+		err := traversal.WalkMatching(middleMapNode, selector.Matcher{}, func(tp traversal.Progress, n ipld.Node) error {
 			Wish(t, n, ShouldEqual, middleMapNode)
 			Wish(t, tp.Path.String(), ShouldEqual, ipld.Path{}.String())
 			return nil
@@ -72,7 +72,7 @@ func TestTraverse(t *testing.T) {
 		s, err := ss.Selector()
 		Require(t, err, ShouldEqual, nil)
 		var order int
-		err = traversal.Traverse(middleMapNode, s, func(tp traversal.TraversalProgress, n ipld.Node) error {
+		err = traversal.WalkMatching(middleMapNode, s, func(tp traversal.Progress, n ipld.Node) error {
 			switch order {
 			case 0:
 				Wish(t, n, ShouldEqual, fnb.CreateBool(true))
@@ -97,7 +97,7 @@ func TestTraverse(t *testing.T) {
 		s, err := ss.Selector()
 		Require(t, err, ShouldEqual, nil)
 		var order int
-		err = traversal.Traverse(middleMapNode, s, func(tp traversal.TraversalProgress, n ipld.Node) error {
+		err = traversal.WalkMatching(middleMapNode, s, func(tp traversal.Progress, n ipld.Node) error {
 			switch order {
 			case 0:
 				Wish(t, n, ShouldEqual, fnb.CreateBool(true))
@@ -119,13 +119,13 @@ func TestTraverse(t *testing.T) {
 		))
 		s, err := ss.Selector()
 		var order int
-		err = traversal.TraversalProgress{
-			Cfg: &traversal.TraversalConfig{
+		err = traversal.Progress{
+			Cfg: &traversal.Config{
 				LinkLoader: func(lnk ipld.Link, _ ipld.LinkContext) (io.Reader, error) {
 					return bytes.NewBuffer(storage[lnk]), nil
 				},
 			},
-		}.Traverse(middleMapNode, s, func(tp traversal.TraversalProgress, n ipld.Node) error {
+		}.WalkMatching(middleMapNode, s, func(tp traversal.Progress, n ipld.Node) error {
 			switch order {
 			case 0:
 				Wish(t, n, ShouldEqual, middleMapNode)
@@ -162,13 +162,13 @@ func TestTraverse(t *testing.T) {
 		ss := ssb.ExploreRange(0, 3, ssb.Matcher())
 		s, err := ss.Selector()
 		var order int
-		err = traversal.TraversalProgress{
-			Cfg: &traversal.TraversalConfig{
+		err = traversal.Progress{
+			Cfg: &traversal.Config{
 				LinkLoader: func(lnk ipld.Link, _ ipld.LinkContext) (io.Reader, error) {
 					return bytes.NewBuffer(storage[lnk]), nil
 				},
 			},
-		}.Traverse(middleListNode, s, func(tp traversal.TraversalProgress, n ipld.Node) error {
+		}.WalkMatching(middleListNode, s, func(tp traversal.Progress, n ipld.Node) error {
 			switch order {
 			case 0:
 				Wish(t, n, ShouldEqual, fnb.CreateString("alpha"))
@@ -204,13 +204,13 @@ func TestTraverse(t *testing.T) {
 		})
 		s, err := ss.Selector()
 		var order int
-		err = traversal.TraversalProgress{
-			Cfg: &traversal.TraversalConfig{
+		err = traversal.Progress{
+			Cfg: &traversal.Config{
 				LinkLoader: func(lnk ipld.Link, _ ipld.LinkContext) (io.Reader, error) {
 					return bytes.NewBuffer(storage[lnk]), nil
 				},
 			},
-		}.Traverse(rootNode, s, func(tp traversal.TraversalProgress, n ipld.Node) error {
+		}.WalkMatching(rootNode, s, func(tp traversal.Progress, n ipld.Node) error {
 			switch order {
 			case 0:
 				Wish(t, n, ShouldEqual, fnb.CreateString("alpha"))

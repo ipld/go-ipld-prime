@@ -98,7 +98,7 @@ func init() {
 // covers Focus used on one already-loaded Node; no link-loading exercised.
 func TestFocusSingleTree(t *testing.T) {
 	t.Run("empty path on scalar node returns start node", func(t *testing.T) {
-		err := traversal.Focus(fnb.CreateString("x"), ipld.Path{}, func(tp traversal.TraversalProgress, n ipld.Node) error {
+		err := traversal.Focus(fnb.CreateString("x"), ipld.Path{}, func(tp traversal.Progress, n ipld.Node) error {
 			Wish(t, n, ShouldEqual, fnb.CreateString("x"))
 			Wish(t, tp.Path.String(), ShouldEqual, ipld.Path{}.String())
 			return nil
@@ -106,7 +106,7 @@ func TestFocusSingleTree(t *testing.T) {
 		Wish(t, err, ShouldEqual, nil)
 	})
 	t.Run("one step path on map node works", func(t *testing.T) {
-		err := traversal.Focus(middleMapNode, ipld.ParsePath("foo"), func(tp traversal.TraversalProgress, n ipld.Node) error {
+		err := traversal.Focus(middleMapNode, ipld.ParsePath("foo"), func(tp traversal.Progress, n ipld.Node) error {
 			Wish(t, n, ShouldEqual, fnb.CreateBool(true))
 			Wish(t, tp.Path, ShouldEqual, ipld.ParsePath("foo"))
 			return nil
@@ -114,7 +114,7 @@ func TestFocusSingleTree(t *testing.T) {
 		Wish(t, err, ShouldEqual, nil)
 	})
 	t.Run("two step path on map node works", func(t *testing.T) {
-		err := traversal.Focus(middleMapNode, ipld.ParsePath("nested/nonlink"), func(tp traversal.TraversalProgress, n ipld.Node) error {
+		err := traversal.Focus(middleMapNode, ipld.ParsePath("nested/nonlink"), func(tp traversal.Progress, n ipld.Node) error {
 			Wish(t, n, ShouldEqual, fnb.CreateString("zoo"))
 			Wish(t, tp.Path, ShouldEqual, ipld.ParsePath("nested/nonlink"))
 			return nil
@@ -126,14 +126,14 @@ func TestFocusSingleTree(t *testing.T) {
 func TestFocusWithLinkLoading(t *testing.T) {
 	t.Run("link traversal with no configured loader should fail", func(t *testing.T) {
 		t.Run("terminal link should fail", func(t *testing.T) {
-			err := traversal.Focus(middleMapNode, ipld.ParsePath("nested/alink"), func(tp traversal.TraversalProgress, n ipld.Node) error {
+			err := traversal.Focus(middleMapNode, ipld.ParsePath("nested/alink"), func(tp traversal.Progress, n ipld.Node) error {
 				t.Errorf("should not be reached; no way to load this path")
 				return nil
 			})
 			Wish(t, err.Error(), ShouldEqual, `error traversing node at "nested/alink": could not load link "`+leafAlphaLnk.String()+`": no link loader configured`)
 		})
 		t.Run("mid-path link should fail", func(t *testing.T) {
-			err := traversal.Focus(rootNode, ipld.ParsePath("linkedMap/nested/nonlink"), func(tp traversal.TraversalProgress, n ipld.Node) error {
+			err := traversal.Focus(rootNode, ipld.ParsePath("linkedMap/nested/nonlink"), func(tp traversal.Progress, n ipld.Node) error {
 				t.Errorf("should not be reached; no way to load this path")
 				return nil
 			})
@@ -141,13 +141,13 @@ func TestFocusWithLinkLoading(t *testing.T) {
 		})
 	})
 	t.Run("link traversal with loader should work", func(t *testing.T) {
-		err := traversal.TraversalProgress{
-			Cfg: &traversal.TraversalConfig{
+		err := traversal.Progress{
+			Cfg: &traversal.Config{
 				LinkLoader: func(lnk ipld.Link, _ ipld.LinkContext) (io.Reader, error) {
 					return bytes.NewBuffer(storage[lnk]), nil
 				},
 			},
-		}.Focus(rootNode, ipld.ParsePath("linkedMap/nested/nonlink"), func(tp traversal.TraversalProgress, n ipld.Node) error {
+		}.Focus(rootNode, ipld.ParsePath("linkedMap/nested/nonlink"), func(tp traversal.Progress, n ipld.Node) error {
 			Wish(t, n, ShouldEqual, fnb.CreateString("zoo"))
 			Wish(t, tp.Path, ShouldEqual, ipld.ParsePath("linkedMap/nested/nonlink"))
 			Wish(t, tp.LastBlock.Link, ShouldEqual, middleMapNodeLnk)

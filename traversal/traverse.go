@@ -7,40 +7,40 @@ import (
 	"github.com/ipld/go-ipld-prime/traversal/selector"
 )
 
-func Traverse(n ipld.Node, s selector.Selector, fn VisitFn) error {
-	return TraversalProgress{}.Traverse(n, s, fn)
+func WalkMatching(n ipld.Node, s selector.Selector, fn VisitFn) error {
+	return Progress{}.WalkMatching(n, s, fn)
 }
 
-func TraverseInformatively(n ipld.Node, s selector.Selector, fn AdvVisitFn) error {
-	return TraversalProgress{}.TraverseInformatively(n, s, fn)
+func WalkAdv(n ipld.Node, s selector.Selector, fn AdvVisitFn) error {
+	return Progress{}.WalkAdv(n, s, fn)
 }
 
-func TraverseTransform(n ipld.Node, s selector.Selector, fn TransformFn) (ipld.Node, error) {
-	return TraversalProgress{}.TraverseTransform(n, s, fn)
+func WalkTransforming(n ipld.Node, s selector.Selector, fn TransformFn) (ipld.Node, error) {
+	return Progress{}.WalkTransforming(n, s, fn)
 }
 
-func (tp TraversalProgress) Traverse(n ipld.Node, s selector.Selector, fn VisitFn) error {
+func (tp Progress) WalkMatching(n ipld.Node, s selector.Selector, fn VisitFn) error {
 	tp.init()
-	return tp.traverseInformatively(n, s, func(tp TraversalProgress, n ipld.Node, tr TraversalReason) error {
-		if tr != TraversalReason_SelectionMatch {
+	return tp.walkAdv(n, s, func(tp Progress, n ipld.Node, tr VisitReason) error {
+		if tr != VisitReason_SelectionMatch {
 			return nil
 		}
 		return fn(tp, n)
 	})
 }
 
-func (tp TraversalProgress) TraverseInformatively(n ipld.Node, s selector.Selector, fn AdvVisitFn) error {
+func (tp Progress) WalkAdv(n ipld.Node, s selector.Selector, fn AdvVisitFn) error {
 	tp.init()
-	return tp.traverseInformatively(n, s, fn)
+	return tp.walkAdv(n, s, fn)
 }
 
-func (tp TraversalProgress) traverseInformatively(n ipld.Node, s selector.Selector, fn AdvVisitFn) error {
+func (tp Progress) walkAdv(n ipld.Node, s selector.Selector, fn AdvVisitFn) error {
 	if s.Decide(n) {
-		if err := fn(tp, n, TraversalReason_SelectionMatch); err != nil {
+		if err := fn(tp, n, VisitReason_SelectionMatch); err != nil {
 			return err
 		}
 	} else {
-		if err := fn(tp, n, TraversalReason_SelectionCandidate); err != nil {
+		if err := fn(tp, n, VisitReason_SelectionCandidate); err != nil {
 			return err
 		}
 	}
@@ -52,13 +52,13 @@ func (tp TraversalProgress) traverseInformatively(n ipld.Node, s selector.Select
 	}
 	attn := s.Interests()
 	if attn == nil {
-		return tp.traverseAll(n, s, fn)
+		return tp.walkAdv_iterateAll(n, s, fn)
 	}
-	return tp.traverseSelective(n, attn, s, fn)
+	return tp.walkAdv_iterateSelective(n, attn, s, fn)
 
 }
 
-func (tp TraversalProgress) traverseAll(n ipld.Node, s selector.Selector, fn AdvVisitFn) error {
+func (tp Progress) walkAdv_iterateAll(n ipld.Node, s selector.Selector, fn AdvVisitFn) error {
 	for itr := selector.NewSegmentIterator(n); !itr.Done(); {
 		ps, v, err := itr.Next()
 		if err != nil {
@@ -78,7 +78,7 @@ func (tp TraversalProgress) traverseAll(n ipld.Node, s selector.Selector, fn Adv
 				}
 			}
 
-			err = tpNext.traverseInformatively(v, sNext, fn)
+			err = tpNext.walkAdv(v, sNext, fn)
 			if err != nil {
 				return err
 			}
@@ -87,7 +87,7 @@ func (tp TraversalProgress) traverseAll(n ipld.Node, s selector.Selector, fn Adv
 	return nil
 }
 
-func (tp TraversalProgress) traverseSelective(n ipld.Node, attn []selector.PathSegment, s selector.Selector, fn AdvVisitFn) error {
+func (tp Progress) walkAdv_iterateSelective(n ipld.Node, attn []selector.PathSegment, s selector.Selector, fn AdvVisitFn) error {
 	for _, ps := range attn {
 		// TODO: Probably not the most efficient way to be doing this...
 		v, err := n.LookupString(ps.String())
@@ -108,7 +108,7 @@ func (tp TraversalProgress) traverseSelective(n ipld.Node, attn []selector.PathS
 				}
 			}
 
-			err = tpNext.traverseInformatively(v, sNext, fn)
+			err = tpNext.walkAdv(v, sNext, fn)
 			if err != nil {
 				return err
 			}
@@ -117,7 +117,7 @@ func (tp TraversalProgress) traverseSelective(n ipld.Node, attn []selector.PathS
 	return nil
 }
 
-func (tp TraversalProgress) loadLink(v ipld.Node, parent ipld.Node) (ipld.Node, error) {
+func (tp Progress) loadLink(v ipld.Node, parent ipld.Node) (ipld.Node, error) {
 	lnk, err := v.AsLink()
 	if err != nil {
 		return nil, err
@@ -141,6 +141,6 @@ func (tp TraversalProgress) loadLink(v ipld.Node, parent ipld.Node) (ipld.Node, 
 	return v, nil
 }
 
-func (tp TraversalProgress) TraverseTransform(n ipld.Node, s selector.Selector, fn TransformFn) (ipld.Node, error) {
+func (tp Progress) WalkTransforming(n ipld.Node, s selector.Selector, fn TransformFn) (ipld.Node, error) {
 	panic("TODO")
 }

@@ -9,34 +9,34 @@
 // "Focus" functions provide syntactic sugar for using ipld.Path to jump
 // to a Node deep in a tree of other Nodes.
 //
-// "FocusTransform" functions can the same such deep jumps, and support
+// "FocusedTransform" functions can do the same such deep jumps, and support
 // mutation as well!
 // (Of course, since ipld.Node is an immutable interface, more precisely
 // speaking, "transformations" are implemented rebuilding trees of nodes to
 // emulate mutation in a copy-on-write way.)
 //
-// "Traverse" functions perform a walk of a Node graph, and apply visitor
-// functions multiple Nodes.  Traverse can be guided by Selectors,
-// which are a very general and extensible mechanism for filtering which
-// Nodes are of interest, as well as guiding the traversal.
+// "Walk" functions perform a walk of a Node graph, and apply visitor
+// functions multiple Nodes.  The more advanced Walk functions can be guided
+// by Selectors, which provide a declarative mechanism for guiding the
+// traversal and filtering which Nodes are of interest.
 // (See the selector sub-package for more detail.)
 //
-// "TraverseTransform" is similar to Traverse, but with support for mutations.
+// "WalkTransforming" is similar to Traverse, but with support for mutations.
+// Like "FocusTransform", "WalkTransforming" operates in a copy-on-write way.
 //
-// All of these functions -- the "Focus*" and "Traverse*" family alike --
+// All of these functions -- the "Focus*" and "Walk*" family alike --
 // work via callbacks: they do the traversal, and call a user-provided function
-// with a handle to the reached Node.  Traversals and Focuses can be used
+// with a handle to the reached Node.  Further "Focus" and "Walk" can be used
 // recursively within this callback.
 //
-// All of these functions -- the "Focus*" and "Traverse*" family alike --
+// All of these functions -- the "Focus*" and "Walk*" family alike --
 // include support for automatic resolution and loading of new Node trees
 // whenever IPLD Links are encountered.  This can be configured freely
-// by providing LinkLoader interfaces in TraversalConfig.
-// (TODO.)
+// by providing LinkLoader interfaces to the traversal.Config.
 //
 // Some notes on the limits of usage:
 //
-// The Transform family of methods is most appropriate for patterns of usage
+// The "*Transform" family of methods is most appropriate for patterns of usage
 // which resemble point mutations.
 // More general transformations -- zygohylohistomorphisms, etc -- will be best
 // implemented by composing the read-only systems (e.g. Focus, Traverse) and
