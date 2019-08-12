@@ -20,11 +20,11 @@ type justString string
 func (justString) ReprKind() ipld.ReprKind {
 	return ipld.ReprKind_String
 }
-func (justString) TraverseField(string) (ipld.Node, error) {
-	return nil, ipld.ErrWrongKind{MethodName: "TraverseField", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: ipld.ReprKind_String}
+func (justString) LookupString(string) (ipld.Node, error) {
+	return nil, ipld.ErrWrongKind{MethodName: "LookupString", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: ipld.ReprKind_String}
 }
-func (justString) TraverseIndex(idx int) (ipld.Node, error) {
-	return nil, ipld.ErrWrongKind{MethodName: "TraverseIndex", AppropriateKind: ipld.ReprKindSet_JustList, ActualKind: ipld.ReprKind_String}
+func (justString) LookupIndex(idx int) (ipld.Node, error) {
+	return nil, ipld.ErrWrongKind{MethodName: "LookupIndex", AppropriateKind: ipld.ReprKindSet_JustList, ActualKind: ipld.ReprKind_String}
 }
 func (justString) MapIterator() ipld.MapIterator {
 	return nodeutil.MapIteratorErrorThunk(ipld.ErrWrongKind{MethodName: "MapIterator", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: ipld.ReprKind_String})

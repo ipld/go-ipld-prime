@@ -6,26 +6,40 @@ type Node interface {
 	// Most other handling of a node requires first switching upon the kind.
 	ReprKind() ReprKind
 
-	// GetField resolves a path in the the object and returns
-	// either a primitive (e.g. string, int, etc), a link (type CID),
-	// or another Node.
+	// LookupString looks up a child object in this node and returns it.
+	// The returned Node may be any of the ReprKind:
+	// a primitive (string, int, etc), a map, a list, or a link.
 	//
 	// If the Kind of this Node is not ReprKind_Map, a nil node and an error
 	// will be returned.
 	//
 	// If the key does not exist, a nil node and an error will be returned.
-	TraverseField(key string) (Node, error)
+	LookupString(key string) (Node, error)
 
-	// GetIndex is the equivalent of GetField but for indexing into an array
-	// (or a numerically-keyed map).  Like GetField, it returns
-	// either a primitive (e.g. string, int, etc), a link (type CID),
-	// or another Node.
+	// Lookup is the equivalent of LookupString, but takes a reified Node
+	// as a parameter instead of a plain string.
+	// This mechanism is useful if working with typed maps (if the key types
+	// have constraints, and you already have a reified `typed.Node` value,
+	// using that value can save parsing and validation costs);
+	// and may simply be convenient if you already have a Node value in hand.
+	/// Lookup(key Node) (Node, error)
+
+	// LookupIndex is the equivalent of LookupString but for indexing into a list.
+	// As with LookupString, the returned Node may be any of the ReprKind:
+	// a primitive (string, int, etc), a map, a list, or a link.
 	//
 	// If the Kind of this Node is not ReprKind_List, a nil node and an error
 	// will be returned.
 	//
 	// If idx is out of range, a nil node and an error will be returned.
-	TraverseIndex(idx int) (Node, error)
+	LookupIndex(idx int) (Node, error)
+
+	// LookupSegment is a convenience method that might exist... if we moved
+	// the PathSegment type up here to the main package!
+	/// LookupSegment(seg PathSegment) (Node, error)
+
+	// Note that when using codegenerated types, there may be a fifth variant
+	// of lookup method on maps: `Get($GeneratedTypeKey) $GeneratedTypeValue`!
 
 	// MapIterator returns an iterator which yields key-value pairs
 	// traversing the node.

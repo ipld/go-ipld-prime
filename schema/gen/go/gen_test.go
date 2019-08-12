@@ -21,8 +21,8 @@ func TestNuevo(t *testing.T) {
 	emitType := func(tg typeGenerator, w io.Writer) {
 		tg.EmitNodeType(w)
 		tg.EmitNodeMethodReprKind(w)
-		tg.EmitNodeMethodTraverseField(w)
-		tg.EmitNodeMethodTraverseIndex(w)
+		tg.EmitNodeMethodLookupString(w)
+		tg.EmitNodeMethodLookupIndex(w)
 		tg.EmitNodeMethodMapIterator(w)
 		tg.EmitNodeMethodListIterator(w)
 		tg.EmitNodeMethodLength(w)

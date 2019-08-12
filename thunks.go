@@ -8,11 +8,11 @@ type nullNode struct{}
 func (nullNode) ReprKind() ReprKind {
 	return ReprKind_Null
 }
-func (nullNode) TraverseField(key string) (Node, error) {
-	return nil, ErrWrongKind{MethodName: "<null>.TraverseField", AppropriateKind: ReprKindSet_JustMap, ActualKind: ReprKind_Null}
+func (nullNode) LookupString(key string) (Node, error) {
+	return nil, ErrWrongKind{MethodName: "<null>.LookupString", AppropriateKind: ReprKindSet_JustMap, ActualKind: ReprKind_Null}
 }
-func (nullNode) TraverseIndex(idx int) (Node, error) {
-	return nil, ErrWrongKind{MethodName: "<null>.TraverseIndex", AppropriateKind: ReprKindSet_JustList, ActualKind: ReprKind_Null}
+func (nullNode) LookupIndex(idx int) (Node, error) {
+	return nil, ErrWrongKind{MethodName: "<null>.LookupIndex", AppropriateKind: ReprKindSet_JustList, ActualKind: ReprKind_Null}
 }
 func (nullNode) MapIterator() MapIterator {
 	return mapIteratorReject{ErrWrongKind{MethodName: "<null>.MapIterator", AppropriateKind: ReprKindSet_JustMap, ActualKind: ReprKind_Null}}

@@ -62,7 +62,7 @@ func Marshal(n ipld.Node, sink shared.TokenSink) error {
 		}
 		// Emit list contents (and recurse).
 		for i := 0; i < l; i++ {
-			v, err := n.TraverseIndex(i)
+			v, err := n.LookupIndex(i)
 			if err != nil {
 				return err
 			}

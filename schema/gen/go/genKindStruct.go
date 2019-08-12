@@ -49,9 +49,9 @@ func (gk generateKindStruct) EmitNodeMethodReprKind(w io.Writer) {
 	`, w, gk)
 }
 
-func (gk generateKindStruct) EmitNodeMethodTraverseField(w io.Writer) {
+func (gk generateKindStruct) EmitNodeMethodLookupString(w io.Writer) {
 	doTemplate(`
-		func (x {{ .Type.Name }}) TraverseField(key string) (ipld.Node, error) {
+		func (x {{ .Type.Name }}) LookupString(key string) (ipld.Node, error) {
 			switch key {
 			{{- range $field := .Type.Fields }}
 			case "{{ $field.Name }}":

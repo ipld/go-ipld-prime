@@ -28,12 +28,12 @@ func (tn wrapnodeStruct) Type() schema.Type {
 	return tn.typ
 }
 
-func (tn wrapnodeStruct) TraverseField(key string) (ipld.Node, error) {
+func (tn wrapnodeStruct) LookupString(key string) (ipld.Node, error) {
 	for _, field := range tn.typ.Fields() {
 		if field.Name() != key {
 			continue
 		}
-		v, e1 := tn.Node.TraverseField(key)
+		v, e1 := tn.Node.LookupString(key)
 		if e1 == nil {
 			return v, nil // null or set both flow through here
 		}
@@ -60,7 +60,7 @@ func (itr *wrapnodeStruct_Iterator) Next() (k ipld.Node, v ipld.Node, _ error) {
 	}
 	field := itr.node.typ.Fields()[itr.idx]
 	k = ipldfree.String(field.Name())
-	v, e1 := itr.node.TraverseField(field.Name())
+	v, e1 := itr.node.LookupString(field.Name())
 	if e1 != nil {
 		if _, ok := e1.(ipld.ErrNotExists); ok {
 			v = ipld.Undef // we assume the type allows this, or this node shouldn't have been possible to construct in the first place
