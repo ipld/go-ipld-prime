@@ -11,25 +11,25 @@ import (
 //--------------------------------------------------------
 
 // VisitFn is a read-only visitor.
-type VisitFn func(TraversalProgress, ipld.Node) error
+type VisitFn func(Progress, ipld.Node) error
 
 // TransformFn is like a visitor that can also return a new Node to replace the visited one.
-type TransformFn func(TraversalProgress, ipld.Node) (ipld.Node, error)
+type TransformFn func(Progress, ipld.Node) (ipld.Node, error)
 
 // AdvVisitFn is like VisitFn, but for use with AdvTraversal: it gets additional arguments describing *why* this node is visited.
-type AdvVisitFn func(TraversalProgress, ipld.Node, TraversalReason) error
+type AdvVisitFn func(Progress, ipld.Node, VisitReason) error
 
-// TraversalReason provides additional information to traversals using AdvVisitFn.
-type TraversalReason byte
+// VisitReason provides additional information to traversals using AdvVisitFn.
+type VisitReason byte
 
 const (
-	TraversalReason_SelectionMatch     TraversalReason = 'm' // Tells AdvVisitFn that this node was explicitly selected.  (This is the set of nodes that VisitFn is called for.)
-	TraversalReason_SelectionParent    TraversalReason = 'p' // Tells AdvVisitFn that this node is a parent of one that will be explicitly selected.  (These calls only happen if the feature is enabled -- enabling parent detection requires a different algorithm and adds some overhead.)
-	TraversalReason_SelectionCandidate TraversalReason = 'x' // Tells AdvVisitFn that this node was visited while searching for selection matches.  It is not necessarily implied that any explicit match will be a child of this node; only that we had to consider it.  (Merkle-proofs generally need to include any node in this group.)
+	VisitReason_SelectionMatch     VisitReason = 'm' // Tells AdvVisitFn that this node was explicitly selected.  (This is the set of nodes that VisitFn is called for.)
+	VisitReason_SelectionParent    VisitReason = 'p' // Tells AdvVisitFn that this node is a parent of one that will be explicitly selected.  (These calls only happen if the feature is enabled -- enabling parent detection requires a different algorithm and adds some overhead.)
+	VisitReason_SelectionCandidate VisitReason = 'x' // Tells AdvVisitFn that this node was visited while searching for selection matches.  It is not necessarily implied that any explicit match will be a child of this node; only that we had to consider it.  (Merkle-proofs generally need to include any node in this group.)
 )
 
-type TraversalProgress struct {
-	Cfg       *TraversalConfig
+type Progress struct {
+	Cfg       *Config
 	Path      ipld.Path // Path is how we reached the current point in the traversal.
 	LastBlock struct {  // LastBlock stores the Path and Link of the last block edge we had to load.  (It will always be zero in traversals with no linkloader.)
 		Path ipld.Path
@@ -37,7 +37,7 @@ type TraversalProgress struct {
 	}
 }
 
-type TraversalConfig struct {
+type Config struct {
 	Ctx                    context.Context    // Context carried through a traversal.  Optional; use it if you need cancellation.
 	LinkLoader             ipld.Loader        // Loader used for automatic link traversal.
 	LinkNodeBuilderChooser NodeBuilderChooser // Chooser for Node implementations to produce during automatic link traversal.
@@ -47,7 +47,7 @@ type TraversalConfig struct {
 // NodeBuilderChooser is a function that returns a NodeBuilder based on
 // the information in a Link its LinkContext.
 //
-// A NodeBuilderChooser can be used in a TraversalConfig to be clear about
+// A NodeBuilderChooser can be used in a traversal.Config to be clear about
 // what kind of Node implementation to use when loading a Link.
 // In a simple example, it could constantly return an `ipldfree.NodeBuilder`.
 // In a more complex example, a program using `bind` over native Go types

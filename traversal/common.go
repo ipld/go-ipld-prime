@@ -11,7 +11,7 @@ import (
 
 // init sets all the values in TraveralConfig to reasonable defaults
 // if they're currently the zero value.
-func (tc *TraversalConfig) init() {
+func (tc *Config) init() {
 	if tc.Ctx == nil {
 		tc.Ctx = context.Background()
 	}
@@ -32,9 +32,9 @@ func (tc *TraversalConfig) init() {
 	}
 }
 
-func (tp *TraversalProgress) init() {
-	if tp.Cfg == nil {
-		tp.Cfg = &TraversalConfig{}
+func (prog *Progress) init() {
+	if prog.Cfg == nil {
+		prog.Cfg = &Config{}
 	}
-	tp.Cfg.init()
+	prog.Cfg.init()
 }
