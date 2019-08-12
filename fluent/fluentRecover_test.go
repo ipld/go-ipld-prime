@@ -10,7 +10,7 @@ import (
 )
 
 func TestRecover(t *testing.T) {
-	t.Run("simple traversal error should capture", func(t *testing.T) {
+	t.Run("simple lookup error should capture", func(t *testing.T) {
 		Wish(t,
 			Recover(func() {
 				WrapNode(&ipldfree.Node{}).LookupIndex(0).AsString()
@@ -20,7 +20,7 @@ func TestRecover(t *testing.T) {
 			Error{ipld.ErrWrongKind{MethodName: "LookupIndex", AppropriateKind: ipld.ReprKindSet_JustList, ActualKind: ipld.ReprKind_Invalid}},
 		)
 	})
-	t.Run("correct traversal should return nil", func(t *testing.T) {
+	t.Run("correct lookup should return nil", func(t *testing.T) {
 		Wish(t,
 			Recover(func() {
 				n, _ := ipldfree.NodeBuilder().CreateString("foo")

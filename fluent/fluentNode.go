@@ -9,7 +9,7 @@ import (
 // which makes chaining calls easier.
 //
 // The very first error value encountered will be stored, and can be viewed later.
-// After an error is encountered, all subsequent traversal methods will
+// After an error is encountered, all subsequent lookup methods will
 // silently return the same error-storing node.
 // Any of the terminal scalar-returning methods will panic if an error is stored.
 // (The fluent.Recover function can be used to nicely gather these panics.)

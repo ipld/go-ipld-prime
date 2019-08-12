@@ -9,7 +9,7 @@ import (
 // that node concretely contains.
 //
 // For example, calling AsString on a map will return ErrWrongKind.
-// Calling LookupString on an int will similarly return ErrWrongKind.
+// Calling Lookup on an int will similarly return ErrWrongKind.
 type ErrWrongKind struct {
 	// CONSIDER: if we should add a `TypeName string` here as well?
 	// It seems to be useful information, and in many places we've shoved it
@@ -36,8 +36,8 @@ func (e ErrWrongKind) Error() string {
 	return fmt.Sprintf("func called on wrong kind: %s called on a %s node, but only makes sense on %s", e.MethodName, e.ActualKind, e.AppropriateKind)
 }
 
-// ErrNotExists may be returned from the traversal functions of the Node
-// interface to indicate a missing value.
+// ErrNotExists may be returned from the lookup functions of the Node interface
+// to indicate a missing value.
 //
 // Note that typed.ErrNoSuchField is another type of error which sometimes
 // occurs in similar places as ErrNotExists.  ErrNoSuchField is preferred
