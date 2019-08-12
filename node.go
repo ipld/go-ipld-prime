@@ -6,9 +6,9 @@ type Node interface {
 	// Most other handling of a node requires first switching upon the kind.
 	ReprKind() ReprKind
 
-	// GetField resolves a path in the the object and returns
-	// either a primitive (e.g. string, int, etc), a link (type CID),
-	// or another Node.
+	// TraverseField looks up a child object in this node and returns it.
+	// The returned Node may be any of the ReprKind:
+	// a primitive (string, int, etc), a map, a list, or a link.
 	//
 	// If the Kind of this Node is not ReprKind_Map, a nil node and an error
 	// will be returned.
@@ -16,10 +16,9 @@ type Node interface {
 	// If the key does not exist, a nil node and an error will be returned.
 	TraverseField(key string) (Node, error)
 
-	// GetIndex is the equivalent of GetField but for indexing into an array
-	// (or a numerically-keyed map).  Like GetField, it returns
-	// either a primitive (e.g. string, int, etc), a link (type CID),
-	// or another Node.
+	// TraverseIndex is the equivalent of TraverseField but for indexing into a list.
+	// As with TraverseField, the returned Node may be any of the ReprKind:
+	// a primitive (string, int, etc), a map, a list, or a link.
 	//
 	// If the Kind of this Node is not ReprKind_List, a nil node and an error
 	// will be returned.
