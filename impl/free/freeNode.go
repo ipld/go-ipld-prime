@@ -184,6 +184,23 @@ func (n *Node) LookupString(pth string) (ipld.Node, error) {
 	}
 }
 
+func (n *Node) Lookup(key ipld.Node) (ipld.Node, error) {
+	switch n.kind {
+	case ipld.ReprKind_Map:
+		ks, err := key.AsString()
+		if err != nil {
+			return nil, ipld.ErrInvalidKey{fmt.Sprintf("got %s, need string", key.ReprKind())}
+		}
+		v, exists := n._map[ks]
+		if !exists {
+			return nil, fmt.Errorf("404")
+		}
+		return v, nil
+	default:
+		return nil, ipld.ErrWrongKind{MethodName: "Lookup", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: n.kind}
+	}
+}
+
 func (n *Node) LookupIndex(idx int) (ipld.Node, error) {
 	switch n.kind {
 	case ipld.ReprKind_List:

@@ -80,6 +80,18 @@ func (gk generateKindStruct) EmitNodeMethodLookupString(w io.Writer) {
 	`, w, gk)
 }
 
+func (gk generateKindStruct) EmitNodeMethodLookup(w io.Writer) {
+	doTemplate(`
+		func (x {{ .Type.Name }}) Lookup(key ipld.Node) (ipld.Node, error) {
+			ks, err := key.AsString()
+			if err != nil {
+				return nil, ipld.ErrInvalidKey{"got " + key.ReprKind().String() + ", need string"}
+			}
+			return x.LookupString(ks)
+		}
+	`, w, gk)
+}
+
 func (gk generateKindStruct) EmitNodeMethodMapIterator(w io.Writer) {
 	doTemplate(`
 		func (x {{ .Type.Name }}) MapIterator() ipld.MapIterator {

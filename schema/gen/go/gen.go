@@ -39,6 +39,7 @@ type typeGenerator interface {
 	EmitNodeType(io.Writer)
 	EmitNodeMethodReprKind(io.Writer)
 	EmitNodeMethodLookupString(io.Writer)
+	EmitNodeMethodLookup(io.Writer)
 	EmitNodeMethodLookupIndex(io.Writer)
 	EmitNodeMethodMapIterator(io.Writer)
 	EmitNodeMethodListIterator(io.Writer)

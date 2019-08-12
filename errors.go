@@ -52,6 +52,23 @@ func (e ErrNotExists) Error() string {
 	return fmt.Sprintf("key not found: %q", e.Segment)
 }
 
+// ErrInvalidKey may be returned from lookup functions on the Node interface
+// when a key is invalid.
+//
+// Common examples of this are when `Lookup(Node)` is used with a non-string Node;
+// typed nodes also introduce other reasons a key may be invalid.
+type ErrInvalidKey struct {
+	Reason string
+
+	// Perhaps typed.ErrNoSuchField could be folded into this?
+	// Perhaps Reason could be replaced by an enum of "NoSuchField"|"NotAString"|"ConstraintRejected"?
+	// Might be hard to get rid of the freetext field entirely -- constraints may be nontrivial to describe.
+}
+
+func (e ErrInvalidKey) Error() string {
+	return fmt.Sprintf("invalid key: %s", e.Reason)
+}
+
 // ErrIteratorOverread is returned when calling 'Next' on a MapIterator or
 // ListIterator when it is already done.
 type ErrIteratorOverread struct{}

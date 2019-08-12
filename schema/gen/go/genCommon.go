@@ -16,6 +16,14 @@ func (generateKindedRejections) emitNodeMethodLookupString(w io.Writer, t schema
 	`, w, t)
 }
 
+func (generateKindedRejections) emitNodeMethodLookup(w io.Writer, t schema.Type) {
+	doTemplate(`
+		func ({{ .Name }}) Lookup(ipld.Node) (ipld.Node, error) {
+			return nil, ipld.ErrWrongKind{MethodName: "{{ .Name }}.Lookup", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: {{ .Kind.ActsLike | ReprKindConst }}}
+		}
+	`, w, t)
+}
+
 func (generateKindedRejections) emitNodeMethodLookupIndex(w io.Writer, t schema.Type) {
 	doTemplate(`
 		func ({{ .Name }}) LookupIndex(idx int) (ipld.Node, error) {
@@ -119,6 +127,9 @@ type generateKindedRejections_String struct {
 
 func (gk generateKindedRejections_String) EmitNodeMethodLookupString(w io.Writer) {
 	generateKindedRejections{}.emitNodeMethodLookupString(w, gk.Type)
+}
+func (gk generateKindedRejections_String) EmitNodeMethodLookup(w io.Writer) {
+	generateKindedRejections{}.emitNodeMethodLookup(w, gk.Type)
 }
 func (gk generateKindedRejections_String) EmitNodeMethodLookupIndex(w io.Writer) {
 	generateKindedRejections{}.emitNodeMethodLookupIndex(w, gk.Type)

@@ -11,6 +11,9 @@ func (nullNode) ReprKind() ReprKind {
 func (nullNode) LookupString(key string) (Node, error) {
 	return nil, ErrWrongKind{MethodName: "<null>.LookupString", AppropriateKind: ReprKindSet_JustMap, ActualKind: ReprKind_Null}
 }
+func (nullNode) Lookup(key Node) (Node, error) {
+	return nil, ErrWrongKind{MethodName: "<null>.Lookup", AppropriateKind: ReprKindSet_JustMap, ActualKind: ReprKind_Null}
+}
 func (nullNode) LookupIndex(idx int) (Node, error) {
 	return nil, ErrWrongKind{MethodName: "<null>.LookupIndex", AppropriateKind: ReprKindSet_JustList, ActualKind: ReprKind_Null}
 }

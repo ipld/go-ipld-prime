@@ -23,6 +23,9 @@ func (justString) ReprKind() ipld.ReprKind {
 func (justString) LookupString(string) (ipld.Node, error) {
 	return nil, ipld.ErrWrongKind{MethodName: "LookupString", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: ipld.ReprKind_String}
 }
+func (justString) Lookup(key ipld.Node) (ipld.Node, error) {
+	return nil, ipld.ErrWrongKind{MethodName: "Lookup", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: ipld.ReprKind_String}
+}
 func (justString) LookupIndex(idx int) (ipld.Node, error) {
 	return nil, ipld.ErrWrongKind{MethodName: "LookupIndex", AppropriateKind: ipld.ReprKindSet_JustList, ActualKind: ipld.ReprKind_String}
 }

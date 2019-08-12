@@ -214,6 +214,19 @@ func (n Node) LookupString(pth string) (ipld.Node, error) {
 	}
 }
 
+func (n Node) Lookup(key ipld.Node) (ipld.Node, error) {
+	switch n.kind {
+	case ipld.ReprKind_Map:
+		ks, err := key.AsString()
+		if err != nil {
+			return nil, ipld.ErrInvalidKey{"got " + key.ReprKind().String() + ", need string"}
+		}
+		return n.LookupString(ks)
+	default:
+		return nil, ipld.ErrWrongKind{MethodName: "Lookup", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: n.kind}
+	}
+}
+
 func (n Node) LookupIndex(idx int) (ipld.Node, error) {
 	panic("NYI")
 }
