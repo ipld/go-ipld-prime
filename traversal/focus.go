@@ -31,8 +31,8 @@ func FocusedTransform(n ipld.Node, p ipld.Path, fn TransformFn) (ipld.Node, erro
 // By using the traversal.Progress handed to the VisitFn, the Path recorded
 // of the traversal so far will continue to be extended, and thus continued
 // nested uses of Focus will see a fully contextualized Path.
-func (tp Progress) Focus(n ipld.Node, p ipld.Path, fn VisitFn) error {
-	tp.init()
+func (prog Progress) Focus(n ipld.Node, p ipld.Path, fn VisitFn) error {
+	prog.init()
 	segments := p.Segments()
 	var prev ipld.Node // for LinkContext
 	for i, seg := range segments {
@@ -70,21 +70,21 @@ func (tp Progress) Focus(n ipld.Node, p ipld.Path, fn VisitFn) error {
 			}
 			// Load link!
 			next, err := lnk.Load(
-				tp.Cfg.Ctx,
+				prog.Cfg.Ctx,
 				lnkCtx,
-				tp.Cfg.LinkNodeBuilderChooser(lnk, lnkCtx),
-				tp.Cfg.LinkLoader,
+				prog.Cfg.LinkNodeBuilderChooser(lnk, lnkCtx),
+				prog.Cfg.LinkLoader,
 			)
 			if err != nil {
 				return fmt.Errorf("error traversing node at %q: could not load link %q: %s", p.Truncate(i+1), lnk, err)
 			}
-			tp.LastBlock.Path = p.Truncate(i + 1)
-			tp.LastBlock.Link = lnk
+			prog.LastBlock.Path = p.Truncate(i + 1)
+			prog.LastBlock.Link = lnk
 			prev, n = n, next
 		}
 	}
-	tp.Path = tp.Path.Join(p)
-	return fn(tp, n)
+	prog.Path = prog.Path.Join(p)
+	return fn(prog, n)
 }
 
 // FocusedTransform traverses an ipld.Node graph, reaches a single Node,
@@ -115,6 +115,6 @@ func (tp Progress) Focus(n ipld.Node, p ipld.Path, fn VisitFn) error {
 // do with regular Node and NodeBuilder usage directly.  Transform just
 // does a large amount of the intermediate bookkeeping that's useful when
 // creating new values which are partial updates to existing values.
-func (tp Progress) FocusedTransform(n ipld.Node, p ipld.Path, fn TransformFn) (ipld.Node, error) {
+func (prog Progress) FocusedTransform(n ipld.Node, p ipld.Path, fn TransformFn) (ipld.Node, error) {
 	panic("TODO") // TODO surprisingly different from Focus -- need to store nodes we traversed, and able do building.
 }

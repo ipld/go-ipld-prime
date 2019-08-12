@@ -32,9 +32,9 @@ func (tc *Config) init() {
 	}
 }
 
-func (tp *Progress) init() {
-	if tp.Cfg == nil {
-		tp.Cfg = &Config{}
+func (prog *Progress) init() {
+	if prog.Cfg == nil {
+		prog.Cfg = &Config{}
 	}
-	tp.Cfg.init()
+	prog.Cfg.init()
 }
