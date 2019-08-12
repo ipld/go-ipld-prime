@@ -16,6 +16,7 @@ import (
 type Node interface {
 	ReprKind() ipld.ReprKind
 	LookupString(path string) Node
+	Lookup(key Node) Node
 	LookupIndex(idx int) Node
 	MapIterator() MapIterator
 	ListIterator() ListIterator
@@ -61,6 +62,16 @@ func (n node) LookupString(path string) Node {
 		return n
 	}
 	v, err := n.n.LookupString(path)
+	if err != nil {
+		return node{nil, err}
+	}
+	return node{v, nil}
+}
+func (n node) Lookup(key Node) Node {
+	if n.err != nil {
+		return n
+	}
+	v, err := n.n.Lookup(key.(node).n) // hacky.  needs fluent.Node needs unbox method.
 	if err != nil {
 		return node{nil, err}
 	}

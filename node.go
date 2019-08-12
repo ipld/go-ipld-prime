@@ -22,7 +22,12 @@ type Node interface {
 	// have constraints, and you already have a reified `typed.Node` value,
 	// using that value can save parsing and validation costs);
 	// and may simply be convenient if you already have a Node value in hand.
-	/// Lookup(key Node) (Node, error)
+	//
+	// (When writing generic functions over Node, a good rule of thumb is:
+	// when handling a map, check for `typed.Node`, and in this case prefer
+	// the Lookup(Node) method; otherwise, favor LookupString; typically
+	// implementations will have their fastest paths thusly.)
+	Lookup(key Node) (Node, error)
 
 	// LookupIndex is the equivalent of LookupString but for indexing into a list.
 	// As with LookupString, the returned Node may be any of the ReprKind:

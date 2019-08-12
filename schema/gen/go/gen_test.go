@@ -22,6 +22,7 @@ func TestNuevo(t *testing.T) {
 		tg.EmitNodeType(w)
 		tg.EmitNodeMethodReprKind(w)
 		tg.EmitNodeMethodLookupString(w)
+		tg.EmitNodeMethodLookup(w)
 		tg.EmitNodeMethodLookupIndex(w)
 		tg.EmitNodeMethodMapIterator(w)
 		tg.EmitNodeMethodListIterator(w)
