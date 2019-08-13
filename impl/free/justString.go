@@ -69,35 +69,35 @@ func (justString) NodeBuilder() ipld.NodeBuilder {
 type justStringNodeBuilder struct{}
 
 func (nb justStringNodeBuilder) CreateMap() (ipld.MapBuilder, error) {
-	return nil, ipld.ErrWrongKind{MethodName: "CreateMap", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: ipld.ReprKind_String}
+	return nil, ipld.ErrWrongKind{MethodName: "NodeBuilder.CreateMap", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: ipld.ReprKind_String}
 }
 func (nb justStringNodeBuilder) AmendMap() (ipld.MapBuilder, error) {
-	return nil, ipld.ErrWrongKind{MethodName: "AmendMap", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: ipld.ReprKind_String}
+	return nil, ipld.ErrWrongKind{MethodName: "NodeBuilder.AmendMap", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: ipld.ReprKind_String}
 }
 func (nb justStringNodeBuilder) CreateList() (ipld.ListBuilder, error) {
-	return nil, ipld.ErrWrongKind{MethodName: "CreateList", AppropriateKind: ipld.ReprKindSet_JustList, ActualKind: ipld.ReprKind_String}
+	return nil, ipld.ErrWrongKind{MethodName: "NodeBuilder.CreateList", AppropriateKind: ipld.ReprKindSet_JustList, ActualKind: ipld.ReprKind_String}
 }
 func (nb justStringNodeBuilder) AmendList() (ipld.ListBuilder, error) {
-	return nil, ipld.ErrWrongKind{MethodName: "AmendList", AppropriateKind: ipld.ReprKindSet_JustList, ActualKind: ipld.ReprKind_String}
+	return nil, ipld.ErrWrongKind{MethodName: "NodeBuilder.AmendList", AppropriateKind: ipld.ReprKindSet_JustList, ActualKind: ipld.ReprKind_String}
 }
 func (nb justStringNodeBuilder) CreateNull() (ipld.Node, error) {
-	return nil, ipld.ErrWrongKind{MethodName: "CreateNull", AppropriateKind: ipld.ReprKindSet_JustNull, ActualKind: ipld.ReprKind_String}
+	return nil, ipld.ErrWrongKind{MethodName: "NodeBuilder.CreateNull", AppropriateKind: ipld.ReprKindSet_JustNull, ActualKind: ipld.ReprKind_String}
 }
 func (nb justStringNodeBuilder) CreateBool(v bool) (ipld.Node, error) {
-	return nil, ipld.ErrWrongKind{MethodName: "CreateBool", AppropriateKind: ipld.ReprKindSet_JustBool, ActualKind: ipld.ReprKind_String}
+	return nil, ipld.ErrWrongKind{MethodName: "NodeBuilder.CreateBool", AppropriateKind: ipld.ReprKindSet_JustBool, ActualKind: ipld.ReprKind_String}
 }
 func (nb justStringNodeBuilder) CreateInt(v int) (ipld.Node, error) {
-	return nil, ipld.ErrWrongKind{MethodName: "CreateInt", AppropriateKind: ipld.ReprKindSet_JustInt, ActualKind: ipld.ReprKind_String}
+	return nil, ipld.ErrWrongKind{MethodName: "NodeBuilder.CreateInt", AppropriateKind: ipld.ReprKindSet_JustInt, ActualKind: ipld.ReprKind_String}
 }
 func (nb justStringNodeBuilder) CreateFloat(v float64) (ipld.Node, error) {
-	return nil, ipld.ErrWrongKind{MethodName: "CreateFloat", AppropriateKind: ipld.ReprKindSet_JustFloat, ActualKind: ipld.ReprKind_String}
+	return nil, ipld.ErrWrongKind{MethodName: "NodeBuilder.CreateFloat", AppropriateKind: ipld.ReprKindSet_JustFloat, ActualKind: ipld.ReprKind_String}
 }
 func (nb justStringNodeBuilder) CreateString(v string) (ipld.Node, error) {
 	return justString(v), nil
 }
 func (nb justStringNodeBuilder) CreateBytes(v []byte) (ipld.Node, error) {
-	return nil, ipld.ErrWrongKind{MethodName: "CreateBytes", AppropriateKind: ipld.ReprKindSet_JustBytes, ActualKind: ipld.ReprKind_String}
+	return nil, ipld.ErrWrongKind{MethodName: "NodeBuilder.CreateBytes", AppropriateKind: ipld.ReprKindSet_JustBytes, ActualKind: ipld.ReprKind_String}
 }
 func (nb justStringNodeBuilder) CreateLink(v ipld.Link) (ipld.Node, error) {
-	return nil, ipld.ErrWrongKind{MethodName: "CreateLink", AppropriateKind: ipld.ReprKindSet_JustLink, ActualKind: ipld.ReprKind_String}
+	return nil, ipld.ErrWrongKind{MethodName: "NodeBuilder.CreateLink", AppropriateKind: ipld.ReprKindSet_JustLink, ActualKind: ipld.ReprKind_String}
 }

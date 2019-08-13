@@ -9,19 +9,19 @@ func (nullNode) ReprKind() ReprKind {
 	return ReprKind_Null
 }
 func (nullNode) LookupString(key string) (Node, error) {
-	return nil, ErrWrongKind{MethodName: "<null>.LookupString", AppropriateKind: ReprKindSet_JustMap, ActualKind: ReprKind_Null}
+	return nil, ErrWrongKind{MethodName: "LookupString", AppropriateKind: ReprKindSet_JustMap, ActualKind: ReprKind_Null}
 }
 func (nullNode) Lookup(key Node) (Node, error) {
-	return nil, ErrWrongKind{MethodName: "<null>.Lookup", AppropriateKind: ReprKindSet_JustMap, ActualKind: ReprKind_Null}
+	return nil, ErrWrongKind{MethodName: "Lookup", AppropriateKind: ReprKindSet_JustMap, ActualKind: ReprKind_Null}
 }
 func (nullNode) LookupIndex(idx int) (Node, error) {
-	return nil, ErrWrongKind{MethodName: "<null>.LookupIndex", AppropriateKind: ReprKindSet_JustList, ActualKind: ReprKind_Null}
+	return nil, ErrWrongKind{MethodName: "LookupIndex", AppropriateKind: ReprKindSet_JustList, ActualKind: ReprKind_Null}
 }
 func (nullNode) MapIterator() MapIterator {
-	return mapIteratorReject{ErrWrongKind{MethodName: "<null>.MapIterator", AppropriateKind: ReprKindSet_JustMap, ActualKind: ReprKind_Null}}
+	return mapIteratorReject{ErrWrongKind{MethodName: "MapIterator", AppropriateKind: ReprKindSet_JustMap, ActualKind: ReprKind_Null}}
 }
 func (nullNode) ListIterator() ListIterator {
-	return listIteratorReject{ErrWrongKind{MethodName: "<null>.ListIterator", AppropriateKind: ReprKindSet_JustList, ActualKind: ReprKind_Null}}
+	return listIteratorReject{ErrWrongKind{MethodName: "ListIterator", AppropriateKind: ReprKindSet_JustList, ActualKind: ReprKind_Null}}
 }
 func (nullNode) Length() int {
 	return -1
@@ -33,22 +33,22 @@ func (nullNode) IsNull() bool {
 	return true
 }
 func (nullNode) AsBool() (bool, error) {
-	return false, ErrWrongKind{MethodName: "<null>.AsBool", AppropriateKind: ReprKindSet_JustBool, ActualKind: ReprKind_Null}
+	return false, ErrWrongKind{MethodName: "AsBool", AppropriateKind: ReprKindSet_JustBool, ActualKind: ReprKind_Null}
 }
 func (nullNode) AsInt() (int, error) {
-	return 0, ErrWrongKind{MethodName: "<null>.AsInt", AppropriateKind: ReprKindSet_JustInt, ActualKind: ReprKind_Null}
+	return 0, ErrWrongKind{MethodName: "AsInt", AppropriateKind: ReprKindSet_JustInt, ActualKind: ReprKind_Null}
 }
 func (nullNode) AsFloat() (float64, error) {
-	return 0, ErrWrongKind{MethodName: "<null>.AsFloat", AppropriateKind: ReprKindSet_JustFloat, ActualKind: ReprKind_Null}
+	return 0, ErrWrongKind{MethodName: "AsFloat", AppropriateKind: ReprKindSet_JustFloat, ActualKind: ReprKind_Null}
 }
 func (nullNode) AsString() (string, error) {
-	return "", ErrWrongKind{MethodName: "<null>.AsString", AppropriateKind: ReprKindSet_JustString, ActualKind: ReprKind_Null}
+	return "", ErrWrongKind{MethodName: "AsString", AppropriateKind: ReprKindSet_JustString, ActualKind: ReprKind_Null}
 }
 func (nullNode) AsBytes() ([]byte, error) {
-	return nil, ErrWrongKind{MethodName: "<null>.AsBytes", AppropriateKind: ReprKindSet_JustBytes, ActualKind: ReprKind_Null}
+	return nil, ErrWrongKind{MethodName: "AsBytes", AppropriateKind: ReprKindSet_JustBytes, ActualKind: ReprKind_Null}
 }
 func (nullNode) AsLink() (Link, error) {
-	return nil, ErrWrongKind{MethodName: "<null>.AsLink", AppropriateKind: ReprKindSet_JustLink, ActualKind: ReprKind_Null}
+	return nil, ErrWrongKind{MethodName: "AsLink", AppropriateKind: ReprKindSet_JustLink, ActualKind: ReprKind_Null}
 }
 func (nullNode) NodeBuilder() NodeBuilder {
 	panic("cannot build null nodes")
