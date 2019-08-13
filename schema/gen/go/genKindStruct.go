@@ -79,7 +79,11 @@ func (gk generateKindStruct) EmitNodeMethodLookupString(w io.Writer) {
 					return ipld.Null, nil
 				}
 				{{- end}}
+				{{- if or $field.IsOptional $field.IsNullable }}
+				return *x.{{ $field.Name }}, nil
+				{{- else}}
 				return x.{{ $field.Name }}, nil
+				{{- end}}
 			{{- end}}
 			default:
 				return nil, typed.ErrNoSuchField{Type: nil /*TODO*/, FieldName: key}

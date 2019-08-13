@@ -62,6 +62,9 @@ func TestStructBuilder(t *testing.T) {
 			Wish(t, err, ShouldEqual, nil)
 			Wish(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
 			Wish(t, plz(n.LookupString("f1")), ShouldEqual, plz(String__NodeBuilder{}.CreateString("a")))
+			Wish(t, plz(n.LookupString("f2")), ShouldEqual, plz(String__NodeBuilder{}.CreateString("b")))
+			Wish(t, plz(n.LookupString("f3")), ShouldEqual, plz(String__NodeBuilder{}.CreateString("c")))
+			Wish(t, plz(n.LookupString("f4")), ShouldEqual, plz(String__NodeBuilder{}.CreateString("d")))
 		})
 	})
 }
