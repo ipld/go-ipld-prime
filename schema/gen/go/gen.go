@@ -41,8 +41,8 @@ type typeGenerator interface {
 	EmitNodeMethodLookupString(io.Writer)
 	EmitNodeMethodLookup(io.Writer)
 	EmitNodeMethodLookupIndex(io.Writer)
-	EmitNodeMethodMapIterator(io.Writer)
-	EmitNodeMethodListIterator(io.Writer)
+	EmitNodeMethodMapIterator(io.Writer)  // also iterator itself
+	EmitNodeMethodListIterator(io.Writer) // also iterator itself
 	EmitNodeMethodLength(io.Writer)
 	EmitNodeMethodIsUndefined(io.Writer)
 	EmitNodeMethodIsNull(io.Writer)
@@ -53,7 +53,6 @@ type typeGenerator interface {
 	EmitNodeMethodAsBytes(io.Writer)
 	EmitNodeMethodAsLink(io.Writer)
 	EmitNodeMethodNodeBuilder(io.Writer)
-	// TODO also iterators (return blanks for non-{map,list,struct,enum})
 
 	// -- all nodebuilder methods -->
 	// TODO
