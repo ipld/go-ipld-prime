@@ -20,6 +20,7 @@ func TestNuevo(t *testing.T) {
 
 	emitType := func(tg typeGenerator, w io.Writer) {
 		tg.EmitNodeType(w)
+		tg.EmitTypedNodeMethodType(w)
 		tg.EmitNodeMethodReprKind(w)
 		tg.EmitNodeMethodLookupString(w)
 		tg.EmitNodeMethodLookup(w)
@@ -36,6 +37,7 @@ func TestNuevo(t *testing.T) {
 		tg.EmitNodeMethodAsBytes(w)
 		tg.EmitNodeMethodAsLink(w)
 		tg.EmitNodeMethodNodeBuilder(w)
+		tg.EmitTypedNodeMethodRepresentation(w)
 
 		tnbg := tg.GetNodeBuilderGen()
 		tnbg.EmitNodebuilderType(w)

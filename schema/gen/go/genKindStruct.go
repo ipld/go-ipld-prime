@@ -25,7 +25,7 @@ func (gk generateKindStruct) EmitNodeType(w io.Writer) {
 	//  and we get an extra bool for the second cardinality +1'er if both are true.
 	doTemplate(`
 		var _ ipld.Node = {{ .Type.Name }}{}
-		var _ typed.Node = typed.Node(nil) // TODO
+		var _ typed.Node = {{ .Type.Name }}{}
 
 		type {{ .Type.Name }} struct{
 			{{- range $field := .Type.Fields }}
@@ -38,6 +38,14 @@ func (gk generateKindStruct) EmitNodeType(w io.Writer) {
 			{{- end}}
 		}
 
+	`, w, gk)
+}
+
+func (gk generateKindStruct) EmitTypedNodeMethodType(w io.Writer) {
+	doTemplate(`
+		func ({{ .Type.Name }}) Type() schema.Type {
+			return nil /*TODO:typelit*/
+		}
 	`, w, gk)
 }
 
@@ -150,6 +158,14 @@ func (gk generateKindStruct) EmitNodeMethodLength(w io.Writer) {
 	doTemplate(`
 		func ({{ .Type.Name }}) Length() int {
 			return {{ len .Type.Fields }}
+		}
+	`, w, gk)
+}
+
+func (gk generateKindStruct) EmitTypedNodeMethodRepresentation(w io.Writer) {
+	doTemplate(`
+		func ({{ .Type.Name }}) Representation() ipld.Node {
+			panic("TODO representation")
 		}
 	`, w, gk)
 }

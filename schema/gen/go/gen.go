@@ -31,8 +31,8 @@ type typeGenerator interface {
 	// wip note: hopefully imports are a constant.  if not, we'll have to curry something with the writer.
 
 	// -- the typed.Node.Type method and vars -->
-	// TODO
-	//  (and last -- needs whole `typed/system` package)
+
+	EmitTypedNodeMethodType(io.Writer) // these emit dummies for now
 
 	// -- all node methods -->
 
@@ -59,7 +59,8 @@ type typeGenerator interface {
 	GetNodeBuilderGen() nodebuilderGenerator
 
 	// -- and the representation and its node and nodebuilder -->
-	// TODO: EmitNodeMethodRepresentation(io.Writer)
+
+	EmitTypedNodeMethodRepresentation(io.Writer)
 	// TODO: EmitRepresentationNode(io.Writer) // deploys *another* whole typeGenerator
 	// TODO: EmitRepresentationNodeBuilder(io.Writer) // deploys *another* whole nodebuilderGenerator
 
@@ -90,6 +91,7 @@ func emitFileHeader(w io.Writer) {
 	fmt.Fprintf(w, "import (\n")
 	fmt.Fprintf(w, "\tipld \"github.com/ipld/go-ipld-prime\"\n")
 	fmt.Fprintf(w, "\t\"github.com/ipld/go-ipld-prime/impl/typed\"\n")
+	fmt.Fprintf(w, "\t\"github.com/ipld/go-ipld-prime/schema\"\n")
 	fmt.Fprintf(w, ")\n\n")
 }
 

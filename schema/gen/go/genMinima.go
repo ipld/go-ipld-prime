@@ -5,11 +5,12 @@ import (
 )
 
 func emitMinima(f io.Writer) {
-	emitFileHeader(f)
+	// Write header and imports.
+	f.Write([]byte(`package whee
 
-	// Avoid moderate annoyance keeping track of imports.
-	f.Write([]byte(`
-var _ typed.Node = typed.Node(nil)
+import (
+	ipld "github.com/ipld/go-ipld-prime"
+)
 `))
 
 	// Iterator rejection thunks.
