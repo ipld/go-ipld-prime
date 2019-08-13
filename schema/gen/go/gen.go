@@ -54,24 +54,33 @@ type typeGenerator interface {
 	EmitNodeMethodAsLink(io.Writer)
 	EmitNodeMethodNodeBuilder(io.Writer)
 
-	// -- all nodebuilder methods -->
-	// TODO
+	// -- the ideal/typed nodebuilder -->
+
+	GetNodeBuilderGen() nodebuilderGenerator
+
+	// -- and the representation and its node and nodebuilder -->
+	// TODO: EmitNodeMethodRepresentation(io.Writer)
+	// TODO: EmitRepresentationNode(io.Writer) // deploys *another* whole typeGenerator
+	// TODO: EmitRepresentationNodeBuilder(io.Writer) // deploys *another* whole nodebuilderGenerator
+
+	// debatable: we could have 'EmitRepresentationNode' and similar return a generator interface instead of just going to work.
+	//  however, this raises questions when it comes to any types which have *multiple* representation-side builders (e.g. strict-order as well as loose-order).
 }
 
 type nodebuilderGenerator interface {
-	EmitNodeBuilderType(io.Writer)
+	EmitNodebuilderType(io.Writer)
 
-	EmitNodeBuilderMethodCreateMap(io.Writer)
-	EmitNodeBuilderMethodAmendMap(io.Writer)
-	EmitNodeBuilderMethodCreateList(io.Writer)
-	EmitNodeBuilderMethodAmendList(io.Writer)
-	EmitNodeBuilderMethodCreateNull(io.Writer)
-	EmitNodeBuilderMethodCreateBool(io.Writer)
-	EmitNodeBuilderMethodCreateInt(io.Writer)
-	EmitNodeBuilderMethodCreateFloat(io.Writer)
-	EmitNodeBuilderMethodCreateString(io.Writer)
-	EmitNodeBuilderMethodCreateBytes(io.Writer)
-	EmitNodeBuilderMethodCreateLink(io.Writer)
+	EmitNodebuilderMethodCreateMap(io.Writer)
+	EmitNodebuilderMethodAmendMap(io.Writer)
+	EmitNodebuilderMethodCreateList(io.Writer)
+	EmitNodebuilderMethodAmendList(io.Writer)
+	EmitNodebuilderMethodCreateNull(io.Writer)
+	EmitNodebuilderMethodCreateBool(io.Writer)
+	EmitNodebuilderMethodCreateInt(io.Writer)
+	EmitNodebuilderMethodCreateFloat(io.Writer)
+	EmitNodebuilderMethodCreateString(io.Writer)
+	EmitNodebuilderMethodCreateBytes(io.Writer)
+	EmitNodebuilderMethodCreateLink(io.Writer)
 
 	// TODO we'll soon also need all the child-nb-getters here too.
 }

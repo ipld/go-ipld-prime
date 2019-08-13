@@ -36,6 +36,20 @@ func TestNuevo(t *testing.T) {
 		tg.EmitNodeMethodAsBytes(w)
 		tg.EmitNodeMethodAsLink(w)
 		tg.EmitNodeMethodNodeBuilder(w)
+
+		tnbg := tg.GetNodeBuilderGen()
+		tnbg.EmitNodebuilderType(w)
+		tnbg.EmitNodebuilderMethodCreateMap(w)
+		tnbg.EmitNodebuilderMethodAmendMap(w)
+		tnbg.EmitNodebuilderMethodCreateList(w)
+		tnbg.EmitNodebuilderMethodAmendList(w)
+		tnbg.EmitNodebuilderMethodCreateNull(w)
+		tnbg.EmitNodebuilderMethodCreateBool(w)
+		tnbg.EmitNodebuilderMethodCreateInt(w)
+		tnbg.EmitNodebuilderMethodCreateFloat(w)
+		tnbg.EmitNodebuilderMethodCreateString(w)
+		tnbg.EmitNodebuilderMethodCreateBytes(w)
+		tnbg.EmitNodebuilderMethodCreateLink(w)
 	}
 
 	f := openOrPanic("_test/minima.go")

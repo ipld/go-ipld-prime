@@ -20,6 +20,24 @@ type generateKindString struct {
 	// FUTURE: perhaps both a global one (e.g. output package name) and a per-type one.
 }
 
+func (gk generateKindString) EmitNodeType(w io.Writer) {
+	doTemplate(`
+		var _ ipld.Node = {{ .Type.Name }}{}
+		var _ typed.Node = typed.Node(nil) // TODO
+
+		type {{ .Type.Name }} struct{ x string }
+
+	`, w, gk)
+}
+
+func (gk generateKindString) EmitNodeMethodReprKind(w io.Writer) {
+	doTemplate(`
+		func ({{ .Type.Name }}) ReprKind() ipld.ReprKind {
+			return ipld.ReprKind_String
+		}
+	`, w, gk)
+}
+
 func (gk generateKindString) EmitNodeMethodAsString(w io.Writer) {
 	doTemplate(`
 		func (x {{ .Type.Name }}) AsString() (string, error) {
