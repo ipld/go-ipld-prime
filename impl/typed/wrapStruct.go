@@ -163,7 +163,7 @@ type wrapnodeStruct_MapBuilder struct {
 func (mb *wrapnodeStruct_MapBuilder) Insert(k, v ipld.Node) error {
 	ks, err := k.AsString()
 	if err != nil {
-		return err
+		return ipld.ErrInvalidKey{"not a string: " + err.Error()}
 	}
 	// Check that the field exists at all.
 	field := mb.typ.Field(ks)
