@@ -91,13 +91,15 @@ func (gk generateNbKindStruct) EmitNodebuilderMethodCreateMap(w io.Writer) {
 				if !ok {
 					panic("field '{{$field.Name}}' in type {{.Type.Name}} is type {{$field.Type.Name}}; cannot assign "+tv.Type().Name()) // FIXME need an error type for this
 				}
-				{{- if and $field.IsOptional $field.IsNullable }}
-				mb.v.{{ $field.Name }} = &x
-				mb.v.{{ $field.Name }}__exists = true
-				{{- else if or $field.IsOptional $field.IsNullable }}
+
+				{{- if or $field.IsOptional $field.IsNullable }}
 				mb.v.{{ $field.Name }} = &x
 				{{- else}}
 				mb.v.{{ $field.Name }} = x
+				{{- end}}
+				{{- if and $field.IsOptional $field.IsNullable }}
+				mb.v.{{ $field.Name }}__exists = true
+				{{- else if not $field.IsOptional }}
 				mb.{{ $field.Name }}__isset = true
 				{{- end}}
 			{{- end}}

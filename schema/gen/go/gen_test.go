@@ -81,7 +81,7 @@ func TestNuevo(t *testing.T) {
 			schema.SpawnStructField("f1", tString, false, false),
 			schema.SpawnStructField("f2", tString, true, false),
 			schema.SpawnStructField("f3", tString, true, true),
-			schema.SpawnStructField("f4", tString, false, false),
+			schema.SpawnStructField("f4", tString, false, true),
 		},
 		schema.StructRepresentation_Map{},
 	)
