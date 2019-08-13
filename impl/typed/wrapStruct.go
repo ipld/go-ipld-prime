@@ -125,31 +125,31 @@ func (nb wrapnodeStruct_Builder) AmendMap() (ipld.MapBuilder, error) {
 	panic("TODO") // TODO
 }
 func (nb wrapnodeStruct_Builder) CreateList() (ipld.ListBuilder, error) {
-	return nil, ipld.ErrWrongKind{MethodName: string(nb.typ.Name()) + ".CreateList", AppropriateKind: ipld.ReprKindSet_JustList, ActualKind: ipld.ReprKind_Map}
+	return nil, ipld.ErrWrongKind{TypeName: string(nb.typ.Name()), MethodName: "NodeBuilder.CreateList", AppropriateKind: ipld.ReprKindSet_JustList, ActualKind: ipld.ReprKind_Map}
 }
 func (nb wrapnodeStruct_Builder) AmendList() (ipld.ListBuilder, error) {
-	return nil, ipld.ErrWrongKind{MethodName: string(nb.typ.Name()) + ".AmendList", AppropriateKind: ipld.ReprKindSet_JustList, ActualKind: ipld.ReprKind_Map}
+	return nil, ipld.ErrWrongKind{TypeName: string(nb.typ.Name()), MethodName: "NodeBuilder.AmendList", AppropriateKind: ipld.ReprKindSet_JustList, ActualKind: ipld.ReprKind_Map}
 }
 func (nb wrapnodeStruct_Builder) CreateNull() (ipld.Node, error) {
-	return nil, ipld.ErrWrongKind{MethodName: string(nb.typ.Name()) + ".CreateNull", AppropriateKind: ipld.ReprKindSet_JustNull, ActualKind: ipld.ReprKind_Map}
+	return nil, ipld.ErrWrongKind{TypeName: string(nb.typ.Name()), MethodName: "NodeBuilder.CreateNull", AppropriateKind: ipld.ReprKindSet_JustNull, ActualKind: ipld.ReprKind_Map}
 }
 func (nb wrapnodeStruct_Builder) CreateBool(v bool) (ipld.Node, error) {
-	return nil, ipld.ErrWrongKind{MethodName: string(nb.typ.Name()) + ".CreateBool", AppropriateKind: ipld.ReprKindSet_JustBool, ActualKind: ipld.ReprKind_Map}
+	return nil, ipld.ErrWrongKind{TypeName: string(nb.typ.Name()), MethodName: "NodeBuilder.CreateBool", AppropriateKind: ipld.ReprKindSet_JustBool, ActualKind: ipld.ReprKind_Map}
 }
 func (nb wrapnodeStruct_Builder) CreateInt(v int) (ipld.Node, error) {
-	return nil, ipld.ErrWrongKind{MethodName: string(nb.typ.Name()) + ".CreateInt", AppropriateKind: ipld.ReprKindSet_JustInt, ActualKind: ipld.ReprKind_Map}
+	return nil, ipld.ErrWrongKind{TypeName: string(nb.typ.Name()), MethodName: "NodeBuilder.CreateInt", AppropriateKind: ipld.ReprKindSet_JustInt, ActualKind: ipld.ReprKind_Map}
 }
 func (nb wrapnodeStruct_Builder) CreateFloat(v float64) (ipld.Node, error) {
-	return nil, ipld.ErrWrongKind{MethodName: string(nb.typ.Name()) + ".CreateFloat", AppropriateKind: ipld.ReprKindSet_JustFloat, ActualKind: ipld.ReprKind_Map}
+	return nil, ipld.ErrWrongKind{TypeName: string(nb.typ.Name()), MethodName: "NodeBuilder.CreateFloat", AppropriateKind: ipld.ReprKindSet_JustFloat, ActualKind: ipld.ReprKind_Map}
 }
 func (nb wrapnodeStruct_Builder) CreateString(v string) (ipld.Node, error) {
-	return nil, ipld.ErrWrongKind{MethodName: string(nb.typ.Name()) + ".CreateString", AppropriateKind: ipld.ReprKindSet_JustString, ActualKind: ipld.ReprKind_Map}
+	return nil, ipld.ErrWrongKind{TypeName: string(nb.typ.Name()), MethodName: "NodeBuilder.CreateString", AppropriateKind: ipld.ReprKindSet_JustString, ActualKind: ipld.ReprKind_Map}
 }
 func (nb wrapnodeStruct_Builder) CreateBytes(v []byte) (ipld.Node, error) {
-	return nil, ipld.ErrWrongKind{MethodName: string(nb.typ.Name()) + ".CreateBytes", AppropriateKind: ipld.ReprKindSet_JustBytes, ActualKind: ipld.ReprKind_Map}
+	return nil, ipld.ErrWrongKind{TypeName: string(nb.typ.Name()), MethodName: "NodeBuilder.CreateBytes", AppropriateKind: ipld.ReprKindSet_JustBytes, ActualKind: ipld.ReprKind_Map}
 }
 func (nb wrapnodeStruct_Builder) CreateLink(v ipld.Link) (ipld.Node, error) {
-	return nil, ipld.ErrWrongKind{MethodName: string(nb.typ.Name()) + ".CreateLink", AppropriateKind: ipld.ReprKindSet_JustLink, ActualKind: ipld.ReprKind_Map}
+	return nil, ipld.ErrWrongKind{TypeName: string(nb.typ.Name()), MethodName: "NodeBuilder.CreateLink", AppropriateKind: ipld.ReprKindSet_JustLink, ActualKind: ipld.ReprKind_Map}
 }
 
 type wrapnodeStruct_MapBuilder struct {

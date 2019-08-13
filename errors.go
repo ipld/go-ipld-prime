@@ -11,14 +11,14 @@ import (
 // For example, calling AsString on a map will return ErrWrongKind.
 // Calling Lookup on an int will similarly return ErrWrongKind.
 type ErrWrongKind struct {
-	// CONSIDER: if we should add a `TypeName string` here as well?
-	// It seems to be useful information, and in many places we've shoved it
-	// along with the MethodName; but while that's fine for the printed message,
-	// we could do better internally (and it would enable `typed.wrapnode*` to
-	// touch this field on its way out in a nice reusable way).
+	// TypeName may optionally indicate the named type of a node the function
+	// was called on (if the node was typed!), or, may be the empty string.
+	TypeName string
 
 	// MethodName is literally the string for the operation attempted, e.g.
 	// "AsString".
+	//
+	// For methods on nodebuilders, we say e.g. "NodeBuilder.CreateMap".
 	MethodName string
 
 	// ApprorpriateKind describes which ReprKinds the erroring method would
@@ -33,7 +33,11 @@ type ErrWrongKind struct {
 }
 
 func (e ErrWrongKind) Error() string {
-	return fmt.Sprintf("func called on wrong kind: %s called on a %s node, but only makes sense on %s", e.MethodName, e.ActualKind, e.AppropriateKind)
+	if e.TypeName == "" {
+		return fmt.Sprintf("func called on wrong kind: %s called on a %s node, but only makes sense on %s", e.MethodName, e.ActualKind, e.AppropriateKind)
+	} else {
+		return fmt.Sprintf("func called on wrong kind: %s called on a %s node (kind: %s), but only makes sense on %s", e.MethodName, e.TypeName, e.ActualKind, e.AppropriateKind)
+	}
 }
 
 // ErrNotExists may be returned from the lookup functions of the Node interface
