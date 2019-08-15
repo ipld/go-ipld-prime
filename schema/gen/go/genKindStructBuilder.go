@@ -29,6 +29,7 @@ type generateNbKindStruct struct {
 func (gk generateNbKindStruct) EmitNodebuilderType(w io.Writer) {
 	doTemplate(`
 		type {{ .Type.Name }}__NodeBuilder struct{}
+
 	`, w, gk)
 }
 
@@ -108,11 +109,9 @@ func (gk generateNbKindStruct) EmitNodebuilderMethodCreateMap(w io.Writer) {
 			}
 			return nil
 		}
-
 		func (mb *{{ .Type.Name }}__MapBuilder) Delete(k ipld.Node) error {
 			panic("TODO later")
 		}
-
 		func (mb *{{ .Type.Name }}__MapBuilder) Build() (ipld.Node, error) {
 			{{- range $field := .Type.Fields }}
 			{{- if not $field.IsOptional }}
@@ -125,8 +124,10 @@ func (gk generateNbKindStruct) EmitNodebuilderMethodCreateMap(w io.Writer) {
 			mb = nil
 			return v, nil
 		}
+
 	`, w, gk)
 }
+
 func (gk generateNbKindStruct) EmitNodebuilderMethodAmendMap(w io.Writer) {
 	doTemplate(`
 		func (nb {{ .Type.Name }}__NodeBuilder) AmendMap() (ipld.MapBuilder, error) {
