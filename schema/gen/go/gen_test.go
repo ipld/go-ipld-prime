@@ -20,6 +20,7 @@ func TestNuevo(t *testing.T) {
 
 	emitType := func(tg typeGenerator, w io.Writer) {
 		tg.EmitNodeType(w)
+		tg.EmitTypedNodeMethodType(w)
 		tg.EmitNodeMethodReprKind(w)
 		tg.EmitNodeMethodLookupString(w)
 		tg.EmitNodeMethodLookup(w)
@@ -36,6 +37,21 @@ func TestNuevo(t *testing.T) {
 		tg.EmitNodeMethodAsBytes(w)
 		tg.EmitNodeMethodAsLink(w)
 		tg.EmitNodeMethodNodeBuilder(w)
+		tg.EmitTypedNodeMethodRepresentation(w)
+
+		tnbg := tg.GetNodeBuilderGen()
+		tnbg.EmitNodebuilderType(w)
+		tnbg.EmitNodebuilderMethodCreateMap(w)
+		tnbg.EmitNodebuilderMethodAmendMap(w)
+		tnbg.EmitNodebuilderMethodCreateList(w)
+		tnbg.EmitNodebuilderMethodAmendList(w)
+		tnbg.EmitNodebuilderMethodCreateNull(w)
+		tnbg.EmitNodebuilderMethodCreateBool(w)
+		tnbg.EmitNodebuilderMethodCreateInt(w)
+		tnbg.EmitNodebuilderMethodCreateFloat(w)
+		tnbg.EmitNodebuilderMethodCreateString(w)
+		tnbg.EmitNodebuilderMethodCreateBytes(w)
+		tnbg.EmitNodebuilderMethodCreateLink(w)
 	}
 
 	f := openOrPanic("_test/minima.go")
@@ -65,7 +81,7 @@ func TestNuevo(t *testing.T) {
 			schema.SpawnStructField("f1", tString, false, false),
 			schema.SpawnStructField("f2", tString, true, false),
 			schema.SpawnStructField("f3", tString, true, true),
-			schema.SpawnStructField("f4", tString, false, false),
+			schema.SpawnStructField("f4", tString, false, true),
 		},
 		schema.StructRepresentation_Map{},
 	)

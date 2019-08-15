@@ -31,8 +31,8 @@ type typeGenerator interface {
 	// wip note: hopefully imports are a constant.  if not, we'll have to curry something with the writer.
 
 	// -- the typed.Node.Type method and vars -->
-	// TODO
-	//  (and last -- needs whole `typed/system` package)
+
+	EmitTypedNodeMethodType(io.Writer) // these emit dummies for now
 
 	// -- all node methods -->
 
@@ -41,8 +41,8 @@ type typeGenerator interface {
 	EmitNodeMethodLookupString(io.Writer)
 	EmitNodeMethodLookup(io.Writer)
 	EmitNodeMethodLookupIndex(io.Writer)
-	EmitNodeMethodMapIterator(io.Writer)
-	EmitNodeMethodListIterator(io.Writer)
+	EmitNodeMethodMapIterator(io.Writer)  // also iterator itself
+	EmitNodeMethodListIterator(io.Writer) // also iterator itself
 	EmitNodeMethodLength(io.Writer)
 	EmitNodeMethodIsUndefined(io.Writer)
 	EmitNodeMethodIsNull(io.Writer)
@@ -53,26 +53,35 @@ type typeGenerator interface {
 	EmitNodeMethodAsBytes(io.Writer)
 	EmitNodeMethodAsLink(io.Writer)
 	EmitNodeMethodNodeBuilder(io.Writer)
-	// TODO also iterators (return blanks for non-{map,list,struct,enum})
 
-	// -- all nodebuilder methods -->
-	// TODO
+	// -- the ideal/typed nodebuilder -->
+
+	GetNodeBuilderGen() nodebuilderGenerator
+
+	// -- and the representation and its node and nodebuilder -->
+
+	EmitTypedNodeMethodRepresentation(io.Writer)
+	// TODO: EmitRepresentationNode(io.Writer) // deploys *another* whole typeGenerator
+	// TODO: EmitRepresentationNodeBuilder(io.Writer) // deploys *another* whole nodebuilderGenerator
+
+	// debatable: we could have 'EmitRepresentationNode' and similar return a generator interface instead of just going to work.
+	//  however, this raises questions when it comes to any types which have *multiple* representation-side builders (e.g. strict-order as well as loose-order).
 }
 
 type nodebuilderGenerator interface {
-	EmitNodeBuilderType(io.Writer)
+	EmitNodebuilderType(io.Writer)
 
-	EmitNodeBuilderMethodCreateMap(io.Writer)
-	EmitNodeBuilderMethodAmendMap(io.Writer)
-	EmitNodeBuilderMethodCreateList(io.Writer)
-	EmitNodeBuilderMethodAmendList(io.Writer)
-	EmitNodeBuilderMethodCreateNull(io.Writer)
-	EmitNodeBuilderMethodCreateBool(io.Writer)
-	EmitNodeBuilderMethodCreateInt(io.Writer)
-	EmitNodeBuilderMethodCreateFloat(io.Writer)
-	EmitNodeBuilderMethodCreateString(io.Writer)
-	EmitNodeBuilderMethodCreateBytes(io.Writer)
-	EmitNodeBuilderMethodCreateLink(io.Writer)
+	EmitNodebuilderMethodCreateMap(io.Writer)
+	EmitNodebuilderMethodAmendMap(io.Writer)
+	EmitNodebuilderMethodCreateList(io.Writer)
+	EmitNodebuilderMethodAmendList(io.Writer)
+	EmitNodebuilderMethodCreateNull(io.Writer)
+	EmitNodebuilderMethodCreateBool(io.Writer)
+	EmitNodebuilderMethodCreateInt(io.Writer)
+	EmitNodebuilderMethodCreateFloat(io.Writer)
+	EmitNodebuilderMethodCreateString(io.Writer)
+	EmitNodebuilderMethodCreateBytes(io.Writer)
+	EmitNodebuilderMethodCreateLink(io.Writer)
 
 	// TODO we'll soon also need all the child-nb-getters here too.
 }
@@ -82,6 +91,7 @@ func emitFileHeader(w io.Writer) {
 	fmt.Fprintf(w, "import (\n")
 	fmt.Fprintf(w, "\tipld \"github.com/ipld/go-ipld-prime\"\n")
 	fmt.Fprintf(w, "\t\"github.com/ipld/go-ipld-prime/impl/typed\"\n")
+	fmt.Fprintf(w, "\t\"github.com/ipld/go-ipld-prime/schema\"\n")
 	fmt.Fprintf(w, ")\n\n")
 }
 
