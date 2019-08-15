@@ -123,34 +123,34 @@ func (gk genKindedNbRejections_String) EmitNodebuilderMethodCreateLink(w io.Writ
 }
 
 // Embeddable to do all the "nope" methods at once.
-type genKindedNbRejections_Struct struct {
+type genKindedNbRejections_Map struct {
 	Type schema.Type // used so we can generate error messages with the type name.
 }
 
-func (gk genKindedNbRejections_Struct) EmitNodebuilderMethodCreateList(w io.Writer) {
+func (gk genKindedNbRejections_Map) EmitNodebuilderMethodCreateList(w io.Writer) {
 	genKindedNbRejections{}.emitNodebuilderMethodCreateList(w, gk.Type)
 }
-func (gk genKindedNbRejections_Struct) EmitNodebuilderMethodAmendList(w io.Writer) {
+func (gk genKindedNbRejections_Map) EmitNodebuilderMethodAmendList(w io.Writer) {
 	genKindedNbRejections{}.emitNodebuilderMethodAmendList(w, gk.Type)
 }
-func (gk genKindedNbRejections_Struct) EmitNodebuilderMethodCreateNull(w io.Writer) {
+func (gk genKindedNbRejections_Map) EmitNodebuilderMethodCreateNull(w io.Writer) {
 	genKindedNbRejections{}.emitNodebuilderMethodCreateNull(w, gk.Type)
 }
-func (gk genKindedNbRejections_Struct) EmitNodebuilderMethodCreateBool(w io.Writer) {
+func (gk genKindedNbRejections_Map) EmitNodebuilderMethodCreateBool(w io.Writer) {
 	genKindedNbRejections{}.emitNodebuilderMethodCreateBool(w, gk.Type)
 }
-func (gk genKindedNbRejections_Struct) EmitNodebuilderMethodCreateInt(w io.Writer) {
+func (gk genKindedNbRejections_Map) EmitNodebuilderMethodCreateInt(w io.Writer) {
 	genKindedNbRejections{}.emitNodebuilderMethodCreateInt(w, gk.Type)
 }
-func (gk genKindedNbRejections_Struct) EmitNodebuilderMethodCreateFloat(w io.Writer) {
+func (gk genKindedNbRejections_Map) EmitNodebuilderMethodCreateFloat(w io.Writer) {
 	genKindedNbRejections{}.emitNodebuilderMethodCreateFloat(w, gk.Type)
 }
-func (gk genKindedNbRejections_Struct) EmitNodebuilderMethodCreateString(w io.Writer) {
+func (gk genKindedNbRejections_Map) EmitNodebuilderMethodCreateString(w io.Writer) {
 	genKindedNbRejections{}.emitNodebuilderMethodCreateString(w, gk.Type)
 }
-func (gk genKindedNbRejections_Struct) EmitNodebuilderMethodCreateBytes(w io.Writer) {
+func (gk genKindedNbRejections_Map) EmitNodebuilderMethodCreateBytes(w io.Writer) {
 	genKindedNbRejections{}.emitNodebuilderMethodCreateBytes(w, gk.Type)
 }
-func (gk genKindedNbRejections_Struct) EmitNodebuilderMethodCreateLink(w io.Writer) {
+func (gk genKindedNbRejections_Map) EmitNodebuilderMethodCreateLink(w io.Writer) {
 	genKindedNbRejections{}.emitNodebuilderMethodCreateLink(w, gk.Type)
 }

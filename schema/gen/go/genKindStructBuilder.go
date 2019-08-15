@@ -9,7 +9,7 @@ import (
 func (gk generateKindStruct) GetNodeBuilderGen() nodebuilderGenerator {
 	return generateNbKindStruct{
 		gk.Type,
-		genKindedNbRejections_Struct{gk.Type},
+		genKindedNbRejections_Map{gk.Type},
 	}
 }
 
@@ -23,7 +23,7 @@ func (gk generateKindStruct) EmitNodeMethodNodeBuilder(w io.Writer) {
 
 type generateNbKindStruct struct {
 	Type schema.TypeStruct
-	genKindedNbRejections_Struct
+	genKindedNbRejections_Map
 }
 
 func (gk generateNbKindStruct) EmitNodebuilderType(w io.Writer) {
