@@ -67,6 +67,7 @@ func (gk generateNbKindStruct) EmitNodebuilderMethodCreateMap(w io.Writer) {
 				return ipld.ErrInvalidKey{"not a string: " + err.Error()}
 			}
 			switch ks {
+			{{- $type := .Type -}} {{- /* ranging modifies dot, unhelpfully */ -}}
 			{{- range $field := .Type.Fields }}
 			case "{{ $field.Name }}":
 				{{- if $field.IsNullable }}
@@ -90,7 +91,7 @@ func (gk generateNbKindStruct) EmitNodebuilderMethodCreateMap(w io.Writer) {
 				}
 				x, ok := v.({{ $field.Type.Name }})
 				if !ok {
-					panic("field '{{$field.Name}}' in type {{.Type.Name}} is type {{$field.Type.Name}}; cannot assign "+tv.Type().Name()) // FIXME need an error type for this
+					panic("field '{{$field.Name}}' in type {{$type.Name}} is type {{$field.Type.Name}}; cannot assign "+tv.Type().Name()) // FIXME need an error type for this
 				}
 
 				{{- if or $field.IsOptional $field.IsNullable }}
@@ -113,10 +114,11 @@ func (gk generateNbKindStruct) EmitNodebuilderMethodCreateMap(w io.Writer) {
 			panic("TODO later")
 		}
 		func (mb *{{ .Type.Name }}__MapBuilder) Build() (ipld.Node, error) {
+			{{- $type := .Type -}} {{- /* ranging modifies dot, unhelpfully */ -}}
 			{{- range $field := .Type.Fields }}
 			{{- if not $field.IsOptional }}
 			if !mb.{{ $field.Name }}__isset {
-				panic("missing required field '{{$field.Name}}' in building struct {{ .Type.Name }}") // FIXME need an error type for this
+				panic("missing required field '{{$field.Name}}' in building struct {{ $type.Name }}") // FIXME need an error type for this
 			}
 			{{- end}}
 			{{- end}}
