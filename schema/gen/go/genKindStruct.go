@@ -9,7 +9,10 @@ import (
 func NewGeneratorForKindStruct(t schema.Type) typedNodeGenerator {
 	return generateKindStruct{
 		t.(schema.TypeStruct),
-		generateKindedRejections_Map{t},
+		generateKindedRejections_Map{
+			string(t.Name()),
+			string(t.Name()),
+		},
 	}
 }
 

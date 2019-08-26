@@ -3,202 +3,208 @@ package gengo
 import (
 	"io"
 
-	"github.com/ipld/go-ipld-prime/schema"
+	ipld "github.com/ipld/go-ipld-prime"
 )
 
-type generateKindedRejections struct{}
-
-func (generateKindedRejections) emitNodeMethodLookupString(w io.Writer, t schema.Type) {
-	doTemplate(`
-		func ({{ .Name }}) LookupString(string) (ipld.Node, error) {
-			return nil, ipld.ErrWrongKind{TypeName: "{{ .Name }}", MethodName: "LookupString", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: {{ .Kind.ActsLike | ReprKindConst }}}
-		}
-	`, w, t)
+type generateKindedRejections struct {
+	TypeIdent string // the identifier in code (sometimes is munged internals like "_Thing__Repr" corresponding to no publicly admitted schema.Type.Name).
+	TypeProse string // as will be printed in messages (e.g. can be goosed up a bit, like "Thing.Repr" instead of "_Thing__Repr").
+	Kind      ipld.ReprKind
 }
 
-func (generateKindedRejections) emitNodeMethodLookup(w io.Writer, t schema.Type) {
+func (d generateKindedRejections) emitNodeMethodLookupString(w io.Writer) {
 	doTemplate(`
-		func ({{ .Name }}) Lookup(ipld.Node) (ipld.Node, error) {
-			return nil, ipld.ErrWrongKind{TypeName: "{{ .Name }}", MethodName: "Lookup", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: {{ .Kind.ActsLike | ReprKindConst }}}
+		func ({{ .TypeIdent }}) LookupString(string) (ipld.Node, error) {
+			return nil, ipld.ErrWrongKind{TypeName: "{{ .TypeProse }}", MethodName: "LookupString", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: {{ .Kind | ReprKindConst }}}
 		}
-	`, w, t)
+	`, w, d)
 }
 
-func (generateKindedRejections) emitNodeMethodLookupIndex(w io.Writer, t schema.Type) {
+func (d generateKindedRejections) emitNodeMethodLookup(w io.Writer) {
 	doTemplate(`
-		func ({{ .Name }}) LookupIndex(idx int) (ipld.Node, error) {
-			return nil, ipld.ErrWrongKind{TypeName: "{{ .Name }}", MethodName: "LookupIndex", AppropriateKind: ipld.ReprKindSet_JustList, ActualKind: {{ .Kind.ActsLike | ReprKindConst }}}
+		func ({{ .TypeIdent }}) Lookup(ipld.Node) (ipld.Node, error) {
+			return nil, ipld.ErrWrongKind{TypeName: "{{ .TypeProse }}", MethodName: "Lookup", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: {{ .Kind | ReprKindConst }}}
 		}
-	`, w, t)
+	`, w, d)
 }
 
-func (generateKindedRejections) emitNodeMethodMapIterator(w io.Writer, t schema.Type) {
+func (d generateKindedRejections) emitNodeMethodLookupIndex(w io.Writer) {
 	doTemplate(`
-		func ({{ .Name }}) MapIterator() ipld.MapIterator {
-			return mapIteratorReject{ipld.ErrWrongKind{TypeName: "{{ .Name }}", MethodName: "MapIterator", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: {{ .Kind.ActsLike | ReprKindConst }}}}
+		func ({{ .TypeIdent }}) LookupIndex(idx int) (ipld.Node, error) {
+			return nil, ipld.ErrWrongKind{TypeName: "{{ .TypeProse }}", MethodName: "LookupIndex", AppropriateKind: ipld.ReprKindSet_JustList, ActualKind: {{ .Kind | ReprKindConst }}}
 		}
-	`, w, t)
+	`, w, d)
 }
 
-func (generateKindedRejections) emitNodeMethodListIterator(w io.Writer, t schema.Type) {
+func (d generateKindedRejections) emitNodeMethodMapIterator(w io.Writer) {
 	doTemplate(`
-		func ({{ .Name }}) ListIterator() ipld.ListIterator {
-			return listIteratorReject{ipld.ErrWrongKind{TypeName: "{{ .Name }}", MethodName: "ListIterator", AppropriateKind: ipld.ReprKindSet_JustList, ActualKind: {{ .Kind.ActsLike | ReprKindConst }}}}
+		func ({{ .TypeIdent }}) MapIterator() ipld.MapIterator {
+			return mapIteratorReject{ipld.ErrWrongKind{TypeName: "{{ .TypeProse }}", MethodName: "MapIterator", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: {{ .Kind | ReprKindConst }}}}
 		}
-	`, w, t)
+	`, w, d)
 }
 
-func (generateKindedRejections) emitNodeMethodLength(w io.Writer, t schema.Type) {
+func (d generateKindedRejections) emitNodeMethodListIterator(w io.Writer) {
 	doTemplate(`
-		func ({{ .Name }}) Length() int {
+		func ({{ .TypeIdent }}) ListIterator() ipld.ListIterator {
+			return listIteratorReject{ipld.ErrWrongKind{TypeName: "{{ .TypeProse }}", MethodName: "ListIterator", AppropriateKind: ipld.ReprKindSet_JustList, ActualKind: {{ .Kind | ReprKindConst }}}}
+		}
+	`, w, d)
+}
+
+func (d generateKindedRejections) emitNodeMethodLength(w io.Writer) {
+	doTemplate(`
+		func ({{ .TypeIdent }}) Length() int {
 			return -1
 		}
-	`, w, t)
+	`, w, d)
 }
 
-func (generateKindedRejections) emitNodeMethodIsUndefined(w io.Writer, t schema.Type) {
+func (d generateKindedRejections) emitNodeMethodIsUndefined(w io.Writer) {
 	doTemplate(`
-		func ({{ .Name }}) IsUndefined() bool {
+		func ({{ .TypeIdent }}) IsUndefined() bool {
 			return false
 		}
-	`, w, t)
+	`, w, d)
 }
 
-func (generateKindedRejections) emitNodeMethodIsNull(w io.Writer, t schema.Type) {
+func (d generateKindedRejections) emitNodeMethodIsNull(w io.Writer) {
 	doTemplate(`
-		func ({{ .Name }}) IsNull() bool {
+		func ({{ .TypeIdent }}) IsNull() bool {
 			return false
 		}
-	`, w, t)
+	`, w, d)
 }
 
-func (generateKindedRejections) emitNodeMethodAsBool(w io.Writer, t schema.Type) {
+func (d generateKindedRejections) emitNodeMethodAsBool(w io.Writer) {
 	doTemplate(`
-		func ({{ .Name }}) AsBool() (bool, error) {
-			return false, ipld.ErrWrongKind{TypeName: "{{ .Name }}", MethodName: "AsBool", AppropriateKind: ipld.ReprKindSet_JustBool, ActualKind: {{ .Kind.ActsLike | ReprKindConst }}}
+		func ({{ .TypeIdent }}) AsBool() (bool, error) {
+			return false, ipld.ErrWrongKind{TypeName: "{{ .TypeProse }}", MethodName: "AsBool", AppropriateKind: ipld.ReprKindSet_JustBool, ActualKind: {{ .Kind | ReprKindConst }}}
 		}
-	`, w, t)
+	`, w, d)
 }
 
-func (generateKindedRejections) emitNodeMethodAsInt(w io.Writer, t schema.Type) {
+func (d generateKindedRejections) emitNodeMethodAsInt(w io.Writer) {
 	doTemplate(`
-		func ({{ .Name }}) AsInt() (int, error) {
-			return 0, ipld.ErrWrongKind{TypeName: "{{ .Name }}", MethodName: "AsInt", AppropriateKind: ipld.ReprKindSet_JustInt, ActualKind: {{ .Kind.ActsLike | ReprKindConst }}}
+		func ({{ .TypeIdent }}) AsInt() (int, error) {
+			return 0, ipld.ErrWrongKind{TypeName: "{{ .TypeProse }}", MethodName: "AsInt", AppropriateKind: ipld.ReprKindSet_JustInt, ActualKind: {{ .Kind | ReprKindConst }}}
 		}
-	`, w, t)
+	`, w, d)
 }
 
-func (generateKindedRejections) emitNodeMethodAsFloat(w io.Writer, t schema.Type) {
+func (d generateKindedRejections) emitNodeMethodAsFloat(w io.Writer) {
 	doTemplate(`
-		func ({{ .Name }}) AsFloat() (float64, error) {
-			return 0, ipld.ErrWrongKind{TypeName: "{{ .Name }}", MethodName: "AsFloat", AppropriateKind: ipld.ReprKindSet_JustFloat, ActualKind: {{ .Kind.ActsLike | ReprKindConst }}}
+		func ({{ .TypeIdent }}) AsFloat() (float64, error) {
+			return 0, ipld.ErrWrongKind{TypeName: "{{ .TypeProse }}", MethodName: "AsFloat", AppropriateKind: ipld.ReprKindSet_JustFloat, ActualKind: {{ .Kind | ReprKindConst }}}
 		}
-	`, w, t)
+	`, w, d)
 }
 
-func (generateKindedRejections) emitNodeMethodAsString(w io.Writer, t schema.Type) {
+func (d generateKindedRejections) emitNodeMethodAsString(w io.Writer) {
 	doTemplate(`
-		func ({{ .Name }}) AsString() (string, error) {
-			return "", ipld.ErrWrongKind{TypeName: "{{ .Name }}", MethodName: "AsString", AppropriateKind: ipld.ReprKindSet_JustString, ActualKind: {{ .Kind.ActsLike | ReprKindConst }}}
+		func ({{ .TypeIdent }}) AsString() (string, error) {
+			return "", ipld.ErrWrongKind{TypeName: "{{ .TypeProse }}", MethodName: "AsString", AppropriateKind: ipld.ReprKindSet_JustString, ActualKind: {{ .Kind | ReprKindConst }}}
 		}
-	`, w, t)
+	`, w, d)
 }
 
-func (generateKindedRejections) emitNodeMethodAsBytes(w io.Writer, t schema.Type) {
+func (d generateKindedRejections) emitNodeMethodAsBytes(w io.Writer) {
 	doTemplate(`
-		func ({{ .Name }}) AsBytes() ([]byte, error) {
-			return nil, ipld.ErrWrongKind{TypeName: "{{ .Name }}", MethodName: "AsBytes", AppropriateKind: ipld.ReprKindSet_JustBytes, ActualKind: {{ .Kind.ActsLike | ReprKindConst }}}
+		func ({{ .TypeIdent }}) AsBytes() ([]byte, error) {
+			return nil, ipld.ErrWrongKind{TypeName: "{{ .TypeProse }}", MethodName: "AsBytes", AppropriateKind: ipld.ReprKindSet_JustBytes, ActualKind: {{ .Kind | ReprKindConst }}}
 		}
-	`, w, t)
+	`, w, d)
 }
 
-func (generateKindedRejections) emitNodeMethodAsLink(w io.Writer, t schema.Type) {
+func (d generateKindedRejections) emitNodeMethodAsLink(w io.Writer) {
 	doTemplate(`
-		func ({{ .Name }}) AsLink() (ipld.Link, error) {
-			return nil, ipld.ErrWrongKind{TypeName: "{{ .Name }}", MethodName: "AsLink", AppropriateKind: ipld.ReprKindSet_JustLink, ActualKind: {{ .Kind.ActsLike | ReprKindConst }}}
+		func ({{ .TypeIdent }}) AsLink() (ipld.Link, error) {
+			return nil, ipld.ErrWrongKind{TypeName: "{{ .TypeProse }}", MethodName: "AsLink", AppropriateKind: ipld.ReprKindSet_JustLink, ActualKind: {{ .Kind | ReprKindConst }}}
 		}
-	`, w, t)
+	`, w, d)
 }
 
 // Embeddable to do all the "nope" methods at once.
 type generateKindedRejections_String struct {
-	Type schema.Type // used so we can generate error messages with the type name.
+	TypeIdent string // see doc in generateKindedRejections
+	TypeProse string // see doc in generateKindedRejections
 }
 
 func (gk generateKindedRejections_String) EmitNodeMethodLookupString(w io.Writer) {
-	generateKindedRejections{}.emitNodeMethodLookupString(w, gk.Type)
+	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_String}.emitNodeMethodLookupString(w)
 }
 func (gk generateKindedRejections_String) EmitNodeMethodLookup(w io.Writer) {
-	generateKindedRejections{}.emitNodeMethodLookup(w, gk.Type)
+	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_String}.emitNodeMethodLookup(w)
 }
 func (gk generateKindedRejections_String) EmitNodeMethodLookupIndex(w io.Writer) {
-	generateKindedRejections{}.emitNodeMethodLookupIndex(w, gk.Type)
+	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_String}.emitNodeMethodLookupIndex(w)
 }
 func (gk generateKindedRejections_String) EmitNodeMethodMapIterator(w io.Writer) {
-	generateKindedRejections{}.emitNodeMethodMapIterator(w, gk.Type)
+	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_String}.emitNodeMethodMapIterator(w)
 }
 func (gk generateKindedRejections_String) EmitNodeMethodListIterator(w io.Writer) {
-	generateKindedRejections{}.emitNodeMethodListIterator(w, gk.Type)
+	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_String}.emitNodeMethodListIterator(w)
 }
 func (gk generateKindedRejections_String) EmitNodeMethodLength(w io.Writer) {
-	generateKindedRejections{}.emitNodeMethodLength(w, gk.Type)
+	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_String}.emitNodeMethodLength(w)
 }
 func (gk generateKindedRejections_String) EmitNodeMethodIsUndefined(w io.Writer) {
-	generateKindedRejections{}.emitNodeMethodIsUndefined(w, gk.Type)
+	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_String}.emitNodeMethodIsUndefined(w)
 }
 func (gk generateKindedRejections_String) EmitNodeMethodIsNull(w io.Writer) {
-	generateKindedRejections{}.emitNodeMethodIsNull(w, gk.Type)
+	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_String}.emitNodeMethodIsNull(w)
 }
 func (gk generateKindedRejections_String) EmitNodeMethodAsBool(w io.Writer) {
-	generateKindedRejections{}.emitNodeMethodAsBool(w, gk.Type)
+	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_String}.emitNodeMethodAsBool(w)
 }
 func (gk generateKindedRejections_String) EmitNodeMethodAsInt(w io.Writer) {
-	generateKindedRejections{}.emitNodeMethodAsInt(w, gk.Type)
+	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_String}.emitNodeMethodAsInt(w)
 }
 func (gk generateKindedRejections_String) EmitNodeMethodAsFloat(w io.Writer) {
-	generateKindedRejections{}.emitNodeMethodAsFloat(w, gk.Type)
+	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_String}.emitNodeMethodAsFloat(w)
 }
 func (gk generateKindedRejections_String) EmitNodeMethodAsBytes(w io.Writer) {
-	generateKindedRejections{}.emitNodeMethodAsBytes(w, gk.Type)
+	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_String}.emitNodeMethodAsBytes(w)
 }
 func (gk generateKindedRejections_String) EmitNodeMethodAsLink(w io.Writer) {
-	generateKindedRejections{}.emitNodeMethodAsLink(w, gk.Type)
+	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_String}.emitNodeMethodAsLink(w)
 }
 
 // Embeddable to do all the "nope" methods at once.
 //
 // Used for anything that "acts like" map (so, also struct).
 type generateKindedRejections_Map struct {
-	Type schema.Type // used so we can generate error messages with the type name.
+	TypeIdent string // see doc in generateKindedRejections
+	TypeProse string // see doc in generateKindedRejections
 }
 
 func (gk generateKindedRejections_Map) EmitNodeMethodLookupIndex(w io.Writer) {
-	generateKindedRejections{}.emitNodeMethodLookupIndex(w, gk.Type)
+	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Map}.emitNodeMethodLookupIndex(w)
 }
 func (gk generateKindedRejections_Map) EmitNodeMethodListIterator(w io.Writer) {
-	generateKindedRejections{}.emitNodeMethodListIterator(w, gk.Type)
+	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Map}.emitNodeMethodListIterator(w)
 }
 func (gk generateKindedRejections_Map) EmitNodeMethodIsUndefined(w io.Writer) {
-	generateKindedRejections{}.emitNodeMethodIsUndefined(w, gk.Type)
+	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Map}.emitNodeMethodIsUndefined(w)
 }
 func (gk generateKindedRejections_Map) EmitNodeMethodIsNull(w io.Writer) {
-	generateKindedRejections{}.emitNodeMethodIsNull(w, gk.Type)
+	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Map}.emitNodeMethodIsNull(w)
 }
 func (gk generateKindedRejections_Map) EmitNodeMethodAsBool(w io.Writer) {
-	generateKindedRejections{}.emitNodeMethodAsBool(w, gk.Type)
+	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Map}.emitNodeMethodAsBool(w)
 }
 func (gk generateKindedRejections_Map) EmitNodeMethodAsInt(w io.Writer) {
-	generateKindedRejections{}.emitNodeMethodAsInt(w, gk.Type)
+	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Map}.emitNodeMethodAsInt(w)
 }
 func (gk generateKindedRejections_Map) EmitNodeMethodAsFloat(w io.Writer) {
-	generateKindedRejections{}.emitNodeMethodAsFloat(w, gk.Type)
+	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Map}.emitNodeMethodAsFloat(w)
 }
 func (gk generateKindedRejections_Map) EmitNodeMethodAsString(w io.Writer) {
-	generateKindedRejections{}.emitNodeMethodAsString(w, gk.Type)
+	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Map}.emitNodeMethodAsString(w)
 }
 func (gk generateKindedRejections_Map) EmitNodeMethodAsBytes(w io.Writer) {
-	generateKindedRejections{}.emitNodeMethodAsBytes(w, gk.Type)
+	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Map}.emitNodeMethodAsBytes(w)
 }
 func (gk generateKindedRejections_Map) EmitNodeMethodAsLink(w io.Writer) {
-	generateKindedRejections{}.emitNodeMethodAsLink(w, gk.Type)
+	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Map}.emitNodeMethodAsLink(w)
 }
