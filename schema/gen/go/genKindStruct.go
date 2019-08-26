@@ -171,8 +171,17 @@ func (gk generateKindStruct) EmitNodeMethodLength(w io.Writer) {
 
 func (gk generateKindStruct) EmitTypedNodeMethodRepresentation(w io.Writer) {
 	doTemplate(`
-		func ({{ .Type.Name }}) Representation() ipld.Node {
-			panic("TODO representation")
+		func (n {{ .Type.Name }}) Representation() ipld.Node {
+			return  _{{ .Type.Name }}__Repr{&n}
 		}
 	`, w, gk)
+}
+
+func (gk generateKindStruct) GetRepresentationNodeGen() nodeGenerator {
+	switch gk.Type.RepresentationStrategy().(type) {
+	case schema.StructRepresentation_Map:
+		return getStructRepresentationMapNodeGen(gk.Type)
+	default:
+		panic("missing case in switch for repr strategy for structs")
+	}
 }

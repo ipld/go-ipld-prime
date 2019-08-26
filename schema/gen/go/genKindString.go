@@ -64,3 +64,7 @@ func (gk generateKindString) EmitTypedNodeMethodRepresentation(w io.Writer) {
 		}
 	`, w, gk)
 }
+
+func (gk generateKindString) GetRepresentationNodeGen() nodeGenerator {
+	return nil // TODO of course
+}
