@@ -6,7 +6,7 @@ import (
 	"github.com/ipld/go-ipld-prime/schema"
 )
 
-func NewGeneratorForKindString(t schema.Type) typeGenerator {
+func NewGeneratorForKindString(t schema.Type) typedNodeGenerator {
 	return generateKindString{
 		t.(schema.TypeString),
 		generateKindedRejections_String{t},

@@ -13,7 +13,7 @@ import (
 //    and hopefully that interface is nodebuilder,
 //     because I dunno why it wouldn't be unless we goof on perf somehow).
 
-// typeGenerator declares a standard names for a bunch of methods for generating
+// typedNodeGenerator declares a standard names for a bunch of methods for generating
 // code for our schema types.  There's still numerous places where other casts
 // to more specific interfaces will be required (so, technically, it's not a
 // very powerful interface; it's not so much that the abstractions leak as that
@@ -27,7 +27,7 @@ import (
 //
 // None of these methods return error values because we panic in this package.
 //
-type typeGenerator interface {
+type typedNodeGenerator interface {
 	// wip note: hopefully imports are a constant.  if not, we'll have to curry something with the writer.
 
 	// -- the typed.Node.Type method and vars -->
@@ -35,7 +35,22 @@ type typeGenerator interface {
 	EmitTypedNodeMethodType(io.Writer) // these emit dummies for now
 
 	// -- all node methods -->
+	//   (and note that the nodeBuilder for this one should be the "semantic" one,
+	//     e.g. it *always* acts like a map for structs, even if the repr is different.)
 
+	nodeGenerator
+
+	// -- and the representation and its node and nodebuilder -->
+
+	EmitTypedNodeMethodRepresentation(io.Writer)
+	// TODO: EmitRepresentationNode(io.Writer) // deploys *another* whole nodeGenerator
+	// TODO: EmitRepresentationNodeBuilder(io.Writer) // deploys *another* whole nodebuilderGenerator
+
+	// debatable: we could have 'EmitRepresentationNode' and similar return a generator interface instead of just going to work.
+	//  however, this raises questions when it comes to any types which have *multiple* representation-side builders (e.g. strict-order as well as loose-order).
+}
+
+type nodeGenerator interface {
 	EmitNodeType(io.Writer)
 	EmitNodeMethodReprKind(io.Writer)
 	EmitNodeMethodLookupString(io.Writer)
@@ -54,18 +69,7 @@ type typeGenerator interface {
 	EmitNodeMethodAsLink(io.Writer)
 	EmitNodeMethodNodeBuilder(io.Writer)
 
-	// -- the ideal/typed nodebuilder -->
-
 	GetNodeBuilderGen() nodebuilderGenerator
-
-	// -- and the representation and its node and nodebuilder -->
-
-	EmitTypedNodeMethodRepresentation(io.Writer)
-	// TODO: EmitRepresentationNode(io.Writer) // deploys *another* whole typeGenerator
-	// TODO: EmitRepresentationNodeBuilder(io.Writer) // deploys *another* whole nodebuilderGenerator
-
-	// debatable: we could have 'EmitRepresentationNode' and similar return a generator interface instead of just going to work.
-	//  however, this raises questions when it comes to any types which have *multiple* representation-side builders (e.g. strict-order as well as loose-order).
 }
 
 type nodebuilderGenerator interface {
