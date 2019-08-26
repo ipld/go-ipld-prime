@@ -23,6 +23,15 @@ import (
 // Imagine you have two parts of a very large code base which have codegen'd
 // components which are from different versions of a schema.  Smooth migrations
 // and zero-copy type-safe data sharing between them: We can accommodate that!
+//
+// Typed nodes sometimes have slightly different behaviors than plain nodes:
+// For example, when looking up fields on a typed node that's a struct,
+// the error returned for a lookup with a key that's not a field name will
+// be ErrNoSuchField (instead of ErrNotExists).
+// These behaviors apply to the typed.Node only and not their representations;
+// continuing the example, the .Representation().LookupString() method on
+// that same node for the same key as plain `.LookupString()` will still
+// return ErrNotExists, because the representation isn't a typed.Node!
 type Node interface {
 	// typed.Node acts just like a regular Node for almost all purposes;
 	// which ReprKind it acts as is determined by the TypeKind.

@@ -58,7 +58,7 @@ func (gk generateStructReprMapNode) EmitNodeMethodLookupString(w io.Writer) {
 				}
 				{{- else if $field.IsOptional }}
 				if rn.n.{{ $field.Name }} == nil {
-					return ipld.Undef, nil
+					return ipld.Undef, nil // FIMXE use ErrNotExists -- but TODO we should resolve the PathSegment issue in that first
 				}
 				{{- else if $field.IsNullable }}
 				if rn.n.{{ $field.Name }} == nil {
