@@ -20,12 +20,12 @@ type Matcher struct{}
 
 // Interests are empty for a matcher (for now) because
 // It is always just there to match, not explore further
-func (s Matcher) Interests() []PathSegment {
-	return []PathSegment{}
+func (s Matcher) Interests() []ipld.PathSegment {
+	return []ipld.PathSegment{}
 }
 
 // Explore will return nil because a matcher is a terminal selector
-func (s Matcher) Explore(n ipld.Node, p PathSegment) Selector {
+func (s Matcher) Explore(n ipld.Node, p ipld.PathSegment) Selector {
 	return nil
 }
 

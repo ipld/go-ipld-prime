@@ -67,7 +67,7 @@ func (prog Progress) walkAdv_iterateAll(n ipld.Node, s selector.Selector, fn Adv
 		sNext := s.Explore(n, ps)
 		if sNext != nil {
 			progNext := prog
-			progNext.Path = prog.Path.AppendSegment(ps.String())
+			progNext.Path = prog.Path.AppendSegment(ps)
 			if v.ReprKind() == ipld.ReprKind_Link {
 				lnk, _ := v.AsLink()
 				progNext.LastBlock.Path = progNext.Path
@@ -87,7 +87,7 @@ func (prog Progress) walkAdv_iterateAll(n ipld.Node, s selector.Selector, fn Adv
 	return nil
 }
 
-func (prog Progress) walkAdv_iterateSelective(n ipld.Node, attn []selector.PathSegment, s selector.Selector, fn AdvVisitFn) error {
+func (prog Progress) walkAdv_iterateSelective(n ipld.Node, attn []ipld.PathSegment, s selector.Selector, fn AdvVisitFn) error {
 	for _, ps := range attn {
 		// TODO: Probably not the most efficient way to be doing this...
 		v, err := n.LookupString(ps.String())
@@ -97,7 +97,7 @@ func (prog Progress) walkAdv_iterateSelective(n ipld.Node, attn []selector.PathS
 		sNext := s.Explore(n, ps)
 		if sNext != nil {
 			progNext := prog
-			progNext.Path = prog.Path.AppendSegment(ps.String())
+			progNext.Path = prog.Path.AppendSegment(ps)
 			if v.ReprKind() == ipld.ReprKind_Link {
 				lnk, _ := v.AsLink()
 				progNext.LastBlock.Path = progNext.Path

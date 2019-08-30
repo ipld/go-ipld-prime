@@ -98,37 +98,37 @@ func TestParseExploreRange(t *testing.T) {
 		})
 		s, err := ParseContext{}.ParseExploreRange(sn)
 		Wish(t, err, ShouldEqual, nil)
-		Wish(t, s, ShouldEqual, ExploreRange{Matcher{}, 2, 3, []PathSegment{PathSegmentInt{I: 2}}})
+		Wish(t, s, ShouldEqual, ExploreRange{Matcher{}, 2, 3, []ipld.PathSegment{ipld.PathSegmentOfInt(2)}})
 	})
 }
 
 func TestExploreRangeExplore(t *testing.T) {
 	fnb := fluent.WrapNodeBuilder(ipldfree.NodeBuilder()) // just for the other fixture building
-	s := ExploreRange{Matcher{}, 3, 4, []PathSegment{PathSegmentInt{I: 3}}}
+	s := ExploreRange{Matcher{}, 3, 4, []ipld.PathSegment{ipld.PathSegmentOfInt(3)}}
 	t.Run("exploring should return nil unless node is a list", func(t *testing.T) {
 		n := fnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {})
-		returnedSelector := s.Explore(n, PathSegmentInt{I: 3})
+		returnedSelector := s.Explore(n, ipld.PathSegmentOfInt(3))
 		Wish(t, returnedSelector, ShouldEqual, nil)
 	})
 	t.Run("exploring should return nil when given a path segment out of range", func(t *testing.T) {
 		n := fnb.CreateList(func(lb fluent.ListBuilder, vnb fluent.NodeBuilder) {
 			lb.AppendAll([]ipld.Node{fnb.CreateInt(0), fnb.CreateInt(1), fnb.CreateInt(2), fnb.CreateInt(3)})
 		})
-		returnedSelector := s.Explore(n, PathSegmentInt{I: 2})
+		returnedSelector := s.Explore(n, ipld.PathSegmentOfInt(2))
 		Wish(t, returnedSelector, ShouldEqual, nil)
 	})
 	t.Run("exploring should return nil when given a path segment that isn't an index", func(t *testing.T) {
 		n := fnb.CreateList(func(lb fluent.ListBuilder, vnb fluent.NodeBuilder) {
 			lb.AppendAll([]ipld.Node{fnb.CreateInt(0), fnb.CreateInt(1), fnb.CreateInt(2), fnb.CreateInt(3)})
 		})
-		returnedSelector := s.Explore(n, PathSegmentString{S: "cheese"})
+		returnedSelector := s.Explore(n, ipld.PathSegmentOfString("cheese"))
 		Wish(t, returnedSelector, ShouldEqual, nil)
 	})
 	t.Run("exploring should return the next selector when given a path segment with index in range", func(t *testing.T) {
 		n := fnb.CreateList(func(lb fluent.ListBuilder, vnb fluent.NodeBuilder) {
 			lb.AppendAll([]ipld.Node{fnb.CreateInt(0), fnb.CreateInt(1), fnb.CreateInt(2), fnb.CreateInt(3)})
 		})
-		returnedSelector := s.Explore(n, PathSegmentInt{I: 3})
+		returnedSelector := s.Explore(n, ipld.PathSegmentOfInt(3))
 		Wish(t, returnedSelector, ShouldEqual, Matcher{})
 	})
 }

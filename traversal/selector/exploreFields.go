@@ -19,17 +19,17 @@ import (
 // ExploreIndex or ExploreRange is more appropriate, however, and should be preferred.
 type ExploreFields struct {
 	selections map[string]Selector
-	interests  []PathSegment // keys of above; already boxed as that's the only way we consume them
+	interests  []ipld.PathSegment // keys of above; already boxed as that's the only way we consume them
 }
 
 // Interests for ExploreFields are the fields listed in the selector node
-func (s ExploreFields) Interests() []PathSegment {
+func (s ExploreFields) Interests() []ipld.PathSegment {
 	return s.interests
 }
 
 // Explore returns the selector for the given path if it is a field in
 // the selector node or nil if not
-func (s ExploreFields) Explore(n ipld.Node, p PathSegment) Selector {
+func (s ExploreFields) Explore(n ipld.Node, p ipld.PathSegment) Selector {
 	return s.selections[p.String()]
 }
 
@@ -53,7 +53,7 @@ func (pc ParseContext) ParseExploreFields(n ipld.Node) (Selector, error) {
 	}
 	x := ExploreFields{
 		make(map[string]Selector, fields.Length()),
-		make([]PathSegment, 0, fields.Length()),
+		make([]ipld.PathSegment, 0, fields.Length()),
 	}
 	for itr := fields.MapIterator(); !itr.Done(); {
 		kn, v, err := itr.Next()
@@ -62,7 +62,7 @@ func (pc ParseContext) ParseExploreFields(n ipld.Node) (Selector, error) {
 		}
 
 		kstr, _ := kn.AsString()
-		x.interests = append(x.interests, PathSegmentString{kstr})
+		x.interests = append(x.interests, ipld.PathSegmentOfString(kstr))
 		x.selections[kstr], err = pc.ParseSelector(v)
 		if err != nil {
 			return nil, err

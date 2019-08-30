@@ -20,7 +20,7 @@ type ExploreUnion struct {
 // Interests for ExploreUnion is:
 // - nil (aka all) if any member selector has nil interests
 // - the union of values returned by all member selectors otherwise
-func (s ExploreUnion) Interests() []PathSegment {
+func (s ExploreUnion) Interests() []ipld.PathSegment {
 	// Check for any high-cardinality selectors first; if so, shortcircuit.
 	//  (n.b. we're assuming the 'Interests' method is cheap here.)
 	for _, m := range s.Members {
@@ -30,7 +30,7 @@ func (s ExploreUnion) Interests() []PathSegment {
 	}
 	// Accumulate the whitelist of interesting path segments.
 	// TODO: Dedup?
-	v := []PathSegment{}
+	v := []ipld.PathSegment{}
 	for _, m := range s.Members {
 		v = append(v, m.Interests()...)
 	}
@@ -42,7 +42,7 @@ func (s ExploreUnion) Interests() []PathSegment {
 // - a new union selector if more than one member returns a selector
 // - if exactly one member returns a selector, that selector
 // - nil if no members return a selector
-func (s ExploreUnion) Explore(n ipld.Node, p PathSegment) Selector {
+func (s ExploreUnion) Explore(n ipld.Node, p ipld.PathSegment) Selector {
 	// TODO: memory efficient?
 	nonNilResults := make([]Selector, 0, len(s.Members))
 	for _, member := range s.Members {
