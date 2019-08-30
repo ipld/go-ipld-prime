@@ -2,9 +2,8 @@ package ipldfree
 
 import (
 	"fmt"
-	"strconv"
 
-	"github.com/ipld/go-ipld-prime"
+	ipld "github.com/ipld/go-ipld-prime"
 )
 
 var (
@@ -162,17 +161,9 @@ func (n *Node) LookupString(pth string) (ipld.Node, error) {
 			return nil, fmt.Errorf("404")
 		}
 		return v, nil
-	case ipld.ReprKind_List:
-		i, err := strconv.Atoi(pth)
-		if err != nil {
-			return nil, fmt.Errorf("404")
-		}
-		if i >= len(n._arr) {
-			return nil, fmt.Errorf("404")
-		}
-		return n._arr[i], nil
 	case ipld.ReprKind_Invalid,
 		ipld.ReprKind_Null,
+		ipld.ReprKind_List,
 		ipld.ReprKind_String,
 		ipld.ReprKind_Bytes,
 		ipld.ReprKind_Int,
@@ -221,6 +212,30 @@ func (n *Node) LookupIndex(idx int) (ipld.Node, error) {
 		ipld.ReprKind_Float,
 		ipld.ReprKind_Link:
 		return nil, ipld.ErrWrongKind{MethodName: "LookupIndex", AppropriateKind: ipld.ReprKindSet_JustList, ActualKind: n.kind}
+	default:
+		panic("unreachable")
+	}
+}
+
+func (n *Node) LookupSegment(seg ipld.PathSegment) (ipld.Node, error) {
+	switch n.kind {
+	case ipld.ReprKind_Map:
+		return n.LookupString(seg.String())
+	case ipld.ReprKind_List:
+		idx, err := seg.Index()
+		if err != nil {
+			return nil, err
+		}
+		return n.LookupIndex(idx)
+	case ipld.ReprKind_Invalid,
+		ipld.ReprKind_Null,
+		ipld.ReprKind_Bool,
+		ipld.ReprKind_String,
+		ipld.ReprKind_Bytes,
+		ipld.ReprKind_Int,
+		ipld.ReprKind_Float,
+		ipld.ReprKind_Link:
+		return nil, ipld.ErrWrongKind{MethodName: "LookupSegment", AppropriateKind: ipld.ReprKindSet_Recursive, ActualKind: n.kind}
 	default:
 		panic("unreachable")
 	}

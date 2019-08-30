@@ -52,6 +52,7 @@ type nodeGenerator interface {
 	EmitNodeMethodLookupString(io.Writer)
 	EmitNodeMethodLookup(io.Writer)
 	EmitNodeMethodLookupIndex(io.Writer)
+	EmitNodeMethodLookupSegment(io.Writer)
 	EmitNodeMethodMapIterator(io.Writer)  // also iterator itself
 	EmitNodeMethodListIterator(io.Writer) // also iterator itself
 	EmitNodeMethodLength(io.Writer)

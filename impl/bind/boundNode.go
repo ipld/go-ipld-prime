@@ -230,3 +230,27 @@ func (n Node) Lookup(key ipld.Node) (ipld.Node, error) {
 func (n Node) LookupIndex(idx int) (ipld.Node, error) {
 	panic("NYI")
 }
+
+func (n Node) LookupSegment(seg ipld.PathSegment) (ipld.Node, error) {
+	switch n.kind {
+	case ipld.ReprKind_Map:
+		return n.LookupString(seg.String())
+	case ipld.ReprKind_List:
+		idx, err := seg.Index()
+		if err != nil {
+			return nil, err
+		}
+		return n.LookupIndex(idx)
+	case ipld.ReprKind_Invalid,
+		ipld.ReprKind_Null,
+		ipld.ReprKind_Bool,
+		ipld.ReprKind_String,
+		ipld.ReprKind_Bytes,
+		ipld.ReprKind_Int,
+		ipld.ReprKind_Float,
+		ipld.ReprKind_Link:
+		return nil, ipld.ErrWrongKind{MethodName: "LookupSegment", AppropriateKind: ipld.ReprKindSet_Recursive, ActualKind: n.kind}
+	default:
+		panic("unreachable")
+	}
+}

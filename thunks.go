@@ -17,6 +17,9 @@ func (nullNode) Lookup(key Node) (Node, error) {
 func (nullNode) LookupIndex(idx int) (Node, error) {
 	return nil, ErrWrongKind{MethodName: "LookupIndex", AppropriateKind: ReprKindSet_JustList, ActualKind: ReprKind_Null}
 }
+func (nullNode) LookupSegment(seg PathSegment) (Node, error) {
+	return nil, ErrWrongKind{MethodName: "LookupSegment", AppropriateKind: ReprKindSet_Recursive, ActualKind: ReprKind_Null}
+}
 func (nullNode) MapIterator() MapIterator {
 	return mapIteratorReject{ErrWrongKind{MethodName: "MapIterator", AppropriateKind: ReprKindSet_JustMap, ActualKind: ReprKind_Null}}
 }
