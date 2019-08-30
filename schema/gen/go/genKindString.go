@@ -9,7 +9,10 @@ import (
 func NewGeneratorForKindString(t schema.Type) typedNodeGenerator {
 	return generateKindString{
 		t.(schema.TypeString),
-		generateKindedRejections_String{t},
+		generateKindedRejections_String{
+			string(t.Name()),
+			string(t.Name()),
+		},
 	}
 }
 
@@ -60,4 +63,8 @@ func (gk generateKindString) EmitTypedNodeMethodRepresentation(w io.Writer) {
 			panic("TODO representation")
 		}
 	`, w, gk)
+}
+
+func (gk generateKindString) GetRepresentationNodeGen() nodeGenerator {
+	return nil // TODO of course
 }

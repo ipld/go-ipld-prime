@@ -128,6 +128,13 @@ func (t TypeStruct) RepresentationStrategy() StructRepresentation {
 	return t.representation
 }
 
+func (r StructRepresentation_Map) GetFieldKey(field StructField) string {
+	if n, ok := r.renames[field.name]; ok {
+		return n
+	}
+	return field.name
+}
+
 // Members returns a slice the strings which are valid inhabitants of this enum.
 func (t TypeEnum) Members() []string {
 	a := make([]string, len(t.members))

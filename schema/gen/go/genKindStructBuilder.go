@@ -9,7 +9,10 @@ import (
 func (gk generateKindStruct) GetNodeBuilderGen() nodebuilderGenerator {
 	return generateNbKindStruct{
 		gk.Type,
-		genKindedNbRejections_Map{gk.Type},
+		genKindedNbRejections_Map{
+			string(gk.Type.Name()) + "__NodeBuilder",
+			string(gk.Type.Name()) + ".Builder",
+		},
 	}
 }
 

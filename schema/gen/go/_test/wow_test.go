@@ -10,6 +10,7 @@ import (
 	"github.com/ipld/go-ipld-prime/encoding"
 	"github.com/ipld/go-ipld-prime/fluent"
 	ipldfree "github.com/ipld/go-ipld-prime/impl/free"
+	"github.com/ipld/go-ipld-prime/impl/typed"
 )
 
 // TokenSourceBucket acts like a TokenSource by yielding tokens from a pre-made
@@ -46,87 +47,170 @@ func TestScalarUnmarshal(t *testing.T) {
 	})
 }
 
-// n.b. testing unmarshal is something different (this doesn't exercise
-// representation node/nodebuilder, just the semantic/type level one).
-func TestStructBuilder(t *testing.T) {
-	t.Run("stroct", func(t *testing.T) {
-		t.Run("all fields set", func(t *testing.T) {
-			mb, err := Stroct__NodeBuilder{}.CreateMap()
-			Require(t, err, ShouldEqual, nil)
-			mb.Insert(ipldfree.String("f1"), plz(String__NodeBuilder{}.CreateString("a")))
-			mb.Insert(ipldfree.String("f2"), plz(String__NodeBuilder{}.CreateString("b")))
-			mb.Insert(ipldfree.String("f3"), plz(String__NodeBuilder{}.CreateString("c")))
-			mb.Insert(ipldfree.String("f4"), plz(String__NodeBuilder{}.CreateString("d")))
-			n, err := mb.Build()
+// Test generated structs (n, nb, rn, rnb).
+//
+// Does not exercise iterators (marshal/unmarshal tests do that heavily anyway).
+//
+// Yes, it's big.  Proding all cases around optionals and nullables is fun.
+func TestGeneratedStructs(t *testing.T) {
+	t.Run("struct with map repr", func(t *testing.T) {
+		var (
+			v0, v1, v2, v3, v4 typed.Node
+		)
+		t.Run("type-level build and read", func(t *testing.T) {
+			t.Run("all fields set", func(t *testing.T) {
+				mb, err := Stroct__NodeBuilder{}.CreateMap()
+				Require(t, err, ShouldEqual, nil)
+				mb.Insert(ipldfree.String("f1"), plz(String__NodeBuilder{}.CreateString("a")))
+				mb.Insert(ipldfree.String("f2"), plz(String__NodeBuilder{}.CreateString("b")))
+				mb.Insert(ipldfree.String("f3"), plz(String__NodeBuilder{}.CreateString("c")))
+				mb.Insert(ipldfree.String("f4"), plz(String__NodeBuilder{}.CreateString("d")))
+				n, err := mb.Build()
+				v0 = n.(typed.Node)
 
-			Wish(t, err, ShouldEqual, nil)
-			Wish(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
-			Wish(t, plz(n.LookupString("f1")), ShouldEqual, plz(String__NodeBuilder{}.CreateString("a")))
-			Wish(t, plz(n.LookupString("f2")), ShouldEqual, plz(String__NodeBuilder{}.CreateString("b")))
-			Wish(t, plz(n.LookupString("f3")), ShouldEqual, plz(String__NodeBuilder{}.CreateString("c")))
-			Wish(t, plz(n.LookupString("f4")), ShouldEqual, plz(String__NodeBuilder{}.CreateString("d")))
+				Wish(t, err, ShouldEqual, nil)
+				Wish(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
+				Wish(t, plz(n.LookupString("f1")), ShouldEqual, plz(String__NodeBuilder{}.CreateString("a")))
+				Wish(t, plz(n.LookupString("f2")), ShouldEqual, plz(String__NodeBuilder{}.CreateString("b")))
+				Wish(t, plz(n.LookupString("f3")), ShouldEqual, plz(String__NodeBuilder{}.CreateString("c")))
+				Wish(t, plz(n.LookupString("f4")), ShouldEqual, plz(String__NodeBuilder{}.CreateString("d")))
+			})
+			t.Run("using null nullable", func(t *testing.T) {
+				mb, err := Stroct__NodeBuilder{}.CreateMap()
+				Require(t, err, ShouldEqual, nil)
+				mb.Insert(ipldfree.String("f1"), plz(String__NodeBuilder{}.CreateString("a")))
+				mb.Insert(ipldfree.String("f2"), plz(String__NodeBuilder{}.CreateString("b")))
+				mb.Insert(ipldfree.String("f3"), plz(String__NodeBuilder{}.CreateString("c")))
+				mb.Insert(ipldfree.String("f4"), ipld.Null)
+				n, err := mb.Build()
+				v1 = n.(typed.Node)
+
+				Wish(t, err, ShouldEqual, nil)
+				Wish(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
+				Wish(t, n.Length(), ShouldEqual, 4)
+				Wish(t, plz(n.LookupString("f1")), ShouldEqual, plz(String__NodeBuilder{}.CreateString("a")))
+				Wish(t, plz(n.LookupString("f2")), ShouldEqual, plz(String__NodeBuilder{}.CreateString("b")))
+				Wish(t, plz(n.LookupString("f3")), ShouldEqual, plz(String__NodeBuilder{}.CreateString("c")))
+				Wish(t, plz(n.LookupString("f4")), ShouldEqual, ipld.Null)
+			})
+			t.Run("using null optional nullable", func(t *testing.T) {
+				mb, err := Stroct__NodeBuilder{}.CreateMap()
+				Require(t, err, ShouldEqual, nil)
+				mb.Insert(ipldfree.String("f1"), plz(String__NodeBuilder{}.CreateString("a")))
+				mb.Insert(ipldfree.String("f2"), plz(String__NodeBuilder{}.CreateString("b")))
+				mb.Insert(ipldfree.String("f3"), ipld.Null)
+				mb.Insert(ipldfree.String("f4"), plz(String__NodeBuilder{}.CreateString("d")))
+				n, err := mb.Build()
+				v2 = n.(typed.Node)
+
+				Wish(t, err, ShouldEqual, nil)
+				Wish(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
+				Wish(t, n.Length(), ShouldEqual, 4)
+				Wish(t, plz(n.LookupString("f1")), ShouldEqual, plz(String__NodeBuilder{}.CreateString("a")))
+				Wish(t, plz(n.LookupString("f2")), ShouldEqual, plz(String__NodeBuilder{}.CreateString("b")))
+				Wish(t, plz(n.LookupString("f3")), ShouldEqual, ipld.Null)
+				Wish(t, plz(n.LookupString("f4")), ShouldEqual, plz(String__NodeBuilder{}.CreateString("d")))
+			})
+			t.Run("using skipped optional", func(t *testing.T) {
+				mb, err := Stroct__NodeBuilder{}.CreateMap()
+				Require(t, err, ShouldEqual, nil)
+				mb.Insert(ipldfree.String("f1"), plz(String__NodeBuilder{}.CreateString("a")))
+				mb.Insert(ipldfree.String("f3"), plz(String__NodeBuilder{}.CreateString("c")))
+				mb.Insert(ipldfree.String("f4"), plz(String__NodeBuilder{}.CreateString("d")))
+				n, err := mb.Build()
+				v3 = n.(typed.Node)
+
+				Wish(t, err, ShouldEqual, nil)
+				Wish(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
+				Wish(t, n.Length(), ShouldEqual, 4)
+				Wish(t, plz(n.LookupString("f1")), ShouldEqual, plz(String__NodeBuilder{}.CreateString("a")))
+				Wish(t, plz(n.LookupString("f2")), ShouldEqual, ipld.Undef)
+				Wish(t, plz(n.LookupString("f3")), ShouldEqual, plz(String__NodeBuilder{}.CreateString("c")))
+				Wish(t, plz(n.LookupString("f4")), ShouldEqual, plz(String__NodeBuilder{}.CreateString("d")))
+			})
+			t.Run("using skipped optional nullable", func(t *testing.T) {
+				mb, err := Stroct__NodeBuilder{}.CreateMap()
+				Require(t, err, ShouldEqual, nil)
+				mb.Insert(ipldfree.String("f1"), plz(String__NodeBuilder{}.CreateString("a")))
+				mb.Insert(ipldfree.String("f2"), plz(String__NodeBuilder{}.CreateString("b")))
+				mb.Insert(ipldfree.String("f4"), plz(String__NodeBuilder{}.CreateString("d")))
+				n, err := mb.Build()
+				v4 = n.(typed.Node)
+
+				Wish(t, err, ShouldEqual, nil)
+				Wish(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
+				Wish(t, n.Length(), ShouldEqual, 4)
+				Wish(t, plz(n.LookupString("f1")), ShouldEqual, plz(String__NodeBuilder{}.CreateString("a")))
+				Wish(t, plz(n.LookupString("f2")), ShouldEqual, plz(String__NodeBuilder{}.CreateString("b")))
+				Wish(t, plz(n.LookupString("f3")), ShouldEqual, ipld.Undef)
+				Wish(t, plz(n.LookupString("f4")), ShouldEqual, plz(String__NodeBuilder{}.CreateString("d")))
+			})
 		})
-		t.Run("using null nullable", func(t *testing.T) {
-			mb, err := Stroct__NodeBuilder{}.CreateMap()
-			Require(t, err, ShouldEqual, nil)
-			mb.Insert(ipldfree.String("f1"), plz(String__NodeBuilder{}.CreateString("a")))
-			mb.Insert(ipldfree.String("f2"), plz(String__NodeBuilder{}.CreateString("b")))
-			mb.Insert(ipldfree.String("f3"), plz(String__NodeBuilder{}.CreateString("c")))
-			mb.Insert(ipldfree.String("f4"), ipld.Null)
-			n, err := mb.Build()
+		t.Run("representation read", func(t *testing.T) {
+			t.Run("all fields set", func(t *testing.T) {
+				n := v0.Representation()
 
-			Wish(t, err, ShouldEqual, nil)
-			Wish(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
-			Wish(t, plz(n.LookupString("f1")), ShouldEqual, plz(String__NodeBuilder{}.CreateString("a")))
-			Wish(t, plz(n.LookupString("f2")), ShouldEqual, plz(String__NodeBuilder{}.CreateString("b")))
-			Wish(t, plz(n.LookupString("f3")), ShouldEqual, plz(String__NodeBuilder{}.CreateString("c")))
-			Wish(t, plz(n.LookupString("f4")), ShouldEqual, ipld.Null)
+				Wish(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
+				Wish(t, n.Length(), ShouldEqual, 4)
+				Wish(t, plz(n.LookupString("f1")), ShouldEqual, plz(String__NodeBuilder{}.CreateString("a")))
+				Wish(t, plz(n.LookupString("f2")), ShouldEqual, plz(String__NodeBuilder{}.CreateString("b")))
+				Wish(t, plz(n.LookupString("f3")), ShouldEqual, plz(String__NodeBuilder{}.CreateString("c")))
+				Wish(t, plz(n.LookupString("f4")), ShouldEqual, plz(String__NodeBuilder{}.CreateString("d")))
+			})
+			t.Run("using null nullable", func(t *testing.T) {
+				n := v1.Representation()
+
+				Wish(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
+				Wish(t, n.Length(), ShouldEqual, 4)
+				Wish(t, plz(n.LookupString("f1")), ShouldEqual, plz(String__NodeBuilder{}.CreateString("a")))
+				Wish(t, plz(n.LookupString("f2")), ShouldEqual, plz(String__NodeBuilder{}.CreateString("b")))
+				Wish(t, plz(n.LookupString("f3")), ShouldEqual, plz(String__NodeBuilder{}.CreateString("c")))
+				Wish(t, plz(n.LookupString("f4")), ShouldEqual, ipld.Null)
+			})
+			t.Run("using null optional nullable", func(t *testing.T) {
+				n := v2.Representation()
+
+				Wish(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
+				Wish(t, n.Length(), ShouldEqual, 4)
+				Wish(t, plz(n.LookupString("f1")), ShouldEqual, plz(String__NodeBuilder{}.CreateString("a")))
+				Wish(t, plz(n.LookupString("f2")), ShouldEqual, plz(String__NodeBuilder{}.CreateString("b")))
+				Wish(t, plz(n.LookupString("f3")), ShouldEqual, ipld.Null)
+				Wish(t, plz(n.LookupString("f4")), ShouldEqual, plz(String__NodeBuilder{}.CreateString("d")))
+			})
+			t.Run("using skipped optional", func(t *testing.T) {
+				n := v3.Representation()
+
+				Wish(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
+				Wish(t, n.Length(), ShouldEqual, 3) // note this is shorter, even though it's not at the type level!
+				Wish(t, plz(n.LookupString("f1")), ShouldEqual, plz(String__NodeBuilder{}.CreateString("a")))
+				Wish(t, plz(n.LookupString("f2")), ShouldEqual, ipld.Undef) // FIXME : shouldn't this return an error?
+				Wish(t, plz(n.LookupString("f3")), ShouldEqual, plz(String__NodeBuilder{}.CreateString("c")))
+				Wish(t, plz(n.LookupString("f4")), ShouldEqual, plz(String__NodeBuilder{}.CreateString("d")))
+			})
+			t.Run("using skipped optional nullable", func(t *testing.T) {
+				n := v4.Representation()
+
+				Wish(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
+				Wish(t, n.Length(), ShouldEqual, 3) // note this is shorter, even though it's not at the type level!
+				Wish(t, plz(n.LookupString("f1")), ShouldEqual, plz(String__NodeBuilder{}.CreateString("a")))
+				Wish(t, plz(n.LookupString("f2")), ShouldEqual, plz(String__NodeBuilder{}.CreateString("b")))
+				Wish(t, plz(n.LookupString("f3")), ShouldEqual, ipld.Undef) // FIXME : shouldn't this return an error?
+				Wish(t, plz(n.LookupString("f4")), ShouldEqual, plz(String__NodeBuilder{}.CreateString("d")))
+			})
+			// TODO will need even more cases to probe implicits
 		})
-		t.Run("using null optional nullable", func(t *testing.T) {
-			mb, err := Stroct__NodeBuilder{}.CreateMap()
-			Require(t, err, ShouldEqual, nil)
-			mb.Insert(ipldfree.String("f1"), plz(String__NodeBuilder{}.CreateString("a")))
-			mb.Insert(ipldfree.String("f2"), plz(String__NodeBuilder{}.CreateString("b")))
-			mb.Insert(ipldfree.String("f3"), ipld.Null)
-			mb.Insert(ipldfree.String("f4"), plz(String__NodeBuilder{}.CreateString("d")))
-			n, err := mb.Build()
-
-			Wish(t, err, ShouldEqual, nil)
-			Wish(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
-			Wish(t, plz(n.LookupString("f1")), ShouldEqual, plz(String__NodeBuilder{}.CreateString("a")))
-			Wish(t, plz(n.LookupString("f2")), ShouldEqual, plz(String__NodeBuilder{}.CreateString("b")))
-			Wish(t, plz(n.LookupString("f3")), ShouldEqual, ipld.Null)
-			Wish(t, plz(n.LookupString("f4")), ShouldEqual, plz(String__NodeBuilder{}.CreateString("d")))
-		})
-		t.Run("using skipped optional", func(t *testing.T) {
-			mb, err := Stroct__NodeBuilder{}.CreateMap()
-			Require(t, err, ShouldEqual, nil)
-			mb.Insert(ipldfree.String("f1"), plz(String__NodeBuilder{}.CreateString("a")))
-			mb.Insert(ipldfree.String("f3"), plz(String__NodeBuilder{}.CreateString("c")))
-			mb.Insert(ipldfree.String("f4"), plz(String__NodeBuilder{}.CreateString("d")))
-			n, err := mb.Build()
-
-			Wish(t, err, ShouldEqual, nil)
-			Wish(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
-			Wish(t, plz(n.LookupString("f1")), ShouldEqual, plz(String__NodeBuilder{}.CreateString("a")))
-			Wish(t, plz(n.LookupString("f2")), ShouldEqual, ipld.Undef)
-			Wish(t, plz(n.LookupString("f3")), ShouldEqual, plz(String__NodeBuilder{}.CreateString("c")))
-			Wish(t, plz(n.LookupString("f4")), ShouldEqual, plz(String__NodeBuilder{}.CreateString("d")))
-		})
-		t.Run("using skipped optional nullable", func(t *testing.T) {
-			mb, err := Stroct__NodeBuilder{}.CreateMap()
-			Require(t, err, ShouldEqual, nil)
-			mb.Insert(ipldfree.String("f1"), plz(String__NodeBuilder{}.CreateString("a")))
-			mb.Insert(ipldfree.String("f2"), plz(String__NodeBuilder{}.CreateString("b")))
-			mb.Insert(ipldfree.String("f4"), plz(String__NodeBuilder{}.CreateString("d")))
-			n, err := mb.Build()
-
-			Wish(t, err, ShouldEqual, nil)
-			Wish(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
-			Wish(t, plz(n.LookupString("f1")), ShouldEqual, plz(String__NodeBuilder{}.CreateString("a")))
-			Wish(t, plz(n.LookupString("f2")), ShouldEqual, plz(String__NodeBuilder{}.CreateString("b")))
-			Wish(t, plz(n.LookupString("f3")), ShouldEqual, ipld.Undef)
-			Wish(t, plz(n.LookupString("f4")), ShouldEqual, plz(String__NodeBuilder{}.CreateString("d")))
+		t.Run("representation build", func(t *testing.T) {
+			t.Run("all fields set", func(t *testing.T) {
+			})
+			t.Run("using null nullable", func(t *testing.T) {
+			})
+			t.Run("using null optional nullable", func(t *testing.T) {
+			})
+			t.Run("using skipped optional", func(t *testing.T) {
+			})
+			t.Run("using skipped optional nullable", func(t *testing.T) {
+			})
+			// TODO will need even more cases to probe implicits
 		})
 	})
 }
