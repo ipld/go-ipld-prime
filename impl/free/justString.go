@@ -29,6 +29,9 @@ func (justString) Lookup(key ipld.Node) (ipld.Node, error) {
 func (justString) LookupIndex(idx int) (ipld.Node, error) {
 	return nil, ipld.ErrWrongKind{MethodName: "LookupIndex", AppropriateKind: ipld.ReprKindSet_JustList, ActualKind: ipld.ReprKind_String}
 }
+func (justString) LookupSegment(seg ipld.PathSegment) (ipld.Node, error) {
+	return nil, ipld.ErrWrongKind{MethodName: "LookupSegment", AppropriateKind: ipld.ReprKindSet_Recursive, ActualKind: ipld.ReprKind_String}
+}
 func (justString) MapIterator() ipld.MapIterator {
 	return nodeutil.MapIteratorErrorThunk(ipld.ErrWrongKind{MethodName: "MapIterator", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: ipld.ReprKind_String})
 }

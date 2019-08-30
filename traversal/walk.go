@@ -89,8 +89,7 @@ func (prog Progress) walkAdv_iterateAll(n ipld.Node, s selector.Selector, fn Adv
 
 func (prog Progress) walkAdv_iterateSelective(n ipld.Node, attn []ipld.PathSegment, s selector.Selector, fn AdvVisitFn) error {
 	for _, ps := range attn {
-		// TODO: Probably not the most efficient way to be doing this...
-		v, err := n.LookupString(ps.String())
+		v, err := n.LookupSegment(ps)
 		if err != nil {
 			continue
 		}

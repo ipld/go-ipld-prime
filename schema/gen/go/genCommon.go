@@ -36,6 +36,14 @@ func (d generateKindedRejections) emitNodeMethodLookupIndex(w io.Writer) {
 	`, w, d)
 }
 
+func (d generateKindedRejections) emitNodeMethodLookupSegment(w io.Writer) {
+	doTemplate(`
+		func ({{ .TypeIdent }}) LookupSegment(seg ipld.PathSegment) (ipld.Node, error) {
+			return nil, ipld.ErrWrongKind{TypeName: "{{ .TypeProse }}", MethodName: "LookupSegment", AppropriateKind: ipld.ReprKindSet_Recursive, ActualKind: {{ .Kind | ReprKindConst }}}
+		}
+	`, w, d)
+}
+
 func (d generateKindedRejections) emitNodeMethodMapIterator(w io.Writer) {
 	doTemplate(`
 		func ({{ .TypeIdent }}) MapIterator() ipld.MapIterator {
@@ -139,6 +147,9 @@ func (gk generateKindedRejections_String) EmitNodeMethodLookup(w io.Writer) {
 func (gk generateKindedRejections_String) EmitNodeMethodLookupIndex(w io.Writer) {
 	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_String}.emitNodeMethodLookupIndex(w)
 }
+func (gk generateKindedRejections_String) EmitNodeMethodLookupSegment(w io.Writer) {
+	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_String}.emitNodeMethodLookupSegment(w)
+}
 func (gk generateKindedRejections_String) EmitNodeMethodMapIterator(w io.Writer) {
 	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_String}.emitNodeMethodMapIterator(w)
 }
@@ -180,6 +191,13 @@ type generateKindedRejections_Map struct {
 
 func (gk generateKindedRejections_Map) EmitNodeMethodLookupIndex(w io.Writer) {
 	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Map}.emitNodeMethodLookupIndex(w)
+}
+func (gk generateKindedRejections_Map) EmitNodeMethodLookupSegment(w io.Writer) {
+	doTemplate(`
+		func (n {{ .TypeIdent }}) LookupSegment(seg ipld.PathSegment) (ipld.Node, error) {
+			return n.LookupString(seg.String())
+		}
+	`, w, gk)
 }
 func (gk generateKindedRejections_Map) EmitNodeMethodListIterator(w io.Writer) {
 	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Map}.emitNodeMethodListIterator(w)

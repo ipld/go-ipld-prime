@@ -87,6 +87,16 @@ func (n node) LookupIndex(idx int) Node {
 	}
 	return node{v, nil}
 }
+func (n node) LookupSegment(seg ipld.PathSegment) Node {
+	if n.err != nil {
+		return n
+	}
+	v, err := n.n.LookupSegment(seg)
+	if err != nil {
+		return node{nil, err}
+	}
+	return node{v, nil}
+}
 func (n node) MapIterator() MapIterator {
 	if n.err != nil {
 		panic(Error{n.err})

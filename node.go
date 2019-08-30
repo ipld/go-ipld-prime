@@ -39,8 +39,13 @@ type Node interface {
 	// If idx is out of range, a nil node and an error will be returned.
 	LookupIndex(idx int) (Node, error)
 
-	// LookupSegment is a convenience method that should be added sometime soon.
-	/// LookupSegment(seg PathSegment) (Node, error)
+	// LookupSegment is will act as either LookupString or LookupIndex,
+	// whichever is contextually appropriate.
+	//
+	// Using LookupSegment may imply an "atoi" conversion if used on a list node,
+	// or an "itoa" conversion if used on a map node.  If an "itoa" conversion
+	// takes place, it may error, and this method may return that error.
+	LookupSegment(seg PathSegment) (Node, error)
 
 	// Note that when using codegenerated types, there may be a fifth variant
 	// of lookup method on maps: `Get($GeneratedTypeKey) $GeneratedTypeValue`!
