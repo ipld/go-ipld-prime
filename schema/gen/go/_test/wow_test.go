@@ -33,6 +33,13 @@ func plz(n ipld.Node, e error) ipld.Node {
 	return n
 }
 
+func erp(n ipld.Node, e error) interface{} {
+	if e != nil {
+		return e
+	}
+	return n
+}
+
 func TestScalarUnmarshal(t *testing.T) {
 	t.Run("string node", func(t *testing.T) {
 		tb := &TokenSourceBucket{tokens: []tok.Token{
@@ -183,7 +190,7 @@ func TestGeneratedStructs(t *testing.T) {
 				Wish(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
 				Wish(t, n.Length(), ShouldEqual, 3) // note this is shorter, even though it's not at the type level!
 				Wish(t, plz(n.LookupString("f1")), ShouldEqual, plz(String__NodeBuilder{}.CreateString("a")))
-				Wish(t, plz(n.LookupString("f2")), ShouldEqual, ipld.Undef) // FIXME : shouldn't this return an error?
+				Wish(t, erp(n.LookupString("f2")), ShouldEqual, ipld.ErrNotExists{ipld.PathSegmentOfString("f2")})
 				Wish(t, plz(n.LookupString("f3")), ShouldEqual, plz(String__NodeBuilder{}.CreateString("c")))
 				Wish(t, plz(n.LookupString("f4")), ShouldEqual, plz(String__NodeBuilder{}.CreateString("d")))
 			})
@@ -194,7 +201,7 @@ func TestGeneratedStructs(t *testing.T) {
 				Wish(t, n.Length(), ShouldEqual, 3) // note this is shorter, even though it's not at the type level!
 				Wish(t, plz(n.LookupString("f1")), ShouldEqual, plz(String__NodeBuilder{}.CreateString("a")))
 				Wish(t, plz(n.LookupString("f2")), ShouldEqual, plz(String__NodeBuilder{}.CreateString("b")))
-				Wish(t, plz(n.LookupString("f3")), ShouldEqual, ipld.Undef) // FIXME : shouldn't this return an error?
+				Wish(t, erp(n.LookupString("f3")), ShouldEqual, ipld.ErrNotExists{ipld.PathSegmentOfString("f3")})
 				Wish(t, plz(n.LookupString("f4")), ShouldEqual, plz(String__NodeBuilder{}.CreateString("d")))
 			})
 			// TODO will need even more cases to probe implicits

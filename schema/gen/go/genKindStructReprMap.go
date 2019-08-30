@@ -51,14 +51,14 @@ func (gk generateStructReprMapNode) EmitNodeMethodLookupString(w io.Writer) {
 			case "{{ $field | $type.RepresentationStrategy.GetFieldKey }}":
 				{{- if and $field.IsOptional $field.IsNullable }}
 				if !rn.n.{{ $field.Name }}__exists {
-					return ipld.Undef, nil
+					return ipld.Undef, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
 				}
 				if rn.n.{{ $field.Name }} == nil {
 					return ipld.Null, nil
 				}
 				{{- else if $field.IsOptional }}
 				if rn.n.{{ $field.Name }} == nil {
-					return ipld.Undef, nil // FIMXE use ErrNotExists -- but TODO we should resolve the PathSegment issue in that first
+					return ipld.Undef, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
 				}
 				{{- else if $field.IsNullable }}
 				if rn.n.{{ $field.Name }} == nil {
