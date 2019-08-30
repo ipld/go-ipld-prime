@@ -49,7 +49,7 @@ func (e ErrWrongKind) Error() string {
 // a field can *never* exist (as differentiated from a map key which is
 // simply absent in some data).
 type ErrNotExists struct {
-	Segment string // REVIEW: might be better to use PathSegment, but depends on another refactor.
+	Segment PathSegment
 }
 
 func (e ErrNotExists) Error() string {
