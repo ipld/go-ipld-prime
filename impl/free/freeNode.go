@@ -158,7 +158,7 @@ func (n *Node) LookupString(pth string) (ipld.Node, error) {
 	case ipld.ReprKind_Map:
 		v, exists := n._map[pth]
 		if !exists {
-			return nil, fmt.Errorf("404")
+			return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(pth)}
 		}
 		return v, nil
 	case ipld.ReprKind_Invalid,
@@ -184,7 +184,7 @@ func (n *Node) Lookup(key ipld.Node) (ipld.Node, error) {
 		}
 		v, exists := n._map[ks]
 		if !exists {
-			return nil, fmt.Errorf("404")
+			return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(ks)}
 		}
 		return v, nil
 	default:
@@ -196,10 +196,10 @@ func (n *Node) LookupIndex(idx int) (ipld.Node, error) {
 	switch n.kind {
 	case ipld.ReprKind_List:
 		if idx >= len(n._arr) {
-			return nil, fmt.Errorf("404")
+			return nil, ipld.ErrNotExists{ipld.PathSegmentOfInt(idx)}
 		}
 		if n._arr[idx] == nil {
-			return nil, fmt.Errorf("404")
+			return nil, ipld.ErrNotExists{ipld.PathSegmentOfInt(idx)}
 		}
 		return n._arr[idx], nil
 	case ipld.ReprKind_Invalid,
