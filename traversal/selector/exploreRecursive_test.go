@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"testing"
 
+	ipld "github.com/ipld/go-ipld-prime"
 	"github.com/ipld/go-ipld-prime/encoding/dagjson"
 	"github.com/ipld/go-ipld-prime/fluent"
 	ipldfree "github.com/ipld/go-ipld-prime/impl/free"
@@ -116,7 +117,7 @@ func TestExploreRecursiveExplore(t *testing.T) {
 	var rs Selector
 	t.Run("exploring should traverse until we get to maxDepth", func(t *testing.T) {
 		parentsSelector := ExploreAll{recursiveEdge}
-		subTree := ExploreFields{map[string]Selector{"Parents": parentsSelector}, []PathSegment{PathSegmentString{S: "Parents"}}}
+		subTree := ExploreFields{map[string]Selector{"Parents": parentsSelector}, []ipld.PathSegment{ipld.PathSegmentOfString("Parents")}}
 		rs = ExploreRecursive{subTree, subTree, maxDepth}
 		nodeString := `{
 			"Parents": [
@@ -136,35 +137,35 @@ func TestExploreRecursiveExplore(t *testing.T) {
 		`
 		rn, err := dagjson.Decoder(ipldfree.NodeBuilder(), bytes.NewBufferString(nodeString))
 		Wish(t, err, ShouldEqual, nil)
-		rs = rs.Explore(rn, PathSegmentString{S: "Parents"})
+		rs = rs.Explore(rn, ipld.PathSegmentOfString("Parents"))
 		rn, err = rn.LookupString("Parents")
 		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, parentsSelector, maxDepth})
 		Wish(t, err, ShouldEqual, nil)
-		rs = rs.Explore(rn, PathSegmentInt{I: 0})
+		rs = rs.Explore(rn, ipld.PathSegmentOfInt(0))
 		rn, err = rn.LookupIndex(0)
 		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, subTree, maxDepth - 1})
 		Wish(t, err, ShouldEqual, nil)
-		rs = rs.Explore(rn, PathSegmentString{S: "Parents"})
+		rs = rs.Explore(rn, ipld.PathSegmentOfString("Parents"))
 
 		rn, err = rn.LookupString("Parents")
 		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, parentsSelector, maxDepth - 1})
 		Wish(t, err, ShouldEqual, nil)
-		rs = rs.Explore(rn, PathSegmentInt{I: 0})
+		rs = rs.Explore(rn, ipld.PathSegmentOfInt(0))
 		rn, err = rn.LookupIndex(0)
 		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, subTree, maxDepth - 2})
 		Wish(t, err, ShouldEqual, nil)
-		rs = rs.Explore(rn, PathSegmentString{S: "Parents"})
+		rs = rs.Explore(rn, ipld.PathSegmentOfString("Parents"))
 		rn, err = rn.LookupString("Parents")
 		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, parentsSelector, maxDepth - 2})
 		Wish(t, err, ShouldEqual, nil)
-		rs = rs.Explore(rn, PathSegmentInt{I: 0})
+		rs = rs.Explore(rn, ipld.PathSegmentOfInt(0))
 		rn, err = rn.LookupIndex(0)
 		Wish(t, rs, ShouldEqual, nil)
 		Wish(t, err, ShouldEqual, nil)
 	})
 	t.Run("exploring should continue till we get to selector that returns nil on explore", func(t *testing.T) {
-		parentsSelector := ExploreIndex{recursiveEdge, [1]PathSegment{PathSegmentInt{I: 1}}}
-		subTree := ExploreFields{map[string]Selector{"Parents": parentsSelector}, []PathSegment{PathSegmentString{S: "Parents"}}}
+		parentsSelector := ExploreIndex{recursiveEdge, [1]ipld.PathSegment{ipld.PathSegmentOfInt(1)}}
+		subTree := ExploreFields{map[string]Selector{"Parents": parentsSelector}, []ipld.PathSegment{ipld.PathSegmentOfString("Parents")}}
 		rs = ExploreRecursive{subTree, subTree, maxDepth}
 		nodeString := `{
 			"Parents": {
@@ -173,11 +174,11 @@ func TestExploreRecursiveExplore(t *testing.T) {
 		`
 		rn, err := dagjson.Decoder(ipldfree.NodeBuilder(), bytes.NewBufferString(nodeString))
 		Wish(t, err, ShouldEqual, nil)
-		rs = rs.Explore(rn, PathSegmentString{S: "Parents"})
+		rs = rs.Explore(rn, ipld.PathSegmentOfString("Parents"))
 		rn, err = rn.LookupString("Parents")
 		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, parentsSelector, maxDepth})
 		Wish(t, err, ShouldEqual, nil)
-		rs = rs.Explore(rn, PathSegmentInt{I: 0})
+		rs = rs.Explore(rn, ipld.PathSegmentOfInt(0))
 		Wish(t, rs, ShouldEqual, nil)
 	})
 	t.Run("exploring should work when there is nested recursion", func(t *testing.T) {
@@ -186,9 +187,9 @@ func TestExploreRecursiveExplore(t *testing.T) {
 		subTree := ExploreFields{map[string]Selector{
 			"Parents": parentsSelector,
 			"Side":    ExploreRecursive{sideSelector, sideSelector, maxDepth},
-		}, []PathSegment{
-			PathSegmentString{S: "Parents"},
-			PathSegmentString{S: "Side"},
+		}, []ipld.PathSegment{
+			ipld.PathSegmentOfString("Parents"),
+			ipld.PathSegmentOfString("Side"),
 		},
 		}
 		s := ExploreRecursive{subTree, subTree, maxDepth}
@@ -220,15 +221,15 @@ func TestExploreRecursiveExplore(t *testing.T) {
 		// traverse down Parent nodes
 		rn := n
 		rs = s
-		rs = rs.Explore(rn, PathSegmentString{S: "Parents"})
+		rs = rs.Explore(rn, ipld.PathSegmentOfString("Parents"))
 		rn, err = rn.LookupString("Parents")
 		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, parentsSelector, maxDepth})
 		Wish(t, err, ShouldEqual, nil)
-		rs = rs.Explore(rn, PathSegmentInt{I: 0})
+		rs = rs.Explore(rn, ipld.PathSegmentOfInt(0))
 		rn, err = rn.LookupIndex(0)
 		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, subTree, maxDepth - 1})
 		Wish(t, err, ShouldEqual, nil)
-		rs = rs.Explore(rn, PathSegmentString{S: "Parents"})
+		rs = rs.Explore(rn, ipld.PathSegmentOfString("Parents"))
 		rn, err = rn.LookupString("Parents")
 		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, parentsSelector, maxDepth - 1})
 		Wish(t, err, ShouldEqual, nil)
@@ -236,19 +237,19 @@ func TestExploreRecursiveExplore(t *testing.T) {
 		// traverse down top level Side tree (nested recursion)
 		rn = n
 		rs = s
-		rs = rs.Explore(rn, PathSegmentString{S: "Side"})
+		rs = rs.Explore(rn, ipld.PathSegmentOfString("Side"))
 		rn, err = rn.LookupString("Side")
 		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, ExploreRecursive{sideSelector, sideSelector, maxDepth}, maxDepth})
 		Wish(t, err, ShouldEqual, nil)
-		rs = rs.Explore(rn, PathSegmentString{S: "real"})
+		rs = rs.Explore(rn, ipld.PathSegmentOfString("real"))
 		rn, err = rn.LookupString("real")
 		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, ExploreRecursive{sideSelector, sideSelector, maxDepth - 1}, maxDepth})
 		Wish(t, err, ShouldEqual, nil)
-		rs = rs.Explore(rn, PathSegmentString{S: "apple"})
+		rs = rs.Explore(rn, ipld.PathSegmentOfString("apple"))
 		rn, err = rn.LookupString("apple")
 		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, ExploreRecursive{sideSelector, sideSelector, maxDepth - 2}, maxDepth})
 		Wish(t, err, ShouldEqual, nil)
-		rs = rs.Explore(rn, PathSegmentString{S: "sauce"})
+		rs = rs.Explore(rn, ipld.PathSegmentOfString("sauce"))
 		rn, err = rn.LookupString("sauce")
 		Wish(t, rs, ShouldEqual, nil)
 		Wish(t, err, ShouldEqual, nil)
@@ -256,30 +257,30 @@ func TestExploreRecursiveExplore(t *testing.T) {
 		// traverse once down Parent (top level recursion) then down Side tree (nested recursion)
 		rn = n
 		rs = s
-		rs = rs.Explore(rn, PathSegmentString{S: "Parents"})
+		rs = rs.Explore(rn, ipld.PathSegmentOfString("Parents"))
 		rn, err = rn.LookupString("Parents")
 		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, parentsSelector, maxDepth})
 		Wish(t, err, ShouldEqual, nil)
-		rs = rs.Explore(rn, PathSegmentInt{I: 0})
+		rs = rs.Explore(rn, ipld.PathSegmentOfInt(0))
 		rn, err = rn.LookupIndex(0)
 		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, subTree, maxDepth - 1})
 		Wish(t, err, ShouldEqual, nil)
-		rs = rs.Explore(rn, PathSegmentString{S: "Side"})
+		rs = rs.Explore(rn, ipld.PathSegmentOfString("Side"))
 		rn, err = rn.LookupString("Side")
 		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, ExploreRecursive{sideSelector, sideSelector, maxDepth}, maxDepth - 1})
 		Wish(t, err, ShouldEqual, nil)
-		rs = rs.Explore(rn, PathSegmentString{S: "cheese"})
+		rs = rs.Explore(rn, ipld.PathSegmentOfString("cheese"))
 		rn, err = rn.LookupString("cheese")
 		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, ExploreRecursive{sideSelector, sideSelector, maxDepth - 1}, maxDepth - 1})
 		Wish(t, err, ShouldEqual, nil)
-		rs = rs.Explore(rn, PathSegmentString{S: "whiz"})
+		rs = rs.Explore(rn, ipld.PathSegmentOfString("whiz"))
 		rn, err = rn.LookupString("whiz")
 		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, ExploreRecursive{sideSelector, sideSelector, maxDepth - 2}, maxDepth - 1})
 		Wish(t, err, ShouldEqual, nil)
 	})
 	t.Run("exploring should work with explore union and recursion", func(t *testing.T) {
-		parentsSelector := ExploreUnion{[]Selector{ExploreAll{Matcher{}}, ExploreIndex{recursiveEdge, [1]PathSegment{PathSegmentInt{0}}}}}
-		subTree := ExploreFields{map[string]Selector{"Parents": parentsSelector}, []PathSegment{PathSegmentString{S: "Parents"}}}
+		parentsSelector := ExploreUnion{[]Selector{ExploreAll{Matcher{}}, ExploreIndex{recursiveEdge, [1]ipld.PathSegment{ipld.PathSegmentOfInt(0)}}}}
+		subTree := ExploreFields{map[string]Selector{"Parents": parentsSelector}, []ipld.PathSegment{ipld.PathSegmentOfString("Parents")}}
 		rs = ExploreRecursive{subTree, subTree, maxDepth}
 		nodeString := `{
 			"Parents": [
@@ -299,20 +300,20 @@ func TestExploreRecursiveExplore(t *testing.T) {
 		`
 		rn, err := dagjson.Decoder(ipldfree.NodeBuilder(), bytes.NewBufferString(nodeString))
 		Wish(t, err, ShouldEqual, nil)
-		rs = rs.Explore(rn, PathSegmentString{S: "Parents"})
+		rs = rs.Explore(rn, ipld.PathSegmentOfString("Parents"))
 		rn, err = rn.LookupString("Parents")
 		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, parentsSelector, maxDepth})
 		Wish(t, err, ShouldEqual, nil)
-		rs = rs.Explore(rn, PathSegmentInt{I: 0})
+		rs = rs.Explore(rn, ipld.PathSegmentOfInt(0))
 		rn, err = rn.LookupIndex(0)
 		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, ExploreUnion{[]Selector{Matcher{}, subTree}}, maxDepth - 1})
 		Wish(t, err, ShouldEqual, nil)
-		rs = rs.Explore(rn, PathSegmentString{S: "Parents"})
+		rs = rs.Explore(rn, ipld.PathSegmentOfString("Parents"))
 
 		rn, err = rn.LookupString("Parents")
 		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, parentsSelector, maxDepth - 1})
 		Wish(t, err, ShouldEqual, nil)
-		rs = rs.Explore(rn, PathSegmentInt{I: 0})
+		rs = rs.Explore(rn, ipld.PathSegmentOfInt(0))
 		rn, err = rn.LookupIndex(0)
 		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, ExploreUnion{[]Selector{Matcher{}, subTree}}, maxDepth - 2})
 		Wish(t, err, ShouldEqual, nil)

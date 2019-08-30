@@ -9,18 +9,18 @@ import (
 // ExploreIndex traverses a specific index in a list, and applies a next
 // selector to the reached node.
 type ExploreIndex struct {
-	next     Selector       // selector for element we're interested in
-	interest [1]PathSegment // index of element we're interested in
+	next     Selector            // selector for element we're interested in
+	interest [1]ipld.PathSegment // index of element we're interested in
 }
 
 // Interests for ExploreIndex is just the index specified by the selector node
-func (s ExploreIndex) Interests() []PathSegment {
+func (s ExploreIndex) Interests() []ipld.PathSegment {
 	return s.interest[:]
 }
 
 // Explore returns the node's selector if
 // the path matches the index the index for this selector or nil if not
-func (s ExploreIndex) Explore(n ipld.Node, p PathSegment) Selector {
+func (s ExploreIndex) Explore(n ipld.Node, p ipld.PathSegment) Selector {
 	if n.ReprKind() != ipld.ReprKind_List {
 		return nil
 	}
@@ -59,5 +59,5 @@ func (pc ParseContext) ParseExploreIndex(n ipld.Node) (Selector, error) {
 	if err != nil {
 		return nil, err
 	}
-	return ExploreIndex{selector, [1]PathSegment{PathSegmentInt{I: indexValue}}}, nil
+	return ExploreIndex{selector, [1]ipld.PathSegment{ipld.PathSegmentOfInt(indexValue)}}, nil
 }

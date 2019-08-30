@@ -2,7 +2,6 @@ package traversal
 
 import (
 	"fmt"
-	"strconv"
 
 	ipld "github.com/ipld/go-ipld-prime"
 )
@@ -41,13 +40,13 @@ func (prog Progress) Focus(n ipld.Node, p ipld.Path, fn VisitFn) error {
 		case ipld.ReprKind_Invalid:
 			return fmt.Errorf("cannot traverse node at %q: it is undefined", p.Truncate(i))
 		case ipld.ReprKind_Map:
-			next, err := n.LookupString(seg)
+			next, err := n.LookupString(seg.String())
 			if err != nil {
 				return fmt.Errorf("error traversing segment %q on node at %q: %s", seg, p.Truncate(i), err)
 			}
 			prev, n = n, next
 		case ipld.ReprKind_List:
-			intSeg, err := strconv.Atoi(seg)
+			intSeg, err := seg.Index()
 			if err != nil {
 				return fmt.Errorf("error traversing segment %q on node at %q: the segment cannot be parsed as a number and the node is a list", seg, p.Truncate(i))
 			}

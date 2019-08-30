@@ -18,63 +18,80 @@ import (
 // Paths are representable as strings.  When represented as a string, each
 // segment is separated by a "/" character.
 // (It follows that path segments may not themselves contain a "/" character.)
+// (Note: escaping may be specified and supported in the future; currently, it is not.)
 //
-// Path segments are stringly typed.  A path segment of "123" will be used
-// as a string when traversing a node of map kind; and it will be converted
-// to an integer when traversing a node of list kind.
-// (If a path segment string cannot be parsed to an int when traversing a node
-// of list kind, then traversal will error.)
 type Path struct {
-	segments []string
+	segments []PathSegment
 }
 
-// ParsePath converts a string to an IPLD Path, parsing the string
-// into a segemented Path.
+// ParsePath converts a string to an IPLD Path, parsing the string into a segmented Path.
 //
 // Each segment of the path string should be separated by a "/" character.
 //
 // Multiple subsequent "/" characters will be silently collapsed.
 // E.g., `"foo///bar"` will be treated equivalently to `"foo/bar"`.
+// Prefixed and suffixed extraneous "/" characters are also discarded.
 //
-// No "cleaning" of the path occurs.  See the documentation of the Path
-// struct; in particular, note that ".." does not mean "go up" -- so
-// correspondingly, there is nothing to "clean".
+// No "cleaning" of the path occurs.  See the documentation of the Path struct;
+// in particular, note that ".." does not mean "go up", nor does "." mean "stay here" --
+// correspondingly, there isn't anything to "clean".
 func ParsePath(pth string) Path {
 	// FUTURE: we should probably have some escaping mechanism which makes
 	//  it possible to encode a slash in a segment.  Specification needed.
-	return Path{strings.FieldsFunc(pth, func(r rune) bool { return r == '/' })}
+	ss := strings.FieldsFunc(pth, func(r rune) bool { return r == '/' })
+	ssl := len(ss)
+	p := Path{make([]PathSegment, ssl)}
+	for i := 0; i < ssl; i++ {
+		p.segments[i] = PathSegmentOfString(ss[i])
+	}
+	return p
 }
 
 // String representation of a Path is simply the join of each segment with '/'.
+// It does not include a leading nor trailing slash.
 func (p Path) String() string {
-	return strings.Join(p.segments, "/")
+	l := len(p.segments)
+	if l == 0 {
+		return ""
+	}
+	sb := strings.Builder{}
+	for i := 0; i < l-1; i++ {
+		sb.WriteString(p.segments[i].String())
+		sb.WriteByte('/')
+	}
+	sb.WriteString(p.segments[l-1].String())
+	return sb.String()
 }
 
 // Segements returns a slice of the path segment strings.
 //
-// It is not lawful to mutate the returned slice.
-func (p Path) Segments() []string {
+// It is not lawful to mutate nor append the returned slice.
+func (p Path) Segments() []PathSegment {
 	return p.segments
 }
 
-// Join creates a new path composed of the concatenation of this and the
-// given path's segments.
+// Join creates a new path composed of the concatenation of this and the given path's segments.
 func (p Path) Join(p2 Path) Path {
-	combinedSegments := make([]string, len(p.segments)+len(p2.segments))
+	combinedSegments := make([]PathSegment, len(p.segments)+len(p2.segments))
 	copy(combinedSegments, p.segments)
 	copy(combinedSegments[len(p.segments):], p2.segments)
 	p.segments = combinedSegments
 	return p
 }
 
-// AppendSegment is as per Join, but a shortcut when appending single segments.
-func (p Path) AppendSegment(ps string) Path {
+// AppendSegmentString is as per Join, but a shortcut when appending single segments using strings.
+func (p Path) AppendSegment(ps PathSegment) Path {
 	l := len(p.segments)
-	combinedSegments := make([]string, l+1)
+	combinedSegments := make([]PathSegment, l+1)
 	copy(combinedSegments, p.segments)
 	combinedSegments[l] = ps
 	p.segments = combinedSegments
 	return p
+}
+
+// AppendSegmentString is as per Join, but a shortcut when appending single segments using strings.
+func (p Path) AppendSegmentString(ps string) Path {
+	return p.AppendSegment(PathSegmentOfString(ps))
 }
 
 // Parent returns a path with the last of its segments popped off (or

@@ -17,12 +17,12 @@ import (
 type ExploreRecursiveEdge struct{}
 
 // Interests should ultimately never get called for an ExploreRecursiveEdge selector
-func (s ExploreRecursiveEdge) Interests() []PathSegment {
+func (s ExploreRecursiveEdge) Interests() []ipld.PathSegment {
 	panic("Traversed Explore Recursive Edge Node With No Parent")
 }
 
 // Explore should ultimately never get called for an ExploreRecursiveEdge selector
-func (s ExploreRecursiveEdge) Explore(n ipld.Node, p PathSegment) Selector {
+func (s ExploreRecursiveEdge) Explore(n ipld.Node, p ipld.PathSegment) Selector {
 	panic("Traversed Explore Recursive Edge Node With No Parent")
 }
 

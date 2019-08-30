@@ -38,12 +38,12 @@ type ExploreRecursive struct {
 }
 
 // Interests for ExploreRecursive is empty (meaning traverse everything)
-func (s ExploreRecursive) Interests() []PathSegment {
+func (s ExploreRecursive) Interests() []ipld.PathSegment {
 	return s.current.Interests()
 }
 
 // Explore returns the node's selector for all fields
-func (s ExploreRecursive) Explore(n ipld.Node, p PathSegment) Selector {
+func (s ExploreRecursive) Explore(n ipld.Node, p ipld.PathSegment) Selector {
 	nextSelector := s.current.Explore(n, p)
 	maxDepth := s.maxDepth
 	if nextSelector == nil {

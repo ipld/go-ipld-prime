@@ -13,12 +13,12 @@ type ExploreAll struct {
 }
 
 // Interests for ExploreAll is nil (meaning traverse everything)
-func (s ExploreAll) Interests() []PathSegment {
+func (s ExploreAll) Interests() []ipld.PathSegment {
 	return nil
 }
 
 // Explore returns the node's selector for all fields
-func (s ExploreAll) Explore(n ipld.Node, p PathSegment) Selector {
+func (s ExploreAll) Explore(n ipld.Node, p ipld.PathSegment) Selector {
 	return s.next
 }
 

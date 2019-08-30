@@ -2,7 +2,6 @@ package selector
 
 import (
 	"fmt"
-	"strconv"
 
 	ipld "github.com/ipld/go-ipld-prime"
 )
@@ -10,8 +9,8 @@ import (
 // Selector is the programmatic representation of an IPLD Selector Node
 // and can be applied to traverse a given IPLD DAG
 type Selector interface {
-	Interests() []PathSegment                // returns the segments we're likely interested in **or nil** if we're a high-cardinality or expression based matcher and need all segments proposed to us.
-	Explore(ipld.Node, PathSegment) Selector // explore one step -- iteration comes from outside (either whole node, or by following suggestions of Interests).  returns nil if no interest.  you have to traverse to the next node yourself (the selector doesn't do it for you because you might be considering multiple selection reasons at the same time).
+	Interests() []ipld.PathSegment                // returns the segments we're likely interested in **or nil** if we're a high-cardinality or expression based matcher and need all segments proposed to us.
+	Explore(ipld.Node, ipld.PathSegment) Selector // explore one step -- iteration comes from outside (either whole node, or by following suggestions of Interests).  returns nil if no interest.  you have to traverse to the next node yourself (the selector doesn't do it for you because you might be considering multiple selection reasons at the same time).
 	Decide(ipld.Node) bool
 }
 
@@ -74,44 +73,10 @@ func (pc ParseContext) PushParent(parent ParsedParent) ParseContext {
 	return ParseContext{parents}
 }
 
-// PathSegment can describe either an index in a list or a key in a map, as either int or a string
-type PathSegment interface {
-	String() string
-	Index() (int, error)
-}
-
-// PathSegmentString represents a PathSegment with an underlying string
-type PathSegmentString struct {
-	S string
-}
-
-// PathSegmentInt represents a PathSegment with an underlying int
-type PathSegmentInt struct {
-	I int
-}
-
-func (ps PathSegmentString) String() string {
-	return ps.S
-}
-
-// Index attempts to parse a string as an int for a PathSegmentString
-func (ps PathSegmentString) Index() (int, error) {
-	return strconv.Atoi(ps.S)
-}
-
-func (ps PathSegmentInt) String() string {
-	return strconv.Itoa(ps.I)
-}
-
-// Index is always just the underlying int for a PathSegmentInt
-func (ps PathSegmentInt) Index() (int, error) {
-	return ps.I, nil
-}
-
 // SegmentIterator iterates either a list or a map, generating PathSegments
 // instead of indexes or keys
 type SegmentIterator interface {
-	Next() (pathSegment PathSegment, value ipld.Node, err error)
+	Next() (pathSegment ipld.PathSegment, value ipld.Node, err error)
 	Done() bool
 }
 
@@ -127,9 +92,9 @@ type listSegmentIterator struct {
 	ipld.ListIterator
 }
 
-func (lsi listSegmentIterator) Next() (pathSegment PathSegment, value ipld.Node, err error) {
+func (lsi listSegmentIterator) Next() (pathSegment ipld.PathSegment, value ipld.Node, err error) {
 	i, v, err := lsi.ListIterator.Next()
-	return PathSegmentInt{i}, v, err
+	return ipld.PathSegmentOfInt(i), v, err
 }
 
 func (lsi listSegmentIterator) Done() bool {
@@ -140,13 +105,13 @@ type mapSegmentIterator struct {
 	ipld.MapIterator
 }
 
-func (msi mapSegmentIterator) Next() (pathSegment PathSegment, value ipld.Node, err error) {
+func (msi mapSegmentIterator) Next() (pathSegment ipld.PathSegment, value ipld.Node, err error) {
 	k, v, err := msi.MapIterator.Next()
 	if err != nil {
-		return nil, v, err
+		return ipld.PathSegment{}, v, err
 	}
 	kstr, _ := k.AsString()
-	return PathSegmentString{kstr}, v, err
+	return ipld.PathSegmentOfString(kstr), v, err
 }
 
 func (msi mapSegmentIterator) Done() bool {

@@ -39,8 +39,7 @@ type Node interface {
 	// If idx is out of range, a nil node and an error will be returned.
 	LookupIndex(idx int) (Node, error)
 
-	// LookupSegment is a convenience method that might exist... if we moved
-	// the PathSegment type up here to the main package!
+	// LookupSegment is a convenience method that should be added sometime soon.
 	/// LookupSegment(seg PathSegment) (Node, error)
 
 	// Note that when using codegenerated types, there may be a fifth variant
