@@ -12,17 +12,17 @@ type ExploreRange struct {
 	next     Selector // selector for element we're interested in
 	start    int
 	end      int
-	interest []PathSegment // index of element we're interested in
+	interest []ipld.PathSegment // index of element we're interested in
 }
 
 // Interests for ExploreRange are all path segments within the iteration range
-func (s ExploreRange) Interests() []PathSegment {
+func (s ExploreRange) Interests() []ipld.PathSegment {
 	return s.interest
 }
 
 // Explore returns the node's selector if
 // the path matches an index in the range of this selector
-func (s ExploreRange) Explore(n ipld.Node, p PathSegment) Selector {
+func (s ExploreRange) Explore(n ipld.Node, p ipld.PathSegment) Selector {
 	if n.ReprKind() != ipld.ReprKind_List {
 		return nil
 	}
@@ -78,10 +78,10 @@ func (pc ParseContext) ParseExploreRange(n ipld.Node) (Selector, error) {
 		selector,
 		startValue,
 		endValue,
-		make([]PathSegment, 0, endValue-startValue),
+		make([]ipld.PathSegment, 0, endValue-startValue),
 	}
 	for i := startValue; i < endValue; i++ {
-		x.interest = append(x.interest, PathSegmentInt{I: i})
+		x.interest = append(x.interest, ipld.PathSegmentOfInt(i))
 	}
 	return x, nil
 }

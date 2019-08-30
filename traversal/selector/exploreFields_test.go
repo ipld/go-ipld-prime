@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"testing"
 
+	ipld "github.com/ipld/go-ipld-prime"
 	"github.com/ipld/go-ipld-prime/fluent"
 	ipldfree "github.com/ipld/go-ipld-prime/impl/free"
 	. "github.com/warpfork/go-wish"
@@ -47,6 +48,6 @@ func TestParseExploreFields(t *testing.T) {
 		})
 		s, err := ParseContext{}.ParseExploreFields(sn)
 		Wish(t, err, ShouldEqual, nil)
-		Wish(t, s, ShouldEqual, ExploreFields{map[string]Selector{"applesauce": Matcher{}}, []PathSegment{PathSegmentString{S: "applesauce"}}})
+		Wish(t, s, ShouldEqual, ExploreFields{map[string]Selector{"applesauce": Matcher{}}, []ipld.PathSegment{ipld.PathSegmentOfString("applesauce")}})
 	})
 }
