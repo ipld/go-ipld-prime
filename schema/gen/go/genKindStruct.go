@@ -32,7 +32,7 @@ func (gk generateKindStruct) EmitNodeType(w io.Writer) {
 
 		type {{ .Type | mungeTypeNodeIdent }} struct{
 			{{- range $field := .Type.Fields }}
-			{{ $field.Name }} {{if or $field.IsOptional $field.IsNullable }}*{{end}}{{ $field.Type.Name }}
+			{{ $field.Name }} {{if or $field.IsOptional $field.IsNullable }}*{{end}}{{ $field.Type | mungeTypeNodeIdent }}
 			{{- end}}
 			{{ range $field := .Type.Fields }}
 			{{- if and $field.IsOptional $field.IsNullable }}
@@ -110,15 +110,15 @@ func (gk generateKindStruct) EmitNodeMethodLookup(w io.Writer) {
 func (gk generateKindStruct) EmitNodeMethodMapIterator(w io.Writer) {
 	doTemplate(`
 		func (x {{ .Type | mungeTypeNodeIdent }}) MapIterator() ipld.MapIterator {
-			return &_{{ .Type.Name }}__itr{&x, 0}
+			return &{{ .Type | mungeTypeNodeItrIdent }}{&x, 0}
 		}
 
-		type _{{ .Type.Name }}__itr struct {
+		type {{ .Type | mungeTypeNodeItrIdent }} struct {
 			node *{{ .Type | mungeTypeNodeIdent }}
 			idx  int
 		}
 
-		func (itr *_{{ .Type.Name }}__itr) Next() (k ipld.Node, v ipld.Node, _ error) {
+		func (itr *{{ .Type | mungeTypeNodeItrIdent }}) Next() (k ipld.Node, v ipld.Node, _ error) {
 			if itr.idx >= {{ len .Type.Fields }} {
 				return nil, nil, ipld.ErrIteratorOverread{}
 			}
@@ -154,7 +154,7 @@ func (gk generateKindStruct) EmitNodeMethodMapIterator(w io.Writer) {
 			itr.idx++
 			return
 		}
-		func (itr *_{{ .Type.Name }}__itr) Done() bool {
+		func (itr *{{ .Type | mungeTypeNodeItrIdent }}) Done() bool {
 			return itr.idx >= {{ len .Type.Fields }}
 		}
 

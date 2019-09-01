@@ -52,11 +52,11 @@ func (gk generateNbKindStruct) EmitNodebuilderMethodCreateMap(w io.Writer) {
 	// REVIEW: 'x, ok := v.({{ $field.Type.Name }})' might need some stars in it... sometimes.
 	doTemplate(`
 		func (nb {{ .Type | mungeTypeNodebuilderIdent }}) CreateMap() (ipld.MapBuilder, error) {
-			return &{{ .Type.Name }}__MapBuilder{v:&{{ .Type | mungeTypeNodeIdent }}{}}, nil
+			return &{{ .Type | mungeTypeNodeMapBuilderIdent }}{v:&{{ .Type | mungeTypeNodeIdent }}{}}, nil
 		}
 
-		type {{ .Type.Name }}__MapBuilder struct{
-			v *{{ .Type.Name }}
+		type {{ .Type | mungeTypeNodeMapBuilderIdent }} struct{
+			v *{{ .Type | mungeTypeNodeIdent }}
 			{{- range $field := .Type.Fields }}
 			{{- if not $field.IsOptional }}
 			{{ $field.Name }}__isset bool
@@ -64,7 +64,7 @@ func (gk generateNbKindStruct) EmitNodebuilderMethodCreateMap(w io.Writer) {
 			{{- end}}
 		}
 
-		func (mb *{{ .Type.Name }}__MapBuilder) Insert(k, v ipld.Node) error {
+		func (mb *{{ .Type | mungeTypeNodeMapBuilderIdent }}) Insert(k, v ipld.Node) error {
 			ks, err := k.AsString()
 			if err != nil {
 				return ipld.ErrInvalidKey{"not a string: " + err.Error()}
@@ -92,7 +92,7 @@ func (gk generateNbKindStruct) EmitNodebuilderMethodCreateMap(w io.Writer) {
 				if !ok {
 					panic("need typed.Node for insertion into struct") // FIXME need an error type for this
 				}
-				x, ok := v.({{ $field.Type.Name }})
+				x, ok := v.({{ $field.Type | mungeTypeNodeIdent }})
 				if !ok {
 					panic("field '{{$field.Name}}' in type {{$type.Name}} is type {{$field.Type.Name}}; cannot assign "+tv.Type().Name()) // FIXME need an error type for this
 				}
@@ -113,10 +113,10 @@ func (gk generateNbKindStruct) EmitNodebuilderMethodCreateMap(w io.Writer) {
 			}
 			return nil
 		}
-		func (mb *{{ .Type.Name }}__MapBuilder) Delete(k ipld.Node) error {
+		func (mb *{{ .Type | mungeTypeNodeMapBuilderIdent }}) Delete(k ipld.Node) error {
 			panic("TODO later")
 		}
-		func (mb *{{ .Type.Name }}__MapBuilder) Build() (ipld.Node, error) {
+		func (mb *{{ .Type | mungeTypeNodeMapBuilderIdent }}) Build() (ipld.Node, error) {
 			{{- $type := .Type -}} {{- /* ranging modifies dot, unhelpfully */ -}}
 			{{- range $field := .Type.Fields }}
 			{{- if not $field.IsOptional }}

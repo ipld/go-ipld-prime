@@ -26,7 +26,7 @@ func (gk generateStructReprMapNode) EmitNodeType(w io.Writer) {
 		var _ ipld.Node = {{ .Type | mungeTypeReprNodeIdent }}{}
 
 		type {{ .Type | mungeTypeReprNodeIdent }} struct{
-			n *{{ .Type.Name }}
+			n *{{ .Type | mungeTypeNodeIdent }}
 		}
 
 	`, w, gk)
@@ -97,15 +97,15 @@ func (gk generateStructReprMapNode) EmitNodeMethodMapIterator(w io.Writer) {
 	// TODO : support for implicits is missing.
 	doTemplate(`
 		func (rn {{ .Type | mungeTypeReprNodeIdent }}) MapIterator() ipld.MapIterator {
-			return &_{{ .Type.Name }}__itr{rn.n, 0}
+			return &{{ .Type | mungeTypeReprNodeItrIdent }}{rn.n, 0}
 		}
 
-		type {{ .Type | mungeTypeReprNodeIdent }}Itr struct {
-			node *{{ .Type.Name }}
+		type {{ .Type | mungeTypeReprNodeItrIdent }} struct {
+			node *{{ .Type | mungeTypeNodeIdent }}
 			idx  int
 		}
 
-		func (itr *{{ .Type | mungeTypeReprNodeIdent }}Itr) Next() (k ipld.Node, v ipld.Node, _ error) {
+		func (itr *{{ .Type | mungeTypeReprNodeItrIdent }}) Next() (k ipld.Node, v ipld.Node, _ error) {
 			if itr.idx >= {{ len .Type.Fields }} {
 				return nil, nil, ipld.ErrIteratorOverread{}
 			}
@@ -144,7 +144,7 @@ func (gk generateStructReprMapNode) EmitNodeMethodMapIterator(w io.Writer) {
 			itr.idx++
 			return
 		}
-		func (itr *{{ .Type | mungeTypeReprNodeIdent }}Itr) Done() bool {
+		func (itr *{{ .Type | mungeTypeReprNodeItrIdent }}) Done() bool {
 			return itr.idx >= {{ len .Type.Fields }}
 		}
 
@@ -186,7 +186,7 @@ func (gk generateStructReprMapNode) GetNodeBuilderGen() nodebuilderGenerator {
 	return generateStructReprMapNb{
 		gk.Type,
 		genKindedNbRejections_Map{
-			"_" + string(gk.Type.Name()) + "__ReprBuilder",
+			mungeTypeReprNodebuilderIdent(gk.Type),
 			string(gk.Type.Name()) + ".Representation.Builder",
 		},
 	}
@@ -221,17 +221,17 @@ func (gk generateStructReprMapNb) EmitNodebuilderMethodCreateMap(w io.Writer) {
 	// TODO : support for implicits is missing.
 	doTemplate(`
 		func (nb {{ .Type | mungeTypeReprNodebuilderIdent }}) CreateMap() (ipld.MapBuilder, error) {
-			return &_{{ .Type.Name }}__ReprMapBuilder{v:&{{ .Type.Name }}{}}, nil
+			return &{{ .Type | mungeTypeReprNodeMapBuilderIdent }}{v:&{{ .Type | mungeTypeNodeIdent }}{}}, nil
 		}
 
-		type _{{ .Type.Name }}__ReprMapBuilder struct{
-			v *{{ .Type.Name }}
+		type {{ .Type | mungeTypeReprNodeMapBuilderIdent }} struct{
+			v *{{ .Type | mungeTypeNodeIdent }}
 			{{- range $field := .Type.Fields }}
 			{{ $field.Name }}__isset bool
 			{{- end}}
 		}
 
-		func (mb *_{{ .Type.Name }}__ReprMapBuilder) Insert(k, v ipld.Node) error {
+		func (mb *{{ .Type | mungeTypeReprNodeMapBuilderIdent }}) Insert(k, v ipld.Node) error {
 			ks, err := k.AsString()
 			if err != nil {
 				return ipld.ErrInvalidKey{"not a string: " + err.Error()}
@@ -262,7 +262,7 @@ func (gk generateStructReprMapNb) EmitNodebuilderMethodCreateMap(w io.Writer) {
 				if !ok {
 					panic("need typed.Node for insertion into struct") // FIXME need an error type for this
 				}
-				x, ok := v.({{ $field.Type.Name }})
+				x, ok := v.({{ $field.Type | mungeTypeNodeIdent }})
 				if !ok {
 					panic("field '{{$field.Name}}' (key: '{{ $field | $type.RepresentationStrategy.GetFieldKey }}') in type {{$type.Name}} is type {{$field.Type.Name}}; cannot assign "+tv.Type().Name()) // FIXME need an error type for this
 				}
@@ -282,10 +282,10 @@ func (gk generateStructReprMapNb) EmitNodebuilderMethodCreateMap(w io.Writer) {
 			}
 			return nil
 		}
-		func (mb *_{{ .Type.Name }}__ReprMapBuilder) Delete(k ipld.Node) error {
+		func (mb *{{ .Type | mungeTypeReprNodeMapBuilderIdent }}) Delete(k ipld.Node) error {
 			panic("TODO later")
 		}
-		func (mb *_{{ .Type.Name }}__ReprMapBuilder) Build() (ipld.Node, error) {
+		func (mb *{{ .Type | mungeTypeReprNodeMapBuilderIdent }}) Build() (ipld.Node, error) {
 			{{- $type := .Type -}} {{- /* ranging modifies dot, unhelpfully */ -}}
 			{{- range $field := .Type.Fields }}
 			{{- if not $field.IsOptional }}
