@@ -208,6 +208,14 @@ func (gk generateStructReprMapNb) EmitNodebuilderType(w io.Writer) {
 	`, w, gk)
 }
 
+func (gk generateStructReprMapNb) EmitNodebuilderConstructor(w io.Writer) {
+	doTemplate(`
+		func {{ .Type | mungeReprNodebuilderConstructorIdent }}() ipld.NodeBuilder {
+			return {{ .Type | mungeTypeReprNodebuilderIdent }}{}
+		}
+	`, w, gk)
+}
+
 func (gk generateStructReprMapNb) EmitNodebuilderMethodCreateMap(w io.Writer) {
 	// Much of these looks the same as the type-level builders.  Key differences:
 	//  - We interact with the rename directives here.

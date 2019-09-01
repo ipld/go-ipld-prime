@@ -35,6 +35,14 @@ func (gk generateNbKindString) EmitNodebuilderType(w io.Writer) {
 	`, w, gk)
 }
 
+func (gk generateNbKindString) EmitNodebuilderConstructor(w io.Writer) {
+	doTemplate(`
+		func {{ .Type | mungeNodebuilderConstructorIdent }}() ipld.NodeBuilder {
+			return {{ .Type | mungeTypeNodebuilderIdent }}{}
+		}
+	`, w, gk)
+}
+
 func (gk generateNbKindString) EmitNodebuilderMethodCreateString(w io.Writer) {
 	doTemplate(`
 		func (nb {{ .Type | mungeTypeNodebuilderIdent }}) CreateString(v string) (ipld.Node, error) {

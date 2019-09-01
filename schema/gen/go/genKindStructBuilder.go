@@ -36,6 +36,14 @@ func (gk generateNbKindStruct) EmitNodebuilderType(w io.Writer) {
 	`, w, gk)
 }
 
+func (gk generateNbKindStruct) EmitNodebuilderConstructor(w io.Writer) {
+	doTemplate(`
+		func {{ .Type | mungeNodebuilderConstructorIdent }}() ipld.NodeBuilder {
+			return {{ .Type | mungeTypeNodebuilderIdent }}{}
+		}
+	`, w, gk)
+}
+
 func (gk generateNbKindStruct) EmitNodebuilderMethodCreateMap(w io.Writer) {
 	// Some interesting edge cases to note:
 	//  - This builder, being all about semantics and not at all about serialization,

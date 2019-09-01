@@ -32,6 +32,9 @@ func doTemplate(tmplstr string, w io.Writer, data interface{}) {
 			"mungeTypeReprNodebuilderIdent":     mungeTypeReprNodebuilderIdent,
 			"mungeTypeReprNodeMapBuilderIdent":  mungeTypeReprNodeMapBuilderIdent,
 			"mungeTypeReprNodeListBuilderIdent": mungeTypeReprNodeListBuilderIdent,
+
+			"mungeNodebuilderConstructorIdent":     mungeNodebuilderConstructorIdent,
+			"mungeReprNodebuilderConstructorIdent": mungeReprNodebuilderConstructorIdent,
 		}).
 		Parse(wish.Dedent(tmplstr)))
 	if err := tmpl.Execute(w, data); err != nil {

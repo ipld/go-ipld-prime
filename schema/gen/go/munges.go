@@ -46,3 +46,11 @@ func mungeTypeReprNodeMapBuilderIdent(t schema.Type) string {
 func mungeTypeReprNodeListBuilderIdent(t schema.Type) string {
 	return "_" + string(t.Name()) + "__ReprListBuilder"
 }
+
+func mungeNodebuilderConstructorIdent(t schema.Type) string {
+	return string(t.Name()) + "__NodeBuilder"
+}
+
+func mungeReprNodebuilderConstructorIdent(t schema.Type) string {
+	return string(t.Name()) + "__ReprNodeBuilder"
+}
