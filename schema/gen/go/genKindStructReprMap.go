@@ -10,7 +10,7 @@ func getStructRepresentationMapNodeGen(t schema.TypeStruct) nodeGenerator {
 	return generateStructReprMapNode{
 		t,
 		generateKindedRejections_Map{
-			"_" + string(t.Name()) + "__Repr",
+			mungeTypeReprNodeIdent(t),
 			string(t.Name()) + ".Representation",
 		},
 	}
@@ -23,9 +23,9 @@ type generateStructReprMapNode struct {
 
 func (gk generateStructReprMapNode) EmitNodeType(w io.Writer) {
 	doTemplate(`
-		var _ ipld.Node = _{{ .Type.Name }}__Repr{}
+		var _ ipld.Node = {{ .Type | mungeTypeReprNodeIdent }}{}
 
-		type _{{ .Type.Name }}__Repr struct{
+		type {{ .Type | mungeTypeReprNodeIdent }} struct{
 			n *{{ .Type.Name }}
 		}
 
@@ -34,7 +34,7 @@ func (gk generateStructReprMapNode) EmitNodeType(w io.Writer) {
 
 func (gk generateStructReprMapNode) EmitNodeMethodReprKind(w io.Writer) {
 	doTemplate(`
-		func (_{{ .Type.Name }}__Repr) ReprKind() ipld.ReprKind {
+		func ({{ .Type | mungeTypeReprNodeIdent }}) ReprKind() ipld.ReprKind {
 			return ipld.ReprKind_Map
 		}
 	`, w, gk)
@@ -44,7 +44,7 @@ func (gk generateStructReprMapNode) EmitNodeMethodLookupString(w io.Writer) {
 	// almost idential to the type-level one, just with different strings in the switch.
 	// TODO : support for implicits is missing.
 	doTemplate(`
-		func (rn _{{ .Type.Name }}__Repr) LookupString(key string) (ipld.Node, error) {
+		func (rn {{ .Type | mungeTypeReprNodeIdent }}) LookupString(key string) (ipld.Node, error) {
 			switch key {
 			{{- $type := .Type -}} {{- /* ranging modifies dot, unhelpfully */ -}}
 			{{- range $field := .Type.Fields }}
@@ -80,7 +80,7 @@ func (gk generateStructReprMapNode) EmitNodeMethodLookupString(w io.Writer) {
 
 func (gk generateStructReprMapNode) EmitNodeMethodLookup(w io.Writer) {
 	doTemplate(`
-		func (rn _{{ .Type.Name }}__Repr) Lookup(key ipld.Node) (ipld.Node, error) {
+		func (rn {{ .Type | mungeTypeReprNodeIdent }}) Lookup(key ipld.Node) (ipld.Node, error) {
 			ks, err := key.AsString()
 			if err != nil {
 				return nil, ipld.ErrInvalidKey{"got " + key.ReprKind().String() + ", need string"}
@@ -96,16 +96,16 @@ func (gk generateStructReprMapNode) EmitNodeMethodMapIterator(w io.Writer) {
 	//   use 'continue' statements to skip past optionals which are undefined.
 	// TODO : support for implicits is missing.
 	doTemplate(`
-		func (rn _{{ .Type.Name }}__Repr) MapIterator() ipld.MapIterator {
+		func (rn {{ .Type | mungeTypeReprNodeIdent }}) MapIterator() ipld.MapIterator {
 			return &_{{ .Type.Name }}__itr{rn.n, 0}
 		}
 
-		type _{{ .Type.Name }}__ReprItr struct {
+		type {{ .Type | mungeTypeReprNodeIdent }}Itr struct {
 			node *{{ .Type.Name }}
 			idx  int
 		}
 
-		func (itr *_{{ .Type.Name }}__ReprItr) Next() (k ipld.Node, v ipld.Node, _ error) {
+		func (itr *{{ .Type | mungeTypeReprNodeIdent }}Itr) Next() (k ipld.Node, v ipld.Node, _ error) {
 			if itr.idx >= {{ len .Type.Fields }} {
 				return nil, nil, ipld.ErrIteratorOverread{}
 			}
@@ -144,7 +144,7 @@ func (gk generateStructReprMapNode) EmitNodeMethodMapIterator(w io.Writer) {
 			itr.idx++
 			return
 		}
-		func (itr *_{{ .Type.Name }}__ReprItr) Done() bool {
+		func (itr *{{ .Type | mungeTypeReprNodeIdent }}Itr) Done() bool {
 			return itr.idx >= {{ len .Type.Fields }}
 		}
 
@@ -156,7 +156,7 @@ func (gk generateStructReprMapNode) EmitNodeMethodLength(w io.Writer) {
 	// This is fun: it has to count down for any unset optional fields.
 	// TODO : support for implicits is missing.
 	doTemplate(`
-		func (rn _{{ .Type.Name }}__Repr) Length() int {
+		func (rn {{ .Type | mungeTypeReprNodeIdent }}) Length() int {
 			l := {{ len .Type.Fields }}
 			{{- range $field := .Type.Fields }}
 			{{- if and $field.IsOptional $field.IsNullable }}
@@ -176,8 +176,8 @@ func (gk generateStructReprMapNode) EmitNodeMethodLength(w io.Writer) {
 
 func (gk generateStructReprMapNode) EmitNodeMethodNodeBuilder(w io.Writer) {
 	doTemplate(`
-		func (_{{ .Type.Name }}__Repr) NodeBuilder() ipld.NodeBuilder {
-			return _{{ .Type.Name }}__ReprBuilder{}
+		func ({{ .Type | mungeTypeReprNodeIdent }}) NodeBuilder() ipld.NodeBuilder {
+			return {{ .Type | mungeTypeReprNodebuilderIdent }}{}
 		}
 	`, w, gk)
 }
@@ -203,7 +203,7 @@ func (gk generateStructReprMapNb) EmitNodebuilderType(w io.Writer) {
 	//   (We *could* munge the reprkind in for debug symbol reading,
 	//    but at present it hasn't seemed warranted.)
 	doTemplate(`
-		type _{{ .Type.Name }}__ReprBuilder struct{}
+		type {{ .Type | mungeTypeReprNodebuilderIdent }} struct{}
 
 	`, w, gk)
 }
@@ -220,7 +220,7 @@ func (gk generateStructReprMapNb) EmitNodebuilderMethodCreateMap(w io.Writer) {
 	//          yielded a huge matrix of concerns and no single clear gradient.
 	// TODO : support for implicits is missing.
 	doTemplate(`
-		func (nb _{{ .Type.Name }}__ReprBuilder) CreateMap() (ipld.MapBuilder, error) {
+		func (nb {{ .Type | mungeTypeReprNodebuilderIdent }}) CreateMap() (ipld.MapBuilder, error) {
 			return &_{{ .Type.Name }}__ReprMapBuilder{v:&{{ .Type.Name }}{}}, nil
 		}
 
@@ -304,7 +304,7 @@ func (gk generateStructReprMapNb) EmitNodebuilderMethodCreateMap(w io.Writer) {
 
 func (gk generateStructReprMapNb) EmitNodebuilderMethodAmendMap(w io.Writer) {
 	doTemplate(`
-		func (nb _{{ .Type.Name }}__ReprBuilder) AmendMap() (ipld.MapBuilder, error) {
+		func (nb {{ .Type | mungeTypeReprNodebuilderIdent }}) AmendMap() (ipld.MapBuilder, error) {
 			panic("TODO later")
 		}
 	`, w, gk)

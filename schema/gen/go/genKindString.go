@@ -10,7 +10,7 @@ func NewGeneratorForKindString(t schema.Type) typedNodeGenerator {
 	return generateKindString{
 		t.(schema.TypeString),
 		generateKindedRejections_String{
-			string(t.Name()),
+			mungeTypeNodeIdent(t),
 			string(t.Name()),
 		},
 	}
@@ -25,17 +25,17 @@ type generateKindString struct {
 
 func (gk generateKindString) EmitNodeType(w io.Writer) {
 	doTemplate(`
-		var _ ipld.Node = {{ .Type.Name }}{}
-		var _ typed.Node = {{ .Type.Name }}{}
+		var _ ipld.Node = {{ .Type | mungeTypeNodeIdent }}{}
+		var _ typed.Node = {{ .Type | mungeTypeNodeIdent }}{}
 
-		type {{ .Type.Name }} struct{ x string }
+		type {{ .Type | mungeTypeNodeIdent }} struct{ x string }
 
 	`, w, gk)
 }
 
 func (gk generateKindString) EmitTypedNodeMethodType(w io.Writer) {
 	doTemplate(`
-		func ({{ .Type.Name }}) Type() schema.Type {
+		func ({{ .Type | mungeTypeNodeIdent }}) Type() schema.Type {
 			return nil /*TODO:typelit*/
 		}
 	`, w, gk)
@@ -43,7 +43,7 @@ func (gk generateKindString) EmitTypedNodeMethodType(w io.Writer) {
 
 func (gk generateKindString) EmitNodeMethodReprKind(w io.Writer) {
 	doTemplate(`
-		func ({{ .Type.Name }}) ReprKind() ipld.ReprKind {
+		func ({{ .Type | mungeTypeNodeIdent }}) ReprKind() ipld.ReprKind {
 			return ipld.ReprKind_String
 		}
 	`, w, gk)
@@ -51,7 +51,7 @@ func (gk generateKindString) EmitNodeMethodReprKind(w io.Writer) {
 
 func (gk generateKindString) EmitNodeMethodAsString(w io.Writer) {
 	doTemplate(`
-		func (x {{ .Type.Name }}) AsString() (string, error) {
+		func (x {{ .Type | mungeTypeNodeIdent }}) AsString() (string, error) {
 			return x.x, nil
 		}
 	`, w, gk)
@@ -59,7 +59,7 @@ func (gk generateKindString) EmitNodeMethodAsString(w io.Writer) {
 
 func (gk generateKindString) EmitTypedNodeMethodRepresentation(w io.Writer) {
 	doTemplate(`
-		func ({{ .Type.Name }}) Representation() ipld.Node {
+		func ({{ .Type | mungeTypeNodeIdent }}) Representation() ipld.Node {
 			panic("TODO representation")
 		}
 	`, w, gk)

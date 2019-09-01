@@ -10,7 +10,7 @@ func NewGeneratorForKindStruct(t schema.Type) typedNodeGenerator {
 	return generateKindStruct{
 		t.(schema.TypeStruct),
 		generateKindedRejections_Map{
-			string(t.Name()),
+			mungeTypeNodeIdent(t),
 			string(t.Name()),
 		},
 	}
@@ -27,10 +27,10 @@ func (gk generateKindStruct) EmitNodeType(w io.Writer) {
 	// Observe that we get a '*' if a field is *either* nullable *or* optional;
 	//  and we get an extra bool for the second cardinality +1'er if both are true.
 	doTemplate(`
-		var _ ipld.Node = {{ .Type.Name }}{}
-		var _ typed.Node = {{ .Type.Name }}{}
+		var _ ipld.Node = {{ .Type | mungeTypeNodeIdent }}{}
+		var _ typed.Node = {{ .Type | mungeTypeNodeIdent }}{}
 
-		type {{ .Type.Name }} struct{
+		type {{ .Type | mungeTypeNodeIdent }} struct{
 			{{- range $field := .Type.Fields }}
 			{{ $field.Name }} {{if or $field.IsOptional $field.IsNullable }}*{{end}}{{ $field.Type.Name }}
 			{{- end}}
@@ -46,7 +46,7 @@ func (gk generateKindStruct) EmitNodeType(w io.Writer) {
 
 func (gk generateKindStruct) EmitTypedNodeMethodType(w io.Writer) {
 	doTemplate(`
-		func ({{ .Type.Name }}) Type() schema.Type {
+		func ({{ .Type | mungeTypeNodeIdent }}) Type() schema.Type {
 			return nil /*TODO:typelit*/
 		}
 	`, w, gk)
@@ -54,7 +54,7 @@ func (gk generateKindStruct) EmitTypedNodeMethodType(w io.Writer) {
 
 func (gk generateKindStruct) EmitNodeMethodReprKind(w io.Writer) {
 	doTemplate(`
-		func ({{ .Type.Name }}) ReprKind() ipld.ReprKind {
+		func ({{ .Type | mungeTypeNodeIdent }}) ReprKind() ipld.ReprKind {
 			return ipld.ReprKind_Map
 		}
 	`, w, gk)
@@ -62,7 +62,7 @@ func (gk generateKindStruct) EmitNodeMethodReprKind(w io.Writer) {
 
 func (gk generateKindStruct) EmitNodeMethodLookupString(w io.Writer) {
 	doTemplate(`
-		func (x {{ .Type.Name }}) LookupString(key string) (ipld.Node, error) {
+		func (x {{ .Type | mungeTypeNodeIdent }}) LookupString(key string) (ipld.Node, error) {
 			switch key {
 			{{- range $field := .Type.Fields }}
 			case "{{ $field.Name }}":
@@ -97,7 +97,7 @@ func (gk generateKindStruct) EmitNodeMethodLookupString(w io.Writer) {
 
 func (gk generateKindStruct) EmitNodeMethodLookup(w io.Writer) {
 	doTemplate(`
-		func (x {{ .Type.Name }}) Lookup(key ipld.Node) (ipld.Node, error) {
+		func (x {{ .Type | mungeTypeNodeIdent }}) Lookup(key ipld.Node) (ipld.Node, error) {
 			ks, err := key.AsString()
 			if err != nil {
 				return nil, ipld.ErrInvalidKey{"got " + key.ReprKind().String() + ", need string"}
@@ -109,12 +109,12 @@ func (gk generateKindStruct) EmitNodeMethodLookup(w io.Writer) {
 
 func (gk generateKindStruct) EmitNodeMethodMapIterator(w io.Writer) {
 	doTemplate(`
-		func (x {{ .Type.Name }}) MapIterator() ipld.MapIterator {
+		func (x {{ .Type | mungeTypeNodeIdent }}) MapIterator() ipld.MapIterator {
 			return &_{{ .Type.Name }}__itr{&x, 0}
 		}
 
 		type _{{ .Type.Name }}__itr struct {
-			node *{{ .Type.Name }}
+			node *{{ .Type | mungeTypeNodeIdent }}
 			idx  int
 		}
 
@@ -163,7 +163,7 @@ func (gk generateKindStruct) EmitNodeMethodMapIterator(w io.Writer) {
 
 func (gk generateKindStruct) EmitNodeMethodLength(w io.Writer) {
 	doTemplate(`
-		func ({{ .Type.Name }}) Length() int {
+		func ({{ .Type | mungeTypeNodeIdent }}) Length() int {
 			return {{ len .Type.Fields }}
 		}
 	`, w, gk)
@@ -171,8 +171,8 @@ func (gk generateKindStruct) EmitNodeMethodLength(w io.Writer) {
 
 func (gk generateKindStruct) EmitTypedNodeMethodRepresentation(w io.Writer) {
 	doTemplate(`
-		func (n {{ .Type.Name }}) Representation() ipld.Node {
-			return  _{{ .Type.Name }}__Repr{&n}
+		func (n {{ .Type | mungeTypeNodeIdent }}) Representation() ipld.Node {
+			return {{ .Type | mungeTypeReprNodeIdent }}{&n}
 		}
 	`, w, gk)
 }

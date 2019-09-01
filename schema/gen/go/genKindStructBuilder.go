@@ -10,7 +10,7 @@ func (gk generateKindStruct) GetNodeBuilderGen() nodebuilderGenerator {
 	return generateNbKindStruct{
 		gk.Type,
 		genKindedNbRejections_Map{
-			string(gk.Type.Name()) + "__NodeBuilder",
+			mungeTypeNodebuilderIdent(gk.Type),
 			string(gk.Type.Name()) + ".Builder",
 		},
 	}
@@ -18,8 +18,8 @@ func (gk generateKindStruct) GetNodeBuilderGen() nodebuilderGenerator {
 
 func (gk generateKindStruct) EmitNodeMethodNodeBuilder(w io.Writer) {
 	doTemplate(`
-		func ({{ .Type.Name }}) NodeBuilder() ipld.NodeBuilder {
-			return {{ .Type.Name }}__NodeBuilder{}
+		func ({{ .Type | mungeTypeNodeIdent }}) NodeBuilder() ipld.NodeBuilder {
+			return {{ .Type | mungeTypeNodebuilderIdent }}{}
 		}
 	`, w, gk)
 }
@@ -31,7 +31,7 @@ type generateNbKindStruct struct {
 
 func (gk generateNbKindStruct) EmitNodebuilderType(w io.Writer) {
 	doTemplate(`
-		type {{ .Type.Name }}__NodeBuilder struct{}
+		type {{ .Type | mungeTypeNodebuilderIdent }} struct{}
 
 	`, w, gk)
 }
@@ -51,8 +51,8 @@ func (gk generateNbKindStruct) EmitNodebuilderMethodCreateMap(w io.Writer) {
 	//       because it gets wedged in with other logic tables around optionality.
 	// REVIEW: 'x, ok := v.({{ $field.Type.Name }})' might need some stars in it... sometimes.
 	doTemplate(`
-		func (nb {{ .Type.Name }}__NodeBuilder) CreateMap() (ipld.MapBuilder, error) {
-			return &{{ .Type.Name }}__MapBuilder{v:&{{ .Type.Name }}{}}, nil
+		func (nb {{ .Type | mungeTypeNodebuilderIdent }}) CreateMap() (ipld.MapBuilder, error) {
+			return &{{ .Type.Name }}__MapBuilder{v:&{{ .Type | mungeTypeNodeIdent }}{}}, nil
 		}
 
 		type {{ .Type.Name }}__MapBuilder struct{
@@ -135,7 +135,7 @@ func (gk generateNbKindStruct) EmitNodebuilderMethodCreateMap(w io.Writer) {
 
 func (gk generateNbKindStruct) EmitNodebuilderMethodAmendMap(w io.Writer) {
 	doTemplate(`
-		func (nb {{ .Type.Name }}__NodeBuilder) AmendMap() (ipld.MapBuilder, error) {
+		func (nb {{ .Type | mungeTypeNodebuilderIdent }}) AmendMap() (ipld.MapBuilder, error) {
 			panic("TODO later")
 		}
 	`, w, gk)
