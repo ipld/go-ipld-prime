@@ -1,9 +1,12 @@
 package whee
 
 import (
+	"bytes"
 	"testing"
 
+	"github.com/polydawn/refmt/json"
 	"github.com/polydawn/refmt/tok"
+
 	. "github.com/warpfork/go-wish"
 
 	ipld "github.com/ipld/go-ipld-prime"
@@ -274,10 +277,6 @@ func TestGeneratedStructs(t *testing.T) {
 	})
 }
 
-/*
-soon...
-
-
 func TestStructUnmarshal(t *testing.T) {
 	t.Run("stroct", func(t *testing.T) {
 		t.Run("all fields set", func(t *testing.T) {
@@ -291,9 +290,27 @@ func TestStructUnmarshal(t *testing.T) {
 			}}
 			nb := Stroct__NodeBuilder()
 			n, err := encoding.Unmarshal(nb, tb)
-			// ... asserts ...
+
+			Require(t, err, ShouldEqual, nil)
+			Wish(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
+			Wish(t, plz(n.LookupString("f1")), ShouldEqual, plz(String__NodeBuilder().CreateString("a")))
+			Wish(t, plz(n.LookupString("f2")), ShouldEqual, plz(String__NodeBuilder().CreateString("b")))
+			Wish(t, plz(n.LookupString("f3")), ShouldEqual, plz(String__NodeBuilder().CreateString("c")))
+			Wish(t, plz(n.LookupString("f4")), ShouldEqual, plz(String__NodeBuilder().CreateString("d")))
 		})
 	})
 }
 
-*/
+func BenchmarkStructUnmarshal(b *testing.B) {
+	bs := []byte(`{"f1":"a","f2":"b","f3":"c","f4":"d"}`)
+	for i := 0; i < b.N; i++ {
+		nb := Stroct__NodeBuilder()
+		n, err := encoding.Unmarshal(nb, json.NewDecoder(bytes.NewReader(bs)))
+		if err != nil {
+			panic(err)
+		}
+		sink = n
+	}
+}
+
+var sink interface{}

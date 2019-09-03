@@ -54,20 +54,6 @@ type NodeBuilder interface {
 	CreateString(string) (Node, error)
 	CreateBytes([]byte) (Node, error)
 	CreateLink(Link) (Node, error)
-
-	//ForField(string) NodeBuilder // works on maps (degenerately) and structs and (overloaded name) unions
-	//ForValues() NodeBuilder      // works on maps, lists, enums, *not* structs and *not* unions
-	//ForKeys() NodeBuilder        // works on maps
-
-	// need an ChildrenAreDiscriminated bool for whether to use per-field or all-values on maps.
-	// unmarshalling will only ever know it has a NodeBuilder and it has map tokens coming in.
-	//
-	// ... what do structs of string repr do?
-	//   nbd, must've already been picked.
-	//
-	// ... can we just assume everything is discriminated?  what's the perf cost?
-	//   one func call with a constant return, in the unhappy path.
-	//    main question is whether the compiler can optimize that (and the boxing) out correctly.
 }
 
 // MapBuilder is an interface for creating new Node instances of kind map.
@@ -81,12 +67,43 @@ type NodeBuilder interface {
 //
 // Insertion methods error if the key already exists.
 //
+// The BuilderForKeys and BuilderForValue functions return NodeBuilders
+// that can be used to produce values for insertion.
+// If you already have the data you're inserting, you can use those Nodes;
+// if you don't, use these builders.
+// (This is particularly relevant for typed nodes and bind nodes, since those
+// have internal specializations, and not all NodeBuilders for them are equal.)
+// Note that BuilderForValue requires a key as a parameter!
+// This is because typed nodes which are structs may return different builders
+// per field, specific to the field's type.
+//
 // You may be interested in the fluent package's fluent.MapBuilder equivalent
 // for common usage with less error-handling boilerplate requirements.
 type MapBuilder interface {
 	Insert(k, v Node) error
 	Delete(k Node) error
 	Build() (Node, error)
+
+	BuilderForKeys() NodeBuilder
+	BuilderForValue(k string) NodeBuilder
+
+	// FIXME we might need a way to reject invalid 'k' for BuilderForValue.
+	//  We certainly can't wait until the insert, because we need the value builder before that (duh!).
+	//  However, you probably should've applied the BuilderForKeys to the key value already,
+	//   and that should've told you about most errors...?
+	//   Hrm.  Not sure if we wanna rely on this.
+	//  Panic?  or return an error, and be sad about breaking chaining of calls?  or return a curried-error thunk?
+	//  Or can we shift all the responsibility to BuilderForKeys after all (with panic as 'unreachable' fallback)?
+	//
+	// - for maps with typed keys that have constraints, the rejection should've come from the key builder.  fine.
+	//   - builderForValue also doesn't need to vary at all in this case; you could've given an empty 'k' and cached that one.
+	//     - though note we haven't exposed a way to *detect* that yet (and it's questioned whether we should until more profiling/optimization info comes in).
+	// - for structs, the rejection *could* come from the key builder, but we haven't decided if that's required or not.
+	//   - requiring a builder for keys that whitelists the valid keys but still returns plain string nodes is viable...
+	//     - but a little odd looking, since the returned thing is going to be a plain untyped string kind node.
+	//       - in other words, the type wouldn't carry info about the constraints it has passed through; not wrong, but perhaps a design smell.
+	//     - for codegen'd impls, this would be compiled into a string switch and be pretty cheap.  viable.
+	//     - for runtime-wrapper typed.Node impls... still viable, but a little heavier.
 }
 
 // ListBuilder is an interface for creating new Node instances of kind list.
@@ -105,7 +122,7 @@ type MapBuilder interface {
 // If you already have the data you're inserting, you can use those Nodes;
 // if you don't, use these builders.
 // (This is particularly relevant for typed nodes and bind nodes, since those
-// have internal specializations, and not at NodeBuilders for them are equal.)
+// have internal specializations, and not all NodeBuilders for them are equal.)
 // Note that BuilderForValue requires an index as a parameter!
 // In most cases, this is not relevant and the method returns a constant NodeBuilder;
 // however, typed nodes which are structs and have list representations may
@@ -118,6 +135,12 @@ type ListBuilder interface {
 	Append(v Node) error
 	Set(idx int, v Node) error
 	Build() (Node, error)
+
+	BuilderForValue(idx int) NodeBuilder
+
+	// FIXME the question about rejection of invalid idx applies here as well,
+	//  for all the same reasons it came up for BuilderForValue on maps:
+	//   structs with tuple representation provoke all the exact same issues.
 }
 
 // future: add AppendIterator() methods (when we've implemented iterators!)

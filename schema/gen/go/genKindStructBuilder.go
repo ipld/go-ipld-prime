@@ -58,6 +58,8 @@ func (gk generateNbKindStruct) EmitNodebuilderMethodCreateMap(w io.Writer) {
 	//     for non-optional fields, and that often gets a little hard to follow
 	//       because it gets wedged in with other logic tables around optionality.
 	// REVIEW: 'x, ok := v.({{ $field.Type.Name }})' might need some stars in it... sometimes.
+	// TODO : review the panic of `ErrNoSuchField` in `BuilderForValue` --
+	//  see the comments in the NodeBuilder interface for the open questions on this topic.
 	doTemplate(`
 		func (nb {{ .Type | mungeTypeNodebuilderIdent }}) CreateMap() (ipld.MapBuilder, error) {
 			return &{{ .Type | mungeTypeNodeMapBuilderIdent }}{v:&{{ .Type | mungeTypeNodeIdent }}{}}, nil
@@ -136,6 +138,20 @@ func (gk generateNbKindStruct) EmitNodebuilderMethodCreateMap(w io.Writer) {
 			v := mb.v
 			mb = nil
 			return v, nil
+		}
+		func (mb *{{ .Type | mungeTypeNodeMapBuilderIdent }}) BuilderForKeys() ipld.NodeBuilder {
+			return _String__NodeBuilder{}
+		}
+		func (mb *{{ .Type | mungeTypeNodeMapBuilderIdent }}) BuilderForValue(ks string) ipld.NodeBuilder {
+			switch ks {
+			{{- range $field := .Type.Fields }}
+			case "{{ $field.Name }}":
+				return {{ $field.Type | mungeNodebuilderConstructorIdent }}()
+			{{- end}}
+			default:
+				panic(typed.ErrNoSuchField{Type: nil /*TODO:typelit*/, FieldName: ks})
+			}
+			return nil
 		}
 
 	`, w, gk)

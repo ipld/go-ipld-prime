@@ -105,6 +105,12 @@ func (mb *mapBuilder) Build() (ipld.Node, error) {
 	mb = nil
 	return &v, nil
 }
+func (mapBuilder) BuilderForKeys() ipld.NodeBuilder {
+	return justStringNodeBuilder{}
+}
+func (mapBuilder) BuilderForValue(_ string) ipld.NodeBuilder {
+	return nodeBuilder{}
+}
 
 type listBuilder struct {
 	n Node // a wip node; initialized at construction.
@@ -131,6 +137,9 @@ func (lb *listBuilder) Build() (ipld.Node, error) {
 	v := lb.n
 	lb = nil
 	return &v, nil
+}
+func (listBuilder) BuilderForValue(_ int) ipld.NodeBuilder {
+	return nodeBuilder{}
 }
 
 func growList(l *[]ipld.Node, k int) {
