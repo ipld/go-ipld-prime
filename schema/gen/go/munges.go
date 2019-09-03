@@ -52,5 +52,5 @@ func mungeNodebuilderConstructorIdent(t schema.Type) string {
 }
 
 func mungeReprNodebuilderConstructorIdent(t schema.Type) string {
-	return string(t.Name()) + "__ReprNodeBuilder"
+	return string(t.Name()) + "__ReprBuilder"
 }

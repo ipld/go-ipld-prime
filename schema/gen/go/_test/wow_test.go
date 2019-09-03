@@ -208,14 +208,66 @@ func TestGeneratedStructs(t *testing.T) {
 		})
 		t.Run("representation build", func(t *testing.T) {
 			t.Run("all fields set", func(t *testing.T) {
+				mb, err := Stroct__ReprBuilder().CreateMap()
+				Require(t, err, ShouldEqual, nil)
+				mb.Insert(ipldfree.String("f1"), plz(String__NodeBuilder().CreateString("a")))
+				mb.Insert(ipldfree.String("f2"), plz(String__NodeBuilder().CreateString("b")))
+				mb.Insert(ipldfree.String("f3"), plz(String__NodeBuilder().CreateString("c")))
+				mb.Insert(ipldfree.String("f4"), plz(String__NodeBuilder().CreateString("d")))
+				n, err := mb.Build()
+
+				Wish(t, err, ShouldEqual, nil)
+				Wish(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
+				Wish(t, n, ShouldEqual, v0)
 			})
 			t.Run("using null nullable", func(t *testing.T) {
+				mb, err := Stroct__ReprBuilder().CreateMap()
+				Require(t, err, ShouldEqual, nil)
+				mb.Insert(ipldfree.String("f1"), plz(String__NodeBuilder().CreateString("a")))
+				mb.Insert(ipldfree.String("f2"), plz(String__NodeBuilder().CreateString("b")))
+				mb.Insert(ipldfree.String("f3"), plz(String__NodeBuilder().CreateString("c")))
+				mb.Insert(ipldfree.String("f4"), ipld.Null)
+				n, err := mb.Build()
+
+				Wish(t, err, ShouldEqual, nil)
+				Wish(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
+				Wish(t, n.Length(), ShouldEqual, 4)
+				Wish(t, n, ShouldEqual, v1)
 			})
 			t.Run("using null optional nullable", func(t *testing.T) {
+				mb, err := Stroct__ReprBuilder().CreateMap()
+				Require(t, err, ShouldEqual, nil)
+				mb.Insert(ipldfree.String("f1"), plz(String__NodeBuilder().CreateString("a")))
+				mb.Insert(ipldfree.String("f2"), plz(String__NodeBuilder().CreateString("b")))
+				mb.Insert(ipldfree.String("f3"), ipld.Null)
+				mb.Insert(ipldfree.String("f4"), plz(String__NodeBuilder().CreateString("d")))
+				n, err := mb.Build()
+
+				Wish(t, err, ShouldEqual, nil)
+				Wish(t, n, ShouldEqual, v2)
 			})
 			t.Run("using skipped optional", func(t *testing.T) {
+				mb, err := Stroct__ReprBuilder().CreateMap()
+				Require(t, err, ShouldEqual, nil)
+				mb.Insert(ipldfree.String("f1"), plz(String__NodeBuilder().CreateString("a")))
+				mb.Insert(ipldfree.String("f3"), plz(String__NodeBuilder().CreateString("c")))
+				mb.Insert(ipldfree.String("f4"), plz(String__NodeBuilder().CreateString("d")))
+				n, err := mb.Build()
+
+				Wish(t, err, ShouldEqual, nil)
+				Wish(t, n, ShouldEqual, v3)
 			})
 			t.Run("using skipped optional nullable", func(t *testing.T) {
+				mb, err := Stroct__ReprBuilder().CreateMap()
+				Require(t, err, ShouldEqual, nil)
+				mb.Insert(ipldfree.String("f1"), plz(String__NodeBuilder().CreateString("a")))
+				mb.Insert(ipldfree.String("f2"), plz(String__NodeBuilder().CreateString("b")))
+				mb.Insert(ipldfree.String("f4"), plz(String__NodeBuilder().CreateString("d")))
+				n, err := mb.Build()
+
+				Wish(t, err, ShouldEqual, nil)
+				Wish(t, n, ShouldEqual, v4)
+
 			})
 			// TODO will need even more cases to probe implicits
 		})
