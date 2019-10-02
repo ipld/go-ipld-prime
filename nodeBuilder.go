@@ -89,10 +89,34 @@ type MapBuilder interface {
 	Build() (Node, error)
 }
 
+// ListBuilder is an interface for creating new Node instances of kind list.
+//
+// A ListBuilder is generally obtained by getting a NodeBuilder first,
+// and then using CreateList or AmendList to begin.
+//
+// Methods mutate the builder's internal state; when done, call Build to
+// produce a new immutable Node from the internal state.
+// (After calling Build, future mutations may be rejected.)
+//
+// Methods may error when handling typed lists if non-matching types are inserted.
+//
+// The BuilderForValue function returns a NodeBuilder
+// that can be used to produce values for insertion.
+// If you already have the data you're inserting, you can use those Nodes;
+// if you don't, use these builders.
+// (This is particularly relevant for typed nodes and bind nodes, since those
+// have internal specializations, and not at NodeBuilders for them are equal.)
+// Note that BuilderForValue requires an index as a parameter!
+// In most cases, this is not relevant and the method returns a constant NodeBuilder;
+// however, typed nodes which are structs and have list representations may
+// return different builders per index, corresponding to the types of its fields.
+//
+// You may be interested in the fluent package's fluent.ListBuilder equivalent
+// for common usage with less error-handling boilerplate requirements.
 type ListBuilder interface {
-	AppendAll([]Node)
-	Append(v Node)
-	Set(idx int, v Node)
+	AppendAll([]Node) error
+	Append(v Node) error
+	Set(idx int, v Node) error
 	Build() (Node, error)
 }
 

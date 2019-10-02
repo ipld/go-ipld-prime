@@ -111,18 +111,21 @@ type listBuilder struct {
 	// whole builder object nil'd after terminal `Build()` call to prevent reuse.
 }
 
-func (lb *listBuilder) AppendAll(vs []ipld.Node) {
+func (lb *listBuilder) AppendAll(vs []ipld.Node) error {
 	off := len(lb.n._arr)
 	new := off + len(vs)
 	growList(&lb.n._arr, new-1)
 	copy(lb.n._arr[off:new], vs)
+	return nil
 }
-func (lb *listBuilder) Append(v ipld.Node) {
+func (lb *listBuilder) Append(v ipld.Node) error {
 	lb.n._arr = append(lb.n._arr, v)
+	return nil
 }
-func (lb *listBuilder) Set(idx int, v ipld.Node) {
+func (lb *listBuilder) Set(idx int, v ipld.Node) error {
 	growList(&lb.n._arr, idx)
 	lb.n._arr[idx] = v
+	return nil
 }
 func (lb *listBuilder) Build() (ipld.Node, error) {
 	v := lb.n
