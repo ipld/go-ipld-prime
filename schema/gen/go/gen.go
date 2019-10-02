@@ -71,6 +71,7 @@ type nodeGenerator interface {
 
 type nodebuilderGenerator interface {
 	EmitNodebuilderType(io.Writer)
+	EmitNodebuilderConstructor(io.Writer)
 
 	EmitNodebuilderMethodCreateMap(io.Writer)
 	EmitNodebuilderMethodAmendMap(io.Writer)

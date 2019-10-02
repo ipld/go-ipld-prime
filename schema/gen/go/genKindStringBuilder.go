@@ -10,7 +10,7 @@ func (gk generateKindString) GetNodeBuilderGen() nodebuilderGenerator {
 	return generateNbKindString{
 		gk.Type,
 		genKindedNbRejections_String{
-			string(gk.Type.Name()) + "__NodeBuilder",
+			mungeTypeNodebuilderIdent(gk.Type),
 			string(gk.Type.Name()) + ".Builder",
 		},
 	}
@@ -18,8 +18,8 @@ func (gk generateKindString) GetNodeBuilderGen() nodebuilderGenerator {
 
 func (gk generateKindString) EmitNodeMethodNodeBuilder(w io.Writer) {
 	doTemplate(`
-		func ({{ .Type.Name }}) NodeBuilder() ipld.NodeBuilder {
-			return {{ .Type.Name }}__NodeBuilder{}
+		func ({{ .Type | mungeTypeNodeIdent }}) NodeBuilder() ipld.NodeBuilder {
+			return {{ .Type | mungeTypeNodebuilderIdent }}{}
 		}
 	`, w, gk)
 }
@@ -31,14 +31,22 @@ type generateNbKindString struct {
 
 func (gk generateNbKindString) EmitNodebuilderType(w io.Writer) {
 	doTemplate(`
-		type {{ .Type.Name }}__NodeBuilder struct{}
+		type {{ .Type | mungeTypeNodebuilderIdent }} struct{}
+	`, w, gk)
+}
+
+func (gk generateNbKindString) EmitNodebuilderConstructor(w io.Writer) {
+	doTemplate(`
+		func {{ .Type | mungeNodebuilderConstructorIdent }}() ipld.NodeBuilder {
+			return {{ .Type | mungeTypeNodebuilderIdent }}{}
+		}
 	`, w, gk)
 }
 
 func (gk generateNbKindString) EmitNodebuilderMethodCreateString(w io.Writer) {
 	doTemplate(`
-		func (nb {{ .Type.Name }}__NodeBuilder) CreateString(v string) (ipld.Node, error) {
-			return {{ .Type.Name }}{v}, nil
+		func (nb {{ .Type | mungeTypeNodebuilderIdent }}) CreateString(v string) (ipld.Node, error) {
+			return {{ .Type | mungeTypeNodeIdent }}{v}, nil
 		}
 	`, w, gk)
 }
