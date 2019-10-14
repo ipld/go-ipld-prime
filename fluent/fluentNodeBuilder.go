@@ -179,10 +179,18 @@ type mapBuilder struct {
 }
 
 func (mb mapBuilder) Insert(k, v ipld.Node) {
-	mb.MapBuilder.Insert(k, v)
+	if err := mb.MapBuilder.Insert(k, v); err != nil {
+		if err != nil {
+			panic(Error{err})
+		}
+	}
 }
 func (mb mapBuilder) Delete(k ipld.Node) {
-	mb.MapBuilder.Delete(k)
+	if err := mb.MapBuilder.Delete(k); err != nil {
+		if err != nil {
+			panic(Error{err})
+		}
+	}
 }
 
 type listBuilder struct {
@@ -190,11 +198,23 @@ type listBuilder struct {
 }
 
 func (lb listBuilder) AppendAll(vs []ipld.Node) {
-	lb.ListBuilder.AppendAll(vs)
+	if err := lb.ListBuilder.AppendAll(vs); err != nil {
+		if err != nil {
+			panic(Error{err})
+		}
+	}
 }
 func (lb listBuilder) Append(v ipld.Node) {
-	lb.ListBuilder.Append(v)
+	if err := lb.ListBuilder.Append(v); err != nil {
+		if err != nil {
+			panic(Error{err})
+		}
+	}
 }
 func (lb listBuilder) Set(idx int, v ipld.Node) {
-	lb.ListBuilder.Set(idx, v)
+	if err := lb.ListBuilder.Set(idx, v); err != nil {
+		if err != nil {
+			panic(Error{err})
+		}
+	}
 }
