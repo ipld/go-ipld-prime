@@ -80,7 +80,7 @@ func (tn wrapnodeStruct) Length() int {
 }
 
 func (tn wrapnodeStruct) NodeBuilder() ipld.NodeBuilder {
-	panic("todo")
+	return wrapnodeStruct_Builder{tn.NodeBuilder(), tn.typ}
 }
 
 func (tn wrapnodeStruct) Representation() ipld.Node {
@@ -207,6 +207,18 @@ func (mb *wrapnodeStruct_MapBuilder) Build() (ipld.Node, error) {
 	return wrapnodeStruct{n, mb.typ}, nil
 }
 
-// TODO and soon the nb methods for getting child builders.
-// also those will have fun methods for handling the ability to have undefined..?
-//     no they shouldn't actually that's important -- those features really only occur in Insert methods.
+func (mb *wrapnodeStruct_MapBuilder) BuilderForKeys() ipld.NodeBuilder {
+	// Struct fields are always plain strings, so this is easy.
+	// FUTURE: we might want to have the builder immediately reject a string not in the field names enum instead of leaving that until insert?
+	//  unclear if this is necessary.  if so: one impl sufficies, just looks at TypeStruct.Field (fortunately this already computes a map internally).
+	return ipldfree.NodeBuilder() // FIXME: justStringNodeBuilder{} would be preferable but isn't exported atm.
+}
+func (mb *wrapnodeStruct_MapBuilder) BuilderForValue(k string) ipld.NodeBuilder {
+	// TODO we'll need other kinds of "wrapnode{Foo}_Builder" to finish fleshing this out.
+	_ = mb.typ.Field(k).Type().Kind() // putting together a nodebuilder from this info should be easy.
+	panic("todo: need more wrapnode builders")
+}
+
+// TODO much of this all again, but now for representations.
+// (e.g. `wrapnodeStruct_ReprMap_MapBuilder.BuilderForValue` method will do almost the same things,
+//  but will need to look up a nodebuilder from a slightly different table.)

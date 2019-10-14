@@ -77,15 +77,13 @@ func unmarshal(nb ipld.NodeBuilder, tokSrc shared.TokenSource, tk *tok.Token) (i
 				return nil, fmt.Errorf("unexpected continuation of map elements beyond declared length")
 			}
 			k = tk.Str
-			// FUTURE: check for typed.NodeBuilder; need to specialize before recursing if so.
-			// FUTURE: similar specialization needed for bind.Node as well -- perhaps this actually needs to live on NodeBuilder.
-			v, err = Unmarshal(nb, tokSrc)
+			v, err = Unmarshal(mb.BuilderForValue(k), tokSrc)
 			if err != nil {
 				return nil, err
 			}
-			kn, err := nb.CreateString(k)
+			kn, err := mb.BuilderForKeys().CreateString(k)
 			if err != nil {
-				panic(err) // TODO: I'm no longer sure Insert should take a Node instead of string, but not recursing into reviewing that choice now.
+				return nil, fmt.Errorf("value rejected as key: %s", err)
 			}
 			if err := mb.Insert(kn, v); err != nil {
 				return nil, err
@@ -102,7 +100,7 @@ func unmarshal(nb ipld.NodeBuilder, tokSrc shared.TokenSource, tk *tok.Token) (i
 		if tk.Length == -1 {
 			expectLen = math.MaxInt32
 		}
-		observedLen := 0
+		i := 0
 		for {
 			_, err := tokSrc.Step(tk)
 			if err != nil {
@@ -110,18 +108,16 @@ func unmarshal(nb ipld.NodeBuilder, tokSrc shared.TokenSource, tk *tok.Token) (i
 			}
 			switch tk.Type {
 			case tok.TArrClose:
-				if expectLen != math.MaxInt32 && observedLen != expectLen {
+				if expectLen != math.MaxInt32 && i != expectLen {
 					return nil, fmt.Errorf("unexpected arrClose before declared length")
 				}
 				return lb.Build()
 			default:
-				observedLen++
-				if observedLen > expectLen {
+				if i >= expectLen {
 					return nil, fmt.Errorf("unexpected continuation of array elements beyond declared length")
 				}
-				// FUTURE: check for typed.NodeBuilder; need to specialize before recursing if so.
-				//  N.B. when considering optionals for tuple-represented structs, keep in mind how murky that will get here.
-				v, err := unmarshal(nb, tokSrc, tk)
+				v, err := unmarshal(lb.BuilderForValue(i), tokSrc, tk)
+				i++
 				if err != nil {
 					return nil, err
 				}

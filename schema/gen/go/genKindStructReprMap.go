@@ -227,6 +227,8 @@ func (gk generateStructReprMapNb) EmitNodebuilderMethodCreateMap(w io.Writer) {
 	//         reason out the perf and usability implications in advance has
 	//          yielded a huge matrix of concerns and no single clear gradient.
 	// TODO : support for implicits is missing.
+	// TODO : review the panic of `ErrNoSuchField` in `BuilderForValue` --
+	//  see the comments in the NodeBuilder interface for the open questions on this topic.
 	doTemplate(`
 		func (nb {{ .Type | mungeTypeReprNodebuilderIdent }}) CreateMap() (ipld.MapBuilder, error) {
 			return &{{ .Type | mungeTypeReprNodeMapBuilderIdent }}{v:&{{ .Type | mungeTypeNodeIdent }}{}}, nil
@@ -306,8 +308,24 @@ func (gk generateStructReprMapNb) EmitNodebuilderMethodCreateMap(w io.Writer) {
 			mb = nil
 			return v, nil
 		}
+		func (mb *{{ .Type | mungeTypeReprNodeMapBuilderIdent }}) BuilderForKeys() ipld.NodeBuilder {
+			return _String__NodeBuilder{}
+		}
+		func (mb *{{ .Type | mungeTypeReprNodeMapBuilderIdent }}) BuilderForValue(ks string) ipld.NodeBuilder {
+			switch ks {
+			{{- $type := .Type -}} {{- /* ranging modifies dot, unhelpfully */ -}}
+			{{- range $field := .Type.Fields }}
+			case "{{ $field | $type.RepresentationStrategy.GetFieldKey }}":
+				return {{ $field.Type | mungeNodebuilderConstructorIdent }}()
+			{{- end}}
+			default:
+				panic(typed.ErrNoSuchField{Type: nil /*TODO:typelit*/, FieldName: ks})
+			}
+			return nil
+		}
 
 	`, w, gk)
+
 }
 
 func (gk generateStructReprMapNb) EmitNodebuilderMethodAmendMap(w io.Writer) {
