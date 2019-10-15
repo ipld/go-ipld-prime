@@ -73,8 +73,8 @@ type nodebuilderGenerator interface {
 	EmitNodebuilderType(io.Writer)
 	EmitNodebuilderConstructor(io.Writer)
 
-	EmitNodebuilderMethodCreateMap(io.Writer)
-	EmitNodebuilderMethodAmendMap(io.Writer)
+	EmitNodebuilderMethodCreateMap(io.Writer) // also mapbuilder itself
+	EmitNodebuilderMethodAmendMap(io.Writer)  // also listbuilder itself
 	EmitNodebuilderMethodCreateList(io.Writer)
 	EmitNodebuilderMethodAmendList(io.Writer)
 	EmitNodebuilderMethodCreateNull(io.Writer)
@@ -84,8 +84,6 @@ type nodebuilderGenerator interface {
 	EmitNodebuilderMethodCreateString(io.Writer)
 	EmitNodebuilderMethodCreateBytes(io.Writer)
 	EmitNodebuilderMethodCreateLink(io.Writer)
-
-	// TODO we'll soon also need all the child-nb-getters here too. // they're hucked in the CreateMap/CreateList methods for now.
 }
 
 func emitFileHeader(w io.Writer) {
