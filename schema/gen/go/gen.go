@@ -18,13 +18,13 @@ import (
 // 5 is emitted from another `nodeGenerator` instance.
 // 4 and 6 are emitted from two distinct `nodebuilderGenerator` instances.
 
-// you'll find a file in this package per kind
-//  (schema level kind, not data model level reprkind)...
-// sparse cross-product with their representation strategy (more or less)
-//  (it's more... idunnoyet.  hopefully we have implstrats and reprstrats,
-//   and those combine over an interface so it's not a triple cross product...
-//    and hopefully that interface is nodebuilder,
-//     because I dunno why it wouldn't be unless we goof on perf somehow).
+// file patterns in this package:
+//
+// - for each kind:
+//   - `genKind{Kind}.go` -- has emitters for the native type parts (1, 2, 7).
+//   - `genKind{Kind}Node.go` -- has emitters for the typed node parts (3, 4), and the entrypoint to (5).
+//   - for each representation that kind can have:
+//      - `genKind{Kind}Repr{ReprStrat}.go` -- has emitters for (5, 6).
 
 // typedNodeGenerator declares a standard names for a bunch of methods for generating
 // code for our schema types.  There's still numerous places where other casts
