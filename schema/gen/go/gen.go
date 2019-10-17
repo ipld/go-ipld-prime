@@ -5,6 +5,19 @@ import (
 	"io"
 )
 
+// there are roughly *seven* categories of API to generate per type:
+// - 1: the readonly thing a native caller uses
+// - 2: the builder thing a native caller uses
+// - 3: the readonly typed node
+// - 4: the builder for typed node
+// - 5: the readonly representation node
+// - 6: the builder via representation
+// - 7: and a maybe wrapper
+//
+// 1, 2, 3, and 7 are emitted from `typedNodeGenerator` (3 from the embedded `nodeGenerator`).
+// 5 is emitted from another `nodeGenerator` instance.
+// 4 and 6 are emitted from two distinct `nodebuilderGenerator` instances.
+
 // you'll find a file in this package per kind
 //  (schema level kind, not data model level reprkind)...
 // sparse cross-product with their representation strategy (more or less)
@@ -28,7 +41,15 @@ import (
 // None of these methods return error values because we panic in this package.
 //
 type typedNodeGenerator interface {
-	// wip note: hopefully imports are a constant.  if not, we'll have to curry something with the writer.
+
+	// -- the natively-typed apis -->
+	//   (might be more readable to group these in another interface and have it
+	//     return a `typedNodeGenerator` with the rest?  but structurally same.)
+
+	EmitNativeType(io.Writer)
+	EmitNativeAccessors(io.Writer) // depends on the kind -- field accessors for struct, typed iterators for map, etc.
+	EmitNativeBuilder(io.Writer)   // typically emits some kind of struct that has a Build method.
+	EmitNativeMaybe(io.Writer)     // a pointer-free 'maybe' mechanism is generated for all types.
 
 	// -- the typed.Node.Type method and vars -->
 
@@ -94,6 +115,3 @@ func emitFileHeader(w io.Writer) {
 	fmt.Fprintf(w, "\t\"github.com/ipld/go-ipld-prime/schema\"\n")
 	fmt.Fprintf(w, ")\n\n")
 }
-
-// enums will have special methods
-// maps will have special methods (namely, well typed getters

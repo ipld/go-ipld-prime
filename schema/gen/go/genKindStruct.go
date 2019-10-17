@@ -23,13 +23,10 @@ type generateKindStruct struct {
 	// FUTURE: perhaps both a global one (e.g. output package name) and a per-type one.
 }
 
-func (gk generateKindStruct) EmitNodeType(w io.Writer) {
+func (gk generateKindStruct) EmitNativeType(w io.Writer) {
 	// Observe that we get a '*' if a field is *either* nullable *or* optional;
 	//  and we get an extra bool for the second cardinality +1'er if both are true.
 	doTemplate(`
-		var _ ipld.Node = {{ .Type | mungeTypeNodeIdent }}{}
-		var _ typed.Node = {{ .Type | mungeTypeNodeIdent }}{}
-
 		type {{ .Type | mungeTypeNodeIdent }} struct{
 			{{- range $field := .Type.Fields }}
 			{{ $field.Name }} {{if or $field.IsOptional $field.IsNullable }}*{{end}}{{ $field.Type | mungeTypeNodeIdent }}
@@ -40,6 +37,70 @@ func (gk generateKindStruct) EmitNodeType(w io.Writer) {
 			{{- end}}
 			{{- end}}
 		}
+
+	`, w, gk)
+}
+
+func (gk generateKindStruct) EmitNativeAccessors(w io.Writer) {
+	doTemplate(`
+		{{- range $field := .Type.Fields -}}
+		func (x {{ .Type | mungeTypeNodeIdent }}) Field{{ $field.Name | titlize }}() {{ $field.Type | mungeTypeNodeIdent }} {
+			// TODO going to tear through here with changes to Maybe system in a moment anyway
+			return {{ $field.Type | mungeTypeNodeIdent }}{}
+		}
+		{{end}}
+
+	`, w, gk)
+}
+
+func (gk generateKindStruct) EmitNativeBuilder(w io.Writer) {
+	doTemplate(`
+		type {{ .Type | mungeTypeNodeIdent }}__Content struct {
+			{{- range $field := .Type.Fields }}
+			// TODO
+			{{- end}}
+		}
+
+		func (b {{ .Type | mungeTypeNodeIdent }}__Content) Build() ({{ .Type | mungeTypeNodeIdent }}, error) {
+			x := {{ .Type | mungeTypeNodeIdent }}{
+				// TODO
+			}
+			// FUTURE : want to support customizable validation.
+			//   but 'if v, ok := x.(schema.Validatable); ok {' doesn't fly: need a way to work on concrete types.
+			return x, nil
+		}
+		func (b {{ .Type | mungeTypeNodeIdent }}__Content) MustBuild() {{ .Type | mungeTypeNodeIdent }} {
+			if x, err := b.Build(); err != nil {
+				panic(err)
+			} else {
+				return x
+			}
+		}
+
+	`, w, gk)
+}
+
+func (gk generateKindStruct) EmitNativeMaybe(w io.Writer) {
+	doTemplate(`
+		type Maybe{{ .Type | mungeTypeNodeIdent }} struct {
+			Maybe typed.Maybe
+			Value {{ .Type | mungeTypeNodeIdent }}
+		}
+
+		func (m Maybe{{ .Type | mungeTypeNodeIdent }}) Must() {{ .Type | mungeTypeNodeIdent }} {
+			if m.Maybe != typed.Maybe_Value {
+				panic("unbox of a maybe rejected")
+			}
+			return m.Value
+		}
+
+	`, w, gk)
+}
+
+func (gk generateKindStruct) EmitNodeType(w io.Writer) {
+	doTemplate(`
+		var _ ipld.Node = {{ .Type | mungeTypeNodeIdent }}{}
+		var _ typed.Node = {{ .Type | mungeTypeNodeIdent }}{}
 
 	`, w, gk)
 }
