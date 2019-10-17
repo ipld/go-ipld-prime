@@ -38,26 +38,20 @@ func (gk generateKindStruct) EmitNodeMethodLookupString(w io.Writer) {
 			switch key {
 			{{- range $field := .Type.Fields }}
 			case "{{ $field.Name }}":
-				{{- if and $field.IsOptional $field.IsNullable }}
-				if !x.{{ $field.Name }}__exists {
+				{{- if $field.IsOptional }}
+				if x.d.{{ $field.Name | titlize }}.Maybe == typed.Maybe_Absent {
 					return ipld.Undef, nil
 				}
-				if x.{{ $field.Name }} == nil {
-					return ipld.Null, nil
-				}
-				{{- else if $field.IsOptional }}
-				if x.{{ $field.Name }} == nil {
-					return ipld.Undef, nil
-				}
-				{{- else if $field.IsNullable }}
-				if x.{{ $field.Name }} == nil {
+				{{- end}}
+				{{- if $field.IsNullable }}
+				if x.d.{{ $field.Name | titlize }}.Maybe == typed.Maybe_Null {
 					return ipld.Null, nil
 				}
 				{{- end}}
 				{{- if or $field.IsOptional $field.IsNullable }}
-				return *x.{{ $field.Name }}, nil
+				return x.d.{{ $field.Name | titlize}}.Value, nil
 				{{- else}}
-				return x.{{ $field.Name }}, nil
+				return x.d.{{ $field.Name | titlize}}, nil
 				{{- end}}
 			{{- end}}
 			default:
@@ -80,6 +74,8 @@ func (gk generateKindStruct) EmitNodeMethodLookup(w io.Writer) {
 }
 
 func (gk generateKindStruct) EmitNodeMethodMapIterator(w io.Writer) {
+	// Note that the typed iterator will report absent fields.
+	//  The representation iterator, if maplike, will not.
 	doTemplate(`
 		func (x {{ .Type | mungeTypeNodeIdent }}) MapIterator() ipld.MapIterator {
 			return &{{ .Type | mungeTypeNodeItrIdent }}{&x, 0}
@@ -98,27 +94,23 @@ func (gk generateKindStruct) EmitNodeMethodMapIterator(w io.Writer) {
 			{{- range $i, $field := .Type.Fields }}
 			case {{ $i }}:
 				k = String{"{{ $field.Name }}"}
-				{{- if and $field.IsOptional $field.IsNullable }}
-				if !itr.node.{{ $field.Name }}__exists {
+				{{- if $field.IsOptional }}
+				if itr.node.d.{{ $field.Name | titlize  }}.Maybe == typed.Maybe_Absent {
 					v = ipld.Undef
 					break
 				}
-				if itr.node.{{ $field.Name }} == nil {
-					v = ipld.Null
-					break
-				}
-				{{- else if $field.IsOptional }}
-				if itr.node.{{ $field.Name }} == nil {
-					v = ipld.Undef
-					break
-				}
-				{{- else if $field.IsNullable }}
-				if itr.node.{{ $field.Name }} == nil {
+				{{- end}}
+				{{- if $field.IsNullable }}
+				if itr.node.d.{{ $field.Name | titlize }}.Maybe == typed.Maybe_Null {
 					v = ipld.Null
 					break
 				}
 				{{- end}}
-				v = itr.node.{{ $field.Name }}
+				{{- if or $field.IsOptional $field.IsNullable }}
+				v = itr.node.d.{{ $field.Name | titlize}}.Value
+				{{- else}}
+				v = itr.node.d.{{ $field.Name | titlize}}
+				{{- end}}
 			{{- end}}
 			default:
 				panic("unreachable")
@@ -195,11 +187,18 @@ func (gk generateNbKindStruct) EmitNodebuilderMethodCreateMap(w io.Writer) {
 	//     for non-optional fields, and that often gets a little hard to follow
 	//       because it gets wedged in with other logic tables around optionality.
 	// REVIEW: 'x, ok := v.({{ $field.Type.Name }})' might need some stars in it... sometimes.
+	// FIXME : since the typed iterator yields undefineds, this should probably also accept them...?
 	// TODO : review the panic of `ErrNoSuchField` in `BuilderForValue` --
 	//  see the comments in the NodeBuilder interface for the open questions on this topic.
 	doTemplate(`
 		func (nb {{ .Type | mungeTypeNodebuilderIdent }}) CreateMap() (ipld.MapBuilder, error) {
-			return &{{ .Type | mungeTypeNodeMapBuilderIdent }}{v:&{{ .Type | mungeTypeNodeIdent }}{}}, nil
+			mb := &{{ .Type | mungeTypeNodeMapBuilderIdent }}{v:&{{ .Type | mungeTypeNodeIdent }}{}}
+			{{- range $field := .Type.Fields }}
+			{{- if $field.IsOptional }}
+			mb.v.d.{{ $field.Name | titlize }}.Maybe = typed.Maybe_Absent
+			{{- end}}
+			{{- end}}
+			return mb, nil
 		}
 
 		type {{ .Type | mungeTypeNodeMapBuilderIdent }} struct{
@@ -222,10 +221,8 @@ func (gk generateNbKindStruct) EmitNodebuilderMethodCreateMap(w io.Writer) {
 			case "{{ $field.Name }}":
 				{{- if $field.IsNullable }}
 				if v.IsNull() {
-					mb.v.{{ $field.Name }} = nil
-					{{- if $field.IsOptional }}
-					mb.v.{{ $field.Name }}__exists = true
-					{{- else}}
+					mb.v.d.{{ $field.Name | titlize}}.Maybe = typed.Maybe_Null
+					{{- if not $field.IsOptional }}
 					mb.{{ $field.Name }}__isset = true
 					{{- end}}
 					return nil
@@ -245,13 +242,13 @@ func (gk generateNbKindStruct) EmitNodebuilderMethodCreateMap(w io.Writer) {
 				}
 
 				{{- if or $field.IsOptional $field.IsNullable }}
-				mb.v.{{ $field.Name }} = &x
+				mb.v.d.{{ $field.Name | titlize}}.Value = x
 				{{- else}}
-				mb.v.{{ $field.Name }} = x
+				mb.v.d.{{ $field.Name | titlize}} = x
 				{{- end}}
-				{{- if and $field.IsOptional $field.IsNullable }}
-				mb.v.{{ $field.Name }}__exists = true
-				{{- else if not $field.IsOptional }}
+				{{- if $field.IsOptional }}
+				mb.v.d.{{ $field.Name | titlize}}.Maybe = typed.Maybe_Value
+				{{- else}}
 				mb.{{ $field.Name }}__isset = true
 				{{- end}}
 			{{- end}}
