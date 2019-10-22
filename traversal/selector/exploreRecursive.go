@@ -34,7 +34,8 @@ import (
 type ExploreRecursive struct {
 	sequence Selector // selector for element we're interested in
 	current  Selector // selector to apply to the current node
-	maxDepth int
+	depth    int
+	hasDepth bool
 }
 
 // Interests for ExploreRecursive is empty (meaning traverse everything)
@@ -45,17 +46,22 @@ func (s ExploreRecursive) Interests() []ipld.PathSegment {
 // Explore returns the node's selector for all fields
 func (s ExploreRecursive) Explore(n ipld.Node, p ipld.PathSegment) Selector {
 	nextSelector := s.current.Explore(n, p)
-	maxDepth := s.maxDepth
+	depth := s.depth
+	hasDepth := s.hasDepth
+
 	if nextSelector == nil {
 		return nil
 	}
 	if !s.hasRecursiveEdge(nextSelector) {
-		return ExploreRecursive{s.sequence, nextSelector, maxDepth}
+		return ExploreRecursive{s.sequence, nextSelector, depth, hasDepth}
 	}
-	if maxDepth < 2 {
-		return s.replaceRecursiveEdge(nextSelector, nil)
+	if hasDepth {
+		if depth < 2 {
+			return s.replaceRecursiveEdge(nextSelector, nil)
+		}
+		return ExploreRecursive{s.sequence, s.replaceRecursiveEdge(nextSelector, s.sequence), s.depth - 1, true}
 	}
-	return ExploreRecursive{s.sequence, s.replaceRecursiveEdge(nextSelector, s.sequence), s.maxDepth - 1}
+	return ExploreRecursive{s.sequence, s.replaceRecursiveEdge(nextSelector, s.sequence), 0, false}
 }
 
 func (s ExploreRecursive) hasRecursiveEdge(nextSelector Selector) bool {
@@ -122,13 +128,13 @@ func (pc ParseContext) ParseExploreRecursive(n ipld.Node) (Selector, error) {
 		return nil, fmt.Errorf("selector spec parse rejected: selector body must be a map")
 	}
 
-	maxDepthNode, err := n.LookupString(SelectorKey_MaxDepth)
+	limitNode, err := n.LookupString(SelectorKey_Limit)
 	if err != nil {
-		return nil, fmt.Errorf("selector spec parse rejected: maxDepth field must be present in ExploreRecursive selector")
+		return nil, fmt.Errorf("selector spec parse rejected: limit field must be present in ExploreRecursive selector")
 	}
-	maxDepthValue, err := maxDepthNode.AsInt()
+	maxDepthValue, hasDepth, err := parseLimit(limitNode)
 	if err != nil {
-		return nil, fmt.Errorf("selector spec parse rejected: maxDepth field must be a number in ExploreRecursive selector")
+		return nil, err
 	}
 	sequence, err := n.LookupString(SelectorKey_Sequence)
 	if err != nil {
@@ -142,5 +148,28 @@ func (pc ParseContext) ParseExploreRecursive(n ipld.Node) (Selector, error) {
 	if erc.edgesFound == 0 {
 		return nil, fmt.Errorf("selector spec parse rejected: ExploreRecursive must have at least one ExploreRecursiveEdge")
 	}
-	return ExploreRecursive{selector, selector, maxDepthValue}, nil
+	return ExploreRecursive{selector, selector, maxDepthValue, hasDepth}, nil
+}
+
+func parseLimit(n ipld.Node) (int, bool, error) {
+	if n.ReprKind() != ipld.ReprKind_Map {
+		return 0, false, fmt.Errorf("selector spec parse rejected: limit in ExploreRecursive is a keyed union and thus must be a map")
+	}
+	if n.Length() != 1 {
+		return 0, false, fmt.Errorf("selector spec parse rejected: limit in ExploreRecursive is a keyed union and thus must be a single-entry map")
+	}
+	kn, v, _ := n.MapIterator().Next()
+	kstr, _ := kn.AsString()
+	switch kstr {
+	case SelectorKey_LimitDepth:
+		maxDepthValue, err := v.AsInt()
+		if err != nil {
+			return 0, false, fmt.Errorf("selector spec parse rejected: limit field of type depth must be a number in ExploreRecursive selector")
+		}
+		return maxDepthValue, true, nil
+	case SelectorKey_LimitNone:
+		return 0, false, nil
+	default:
+		return 0, false, fmt.Errorf("selector spec parse rejected: %q is not a known member of the limit union in ExploreRecursive", kstr)
+	}
 }

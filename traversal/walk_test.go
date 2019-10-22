@@ -113,7 +113,7 @@ func TestWalkMatching(t *testing.T) {
 		Wish(t, order, ShouldEqual, 2)
 	})
 	t.Run("traversing across nodes should work", func(t *testing.T) {
-		ss := ssb.ExploreRecursive(3, ssb.ExploreUnion(
+		ss := ssb.ExploreRecursive(3, true, ssb.ExploreUnion(
 			ssb.Matcher(),
 			ssb.ExploreAll(ssb.ExploreRecursiveEdge()),
 		))
@@ -195,7 +195,7 @@ func TestWalkMatching(t *testing.T) {
 	t.Run("multiple layers of link traversal should work", func(t *testing.T) {
 		ss := ssb.ExploreFields(func(efsb builder.ExploreFieldsSpecBuilder) {
 			efsb.Insert("linkedList", ssb.ExploreAll(ssb.Matcher()))
-			efsb.Insert("linkedMap", ssb.ExploreRecursive(3, ssb.ExploreFields(func(efsb builder.ExploreFieldsSpecBuilder) {
+			efsb.Insert("linkedMap", ssb.ExploreRecursive(3, true, ssb.ExploreFields(func(efsb builder.ExploreFieldsSpecBuilder) {
 				efsb.Insert("foo", ssb.Matcher())
 				efsb.Insert("nonlink", ssb.Matcher())
 				efsb.Insert("alink", ssb.Matcher())

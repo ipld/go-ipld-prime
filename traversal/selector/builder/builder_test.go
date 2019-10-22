@@ -64,10 +64,28 @@ func TestBuildingSelectors(t *testing.T) {
 		Wish(t, sn, ShouldEqual, esn)
 	})
 	t.Run("ExploreRecursive builds ExploreRecursive nodes", func(t *testing.T) {
-		sn := ssb.ExploreRecursive(2, ssb.ExploreAll(ssb.ExploreRecursiveEdge())).Node()
+		sn := ssb.ExploreRecursive(2, true, ssb.ExploreAll(ssb.ExploreRecursiveEdge())).Node()
 		esn := fnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
 			mb.Insert(knb.CreateString(selector.SelectorKey_ExploreRecursive), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-				mb.Insert(knb.CreateString(selector.SelectorKey_MaxDepth), vnb.CreateInt(2))
+				mb.Insert(knb.CreateString(selector.SelectorKey_Limit), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
+					mb.Insert(knb.CreateString(selector.SelectorKey_LimitDepth), vnb.CreateInt(2))
+				}))
+				mb.Insert(knb.CreateString(selector.SelectorKey_Sequence), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
+					mb.Insert(knb.CreateString(selector.SelectorKey_ExploreAll), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
+						mb.Insert(knb.CreateString(selector.SelectorKey_Next), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
+							mb.Insert(knb.CreateString(selector.SelectorKey_ExploreRecursiveEdge), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {}))
+						}))
+					}))
+				}))
+			}))
+		})
+		Wish(t, sn, ShouldEqual, esn)
+		sn = ssb.ExploreRecursive(0, false, ssb.ExploreAll(ssb.ExploreRecursiveEdge())).Node()
+		esn = fnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
+			mb.Insert(knb.CreateString(selector.SelectorKey_ExploreRecursive), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
+				mb.Insert(knb.CreateString(selector.SelectorKey_Limit), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
+					mb.Insert(knb.CreateString(selector.SelectorKey_LimitNone), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {}))
+				}))
 				mb.Insert(knb.CreateString(selector.SelectorKey_Sequence), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
 					mb.Insert(knb.CreateString(selector.SelectorKey_ExploreAll), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
 						mb.Insert(knb.CreateString(selector.SelectorKey_Next), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
