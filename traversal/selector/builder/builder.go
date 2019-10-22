@@ -24,7 +24,7 @@ type SelectorSpec interface {
 // of naming, if not structure
 type SelectorSpecBuilder interface {
 	ExploreRecursiveEdge() SelectorSpec
-	ExploreRecursive(maxDepth int, sequence SelectorSpec) SelectorSpec
+	ExploreRecursive(limit selector.RecursionLimit, sequence SelectorSpec) SelectorSpec
 	ExploreUnion(...SelectorSpec) SelectorSpec
 	ExploreAll(next SelectorSpec) SelectorSpec
 	ExploreIndex(index int, next SelectorSpec) SelectorSpec
@@ -75,11 +75,20 @@ func (ssb *selectorSpecBuilder) ExploreRecursiveEdge() SelectorSpec {
 	}
 }
 
-func (ssb *selectorSpecBuilder) ExploreRecursive(maxDepth int, sequence SelectorSpec) SelectorSpec {
+func (ssb *selectorSpecBuilder) ExploreRecursive(limit selector.RecursionLimit, sequence SelectorSpec) SelectorSpec {
 	return selectorSpec{
 		ssb.fnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
 			mb.Insert(knb.CreateString(selector.SelectorKey_ExploreRecursive), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-				mb.Insert(knb.CreateString(selector.SelectorKey_MaxDepth), vnb.CreateInt(maxDepth))
+				mb.Insert(knb.CreateString(selector.SelectorKey_Limit), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
+					switch limit.Mode() {
+					case selector.RecursionLimit_Depth:
+						mb.Insert(knb.CreateString(selector.SelectorKey_LimitDepth), vnb.CreateInt(limit.Depth()))
+					case selector.RecursionLimit_None:
+						mb.Insert(knb.CreateString(selector.SelectorKey_LimitNone), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {}))
+					default:
+						panic("Unsupported recursion limit type")
+					}
+				}))
 				mb.Insert(knb.CreateString(selector.SelectorKey_Sequence), sequence.Node())
 			}))
 		}),
