@@ -64,7 +64,7 @@ func TestBuildingSelectors(t *testing.T) {
 		Wish(t, sn, ShouldEqual, esn)
 	})
 	t.Run("ExploreRecursive builds ExploreRecursive nodes", func(t *testing.T) {
-		sn := ssb.ExploreRecursive(2, true, ssb.ExploreAll(ssb.ExploreRecursiveEdge())).Node()
+		sn := ssb.ExploreRecursive(selector.RecursionLimitDepth(2), ssb.ExploreAll(ssb.ExploreRecursiveEdge())).Node()
 		esn := fnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
 			mb.Insert(knb.CreateString(selector.SelectorKey_ExploreRecursive), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
 				mb.Insert(knb.CreateString(selector.SelectorKey_Limit), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
@@ -80,7 +80,7 @@ func TestBuildingSelectors(t *testing.T) {
 			}))
 		})
 		Wish(t, sn, ShouldEqual, esn)
-		sn = ssb.ExploreRecursive(0, false, ssb.ExploreAll(ssb.ExploreRecursiveEdge())).Node()
+		sn = ssb.ExploreRecursive(selector.RecursionLimitNone(), ssb.ExploreAll(ssb.ExploreRecursiveEdge())).Node()
 		esn = fnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
 			mb.Insert(knb.CreateString(selector.SelectorKey_ExploreRecursive), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
 				mb.Insert(knb.CreateString(selector.SelectorKey_Limit), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {

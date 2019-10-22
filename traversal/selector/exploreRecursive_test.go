@@ -130,7 +130,7 @@ func TestParseExploreRecursive(t *testing.T) {
 		})
 		s, err := ParseContext{}.ParseExploreRecursive(sn)
 		Wish(t, err, ShouldEqual, nil)
-		Wish(t, s, ShouldEqual, ExploreRecursive{ExploreAll{ExploreRecursiveEdge{}}, ExploreAll{ExploreRecursiveEdge{}}, 2, true})
+		Wish(t, s, ShouldEqual, ExploreRecursive{ExploreAll{ExploreRecursiveEdge{}}, ExploreAll{ExploreRecursiveEdge{}}, RecursionLimit{RecursionLimit_Depth, 2}})
 	})
 
 	t.Run("parsing map node with sequence field with valid selector node and limit type none should parse", func(t *testing.T) {
@@ -148,7 +148,7 @@ func TestParseExploreRecursive(t *testing.T) {
 		})
 		s, err := ParseContext{}.ParseExploreRecursive(sn)
 		Wish(t, err, ShouldEqual, nil)
-		Wish(t, s, ShouldEqual, ExploreRecursive{ExploreAll{ExploreRecursiveEdge{}}, ExploreAll{ExploreRecursiveEdge{}}, 0, false})
+		Wish(t, s, ShouldEqual, ExploreRecursive{ExploreAll{ExploreRecursiveEdge{}}, ExploreAll{ExploreRecursiveEdge{}}, RecursionLimit{RecursionLimit_None, 0}})
 	})
 
 }
@@ -181,7 +181,7 @@ func TestExploreRecursiveExplore(t *testing.T) {
 	t.Run("exploring should traverse until we get to maxDepth", func(t *testing.T) {
 		parentsSelector := ExploreAll{recursiveEdge}
 		subTree := ExploreFields{map[string]Selector{"Parents": parentsSelector}, []ipld.PathSegment{ipld.PathSegmentOfString("Parents")}}
-		rs = ExploreRecursive{subTree, subTree, maxDepth, true}
+		rs = ExploreRecursive{subTree, subTree, RecursionLimit{RecursionLimit_Depth, maxDepth}}
 		nodeString := `{
 			"Parents": [
 				{
@@ -202,24 +202,24 @@ func TestExploreRecursiveExplore(t *testing.T) {
 		Wish(t, err, ShouldEqual, nil)
 		rs = rs.Explore(rn, ipld.PathSegmentOfString("Parents"))
 		rn, err = rn.LookupString("Parents")
-		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, parentsSelector, maxDepth, true})
+		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, parentsSelector, RecursionLimit{RecursionLimit_Depth, maxDepth}})
 		Wish(t, err, ShouldEqual, nil)
 		rs = rs.Explore(rn, ipld.PathSegmentOfInt(0))
 		rn, err = rn.LookupIndex(0)
-		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, subTree, maxDepth - 1, true})
+		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, subTree, RecursionLimit{RecursionLimit_Depth, maxDepth - 1}})
 		Wish(t, err, ShouldEqual, nil)
 		rs = rs.Explore(rn, ipld.PathSegmentOfString("Parents"))
 
 		rn, err = rn.LookupString("Parents")
-		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, parentsSelector, maxDepth - 1, true})
+		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, parentsSelector, RecursionLimit{RecursionLimit_Depth, maxDepth - 1}})
 		Wish(t, err, ShouldEqual, nil)
 		rs = rs.Explore(rn, ipld.PathSegmentOfInt(0))
 		rn, err = rn.LookupIndex(0)
-		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, subTree, maxDepth - 2, true})
+		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, subTree, RecursionLimit{RecursionLimit_Depth, maxDepth - 2}})
 		Wish(t, err, ShouldEqual, nil)
 		rs = rs.Explore(rn, ipld.PathSegmentOfString("Parents"))
 		rn, err = rn.LookupString("Parents")
-		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, parentsSelector, maxDepth - 2, true})
+		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, parentsSelector, RecursionLimit{RecursionLimit_Depth, maxDepth - 2}})
 		Wish(t, err, ShouldEqual, nil)
 		rs = rs.Explore(rn, ipld.PathSegmentOfInt(0))
 		rn, err = rn.LookupIndex(0)
@@ -230,7 +230,7 @@ func TestExploreRecursiveExplore(t *testing.T) {
 	t.Run("exploring should traverse indefinitely if no depth specified", func(t *testing.T) {
 		parentsSelector := ExploreAll{recursiveEdge}
 		subTree := ExploreFields{map[string]Selector{"Parents": parentsSelector}, []ipld.PathSegment{ipld.PathSegmentOfString("Parents")}}
-		rs = ExploreRecursive{subTree, subTree, 0, false}
+		rs = ExploreRecursive{subTree, subTree, RecursionLimit{RecursionLimit_None, 0}}
 		nodeString := `{
 			"Parents": [
 				{
@@ -251,38 +251,38 @@ func TestExploreRecursiveExplore(t *testing.T) {
 		Wish(t, err, ShouldEqual, nil)
 		rs = rs.Explore(rn, ipld.PathSegmentOfString("Parents"))
 		rn, err = rn.LookupString("Parents")
-		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, parentsSelector, 0, false})
+		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, parentsSelector, RecursionLimit{RecursionLimit_None, 0}})
 		Wish(t, err, ShouldEqual, nil)
 		rs = rs.Explore(rn, ipld.PathSegmentOfInt(0))
 		rn, err = rn.LookupIndex(0)
-		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, subTree, 0, false})
+		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, subTree, RecursionLimit{RecursionLimit_None, 0}})
 		Wish(t, err, ShouldEqual, nil)
 		rs = rs.Explore(rn, ipld.PathSegmentOfString("Parents"))
 		rn, err = rn.LookupString("Parents")
-		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, parentsSelector, 0, false})
+		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, parentsSelector, RecursionLimit{RecursionLimit_None, 0}})
 		Wish(t, err, ShouldEqual, nil)
 		rs = rs.Explore(rn, ipld.PathSegmentOfInt(0))
 		rn, err = rn.LookupIndex(0)
-		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, subTree, 0, false})
+		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, subTree, RecursionLimit{RecursionLimit_None, 0}})
 		Wish(t, err, ShouldEqual, nil)
 		rs = rs.Explore(rn, ipld.PathSegmentOfString("Parents"))
 		rn, err = rn.LookupString("Parents")
-		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, parentsSelector, 0, false})
+		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, parentsSelector, RecursionLimit{RecursionLimit_None, 0}})
 		Wish(t, err, ShouldEqual, nil)
 		rs = rs.Explore(rn, ipld.PathSegmentOfInt(0))
 		rn, err = rn.LookupIndex(0)
-		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, subTree, 0, false})
+		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, subTree, RecursionLimit{RecursionLimit_None, 0}})
 		Wish(t, err, ShouldEqual, nil)
 		rs = rs.Explore(rn, ipld.PathSegmentOfString("Parents"))
 		rn, err = rn.LookupString("Parents")
-		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, parentsSelector, 0, false})
+		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, parentsSelector, RecursionLimit{RecursionLimit_None, 0}})
 		Wish(t, err, ShouldEqual, nil)
 	})
 
 	t.Run("exploring should continue till we get to selector that returns nil on explore", func(t *testing.T) {
 		parentsSelector := ExploreIndex{recursiveEdge, [1]ipld.PathSegment{ipld.PathSegmentOfInt(1)}}
 		subTree := ExploreFields{map[string]Selector{"Parents": parentsSelector}, []ipld.PathSegment{ipld.PathSegmentOfString("Parents")}}
-		rs = ExploreRecursive{subTree, subTree, maxDepth, true}
+		rs = ExploreRecursive{subTree, subTree, RecursionLimit{RecursionLimit_Depth, maxDepth}}
 		nodeString := `{
 			"Parents": {
 			}
@@ -292,7 +292,7 @@ func TestExploreRecursiveExplore(t *testing.T) {
 		Wish(t, err, ShouldEqual, nil)
 		rs = rs.Explore(rn, ipld.PathSegmentOfString("Parents"))
 		rn, err = rn.LookupString("Parents")
-		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, parentsSelector, maxDepth, true})
+		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, parentsSelector, RecursionLimit{RecursionLimit_Depth, maxDepth}})
 		Wish(t, err, ShouldEqual, nil)
 		rs = rs.Explore(rn, ipld.PathSegmentOfInt(0))
 		Wish(t, rs, ShouldEqual, nil)
@@ -302,13 +302,13 @@ func TestExploreRecursiveExplore(t *testing.T) {
 		sideSelector := ExploreAll{recursiveEdge}
 		subTree := ExploreFields{map[string]Selector{
 			"Parents": parentsSelector,
-			"Side":    ExploreRecursive{sideSelector, sideSelector, maxDepth, true},
+			"Side":    ExploreRecursive{sideSelector, sideSelector, RecursionLimit{RecursionLimit_Depth, maxDepth}},
 		}, []ipld.PathSegment{
 			ipld.PathSegmentOfString("Parents"),
 			ipld.PathSegmentOfString("Side"),
 		},
 		}
-		s := ExploreRecursive{subTree, subTree, maxDepth, true}
+		s := ExploreRecursive{subTree, subTree, RecursionLimit{RecursionLimit_Depth, maxDepth}}
 		nodeString := `{
 			"Parents": [
 				{
@@ -339,15 +339,15 @@ func TestExploreRecursiveExplore(t *testing.T) {
 		rs = s
 		rs = rs.Explore(rn, ipld.PathSegmentOfString("Parents"))
 		rn, err = rn.LookupString("Parents")
-		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, parentsSelector, maxDepth, true})
+		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, parentsSelector, RecursionLimit{RecursionLimit_Depth, maxDepth}})
 		Wish(t, err, ShouldEqual, nil)
 		rs = rs.Explore(rn, ipld.PathSegmentOfInt(0))
 		rn, err = rn.LookupIndex(0)
-		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, subTree, maxDepth - 1, true})
+		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, subTree, RecursionLimit{RecursionLimit_Depth, maxDepth - 1}})
 		Wish(t, err, ShouldEqual, nil)
 		rs = rs.Explore(rn, ipld.PathSegmentOfString("Parents"))
 		rn, err = rn.LookupString("Parents")
-		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, parentsSelector, maxDepth - 1, true})
+		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, parentsSelector, RecursionLimit{RecursionLimit_Depth, maxDepth - 1}})
 		Wish(t, err, ShouldEqual, nil)
 
 		// traverse down top level Side tree (nested recursion)
@@ -355,15 +355,15 @@ func TestExploreRecursiveExplore(t *testing.T) {
 		rs = s
 		rs = rs.Explore(rn, ipld.PathSegmentOfString("Side"))
 		rn, err = rn.LookupString("Side")
-		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, ExploreRecursive{sideSelector, sideSelector, maxDepth, true}, maxDepth, true})
+		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, ExploreRecursive{sideSelector, sideSelector, RecursionLimit{RecursionLimit_Depth, maxDepth}}, RecursionLimit{RecursionLimit_Depth, maxDepth}})
 		Wish(t, err, ShouldEqual, nil)
 		rs = rs.Explore(rn, ipld.PathSegmentOfString("real"))
 		rn, err = rn.LookupString("real")
-		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, ExploreRecursive{sideSelector, sideSelector, maxDepth - 1, true}, maxDepth, true})
+		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, ExploreRecursive{sideSelector, sideSelector, RecursionLimit{RecursionLimit_Depth, maxDepth - 1}}, RecursionLimit{RecursionLimit_Depth, maxDepth}})
 		Wish(t, err, ShouldEqual, nil)
 		rs = rs.Explore(rn, ipld.PathSegmentOfString("apple"))
 		rn, err = rn.LookupString("apple")
-		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, ExploreRecursive{sideSelector, sideSelector, maxDepth - 2, true}, maxDepth, true})
+		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, ExploreRecursive{sideSelector, sideSelector, RecursionLimit{RecursionLimit_Depth, maxDepth - 2}}, RecursionLimit{RecursionLimit_Depth, maxDepth}})
 		Wish(t, err, ShouldEqual, nil)
 		rs = rs.Explore(rn, ipld.PathSegmentOfString("sauce"))
 		rn, err = rn.LookupString("sauce")
@@ -375,29 +375,29 @@ func TestExploreRecursiveExplore(t *testing.T) {
 		rs = s
 		rs = rs.Explore(rn, ipld.PathSegmentOfString("Parents"))
 		rn, err = rn.LookupString("Parents")
-		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, parentsSelector, maxDepth, true})
+		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, parentsSelector, RecursionLimit{RecursionLimit_Depth, maxDepth}})
 		Wish(t, err, ShouldEqual, nil)
 		rs = rs.Explore(rn, ipld.PathSegmentOfInt(0))
 		rn, err = rn.LookupIndex(0)
-		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, subTree, maxDepth - 1, true})
+		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, subTree, RecursionLimit{RecursionLimit_Depth, maxDepth - 1}})
 		Wish(t, err, ShouldEqual, nil)
 		rs = rs.Explore(rn, ipld.PathSegmentOfString("Side"))
 		rn, err = rn.LookupString("Side")
-		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, ExploreRecursive{sideSelector, sideSelector, maxDepth, true}, maxDepth - 1, true})
+		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, ExploreRecursive{sideSelector, sideSelector, RecursionLimit{RecursionLimit_Depth, maxDepth}}, RecursionLimit{RecursionLimit_Depth, maxDepth - 1}})
 		Wish(t, err, ShouldEqual, nil)
 		rs = rs.Explore(rn, ipld.PathSegmentOfString("cheese"))
 		rn, err = rn.LookupString("cheese")
-		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, ExploreRecursive{sideSelector, sideSelector, maxDepth - 1, true}, maxDepth - 1, true})
+		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, ExploreRecursive{sideSelector, sideSelector, RecursionLimit{RecursionLimit_Depth, maxDepth - 1}}, RecursionLimit{RecursionLimit_Depth, maxDepth - 1}})
 		Wish(t, err, ShouldEqual, nil)
 		rs = rs.Explore(rn, ipld.PathSegmentOfString("whiz"))
 		rn, err = rn.LookupString("whiz")
-		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, ExploreRecursive{sideSelector, sideSelector, maxDepth - 2, true}, maxDepth - 1, true})
+		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, ExploreRecursive{sideSelector, sideSelector, RecursionLimit{RecursionLimit_Depth, maxDepth - 2}}, RecursionLimit{RecursionLimit_Depth, maxDepth - 1}})
 		Wish(t, err, ShouldEqual, nil)
 	})
 	t.Run("exploring should work with explore union and recursion", func(t *testing.T) {
 		parentsSelector := ExploreUnion{[]Selector{ExploreAll{Matcher{}}, ExploreIndex{recursiveEdge, [1]ipld.PathSegment{ipld.PathSegmentOfInt(0)}}}}
 		subTree := ExploreFields{map[string]Selector{"Parents": parentsSelector}, []ipld.PathSegment{ipld.PathSegmentOfString("Parents")}}
-		rs = ExploreRecursive{subTree, subTree, maxDepth, true}
+		rs = ExploreRecursive{subTree, subTree, RecursionLimit{RecursionLimit_Depth, maxDepth}}
 		nodeString := `{
 			"Parents": [
 				{
@@ -418,20 +418,20 @@ func TestExploreRecursiveExplore(t *testing.T) {
 		Wish(t, err, ShouldEqual, nil)
 		rs = rs.Explore(rn, ipld.PathSegmentOfString("Parents"))
 		rn, err = rn.LookupString("Parents")
-		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, parentsSelector, maxDepth, true})
+		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, parentsSelector, RecursionLimit{RecursionLimit_Depth, maxDepth}})
 		Wish(t, err, ShouldEqual, nil)
 		rs = rs.Explore(rn, ipld.PathSegmentOfInt(0))
 		rn, err = rn.LookupIndex(0)
-		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, ExploreUnion{[]Selector{Matcher{}, subTree}}, maxDepth - 1, true})
+		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, ExploreUnion{[]Selector{Matcher{}, subTree}}, RecursionLimit{RecursionLimit_Depth, maxDepth - 1}})
 		Wish(t, err, ShouldEqual, nil)
 		rs = rs.Explore(rn, ipld.PathSegmentOfString("Parents"))
 
 		rn, err = rn.LookupString("Parents")
-		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, parentsSelector, maxDepth - 1, true})
+		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, parentsSelector, RecursionLimit{RecursionLimit_Depth, maxDepth - 1}})
 		Wish(t, err, ShouldEqual, nil)
 		rs = rs.Explore(rn, ipld.PathSegmentOfInt(0))
 		rn, err = rn.LookupIndex(0)
-		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, ExploreUnion{[]Selector{Matcher{}, subTree}}, maxDepth - 2, true})
+		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, ExploreUnion{[]Selector{Matcher{}, subTree}}, RecursionLimit{RecursionLimit_Depth, maxDepth - 2}})
 		Wish(t, err, ShouldEqual, nil)
 	})
 }
