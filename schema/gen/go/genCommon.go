@@ -373,3 +373,53 @@ func (gk generateKindedRejections_Link) EmitNodeMethodAsBytes(w io.Writer) {
 func (gk generateKindedRejections_Link) EmitNodeMethodAsString(w io.Writer) {
 	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Link}.emitNodeMethodAsString(w)
 }
+
+// Embeddable to do all the "nope" methods at once.
+//
+// Used for anything that "acts like" map (so, also struct).
+type generateKindedRejections_List struct {
+	TypeIdent string // see doc in generateKindedRejections
+	TypeProse string // see doc in generateKindedRejections
+}
+
+func (gk generateKindedRejections_List) EmitNodeMethodLookupString(w io.Writer) {
+	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_List}.emitNodeMethodLookupString(w)
+}
+func (gk generateKindedRejections_List) EmitNodeMethodLookupSegment(w io.Writer) {
+	doTemplate(`
+		func (n {{ .TypeIdent }}) LookupSegment(seg ipld.PathSegment) (ipld.Node, error) {
+			idx, err := seg.Index()
+			if err != nil {
+				return nil, err
+			}
+			return n.LookupIndex(idx)
+		}
+	`, w, gk)
+}
+func (gk generateKindedRejections_List) EmitNodeMethodMapIterator(w io.Writer) {
+	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_List}.emitNodeMethodMapIterator(w)
+}
+func (gk generateKindedRejections_List) EmitNodeMethodIsUndefined(w io.Writer) {
+	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_List}.emitNodeMethodIsUndefined(w)
+}
+func (gk generateKindedRejections_List) EmitNodeMethodIsNull(w io.Writer) {
+	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_List}.emitNodeMethodIsNull(w)
+}
+func (gk generateKindedRejections_List) EmitNodeMethodAsBool(w io.Writer) {
+	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_List}.emitNodeMethodAsBool(w)
+}
+func (gk generateKindedRejections_List) EmitNodeMethodAsInt(w io.Writer) {
+	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_List}.emitNodeMethodAsInt(w)
+}
+func (gk generateKindedRejections_List) EmitNodeMethodAsFloat(w io.Writer) {
+	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_List}.emitNodeMethodAsFloat(w)
+}
+func (gk generateKindedRejections_List) EmitNodeMethodAsString(w io.Writer) {
+	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_List}.emitNodeMethodAsString(w)
+}
+func (gk generateKindedRejections_List) EmitNodeMethodAsBytes(w io.Writer) {
+	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_List}.emitNodeMethodAsBytes(w)
+}
+func (gk generateKindedRejections_List) EmitNodeMethodAsLink(w io.Writer) {
+	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_List}.emitNodeMethodAsLink(w)
+}

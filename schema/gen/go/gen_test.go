@@ -101,6 +101,8 @@ func TestNuevo(t *testing.T) {
 	tInt := schema.SpawnInt("Int")
 	tBytes := schema.SpawnBytes("Bytes")
 	tLink := schema.SpawnLink("Link")
+	tIntList := schema.SpawnList("IntList", tInt, false)
+	tNullableIntList := schema.SpawnList("NullableIntList", tInt, true)
 
 	tStract := schema.SpawnStruct("Stract",
 		[]schema.StructField{schema.SpawnStructField(
@@ -135,6 +137,8 @@ func TestNuevo(t *testing.T) {
 			schema.SpawnStructField("inty", tInt, false, false),
 			schema.SpawnStructField("bytey", tBytes, false, false),
 			schema.SpawnStructField("linky", tLink, false, false),
+			schema.SpawnStructField("intListy", tIntList, false, false),
+			schema.SpawnStructField("nullableIntListy", tNullableIntList, false, false),
 		},
 		schema.StructRepresentation_Map{},
 	)
@@ -153,6 +157,14 @@ func TestNuevo(t *testing.T) {
 	f = openOrPanic("_test/tLink.go")
 	emitFileHeader(f)
 	emitType(NewGeneratorForKindLink(tLink), f)
+
+	f = openOrPanic("_test/tIntList.go")
+	emitFileHeader(f)
+	emitType(NewGeneratorForKindList(tIntList), f)
+
+	f = openOrPanic("_test/tNullableIntList.go")
+	emitFileHeader(f)
+	emitType(NewGeneratorForKindList(tNullableIntList), f)
 
 	f = openOrPanic("_test/Stract.go")
 	emitFileHeader(f)

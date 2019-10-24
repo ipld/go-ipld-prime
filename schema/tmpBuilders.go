@@ -25,6 +25,10 @@ func SpawnLink(name TypeName) TypeLink {
 	return TypeLink{anyType{name, nil}}
 }
 
+func SpawnList(name TypeName, typ Type, nullable bool) TypeList {
+	return TypeList{anyType{name, nil}, false, typ, nullable}
+}
+
 func SpawnStruct(name TypeName, fields []StructField, repr StructRepresentation) TypeStruct {
 	fieldsMap := make(map[string]StructField, len(fields))
 	for _, field := range fields {
