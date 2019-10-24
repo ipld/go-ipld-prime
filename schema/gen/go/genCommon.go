@@ -226,3 +226,150 @@ func (gk generateKindedRejections_Map) EmitNodeMethodAsBytes(w io.Writer) {
 func (gk generateKindedRejections_Map) EmitNodeMethodAsLink(w io.Writer) {
 	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Map}.emitNodeMethodAsLink(w)
 }
+
+// Embeddable to do all the "nope" methods at once.
+type generateKindedRejections_Int struct {
+	TypeIdent string // see doc in generateKindedRejections
+	TypeProse string // see doc in generateKindedRejections
+}
+
+func (gk generateKindedRejections_Int) EmitNodeMethodLookupString(w io.Writer) {
+	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Int}.emitNodeMethodLookupString(w)
+}
+func (gk generateKindedRejections_Int) EmitNodeMethodLookup(w io.Writer) {
+	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Int}.emitNodeMethodLookup(w)
+}
+func (gk generateKindedRejections_Int) EmitNodeMethodLookupIndex(w io.Writer) {
+	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Int}.emitNodeMethodLookupIndex(w)
+}
+func (gk generateKindedRejections_Int) EmitNodeMethodLookupSegment(w io.Writer) {
+	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Int}.emitNodeMethodLookupSegment(w)
+}
+func (gk generateKindedRejections_Int) EmitNodeMethodMapIterator(w io.Writer) {
+	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Int}.emitNodeMethodMapIterator(w)
+}
+func (gk generateKindedRejections_Int) EmitNodeMethodListIterator(w io.Writer) {
+	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Int}.emitNodeMethodListIterator(w)
+}
+func (gk generateKindedRejections_Int) EmitNodeMethodLength(w io.Writer) {
+	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Int}.emitNodeMethodLength(w)
+}
+func (gk generateKindedRejections_Int) EmitNodeMethodIsUndefined(w io.Writer) {
+	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Int}.emitNodeMethodIsUndefined(w)
+}
+func (gk generateKindedRejections_Int) EmitNodeMethodIsNull(w io.Writer) {
+	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Int}.emitNodeMethodIsNull(w)
+}
+func (gk generateKindedRejections_Int) EmitNodeMethodAsBool(w io.Writer) {
+	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Int}.emitNodeMethodAsBool(w)
+}
+func (gk generateKindedRejections_Int) EmitNodeMethodAsString(w io.Writer) {
+	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Int}.emitNodeMethodAsString(w)
+}
+func (gk generateKindedRejections_Int) EmitNodeMethodAsFloat(w io.Writer) {
+	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Int}.emitNodeMethodAsFloat(w)
+}
+func (gk generateKindedRejections_Int) EmitNodeMethodAsBytes(w io.Writer) {
+	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Int}.emitNodeMethodAsBytes(w)
+}
+func (gk generateKindedRejections_Int) EmitNodeMethodAsLink(w io.Writer) {
+	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Int}.emitNodeMethodAsLink(w)
+}
+
+// Embeddable to do all the "nope" methods at once.
+type generateKindedRejections_Bytes struct {
+	TypeIdent string // see doc in generateKindedRejections
+	TypeProse string // see doc in generateKindedRejections
+}
+
+func (gk generateKindedRejections_Bytes) EmitNodeMethodLookupString(w io.Writer) {
+	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Bytes}.emitNodeMethodLookupString(w)
+}
+func (gk generateKindedRejections_Bytes) EmitNodeMethodLookup(w io.Writer) {
+	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Bytes}.emitNodeMethodLookup(w)
+}
+func (gk generateKindedRejections_Bytes) EmitNodeMethodLookupIndex(w io.Writer) {
+	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Bytes}.emitNodeMethodLookupIndex(w)
+}
+func (gk generateKindedRejections_Bytes) EmitNodeMethodLookupSegment(w io.Writer) {
+	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Bytes}.emitNodeMethodLookupSegment(w)
+}
+func (gk generateKindedRejections_Bytes) EmitNodeMethodMapIterator(w io.Writer) {
+	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Bytes}.emitNodeMethodMapIterator(w)
+}
+func (gk generateKindedRejections_Bytes) EmitNodeMethodListIterator(w io.Writer) {
+	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Bytes}.emitNodeMethodListIterator(w)
+}
+func (gk generateKindedRejections_Bytes) EmitNodeMethodLength(w io.Writer) {
+	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Bytes}.emitNodeMethodLength(w)
+}
+func (gk generateKindedRejections_Bytes) EmitNodeMethodIsUndefined(w io.Writer) {
+	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Bytes}.emitNodeMethodIsUndefined(w)
+}
+func (gk generateKindedRejections_Bytes) EmitNodeMethodIsNull(w io.Writer) {
+	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Bytes}.emitNodeMethodIsNull(w)
+}
+func (gk generateKindedRejections_Bytes) EmitNodeMethodAsBool(w io.Writer) {
+	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Bytes}.emitNodeMethodAsBool(w)
+}
+func (gk generateKindedRejections_Bytes) EmitNodeMethodAsInt(w io.Writer) {
+	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Bytes}.emitNodeMethodAsInt(w)
+}
+func (gk generateKindedRejections_Bytes) EmitNodeMethodAsFloat(w io.Writer) {
+	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Bytes}.emitNodeMethodAsFloat(w)
+}
+func (gk generateKindedRejections_Bytes) EmitNodeMethodAsString(w io.Writer) {
+	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Bytes}.emitNodeMethodAsString(w)
+}
+func (gk generateKindedRejections_Bytes) EmitNodeMethodAsLink(w io.Writer) {
+	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Bytes}.emitNodeMethodAsLink(w)
+}
+
+// Embeddable to do all the "nope" methods at once.
+type generateKindedRejections_Link struct {
+	TypeIdent string // see doc in generateKindedRejections
+	TypeProse string // see doc in generateKindedRejections
+}
+
+func (gk generateKindedRejections_Link) EmitNodeMethodLookupString(w io.Writer) {
+	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Link}.emitNodeMethodLookupString(w)
+}
+func (gk generateKindedRejections_Link) EmitNodeMethodLookup(w io.Writer) {
+	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Link}.emitNodeMethodLookup(w)
+}
+func (gk generateKindedRejections_Link) EmitNodeMethodLookupIndex(w io.Writer) {
+	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Link}.emitNodeMethodLookupIndex(w)
+}
+func (gk generateKindedRejections_Link) EmitNodeMethodLookupSegment(w io.Writer) {
+	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Link}.emitNodeMethodLookupSegment(w)
+}
+func (gk generateKindedRejections_Link) EmitNodeMethodMapIterator(w io.Writer) {
+	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Link}.emitNodeMethodMapIterator(w)
+}
+func (gk generateKindedRejections_Link) EmitNodeMethodListIterator(w io.Writer) {
+	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Link}.emitNodeMethodListIterator(w)
+}
+func (gk generateKindedRejections_Link) EmitNodeMethodLength(w io.Writer) {
+	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Link}.emitNodeMethodLength(w)
+}
+func (gk generateKindedRejections_Link) EmitNodeMethodIsUndefined(w io.Writer) {
+	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Link}.emitNodeMethodIsUndefined(w)
+}
+func (gk generateKindedRejections_Link) EmitNodeMethodIsNull(w io.Writer) {
+	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Link}.emitNodeMethodIsNull(w)
+}
+func (gk generateKindedRejections_Link) EmitNodeMethodAsBool(w io.Writer) {
+	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Link}.emitNodeMethodAsBool(w)
+}
+func (gk generateKindedRejections_Link) EmitNodeMethodAsInt(w io.Writer) {
+	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Link}.emitNodeMethodAsInt(w)
+}
+func (gk generateKindedRejections_Link) EmitNodeMethodAsFloat(w io.Writer) {
+	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Link}.emitNodeMethodAsFloat(w)
+}
+func (gk generateKindedRejections_Link) EmitNodeMethodAsBytes(w io.Writer) {
+	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Link}.emitNodeMethodAsBytes(w)
+}
+func (gk generateKindedRejections_Link) EmitNodeMethodAsString(w io.Writer) {
+	generateKindedRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Link}.emitNodeMethodAsString(w)
+}

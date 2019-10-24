@@ -98,6 +98,10 @@ func TestNuevo(t *testing.T) {
 	emitMinima(f)
 
 	tString := schema.SpawnString("String")
+	tInt := schema.SpawnInt("Int")
+	tBytes := schema.SpawnBytes("Bytes")
+	tLink := schema.SpawnLink("Link")
+
 	tStract := schema.SpawnStruct("Stract",
 		[]schema.StructField{schema.SpawnStructField(
 			"aField", tString, false, false,
@@ -126,9 +130,29 @@ func TestNuevo(t *testing.T) {
 		schema.StructRepresentation_Map{},
 	)
 
+	tKindsStroct := schema.SpawnStruct("KindsStroct",
+		[]schema.StructField{
+			schema.SpawnStructField("inty", tInt, false, false),
+			schema.SpawnStructField("bytey", tBytes, false, false),
+			schema.SpawnStructField("linky", tLink, false, false),
+		},
+		schema.StructRepresentation_Map{},
+	)
 	f = openOrPanic("_test/tString.go")
 	emitFileHeader(f)
 	emitType(NewGeneratorForKindString(tString), f)
+
+	f = openOrPanic("_test/tInt.go")
+	emitFileHeader(f)
+	emitType(NewGeneratorForKindInt(tInt), f)
+
+	f = openOrPanic("_test/tBytes.go")
+	emitFileHeader(f)
+	emitType(NewGeneratorForKindBytes(tBytes), f)
+
+	f = openOrPanic("_test/tLink.go")
+	emitFileHeader(f)
+	emitType(NewGeneratorForKindLink(tLink), f)
 
 	f = openOrPanic("_test/Stract.go")
 	emitFileHeader(f)
@@ -145,4 +169,8 @@ func TestNuevo(t *testing.T) {
 	f = openOrPanic("_test/Stroct.go")
 	emitFileHeader(f)
 	emitType(NewGeneratorForKindStruct(tStroct), f)
+
+	f = openOrPanic("_test/KindsStroct.go")
+	emitFileHeader(f)
+	emitType(NewGeneratorForKindStruct(tKindsStroct), f)
 }

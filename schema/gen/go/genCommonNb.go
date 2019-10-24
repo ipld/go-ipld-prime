@@ -160,3 +160,115 @@ func (gk genKindedNbRejections_Map) EmitNodebuilderMethodCreateBytes(w io.Writer
 func (gk genKindedNbRejections_Map) EmitNodebuilderMethodCreateLink(w io.Writer) {
 	genKindedNbRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Map}.emitNodebuilderMethodCreateLink(w)
 }
+
+// Embeddable to do all the "nope" methods at once.
+type genKindedNbRejections_Int struct {
+	TypeIdent string // see doc in generateKindedRejections
+	TypeProse string // see doc in generateKindedRejections
+}
+
+func (gk genKindedNbRejections_Int) EmitNodebuilderMethodCreateMap(w io.Writer) {
+	genKindedNbRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Int}.emitNodebuilderMethodCreateMap(w)
+}
+
+func (gk genKindedNbRejections_Int) EmitNodebuilderMethodAmendMap(w io.Writer) {
+	genKindedNbRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Int}.emitNodebuilderMethodAmendMap(w)
+}
+func (gk genKindedNbRejections_Int) EmitNodebuilderMethodCreateList(w io.Writer) {
+	genKindedNbRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Int}.emitNodebuilderMethodCreateList(w)
+}
+func (gk genKindedNbRejections_Int) EmitNodebuilderMethodAmendList(w io.Writer) {
+	genKindedNbRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Int}.emitNodebuilderMethodAmendList(w)
+}
+func (gk genKindedNbRejections_Int) EmitNodebuilderMethodCreateNull(w io.Writer) {
+	genKindedNbRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Int}.emitNodebuilderMethodCreateNull(w)
+}
+func (gk genKindedNbRejections_Int) EmitNodebuilderMethodCreateBool(w io.Writer) {
+	genKindedNbRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Int}.emitNodebuilderMethodCreateBool(w)
+}
+func (gk genKindedNbRejections_Int) EmitNodebuilderMethodCreateString(w io.Writer) {
+	genKindedNbRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Int}.emitNodebuilderMethodCreateString(w)
+}
+func (gk genKindedNbRejections_Int) EmitNodebuilderMethodCreateFloat(w io.Writer) {
+	genKindedNbRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Int}.emitNodebuilderMethodCreateFloat(w)
+}
+func (gk genKindedNbRejections_Int) EmitNodebuilderMethodCreateBytes(w io.Writer) {
+	genKindedNbRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Int}.emitNodebuilderMethodCreateBytes(w)
+}
+func (gk genKindedNbRejections_Int) EmitNodebuilderMethodCreateLink(w io.Writer) {
+	genKindedNbRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Int}.emitNodebuilderMethodCreateLink(w)
+}
+
+// Embeddable to do all the "nope" methods at once.
+type genKindedNbRejections_Bytes struct {
+	TypeIdent string // see doc in generateKindedRejections
+	TypeProse string // see doc in generateKindedRejections
+}
+
+func (gk genKindedNbRejections_Bytes) EmitNodebuilderMethodCreateMap(w io.Writer) {
+	genKindedNbRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Bytes}.emitNodebuilderMethodCreateMap(w)
+}
+func (gk genKindedNbRejections_Bytes) EmitNodebuilderMethodAmendMap(w io.Writer) {
+	genKindedNbRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Bytes}.emitNodebuilderMethodAmendMap(w)
+}
+func (gk genKindedNbRejections_Bytes) EmitNodebuilderMethodCreateList(w io.Writer) {
+	genKindedNbRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Bytes}.emitNodebuilderMethodCreateList(w)
+}
+func (gk genKindedNbRejections_Bytes) EmitNodebuilderMethodAmendList(w io.Writer) {
+	genKindedNbRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Bytes}.emitNodebuilderMethodAmendList(w)
+}
+func (gk genKindedNbRejections_Bytes) EmitNodebuilderMethodCreateNull(w io.Writer) {
+	genKindedNbRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Bytes}.emitNodebuilderMethodCreateNull(w)
+}
+func (gk genKindedNbRejections_Bytes) EmitNodebuilderMethodCreateBool(w io.Writer) {
+	genKindedNbRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Bytes}.emitNodebuilderMethodCreateBool(w)
+}
+func (gk genKindedNbRejections_Bytes) EmitNodebuilderMethodCreateInt(w io.Writer) {
+	genKindedNbRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Bytes}.emitNodebuilderMethodCreateInt(w)
+}
+func (gk genKindedNbRejections_Bytes) EmitNodebuilderMethodCreateFloat(w io.Writer) {
+	genKindedNbRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Bytes}.emitNodebuilderMethodCreateFloat(w)
+}
+func (gk genKindedNbRejections_Bytes) EmitNodebuilderMethodCreateString(w io.Writer) {
+	genKindedNbRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Bytes}.emitNodebuilderMethodCreateString(w)
+}
+func (gk genKindedNbRejections_Bytes) EmitNodebuilderMethodCreateLink(w io.Writer) {
+	genKindedNbRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Bytes}.emitNodebuilderMethodCreateLink(w)
+}
+
+// Embeddable to do all the "nope" methods at once.
+type genKindedNbRejections_Link struct {
+	TypeIdent string // see doc in generateKindedRejections
+	TypeProse string // see doc in generateKindedRejections
+}
+
+func (gk genKindedNbRejections_Link) EmitNodebuilderMethodCreateMap(w io.Writer) {
+	genKindedNbRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Link}.emitNodebuilderMethodCreateMap(w)
+}
+func (gk genKindedNbRejections_Link) EmitNodebuilderMethodAmendMap(w io.Writer) {
+	genKindedNbRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Link}.emitNodebuilderMethodAmendMap(w)
+}
+func (gk genKindedNbRejections_Link) EmitNodebuilderMethodCreateList(w io.Writer) {
+	genKindedNbRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Link}.emitNodebuilderMethodCreateList(w)
+}
+func (gk genKindedNbRejections_Link) EmitNodebuilderMethodAmendList(w io.Writer) {
+	genKindedNbRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Link}.emitNodebuilderMethodAmendList(w)
+}
+func (gk genKindedNbRejections_Link) EmitNodebuilderMethodCreateNull(w io.Writer) {
+	genKindedNbRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Link}.emitNodebuilderMethodCreateNull(w)
+}
+func (gk genKindedNbRejections_Link) EmitNodebuilderMethodCreateBool(w io.Writer) {
+	genKindedNbRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Link}.emitNodebuilderMethodCreateBool(w)
+}
+func (gk genKindedNbRejections_Link) EmitNodebuilderMethodCreateInt(w io.Writer) {
+	genKindedNbRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Link}.emitNodebuilderMethodCreateInt(w)
+}
+func (gk genKindedNbRejections_Link) EmitNodebuilderMethodCreateFloat(w io.Writer) {
+	genKindedNbRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Link}.emitNodebuilderMethodCreateFloat(w)
+}
+func (gk genKindedNbRejections_Link) EmitNodebuilderMethodCreateBytes(w io.Writer) {
+	genKindedNbRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Link}.emitNodebuilderMethodCreateBytes(w)
+}
+func (gk genKindedNbRejections_Link) EmitNodebuilderMethodCreateString(w io.Writer) {
+	genKindedNbRejections{gk.TypeIdent, gk.TypeProse, ipld.ReprKind_Link}.emitNodebuilderMethodCreateString(w)
+}
