@@ -86,11 +86,95 @@ type nodebuilderGenerator interface {
 	EmitNodebuilderMethodCreateLink(io.Writer)
 }
 
-func emitFileHeader(w io.Writer) {
-	fmt.Fprintf(w, "package whee\n\n")
+// EmitFileHeader emits a baseline package header that will
+// allow a file with a generated type to compile
+func EmitFileHeader(packageName string, w io.Writer) {
+	fmt.Fprintf(w, "package %s\n\n", packageName)
 	fmt.Fprintf(w, "import (\n")
 	fmt.Fprintf(w, "\tipld \"github.com/ipld/go-ipld-prime\"\n")
 	fmt.Fprintf(w, "\t\"github.com/ipld/go-ipld-prime/impl/typed\"\n")
 	fmt.Fprintf(w, "\t\"github.com/ipld/go-ipld-prime/schema\"\n")
 	fmt.Fprintf(w, ")\n\n")
+}
+
+// EmitEntireType outputs every possible type of code generation for a
+// typedNodeGenerator
+func EmitEntireType(tg typedNodeGenerator, w io.Writer) {
+	tg.EmitNativeType(w)
+	tg.EmitNativeAccessors(w)
+	tg.EmitNativeBuilder(w)
+	tg.EmitNativeMaybe(w)
+	tg.EmitNodeType(w)
+	tg.EmitTypedNodeMethodType(w)
+	tg.EmitNodeMethodReprKind(w)
+	tg.EmitNodeMethodLookupString(w)
+	tg.EmitNodeMethodLookup(w)
+	tg.EmitNodeMethodLookupIndex(w)
+	tg.EmitNodeMethodLookupSegment(w)
+	tg.EmitNodeMethodMapIterator(w)
+	tg.EmitNodeMethodListIterator(w)
+	tg.EmitNodeMethodLength(w)
+	tg.EmitNodeMethodIsUndefined(w)
+	tg.EmitNodeMethodIsNull(w)
+	tg.EmitNodeMethodAsBool(w)
+	tg.EmitNodeMethodAsInt(w)
+	tg.EmitNodeMethodAsFloat(w)
+	tg.EmitNodeMethodAsString(w)
+	tg.EmitNodeMethodAsBytes(w)
+	tg.EmitNodeMethodAsLink(w)
+
+	tg.EmitNodeMethodNodeBuilder(w)
+	tnbg := tg.GetNodeBuilderGen()
+	tnbg.EmitNodebuilderType(w)
+	tnbg.EmitNodebuilderConstructor(w)
+	tnbg.EmitNodebuilderMethodCreateMap(w)
+	tnbg.EmitNodebuilderMethodAmendMap(w)
+	tnbg.EmitNodebuilderMethodCreateList(w)
+	tnbg.EmitNodebuilderMethodAmendList(w)
+	tnbg.EmitNodebuilderMethodCreateNull(w)
+	tnbg.EmitNodebuilderMethodCreateBool(w)
+	tnbg.EmitNodebuilderMethodCreateInt(w)
+	tnbg.EmitNodebuilderMethodCreateFloat(w)
+	tnbg.EmitNodebuilderMethodCreateString(w)
+	tnbg.EmitNodebuilderMethodCreateBytes(w)
+	tnbg.EmitNodebuilderMethodCreateLink(w)
+
+	tg.EmitTypedNodeMethodRepresentation(w)
+	rng := tg.GetRepresentationNodeGen()
+	if rng == nil { // FIXME: hack to save me from stubbing tons right now, remove when done
+		return
+	}
+	rng.EmitNodeType(w)
+	rng.EmitNodeMethodReprKind(w)
+	rng.EmitNodeMethodLookupString(w)
+	rng.EmitNodeMethodLookup(w)
+	rng.EmitNodeMethodLookupIndex(w)
+	rng.EmitNodeMethodLookupSegment(w)
+	rng.EmitNodeMethodMapIterator(w)
+	rng.EmitNodeMethodListIterator(w)
+	rng.EmitNodeMethodLength(w)
+	rng.EmitNodeMethodIsUndefined(w)
+	rng.EmitNodeMethodIsNull(w)
+	rng.EmitNodeMethodAsBool(w)
+	rng.EmitNodeMethodAsInt(w)
+	rng.EmitNodeMethodAsFloat(w)
+	rng.EmitNodeMethodAsString(w)
+	rng.EmitNodeMethodAsBytes(w)
+	rng.EmitNodeMethodAsLink(w)
+
+	rng.EmitNodeMethodNodeBuilder(w)
+	rnbg := rng.GetNodeBuilderGen()
+	rnbg.EmitNodebuilderType(w)
+	rnbg.EmitNodebuilderConstructor(w)
+	rnbg.EmitNodebuilderMethodCreateMap(w)
+	rnbg.EmitNodebuilderMethodAmendMap(w)
+	rnbg.EmitNodebuilderMethodCreateList(w)
+	rnbg.EmitNodebuilderMethodAmendList(w)
+	rnbg.EmitNodebuilderMethodCreateNull(w)
+	rnbg.EmitNodebuilderMethodCreateBool(w)
+	rnbg.EmitNodebuilderMethodCreateInt(w)
+	rnbg.EmitNodebuilderMethodCreateFloat(w)
+	rnbg.EmitNodebuilderMethodCreateString(w)
+	rnbg.EmitNodebuilderMethodCreateBytes(w)
+	rnbg.EmitNodebuilderMethodCreateLink(w)
 }
