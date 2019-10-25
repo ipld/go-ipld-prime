@@ -25,6 +25,8 @@ type generateKindList struct {
 
 func (gk generateKindList) EmitNodeType(w io.Writer) {
 	// Observe that we get a '*' if the values are nullable.
+	//  FUTURE: worth reviewing if this could or should use 'maybe' structs instead of pointers
+	//   (which would effectively trade alloc count vs size for very different performance characteristics).
 	doTemplate(`
 		var _ ipld.Node = {{ .Type | mungeTypeNodeIdent }}{}
 		var _ typed.Node = {{ .Type | mungeTypeNodeIdent }}{}
