@@ -1,14 +1,16 @@
 package gengo
 
 import (
+	"fmt"
 	"io"
 )
 
-func emitMinima(f io.Writer) {
+// EmitMinima emits common code shared by all types --
+// only needs to be output once per module
+func EmitMinima(packageName string, f io.Writer) {
 	// Write header and imports.
-	f.Write([]byte(`package whee
-
-import (
+	fmt.Fprintf(f, "package %s\n\n", packageName)
+	f.Write([]byte(`import (
 	ipld "github.com/ipld/go-ipld-prime"
 )
 `))

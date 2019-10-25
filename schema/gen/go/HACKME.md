@@ -31,6 +31,9 @@ It contains substantial amounts of hardcoded testcases.
 Run the tests in the `./_test` subpackage explicitly to make sure the
 generated code passes its own interface contracts and tests.
 
+If you want to try hacking together your own generated types, the easiest
+way is to use the functions used by gen_test.go -- `EmitFileHeader`, `EmitMinima`, and `EmitEntireType`
+
 The eventual plan is be able to drive this whole apparatus around via a CLI
 which consumes IPLD Schema files.
 Implementing this can come after more of the core is done.
