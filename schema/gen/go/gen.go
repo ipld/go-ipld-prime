@@ -5,27 +5,6 @@ import (
 	"io"
 )
 
-// there are roughly *seven* categories of API to generate per type:
-// - 1: the readonly thing a native caller uses
-// - 2: the builder thing a native caller uses
-// - 3: the readonly typed node
-// - 4: the builder for typed node
-// - 5: the readonly representation node
-// - 6: the builder via representation
-// - 7: and a maybe wrapper
-//
-// 1, 2, 3, and 7 are emitted from `typedNodeGenerator` (3 from the embedded `nodeGenerator`).
-// 5 is emitted from another `nodeGenerator` instance.
-// 4 and 6 are emitted from two distinct `nodebuilderGenerator` instances.
-
-// file patterns in this package:
-//
-// - for each kind:
-//   - `genKind{Kind}.go` -- has emitters for the native type parts (1, 2, 7).
-//   - `genKind{Kind}Node.go` -- has emitters for the typed node parts (3, 4), and the entrypoint to (5).
-//   - for each representation that kind can have:
-//      - `genKind{Kind}Repr{ReprStrat}.go` -- has emitters for (5, 6).
-
 // typedNodeGenerator declares a standard names for a bunch of methods for generating
 // code for our schema types.  There's still numerous places where other casts
 // to more specific interfaces will be required (so, technically, it's not a
