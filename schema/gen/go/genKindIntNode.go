@@ -8,7 +8,7 @@ import (
 
 // --- type-semantics node interface satisfaction --->
 
-func (gk generateKindString) EmitNodeType(w io.Writer) {
+func (gk generateKindInt) EmitNodeType(w io.Writer) {
 	doTemplate(`
 		var _ ipld.Node = {{ .Type | mungeTypeNodeIdent }}{}
 		var _ typed.Node = {{ .Type | mungeTypeNodeIdent }}{}
@@ -16,7 +16,7 @@ func (gk generateKindString) EmitNodeType(w io.Writer) {
 	`, w, gk)
 }
 
-func (gk generateKindString) EmitTypedNodeMethodType(w io.Writer) {
+func (gk generateKindInt) EmitTypedNodeMethodType(w io.Writer) {
 	doTemplate(`
 		func ({{ .Type | mungeTypeNodeIdent }}) Type() schema.Type {
 			return nil /*TODO:typelit*/
@@ -24,17 +24,17 @@ func (gk generateKindString) EmitTypedNodeMethodType(w io.Writer) {
 	`, w, gk)
 }
 
-func (gk generateKindString) EmitNodeMethodReprKind(w io.Writer) {
+func (gk generateKindInt) EmitNodeMethodReprKind(w io.Writer) {
 	doTemplate(`
 		func ({{ .Type | mungeTypeNodeIdent }}) ReprKind() ipld.ReprKind {
-			return ipld.ReprKind_String
+			return ipld.ReprKind_Int
 		}
 	`, w, gk)
 }
 
-func (gk generateKindString) EmitNodeMethodAsString(w io.Writer) {
+func (gk generateKindInt) EmitNodeMethodAsInt(w io.Writer) {
 	doTemplate(`
-		func (x {{ .Type | mungeTypeNodeIdent }}) AsString() (string, error) {
+		func (x {{ .Type | mungeTypeNodeIdent }}) AsInt() (int, error) {
 			return x.x, nil
 		}
 	`, w, gk)
@@ -42,7 +42,7 @@ func (gk generateKindString) EmitNodeMethodAsString(w io.Writer) {
 
 // --- type-semantics nodebuilder --->
 
-func (gk generateKindString) EmitNodeMethodNodeBuilder(w io.Writer) {
+func (gk generateKindInt) EmitNodeMethodNodeBuilder(w io.Writer) {
 	doTemplate(`
 		func ({{ .Type | mungeTypeNodeIdent }}) NodeBuilder() ipld.NodeBuilder {
 			return {{ .Type | mungeTypeNodebuilderIdent }}{}
@@ -50,28 +50,28 @@ func (gk generateKindString) EmitNodeMethodNodeBuilder(w io.Writer) {
 	`, w, gk)
 }
 
-func (gk generateKindString) GetNodeBuilderGen() nodebuilderGenerator {
-	return generateNbKindString{
+func (gk generateKindInt) GetNodeBuilderGen() nodebuilderGenerator {
+	return generateNbKindInt{
 		gk.Type,
-		genKindedNbRejections_String{
+		genKindedNbRejections_Int{
 			mungeTypeNodebuilderIdent(gk.Type),
 			string(gk.Type.Name()) + ".Builder",
 		},
 	}
 }
 
-type generateNbKindString struct {
-	Type schema.TypeString
-	genKindedNbRejections_String
+type generateNbKindInt struct {
+	Type schema.TypeInt
+	genKindedNbRejections_Int
 }
 
-func (gk generateNbKindString) EmitNodebuilderType(w io.Writer) {
+func (gk generateNbKindInt) EmitNodebuilderType(w io.Writer) {
 	doTemplate(`
 		type {{ .Type | mungeTypeNodebuilderIdent }} struct{}
 	`, w, gk)
 }
 
-func (gk generateNbKindString) EmitNodebuilderConstructor(w io.Writer) {
+func (gk generateNbKindInt) EmitNodebuilderConstructor(w io.Writer) {
 	doTemplate(`
 		func {{ .Type | mungeNodebuilderConstructorIdent }}() ipld.NodeBuilder {
 			return {{ .Type | mungeTypeNodebuilderIdent }}{}
@@ -79,9 +79,9 @@ func (gk generateNbKindString) EmitNodebuilderConstructor(w io.Writer) {
 	`, w, gk)
 }
 
-func (gk generateNbKindString) EmitNodebuilderMethodCreateString(w io.Writer) {
+func (gk generateNbKindInt) EmitNodebuilderMethodCreateInt(w io.Writer) {
 	doTemplate(`
-		func (nb {{ .Type | mungeTypeNodebuilderIdent }}) CreateString(v string) (ipld.Node, error) {
+		func (nb {{ .Type | mungeTypeNodebuilderIdent }}) CreateInt(v int) (ipld.Node, error) {
 			return {{ .Type | mungeTypeNodeIdent }}{v}, nil
 		}
 	`, w, gk)
@@ -89,13 +89,14 @@ func (gk generateNbKindString) EmitNodebuilderMethodCreateString(w io.Writer) {
 
 // --- entrypoints to representation --->
 
-func (gk generateKindString) EmitTypedNodeMethodRepresentation(w io.Writer) {
+func (gk generateKindInt) EmitTypedNodeMethodRepresentation(w io.Writer) {
 	doTemplate(`
 		func ({{ .Type | mungeTypeNodeIdent }}) Representation() ipld.Node {
 			panic("TODO representation")
 		}
 	`, w, gk)
 }
-func (gk generateKindString) GetRepresentationNodeGen() nodeGenerator {
+
+func (gk generateKindInt) GetRepresentationNodeGen() nodeGenerator {
 	return nil // TODO of course
 }

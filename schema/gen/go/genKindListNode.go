@@ -6,6 +6,116 @@ import (
 	"github.com/ipld/go-ipld-prime/schema"
 )
 
+// --- type-semantics node interface satisfaction --->
+
+func (gk generateKindList) EmitNodeType(w io.Writer) {
+	doTemplate(`
+		var _ ipld.Node = {{ .Type | mungeTypeNodeIdent }}{}
+		var _ typed.Node = {{ .Type | mungeTypeNodeIdent }}{}
+
+	`, w, gk)
+}
+
+func (gk generateKindList) EmitTypedNodeMethodType(w io.Writer) {
+	doTemplate(`
+		func ({{ .Type | mungeTypeNodeIdent }}) Type() schema.Type {
+			return nil /*TODO:typelit*/
+		}
+	`, w, gk)
+}
+
+func (gk generateKindList) EmitNodeMethodReprKind(w io.Writer) {
+	doTemplate(`
+		func ({{ .Type | mungeTypeNodeIdent }}) ReprKind() ipld.ReprKind {
+			return ipld.ReprKind_List
+		}
+	`, w, gk)
+}
+
+func (gk generateKindList) EmitNodeMethodLookupIndex(w io.Writer) {
+	doTemplate(`
+		func (x {{ .Type | mungeTypeNodeIdent }}) LookupIndex(index int) (ipld.Node, error) {
+			if index >= len(x.x) {
+				return nil, ipld.ErrNotExists{ipld.PathSegmentOfInt(index)}
+			}
+			{{- if .Type.ValueIsNullable }}
+			if x.x[index] == nil {
+				return ipld.Null, nil
+			}
+			return *x.x[index], nil
+			{{- else }}
+			return x.x[index], nil
+			{{- end }}
+		}
+	`, w, gk)
+}
+
+func (gk generateKindList) EmitNodeMethodLookup(w io.Writer) {
+	doTemplate(`
+		func (x {{ .Type | mungeTypeNodeIdent }}) Lookup(key ipld.Node) (ipld.Node, error) {
+			ki, err := key.AsInt()
+			if err != nil {
+				return nil, ipld.ErrInvalidKey{"got " + key.ReprKind().String() + ", need Int"}
+			}
+			return x.LookupIndex(ki)
+		}
+	`, w, gk)
+}
+
+func (gk generateKindList) EmitNodeMethodListIterator(w io.Writer) {
+	doTemplate(`
+		func (x {{ .Type | mungeTypeNodeIdent }}) ListIterator() ipld.ListIterator {
+			return &{{ .Type | mungeTypeNodeItrIdent }}{&x, 0}
+		}
+
+		type {{ .Type | mungeTypeNodeItrIdent }} struct {
+			node *{{ .Type | mungeTypeNodeIdent }}
+			idx  int
+		}
+
+		func (itr *{{ .Type | mungeTypeNodeItrIdent }}) Next() (idx int, value ipld.Node, _ error)	{
+			if itr.idx >= len(itr.node.x) {
+				return 0, nil, ipld.ErrIteratorOverread{}
+			}
+			idx = itr.idx
+			{{- if .Type.ValueIsNullable }}
+			if itr.node.x[idx] == nil {
+				value = ipld.Null
+			} else {
+				value = *itr.node.x[idx]
+			}
+			{{- else }}
+			value = itr.node.x[idx]
+			{{- end }}
+			itr.idx++
+			return
+		}
+
+		func (itr *{{ .Type | mungeTypeNodeItrIdent }}) Done() bool {
+			return itr.idx >= len(itr.node.x)
+		}
+
+	`, w, gk)
+}
+
+func (gk generateKindList) EmitNodeMethodLength(w io.Writer) {
+	doTemplate(`
+		func (x {{ .Type | mungeTypeNodeIdent }}) Length() int {
+			return len(x.x)
+		}
+	`, w, gk)
+}
+
+// --- type-semantics nodebuilder --->
+
+func (gk generateKindList) EmitNodeMethodNodeBuilder(w io.Writer) {
+	doTemplate(`
+		func ({{ .Type | mungeTypeNodeIdent }}) NodeBuilder() ipld.NodeBuilder {
+			return {{ .Type | mungeTypeNodebuilderIdent }}{}
+		}
+	`, w, gk)
+}
+
 func (gk generateKindList) GetNodeBuilderGen() nodebuilderGenerator {
 	return generateNbKindList{
 		gk.Type,
@@ -14,14 +124,6 @@ func (gk generateKindList) GetNodeBuilderGen() nodebuilderGenerator {
 			string(gk.Type.Name()) + ".Builder",
 		},
 	}
-}
-
-func (gk generateKindList) EmitNodeMethodNodeBuilder(w io.Writer) {
-	doTemplate(`
-		func ({{ .Type | mungeTypeNodeIdent }}) NodeBuilder() ipld.NodeBuilder {
-			return {{ .Type | mungeTypeNodebuilderIdent }}{}
-		}
-	`, w, gk)
 }
 
 type generateNbKindList struct {
@@ -194,4 +296,18 @@ func (gk generateNbKindList) EmitNodebuilderMethodAmendList(w io.Writer) {
 			panic("TODO later")
 		}
 	`, w, gk)
+}
+
+// --- entrypoints to representation --->
+
+func (gk generateKindList) EmitTypedNodeMethodRepresentation(w io.Writer) {
+	doTemplate(`
+		func (n {{ .Type | mungeTypeNodeIdent }}) Representation() ipld.Node {
+			panic("TODO representation")
+		}
+	`, w, gk)
+}
+
+func (gk generateKindList) GetRepresentationNodeGen() nodeGenerator {
+	return nil // TODO of course
 }

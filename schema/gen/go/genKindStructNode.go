@@ -6,6 +6,8 @@ import (
 	"github.com/ipld/go-ipld-prime/schema"
 )
 
+// --- type-semantics node interface satisfaction --->
+
 func (gk generateKindStruct) EmitNodeType(w io.Writer) {
 	doTemplate(`
 		var _ ipld.Node = {{ .Type | mungeTypeNodeIdent }}{}
@@ -139,13 +141,7 @@ func (gk generateKindStruct) EmitNodeMethodLength(w io.Writer) {
 	`, w, gk)
 }
 
-func (gk generateKindStruct) EmitTypedNodeMethodRepresentation(w io.Writer) {
-	doTemplate(`
-		func (n {{ .Type | mungeTypeNodeIdent }}) Representation() ipld.Node {
-			return {{ .Type | mungeTypeReprNodeIdent }}{&n}
-		}
-	`, w, gk)
-}
+// --- type-semantics nodebuilder --->
 
 func (gk generateKindStruct) EmitNodeMethodNodeBuilder(w io.Writer) {
 	doTemplate(`
@@ -302,6 +298,16 @@ func (gk generateNbKindStruct) EmitNodebuilderMethodAmendMap(w io.Writer) {
 	doTemplate(`
 		func (nb {{ .Type | mungeTypeNodebuilderIdent }}) AmendMap() (ipld.MapBuilder, error) {
 			panic("TODO later")
+		}
+	`, w, gk)
+}
+
+// --- entrypoints to representation --->
+
+func (gk generateKindStruct) EmitTypedNodeMethodRepresentation(w io.Writer) {
+	doTemplate(`
+		func (n {{ .Type | mungeTypeNodeIdent }}) Representation() ipld.Node {
+			return {{ .Type | mungeTypeReprNodeIdent }}{&n}
 		}
 	`, w, gk)
 }

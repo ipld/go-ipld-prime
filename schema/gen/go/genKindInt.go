@@ -23,48 +23,44 @@ type generateKindInt struct {
 	// FUTURE: perhaps both a global one (e.g. output package name) and a per-type one.
 }
 
-func (gk generateKindInt) EmitNodeType(w io.Writer) {
+func (gk generateKindInt) EmitNativeType(w io.Writer) {
 	doTemplate(`
-		var _ ipld.Node = {{ .Type | mungeTypeNodeIdent }}{}
-		var _ typed.Node = {{ .Type | mungeTypeNodeIdent }}{}
-
 		type {{ .Type | mungeTypeNodeIdent }} struct{ x int }
 
 	`, w, gk)
 }
 
-func (gk generateKindInt) EmitTypedNodeMethodType(w io.Writer) {
+func (gk generateKindInt) EmitNativeAccessors(w io.Writer) {
+	// The node interface's `AsInt` method is almost sufficient... but
+	//  this method unboxes without needing to return an error that's statically impossible,
+	//   which makes it easier to use in chaining.
 	doTemplate(`
-		func ({{ .Type | mungeTypeNodeIdent }}) Type() schema.Type {
-			return nil /*TODO:typelit*/
+		func (x {{ .Type | mungeTypeNodeIdent }}) Int() int {
+			return x.x
 		}
 	`, w, gk)
 }
 
-func (gk generateKindInt) EmitNodeMethodReprKind(w io.Writer) {
+func (gk generateKindInt) EmitNativeBuilder(w io.Writer) {
 	doTemplate(`
-		func ({{ .Type | mungeTypeNodeIdent }}) ReprKind() ipld.ReprKind {
-			return ipld.ReprKind_Int
-		}
+		// TODO generateKindInt.EmitNativeBuilder
 	`, w, gk)
 }
 
-func (gk generateKindInt) EmitNodeMethodAsInt(w io.Writer) {
+func (gk generateKindInt) EmitNativeMaybe(w io.Writer) {
+	// TODO this can most likely be extracted and DRY'd, just not 100% sure yet
 	doTemplate(`
-		func (x {{ .Type | mungeTypeNodeIdent }}) AsInt() (int, error) {
-			return x.x, nil
+		type Maybe{{ .Type | mungeTypeNodeIdent }} struct {
+			Maybe typed.Maybe
+			Value {{ .Type | mungeTypeNodeIdent }}
 		}
-	`, w, gk)
-}
 
-func (gk generateKindInt) EmitTypedNodeMethodRepresentation(w io.Writer) {
-	doTemplate(`
-		func ({{ .Type | mungeTypeNodeIdent }}) Representation() ipld.Node {
-			panic("TODO representation")
+		func (m Maybe{{ .Type | mungeTypeNodeIdent }}) Must() {{ .Type | mungeTypeNodeIdent }} {
+			if m.Maybe != typed.Maybe_Value {
+				panic("unbox of a maybe rejected")
+			}
+			return m.Value
 		}
-	`, w, gk)
-}
 
-func (gk generateKindInt) GetRepresentationNodeGen() nodeGenerator {
-	return nil // TODO of course
+	`, w, gk)
 }

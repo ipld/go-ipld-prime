@@ -8,7 +8,7 @@ import (
 
 // --- type-semantics node interface satisfaction --->
 
-func (gk generateKindString) EmitNodeType(w io.Writer) {
+func (gk generateKindLink) EmitNodeType(w io.Writer) {
 	doTemplate(`
 		var _ ipld.Node = {{ .Type | mungeTypeNodeIdent }}{}
 		var _ typed.Node = {{ .Type | mungeTypeNodeIdent }}{}
@@ -16,7 +16,7 @@ func (gk generateKindString) EmitNodeType(w io.Writer) {
 	`, w, gk)
 }
 
-func (gk generateKindString) EmitTypedNodeMethodType(w io.Writer) {
+func (gk generateKindLink) EmitTypedNodeMethodType(w io.Writer) {
 	doTemplate(`
 		func ({{ .Type | mungeTypeNodeIdent }}) Type() schema.Type {
 			return nil /*TODO:typelit*/
@@ -24,17 +24,17 @@ func (gk generateKindString) EmitTypedNodeMethodType(w io.Writer) {
 	`, w, gk)
 }
 
-func (gk generateKindString) EmitNodeMethodReprKind(w io.Writer) {
+func (gk generateKindLink) EmitNodeMethodReprKind(w io.Writer) {
 	doTemplate(`
 		func ({{ .Type | mungeTypeNodeIdent }}) ReprKind() ipld.ReprKind {
-			return ipld.ReprKind_String
+			return ipld.ReprKind_Link
 		}
 	`, w, gk)
 }
 
-func (gk generateKindString) EmitNodeMethodAsString(w io.Writer) {
+func (gk generateKindLink) EmitNodeMethodAsLink(w io.Writer) {
 	doTemplate(`
-		func (x {{ .Type | mungeTypeNodeIdent }}) AsString() (string, error) {
+		func (x {{ .Type | mungeTypeNodeIdent }}) AsLink() (ipld.Link, error) {
 			return x.x, nil
 		}
 	`, w, gk)
@@ -42,7 +42,7 @@ func (gk generateKindString) EmitNodeMethodAsString(w io.Writer) {
 
 // --- type-semantics nodebuilder --->
 
-func (gk generateKindString) EmitNodeMethodNodeBuilder(w io.Writer) {
+func (gk generateKindLink) EmitNodeMethodNodeBuilder(w io.Writer) {
 	doTemplate(`
 		func ({{ .Type | mungeTypeNodeIdent }}) NodeBuilder() ipld.NodeBuilder {
 			return {{ .Type | mungeTypeNodebuilderIdent }}{}
@@ -50,28 +50,29 @@ func (gk generateKindString) EmitNodeMethodNodeBuilder(w io.Writer) {
 	`, w, gk)
 }
 
-func (gk generateKindString) GetNodeBuilderGen() nodebuilderGenerator {
-	return generateNbKindString{
+func (gk generateKindLink) GetNodeBuilderGen() nodebuilderGenerator {
+	return generateNbKindLink{
 		gk.Type,
-		genKindedNbRejections_String{
+		genKindedNbRejections_Link{
 			mungeTypeNodebuilderIdent(gk.Type),
 			string(gk.Type.Name()) + ".Builder",
 		},
 	}
 }
 
-type generateNbKindString struct {
-	Type schema.TypeString
-	genKindedNbRejections_String
+type generateNbKindLink struct {
+	Type schema.TypeLink
+	genKindedNbRejections_Link
 }
 
-func (gk generateNbKindString) EmitNodebuilderType(w io.Writer) {
+func (gk generateNbKindLink) EmitNodebuilderType(w io.Writer) {
 	doTemplate(`
 		type {{ .Type | mungeTypeNodebuilderIdent }} struct{}
+
 	`, w, gk)
 }
 
-func (gk generateNbKindString) EmitNodebuilderConstructor(w io.Writer) {
+func (gk generateNbKindLink) EmitNodebuilderConstructor(w io.Writer) {
 	doTemplate(`
 		func {{ .Type | mungeNodebuilderConstructorIdent }}() ipld.NodeBuilder {
 			return {{ .Type | mungeTypeNodebuilderIdent }}{}
@@ -79,9 +80,9 @@ func (gk generateNbKindString) EmitNodebuilderConstructor(w io.Writer) {
 	`, w, gk)
 }
 
-func (gk generateNbKindString) EmitNodebuilderMethodCreateString(w io.Writer) {
+func (gk generateNbKindLink) EmitNodebuilderMethodCreateLink(w io.Writer) {
 	doTemplate(`
-		func (nb {{ .Type | mungeTypeNodebuilderIdent }}) CreateString(v string) (ipld.Node, error) {
+		func (nb {{ .Type | mungeTypeNodebuilderIdent }}) CreateLink(v ipld.Link) (ipld.Node, error) {
 			return {{ .Type | mungeTypeNodeIdent }}{v}, nil
 		}
 	`, w, gk)
@@ -89,13 +90,14 @@ func (gk generateNbKindString) EmitNodebuilderMethodCreateString(w io.Writer) {
 
 // --- entrypoints to representation --->
 
-func (gk generateKindString) EmitTypedNodeMethodRepresentation(w io.Writer) {
+func (gk generateKindLink) EmitTypedNodeMethodRepresentation(w io.Writer) {
 	doTemplate(`
 		func ({{ .Type | mungeTypeNodeIdent }}) Representation() ipld.Node {
 			panic("TODO representation")
 		}
 	`, w, gk)
 }
-func (gk generateKindString) GetRepresentationNodeGen() nodeGenerator {
+
+func (gk generateKindLink) GetRepresentationNodeGen() nodeGenerator {
 	return nil // TODO of course
 }
