@@ -5,14 +5,6 @@ import (
 	"io"
 )
 
-// you'll find a file in this package per kind
-//  (schema level kind, not data model level reprkind)...
-// sparse cross-product with their representation strategy (more or less)
-//  (it's more... idunnoyet.  hopefully we have implstrats and reprstrats,
-//   and those combine over an interface so it's not a triple cross product...
-//    and hopefully that interface is nodebuilder,
-//     because I dunno why it wouldn't be unless we goof on perf somehow).
-
 // typedNodeGenerator declares a standard names for a bunch of methods for generating
 // code for our schema types.  There's still numerous places where other casts
 // to more specific interfaces will be required (so, technically, it's not a
@@ -28,7 +20,15 @@ import (
 // None of these methods return error values because we panic in this package.
 //
 type typedNodeGenerator interface {
-	// wip note: hopefully imports are a constant.  if not, we'll have to curry something with the writer.
+
+	// -- the natively-typed apis -->
+	//   (might be more readable to group these in another interface and have it
+	//     return a `typedNodeGenerator` with the rest?  but structurally same.)
+
+	EmitNativeType(io.Writer)
+	EmitNativeAccessors(io.Writer) // depends on the kind -- field accessors for struct, typed iterators for map, etc.
+	EmitNativeBuilder(io.Writer)   // typically emits some kind of struct that has a Build method.
+	EmitNativeMaybe(io.Writer)     // a pointer-free 'maybe' mechanism is generated for all types.
 
 	// -- the typed.Node.Type method and vars -->
 
@@ -73,8 +73,8 @@ type nodebuilderGenerator interface {
 	EmitNodebuilderType(io.Writer)
 	EmitNodebuilderConstructor(io.Writer)
 
-	EmitNodebuilderMethodCreateMap(io.Writer)
-	EmitNodebuilderMethodAmendMap(io.Writer)
+	EmitNodebuilderMethodCreateMap(io.Writer) // also mapbuilder itself
+	EmitNodebuilderMethodAmendMap(io.Writer)  // also listbuilder itself
 	EmitNodebuilderMethodCreateList(io.Writer)
 	EmitNodebuilderMethodAmendList(io.Writer)
 	EmitNodebuilderMethodCreateNull(io.Writer)
@@ -84,8 +84,6 @@ type nodebuilderGenerator interface {
 	EmitNodebuilderMethodCreateString(io.Writer)
 	EmitNodebuilderMethodCreateBytes(io.Writer)
 	EmitNodebuilderMethodCreateLink(io.Writer)
-
-	// TODO we'll soon also need all the child-nb-getters here too. // they're hucked in the CreateMap/CreateList methods for now.
 }
 
 func emitFileHeader(w io.Writer) {
@@ -96,6 +94,3 @@ func emitFileHeader(w io.Writer) {
 	fmt.Fprintf(w, "\t\"github.com/ipld/go-ipld-prime/schema\"\n")
 	fmt.Fprintf(w, ")\n\n")
 }
-
-// enums will have special methods
-// maps will have special methods (namely, well typed getters

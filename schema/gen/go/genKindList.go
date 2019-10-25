@@ -23,117 +23,43 @@ type generateKindList struct {
 	// FUTURE: perhaps both a global one (e.g. output package name) and a per-type one.
 }
 
-func (gk generateKindList) EmitNodeType(w io.Writer) {
-	// Observe that we get a '*' if a field is *either* nullable *or* optional;
-	//  and we get an extra bool for the second cardinality +1'er if both are true.
+func (gk generateKindList) EmitNativeType(w io.Writer) {
+	// Observe that we get a '*' if the values are nullable.
+	//  FUTURE: worth reviewing if this could or should use 'maybe' structs instead of pointers
+	//   (which would effectively trade alloc count vs size for very different performance characteristics).
 	doTemplate(`
-		var _ ipld.Node = {{ .Type | mungeTypeNodeIdent }}{}
-		var _ typed.Node = {{ .Type | mungeTypeNodeIdent }}{}
-
 		type {{ .Type | mungeTypeNodeIdent }} struct{
 			x []{{if .Type.ValueIsNullable}}*{{end}}{{.Type.ValueType | mungeTypeNodeIdent}}
 		}
 	`, w, gk)
 }
 
-func (gk generateKindList) EmitTypedNodeMethodType(w io.Writer) {
+func (gk generateKindList) EmitNativeAccessors(w io.Writer) {
 	doTemplate(`
-		func ({{ .Type | mungeTypeNodeIdent }}) Type() schema.Type {
-			return nil /*TODO:typelit*/
-		}
+		// TODO generateKindList.EmitNativeAccessors
 	`, w, gk)
 }
 
-func (gk generateKindList) EmitNodeMethodReprKind(w io.Writer) {
+func (gk generateKindList) EmitNativeBuilder(w io.Writer) {
 	doTemplate(`
-		func ({{ .Type | mungeTypeNodeIdent }}) ReprKind() ipld.ReprKind {
-			return ipld.ReprKind_List
-		}
+		// TODO generateKindList.EmitNativeBuilder
 	`, w, gk)
 }
 
-func (gk generateKindList) EmitNodeMethodLookupIndex(w io.Writer) {
+func (gk generateKindList) EmitNativeMaybe(w io.Writer) {
+	// TODO this can most likely be extracted and DRY'd, just not 100% sure yet
 	doTemplate(`
-		func (x {{ .Type | mungeTypeNodeIdent }}) LookupIndex(index int) (ipld.Node, error) {
-			if index >= len(x.x) {
-				return nil, ipld.ErrNotExists{ipld.PathSegmentOfInt(index)}
+		type Maybe{{ .Type | mungeTypeNodeIdent }} struct {
+			Maybe typed.Maybe
+			Value {{ .Type | mungeTypeNodeIdent }}
+		}
+
+		func (m Maybe{{ .Type | mungeTypeNodeIdent }}) Must() {{ .Type | mungeTypeNodeIdent }} {
+			if m.Maybe != typed.Maybe_Value {
+				panic("unbox of a maybe rejected")
 			}
-			{{- if .Type.ValueIsNullable }}
-			if x.x[index] == nil {
-				return ipld.Null, nil
-			}
-			return *x.x[index], nil
-			{{- else }}
-			return x.x[index], nil
-			{{- end }}
-		}	
-	`, w, gk)
-}
-
-func (gk generateKindList) EmitNodeMethodLookup(w io.Writer) {
-	doTemplate(`
-		func (x {{ .Type | mungeTypeNodeIdent }}) Lookup(key ipld.Node) (ipld.Node, error) {
-			ki, err := key.AsInt()
-			if err != nil {
-				return nil, ipld.ErrInvalidKey{"got " + key.ReprKind().String() + ", need Int"}
-			}
-			return x.LookupIndex(ki)
-		}
-	`, w, gk)
-}
-
-func (gk generateKindList) EmitNodeMethodListIterator(w io.Writer) {
-	doTemplate(`
-		func (x {{ .Type | mungeTypeNodeIdent }}) ListIterator() ipld.ListIterator {
-			return &{{ .Type | mungeTypeNodeItrIdent }}{&x, 0}
-		}
-
-		type {{ .Type | mungeTypeNodeItrIdent }} struct {
-			node *{{ .Type | mungeTypeNodeIdent }}
-			idx  int
-		}
-
-		func (itr *{{ .Type | mungeTypeNodeItrIdent }}) Next() (idx int, value ipld.Node, _ error)	{
-			if itr.idx >= len(itr.node.x) {
-				return 0, nil, ipld.ErrIteratorOverread{}
-			}
-			idx = itr.idx
-			{{- if .Type.ValueIsNullable }}
-			if itr.node.x[idx] == nil {
-				value = ipld.Null
-			} else {
-				value = *itr.node.x[idx]
-			}
-			{{- else }}
-			value = itr.node.x[idx]
-			{{- end }}
-			itr.idx++
-			return
-		}
-
-		func (itr *{{ .Type | mungeTypeNodeItrIdent }}) Done() bool {
-			return itr.idx >= len(itr.node.x)
+			return m.Value
 		}
 
 	`, w, gk)
-}
-
-func (gk generateKindList) EmitNodeMethodLength(w io.Writer) {
-	doTemplate(`
-		func (x {{ .Type | mungeTypeNodeIdent }}) Length() int {
-			return len(x.x)
-		}
-	`, w, gk)
-}
-
-func (gk generateKindList) EmitTypedNodeMethodRepresentation(w io.Writer) {
-	doTemplate(`
-		func (n {{ .Type | mungeTypeNodeIdent }}) Representation() ipld.Node {
-			panic("TODO representation")
-		}
-	`, w, gk)
-}
-
-func (gk generateKindList) GetRepresentationNodeGen() nodeGenerator {
-	return nil // TODO of course
 }

@@ -19,6 +19,10 @@ func TestNuevo(t *testing.T) {
 	}
 
 	emitType := func(tg typedNodeGenerator, w io.Writer) {
+		tg.EmitNativeType(w)
+		tg.EmitNativeAccessors(w)
+		tg.EmitNativeBuilder(w)
+		tg.EmitNativeMaybe(w)
 		tg.EmitNodeType(w)
 		tg.EmitTypedNodeMethodType(w)
 		tg.EmitNodeMethodReprKind(w)

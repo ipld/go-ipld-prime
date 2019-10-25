@@ -2,6 +2,7 @@ package gengo
 
 import (
 	"io"
+	"strings"
 	"text/template"
 
 	ipld "github.com/ipld/go-ipld-prime"
@@ -21,6 +22,9 @@ func doTemplate(tmplstr string, w io.Writer, data interface{}) {
 			"Add": func(a, b int) int {
 				return a + b
 			},
+
+			// Title case.  Used to make a exported symbol.  Could be more efficient.
+			"titlize": strings.Title,
 
 			"mungeTypeNodeIdent":                mungeTypeNodeIdent,
 			"mungeTypeNodeItrIdent":             mungeTypeNodeItrIdent,

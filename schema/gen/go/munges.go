@@ -15,6 +15,11 @@ func mungeTypeNodeItrIdent(t schema.Type) string {
 	return "_" + string(t.Name()) + "__Itr"
 }
 
+// maps and lists are going to want a nicely-typed rather than boxed iterator too.
+// the method on the node will probby just be called "Iterator" because we can.
+// but we might want to change the above "__Itr" const to something else
+// (maybe even just back to "__MapItr" and "__ListItr" is good).
+
 func mungeTypeNodebuilderIdent(t schema.Type) string {
 	return "_" + string(t.Name()) + "__NodeBuilder"
 }

@@ -376,7 +376,9 @@ func (gk generateKindedRejections_Link) EmitNodeMethodAsString(w io.Writer) {
 
 // Embeddable to do all the "nope" methods at once.
 //
-// Used for anything that "acts like" map (so, also struct).
+// Used for anything that "acts like" list (mostly this is just lists,
+// but even e.g. structs-with-a-tuple-representation can end up using this
+// as part of emitting their representation nodes).
 type generateKindedRejections_List struct {
 	TypeIdent string // see doc in generateKindedRejections
 	TypeProse string // see doc in generateKindedRejections

@@ -23,48 +23,39 @@ type generateKindBytes struct {
 	// FUTURE: perhaps both a global one (e.g. output package name) and a per-type one.
 }
 
-func (gk generateKindBytes) EmitNodeType(w io.Writer) {
+func (gk generateKindBytes) EmitNativeType(w io.Writer) {
 	doTemplate(`
-		var _ ipld.Node = {{ .Type | mungeTypeNodeIdent }}{}
-		var _ typed.Node = {{ .Type | mungeTypeNodeIdent }}{}
-
 		type {{ .Type | mungeTypeNodeIdent }} struct{ x []byte }
 
 	`, w, gk)
 }
 
-func (gk generateKindBytes) EmitTypedNodeMethodType(w io.Writer) {
+func (gk generateKindBytes) EmitNativeAccessors(w io.Writer) {
 	doTemplate(`
-		func ({{ .Type | mungeTypeNodeIdent }}) Type() schema.Type {
-			return nil /*TODO:typelit*/
-		}
+		// TODO generateKindBytes.EmitNativeAccessors
 	`, w, gk)
 }
 
-func (gk generateKindBytes) EmitNodeMethodReprKind(w io.Writer) {
+func (gk generateKindBytes) EmitNativeBuilder(w io.Writer) {
 	doTemplate(`
-		func ({{ .Type | mungeTypeNodeIdent }}) ReprKind() ipld.ReprKind {
-			return ipld.ReprKind_Bytes
-		}
+		// TODO generateKindBytes.EmitNativeBuilder
 	`, w, gk)
 }
 
-func (gk generateKindBytes) EmitNodeMethodAsBytes(w io.Writer) {
+func (gk generateKindBytes) EmitNativeMaybe(w io.Writer) {
+	// TODO this can most likely be extracted and DRY'd, just not 100% sure yet
 	doTemplate(`
-		func (x {{ .Type | mungeTypeNodeIdent }}) AsBytes() ([]byte, error) {
-			return x.x, nil
+		type Maybe{{ .Type | mungeTypeNodeIdent }} struct {
+			Maybe typed.Maybe
+			Value {{ .Type | mungeTypeNodeIdent }}
 		}
-	`, w, gk)
-}
 
-func (gk generateKindBytes) EmitTypedNodeMethodRepresentation(w io.Writer) {
-	doTemplate(`
-		func ({{ .Type | mungeTypeNodeIdent }}) Representation() ipld.Node {
-			panic("TODO representation")
+		func (m Maybe{{ .Type | mungeTypeNodeIdent }}) Must() {{ .Type | mungeTypeNodeIdent }} {
+			if m.Maybe != typed.Maybe_Value {
+				panic("unbox of a maybe rejected")
+			}
+			return m.Value
 		}
-	`, w, gk)
-}
 
-func (gk generateKindBytes) GetRepresentationNodeGen() nodeGenerator {
-	return nil // TODO of course
+	`, w, gk)
 }

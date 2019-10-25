@@ -23,48 +23,39 @@ type generateKindLink struct {
 	// FUTURE: perhaps both a global one (e.g. output package name) and a per-type one.
 }
 
-func (gk generateKindLink) EmitNodeType(w io.Writer) {
+func (gk generateKindLink) EmitNativeType(w io.Writer) {
 	doTemplate(`
-		var _ ipld.Node = {{ .Type | mungeTypeNodeIdent }}{}
-		var _ typed.Node = {{ .Type | mungeTypeNodeIdent }}{}
-
 		type {{ .Type | mungeTypeNodeIdent }} struct{ x ipld.Link }
 
 	`, w, gk)
 }
 
-func (gk generateKindLink) EmitTypedNodeMethodType(w io.Writer) {
+func (gk generateKindLink) EmitNativeAccessors(w io.Writer) {
 	doTemplate(`
-		func ({{ .Type | mungeTypeNodeIdent }}) Type() schema.Type {
-			return nil /*TODO:typelit*/
-		}
+		// TODO generateKindLink.EmitNativeAccessors
 	`, w, gk)
 }
 
-func (gk generateKindLink) EmitNodeMethodReprKind(w io.Writer) {
+func (gk generateKindLink) EmitNativeBuilder(w io.Writer) {
 	doTemplate(`
-		func ({{ .Type | mungeTypeNodeIdent }}) ReprKind() ipld.ReprKind {
-			return ipld.ReprKind_Link
-		}
+		// TODO generateKindLink.EmitNativeBuilder
 	`, w, gk)
 }
 
-func (gk generateKindLink) EmitNodeMethodAsLink(w io.Writer) {
+func (gk generateKindLink) EmitNativeMaybe(w io.Writer) {
+	// TODO this can most likely be extracted and DRY'd, just not 100% sure yet
 	doTemplate(`
-		func (x {{ .Type | mungeTypeNodeIdent }}) AsLink() (ipld.Link, error) {
-			return x.x, nil
+		type Maybe{{ .Type | mungeTypeNodeIdent }} struct {
+			Maybe typed.Maybe
+			Value {{ .Type | mungeTypeNodeIdent }}
 		}
-	`, w, gk)
-}
 
-func (gk generateKindLink) EmitTypedNodeMethodRepresentation(w io.Writer) {
-	doTemplate(`
-		func ({{ .Type | mungeTypeNodeIdent }}) Representation() ipld.Node {
-			panic("TODO representation")
+		func (m Maybe{{ .Type | mungeTypeNodeIdent }}) Must() {{ .Type | mungeTypeNodeIdent }} {
+			if m.Maybe != typed.Maybe_Value {
+				panic("unbox of a maybe rejected")
+			}
+			return m.Value
 		}
-	`, w, gk)
-}
 
-func (gk generateKindLink) GetRepresentationNodeGen() nodeGenerator {
-	return nil // TODO of course
+	`, w, gk)
 }
