@@ -16,7 +16,9 @@ const (
 	SelectorKey_Start                = "^"
 	SelectorKey_End                  = "$"
 	SelectorKey_Sequence             = ":>"
-	SelectorKey_MaxDepth             = "d"
+	SelectorKey_Limit                = "l"
+	SelectorKey_LimitDepth           = "depth"
+	SelectorKey_LimitNone            = "none"
 	SelectorKey_StopAt               = "!"
 	SelectorKey_Condition            = "&"
 	// not filling conditional keys since it's not complete
