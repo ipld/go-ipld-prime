@@ -24,8 +24,7 @@ type generateKindList struct {
 }
 
 func (gk generateKindList) EmitNodeType(w io.Writer) {
-	// Observe that we get a '*' if a field is *either* nullable *or* optional;
-	//  and we get an extra bool for the second cardinality +1'er if both are true.
+	// Observe that we get a '*' if the values are nullable.
 	doTemplate(`
 		var _ ipld.Node = {{ .Type | mungeTypeNodeIdent }}{}
 		var _ typed.Node = {{ .Type | mungeTypeNodeIdent }}{}
@@ -66,7 +65,7 @@ func (gk generateKindList) EmitNodeMethodLookupIndex(w io.Writer) {
 			{{- else }}
 			return x.x[index], nil
 			{{- end }}
-		}	
+		}
 	`, w, gk)
 }
 
