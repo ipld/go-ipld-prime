@@ -278,7 +278,7 @@ func (gk generateNbKindList) EmitNodebuilderMethodCreateList(w io.Writer) {
 		}
 
 		func (lb *{{ .Type | mungeTypeNodeListBuilderIdent }}) Build() (ipld.Node, error) {
-			v := lb.v
+			v := *lb.v
 			lb = nil
 			return v, nil
 		}
