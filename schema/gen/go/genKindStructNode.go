@@ -272,7 +272,7 @@ func (gk generateNbKindStruct) EmitNodebuilderMethodCreateMap(w io.Writer) {
 			}
 			{{- end}}
 			{{- end}}
-			v := mb.v
+			v := *mb.v
 			mb = nil
 			return v, nil
 		}
