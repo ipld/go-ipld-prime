@@ -17,11 +17,26 @@ package ipld
 // has a NodeBuilder implementation that produces new nodes of that same
 // package's type.
 //
-// Most Node implementations also have a method which returns a NodeBuilder
-// that produces more nodes of their same concrete implementation type.
+// The Node interface includes a method which returns a NodeBuilder;
+// this builder must be able to produce a new node of the same concrete
+// implementation as the original node.
 // This is useful for algorithms that work on trees of nodes: this NodeBuilder
 // getter will be used when an update deep in the tree causes a need to
 // create several new nodes to propagate the change up through parent nodes.
+//
+// NodeBuilder instances obtained from `Node.NodeBuilder()` may carry some
+// additional logic or constraints with them to the new Node they produce.
+// For example, a Node which is implemented using reflection to bind to a
+// natively-typed struct will yield a NodeBuilder which contains a
+// `reflect.Type` handle it can use to create a new value of that native type;
+// similarly, schema-typed Nodes will yield a NodeBuilder that keeps the schema
+// info and type constraints from that Node!
+// (Continuing the typed.Node example: if you have a typed.Node that is
+// constrained to be of some `type Foo = {Bar:Baz}` type, then any new Node
+// produced from its NodeBuilder will still answer
+// `n.(typed.Node).Type().Name()` as `Foo`; and if
+// `n.NodeBuilder().AmendMap().Insert(...)` is called with nodes of unmatching
+// type given to the insertion, the builder will error!)
 //
 // The NodeBuilder retrieved from a Node can also be used to do *updates*:
 // consider the AmendMap and AmendList methods.  These methods are useful
@@ -31,17 +46,6 @@ package ipld
 // methods are equivalent to their Create* counterparts.  As there's no
 // "existing" node for them to refer to, it's treated the same as amending
 // an empty node.)
-//
-// NodeBuilder instances obtained from Node.GetBuilder may carry some of the
-// additional logic of their parent with them to the new Node they produce.
-// For example, the NodeBuilder from typed.Node.GetBuilder may keep the type
-// info and type constraints of their parent with them!
-// (Continuing the typed.Node example: if you have a typed.Node that is
-// constrained to be of some `type Foo = {Bar:Baz}` type, then any new Node
-// produced from its NodeBuilder will still answer
-// `n.(typed.Node).Type().Name()` as `Foo`; and if
-// `n.GetBuilder().AmendMap().Insert(...)` is called with nodes of unmatching
-// type given to the insertion, the builder will error!)
 type NodeBuilder interface {
 	CreateMap() (MapBuilder, error)
 	AmendMap() (MapBuilder, error)

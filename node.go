@@ -1,7 +1,59 @@
 package ipld
 
+// Node represents a value in IPLD.  Any point in a tree of data is a node:
+// scalar values (like int, string, etc) are nodes, and
+// so are recursive values (like map and list).
+//
+// Nodes and kinds are described in the IPLD specs at
+// https://github.com/ipld/specs/blob/master/data-model-layer/data-model.md .
+//
+// Methods on the Node interface cover the superset of all possible methods for
+// all possible kinds -- but some methods only make sense for particular kinds,
+// and thus will only make sense to call on values of the appropriate kind.
+// (For example, 'Length' on an int doesn't make sense,
+// and 'AsInt' on a map certainly doesn't work either!)
+// Use the ReprKind method to find out the kind of value before
+// calling kind-specific methods.
+// Individual method documentation state which kinds the method is valid for.
+// (If you're familiar with the stdlib reflect package, you'll find
+// the design of the Node interface very comparable to 'reflect.Value'.)
+//
+// The Node interface is read-only.  All of the methods on the interface are
+// for examining values, and implementations should be immutable.
+// The companion interface, NodeBuilder, provides the matching writable
+// methods, and should be use to create a (thence immutable) Node.
+//
+// Keeping Node immutable and separating mutation into NodeBuilder makes
+// it possible to perform caching (or rather, memoization, since there's no
+// such thing as cache invalidation for immutable systems) of computed
+// properties of Node; use copy-on-write algorithms for memory efficiency;
+// and to generally build pleasant APIs.
+// Many library functions will rely on the immutability of Node (e.g.,
+// assuming that pointer-equal nodes do not change in value over time),
+// so any user-defined Node implementations should be careful to uphold
+// the immutability contract.)
+//
+// There are many different concrete types which implement Node.
+// The primary purpose of various node implementations is to organize
+// memory in the program in different ways -- some in-memory layouts may
+// be more optimal for some programs than others, and changing the Node
+// (and NodeBuilder) implementations lets the programmer choose.
+//
+// For concrete implementations of Node, check out the "./impl/" folder,
+// and the packages within it.
+// "impl/free" should probably be your first start; the Node and NodeBuilder
+// implementations in that package work for any data.
+// Other packages are optimized for specific use-cases.
+// Codegen tools can also be used to produce concrete implementations of Node;
+// these may be specific to certain data, but still conform to the Node
+// interface for interoperability and to support higher-level functions.
+//
+// Nodes may also be *typed* -- see the 'schema' and 'impl/typed' packages.
+// Typed nodes have additional constraints and behaviors (and have a
+// `.Type().Kind()` in addition to their `.ReprKind()`!), but still behave
+// as a regular Node in all the basic ways.
 type Node interface {
-	// Kind returns a value from the ReprKind enum describing what the
+	// ReprKind returns a value from the ReprKind enum describing what the
 	// essential serializable kind of this node is (map, list, int, etc).
 	// Most other handling of a node requires first switching upon the kind.
 	ReprKind() ReprKind
