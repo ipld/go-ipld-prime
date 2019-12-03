@@ -24,18 +24,11 @@ type generateKindStruct struct {
 }
 
 func (gk generateKindStruct) EmitNativeType(w io.Writer) {
-	// Observe that we get a '*' if a field is *either* nullable *or* optional;
-	//  and we get an extra bool for the second cardinality +1'er if both are true.
+	// The data is actually the content type, just embedded in an unexported field,
+	//  which means we get immutability, plus initializing the object is essentially a memmove.
 	doTemplate(`
 		type {{ .Type | mungeTypeNodeIdent }} struct{
-			{{- range $field := .Type.Fields }}
-			{{ $field.Name }} {{if or $field.IsOptional $field.IsNullable }}*{{end}}{{ $field.Type | mungeTypeNodeIdent }}
-			{{- end}}
-			{{ range $field := .Type.Fields }}
-			{{- if and $field.IsOptional $field.IsNullable }}
-			{{ $field.Name }}__exists bool
-			{{- end}}
-			{{- end}}
+			d {{ .Type | mungeTypeNodeIdent }}__Content
 		}
 
 	`, w, gk)
@@ -43,10 +36,11 @@ func (gk generateKindStruct) EmitNativeType(w io.Writer) {
 
 func (gk generateKindStruct) EmitNativeAccessors(w io.Writer) {
 	doTemplate(`
+		{{- $type := .Type -}} {{- /* ranging modifies dot, unhelpfully */ -}}
 		{{- range $field := .Type.Fields -}}
-		func (x {{ .Type | mungeTypeNodeIdent }}) Field{{ $field.Name | titlize }}() {{ $field.Type | mungeTypeNodeIdent }} {
-			// TODO going to tear through here with changes to Maybe system in a moment anyway
-			return {{ $field.Type | mungeTypeNodeIdent }}{}
+		func (x {{ $type | mungeTypeNodeIdent }}) Field{{ $field.Name | titlize }}()
+			{{- if or $field.IsOptional $field.IsNullable }}Maybe{{end}}{{ $field.Type | mungeTypeNodeIdent }} {
+			return x.d.{{ $field.Name | titlize }}
 		}
 		{{end}}
 
@@ -56,15 +50,26 @@ func (gk generateKindStruct) EmitNativeAccessors(w io.Writer) {
 func (gk generateKindStruct) EmitNativeBuilder(w io.Writer) {
 	doTemplate(`
 		type {{ .Type | mungeTypeNodeIdent }}__Content struct {
-			{{- range $field := .Type.Fields }}
-			// TODO
+			{{- range $field := .Type.Fields}}
+			{{ $field.Name | titlize }} {{if or $field.IsOptional $field.IsNullable }}Maybe{{end}}{{ $field.Type | mungeTypeNodeIdent }}
 			{{- end}}
 		}
 
 		func (b {{ .Type | mungeTypeNodeIdent }}__Content) Build() ({{ .Type | mungeTypeNodeIdent }}, error) {
-			x := {{ .Type | mungeTypeNodeIdent }}{
-				// TODO
+			{{- range $field := .Type.Fields -}}
+			{{- if or $field.IsOptional $field.IsNullable }}
+			{{- /* if both modifiers present, anything goes */ -}}
+			{{- else if $field.IsOptional }}
+			if b.{{ $field.Name | titlize }}.Maybe == typed.Maybe_Null {
+				return {{ $field.Type | mungeTypeNodeIdent }}{}, fmt.Errorf("cannot be absent")
 			}
+			{{- else if $field.IsNullable }}
+			if b.{{ $field.Name | titlize }}.Maybe == typed.Maybe_Absent {
+				return {{ $field.Type | mungeTypeNodeIdent }}{}, fmt.Errorf("cannot be null")
+			}
+			{{- end}}
+			{{- end}}
+			x := {{ .Type | mungeTypeNodeIdent }}{b}
 			// FUTURE : want to support customizable validation.
 			//   but 'if v, ok := x.(schema.Validatable); ok {' doesn't fly: need a way to work on concrete types.
 			return x, nil
