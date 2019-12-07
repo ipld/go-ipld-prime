@@ -380,3 +380,43 @@ Amusing Details and Edge Cases
 // the schema validator should check it...
 // but something that breaks the cycle *there* doesn't necessarily do so for the emitted code!  aggh!
 //  ... unless we go back to optional and nullable both making ptrs unconditionally.
+
+
+
+Learning more (the hard way)
+----------------------------
+
+If this document doesn't provide enough information for you,
+you've probably graduated to the point where doing experiments is next.  :)
+
+Prototypes and research examples can be found in the
+`go-ipld-prime/_rsrch/` directories.
+In particular, the "multihoisting" and "nodeassembler" packages are relevant,
+containing research that lead to the drafting of this doc,
+as well as some partially-worked alternative interface drafts.
+
+Tests there include some benchmarks (self-explanitory);
+some tests based on runtime memory stats inspection;
+and some tests which are simply meant to be disassembled and read thusly.
+
+Compiler flags can provide useful insights:
+
+- `-gcflags '-S'` -- gives you assembler dump.
+	- read this to see for sure what's inlined and not.
+	- easy to quickly skim for calls like `runtime.newObject`, etc.
+	- often critically useful to ensure a benchmark hasn't optimized out the question you meant to ask it!
+	- generally gives a ground truth which puts an end to guessing.
+- `-gcflags '-m -m'` -- reports escape analysis and other decisions.
+   - note the two m's -- not a typo: this gives you info in stack form,
+	  which is radically more informative than the single-m output.
+- `-gcflags '-l'` -- disables inlining!
+	- useful on benchmarks to quickly detect whether inlining is a major part of performance.
+
+These flags can apply to any command like `go install`... as well as `go test`.
+
+Profiling information collected from live systems in use is of course always
+intensely useful... if you have any on hand.  When handling this, be aware of
+how data-dependent performance can be when handling serialization systems:
+different workload content can very much lead to different hot spots.
+
+Happy hunting.
