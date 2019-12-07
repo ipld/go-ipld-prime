@@ -95,6 +95,7 @@ func EmitFileHeader(packageName string, w io.Writer) {
 	fmt.Fprintf(w, "\t\"github.com/ipld/go-ipld-prime/impl/typed\"\n")
 	fmt.Fprintf(w, "\t\"github.com/ipld/go-ipld-prime/schema\"\n")
 	fmt.Fprintf(w, ")\n\n")
+	fmt.Fprintf(w, "// Code generated go-ipld-prime DO NOT EDIT.\n\n")
 }
 
 // EmitEntireType outputs every possible type of code generation for a
