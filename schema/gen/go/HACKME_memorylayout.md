@@ -9,8 +9,9 @@ or, failing that, at least make them appear consistent.
 There's some deeper logic required to *pick* which way we do things, though.
 
 
-Prerequiste understandings
---------------------------
+
+Prerequisite understandings
+---------------------------
 
 The following headings contain brief summaries of information that's important
 to know in order to understand how we designed the IPLD data structure
