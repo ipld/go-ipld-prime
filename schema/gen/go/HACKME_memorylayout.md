@@ -192,7 +192,14 @@ This makes designing library code to be inline-friendly a potentially
 high-impact concern -- sometimes even more so than can be easily seen.
 
 The exact mechanisms used by the compiler to determine what can (and should)
-be inlined
+be inlined may vary significantly from version to version of the Go compiler,
+which means one should be cautious of spending too much time in the details.
+However, we *can* make useful choices around things that will predictably
+obstruct inlining -- such as [virtual function calls](#virtual-function-calls).
+Occasionally there are positive stories in teasing the inliner to do well,
+such as https://blog.filippo.io/efficient-go-apis-with-the-inliner/ (but these
+seem to generally require a lot of thought and probably aren't the first stop
+on most optimization quests).
 
 ### virtual function calls
 
@@ -327,8 +334,40 @@ notable limitations:
 - Lists can only be appended linearly, not populated in free order.
   (This means we can condense the 'isFrozen' attribute to an int offset.)
 - Maps can only build one new value at a time.
+  (Even though we usually handle map contents as pointers, being able to build
+  more than one value at a time would require unknown amounts of memory for
+  the any NodeBuilder state after the first, which is undesirable.)
 - Structs need no special handling -- they can still be regarded in any order.
   (We know how much memory we need at compile time, so we can swallow that.)
+
+### natively-typed methods in addition to the general interface
+
+We generate two sets of methods: **both** the general interface methods to
+comply with Node and NodeBuilder interfaces, **and** also natively-typed
+variants of the same methods (e.g. a `Lookup` method for maps that takes
+the concrete type key and returns the concrete type value, rather than
+taking and returning `Node` interfaces).
+
+While both sets of methods can accomplish the same end goals, both are needed.
+There are two distinct advantages to natively-typed methods;
+and at the same time, the need for the general methods is system critical.
+
+Firstly, to programmers writing code that can use the concrete types, the
+natively-typed methods provide more value in the form of compile-time type
+checking, autocompletion and other tooling assist opportunities, and
+less verbosity.
+
+Secondly, natively-typed funtions on concrete types can be higher performance:
+since they're not [virtual function calls](#virtual-function-calls), we
+can expect [inlining](#inlining-functions) to work.  We might expect this to
+be particularly consequential in builders and in accessor methods, since these
+involve numerous calls to methods with small bodies -- precisely the sort of
+situation that often substantially benefits from inlining.
+
+At the same time, it goes without saying that we need the general Node and
+NodeBuilder interfaces to be satisfied, so that we can write generic library
+code such as reusable traversals, etc.  It is not possible to satisfy both
+needs with a single set of methods with the Golang typesystem.
 
 
 
