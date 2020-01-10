@@ -32,8 +32,8 @@ Maybe.  Let's see.
 */
 
 type NodeAssembler interface {
-	CreateMap() MapNodeAssembler
-	CreateList() ListNodeAssembler
+	BeginMap() MapNodeAssembler
+	BeginList() ListNodeAssembler
 	AssignNull()
 	AssignBool(bool)
 	AssignInt(int)
@@ -46,17 +46,27 @@ type NodeAssembler interface {
 }
 
 type MapNodeAssembler interface {
-	AssembleKey() NodeAssembler
-	AssembleValue() NodeAssembler
+	AssembleKey() MapKeyAssembler
 
-	Assign(string, Node)
-	Assign2(Node, Node)
+	Insert(string, Node)
+	Insert2(Node, Node)
+
+	Done()
+}
+type MapKeyAssembler interface {
+	NodeAssembler
+	AssembleValue() MapValueAssembler
+}
+type MapValueAssembler interface {
+	NodeAssembler
 }
 
 type ListNodeAssembler interface {
 	AssembleValue() NodeAssembler
 
 	Append(Node)
+
+	Done()
 }
 
 type NodeBuilder interface {
@@ -75,10 +85,12 @@ func demo() {
 		func(mb MapNodeAssembler) {
 			mb.AssembleKey().AssignString("nested")
 			mb.AssembleValue().AssignBool(true)
-		}(mb.AssembleValue().CreateMap())
+			mb.Done()
+		}(mb.AssembleValue().BeginMap())
 		mb.AssembleKey().AssignString("secondkey")
 		mb.AssembleValue().AssignString("morevalue")
-	}(nb.CreateMap())
+		mb.Done()
+	}(nb.BeginMap())
 	result, err := nb.Build()
 	_, _ = result, err
 }
@@ -100,7 +112,9 @@ Cons:
 	- when you have a typed map value, does the next `AssembleKey` call trigger validating value?
 	- what happens for the last value in a map?  now we're really in trouble.  the next action on the parent has to pick up the duty?  no, I really don't think that's even viable.
 - is every builder gonna need to have room inside to curry an error?  that means a bunch of things might go from zero to nonzero struct size, which might be consequential.
-- i really don't like that we have two different styles of usage appearing in the same interfaces (the 'Assemble' recursors vs 'Assign'/'Append').
+- i really don't like that we have two different styles of usage appearing in the same interfaces (the 'Assemble' recursors vs 'Insert'/'Append').
+	- ... maybe we can get rid of those now?  `mb.AssembleKey().Assign(n1).Assign(n2)`?  no, not quite a one-liner yet...
+		- ... yeah, I can't get a one-liner out of this.  either the key or the value might require or design (respectively) a closure in order to flow well.  the former complicates the core interface, and the latter can still be done from the outside but then just looks weird.
 - building single scalar values got more annoying.  it's at least two or three lines now: create builder, do assign, call build.
 	- question is whether this is the thing to worry about -- we traded this for fewer lines when making recursive structures, which we presumably do more often than not.
 
