@@ -1,6 +1,11 @@
 package nodeworkshop
 
 /*
+	Experiment closed: we didn't reach a clearly better error handling
+	strategy that's ergonomic and performant, and what we did reach is
+	probably stil better implemented as a wrapper package like 'fluent'.
+*/
+/*
 	The hypothesis I want to explore here is if having a "workshop" that
 	stores some global state and behaviors (and is very visibly passed down)
 	is a good idea.

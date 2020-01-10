@@ -42,7 +42,7 @@ type NodeAssembler interface {
 	AssignBytes([]byte)
 
 	Assign(Node)
-	CheckError() error
+	CheckError() error // where are these stored?  when each child is done, could check this.  and have it stored in each child.  means each allocs (nonzero struct)... but isn't that true anyway?  yeah.  well, except now you're apparently getting that for scalars, which is bad.
 }
 
 type MapNodeAssembler interface {

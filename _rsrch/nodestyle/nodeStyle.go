@@ -54,6 +54,28 @@ type NodeBuilder interface {
 type MapBuilder interface {
 	// in question whether this needs error returns and/or possibly a 'Done' method at all
 	// philosophically: is it worse if this cursor make cause an error when a method is called on its parent object (vs if we just put all cursor behavior in one object flatly)?
+
+	// how maps do key recursion is one major question;
+	// and whether the 'Done' method returns a Node is the other.
+	// the nodebuilder above seems to think things return Node, but that doesn't have to be.
+	// size hinting also got forgotten again.
+
+	// problem with trying to put the results elsewhere is... where?
+	//  the NodeBuilder above *doesn't have* a bind operation or Done method that could serve.
+	//   didn't we have a draft somewhere that... did?
+
+	// yeah, we did.  that's the 'nodeassembler' draft.
+	// currently thinking: best hybrid is:
+	// - yes, nodeStyle
+	// - yes, nodeAssembler vs nodeBuilder -- BUT:
+	// - nodeAssembler still return error promptly all over the place.
+	// the reasons these are the preferable choices are:
+	// - nodeStyle still dekinks about a dozen things
+	// - not returning intermediate nodes simplifies the builder/freezing cycle radically (basically, removes it) and this means going faster and with less code.
+	// - returning errors promptly all over the place reduces intermediate assembler structs needing to store errors just to curry weirdly and temporarily (esp. on scalar/leaf node construction).
+	// - and yes, in most generic algorithms, we're going to want to return errors completely promptly -- the position in the other side of a hylomorphism is relevant.
+	// - these interfaces are mostly for high performance in generic algorithms.  we can attempt to build additional friendliness for application programmers on at higher or alternative laters.
+
 }
 
 type ListBuilder interface {
