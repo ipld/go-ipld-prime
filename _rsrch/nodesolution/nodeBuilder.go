@@ -16,8 +16,8 @@ package ipld
 // language without first-class/compile-time support for them (as golang is)
 // would tend to push complexity and costs to execution time; we'd rather not.)
 type NodeAssembler interface {
-	BeginMap() (MapNodeAssembler, error)
-	BeginList() (ListNodeAssembler, error)
+	BeginMap(sizeHint int) (MapNodeAssembler, error)
+	BeginList(sizeHint int) (ListNodeAssembler, error)
 	AssignNull() error
 	AssignBool(bool) error
 	AssignInt(int) error
