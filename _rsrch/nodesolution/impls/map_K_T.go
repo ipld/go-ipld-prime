@@ -313,7 +313,9 @@ func (nb *_Map_K_T__Builder) Reset() {
 	nb.w = &Map_K_T{}
 }
 
-func (ta *_Map_K_T__Assembler) BeginMap(_ int) (ipld.MapNodeAssembler, error) {
+func (ta *_Map_K_T__Assembler) BeginMap(sizeHint int) (ipld.MapNodeAssembler, error) {
+	ta.w.t = make([]_Map_K_T__entry, 0, sizeHint)
+	ta.w.m = make(map[K]*T, sizeHint)
 	return ta, nil
 }
 func (_Map_K_T__Assembler) BeginList(_ int) (ipld.ListNodeAssembler, error) { panic("no") }
@@ -343,7 +345,8 @@ func (ma *_Map_K_T__Assembler) AssembleDirectly(k string) (ipld.NodeAssembler, e
 	}
 	l := len(ma.w.t)
 	ma.w.t = append(ma.w.t, _Map_K_T__entry{k: K{k}})
-	return &_T__Assembler{&ma.w.t[l].v}, nil
+	ma.va.w = &ma.w.t[l].v
+	return &ma.va, nil
 }
 
 func (ma *_Map_K_T__Assembler) AssembleKey() ipld.NodeAssembler {
@@ -353,14 +356,17 @@ func (ma *_Map_K_T__Assembler) AssembleKey() ipld.NodeAssembler {
 	ma.midappend = true
 	l := len(ma.w.t)
 	ma.w.t = append(ma.w.t, _Map_K_T__entry{})
-	return &_K__Assembler{&ma.w.t[l].k}
+	ma.ka.w = &ma.w.t[l].k
+	return &ma.ka
 }
 func (ma *_Map_K_T__Assembler) AssembleValue() ipld.NodeAssembler {
 	if ma.midappend == false {
 		panic("misuse")
 	}
 	ma.midappend = false // REVIEW: kinda sketchy to set this so early... but there's only so much hand-holding we can do!
-	return &_T__Assembler{&ma.w.t[len(ma.w.t)-1].v}
+	// FIXME rather big missing bit here: the child builder needs to cause map insertion when it's done.
+	ma.va.w = &ma.w.t[len(ma.w.t)-1].v
+	return &ma.va
 }
 func (ta *_Map_K_T__Assembler) Done() error {
 	if ta.midappend == true {
