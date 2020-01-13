@@ -31,9 +31,16 @@ type NodeAssembler interface {
 }
 
 type MapNodeAssembler interface {
-	Insert(string, Node) error
-	InsertComplexKey(Node, Node) error
-	AssembleInsertion() (NodeAssembler, NodeAssembler) // NOT POSSIBLE: latter may depend on actions on former.
+	Insert(string, Node) error         // REVIEW: shortcut of dubious utility.  could construct as free function.
+	InsertComplexKey(Node, Node) error // REVIEW: shortcut of dubious utility.  seriously, you can just use `Assemble{Key,Value}().Assign(n)`.
+	// `AssembleDirectly(string) (NodeAssembler, error)` ?  doesn't save much, probably.
+	// prev vtable jumps: GetKeyBuilder, CreateString, BuilderForValue, Whatever, Insert.
+	// now vtable jumps: AssembleKey, AssignString, AssembleValue, Whatever.  One better!
+	// AD vtable jumps: AssembleDirectly, Whatever.  Okay, maybe significant.
+	// this above thing: this is something you should actually write benchmarks for, as early as possible.
+
+	AssembleKey() NodeAssembler   // must be followed by call to AssembleValue.
+	AssembleValue() NodeAssembler // must be called immediately after AssembleKey.
 
 	Done() error
 
@@ -42,7 +49,8 @@ type MapNodeAssembler interface {
 }
 
 type ListNodeAssembler interface {
-	Append(Node) error
+	Append(Node) error // REVIEW: shortcut of dubious utility.  all the above arguments still work.  this skips... what, one vtable?  for what?
+
 	AssembleValue() NodeAssembler
 
 	Done() error
@@ -56,64 +64,10 @@ type NodeBuilder interface {
 
 	// Resets the builder.  It can hereafter be used again.
 	// Reusing a NodeBuilder can reduce allocations and improve performance.
-	// If you're not reusing the builder, don't call this.
 	//
-	// (Authors of generic algorithms handling maps: if your map has complex
-	// keys (e.g., you need to use a NodeBuilder and the InsertComplexKey
-	// function rather than just Insert), it's often particularly impact
-	// useful to
-	// no
-	// avoiding only one of the two allocs per key is Not Good
-	// okay... i can't think of a way to generically copy map keys without allocs.
-	// unless all maps basically contain the key twice: once in the map and once in a (second) slice.
-	// or if we just... completely reimplement maps.  but let's not.
-	// i guess this is also something we can/should defer...
-	// key takeaways for now are:
-	// - yes, you might actually need a values-only iterator, because holy crap
-	//   - might be worth an experiment to see if unused things can be escape-analyzed out; but i'm betting against.
-	//     - we can just... deliver the thing ignoring this, and do this later.  purely additive future work, no backtracking.
-	// - yes, you definitely need a way to stream in parts of a complex key... a builder outside and InsertComplexKey is not great.
-	// - optimizing for the key-comes-from-another-map mode might be trickier than the rest... but that's mostly on the source side rather than accept side.
+	// Only call this if you're going to reuse the builder.
+	// (Otherwise, it's unnecessary, and may cause an unwanted allocation).
 	Reset()
-}
-
-// sidequest for ergonomics test, even though this is priority 2 for these APIs
-func demo() {
-	mustChill := func(error) {}
-	var nb NodeBuilder
-	func(ma MapNodeAssembler) {
-		ka, va := ma.AssembleInsertion()
-		mustChill(ka.AssignString("key"))
-		func(ma MapNodeAssembler) {
-			ka, va := ma.AssembleInsertion()
-			mustChill(ka.AssignString("nested"))
-			mustChill(va.AssignBool(true))
-			ma.Done()
-		}(va.BeginMap())
-		ka, va = ma.AssembleInsertion() // calling this repeatedly will be annoying.  (for `:=`/`=` reasons, mainly.  also: disrupts lhs flow.)
-		mustChill(ka.AssignString("secondkey"))
-		mustChill(va.AssignString("morevalue"))
-		ma.Done()
-	}(nb.BeginMap())
-	result, err := nb.Build()
-	_, _ = result, err
-	// basically no part of the above works if you mentally replace `mustChill` with the three-liner that needs to return.
-	// so this whole demo is wishful thinking that's not particularly plausible;
-	// if we want indentation like this, it's gonna need to come from wrappers (like the already explored 'fluent' package).
-}
-
-type AltMapNodeAssembler interface {
-	Insert(string, Node) error
-	InsertComplexKey(Node, Node) error
-	AssembleKey() NodeAssembler   // must be followed by call to AssembleValue.
-	AssembleValue() NodeAssembler // must be called after AssembleKey.
-	// ^ this is attempting to fix the "lhs flow" issue, but doesn't touch the big compile error above around BeginMap returning error.
-	// ^ also probably require a word or two less memory to implement (i think).
-
-	Done() error
-
-	KeyStyle() NodeStyle   // you probably don't need this (because you should be able to just feed data and check errors), but it's here.
-	ValueStyle() NodeStyle // you probably don't need this (because you should be able to just feed data and check errors), but it's here.
 }
 
 // Complex keys: What do they come from?  (What arrre they _good_ for? (Absolutely nothin, say it again))
@@ -138,3 +92,21 @@ type AltMapNodeAssembler interface {
 //       - though since it would only work in *some* cases... still serious questions about whether that'd be a good API to show off.
 //       - we still also need to be able to get a NodeAssembler for streaming in value content when handling structs, so, then we'd end up with two APIs for this?
 //         - yeah, this design still does not go good places; abort.
+
+// Hey what actually happens if you make it interally do `map[Node]Thingy` and all keys are concretely `K` (*not* `*K`)?
+//  - You get the boxing to happen once, at least.
+//  - But a boxing alloc does happen for *every single* key.
+//  - Equality and equality-dependent behaviors are correct.
+//  - But equality and lookups will be a tad (just a tad -- a few nanos) slower, because of all the interface checks.
+// To say I'm disappointed by the idea of an alloc per key is an understatement.
+// And it would end up with a bunch of `Node` iface flying around filled with non-pointer types, and that... is a source of unusualness that I suspect will bring major antijoy.
+// But if you're going to iterate a thing literally twice, it would be preferable to the other status quo's.
+//  (Except for the `[]Entry{K,V}` strategy or equivalently `[]K,[]V` strategy.  Those can still do batched-alloc keys.)
+//   (Holy crap.  Actually... those can even return immutable keys during mid-construction.  Which fixes... oh my... one of the biggest issues that got us here.  Uh.)
+//    (No, Falsey.  It could; but if you actually held onto those, and had to resize the array, you'd end up holding onto multiple arrays, and not be happy.  It would, in effect, be a feature you'd never want to use, unless you knew in a fractal of detail what you were doing, and even then, it's harder to imagine good rather than footgunny uses.)
+
+// Something to consider for typed but non-codegen map implementations: `k struct{ body string; offsets [10]int }`.
+//  This could make it possible to create the typed node relatively cheaply (no parsing).
+//  But unclear if this is useful on the whole.  Doesn't avoid many allocs.  Doesn't make eq for map cheaper.
+//  And obviously, it has a limit on how complex of a struct it works for (the array must be fixed size and not slice, in order to be comparable).
+//  The less ornate option of just have a double map `{ keys map[string]Node; values map[string]Node }`, or `map[string]struct{k, v Node}` might remain superior to this idea.
