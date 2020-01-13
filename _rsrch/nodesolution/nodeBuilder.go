@@ -31,8 +31,9 @@ type NodeAssembler interface {
 }
 
 type MapNodeAssembler interface {
-	Insert(string, Node) error         // REVIEW: shortcut of dubious utility.  could construct as free function.
-	InsertComplexKey(Node, Node) error // REVIEW: shortcut of dubious utility.  seriously, you can just use `Assemble{Key,Value}().Assign(n)`.
+	//Insert(string, Node) error         // REVIEW: shortcut of dubious utility.  could construct as free function.
+	//InsertComplexKey(Node, Node) error // REVIEW: shortcut of dubious utility.  seriously, you can just use `Assemble{Key,Value}().Assign(n)`.
+
 	// `AssembleDirectly(string) (NodeAssembler, error)` ?  doesn't save much, probably.
 	// prev vtable jumps: GetKeyBuilder, CreateString, BuilderForValue, Whatever, Insert.
 	// now vtable jumps: AssembleKey, AssignString, AssembleValue, Whatever.  One better!
@@ -49,7 +50,7 @@ type MapNodeAssembler interface {
 }
 
 type ListNodeAssembler interface {
-	Append(Node) error // REVIEW: shortcut of dubious utility.  all the above arguments still work.  this skips... what, one vtable?  for what?
+	//Append(Node) error // REVIEW: shortcut of dubious utility.  all the above arguments still work.  this skips... what, one vtable?  for what?
 
 	AssembleValue() NodeAssembler
 
