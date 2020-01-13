@@ -39,6 +39,7 @@ type MapNodeAssembler interface {
 	// now vtable jumps: AssembleKey, AssignString, AssembleValue, Whatever.  One better!
 	// AD vtable jumps: AssembleDirectly, Whatever.  Okay, maybe significant.
 	// this above thing: this is something you should actually write benchmarks for, as early as possible.
+	AssembleDirectly(k string) (NodeAssembler, error)
 
 	AssembleKey() NodeAssembler   // must be followed by call to AssembleValue.
 	AssembleValue() NodeAssembler // must be called immediately after AssembleKey.

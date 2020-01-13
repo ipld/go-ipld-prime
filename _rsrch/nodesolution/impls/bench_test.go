@@ -65,3 +65,43 @@ func BenchmarkFeedGennedMapSimpleKeys(b *testing.B) {
 		}
 	}
 }
+
+func BenchmarkFeedGennedMapSimpleKeysDirectly(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		var nb ipld.NodeBuilder
+		nb = NewBuilder_Map_K_T()
+		ma, err := nb.BeginMap(3)
+		if err != nil {
+			panic(err)
+		}
+		if va, err := ma.AssembleDirectly("whee"); err != nil {
+			panic(err)
+		} else {
+			if err := va.AssignInt(1); err != nil {
+				panic(err)
+			}
+		}
+		if va, err := ma.AssembleDirectly("woot"); err != nil {
+			panic(err)
+		} else {
+			if err := va.AssignInt(2); err != nil {
+				panic(err)
+			}
+		}
+		if va, err := ma.AssembleDirectly("waga"); err != nil {
+			panic(err)
+		} else {
+			if err := va.AssignInt(3); err != nil {
+				panic(err)
+			}
+		}
+		if err := ma.Done(); err != nil {
+			panic(err)
+		}
+		if n, err := nb.Build(); err != nil {
+			panic(err)
+		} else {
+			sink = n
+		}
+	}
+}

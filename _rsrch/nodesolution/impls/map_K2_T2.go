@@ -243,6 +243,10 @@ func (ta *_T2__Assembler) Assign(v ipld.Node) error {
 }
 func (_T2__Assembler) Style() ipld.NodeStyle { panic("later") }
 
+func (ta *_T2__Assembler) AssembleDirectly(string) (ipld.NodeAssembler, error) {
+	// this'll be fun
+	panic("soon")
+}
 func (ta *_T2__Assembler) AssembleKey() ipld.NodeAssembler {
 	// this'll be fun
 	panic("soon")
