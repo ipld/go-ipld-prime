@@ -335,10 +335,18 @@ func (ta *_Map_K_T__Assembler) Assign(v ipld.Node) error {
 }
 func (_Map_K_T__Assembler) Style() ipld.NodeStyle { panic("later") }
 
+func (ma *_Map_K_T__Assembler) flushLastEntry() {
+	l := len(ma.w.t) - 1
+	if l < 0 {
+		return
+	}
+	ma.w.m[ma.w.t[l].k] = &ma.w.t[l].v
+}
 func (ma *_Map_K_T__Assembler) AssembleDirectly(k string) (ipld.NodeAssembler, error) {
 	if ma.midappend == true {
 		panic("misuse")
 	}
+	ma.flushLastEntry()
 	_, exists := ma.w.m[K{k}]
 	if exists {
 		return nil, ipld.ErrRepeatedMapKey{&K{k}}
@@ -353,6 +361,7 @@ func (ma *_Map_K_T__Assembler) AssembleKey() ipld.NodeAssembler {
 	if ma.midappend == true {
 		panic("misuse")
 	}
+	ma.flushLastEntry()
 	ma.midappend = true
 	l := len(ma.w.t)
 	ma.w.t = append(ma.w.t, _Map_K_T__entry{})
@@ -364,7 +373,6 @@ func (ma *_Map_K_T__Assembler) AssembleValue() ipld.NodeAssembler {
 		panic("misuse")
 	}
 	ma.midappend = false // REVIEW: kinda sketchy to set this so early... but there's only so much hand-holding we can do!
-	// FIXME rather big missing bit here: the child builder needs to cause map insertion when it's done.
 	ma.va.w = &ma.w.t[len(ma.w.t)-1].v
 	return &ma.va
 }
@@ -372,7 +380,7 @@ func (ta *_Map_K_T__Assembler) Done() error {
 	if ta.midappend == true {
 		panic("misuse")
 	}
-	// ... i... thought i was gonna need to do more work here.  i guess not.
+	ta.flushLastEntry()
 	// validators could run and report errors promptly, if this type had any.
 	return nil
 }
