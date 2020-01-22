@@ -21,6 +21,15 @@ import (
 	"github.com/ipld/go-ipld-prime/impl/typed"
 )
 
+// must.NotError simply panics if given an error.
+// It helps turn multi-line code into one-liner code in situations where
+// you simply don't care.
+func NotError(e error) {
+	if e != nil {
+		panic(e)
+	}
+}
+
 // must.Node helps write pointfree/chainable-style code
 // by taking a Node and an error and transforming any error into a panic.
 //

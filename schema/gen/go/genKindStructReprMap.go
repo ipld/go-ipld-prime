@@ -49,26 +49,20 @@ func (gk generateStructReprMapNode) EmitNodeMethodLookupString(w io.Writer) {
 			{{- $type := .Type -}} {{- /* ranging modifies dot, unhelpfully */ -}}
 			{{- range $field := .Type.Fields }}
 			case "{{ $field | $type.RepresentationStrategy.GetFieldKey }}":
-				{{- if and $field.IsOptional $field.IsNullable }}
-				if !rn.n.{{ $field.Name }}__exists {
+				{{- if $field.IsOptional }}
+				if rn.n.d.{{ $field.Name | titlize}}.Maybe == typed.Maybe_Absent {
 					return ipld.Undef, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
 				}
-				if rn.n.{{ $field.Name }} == nil {
-					return ipld.Null, nil
-				}
-				{{- else if $field.IsOptional }}
-				if rn.n.{{ $field.Name }} == nil {
-					return ipld.Undef, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
-				}
-				{{- else if $field.IsNullable }}
-				if rn.n.{{ $field.Name }} == nil {
+				{{- end}}
+				{{- if $field.IsNullable }}
+				if rn.n.d.{{ $field.Name | titlize}}.Maybe == typed.Maybe_Null {
 					return ipld.Null, nil
 				}
 				{{- end}}
 				{{- if or $field.IsOptional $field.IsNullable }}
-				return *rn.n.{{ $field.Name }}, nil
+				return rn.n.d.{{ $field.Name | titlize}}.Value, nil
 				{{- else}}
-				return rn.n.{{ $field.Name }}, nil
+				return rn.n.d.{{ $field.Name | titlize}}, nil
 				{{- end}}
 			{{- end}}
 			default:
@@ -115,27 +109,23 @@ func (gk generateStructReprMapNode) EmitNodeMethodMapIterator(w io.Writer) {
 				{{- range $i, $field := .Type.Fields }}
 				case {{ $i }}:
 					k = String{"{{ $field | $type.RepresentationStrategy.GetFieldKey }}"}
-					{{- if and $field.IsOptional $field.IsNullable }}
-					if !itr.node.{{ $field.Name }}__exists {
+					{{- if $field.IsOptional }}
+					if itr.node.d.{{ $field.Name | titlize}}.Maybe == typed.Maybe_Absent {
 						itr.idx++
 						continue
 					}
-					if itr.node.{{ $field.Name }} == nil {
-						v = ipld.Null
-						break
-					}
-					{{- else if $field.IsOptional }}
-					if itr.node.{{ $field.Name }} == nil {
-						itr.idx++
-						continue
-					}
-					{{- else if $field.IsNullable }}
-					if itr.node.{{ $field.Name }} == nil {
+					{{- end}}
+					{{- if $field.IsNullable }}
+					if itr.node.d.{{ $field.Name | titlize}}.Maybe == typed.Maybe_Null {
 						v = ipld.Null
 						break
 					}
 					{{- end}}
-					v = itr.node.{{ $field.Name }}
+					{{- if or $field.IsOptional $field.IsNullable }}
+					v = itr.node.d.{{ $field.Name | titlize}}.Value
+					{{- else}}
+					v = itr.node.d.{{ $field.Name | titlize}}
+					{{- end}}
 				{{- end}}
 				default:
 					panic("unreachable")
@@ -159,12 +149,8 @@ func (gk generateStructReprMapNode) EmitNodeMethodLength(w io.Writer) {
 		func (rn {{ .Type | mungeTypeReprNodeIdent }}) Length() int {
 			l := {{ len .Type.Fields }}
 			{{- range $field := .Type.Fields }}
-			{{- if and $field.IsOptional $field.IsNullable }}
-			if !rn.n.{{ $field.Name }}__exists {
-				l--
-			}
-			{{- else if $field.IsOptional }}
-			if rn.n.{{ $field.Name }} == nil {
+			{{- if $field.IsOptional }}
+			if rn.n.d.{{ $field.Name | titlize}}.Maybe == typed.Maybe_Absent {
 				l--
 			}
 			{{- end}}
@@ -231,7 +217,13 @@ func (gk generateStructReprMapNb) EmitNodebuilderMethodCreateMap(w io.Writer) {
 	//  see the comments in the NodeBuilder interface for the open questions on this topic.
 	doTemplate(`
 		func (nb {{ .Type | mungeTypeReprNodebuilderIdent }}) CreateMap() (ipld.MapBuilder, error) {
-			return &{{ .Type | mungeTypeReprNodeMapBuilderIdent }}{v:&{{ .Type | mungeTypeNodeIdent }}{}}, nil
+			mb := &{{ .Type | mungeTypeReprNodeMapBuilderIdent }}{v:&{{ .Type | mungeTypeNodeIdent }}{}}
+			{{- range $field := .Type.Fields }}
+			{{- if $field.IsOptional }}
+			mb.v.d.{{ $field.Name | titlize }}.Maybe = typed.Maybe_Absent
+			{{- end}}
+			{{- end}}
+			return mb, nil
 		}
 
 		type {{ .Type | mungeTypeReprNodeMapBuilderIdent }} struct{
@@ -255,12 +247,8 @@ func (gk generateStructReprMapNb) EmitNodebuilderMethodCreateMap(w io.Writer) {
 				}
 				{{- if $field.IsNullable }}
 				if v.IsNull() {
-					mb.v.{{ $field.Name }} = nil
-					{{- if $field.IsOptional }}
-					mb.v.{{ $field.Name }}__exists = true
-					{{- else}}
+					mb.v.d.{{ $field.Name | titlize}}.Maybe = typed.Maybe_Null
 					mb.{{ $field.Name }}__isset = true
-					{{- end}}
 					return nil
 				}
 				{{- else}}
@@ -278,12 +266,12 @@ func (gk generateStructReprMapNb) EmitNodebuilderMethodCreateMap(w io.Writer) {
 				}
 
 				{{- if or $field.IsOptional $field.IsNullable }}
-				mb.v.{{ $field.Name }} = &x
+				mb.v.d.{{ $field.Name | titlize}}.Value = x
 				{{- else}}
-				mb.v.{{ $field.Name }} = x
+				mb.v.d.{{ $field.Name | titlize}} = x
 				{{- end}}
-				{{- if and $field.IsOptional $field.IsNullable }}
-				mb.v.{{ $field.Name }}__exists = true
+				{{- if $field.IsOptional }}
+				mb.v.d.{{ $field.Name | titlize}}.Maybe = typed.Maybe_Value
 				{{- end}}
 				mb.{{ $field.Name }}__isset = true
 			{{- end}}
