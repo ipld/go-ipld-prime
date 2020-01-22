@@ -109,7 +109,7 @@ func CheckMaps(t *testing.T, ns ipld.NodeStyle) {
 		})
 		t.Run("reads for absent keys error sensibly", func(t *testing.T) {
 			v, err := n.LookupString("nope")
-			// wish.Wish(t, err, wish.ShouldBeSameTypeAs, ipld.ErrNotExists{}) // TODO depends on a bump of go-wish
+			wish.Wish(t, err, wish.ShouldBeSameTypeAs, ipld.ErrNotExists{})
 			wish.Wish(t, err.Error(), wish.ShouldEqual, `key not found: "nope"`)
 			wish.Wish(t, v, wish.ShouldEqual, nil)
 		})
@@ -127,8 +127,7 @@ func CheckMaps(t *testing.T, ns ipld.NodeStyle) {
 			panic(err)
 		}
 		if err := ma.AssembleKey().AssignString("whee"); err != nil {
-			// wish.Wish(t, err, wish.ShouldBeSameTypeAs, ipld.ErrRepeatedMapKey{}) // TODO depends on a bump of go-wish
-
+			wish.Wish(t, err, wish.ShouldBeSameTypeAs, ipld.ErrRepeatedMapKey{})
 			// No string assertion at present -- how that should be presented for typed stuff is unsettled
 			//  (and if it's clever, it'll differ from untyped, which will mean no assertion possible!).
 		}
