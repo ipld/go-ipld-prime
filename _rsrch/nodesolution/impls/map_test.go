@@ -16,22 +16,25 @@ func TestGenericMapIntValues(t *testing.T) {
 	CheckMaps(t, Style__Map{})
 }
 
+func buildMapStrIntN3(ns ipld.NodeStyle) ipld.Node {
+	nb := ns.NewBuilder()
+	ma, err := nb.BeginMap(3)
+	must.NotError(err)
+	must.NotError(ma.AssembleKey().AssignString("whee"))
+	must.NotError(ma.AssembleValue().AssignInt(1))
+	must.NotError(ma.AssembleKey().AssignString("woot"))
+	must.NotError(ma.AssembleValue().AssignInt(2))
+	must.NotError(ma.AssembleKey().AssignString("waga"))
+	must.NotError(ma.AssembleValue().AssignInt(3))
+	must.NotError(ma.Done())
+	n, err := nb.Build()
+	must.NotError(err)
+	return n
+}
+
 func CheckMaps(t *testing.T, ns ipld.NodeStyle) {
 	t.Run("map node, str:int, 3 entries", func(t *testing.T) {
-		nb := ns.NewBuilder()
-		ma, err := nb.BeginMap(3)
-		must.NotError(err)
-		must.NotError(ma.AssembleKey().AssignString("whee"))
-		must.NotError(ma.AssembleValue().AssignInt(1))
-		must.NotError(ma.AssembleKey().AssignString("woot"))
-		must.NotError(ma.AssembleValue().AssignInt(2))
-		must.NotError(ma.AssembleKey().AssignString("waga"))
-		must.NotError(ma.AssembleValue().AssignInt(3))
-		must.NotError(ma.Done())
-		n, err := nb.Build()
-		if err != nil {
-			wish.Require(t, err, wish.ShouldEqual, nil)
-		}
+		n := buildMapStrIntN3(ns)
 		t.Run("reads back out", func(t *testing.T) {
 			wish.Wish(t, n.Length(), wish.ShouldEqual, 3)
 

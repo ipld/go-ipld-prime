@@ -30,47 +30,13 @@ func BenchmarkMap3nBaselineJsonUnmarshalMapSimpleKeys(b *testing.B) {
 
 func BenchmarkMap3nFeedGenericMapSimpleKeys(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		var nb ipld.NodeBuilder
-		nb = Style__Map{}.NewBuilder()
-		ma, err := nb.BeginMap(3)
-		if err != nil {
-			panic(err)
-		}
-		must.NotError(ma.AssembleKey().AssignString("whee"))
-		must.NotError(ma.AssembleValue().AssignInt(1))
-		must.NotError(ma.AssembleKey().AssignString("woot"))
-		must.NotError(ma.AssembleValue().AssignInt(2))
-		must.NotError(ma.AssembleKey().AssignString("waga"))
-		must.NotError(ma.AssembleValue().AssignInt(3))
-		must.NotError(ma.Done())
-		if n, err := nb.Build(); err != nil {
-			panic(err)
-		} else {
-			sink = n
-		}
+		sink = buildMapStrIntN3(Style__Map{})
 	}
 }
 
 func BenchmarkMap3nFeedGennedMapSimpleKeys(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		var nb ipld.NodeBuilder
-		nb = Type__Map_K_T{}.NewBuilder()
-		ma, err := nb.BeginMap(3)
-		if err != nil {
-			panic(err)
-		}
-		must.NotError(ma.AssembleKey().AssignString("whee"))
-		must.NotError(ma.AssembleValue().AssignInt(1))
-		must.NotError(ma.AssembleKey().AssignString("woot"))
-		must.NotError(ma.AssembleValue().AssignInt(2))
-		must.NotError(ma.AssembleKey().AssignString("waga"))
-		must.NotError(ma.AssembleValue().AssignInt(3))
-		must.NotError(ma.Done())
-		if n, err := nb.Build(); err != nil {
-			panic(err)
-		} else {
-			sink = n
-		}
+		sink = buildMapStrIntN3(Type__Map_K_T{})
 	}
 }
 
