@@ -71,3 +71,45 @@ func BenchmarkMap3nFeedGennedMapSimpleKeysDirectly(b *testing.B) {
 		}
 	}
 }
+
+var sink_s string
+var sink_i int
+
+func BenchmarkMap3nBaselineNativeMapIterationSimpleKeys(b *testing.B) {
+	var x = make(map[string]int, 3)
+	x["whee"] = 1
+	x["woot"] = 2
+	x["waga"] = 3
+	sink = x
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		for k, v := range x {
+			sink_s = k
+			sink_i = v
+		}
+	}
+}
+
+func BenchmarkMap3nGenericMapIterationSimpleKeys(b *testing.B) {
+	n := buildMapStrIntN3(Style__Map{})
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		itr := n.MapIterator()
+		for k, v, _ := itr.Next(); !itr.Done(); k, v, _ = itr.Next() {
+			sink = k
+			sink = v
+		}
+	}
+}
+
+func BenchmarkMap3nGennedMapIterationSimpleKeys(b *testing.B) {
+	n := buildMapStrIntN3(Type__Map_K_T{})
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		itr := n.MapIterator()
+		for k, v, _ := itr.Next(); !itr.Done(); k, v, _ = itr.Next() {
+			sink = k
+			sink = v
+		}
+	}
+}
