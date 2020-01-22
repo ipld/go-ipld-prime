@@ -3,7 +3,13 @@ module github.com/ipld/go-ipld-prime
 go 1.12
 
 require (
-	github.com/ipfs/go-cid v0.0.2
-	github.com/polydawn/refmt v0.0.0-20190408063855-01bf1e26dd14
-	github.com/warpfork/go-wish v0.0.0-20190328234359-8b3e70f8e830
+	github.com/gxed/hashland/keccakpg v0.0.1 // indirect
+	github.com/gxed/hashland/murmur3 v0.0.1 // indirect
+	github.com/ipfs/go-cid v0.0.4
+	github.com/minio/sha256-simd v0.1.1 // indirect
+	github.com/mr-tron/base58 v1.1.3 // indirect
+	github.com/polydawn/refmt v0.0.0-20190807091052-3d65705ee9f1
+	github.com/warpfork/go-wish v0.0.0-20200122115046-b9ea61034e4a
+	golang.org/x/crypto v0.0.0-20200117160349-530e935923ad // indirect
+	golang.org/x/sys v0.0.0-20200122134326-e047566fdf82 // indirect
 )
