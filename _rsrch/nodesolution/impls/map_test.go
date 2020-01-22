@@ -1,6 +1,7 @@
 package impls
 
 import (
+	"strconv"
 	"testing"
 
 	wish "github.com/warpfork/go-wish"
@@ -8,6 +9,20 @@ import (
 	ipld "github.com/ipld/go-ipld-prime/_rsrch/nodesolution"
 	"github.com/ipld/go-ipld-prime/must"
 )
+
+var tableStrInt = [25]struct {
+	s string
+	i int
+}{}
+
+func init() {
+	for i := 1; i <= 25; i++ {
+		tableStrInt[i-1] = struct {
+			s string
+			i int
+		}{"k" + strconv.Itoa(i), i}
+	}
+}
 
 func TestGennedMapIntValues(t *testing.T) {
 	CheckMaps(t, Type__Map_K_T{})
@@ -26,6 +41,20 @@ func buildMapStrIntN3(ns ipld.NodeStyle) ipld.Node {
 	must.NotError(ma.AssembleValue().AssignInt(2))
 	must.NotError(ma.AssembleKey().AssignString("waga"))
 	must.NotError(ma.AssembleValue().AssignInt(3))
+	must.NotError(ma.Done())
+	n, err := nb.Build()
+	must.NotError(err)
+	return n
+}
+
+func buildMapStrIntN25(ns ipld.NodeStyle) ipld.Node {
+	nb := ns.NewBuilder()
+	ma, err := nb.BeginMap(25)
+	must.NotError(err)
+	for i := 1; i <= 25; i++ {
+		must.NotError(ma.AssembleKey().AssignString(tableStrInt[i-1].s))
+		must.NotError(ma.AssembleValue().AssignInt(tableStrInt[i-1].i))
+	}
 	must.NotError(ma.Done())
 	n, err := nb.Build()
 	must.NotError(err)

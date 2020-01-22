@@ -113,3 +113,90 @@ func BenchmarkMap3nGennedMapIterationSimpleKeys(b *testing.B) {
 		}
 	}
 }
+
+// n25 -->
+
+func BenchmarkMap25nBaselineNativeMapAssignSimpleKeys(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		var x = make(map[string]int, 25)
+		for i := 1; i <= 25; i++ {
+			x[tableStrInt[i-1].s] = tableStrInt[i-1].i
+		}
+		sink = x
+	}
+}
+
+func BenchmarkMap25nFeedGenericMapSimpleKeys(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		sink = buildMapStrIntN25(Style__Map{})
+	}
+}
+
+func BenchmarkMap25nFeedGennedMapSimpleKeys(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		sink = buildMapStrIntN25(Type__Map_K_T{})
+	}
+}
+
+func BenchmarkMap25nFeedGennedMapSimpleKeysDirectly(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		var nb ipld.NodeBuilder
+		nb = Type__Map_K_T{}.NewBuilder()
+		ma, err := nb.BeginMap(25)
+		if err != nil {
+			panic(err)
+		}
+		for i := 1; i <= 25; i++ {
+			if va, err := ma.AssembleDirectly(tableStrInt[i-1].s); err != nil {
+				panic(err)
+			} else {
+				must.NotError(va.AssignInt(tableStrInt[i-1].i))
+			}
+		}
+		must.NotError(ma.Done())
+		if n, err := nb.Build(); err != nil {
+			panic(err)
+		} else {
+			sink = n
+		}
+	}
+}
+
+func BenchmarkMap25nBaselineNativeMapIterationSimpleKeys(b *testing.B) {
+	var x = make(map[string]int, 25)
+	for i := 1; i <= 25; i++ {
+		x[tableStrInt[i-1].s] = tableStrInt[i-1].i
+	}
+	sink = x
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		for k, v := range x {
+			sink_s = k
+			sink_i = v
+		}
+	}
+}
+
+func BenchmarkMap25nGenericMapIterationSimpleKeys(b *testing.B) {
+	n := buildMapStrIntN25(Style__Map{})
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		itr := n.MapIterator()
+		for k, v, _ := itr.Next(); !itr.Done(); k, v, _ = itr.Next() {
+			sink = k
+			sink = v
+		}
+	}
+}
+
+func BenchmarkMap25nGennedMapIterationSimpleKeys(b *testing.B) {
+	n := buildMapStrIntN25(Type__Map_K_T{})
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		itr := n.MapIterator()
+		for k, v, _ := itr.Next(); !itr.Done(); k, v, _ = itr.Next() {
+			sink = k
+			sink = v
+		}
+	}
+}
