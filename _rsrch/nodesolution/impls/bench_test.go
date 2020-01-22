@@ -9,7 +9,7 @@ import (
 
 var sink interface{}
 
-func BenchmarkBaselineNativeMapAssignSimpleKeys(b *testing.B) {
+func BenchmarkMap3nBaselineNativeMapAssignSimpleKeys(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		var x = make(map[string]int, 3)
 		x["whee"] = 1
@@ -19,7 +19,7 @@ func BenchmarkBaselineNativeMapAssignSimpleKeys(b *testing.B) {
 	}
 }
 
-func BenchmarkBaselineJsonUnmarshalMapSimpleKeys(b *testing.B) {
+func BenchmarkMap3nBaselineJsonUnmarshalMapSimpleKeys(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		var x = make(map[string]int, 3)
 		if err := json.Unmarshal([]byte(`{"whee":1,"woot":2,"waga":3}`), &x); err != nil {
@@ -29,10 +29,10 @@ func BenchmarkBaselineJsonUnmarshalMapSimpleKeys(b *testing.B) {
 	}
 }
 
-func BenchmarkFeedGennedMapSimpleKeys(b *testing.B) {
+func BenchmarkMap3nFeedGenericMapSimpleKeys(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		var nb ipld.NodeBuilder
-		nb = NewBuilder_Map_K_T()
+		nb = Style__Map{}.NewBuilder()
 		ma, err := nb.BeginMap(3)
 		if err != nil {
 			panic(err)
@@ -66,10 +66,47 @@ func BenchmarkFeedGennedMapSimpleKeys(b *testing.B) {
 	}
 }
 
-func BenchmarkFeedGennedMapSimpleKeysDirectly(b *testing.B) {
+func BenchmarkMap3nFeedGennedMapSimpleKeys(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		var nb ipld.NodeBuilder
-		nb = NewBuilder_Map_K_T()
+		nb = Type__Map_K_T{}.NewBuilder()
+		ma, err := nb.BeginMap(3)
+		if err != nil {
+			panic(err)
+		}
+		if err := ma.AssembleKey().AssignString("whee"); err != nil {
+			panic(err)
+		}
+		if err := ma.AssembleValue().AssignInt(1); err != nil {
+			panic(err)
+		}
+		if err := ma.AssembleKey().AssignString("woot"); err != nil {
+			panic(err)
+		}
+		if err := ma.AssembleValue().AssignInt(2); err != nil {
+			panic(err)
+		}
+		if err := ma.AssembleKey().AssignString("waga"); err != nil {
+			panic(err)
+		}
+		if err := ma.AssembleValue().AssignInt(3); err != nil {
+			panic(err)
+		}
+		if err := ma.Done(); err != nil {
+			panic(err)
+		}
+		if n, err := nb.Build(); err != nil {
+			panic(err)
+		} else {
+			sink = n
+		}
+	}
+}
+
+func BenchmarkMap3nFeedGennedMapSimpleKeysDirectly(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		var nb ipld.NodeBuilder
+		nb = Type__Map_K_T{}.NewBuilder()
 		ma, err := nb.BeginMap(3)
 		if err != nil {
 			panic(err)
