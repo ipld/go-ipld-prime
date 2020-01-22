@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	ipld "github.com/ipld/go-ipld-prime/_rsrch/nodesolution"
+	"github.com/ipld/go-ipld-prime/must"
 )
 
 var sink interface{}
@@ -22,9 +23,7 @@ func BenchmarkMap3nBaselineNativeMapAssignSimpleKeys(b *testing.B) {
 func BenchmarkMap3nBaselineJsonUnmarshalMapSimpleKeys(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		var x = make(map[string]int, 3)
-		if err := json.Unmarshal([]byte(`{"whee":1,"woot":2,"waga":3}`), &x); err != nil {
-			panic(err)
-		}
+		must.NotError(json.Unmarshal([]byte(`{"whee":1,"woot":2,"waga":3}`), &x))
 		sink = x
 	}
 }
@@ -37,27 +36,13 @@ func BenchmarkMap3nFeedGenericMapSimpleKeys(b *testing.B) {
 		if err != nil {
 			panic(err)
 		}
-		if err := ma.AssembleKey().AssignString("whee"); err != nil {
-			panic(err)
-		}
-		if err := ma.AssembleValue().AssignInt(1); err != nil {
-			panic(err)
-		}
-		if err := ma.AssembleKey().AssignString("woot"); err != nil {
-			panic(err)
-		}
-		if err := ma.AssembleValue().AssignInt(2); err != nil {
-			panic(err)
-		}
-		if err := ma.AssembleKey().AssignString("waga"); err != nil {
-			panic(err)
-		}
-		if err := ma.AssembleValue().AssignInt(3); err != nil {
-			panic(err)
-		}
-		if err := ma.Done(); err != nil {
-			panic(err)
-		}
+		must.NotError(ma.AssembleKey().AssignString("whee"))
+		must.NotError(ma.AssembleValue().AssignInt(1))
+		must.NotError(ma.AssembleKey().AssignString("woot"))
+		must.NotError(ma.AssembleValue().AssignInt(2))
+		must.NotError(ma.AssembleKey().AssignString("waga"))
+		must.NotError(ma.AssembleValue().AssignInt(3))
+		must.NotError(ma.Done())
 		if n, err := nb.Build(); err != nil {
 			panic(err)
 		} else {
@@ -74,27 +59,13 @@ func BenchmarkMap3nFeedGennedMapSimpleKeys(b *testing.B) {
 		if err != nil {
 			panic(err)
 		}
-		if err := ma.AssembleKey().AssignString("whee"); err != nil {
-			panic(err)
-		}
-		if err := ma.AssembleValue().AssignInt(1); err != nil {
-			panic(err)
-		}
-		if err := ma.AssembleKey().AssignString("woot"); err != nil {
-			panic(err)
-		}
-		if err := ma.AssembleValue().AssignInt(2); err != nil {
-			panic(err)
-		}
-		if err := ma.AssembleKey().AssignString("waga"); err != nil {
-			panic(err)
-		}
-		if err := ma.AssembleValue().AssignInt(3); err != nil {
-			panic(err)
-		}
-		if err := ma.Done(); err != nil {
-			panic(err)
-		}
+		must.NotError(ma.AssembleKey().AssignString("whee"))
+		must.NotError(ma.AssembleValue().AssignInt(1))
+		must.NotError(ma.AssembleKey().AssignString("woot"))
+		must.NotError(ma.AssembleValue().AssignInt(2))
+		must.NotError(ma.AssembleKey().AssignString("waga"))
+		must.NotError(ma.AssembleValue().AssignInt(3))
+		must.NotError(ma.Done())
 		if n, err := nb.Build(); err != nil {
 			panic(err)
 		} else {
@@ -114,27 +85,19 @@ func BenchmarkMap3nFeedGennedMapSimpleKeysDirectly(b *testing.B) {
 		if va, err := ma.AssembleDirectly("whee"); err != nil {
 			panic(err)
 		} else {
-			if err := va.AssignInt(1); err != nil {
-				panic(err)
-			}
+			must.NotError(va.AssignInt(1))
 		}
 		if va, err := ma.AssembleDirectly("woot"); err != nil {
 			panic(err)
 		} else {
-			if err := va.AssignInt(2); err != nil {
-				panic(err)
-			}
+			must.NotError(va.AssignInt(2))
 		}
 		if va, err := ma.AssembleDirectly("waga"); err != nil {
 			panic(err)
 		} else {
-			if err := va.AssignInt(3); err != nil {
-				panic(err)
-			}
+			must.NotError(va.AssignInt(3))
 		}
-		if err := ma.Done(); err != nil {
-			panic(err)
-		}
+		must.NotError(ma.Done())
 		if n, err := nb.Build(); err != nil {
 			panic(err)
 		} else {

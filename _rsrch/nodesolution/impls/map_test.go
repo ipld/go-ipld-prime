@@ -3,9 +3,10 @@ package impls
 import (
 	"testing"
 
-	ipld "github.com/ipld/go-ipld-prime/_rsrch/nodesolution"
-
 	wish "github.com/warpfork/go-wish"
+
+	ipld "github.com/ipld/go-ipld-prime/_rsrch/nodesolution"
+	"github.com/ipld/go-ipld-prime/must"
 )
 
 func TestGennedMapIntValues(t *testing.T) {
@@ -19,30 +20,14 @@ func CheckMaps(t *testing.T, ns ipld.NodeStyle) {
 	t.Run("map node, str:int, 3 entries", func(t *testing.T) {
 		nb := ns.NewBuilder()
 		ma, err := nb.BeginMap(3)
-		if err != nil {
-			panic(err)
-		}
-		if err := ma.AssembleKey().AssignString("whee"); err != nil {
-			panic(err)
-		}
-		if err := ma.AssembleValue().AssignInt(1); err != nil {
-			panic(err)
-		}
-		if err := ma.AssembleKey().AssignString("woot"); err != nil {
-			panic(err)
-		}
-		if err := ma.AssembleValue().AssignInt(2); err != nil {
-			panic(err)
-		}
-		if err := ma.AssembleKey().AssignString("waga"); err != nil {
-			panic(err)
-		}
-		if err := ma.AssembleValue().AssignInt(3); err != nil {
-			panic(err)
-		}
-		if err := ma.Done(); err != nil {
-			panic(err)
-		}
+		must.NotError(err)
+		must.NotError(ma.AssembleKey().AssignString("whee"))
+		must.NotError(ma.AssembleValue().AssignInt(1))
+		must.NotError(ma.AssembleKey().AssignString("woot"))
+		must.NotError(ma.AssembleValue().AssignInt(2))
+		must.NotError(ma.AssembleKey().AssignString("waga"))
+		must.NotError(ma.AssembleValue().AssignInt(3))
+		must.NotError(ma.Done())
 		n, err := nb.Build()
 		if err != nil {
 			wish.Require(t, err, wish.ShouldEqual, nil)
