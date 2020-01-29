@@ -110,6 +110,138 @@ func (itr *_K2_MapIterator) Done() bool {
 	return itr.idx >= 2
 }
 
+type _K2__Assembler struct {
+	w *K2
+
+	state maState
+
+	// ca_u // this field is primitive kind and we know it, so we can just do a bunch of stuff directly.
+	// ca_i // this field is primitive kind and we know it, so we can just do a bunch of stuff directly.
+	// ^ not at all sure this is true, we need SOMETHING to yield, and it's not a uniform thing in general like it is for maps.
+	// ^ and it's not clear we're saving much by trying to avoid it or specialize it.  it'll get largely inlined anyway.  ... wait
+	// holy kjott i continue to need doneness checkers in all places and
+	// i do not want
+	// to generate a wrapper PER FIELD TYPE.
+	// that was possible for maps because it's just one, but here?!  oh my god.  no.
+	// we need interfaces for this.  we do.
+	//...
+	// `typed.wrapper` can use just one monomorphic type, i think.
+	// datamodel stuff alone just doesn't have this issue.
+	// codegen'd stuff is the only one who has an issue here.
+	// not sure if that observation offers any usefully clearer path to solution.
+	//...
+	// if would seem to imply that if we do use an interface here, it can actually (bizarrely enough) be an unexported one.
+	// the idea of pointers in every assembler to a callback, and the parent just sets that like it does the 'w' node, is also still on the table.
+	//  (as long as we can verify that we won't accidentally spawn a new closure alloc to do that -- but this should be easy enough.)
+	//  what to do if this is nil bothers me, but... actually, i think a fixed noop is best; there's already constructors fencing all assemblers, so we can do this.
+	// or we can indeed generate a type per field, and that's honestly gonna be at least one more thing inlined rather than funcptr call,
+	//  if at fairly horrendous cost in GLOC as well as binary size.
+	//  it's the same cost in memory, surprisingly: either a ptr to the callback, or the generated type has a pointer to the parent 'w'.
+	//...
+	// okay, so i'm coming towards prefering the callback, given the realizations about {moot memory size + unexportability + no nil checks needed}.
+	// an interesting consequence of this, though, is that yep, every codegen'd package emitted is going to have its own typedefs of primitives.
+	//  but this is just a "sigh" thing, not any kind of problem, since we already defacto expect most packages providing Node to have their own on these.
+	//...
+	// we could also make a single va{*ca,*maState} per type and have it do a bunch of delegating calls.
+	//  the result of this would be a vtable jump for the delegation (otherwise we have unreusablity)... but that's similar to the update hook idea;
+	//  and at the same time, it's adding two words to the parent assembler, instead of a word to every field's assembler, which is likely better.
+	//  ... hang on, no, this is nontrivial for recursives: we don't want to have to decorate every intermediate key and value assemble call in a map builder just to keep control on the stack so we can intercept the 'done'; that's *way* worse than just one ptrfunc jump at the end.
+	//...
+	// a single clear correct choice is not yet clear here.  some further analysis may be needed.
+
+	isset_u bool
+	isset_i bool
+}
+type _K2__ReprAssembler struct {
+	w *K2
+
+	// note how this is totally different than the type-level assembler -- that's map-like, this is string.
+}
+
+// mostly internal; could put in a 'common' package, but probably better antifragileness to just replicate it into every codegen output package.
+type maState uint8
+
+const (
+	maState_initial     maState = iota // also the 'expect key or done' state
+	maState_midKey                     // waiting for a 'done' state in the KeyAssembler.
+	maState_expectValue                // 'AssembleValue' is the only valid next step
+	maState_midValue                   // waiting for a 'done' state in the ValueAssembler.
+	maState_done                       // 'w' will also be nil, but this is a politer statement
+)
+
+func (ta *_K2__Assembler) BeginMap(_ int) (ipld.MapNodeAssembler, error) { panic("no") }
+func (_K2__Assembler) BeginList(_ int) (ipld.ListNodeAssembler, error)   { panic("no") }
+func (_K2__Assembler) AssignNull() error                                 { panic("no") }
+func (_K2__Assembler) AssignBool(bool) error                             { panic("no") }
+func (_K2__Assembler) AssignInt(v int) error                             { panic("no") }
+func (_K2__Assembler) AssignFloat(float64) error                         { panic("no") }
+func (_K2__Assembler) AssignString(v string) error                       { panic("no") }
+func (_K2__Assembler) AssignBytes([]byte) error                          { panic("no") }
+func (ta *_K2__Assembler) Assign(v ipld.Node) error {
+	if v2, ok := v.(*K2); ok {
+		*ta.w = *v2
+		return nil
+	}
+	panic("todo implement generic copy and use it here")
+}
+func (_K2__Assembler) Style() ipld.NodeStyle { panic("later") }
+
+func (ma *_K2__Assembler) AssembleDirectly(k string) (ipld.NodeAssembler, error) {
+	// Sanity check, then update, assembler state.
+	if ma.state != maState_initial {
+		panic("misuse")
+	}
+	ma.state = maState_midValue
+	// Figure out which field we're addressing,
+	//  check if it's already been assigned (error if so),
+	//   grab a pointer to it and init its value assembler with that,
+	//    and yield that value assembler.
+	//  (Note that `isset_foo` bools may be inside the 'ma.w' node if
+	//   that field is optional; if it's required, they stay in 'ma'.)
+	switch k {
+	case "u":
+		if ma.isset_u {
+			return nil, ipld.ErrRepeatedMapKey{plainString("u")} // REVIEW: interesting to note this is a place we *keep* needing a basic string node impl, *everywhere*.
+		}
+		// TODO initialize the field child assembler 'w' *and* 'done' callback to us; return it.
+		panic("todo")
+	case "i":
+		// TODO same as above
+		panic("todo")
+	default:
+		panic("invalid field key")
+	}
+}
+
+func (ma *_K2__Assembler) AssembleKey() ipld.NodeAssembler {
+	// Sanity check, then update, assembler state.
+	if ma.state != maState_initial {
+		panic("misuse")
+	}
+	ma.state = maState_midKey
+	// TODO return a fairly dummy assembler which just contains a string switch (probably sharing code with AssembleDirectly).
+	panic("todo")
+}
+func (ma *_K2__Assembler) AssembleValue() ipld.NodeAssembler {
+	// Sanity check, then update, assembler state.
+	if ma.state != maState_expectValue {
+		panic("misuse")
+	}
+	ma.state = maState_midValue
+	// TODO initialize the field child assembler 'w' *and* 'done' callback to us; return it.
+	panic("todo")
+}
+func (ma *_K2__Assembler) Done() error {
+	// Sanity check assembler state.
+	if ma.state != maState_initial {
+		panic("misuse")
+	}
+	// validators could run and report errors promptly, if this type had any.
+	return nil
+}
+func (_K2__Assembler) KeyStyle() ipld.NodeStyle   { panic("later") }
+func (_K2__Assembler) ValueStyle() ipld.NodeStyle { panic("later") }
+
 func (T2) ReprKind() ipld.ReprKind {
 	return ipld.ReprKind_Map
 }
@@ -207,13 +339,6 @@ func (itr *_T2_MapIterator) Next() (k ipld.Node, v ipld.Node, _ error) {
 }
 func (itr *_T2_MapIterator) Done() bool {
 	return itr.idx >= 4
-}
-
-type _K2__Assembler struct {
-	w *K2
-}
-type _K2__ReprAssembler struct {
-	w *K2
 }
 
 type _T2__Assembler struct {

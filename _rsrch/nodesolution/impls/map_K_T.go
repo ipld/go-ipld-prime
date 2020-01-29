@@ -412,9 +412,9 @@ func (ma *_Map_K_T__Assembler) AssembleValue() ipld.NodeAssembler {
 	ma.va.ca.w = &ma.w.t[len(ma.w.t)-1].v
 	return &ma.va
 }
-func (ta *_Map_K_T__Assembler) Done() error {
+func (ma *_Map_K_T__Assembler) Done() error {
 	// Sanity check assembler state.
-	if ta.midappend == true {
+	if ma.midappend == true {
 		panic("misuse")
 	}
 	// validators could run and report errors promptly, if this type had any.
