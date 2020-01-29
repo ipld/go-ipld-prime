@@ -128,6 +128,8 @@ type TypeList struct {
 
 type TypeLink struct {
 	anyType
+	referencedType    Type
+	hasReferencedType bool
 	// ...?
 }
 

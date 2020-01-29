@@ -23,8 +23,8 @@ func (tc *Config) init() {
 	}
 	if tc.LinkNodeBuilderChooser == nil {
 		tc.LinkNodeBuilderChooser = func(lnk ipld.Link, lnkCtx ipld.LinkContext) ipld.NodeBuilder {
-			if tlnk, ok := lnk.(typed.Link); ok {
-				return tlnk.SuggestedNodeBuilder()
+			if tlnkNd, ok := lnkCtx.LinkNode.(typed.LinkNode); ok {
+				return tlnkNd.ReferencedNodeBuilder()
 			}
 			return ipldfree.NodeBuilder()
 		}

@@ -24,6 +24,7 @@ func TestNuevo(t *testing.T) {
 	tInt := schema.SpawnInt("Int")
 	tBytes := schema.SpawnBytes("Bytes")
 	tLink := schema.SpawnLink("Link")
+	tIntLink := schema.SpawnLinkReference("IntLink", tInt)
 	tIntList := schema.SpawnList("IntList", tInt, false)
 	tNullableIntList := schema.SpawnList("NullableIntList", tInt, true)
 
@@ -80,6 +81,10 @@ func TestNuevo(t *testing.T) {
 	f = openOrPanic("_test/tLink.go")
 	EmitFileHeader("whee", f)
 	EmitEntireType(NewGeneratorForKindLink(tLink), f)
+
+	f = openOrPanic("_test/tIntLink.go")
+	EmitFileHeader("whee", f)
+	EmitEntireType(NewGeneratorForKindLink(tIntLink), f)
 
 	f = openOrPanic("_test/tIntList.go")
 	EmitFileHeader("whee", f)
