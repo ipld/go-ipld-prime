@@ -7,6 +7,7 @@ import (
 
 	ipld "github.com/ipld/go-ipld-prime"
 	ipldfree "github.com/ipld/go-ipld-prime/impl/free"
+	"github.com/ipld/go-ipld-prime/impl/typed"
 )
 
 // init sets all the values in TraveralConfig to reasonable defaults
@@ -21,7 +22,10 @@ func (tc *Config) init() {
 		}
 	}
 	if tc.LinkNodeBuilderChooser == nil {
-		tc.LinkNodeBuilderChooser = func(ipld.Link, ipld.LinkContext) ipld.NodeBuilder {
+		tc.LinkNodeBuilderChooser = func(lnk ipld.Link, lnkCtx ipld.LinkContext) ipld.NodeBuilder {
+			if tlnk, ok := lnk.(typed.Link); ok {
+				return tlnk.SuggestedNodeBuilder()
+			}
 			return ipldfree.NodeBuilder()
 		}
 	}
