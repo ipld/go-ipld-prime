@@ -51,7 +51,7 @@ type typedLinkNodeGenerator interface {
 	typedNodeGenerator
 
 	// as typed.LinkNode.ReferencedNodeBuilder generator
-	EmitTypedLinkNodeMethodReferencedLinkBuilder(io.Writer)
+	EmitTypedLinkNodeMethodReferencedNodeBuilder(io.Writer)
 }
 
 type nodeGenerator interface {
@@ -150,7 +150,7 @@ func EmitEntireType(tg typedNodeGenerator, w io.Writer) {
 
 	tlg, ok := tg.(typedLinkNodeGenerator)
 	if ok {
-		tlg.EmitTypedLinkNodeMethodReferencedLinkBuilder(w)
+		tlg.EmitTypedLinkNodeMethodReferencedNodeBuilder(w)
 	}
 
 	tg.EmitTypedNodeMethodRepresentation(w)

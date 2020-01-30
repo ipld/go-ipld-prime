@@ -98,7 +98,7 @@ func (gk generateKindLink) EmitTypedNodeMethodRepresentation(w io.Writer) {
 	`, w, gk)
 }
 
-func (gk generateKindLink) EmitTypedLinkNodeMethodReferencedLinkBuilder(w io.Writer) {
+func (gk generateKindLink) EmitTypedLinkNodeMethodReferencedNodeBuilder(w io.Writer) {
 	if gk.Type.HasReferencedType() {
 		doTemplate(`
 		func ({{ .Type | mungeTypeNodeIdent }}) ReferencedNodeBuilder() ipld.NodeBuilder {
