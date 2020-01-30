@@ -143,3 +143,18 @@ func (t TypeEnum) Members() []string {
 	}
 	return a
 }
+
+// Links can keep a referenced type, which is a hint only about the data on the
+// other side of the link, no something that can be explicitly validated without
+// loading the link
+
+// HasReferencedType returns true if the link has a hint about the type it references
+// false if it's generic
+func (t TypeLink) HasReferencedType() bool {
+	return t.hasReferencedType
+}
+
+// ReferencedType returns the type hint for the node on the other side of the link
+func (t TypeLink) ReferencedType() Type {
+	return t.referencedType
+}

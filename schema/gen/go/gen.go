@@ -46,6 +46,14 @@ type typedNodeGenerator interface {
 	GetRepresentationNodeGen() nodeGenerator // includes transitively the matched nodebuilderGenerator
 }
 
+type typedLinkNodeGenerator interface {
+	// all methods in typedNodeGenerator
+	typedNodeGenerator
+
+	// as typed.LinkNode.ReferencedNodeBuilder generator
+	EmitTypedLinkNodeMethodReferencedNodeBuilder(io.Writer)
+}
+
 type nodeGenerator interface {
 	EmitNodeType(io.Writer)
 	EmitNodeMethodReprKind(io.Writer)
@@ -139,6 +147,11 @@ func EmitEntireType(tg typedNodeGenerator, w io.Writer) {
 	tnbg.EmitNodebuilderMethodCreateString(w)
 	tnbg.EmitNodebuilderMethodCreateBytes(w)
 	tnbg.EmitNodebuilderMethodCreateLink(w)
+
+	tlg, ok := tg.(typedLinkNodeGenerator)
+	if ok {
+		tlg.EmitTypedLinkNodeMethodReferencedNodeBuilder(w)
+	}
 
 	tg.EmitTypedNodeMethodRepresentation(w)
 	rng := tg.GetRepresentationNodeGen()

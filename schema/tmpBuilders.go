@@ -22,9 +22,12 @@ func SpawnBytes(name TypeName) TypeBytes {
 }
 
 func SpawnLink(name TypeName) TypeLink {
-	return TypeLink{anyType{name, nil}}
+	return TypeLink{anyType{name, nil}, nil, false}
 }
 
+func SpawnLinkReference(name TypeName, referenceType Type) TypeLink {
+	return TypeLink{anyType{name, nil}, referenceType, true}
+}
 func SpawnList(name TypeName, typ Type, nullable bool) TypeList {
 	return TypeList{anyType{name, nil}, false, typ, nullable}
 }
