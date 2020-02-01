@@ -4,12 +4,21 @@ import (
 	ipld "github.com/ipld/go-ipld-prime/_rsrch/nodesolution"
 )
 
+var (
+	_ ipld.Node          = plainInt(0)
+	_ ipld.NodeStyle     = Style__Int{}
+	_ ipld.NodeBuilder   = &plainInt__Builder{}
+	_ ipld.NodeAssembler = &plainInt__Assembler{}
+)
+
 func Int(value int) ipld.Node {
 	return plainInt(value)
 }
 
 // plainInt is a simple boxed int that complies with ipld.Node.
 type plainInt int
+
+// -- Node interface methods -->
 
 func (plainInt) ReprKind() ipld.ReprKind {
 	return ipld.ReprKind_Int
@@ -61,4 +70,56 @@ func (plainInt) AsLink() (ipld.Link, error) {
 }
 func (plainInt) Style() ipld.NodeStyle {
 	panic("todo")
+}
+
+// -- NodeStyle -->
+
+type Style__Int struct{}
+
+func (Style__Int) NewBuilder() ipld.NodeBuilder {
+	var w plainInt
+	return &plainInt__Builder{plainInt__Assembler{w: &w}}
+}
+
+// -- NodeBuilder -->
+
+type plainInt__Builder struct {
+	plainInt__Assembler
+}
+
+func (nb *plainInt__Builder) Build() (ipld.Node, error) {
+	return nb.w, nil
+}
+func (nb *plainInt__Builder) Reset() {
+	var w plainInt
+	*nb = plainInt__Builder{plainInt__Assembler{w: &w}}
+}
+
+// -- NodeAssembler -->
+
+type plainInt__Assembler struct {
+	w *plainInt
+}
+
+func (plainInt__Assembler) BeginMap(sizeHint int) (ipld.MapNodeAssembler, error)   { panic("no") }
+func (plainInt__Assembler) BeginList(sizeHint int) (ipld.ListNodeAssembler, error) { panic("no") }
+func (plainInt__Assembler) AssignNull() error                                      { panic("no") }
+func (plainInt__Assembler) AssignBool(bool) error                                  { panic("no") }
+func (na *plainInt__Assembler) AssignInt(v int) error {
+	*na.w = plainInt(v)
+	return nil
+}
+func (plainInt__Assembler) AssignFloat(float64) error { panic("no") }
+func (plainInt__Assembler) AssignString(string) error { panic("no") }
+func (plainInt__Assembler) AssignBytes([]byte) error  { panic("no") }
+func (na *plainInt__Assembler) Assign(v ipld.Node) error {
+	if s, err := v.AsInt(); err != nil {
+		return err
+	} else {
+		*na.w = plainInt(s)
+		return nil
+	}
+}
+func (plainInt__Assembler) Style() ipld.NodeStyle {
+	return Style__Int{}
 }
