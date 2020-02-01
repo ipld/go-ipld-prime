@@ -318,7 +318,7 @@ type _Map_K_T__Assembler struct {
 	ka _Map_K_T__KeyAssembler
 	va _Map_K_T__ValueAssembler
 
-	midappend bool // FUTURE: probably extend this into a bigger clearer state machine to enable more and better error messaging.
+	state maState
 }
 type _Map_K_T__Builder struct {
 	_Map_K_T__Assembler
@@ -372,10 +372,11 @@ func (ta *_Map_K_T__Assembler) Assign(v ipld.Node) error {
 func (_Map_K_T__Assembler) Style() ipld.NodeStyle { panic("later") }
 
 func (ma *_Map_K_T__Assembler) AssembleDirectly(k string) (ipld.NodeAssembler, error) {
-	// Sanity check assembler state.
-	if ma.midappend == true {
+	// Sanity check, then update, assembler state.
+	if ma.state != maState_initial {
 		panic("misuse")
 	}
+	ma.state = maState_midValue
 	// Check for dup keys; error if so.
 	_, exists := ma.w.m[K{k}]
 	if exists {
@@ -392,10 +393,10 @@ func (ma *_Map_K_T__Assembler) AssembleDirectly(k string) (ipld.NodeAssembler, e
 
 func (ma *_Map_K_T__Assembler) AssembleKey() ipld.NodeAssembler {
 	// Sanity check, then update, assembler state.
-	if ma.midappend == true {
+	if ma.state != maState_initial {
 		panic("misuse")
 	}
-	ma.midappend = true
+	ma.state = maState_midKey
 	// Extend entry table.
 	l := len(ma.w.t)
 	ma.w.t = append(ma.w.t, _Map_K_T__entry{})
@@ -404,19 +405,21 @@ func (ma *_Map_K_T__Assembler) AssembleKey() ipld.NodeAssembler {
 	return &ma.ka
 }
 func (ma *_Map_K_T__Assembler) AssembleValue() ipld.NodeAssembler {
-	// Sanity check assembler state.
-	if ma.midappend == false {
+	// Sanity check, then update, assembler state.
+	if ma.state != maState_expectValue {
 		panic("misuse")
 	}
+	ma.state = maState_midValue
 	// Init the value assembler with a pointer to its target and yield it.
 	ma.va.ca.w = &ma.w.t[len(ma.w.t)-1].v
 	return &ma.va
 }
 func (ma *_Map_K_T__Assembler) Done() error {
-	// Sanity check assembler state.
-	if ma.midappend == true {
+	// Sanity check, then update, assembler state.
+	if ma.state != maState_initial {
 		panic("misuse")
 	}
+	ma.state = maState_done
 	// validators could run and report errors promptly, if this type had any.
 	return nil
 }
@@ -445,6 +448,8 @@ func (mka *_Map_K_T__KeyAssembler) AssignString(v string) error {
 	// Update the map to point into the entry value!
 	//  (Hopefully the go compiler recognizes our assignment after existence check and optimizes appropriately.)
 	mka.ma.w.m[K{v}] = &mka.ma.w.t[len(mka.ma.w.t)-1].v
+	// Update parent assembler state: clear to proceed.
+	mka.ma.state = maState_expectValue
 	return nil
 }
 func (_Map_K_T__KeyAssembler) AssignBytes([]byte) error { panic("no") }
@@ -486,7 +491,10 @@ func (mva *_Map_K_T__ValueAssembler) flush() {
 	// The child assembler already assigned directly into the target memory,
 	//  and should have invalided its 'w' pointer when it was done doing so,
 	//  so there's not much to do here... except update the assembler state machine.
-	mva.ma.midappend = false
+	// We also don't check the previous state because:
+	//  A) the appropriate time to do that would've been *before* assignments; and
+	//  B) if we were in a wrong state, we should've gotten a nil ptr panic when assigning 'w' content.
+	mva.ma.state = maState_initial
 }
 func (_Map_K_T__ValueAssembler) Style() ipld.NodeStyle { panic("later") }
 

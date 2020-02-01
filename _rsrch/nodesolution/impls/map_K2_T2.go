@@ -158,17 +158,6 @@ type _K2__ReprAssembler struct {
 	// note how this is totally different than the type-level assembler -- that's map-like, this is string.
 }
 
-// mostly internal; could put in a 'common' package, but probably better antifragileness to just replicate it into every codegen output package.
-type maState uint8
-
-const (
-	maState_initial     maState = iota // also the 'expect key or done' state
-	maState_midKey                     // waiting for a 'done' state in the KeyAssembler.
-	maState_expectValue                // 'AssembleValue' is the only valid next step
-	maState_midValue                   // waiting for a 'done' state in the ValueAssembler.
-	maState_done                       // 'w' will also be nil, but this is a politer statement
-)
-
 func (ta *_K2__Assembler) BeginMap(_ int) (ipld.MapNodeAssembler, error) { panic("no") }
 func (_K2__Assembler) BeginList(_ int) (ipld.ListNodeAssembler, error)   { panic("no") }
 func (_K2__Assembler) AssignNull() error                                 { panic("no") }
@@ -236,6 +225,7 @@ func (ma *_K2__Assembler) Done() error {
 	if ma.state != maState_initial {
 		panic("misuse")
 	}
+	ma.state = maState_done
 	// validators could run and report errors promptly, if this type had any.
 	return nil
 }

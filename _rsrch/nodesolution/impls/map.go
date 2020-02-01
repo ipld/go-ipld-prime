@@ -1,29 +1,26 @@
 package impls
 
-// plainMap and this file is how ipldfree would do it: no concrete types, just interfaces.
-
 import (
 	"fmt"
 
 	ipld "github.com/ipld/go-ipld-prime/_rsrch/nodesolution"
 )
 
+// plainMap is a concrete type that provides a map-kind ipld.Node.
+// It can contain any kind of value.
+// plainMap is also embedded in the 'any' struct and usable from there.
 type plainMap struct {
 	m map[string]ipld.Node // string key -- even if a runtime schema wrapper is using us for storage, we must have a comparable type here, and string is all we know.
-	t []plainMap__Entry
+	t []plainMap__Entry    // table for fast iteration, order keeping, and yielding pointers to enable alloc/conv amortization.
 }
 
 type plainMap__Entry struct {
 	k plainString // address of this used when we return keys as nodes, such as in iterators.  Need in one place to amortize shifts to heap when ptr'ing for iface.
-	v ipld.Node   // same as map values.  keeping them here simplifies iteration.  (in codegen'd maps, this position is also part of amortization, but in this implementation, that's less useful.)
-	// todo: depends on what it... is.
-	//  if we put the anyNode -- the whole dang steamrolled union -- here, then we get amortized values.
-	//   it's unclear if that's worth it.  that's a really big struct, all told.  like... 9 words or something.
-	//   we can make two different implementations which offer each choice to users, of course.  but I don't think many people will use such fine grained configurability; and which is appropriate might depend on some context and is a mid-tree decision; and all sorts of things that make it hard to make this ergonomically configurable.
-
-	// on the bright side, we can at least get amortized keys for sure.  previous generation didn't have that.
-	//  and that's probably going to translate to a significant improvement on selectors.  like... really significant.
+	v ipld.Node   // identical to map values.  keeping them here simplifies iteration.  (in codegen'd maps, this position is also part of amortization, but in this implementation, that's less useful.)
+	// note on alternate implementations: 'v' could also use the 'any' type, and thus amortize value allocations.  the memory size trade would be large however, so we don't, here.
 }
+
+// -- Node interface methods -->
 
 func (plainMap) ReprKind() ipld.ReprKind {
 	return ipld.ReprKind_Map
@@ -82,7 +79,7 @@ func (plainMap) AsLink() (ipld.Link, error) {
 	return nil, ipld.ErrWrongKind{TypeName: "map", MethodName: "AsLink", AppropriateKind: ipld.ReprKindSet_JustLink, ActualKind: ipld.ReprKind_Map}
 }
 func (plainMap) Style() ipld.NodeStyle {
-	panic("todo")
+	return Style__Map{}
 }
 
 type plainMap_MapIterator struct {
@@ -103,21 +100,40 @@ func (itr *plainMap_MapIterator) Done() bool {
 	return itr.idx >= len(itr.n.t)
 }
 
+// -- NodeStyle -->
+
 type Style__Map struct{}
 
 func (Style__Map) NewBuilder() ipld.NodeBuilder {
 	return &plainMap__Builder{plainMap__Assembler{w: &plainMap{}}}
 }
 
+// -- NodeBuilder -->
+
+type plainMap__Builder struct {
+	plainMap__Assembler
+}
+
+func (nb *plainMap__Builder) Build() (ipld.Node, error) {
+	if nb.state != maState_done {
+		panic("invalid state: assembler must be 'done' before Build can be called!")
+	}
+	return nb.w, nil
+}
+func (nb *plainMap__Builder) Reset() {
+	*nb = plainMap__Builder{}
+	nb.w = &plainMap{}
+}
+
+// -- NodeAssembler -->
+
 type plainMap__Assembler struct {
-	w  *plainMap
+	w *plainMap
+
 	ka plainMap__KeyAssembler
 	va plainMap__ValueAssembler
 
-	midappend bool // if true, next call must be 'AssembleValue'.
-}
-type plainMap__Builder struct {
-	plainMap__Assembler
+	state maState
 }
 type plainMap__KeyAssembler struct {
 	ma *plainMap__Assembler
@@ -126,22 +142,23 @@ type plainMap__ValueAssembler struct {
 	ma *plainMap__Assembler
 }
 
-func (nb *plainMap__Builder) Build() (ipld.Node, error) {
-	// want to run validators here if present.
-	// would also like to check for half-done work (e.g. midappend==true anywhere deeply, or not-Done maps, etc etc!).
-	return nb.w, nil
-}
-func (nb *plainMap__Builder) Reset() {
-	*nb = plainMap__Builder{}
-	nb.w = &plainMap{}
-}
+// maState is an enum of the state machine for a map assembler.
+// (this might be something to export reusably, but it's also very much an impl detail that need not be seen, so, dubious.)
+type maState uint8
+
+const (
+	maState_initial     maState = iota // also the 'expect key or done' state
+	maState_midKey                     // waiting for a 'done' state in the KeyAssembler.
+	maState_expectValue                // 'AssembleValue' is the only valid next step
+	maState_midValue                   // waiting for a 'done' state in the ValueAssembler.
+	maState_done                       // 'w' will also be nil, but this is a politer statement
+)
 
 func (na *plainMap__Assembler) BeginMap(sizeHint int) (ipld.MapNodeAssembler, error) {
 	// Allocate storage space.
 	na.w.t = make([]plainMap__Entry, 0, sizeHint)
 	na.w.m = make(map[string]ipld.Node, sizeHint)
 	// Initialize the key and value assemblers with pointers back to the whole.
-	//  (REVIEW: Should we initialize these during `AssembleKey` and `AssembleValue` calls, and nil them when done with each value?  It might increase the safety of use.)
 	na.ka.ma = na
 	na.va.ma = na
 	// That's it; return self as the MapNodeAssembler.  We already have all the right methods on this structure.
@@ -163,13 +180,17 @@ func (na *plainMap__Assembler) Assign(v ipld.Node) error {
 }
 func (plainMap__Assembler) Style() ipld.NodeStyle { panic("later") }
 
-// NOT yet an interface function... but wanting benchmarking on it.
-// (how much it might show up for structs is another question.)
-//  (there's... enough differences vs things with concrete type knowledge we might wanna do this all with one of those, too.)
+// -- MapNodeAssembler -->
+
+// AssembleDirectly is part of conforming to MapAssembler, which we do on
+// plainMap__Assembler so that BeginMap can just return a retyped pointer rather than new object.
 func (ma *plainMap__Assembler) AssembleDirectly(k string) (ipld.NodeAssembler, error) {
-	if ma.midappend == true {
+	// Sanity check, then update, assembler state.
+	if ma.state != maState_initial {
 		panic("misuse")
 	}
+	ma.state = maState_midValue
+	// Check for dup keys; error if so.
 	_, exists := ma.w.m[k]
 	if exists {
 		return nil, ipld.ErrRepeatedMapKey{String(k)}
@@ -180,29 +201,47 @@ func (ma *plainMap__Assembler) AssembleDirectly(k string) (ipld.NodeAssembler, e
 	panic("todo")
 }
 
-// plainMap__Assembler also directly implements MapAssembler, so BeginMap can just return a retyped pointer rather than new object.
+// AssembleKey is part of conforming to MapAssembler, which we do on
+// plainMap__Assembler so that BeginMap can just return a retyped pointer rather than new object.
 func (ma *plainMap__Assembler) AssembleKey() ipld.NodeAssembler {
-	if ma.midappend == true {
+	// Sanity check, then update, assembler state.
+	if ma.state != maState_initial {
 		panic("misuse")
 	}
-	ma.midappend = true
+	ma.state = maState_midKey
+	// Extend entry table.
 	ma.w.t = append(ma.w.t, plainMap__Entry{})
+	// No work to be done to init key assembler; it already points back to whole 'ma'; just yield it.
 	return &ma.ka
 }
+
+// AssembleValue is part of conforming to MapAssembler, which we do on
+// plainMap__Assembler so that BeginMap can just return a retyped pointer rather than new object.
 func (ma *plainMap__Assembler) AssembleValue() ipld.NodeAssembler {
-	if ma.midappend == false {
+	// Sanity check, then update, assembler state.
+	if ma.state != maState_expectValue {
 		panic("misuse")
 	}
+	ma.state = maState_midValue
+	// No work to be done to init value assembler; it already points back to whole 'ma'; just yield it.
 	return &ma.va
 }
+
+// Done is part of conforming to MapAssembler, which we do on
+// plainMap__Assembler so that BeginMap can just return a retyped pointer rather than new object.
 func (ma *plainMap__Assembler) Done() error {
-	if ma.midappend == true {
+	// Sanity check, then update, assembler state.
+	if ma.state != maState_initial {
 		panic("misuse")
 	}
+	ma.state = maState_done
+	// validators could run and report errors promptly, if this type had any.
 	return nil
 }
 func (plainMap__Assembler) KeyStyle() ipld.NodeStyle   { panic("later") }
 func (plainMap__Assembler) ValueStyle() ipld.NodeStyle { panic("later") }
+
+// -- MapNodeAssembler.KeyAssembler -->
 
 func (plainMap__KeyAssembler) BeginMap(sizeHint int) (ipld.MapNodeAssembler, error)   { panic("no") }
 func (plainMap__KeyAssembler) BeginList(sizeHint int) (ipld.ListNodeAssembler, error) { panic("no") }
@@ -211,11 +250,18 @@ func (plainMap__KeyAssembler) AssignBool(bool) error                            
 func (plainMap__KeyAssembler) AssignInt(int) error                                    { panic("no") }
 func (plainMap__KeyAssembler) AssignFloat(float64) error                              { panic("no") }
 func (mka *plainMap__KeyAssembler) AssignString(v string) error {
+	// Check for dup keys; error if so.
 	_, exists := mka.ma.w.m[v]
 	if exists {
 		return ipld.ErrRepeatedMapKey{String(v)}
 	}
+	// Assign the key into the end of the entry table;
+	//  we'll be doing map insertions after we get the value in hand.
+	//  (There's no need to delegate to another assembler for the key type,
+	//   because we're just at Data Model level here, which only regards plain strings.)
 	mka.ma.w.t[len(mka.ma.w.t)-1].k = plainString(v)
+	// Update parent assembler state: clear to proceed.
+	mka.ma.state = maState_expectValue
 	return nil
 }
 func (plainMap__KeyAssembler) AssignBytes([]byte) error { panic("no") }
@@ -227,6 +273,8 @@ func (mka *plainMap__KeyAssembler) Assign(v ipld.Node) error {
 	return mka.AssignString(vs)
 }
 func (plainMap__KeyAssembler) Style() ipld.NodeStyle { panic("later") } // probably should give the style of plainString, which could say "only stores string kind" (though we haven't made such a feature part of the interface yet).
+
+// -- MapNodeAssembler.ValueAssembler -->
 
 func (mva *plainMap__ValueAssembler) BeginMap(sizeHint int) (ipld.MapNodeAssembler, error) {
 	panic("todo") // now please
@@ -241,7 +289,7 @@ func (mva *plainMap__ValueAssembler) AssignInt(v int) error {
 	vb := plainInt(v)
 	mva.ma.w.t[l].v = &vb
 	mva.ma.w.m[string(mva.ma.w.t[l].k)] = &vb
-	mva.ma.midappend = false
+	mva.ma.state = maState_initial
 	return nil
 }
 func (mva *plainMap__ValueAssembler) AssignFloat(float64) error   { panic("todo") }
@@ -251,7 +299,7 @@ func (mva *plainMap__ValueAssembler) Assign(v ipld.Node) error {
 	l := len(mva.ma.w.t) - 1
 	mva.ma.w.t[l].v = v
 	mva.ma.w.m[string(mva.ma.w.t[l].k)] = v
-	mva.ma.midappend = false
+	mva.ma.state = maState_initial
 	return nil
 }
 func (plainMap__ValueAssembler) Style() ipld.NodeStyle { panic("later") }

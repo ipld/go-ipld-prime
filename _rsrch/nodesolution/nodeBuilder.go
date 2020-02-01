@@ -30,19 +30,26 @@ type NodeAssembler interface {
 	Style() NodeStyle // you probably don't need this (because you should be able to just feed data and check errors), but it's here.
 }
 
+// MapNodeAssembler assembles a map node!  (You guessed it.)
+//
+// Methods on MapNodeAssembler must be called in a valid order:
+// assemble a key, then assemble a value, then loop as long as desired;
+// when done, call 'Done'.
+//
+// Incorrect order invocations will panic.
+// Calling AssembleKey twice in a row will panic;
+// calling AssembleValue before finishing using the NodeAssembler from AssembleKey will panic;
+// calling AssembleValue twice in a row will panic;
+// etc.
+//
+// Note that the NodeAssembler yielded from AssembleKey has additional behavior:
+// if the node assembled there matches a key already present in the map,
+// that assembler will emit the error!
 type MapNodeAssembler interface {
-	//Insert(string, Node) error         // REVIEW: shortcut of dubious utility.  could construct as free function.
-	//InsertComplexKey(Node, Node) error // REVIEW: shortcut of dubious utility.  seriously, you can just use `Assemble{Key,Value}().Assign(n)`.
-
-	// `AssembleDirectly(string) (NodeAssembler, error)` ?  doesn't save much, probably.
-	// prev vtable jumps: GetKeyBuilder, CreateString, BuilderForValue, Whatever, Insert.
-	// now vtable jumps: AssembleKey, AssignString, AssembleValue, Whatever.  One better!
-	// AD vtable jumps: AssembleDirectly, Whatever.  Okay, maybe significant.
-	// this above thing: this is something you should actually write benchmarks for, as early as possible.
-	AssembleDirectly(k string) (NodeAssembler, error)
-
 	AssembleKey() NodeAssembler   // must be followed by call to AssembleValue.
 	AssembleValue() NodeAssembler // must be called immediately after AssembleKey.
+
+	AssembleDirectly(k string) (NodeAssembler, error) // shortcut combining AssembleKey and AssembleValue into one step; valid when the key is a string kind.
 
 	Done() error
 
@@ -51,8 +58,6 @@ type MapNodeAssembler interface {
 }
 
 type ListNodeAssembler interface {
-	//Append(Node) error // REVIEW: shortcut of dubious utility.  all the above arguments still work.  this skips... what, one vtable?  for what?
-
 	AssembleValue() NodeAssembler
 
 	Done() error
@@ -62,6 +67,15 @@ type ListNodeAssembler interface {
 
 type NodeBuilder interface {
 	NodeAssembler
+
+	// Build returns the new value after all other assembly has been completed.
+	// A method on the NodeAssembler that finishes assembly of the data should
+	// be called first (e.g., any of the "Assign*" methods, or "Done" if
+	// the assembly was for a map or a list); that method still has all
+	// responsibility for validating the assembled data and returning
+	// any errors from that process.
+	//
+	// REVIEW: can we just... get rid of the error return here?  Suspect yes.
 	Build() (Node, error)
 
 	// Resets the builder.  It can hereafter be used again.
