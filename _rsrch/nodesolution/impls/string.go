@@ -4,6 +4,13 @@ import (
 	ipld "github.com/ipld/go-ipld-prime/_rsrch/nodesolution"
 )
 
+var (
+	_ ipld.Node          = plainString("")
+	_ ipld.NodeStyle     = Style__String{}
+	_ ipld.NodeBuilder   = &plainString__Builder{}
+	_ ipld.NodeAssembler = &plainString__Assembler{}
+)
+
 func String(value string) ipld.Node {
 	return plainString(value)
 }
@@ -15,6 +22,8 @@ func String(value string) ipld.Node {
 // handling it as a Node incurs 'runtime.convTstring',
 // which is about the best we can do.
 type plainString string
+
+// -- Node interface methods -->
 
 func (plainString) ReprKind() ipld.ReprKind {
 	return ipld.ReprKind_String
@@ -65,5 +74,57 @@ func (plainString) AsLink() (ipld.Link, error) {
 	return nil, ipld.ErrWrongKind{MethodName: "AsLink", AppropriateKind: ipld.ReprKindSet_JustLink, ActualKind: ipld.ReprKind_String}
 }
 func (plainString) Style() ipld.NodeStyle {
-	panic("todo")
+	return Style__String{}
+}
+
+// -- NodeStyle -->
+
+type Style__String struct{}
+
+func (Style__String) NewBuilder() ipld.NodeBuilder {
+	var w plainString
+	return &plainString__Builder{plainString__Assembler{w: &w}}
+}
+
+// -- NodeBuilder -->
+
+type plainString__Builder struct {
+	plainString__Assembler
+}
+
+func (nb *plainString__Builder) Build() (ipld.Node, error) {
+	return nb.w, nil
+}
+func (nb *plainString__Builder) Reset() {
+	var w plainString
+	*nb = plainString__Builder{plainString__Assembler{w: &w}}
+}
+
+// -- NodeAssembler -->
+
+type plainString__Assembler struct {
+	w *plainString
+}
+
+func (plainString__Assembler) BeginMap(sizeHint int) (ipld.MapNodeAssembler, error)   { panic("no") }
+func (plainString__Assembler) BeginList(sizeHint int) (ipld.ListNodeAssembler, error) { panic("no") }
+func (plainString__Assembler) AssignNull() error                                      { panic("no") }
+func (plainString__Assembler) AssignBool(bool) error                                  { panic("no") }
+func (plainString__Assembler) AssignInt(int) error                                    { panic("no") }
+func (plainString__Assembler) AssignFloat(float64) error                              { panic("no") }
+func (na *plainString__Assembler) AssignString(v string) error {
+	*na.w = plainString(v)
+	return nil
+}
+func (plainString__Assembler) AssignBytes([]byte) error { panic("no") }
+func (na *plainString__Assembler) Assign(v ipld.Node) error {
+	if s, err := v.AsString(); err != nil {
+		return err
+	} else {
+		*na.w = plainString(s)
+		return nil
+	}
+}
+func (plainString__Assembler) Style() ipld.NodeStyle {
+	return Style__String{}
 }

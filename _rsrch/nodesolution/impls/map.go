@@ -6,6 +6,13 @@ import (
 	ipld "github.com/ipld/go-ipld-prime/_rsrch/nodesolution"
 )
 
+var (
+	_ ipld.Node          = &plainMap{}
+	_ ipld.NodeStyle     = Style__Map{}
+	_ ipld.NodeBuilder   = &plainMap__Builder{}
+	_ ipld.NodeAssembler = &plainMap__Assembler{}
+)
+
 // plainMap is a concrete type that provides a map-kind ipld.Node.
 // It can contain any kind of value.
 // plainMap is also embedded in the 'any' struct and usable from there.
@@ -253,7 +260,7 @@ func (mka *plainMap__KeyAssembler) AssignString(v string) error {
 	// Check for dup keys; error if so.
 	_, exists := mka.ma.w.m[v]
 	if exists {
-		return ipld.ErrRepeatedMapKey{String(v)}
+		return ipld.ErrRepeatedMapKey{plainString(v)}
 	}
 	// Assign the key into the end of the entry table;
 	//  we'll be doing map insertions after we get the value in hand.
