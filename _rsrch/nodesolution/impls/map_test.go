@@ -24,13 +24,18 @@ func init() {
 	}
 }
 
-func TestGennedMapIntValues(t *testing.T) {
-	CheckMaps(t, Type__Map_K_T{})
+func TestGennedMapStrInt(t *testing.T) {
+	CheckMapStrInt(t, Type__Map_K_T{})
 }
-func TestGenericMapIntValues(t *testing.T) {
-	CheckMaps(t, Style__Map{})
+func TestGenericMapStrInt(t *testing.T) {
+	CheckMapStrInt(t, Style__Map{})
 }
 
+func TestGenericMapStrMapStrInt(t *testing.T) {
+	CheckMapStrMapStrInt(t, Style__Map{})
+}
+
+// extracted for reuse between correctness tests and benchmarks
 func buildMapStrIntN3(ns ipld.NodeStyle) ipld.Node {
 	nb := ns.NewBuilder()
 	ma, err := nb.BeginMap(3)
@@ -47,6 +52,7 @@ func buildMapStrIntN3(ns ipld.NodeStyle) ipld.Node {
 	return n
 }
 
+// extracted for reuse across benchmarks
 func buildMapStrIntN25(ns ipld.NodeStyle) ipld.Node {
 	nb := ns.NewBuilder()
 	ma, err := nb.BeginMap(25)
@@ -61,7 +67,7 @@ func buildMapStrIntN25(ns ipld.NodeStyle) ipld.Node {
 	return n
 }
 
-func CheckMaps(t *testing.T, ns ipld.NodeStyle) {
+func CheckMapStrInt(t *testing.T, ns ipld.NodeStyle) {
 	t.Run("map node, str:int, 3 entries", func(t *testing.T) {
 		n := buildMapStrIntN3(ns)
 		t.Run("reads back out", func(t *testing.T) {
@@ -151,5 +157,58 @@ func CheckMaps(t *testing.T, ns ipld.NodeStyle) {
 	})
 	t.Run("builder reset works", func(t *testing.T) {
 		// TODO
+	})
+}
+
+// extracted for reuse between correctness tests and benchmarks
+func CheckMapStrMapStrInt(t *testing.T, ns ipld.NodeStyle) {
+	t.Run("map node, str:map containing str:int", func(t *testing.T) {
+		nb := ns.NewBuilder()
+		ma, err := nb.BeginMap(3)
+		must.NotError(err)
+		must.NotError(ma.AssembleKey().AssignString("whee"))
+		func(ma ipld.MapNodeAssembler, err error) {
+			must.NotError(ma.AssembleKey().AssignString("m1k1"))
+			must.NotError(ma.AssembleValue().AssignInt(1))
+			must.NotError(ma.AssembleKey().AssignString("m1k2"))
+			must.NotError(ma.AssembleValue().AssignInt(2))
+			must.NotError(ma.Done())
+		}(ma.AssembleValue().BeginMap(2))
+		must.NotError(ma.AssembleKey().AssignString("woot"))
+		func(ma ipld.MapNodeAssembler, err error) {
+			must.NotError(ma.AssembleKey().AssignString("m2k1"))
+			must.NotError(ma.AssembleValue().AssignInt(3))
+			must.NotError(ma.AssembleKey().AssignString("m2k2"))
+			must.NotError(ma.AssembleValue().AssignInt(4))
+			must.NotError(ma.Done())
+		}(ma.AssembleValue().BeginMap(2))
+		must.NotError(ma.AssembleKey().AssignString("waga"))
+		func(ma ipld.MapNodeAssembler, err error) {
+			must.NotError(ma.AssembleKey().AssignString("m3k1"))
+			must.NotError(ma.AssembleValue().AssignInt(5))
+			must.NotError(ma.AssembleKey().AssignString("m3k2"))
+			must.NotError(ma.AssembleValue().AssignInt(6))
+			must.NotError(ma.Done())
+		}(ma.AssembleValue().BeginMap(2))
+		must.NotError(ma.Done())
+		n, err := nb.Build()
+		must.NotError(err)
+
+		t.Run("reads back out", func(t *testing.T) {
+			wish.Wish(t, n.Length(), wish.ShouldEqual, 3)
+
+			v, err := n.LookupString("woot")
+			wish.Wish(t, err, wish.ShouldEqual, nil)
+			v2, err := v.LookupString("m2k1")
+			wish.Wish(t, err, wish.ShouldEqual, nil)
+			v3, err := v2.AsInt()
+			wish.Wish(t, err, wish.ShouldEqual, nil)
+			wish.Wish(t, v3, wish.ShouldEqual, 3)
+			v2, err = v.LookupString("m2k2")
+			wish.Wish(t, err, wish.ShouldEqual, nil)
+			v3, err = v2.AsInt()
+			wish.Wish(t, err, wish.ShouldEqual, nil)
+			wish.Wish(t, v3, wish.ShouldEqual, 4)
+		})
 	})
 }

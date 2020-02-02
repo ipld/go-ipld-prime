@@ -202,10 +202,9 @@ func (ma *plainMap__Assembler) AssembleDirectly(k string) (ipld.NodeAssembler, e
 	if exists {
 		return nil, ipld.ErrRepeatedMapKey{String(k)}
 	}
-	//l := len(ma.w.t)
 	ma.w.t = append(ma.w.t, plainMap__Entry{k: plainString(k)})
-	// configure and return an anyAssembler, similar to below in prepareAssigner
-	panic("todo")
+	// No work to be done to init value assembler; it already points back to whole 'ma'; just yield it.
+	return &ma.va, nil
 }
 
 // AssembleKey is part of conforming to MapAssembler, which we do on
@@ -284,7 +283,11 @@ func (plainMap__KeyAssembler) Style() ipld.NodeStyle { panic("later") } // proba
 // -- MapNodeAssembler.ValueAssembler -->
 
 func (mva *plainMap__ValueAssembler) BeginMap(sizeHint int) (ipld.MapNodeAssembler, error) {
-	panic("todo") // now please
+	ma := plainMap__ValueAssemblerMap{}
+	ma.w = &plainMap{}
+	ma.p = mva.ma
+	_, err := ma.BeginMap(sizeHint)
+	return &ma, err
 }
 func (mva *plainMap__ValueAssembler) BeginList(sizeHint int) (ipld.ListNodeAssembler, error) {
 	panic("todo") // now please
@@ -299,9 +302,16 @@ func (mva *plainMap__ValueAssembler) AssignInt(v int) error {
 	mva.ma.state = maState_initial
 	return nil
 }
-func (mva *plainMap__ValueAssembler) AssignFloat(float64) error   { panic("todo") }
-func (mva *plainMap__ValueAssembler) AssignString(v string) error { panic("todo") }
-func (mva *plainMap__ValueAssembler) AssignBytes([]byte) error    { panic("todo") }
+func (mva *plainMap__ValueAssembler) AssignFloat(float64) error { panic("todo") }
+func (mva *plainMap__ValueAssembler) AssignString(v string) error {
+	l := len(mva.ma.w.t) - 1
+	vb := plainString(v)
+	mva.ma.w.t[l].v = &vb
+	mva.ma.w.m[string(mva.ma.w.t[l].k)] = &vb
+	mva.ma.state = maState_initial
+	return nil
+}
+func (mva *plainMap__ValueAssembler) AssignBytes([]byte) error { panic("todo") }
 func (mva *plainMap__ValueAssembler) Assign(v ipld.Node) error {
 	l := len(mva.ma.w.t) - 1
 	mva.ma.w.t[l].v = v
@@ -310,3 +320,19 @@ func (mva *plainMap__ValueAssembler) Assign(v ipld.Node) error {
 	return nil
 }
 func (plainMap__ValueAssembler) Style() ipld.NodeStyle { panic("later") }
+
+type plainMap__ValueAssemblerMap struct {
+	plainMap__Assembler
+	p *plainMap__Assembler // pointer back to parent, for final insert and state bump
+}
+
+func (ma *plainMap__ValueAssemblerMap) Done() error {
+	if err := ma.plainMap__Assembler.Done(); err != nil {
+		return err
+	}
+	l := len(ma.p.w.t) - 1
+	ma.p.w.t[l].v = ma.w
+	ma.p.w.m[string(ma.p.w.t[l].k)] = ma.w
+	ma.p.state = maState_initial
+	return nil
+}
