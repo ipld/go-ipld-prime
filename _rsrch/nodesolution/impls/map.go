@@ -295,21 +295,13 @@ func (mva *plainMap__ValueAssembler) BeginList(sizeHint int) (ipld.ListNodeAssem
 func (mva *plainMap__ValueAssembler) AssignNull() error     { panic("todo") }
 func (mva *plainMap__ValueAssembler) AssignBool(bool) error { panic("todo") }
 func (mva *plainMap__ValueAssembler) AssignInt(v int) error {
-	l := len(mva.ma.w.t) - 1
 	vb := plainInt(v)
-	mva.ma.w.t[l].v = &vb
-	mva.ma.w.m[string(mva.ma.w.t[l].k)] = &vb
-	mva.ma.state = maState_initial
-	return nil
+	return mva.Assign(&vb)
 }
 func (mva *plainMap__ValueAssembler) AssignFloat(float64) error { panic("todo") }
 func (mva *plainMap__ValueAssembler) AssignString(v string) error {
-	l := len(mva.ma.w.t) - 1
 	vb := plainString(v)
-	mva.ma.w.t[l].v = &vb
-	mva.ma.w.m[string(mva.ma.w.t[l].k)] = &vb
-	mva.ma.state = maState_initial
-	return nil
+	return mva.Assign(&vb)
 }
 func (mva *plainMap__ValueAssembler) AssignBytes([]byte) error { panic("todo") }
 func (mva *plainMap__ValueAssembler) Assign(v ipld.Node) error {
@@ -330,9 +322,5 @@ func (ma *plainMap__ValueAssemblerMap) Done() error {
 	if err := ma.plainMap__Assembler.Done(); err != nil {
 		return err
 	}
-	l := len(ma.p.w.t) - 1
-	ma.p.w.t[l].v = ma.w
-	ma.p.w.m[string(ma.p.w.t[l].k)] = ma.w
-	ma.p.state = maState_initial
-	return nil
+	return ma.p.va.Assign(ma.w)
 }
