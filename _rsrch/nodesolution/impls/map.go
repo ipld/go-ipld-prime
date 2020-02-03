@@ -284,9 +284,9 @@ func (plainMap__KeyAssembler) Style() ipld.NodeStyle { panic("later") } // proba
 
 func (mva *plainMap__ValueAssembler) BeginMap(sizeHint int) (ipld.MapNodeAssembler, error) {
 	ma := plainMap__ValueAssemblerMap{}
-	ma.w = &plainMap{}
+	ma.ca.w = &plainMap{}
 	ma.p = mva.ma
-	_, err := ma.BeginMap(sizeHint)
+	_, err := ma.ca.BeginMap(sizeHint)
 	return &ma, err
 }
 func (mva *plainMap__ValueAssembler) BeginList(sizeHint int) (ipld.ListNodeAssembler, error) {
@@ -314,13 +314,36 @@ func (mva *plainMap__ValueAssembler) Assign(v ipld.Node) error {
 func (plainMap__ValueAssembler) Style() ipld.NodeStyle { panic("later") }
 
 type plainMap__ValueAssemblerMap struct {
-	plainMap__Assembler
-	p *plainMap__Assembler // pointer back to parent, for final insert and state bump
+	ca plainMap__Assembler
+	p  *plainMap__Assembler // pointer back to parent, for final insert and state bump
 }
 
+// just embedding plainMap__Assembler works, but generates a lot more and less-inlined assembly than you'd think.
+// explicitly writing the handful of methods we need to have delegated here removes many autogen'd methods from the assembly,
+// and (TODO TEST THIS) also creates much more inlined results for each of these functions.
+
+// oh lol.  no actually, on that last part: these methods were already the ones you could just jump for.
+// why?  i dunno.
+// this format does do actual inlining instead of a JMP at the end, but...
+//   i guess that's probably same-speed and is assembly-longer?
+//    i think the asm size overall is small since such fewer methods, but it's odd we lose the JMP style.
+//    but whatever, i'm not really optimizing for assembly size.  uh, much.
+
+func (ma *plainMap__ValueAssemblerMap) AssembleDirectly(k string) (ipld.NodeAssembler, error) {
+	return ma.ca.AssembleDirectly(k)
+}
+func (ma *plainMap__ValueAssemblerMap) AssembleKey() ipld.NodeAssembler {
+	return ma.ca.AssembleKey()
+}
+func (ma *plainMap__ValueAssemblerMap) AssembleValue() ipld.NodeAssembler {
+	return ma.ca.AssembleValue()
+}
+func (plainMap__ValueAssemblerMap) KeyStyle() ipld.NodeStyle   { panic("later") }
+func (plainMap__ValueAssemblerMap) ValueStyle() ipld.NodeStyle { panic("later") }
+
 func (ma *plainMap__ValueAssemblerMap) Done() error {
-	if err := ma.plainMap__Assembler.Done(); err != nil {
+	if err := ma.ca.Done(); err != nil {
 		return err
 	}
-	return ma.p.va.Assign(ma.w)
+	return ma.p.va.Assign(ma.ca.w)
 }

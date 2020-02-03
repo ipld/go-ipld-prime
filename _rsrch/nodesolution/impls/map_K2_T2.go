@@ -149,6 +149,45 @@ type _K2__Assembler struct {
 	//...
 	// a single clear correct choice is not yet clear here.  some further analysis may be needed.
 
+	// - untyped maps can have two more types: plainMap__ValueAssemblerMap and plainMap__ValueAssemblerList...
+	//   - and all they do is override the Done method.
+	//   - they have to be allocated as pointers, but this ain't news.
+	// - typed maps can be basically the same, in fact.
+	//   - the Map__K__V__ValueAssembler will also vary scalar values, but this ain't news.
+	// - structs...
+	//   - honestly, is a type per field so bad?  do types have a meaningful cost, when you're not banging them out at the keyboard?
+	//     - i don't think they do but actually come to think of it i'd love to measure that.
+	//       - okayyyyyy.  ballpark it at 42kb per type, if you believe `go build -o`.  wow; that's a lot more than I expected.
+	//       - or 11kb per type if you believe the change in size of 'impls.test' binaries produced as a sideeffect of '-memprofile'.
+	//         - why are these different?  no idea.  the thing from `go build -o` is an 'ar' file rather than binary, though.
+	//         - pretty sure this is a more accurate number than 42.
+	//       - this is for the addition of 'plainMap__ValueAssemblerMap', to be specific.
+	//       - now, just for context, this comment block here has gotte up to 4.4kb, so, uh.  lol.  kilobytes go fast.
+	//       - it depends a LOT on how many methods the type has.  embedding the node interface can actually be a lot.
+	//         - there's a measurable difference between {every method on NodeAssembler} and {just MapNodeAssembler} methods.
+	//         - also depends on how exactly the methods either inline or autogenerate; some forms of autogen are much longer than others (some just JMP; others do a ton of setup and then CALL).
+	//           - and I don't at present have a predictive understanding of why this is.
+	//       - okay, the 'plainMap__ValueAssemblerMap' type is down to adding 9717 bytes after bothering to get more unneeded autogen methods out.  So we also have some control over this.
+	//     - approaching ballparks from the other side: schema-schema has about 37 fields in it.
+	//       - so we if take '11kb' as a random number, that means generating a type per field might add about .4mb to final binaries in this practical example.
+	//         - is that acceptable?  it's not great, but I think it's probably fine, also.  I'd usually rather pay that than lose run speed.
+
+	// in review: what are we balancing?
+	// - AS: asm size
+	// - BM: builder mem
+	// - SP: execution speed
+	// - AC: allocation count -- but only because of its outsized impact on SP.
+	//
+	// I care about SP>BM>AS.
+	//  (Unless BM gets > 2x, or AS gets really out of hand.)
+	//  (BM also has a special cond where if it increases on recursive kinds, but not on scalars,
+	//   we regard that as half price, because generally most of a tree is leaves.)
+
+	// So in this case, the question is "did AS get 'really out of hand'" if we choose the type-per-field route.
+	//  And the answer seems to be leaning towards "good question... but no, it's not (quite) 'really out of hand'".
+
+	// Go figure: in this situation, SP>BM>AS does seem to resolve to generating more code and more types.
+
 	isset_u bool
 	isset_i bool
 }
