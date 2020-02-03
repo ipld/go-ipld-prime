@@ -332,11 +332,10 @@ type _Map_K_T__ValueAssembler struct {
 	ca _T__Assembler
 }
 
-func (nb *_Map_K_T__Builder) Build() (ipld.Node, error) {
-	// FUTURE: run validator logic here if applicable.
+func (nb *_Map_K_T__Builder) Build() ipld.Node {
 	result := nb.w
 	nb.w = nil
-	return result, nil
+	return result
 }
 func (nb *_Map_K_T__Builder) Reset() {
 	*nb = _Map_K_T__Builder{}

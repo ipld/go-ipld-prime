@@ -64,11 +64,7 @@ func BenchmarkMap3nFeedGennedMapSimpleKeysDirectly(b *testing.B) {
 			must.NotError(va.AssignInt(3))
 		}
 		must.NotError(ma.Finish())
-		if n, err := nb.Build(); err != nil {
-			panic(err)
-		} else {
-			sink = n
-		}
+		sink = nb.Build()
 	}
 }
 
@@ -154,11 +150,7 @@ func BenchmarkMap25nFeedGennedMapSimpleKeysDirectly(b *testing.B) {
 			}
 		}
 		must.NotError(ma.Finish())
-		if n, err := nb.Build(); err != nil {
-			panic(err)
-		} else {
-			sink = n
-		}
+		sink = nb.Build()
 	}
 }
 

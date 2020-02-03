@@ -47,9 +47,7 @@ func buildMapStrIntN3(ns ipld.NodeStyle) ipld.Node {
 	must.NotError(ma.AssembleKey().AssignString("waga"))
 	must.NotError(ma.AssembleValue().AssignInt(3))
 	must.NotError(ma.Finish())
-	n, err := nb.Build()
-	must.NotError(err)
-	return n
+	return nb.Build()
 }
 
 // extracted for reuse across benchmarks
@@ -62,9 +60,7 @@ func buildMapStrIntN25(ns ipld.NodeStyle) ipld.Node {
 		must.NotError(ma.AssembleValue().AssignInt(tableStrInt[i-1].i))
 	}
 	must.NotError(ma.Finish())
-	n, err := nb.Build()
-	must.NotError(err)
-	return n
+	return nb.Build()
 }
 
 func CheckMapStrInt(t *testing.T, ns ipld.NodeStyle) {
@@ -191,8 +187,7 @@ func CheckMapStrMapStrInt(t *testing.T, ns ipld.NodeStyle) {
 			must.NotError(ma.Finish())
 		}(ma.AssembleValue().BeginMap(2))
 		must.NotError(ma.Finish())
-		n, err := nb.Build()
-		must.NotError(err)
+		n := nb.Build()
 
 		t.Run("reads back out", func(t *testing.T) {
 			wish.Wish(t, n.Length(), wish.ShouldEqual, 3)

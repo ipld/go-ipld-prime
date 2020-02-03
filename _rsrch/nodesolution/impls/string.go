@@ -92,8 +92,8 @@ type plainString__Builder struct {
 	plainString__Assembler
 }
 
-func (nb *plainString__Builder) Build() (ipld.Node, error) {
-	return nb.w, nil
+func (nb *plainString__Builder) Build() ipld.Node {
+	return nb.w
 }
 func (nb *plainString__Builder) Reset() {
 	var w plainString

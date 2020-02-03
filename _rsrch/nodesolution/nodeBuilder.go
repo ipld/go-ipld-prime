@@ -69,14 +69,14 @@ type NodeBuilder interface {
 	NodeAssembler
 
 	// Build returns the new value after all other assembly has been completed.
-	// A method on the NodeAssembler that finishes assembly of the data should
-	// be called first (e.g., any of the "Assign*" methods, or "Finish" if
-	// the assembly was for a map or a list); that method still has all
-	// responsibility for validating the assembled data and returning
-	// any errors from that process.
 	//
-	// REVIEW: can we just... get rid of the error return here?  Suspect yes.
-	Build() (Node, error)
+	// A method on the NodeAssembler that finishes assembly of the data must
+	// be called first (e.g., any of the "Assign*" methods, or "Finish" if
+	// the assembly was for a map or a list); that finishing method still has
+	// all responsibility for validating the assembled data and returning
+	// any errors from that process.
+	// (Correspondingly, there is no error return from this method.)
+	Build() Node
 
 	// Resets the builder.  It can hereafter be used again.
 	// Reusing a NodeBuilder can reduce allocations and improve performance.

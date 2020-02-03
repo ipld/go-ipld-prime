@@ -121,11 +121,11 @@ type plainMap__Builder struct {
 	plainMap__Assembler
 }
 
-func (nb *plainMap__Builder) Build() (ipld.Node, error) {
+func (nb *plainMap__Builder) Build() ipld.Node {
 	if nb.state != maState_finished {
 		panic("invalid state: assembler must be 'finished' before Build can be called!")
 	}
-	return nb.w, nil
+	return nb.w
 }
 func (nb *plainMap__Builder) Reset() {
 	*nb = plainMap__Builder{}

@@ -87,8 +87,8 @@ type plainInt__Builder struct {
 	plainInt__Assembler
 }
 
-func (nb *plainInt__Builder) Build() (ipld.Node, error) {
-	return nb.w, nil
+func (nb *plainInt__Builder) Build() ipld.Node {
+	return nb.w
 }
 func (nb *plainInt__Builder) Reset() {
 	var w plainInt

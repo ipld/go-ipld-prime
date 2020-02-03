@@ -113,7 +113,7 @@ func (anyBuilder) Style() ipld.NodeStyle {
 	return Style__Any{}
 }
 
-func (nb *anyBuilder) Build() (ipld.Node, error) {
+func (nb *anyBuilder) Build() ipld.Node {
 	switch nb.kind {
 	case ipld.ReprKind_Invalid:
 		panic("misuse")
