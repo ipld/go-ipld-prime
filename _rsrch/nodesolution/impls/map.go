@@ -56,7 +56,7 @@ func (n *plainMap) MapIterator() ipld.MapIterator {
 	return &plainMap_MapIterator{n, 0}
 }
 func (plainMap) ListIterator() ipld.ListIterator {
-	panic("no")
+	return nil
 }
 func (n *plainMap) Length() int {
 	return len(n.t)

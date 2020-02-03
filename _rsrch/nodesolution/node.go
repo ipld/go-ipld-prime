@@ -104,8 +104,7 @@ type Node interface {
 
 	// MapIterator returns an iterator which yields key-value pairs
 	// traversing the node.
-	// If the node kind is anything other than a map, the iterator will
-	// yield error values.
+	// If the node kind is anything other than a map, nil will be returned.
 	//
 	// The iterator will yield every entry in the map; that is, it
 	// can be expected that itr.Next will be called node.Length times
@@ -114,8 +113,7 @@ type Node interface {
 
 	// ListIterator returns an iterator which yields key-value pairs
 	// traversing the node.
-	// If the node kind is anything other than a list, the iterator will
-	// yield error values.
+	// If the node kind is anything other than a list, nil will be returned.
 	//
 	// The iterator will yield every entry in the list; that is, it
 	// can be expected that itr.Next will be called node.Length times

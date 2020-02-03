@@ -33,10 +33,10 @@ func (K) LookupSegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return nil, ipld.ErrWrongKind{MethodName: "LookupSegment", AppropriateKind: ipld.ReprKindSet_Recursive, ActualKind: ipld.ReprKind_String}
 }
 func (K) MapIterator() ipld.MapIterator {
-	panic("no")
+	return nil
 }
 func (K) ListIterator() ipld.ListIterator {
-	panic("no")
+	return nil
 }
 func (K) Length() int {
 	return -1
@@ -85,10 +85,10 @@ func (T) LookupSegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return nil, ipld.ErrWrongKind{MethodName: "LookupSegment", AppropriateKind: ipld.ReprKindSet_Recursive, ActualKind: ipld.ReprKind_Int}
 }
 func (T) MapIterator() ipld.MapIterator {
-	panic("no")
+	return nil
 }
 func (T) ListIterator() ipld.ListIterator {
-	panic("no")
+	return nil
 }
 func (T) Length() int {
 	return -1
@@ -235,7 +235,7 @@ func (n *Map_K_T) MapIterator() ipld.MapIterator {
 	return &_Map_K_T_MapIterator{n, 0}
 }
 func (Map_K_T) ListIterator() ipld.ListIterator {
-	panic("no")
+	return nil
 }
 func (n *Map_K_T) Length() int {
 	return len(n.t)

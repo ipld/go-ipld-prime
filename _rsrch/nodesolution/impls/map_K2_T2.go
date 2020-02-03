@@ -51,7 +51,7 @@ func (n *K2) MapIterator() ipld.MapIterator {
 	return &_K2_MapIterator{n, 0}
 }
 func (K2) ListIterator() ipld.ListIterator {
-	panic("no")
+	return nil
 }
 func (K2) Length() int {
 	return -1
@@ -305,7 +305,7 @@ func (n *T2) MapIterator() ipld.MapIterator {
 	return &_T2_MapIterator{n, 0}
 }
 func (T2) ListIterator() ipld.ListIterator {
-	panic("no")
+	return nil
 }
 func (T2) Length() int {
 	return -1

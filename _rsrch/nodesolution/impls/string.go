@@ -41,10 +41,10 @@ func (plainString) LookupSegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return nil, ipld.ErrWrongKind{MethodName: "LookupSegment", AppropriateKind: ipld.ReprKindSet_Recursive, ActualKind: ipld.ReprKind_String}
 }
 func (plainString) MapIterator() ipld.MapIterator {
-	panic("no")
+	return nil
 }
 func (plainString) ListIterator() ipld.ListIterator {
-	panic("no")
+	return nil
 }
 func (plainString) Length() int {
 	return -1
