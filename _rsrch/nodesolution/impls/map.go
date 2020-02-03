@@ -165,9 +165,6 @@ func (na *plainMap__Assembler) BeginMap(sizeHint int) (ipld.MapNodeAssembler, er
 	// Allocate storage space.
 	na.w.t = make([]plainMap__Entry, 0, sizeHint)
 	na.w.m = make(map[string]ipld.Node, sizeHint)
-	// Initialize the key and value assemblers with pointers back to the whole.
-	na.ka.ma = na
-	na.va.ma = na
 	// That's it; return self as the MapNodeAssembler.  We already have all the right methods on this structure.
 	return na, nil
 }
@@ -203,7 +200,8 @@ func (ma *plainMap__Assembler) AssembleDirectly(k string) (ipld.NodeAssembler, e
 		return nil, ipld.ErrRepeatedMapKey{String(k)}
 	}
 	ma.w.t = append(ma.w.t, plainMap__Entry{k: plainString(k)})
-	// No work to be done to init value assembler; it already points back to whole 'ma'; just yield it.
+	// Make value assembler valid by giving it pointer back to whole 'ma'; yield it.
+	ma.va.ma = ma
 	return &ma.va, nil
 }
 
@@ -217,7 +215,8 @@ func (ma *plainMap__Assembler) AssembleKey() ipld.NodeAssembler {
 	ma.state = maState_midKey
 	// Extend entry table.
 	ma.w.t = append(ma.w.t, plainMap__Entry{})
-	// No work to be done to init key assembler; it already points back to whole 'ma'; just yield it.
+	// Make key assembler valid by giving it pointer back to whole 'ma'; yield it.
+	ma.ka.ma = ma
 	return &ma.ka
 }
 
@@ -229,7 +228,8 @@ func (ma *plainMap__Assembler) AssembleValue() ipld.NodeAssembler {
 		panic("misuse")
 	}
 	ma.state = maState_midValue
-	// No work to be done to init value assembler; it already points back to whole 'ma'; just yield it.
+	// Make value assembler valid by giving it pointer back to whole 'ma'; yield it.
+	ma.va.ma = ma
 	return &ma.va
 }
 
@@ -268,6 +268,7 @@ func (mka *plainMap__KeyAssembler) AssignString(v string) error {
 	mka.ma.w.t[len(mka.ma.w.t)-1].k = plainString(v)
 	// Update parent assembler state: clear to proceed.
 	mka.ma.state = maState_expectValue
+	mka.ma = nil // invalidate self to prevent further incorrect use.
 	return nil
 }
 func (plainMap__KeyAssembler) AssignBytes([]byte) error { panic("no") }
@@ -309,6 +310,7 @@ func (mva *plainMap__ValueAssembler) Assign(v ipld.Node) error {
 	mva.ma.w.t[l].v = v
 	mva.ma.w.m[string(mva.ma.w.t[l].k)] = v
 	mva.ma.state = maState_initial
+	mva.ma = nil // invalidate self to prevent further incorrect use.
 	return nil
 }
 func (plainMap__ValueAssembler) Style() ipld.NodeStyle { panic("later") }
