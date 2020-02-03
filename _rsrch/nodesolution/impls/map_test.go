@@ -46,7 +46,7 @@ func buildMapStrIntN3(ns ipld.NodeStyle) ipld.Node {
 	must.NotError(ma.AssembleValue().AssignInt(2))
 	must.NotError(ma.AssembleKey().AssignString("waga"))
 	must.NotError(ma.AssembleValue().AssignInt(3))
-	must.NotError(ma.Done())
+	must.NotError(ma.Finish())
 	n, err := nb.Build()
 	must.NotError(err)
 	return n
@@ -61,7 +61,7 @@ func buildMapStrIntN25(ns ipld.NodeStyle) ipld.Node {
 		must.NotError(ma.AssembleKey().AssignString(tableStrInt[i-1].s))
 		must.NotError(ma.AssembleValue().AssignInt(tableStrInt[i-1].i))
 	}
-	must.NotError(ma.Done())
+	must.NotError(ma.Finish())
 	n, err := nb.Build()
 	must.NotError(err)
 	return n
@@ -172,7 +172,7 @@ func CheckMapStrMapStrInt(t *testing.T, ns ipld.NodeStyle) {
 			must.NotError(ma.AssembleValue().AssignInt(1))
 			must.NotError(ma.AssembleKey().AssignString("m1k2"))
 			must.NotError(ma.AssembleValue().AssignInt(2))
-			must.NotError(ma.Done())
+			must.NotError(ma.Finish())
 		}(ma.AssembleValue().BeginMap(2))
 		must.NotError(ma.AssembleKey().AssignString("woot"))
 		func(ma ipld.MapNodeAssembler, err error) {
@@ -180,7 +180,7 @@ func CheckMapStrMapStrInt(t *testing.T, ns ipld.NodeStyle) {
 			must.NotError(ma.AssembleValue().AssignInt(3))
 			must.NotError(ma.AssembleKey().AssignString("m2k2"))
 			must.NotError(ma.AssembleValue().AssignInt(4))
-			must.NotError(ma.Done())
+			must.NotError(ma.Finish())
 		}(ma.AssembleValue().BeginMap(2))
 		must.NotError(ma.AssembleKey().AssignString("waga"))
 		func(ma ipld.MapNodeAssembler, err error) {
@@ -188,9 +188,9 @@ func CheckMapStrMapStrInt(t *testing.T, ns ipld.NodeStyle) {
 			must.NotError(ma.AssembleValue().AssignInt(5))
 			must.NotError(ma.AssembleKey().AssignString("m3k2"))
 			must.NotError(ma.AssembleValue().AssignInt(6))
-			must.NotError(ma.Done())
+			must.NotError(ma.Finish())
 		}(ma.AssembleValue().BeginMap(2))
-		must.NotError(ma.Done())
+		must.NotError(ma.Finish())
 		n, err := nb.Build()
 		must.NotError(err)
 

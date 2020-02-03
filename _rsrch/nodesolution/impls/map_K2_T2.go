@@ -119,7 +119,7 @@ type _K2__Assembler struct {
 	// ca_i // this field is primitive kind and we know it, so we can just do a bunch of stuff directly.
 	// ^ not at all sure this is true, we need SOMETHING to yield, and it's not a uniform thing in general like it is for maps.
 	// ^ and it's not clear we're saving much by trying to avoid it or specialize it.  it'll get largely inlined anyway.  ... wait
-	// holy kjott i continue to need doneness checkers in all places and
+	// holy kjott i continue to need finish checkers in all places and
 	// i do not want
 	// to generate a wrapper PER FIELD TYPE.
 	// that was possible for maps because it's just one, but here?!  oh my god.  no.
@@ -145,12 +145,12 @@ type _K2__Assembler struct {
 	// we could also make a single va{*ca,*maState} per type and have it do a bunch of delegating calls.
 	//  the result of this would be a vtable jump for the delegation (otherwise we have unreusablity)... but that's similar to the update hook idea;
 	//  and at the same time, it's adding two words to the parent assembler, instead of a word to every field's assembler, which is likely better.
-	//  ... hang on, no, this is nontrivial for recursives: we don't want to have to decorate every intermediate key and value assemble call in a map builder just to keep control on the stack so we can intercept the 'done'; that's *way* worse than just one ptrfunc jump at the end.
+	//  ... hang on, no, this is nontrivial for recursives: we don't want to have to decorate every intermediate key and value assemble call in a map builder just to keep control on the stack so we can intercept the 'finish'; that's *way* worse than just one ptrfunc jump at the end.
 	//...
 	// a single clear correct choice is not yet clear here.  some further analysis may be needed.
 
 	// - untyped maps can have two more types: plainMap__ValueAssemblerMap and plainMap__ValueAssemblerList...
-	//   - and all they do is override the Done method.
+	//   - and all they do is override the Finish method.
 	//   - they have to be allocated as pointers, but this ain't news.
 	// - typed maps can be basically the same, in fact.
 	//   - the Map__K__V__ValueAssembler will also vary scalar values, but this ain't news.
@@ -231,7 +231,7 @@ func (ma *_K2__Assembler) AssembleDirectly(k string) (ipld.NodeAssembler, error)
 		if ma.isset_u {
 			return nil, ipld.ErrRepeatedMapKey{plainString("u")} // REVIEW: interesting to note this is a place we *keep* needing a basic string node impl, *everywhere*.
 		}
-		// TODO initialize the field child assembler 'w' *and* 'done' callback to us; return it.
+		// TODO initialize the field child assembler 'w' *and* 'finish' callback to us; return it.
 		panic("todo")
 	case "i":
 		// TODO same as above
@@ -256,15 +256,15 @@ func (ma *_K2__Assembler) AssembleValue() ipld.NodeAssembler {
 		panic("misuse")
 	}
 	ma.state = maState_midValue
-	// TODO initialize the field child assembler 'w' *and* 'done' callback to us; return it.
+	// TODO initialize the field child assembler 'w' *and* 'finish' callback to us; return it.
 	panic("todo")
 }
-func (ma *_K2__Assembler) Done() error {
+func (ma *_K2__Assembler) Finish() error {
 	// Sanity check assembler state.
 	if ma.state != maState_initial {
 		panic("misuse")
 	}
-	ma.state = maState_done
+	ma.state = maState_finished
 	// validators could run and report errors promptly, if this type had any.
 	return nil
 }
@@ -409,7 +409,7 @@ func (ta *_T2__Assembler) AssembleValue() ipld.NodeAssembler {
 	// also fun
 	panic("soon")
 }
-func (ta *_T2__Assembler) Done() error {
+func (ta *_T2__Assembler) Finish() error {
 	panic("soon")
 }
 func (_T2__Assembler) KeyStyle() ipld.NodeStyle   { panic("later") }

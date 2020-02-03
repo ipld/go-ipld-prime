@@ -48,7 +48,7 @@ func (Style__Any) NewBuilder() ipld.NodeBuilder {
 // we'd have all the extra bytes of anyNode still reachable in GC terms
 // for as long as that handle to the interior of it remains live.
 type anyBuilder struct {
-	kind ipld.ReprKind // used to select which builder to delegate 'Done' to, and which embedded builder to return 'w' from!
+	kind ipld.ReprKind // used to select which builder to delegate 'Build' to!  Set on first interaction.
 
 	// Only one of the following ends up being used...
 	//  but we don't know in advance which one, so all are embeded here.

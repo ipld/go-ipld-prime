@@ -5,7 +5,7 @@ package ipld
 //
 // To create a Node, you should start with a NodeBuilder (which contains a
 // superset of the NodeAssembler methods, and can return the finished Node
-// from its `Done` method).
+// from its `Build` method).
 //
 // Why do both this and the NodeBuilder interface exist?
 // When creating trees of nodes, recursion works over the NodeAssembler interface.
@@ -34,7 +34,7 @@ type NodeAssembler interface {
 //
 // Methods on MapNodeAssembler must be called in a valid order:
 // assemble a key, then assemble a value, then loop as long as desired;
-// when done, call 'Done'.
+// when finished, call 'Finish'.
 //
 // Incorrect order invocations will panic.
 // Calling AssembleKey twice in a row will panic;
@@ -51,7 +51,7 @@ type MapNodeAssembler interface {
 
 	AssembleDirectly(k string) (NodeAssembler, error) // shortcut combining AssembleKey and AssembleValue into one step; valid when the key is a string kind.
 
-	Done() error
+	Finish() error
 
 	KeyStyle() NodeStyle   // you probably don't need this (because you should be able to just feed data and check errors), but it's here.
 	ValueStyle() NodeStyle // you probably don't need this (because you should be able to just feed data and check errors), but it's here.
@@ -60,7 +60,7 @@ type MapNodeAssembler interface {
 type ListNodeAssembler interface {
 	AssembleValue() NodeAssembler
 
-	Done() error
+	Finish() error
 
 	ValueStyle() NodeStyle // you probably don't need this (because you should be able to just feed data and check errors), but it's here.
 }
@@ -70,7 +70,7 @@ type NodeBuilder interface {
 
 	// Build returns the new value after all other assembly has been completed.
 	// A method on the NodeAssembler that finishes assembly of the data should
-	// be called first (e.g., any of the "Assign*" methods, or "Done" if
+	// be called first (e.g., any of the "Assign*" methods, or "Finish" if
 	// the assembly was for a map or a list); that method still has all
 	// responsibility for validating the assembled data and returning
 	// any errors from that process.

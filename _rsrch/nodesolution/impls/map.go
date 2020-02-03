@@ -122,8 +122,8 @@ type plainMap__Builder struct {
 }
 
 func (nb *plainMap__Builder) Build() (ipld.Node, error) {
-	if nb.state != maState_done {
-		panic("invalid state: assembler must be 'done' before Build can be called!")
+	if nb.state != maState_finished {
+		panic("invalid state: assembler must be 'finished' before Build can be called!")
 	}
 	return nb.w, nil
 }
@@ -154,11 +154,11 @@ type plainMap__ValueAssembler struct {
 type maState uint8
 
 const (
-	maState_initial     maState = iota // also the 'expect key or done' state
-	maState_midKey                     // waiting for a 'done' state in the KeyAssembler.
+	maState_initial     maState = iota // also the 'expect key or finish' state
+	maState_midKey                     // waiting for a 'finished' state in the KeyAssembler.
 	maState_expectValue                // 'AssembleValue' is the only valid next step
-	maState_midValue                   // waiting for a 'done' state in the ValueAssembler.
-	maState_done                       // 'w' will also be nil, but this is a politer statement
+	maState_midValue                   // waiting for a 'finished' state in the ValueAssembler.
+	maState_finished                   // 'w' will also be nil, but this is a politer statement
 )
 
 func (na *plainMap__Assembler) BeginMap(sizeHint int) (ipld.MapNodeAssembler, error) {
@@ -182,7 +182,7 @@ func (na *plainMap__Assembler) Assign(v ipld.Node) error {
 	// todo: apply a generic 'copy' function.
 	// todo: probably can also shortcut to copying na.t and na.m if it's our same concrete type?
 	//  (can't quite just `na.w = v`, because we don't have 'freeze' features, and we don't wanna open door to mutation of 'v'.)
-	//   (wait... actually, probably we can?  'Assign' is a "done" method.  we can&should invalidate the wip pointer here.)
+	//   (wait... actually, probably we can?  'Assign' is a "finish" method.  we can&should invalidate the wip pointer here.)
 	panic("later")
 }
 func (plainMap__Assembler) Style() ipld.NodeStyle { panic("later") }
@@ -233,14 +233,14 @@ func (ma *plainMap__Assembler) AssembleValue() ipld.NodeAssembler {
 	return &ma.va
 }
 
-// Done is part of conforming to MapAssembler, which we do on
+// Finish is part of conforming to MapAssembler, which we do on
 // plainMap__Assembler so that BeginMap can just return a retyped pointer rather than new object.
-func (ma *plainMap__Assembler) Done() error {
+func (ma *plainMap__Assembler) Finish() error {
 	// Sanity check, then update, assembler state.
 	if ma.state != maState_initial {
 		panic("misuse")
 	}
-	ma.state = maState_done
+	ma.state = maState_finished
 	// validators could run and report errors promptly, if this type had any.
 	return nil
 }
@@ -341,8 +341,8 @@ func (ma *plainMap__ValueAssemblerMap) AssembleValue() ipld.NodeAssembler {
 func (plainMap__ValueAssemblerMap) KeyStyle() ipld.NodeStyle   { panic("later") }
 func (plainMap__ValueAssemblerMap) ValueStyle() ipld.NodeStyle { panic("later") }
 
-func (ma *plainMap__ValueAssemblerMap) Done() error {
-	if err := ma.ca.Done(); err != nil {
+func (ma *plainMap__ValueAssemblerMap) Finish() error {
+	if err := ma.ca.Finish(); err != nil {
 		return err
 	}
 	return ma.p.va.Assign(ma.ca.w)

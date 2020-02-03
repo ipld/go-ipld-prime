@@ -306,7 +306,7 @@ func (Type__Map_K_T) NewBuilder() ipld.NodeBuilder {
 //   - AssignString -- delegates to _K__Assembler (which may run validations); then checks for repeated key, errors if so; in case of either of those errors, un-extends 'w.t'.
 //   - Assign -- more or less does one of the other two, above or below.
 //   - BeginMap -- doesn't apply in this case (key is not complex), but if it was/did...
-//     - Done -- is implemented on _Map_K_T__KeyAssembler and delegates to _K__Assembler, because must do the repeated key check.
+//     - Finish -- is implemented on _Map_K_T__KeyAssembler and delegates to _K__Assembler, because must do the repeated key check.
 // - (okay, the key is now confirmed.  but, keep in mind: we still might need to back out if the value assignment errors.)
 // - AssembleValue -- sets up 'va.ca.w' to point to the 'v' in the very tail of 'w.t'.
 // - ...
@@ -414,12 +414,12 @@ func (ma *_Map_K_T__Assembler) AssembleValue() ipld.NodeAssembler {
 	ma.va.ca.w = &ma.w.t[len(ma.w.t)-1].v
 	return &ma.va
 }
-func (ma *_Map_K_T__Assembler) Done() error {
+func (ma *_Map_K_T__Assembler) Finish() error {
 	// Sanity check, then update, assembler state.
 	if ma.state != maState_initial {
 		panic("misuse")
 	}
-	ma.state = maState_done
+	ma.state = maState_finished
 	// validators could run and report errors promptly, if this type had any.
 	return nil
 }
@@ -489,7 +489,7 @@ func (mva *_Map_K_T__ValueAssembler) Assign(v ipld.Node) error {
 }
 func (mva *_Map_K_T__ValueAssembler) flush() {
 	// The child assembler already assigned directly into the target memory,
-	//  and should have invalided its 'w' pointer when it was done doing so,
+	//  and should have invalided its 'w' pointer when it was finished doing so,
 	//  so there's not much to do here... except update the assembler state machine.
 	// We also don't check the previous state because:
 	//  A) the appropriate time to do that would've been *before* assignments; and
