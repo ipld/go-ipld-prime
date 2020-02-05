@@ -92,3 +92,6 @@ func (x FloatAssembler) AssignString(string) error {
 func (x FloatAssembler) AssignBytes([]byte) error {
 	return ipld.ErrWrongKind{TypeName: x.TypeName, MethodName: "AssignBytes", AppropriateKind: ipld.ReprKindSet_JustBytes, ActualKind: ipld.ReprKind_Float}
 }
+func (x FloatAssembler) AssignLink(Link) error {
+	return ipld.ErrWrongKind{TypeName: x.TypeName, MethodName: "AssignLink", AppropriateKind: ipld.ReprKindSet_JustLink, ActualKind: ipld.ReprKind_Float}
+}
