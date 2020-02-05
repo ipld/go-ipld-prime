@@ -264,12 +264,24 @@ func (plainMap__Assembler) ValueStyle() ipld.NodeStyle { panic("later") }
 
 // -- MapNodeAssembler.KeyAssembler -->
 
-func (plainMap__KeyAssembler) BeginMap(sizeHint int) (ipld.MapNodeAssembler, error)   { panic("no") }
-func (plainMap__KeyAssembler) BeginList(sizeHint int) (ipld.ListNodeAssembler, error) { panic("no") }
-func (plainMap__KeyAssembler) AssignNull() error                                      { panic("no") }
-func (plainMap__KeyAssembler) AssignBool(bool) error                                  { panic("no") }
-func (plainMap__KeyAssembler) AssignInt(int) error                                    { panic("no") }
-func (plainMap__KeyAssembler) AssignFloat(float64) error                              { panic("no") }
+func (plainMap__KeyAssembler) BeginMap(sizeHint int) (ipld.MapNodeAssembler, error) {
+	return mixins.StringAssembler{"string"}.BeginMap(0)
+}
+func (plainMap__KeyAssembler) BeginList(sizeHint int) (ipld.ListNodeAssembler, error) {
+	return mixins.StringAssembler{"string"}.BeginList(0)
+}
+func (plainMap__KeyAssembler) AssignNull() error {
+	return mixins.StringAssembler{"string"}.AssignNull()
+}
+func (plainMap__KeyAssembler) AssignBool(bool) error {
+	return mixins.StringAssembler{"string"}.AssignBool(false)
+}
+func (plainMap__KeyAssembler) AssignInt(int) error {
+	return mixins.StringAssembler{"string"}.AssignInt(0)
+}
+func (plainMap__KeyAssembler) AssignFloat(float64) error {
+	return mixins.StringAssembler{"string"}.AssignFloat(0)
+}
 func (mka *plainMap__KeyAssembler) AssignString(v string) error {
 	// Check for dup keys; error if so.
 	_, exists := mka.ma.w.m[v]
@@ -286,7 +298,9 @@ func (mka *plainMap__KeyAssembler) AssignString(v string) error {
 	mka.ma = nil // invalidate self to prevent further incorrect use.
 	return nil
 }
-func (plainMap__KeyAssembler) AssignBytes([]byte) error { panic("no") }
+func (plainMap__KeyAssembler) AssignBytes([]byte) error {
+	return mixins.StringAssembler{"string"}.AssignBytes(nil)
+}
 func (mka *plainMap__KeyAssembler) AssignNode(v ipld.Node) error {
 	vs, err := v.AsString()
 	if err != nil {
