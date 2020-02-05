@@ -197,6 +197,9 @@ func (na *plainMap__Assembler) AssignNode(v ipld.Node) error {
 	//   (wait... actually, probably we can?  'Assign' is a "finish" method.  we can&should invalidate the wip pointer here.)
 	panic("later")
 }
+func (plainMap__Assembler) AssignLink(ipld.Link) error {
+	return mixins.MapAssembler{"map"}.AssignLink(nil)
+}
 func (plainMap__Assembler) Style() ipld.NodeStyle { panic("later") }
 
 // -- MapNodeAssembler -->
@@ -301,6 +304,9 @@ func (mka *plainMap__KeyAssembler) AssignString(v string) error {
 func (plainMap__KeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{"string"}.AssignBytes(nil)
 }
+func (plainMap__KeyAssembler) AssignLink(ipld.Link) error {
+	return mixins.StringAssembler{"string"}.AssignLink(nil)
+}
 func (mka *plainMap__KeyAssembler) AssignNode(v ipld.Node) error {
 	vs, err := v.AsString()
 	if err != nil {
@@ -333,7 +339,8 @@ func (mva *plainMap__ValueAssembler) AssignString(v string) error {
 	vb := plainString(v)
 	return mva.AssignNode(&vb)
 }
-func (mva *plainMap__ValueAssembler) AssignBytes([]byte) error { panic("todo") }
+func (mva *plainMap__ValueAssembler) AssignBytes([]byte) error   { panic("todo") }
+func (mva *plainMap__ValueAssembler) AssignLink(ipld.Link) error { panic("todo") }
 func (mva *plainMap__ValueAssembler) AssignNode(v ipld.Node) error {
 	l := len(mva.ma.w.t) - 1
 	mva.ma.w.t[l].v = v

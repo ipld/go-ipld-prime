@@ -359,6 +359,7 @@ func (_Map_K_T__Assembler) AssignInt(v int) error                           { pa
 func (_Map_K_T__Assembler) AssignFloat(float64) error                       { panic("no") }
 func (_Map_K_T__Assembler) AssignString(v string) error                     { panic("no") }
 func (_Map_K_T__Assembler) AssignBytes([]byte) error                        { panic("no") }
+func (_Map_K_T__Assembler) AssignLink(ipld.Link) error                      { panic("no") }
 func (ta *_Map_K_T__Assembler) AssignNode(v ipld.Node) error {
 	if v2, ok := v.(*Map_K_T); ok {
 		*ta.w = *v2
@@ -451,7 +452,8 @@ func (mka *_Map_K_T__KeyAssembler) AssignString(v string) error {
 	mka.ma.state = maState_expectValue
 	return nil
 }
-func (_Map_K_T__KeyAssembler) AssignBytes([]byte) error { panic("no") }
+func (_Map_K_T__KeyAssembler) AssignBytes([]byte) error   { panic("no") }
+func (_Map_K_T__KeyAssembler) AssignLink(ipld.Link) error { panic("no") }
 func (mka *_Map_K_T__KeyAssembler) AssignNode(v ipld.Node) error {
 	vs, err := v.AsString()
 	if err != nil {
@@ -479,6 +481,7 @@ func (mva *_Map_K_T__ValueAssembler) AssignInt(v int) error {
 func (mva *_Map_K_T__ValueAssembler) AssignFloat(float64) error   { panic("todo") }
 func (mva *_Map_K_T__ValueAssembler) AssignString(v string) error { panic("todo") }
 func (mva *_Map_K_T__ValueAssembler) AssignBytes([]byte) error    { panic("todo") }
+func (mva *_Map_K_T__ValueAssembler) AssignLink(ipld.Link) error  { panic("todo") }
 func (mva *_Map_K_T__ValueAssembler) AssignNode(v ipld.Node) error {
 	if err := mva.ca.AssignNode(v); err != nil {
 		return err

@@ -24,6 +24,7 @@ type NodeAssembler interface {
 	AssignFloat(float64) error
 	AssignString(string) error
 	AssignBytes([]byte) error
+	AssignLink(Link) error
 
 	AssignNode(Node) error // if you already have a completely constructed subtree, this method puts the whole thing in place at once.
 

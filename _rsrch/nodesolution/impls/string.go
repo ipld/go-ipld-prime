@@ -132,6 +132,9 @@ func (na *plainString__Assembler) AssignString(v string) error {
 func (plainString__Assembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{"string"}.AssignBytes(nil)
 }
+func (plainString__Assembler) AssignLink(ipld.Link) error {
+	return mixins.StringAssembler{"string"}.AssignLink(nil)
+}
 func (na *plainString__Assembler) AssignNode(v ipld.Node) error {
 	if s, err := v.AsString(); err != nil {
 		return err

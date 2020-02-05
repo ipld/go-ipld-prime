@@ -105,6 +105,9 @@ func (nb *anyBuilder) AssignString(v string) error {
 func (nb *anyBuilder) AssignBytes(v []byte) error {
 	panic("soon")
 }
+func (nb *anyBuilder) AssignLink(v ipld.Link) error {
+	panic("soon")
+}
 func (nb *anyBuilder) AssignNode(v ipld.Node) error {
 	// TODO what to do here?  should we just... keep it, in another `Node` field?
 	panic("soon")

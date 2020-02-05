@@ -135,6 +135,9 @@ func (na *plainInt__Assembler) AssignNode(v ipld.Node) error {
 		return nil
 	}
 }
+func (plainInt__Assembler) AssignLink(ipld.Link) error {
+	return mixins.IntAssembler{"int"}.AssignLink(nil)
+}
 func (plainInt__Assembler) Style() ipld.NodeStyle {
 	return Style__Int{}
 }
