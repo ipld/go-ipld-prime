@@ -2,6 +2,7 @@ package impls
 
 import (
 	ipld "github.com/ipld/go-ipld-prime/_rsrch/nodesolution"
+	"github.com/ipld/go-ipld-prime/_rsrch/nodesolution/impls/mixins"
 )
 
 var (
@@ -29,16 +30,16 @@ func (plainString) ReprKind() ipld.ReprKind {
 	return ipld.ReprKind_String
 }
 func (plainString) LookupString(string) (ipld.Node, error) {
-	return nil, ipld.ErrWrongKind{MethodName: "LookupString", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: ipld.ReprKind_String}
+	return mixins.String{"string"}.LookupString("")
 }
 func (plainString) Lookup(key ipld.Node) (ipld.Node, error) {
-	return nil, ipld.ErrWrongKind{MethodName: "Lookup", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: ipld.ReprKind_String}
+	return mixins.String{"string"}.Lookup(nil)
 }
 func (plainString) LookupIndex(idx int) (ipld.Node, error) {
-	return nil, ipld.ErrWrongKind{MethodName: "LookupIndex", AppropriateKind: ipld.ReprKindSet_JustList, ActualKind: ipld.ReprKind_String}
+	return mixins.String{"string"}.LookupIndex(0)
 }
 func (plainString) LookupSegment(seg ipld.PathSegment) (ipld.Node, error) {
-	return nil, ipld.ErrWrongKind{MethodName: "LookupSegment", AppropriateKind: ipld.ReprKindSet_Recursive, ActualKind: ipld.ReprKind_String}
+	return mixins.String{"string"}.LookupSegment(seg)
 }
 func (plainString) MapIterator() ipld.MapIterator {
 	return nil
@@ -56,22 +57,22 @@ func (plainString) IsNull() bool {
 	return false
 }
 func (plainString) AsBool() (bool, error) {
-	return false, ipld.ErrWrongKind{MethodName: "AsBool", AppropriateKind: ipld.ReprKindSet_JustBool, ActualKind: ipld.ReprKind_String}
+	return mixins.String{"string"}.AsBool()
 }
 func (plainString) AsInt() (int, error) {
-	return 0, ipld.ErrWrongKind{MethodName: "AsInt", AppropriateKind: ipld.ReprKindSet_JustInt, ActualKind: ipld.ReprKind_String}
+	return mixins.String{"string"}.AsInt()
 }
 func (plainString) AsFloat() (float64, error) {
-	return 0, ipld.ErrWrongKind{MethodName: "AsFloat", AppropriateKind: ipld.ReprKindSet_JustFloat, ActualKind: ipld.ReprKind_String}
+	return mixins.String{"string"}.AsFloat()
 }
 func (x plainString) AsString() (string, error) {
 	return string(x), nil
 }
 func (plainString) AsBytes() ([]byte, error) {
-	return nil, ipld.ErrWrongKind{MethodName: "AsBytes", AppropriateKind: ipld.ReprKindSet_JustBytes, ActualKind: ipld.ReprKind_String}
+	return mixins.String{"string"}.AsBytes()
 }
 func (plainString) AsLink() (ipld.Link, error) {
-	return nil, ipld.ErrWrongKind{MethodName: "AsLink", AppropriateKind: ipld.ReprKindSet_JustLink, ActualKind: ipld.ReprKind_String}
+	return mixins.String{"string"}.AsLink()
 }
 func (plainString) Style() ipld.NodeStyle {
 	return Style__String{}

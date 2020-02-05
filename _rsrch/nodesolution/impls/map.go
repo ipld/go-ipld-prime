@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	ipld "github.com/ipld/go-ipld-prime/_rsrch/nodesolution"
+	"github.com/ipld/go-ipld-prime/_rsrch/nodesolution/impls/mixins"
 )
 
 var (
@@ -47,7 +48,7 @@ func (n *plainMap) Lookup(key ipld.Node) (ipld.Node, error) {
 	return n.LookupString(ks)
 }
 func (plainMap) LookupIndex(idx int) (ipld.Node, error) {
-	return nil, ipld.ErrWrongKind{TypeName: "map", MethodName: "LookupIndex", AppropriateKind: ipld.ReprKindSet_JustList, ActualKind: ipld.ReprKind_Map}
+	return mixins.Map{"map"}.LookupIndex(0)
 }
 func (n *plainMap) LookupSegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupString(seg.String())
@@ -68,22 +69,22 @@ func (plainMap) IsNull() bool {
 	return false
 }
 func (plainMap) AsBool() (bool, error) {
-	return false, ipld.ErrWrongKind{TypeName: "map", MethodName: "AsBool", AppropriateKind: ipld.ReprKindSet_JustBool, ActualKind: ipld.ReprKind_Map}
+	return mixins.Map{"map"}.AsBool()
 }
 func (plainMap) AsInt() (int, error) {
-	return 0, ipld.ErrWrongKind{TypeName: "map", MethodName: "AsInt", AppropriateKind: ipld.ReprKindSet_JustFloat, ActualKind: ipld.ReprKind_Map}
+	return mixins.Map{"map"}.AsInt()
 }
 func (plainMap) AsFloat() (float64, error) {
-	return 0, ipld.ErrWrongKind{TypeName: "map", MethodName: "AsFloat", AppropriateKind: ipld.ReprKindSet_JustFloat, ActualKind: ipld.ReprKind_Map}
+	return mixins.Map{"map"}.AsFloat()
 }
 func (plainMap) AsString() (string, error) {
-	return "", ipld.ErrWrongKind{TypeName: "map", MethodName: "AsString", AppropriateKind: ipld.ReprKindSet_JustString, ActualKind: ipld.ReprKind_Map}
+	return mixins.Map{"map"}.AsString()
 }
 func (plainMap) AsBytes() ([]byte, error) {
-	return nil, ipld.ErrWrongKind{TypeName: "map", MethodName: "AsBytes", AppropriateKind: ipld.ReprKindSet_JustBytes, ActualKind: ipld.ReprKind_Map}
+	return mixins.Map{"map"}.AsBytes()
 }
 func (plainMap) AsLink() (ipld.Link, error) {
-	return nil, ipld.ErrWrongKind{TypeName: "map", MethodName: "AsLink", AppropriateKind: ipld.ReprKindSet_JustLink, ActualKind: ipld.ReprKind_Map}
+	return mixins.Map{"map"}.AsLink()
 }
 func (plainMap) Style() ipld.NodeStyle {
 	return Style__Map{}

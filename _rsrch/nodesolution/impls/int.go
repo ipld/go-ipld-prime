@@ -2,6 +2,7 @@ package impls
 
 import (
 	ipld "github.com/ipld/go-ipld-prime/_rsrch/nodesolution"
+	"github.com/ipld/go-ipld-prime/_rsrch/nodesolution/impls/mixins"
 )
 
 var (
@@ -24,16 +25,16 @@ func (plainInt) ReprKind() ipld.ReprKind {
 	return ipld.ReprKind_Int
 }
 func (plainInt) LookupString(string) (ipld.Node, error) {
-	return nil, ipld.ErrWrongKind{MethodName: "LookupString", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: ipld.ReprKind_Int}
+	return mixins.Int{"int"}.LookupString("")
 }
 func (plainInt) Lookup(key ipld.Node) (ipld.Node, error) {
-	return nil, ipld.ErrWrongKind{MethodName: "Lookup", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: ipld.ReprKind_Int}
+	return mixins.Int{"int"}.Lookup(nil)
 }
 func (plainInt) LookupIndex(idx int) (ipld.Node, error) {
-	return nil, ipld.ErrWrongKind{MethodName: "LookupIndex", AppropriateKind: ipld.ReprKindSet_JustList, ActualKind: ipld.ReprKind_Int}
+	return mixins.Int{"int"}.LookupIndex(0)
 }
 func (plainInt) LookupSegment(seg ipld.PathSegment) (ipld.Node, error) {
-	return nil, ipld.ErrWrongKind{MethodName: "LookupSegment", AppropriateKind: ipld.ReprKindSet_Recursive, ActualKind: ipld.ReprKind_Int}
+	return mixins.Int{"int"}.LookupSegment(seg)
 }
 func (plainInt) MapIterator() ipld.MapIterator {
 	return nil
@@ -51,22 +52,22 @@ func (plainInt) IsNull() bool {
 	return false
 }
 func (plainInt) AsBool() (bool, error) {
-	return false, ipld.ErrWrongKind{MethodName: "AsBool", AppropriateKind: ipld.ReprKindSet_JustBool, ActualKind: ipld.ReprKind_Int}
+	return mixins.Int{"int"}.AsBool()
 }
 func (n plainInt) AsInt() (int, error) {
 	return int(n), nil
 }
 func (plainInt) AsFloat() (float64, error) {
-	return 0, ipld.ErrWrongKind{MethodName: "AsFloat", AppropriateKind: ipld.ReprKindSet_JustFloat, ActualKind: ipld.ReprKind_Int}
+	return mixins.Int{"int"}.AsFloat()
 }
 func (plainInt) AsString() (string, error) {
-	return "", ipld.ErrWrongKind{MethodName: "AsString", AppropriateKind: ipld.ReprKindSet_JustFloat, ActualKind: ipld.ReprKind_Int}
+	return mixins.Int{"int"}.AsString()
 }
 func (plainInt) AsBytes() ([]byte, error) {
-	return nil, ipld.ErrWrongKind{MethodName: "AsBytes", AppropriateKind: ipld.ReprKindSet_JustBytes, ActualKind: ipld.ReprKind_Int}
+	return mixins.Int{"int"}.AsBytes()
 }
 func (plainInt) AsLink() (ipld.Link, error) {
-	return nil, ipld.ErrWrongKind{MethodName: "AsLink", AppropriateKind: ipld.ReprKindSet_JustLink, ActualKind: ipld.ReprKind_Int}
+	return mixins.Int{"int"}.AsLink()
 }
 func (plainInt) Style() ipld.NodeStyle {
 	return Style__Int{}
