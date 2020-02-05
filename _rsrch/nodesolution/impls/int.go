@@ -102,17 +102,31 @@ type plainInt__Assembler struct {
 	w *plainInt
 }
 
-func (plainInt__Assembler) BeginMap(sizeHint int) (ipld.MapNodeAssembler, error)   { panic("no") }
-func (plainInt__Assembler) BeginList(sizeHint int) (ipld.ListNodeAssembler, error) { panic("no") }
-func (plainInt__Assembler) AssignNull() error                                      { panic("no") }
-func (plainInt__Assembler) AssignBool(bool) error                                  { panic("no") }
+func (plainInt__Assembler) BeginMap(sizeHint int) (ipld.MapNodeAssembler, error) {
+	return mixins.IntAssembler{"int"}.BeginMap(0)
+}
+func (plainInt__Assembler) BeginList(sizeHint int) (ipld.ListNodeAssembler, error) {
+	return mixins.IntAssembler{"int"}.BeginList(0)
+}
+func (plainInt__Assembler) AssignNull() error {
+	return mixins.IntAssembler{"int"}.AssignNull()
+}
+func (plainInt__Assembler) AssignBool(bool) error {
+	return mixins.IntAssembler{"int"}.AssignBool(false)
+}
 func (na *plainInt__Assembler) AssignInt(v int) error {
 	*na.w = plainInt(v)
 	return nil
 }
-func (plainInt__Assembler) AssignFloat(float64) error { panic("no") }
-func (plainInt__Assembler) AssignString(string) error { panic("no") }
-func (plainInt__Assembler) AssignBytes([]byte) error  { panic("no") }
+func (plainInt__Assembler) AssignFloat(float64) error {
+	return mixins.IntAssembler{"int"}.AssignFloat(0)
+}
+func (plainInt__Assembler) AssignString(string) error {
+	return mixins.IntAssembler{"int"}.AssignString("")
+}
+func (plainInt__Assembler) AssignBytes([]byte) error {
+	return mixins.IntAssembler{"int"}.AssignBytes(nil)
+}
 func (na *plainInt__Assembler) AssignNode(v ipld.Node) error {
 	if s, err := v.AsInt(); err != nil {
 		return err

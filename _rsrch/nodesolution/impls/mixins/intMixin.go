@@ -64,3 +64,31 @@ func (x Int) AsBytes() ([]byte, error) {
 func (x Int) AsLink() (ipld.Link, error) {
 	return nil, ipld.ErrWrongKind{TypeName: x.TypeName, MethodName: "AsLink", AppropriateKind: ipld.ReprKindSet_JustLink, ActualKind: ipld.ReprKind_Int}
 }
+
+// IntAssembler has similar purpose as Int, but for (you guessed it)
+// the NodeAssembler interface rather than the Node interface.
+type IntAssembler struct {
+	TypeName string
+}
+
+func (x IntAssembler) BeginMap(sizeHint int) (ipld.MapNodeAssembler, error) {
+	return nil, ipld.ErrWrongKind{TypeName: x.TypeName, MethodName: "BeginMap", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: ipld.ReprKind_Int}
+}
+func (x IntAssembler) BeginList(sizeHint int) (ipld.ListNodeAssembler, error) {
+	return nil, ipld.ErrWrongKind{TypeName: x.TypeName, MethodName: "BeginList", AppropriateKind: ipld.ReprKindSet_JustList, ActualKind: ipld.ReprKind_Int}
+}
+func (x IntAssembler) AssignNull() error {
+	return ipld.ErrWrongKind{TypeName: x.TypeName, MethodName: "AssignNull", AppropriateKind: ipld.ReprKindSet_JustNull, ActualKind: ipld.ReprKind_Int}
+}
+func (x IntAssembler) AssignBool(bool) error {
+	return ipld.ErrWrongKind{TypeName: x.TypeName, MethodName: "AssignBool", AppropriateKind: ipld.ReprKindSet_JustBool, ActualKind: ipld.ReprKind_Int}
+}
+func (x IntAssembler) AssignFloat(float64) error {
+	return ipld.ErrWrongKind{TypeName: x.TypeName, MethodName: "AssignFloat", AppropriateKind: ipld.ReprKindSet_JustFloat, ActualKind: ipld.ReprKind_Int}
+}
+func (x IntAssembler) AssignString(string) error {
+	return ipld.ErrWrongKind{TypeName: x.TypeName, MethodName: "AssignString", AppropriateKind: ipld.ReprKindSet_JustString, ActualKind: ipld.ReprKind_Int}
+}
+func (x IntAssembler) AssignBytes([]byte) error {
+	return ipld.ErrWrongKind{TypeName: x.TypeName, MethodName: "AssignBytes", AppropriateKind: ipld.ReprKindSet_JustBytes, ActualKind: ipld.ReprKind_Int}
+}

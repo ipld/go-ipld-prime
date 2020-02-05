@@ -52,3 +52,31 @@ func (x Map) AsBytes() ([]byte, error) {
 func (x Map) AsLink() (ipld.Link, error) {
 	return nil, ipld.ErrWrongKind{TypeName: x.TypeName, MethodName: "AsLink", AppropriateKind: ipld.ReprKindSet_JustLink, ActualKind: ipld.ReprKind_Map}
 }
+
+// MapAssembler has similar purpose as Map, but for (you guessed it)
+// the NodeAssembler interface rather than the Node interface.
+type MapAssembler struct {
+	TypeName string
+}
+
+func (x MapAssembler) BeginList(sizeHint int) (ipld.ListNodeAssembler, error) {
+	return nil, ipld.ErrWrongKind{TypeName: x.TypeName, MethodName: "BeginList", AppropriateKind: ipld.ReprKindSet_JustList, ActualKind: ipld.ReprKind_Map}
+}
+func (x MapAssembler) AssignNull() error {
+	return ipld.ErrWrongKind{TypeName: x.TypeName, MethodName: "AssignNull", AppropriateKind: ipld.ReprKindSet_JustNull, ActualKind: ipld.ReprKind_Map}
+}
+func (x MapAssembler) AssignBool(bool) error {
+	return ipld.ErrWrongKind{TypeName: x.TypeName, MethodName: "AssignBool", AppropriateKind: ipld.ReprKindSet_JustBool, ActualKind: ipld.ReprKind_Map}
+}
+func (x MapAssembler) AssignInt(int) error {
+	return ipld.ErrWrongKind{TypeName: x.TypeName, MethodName: "AssignInt", AppropriateKind: ipld.ReprKindSet_JustInt, ActualKind: ipld.ReprKind_Map}
+}
+func (x MapAssembler) AssignFloat(float64) error {
+	return ipld.ErrWrongKind{TypeName: x.TypeName, MethodName: "AssignFloat", AppropriateKind: ipld.ReprKindSet_JustFloat, ActualKind: ipld.ReprKind_Map}
+}
+func (x MapAssembler) AssignString(string) error {
+	return ipld.ErrWrongKind{TypeName: x.TypeName, MethodName: "AssignString", AppropriateKind: ipld.ReprKindSet_JustString, ActualKind: ipld.ReprKind_Map}
+}
+func (x MapAssembler) AssignBytes([]byte) error {
+	return ipld.ErrWrongKind{TypeName: x.TypeName, MethodName: "AssignBytes", AppropriateKind: ipld.ReprKindSet_JustBytes, ActualKind: ipld.ReprKind_Map}
+}

@@ -169,13 +169,27 @@ func (na *plainMap__Assembler) BeginMap(sizeHint int) (ipld.MapNodeAssembler, er
 	// That's it; return self as the MapNodeAssembler.  We already have all the right methods on this structure.
 	return na, nil
 }
-func (plainMap__Assembler) BeginList(sizeHint int) (ipld.ListNodeAssembler, error) { panic("no") }
-func (plainMap__Assembler) AssignNull() error                                      { panic("no") }
-func (plainMap__Assembler) AssignBool(bool) error                                  { panic("no") }
-func (plainMap__Assembler) AssignInt(int) error                                    { panic("no") }
-func (plainMap__Assembler) AssignFloat(float64) error                              { panic("no") }
-func (plainMap__Assembler) AssignString(v string) error                            { panic("no") }
-func (plainMap__Assembler) AssignBytes([]byte) error                               { panic("no") }
+func (plainMap__Assembler) BeginList(sizeHint int) (ipld.ListNodeAssembler, error) {
+	return mixins.MapAssembler{"map"}.BeginList(0)
+}
+func (plainMap__Assembler) AssignNull() error {
+	return mixins.MapAssembler{"map"}.AssignNull()
+}
+func (plainMap__Assembler) AssignBool(bool) error {
+	return mixins.MapAssembler{"map"}.AssignBool(false)
+}
+func (plainMap__Assembler) AssignInt(int) error {
+	return mixins.MapAssembler{"map"}.AssignInt(0)
+}
+func (plainMap__Assembler) AssignFloat(float64) error {
+	return mixins.MapAssembler{"map"}.AssignFloat(0)
+}
+func (plainMap__Assembler) AssignString(string) error {
+	return mixins.MapAssembler{"map"}.AssignString("")
+}
+func (plainMap__Assembler) AssignBytes([]byte) error {
+	return mixins.MapAssembler{"map"}.AssignBytes(nil)
+}
 func (na *plainMap__Assembler) AssignNode(v ipld.Node) error {
 	// todo: apply a generic 'copy' function.
 	// todo: probably can also shortcut to copying na.t and na.m if it's our same concrete type?
