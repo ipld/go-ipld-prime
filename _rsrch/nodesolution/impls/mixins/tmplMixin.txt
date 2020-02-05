@@ -99,9 +99,9 @@ func (x @Kind@Assembler) AssignFloat(float64) error {
 func (x @Kind@Assembler) AssignString(string) error {
 	return ipld.ErrWrongKind{TypeName: x.TypeName, MethodName: "AssignString", AppropriateKind: ipld.ReprKindSet_JustString, ActualKind: ipld.ReprKind_@Kind@}
 }
-func (x @Kind@Assembler) AssignBytes([]byte) error  {
+func (x @Kind@Assembler) AssignBytes([]byte) error {
 	return ipld.ErrWrongKind{TypeName: x.TypeName, MethodName: "AssignBytes", AppropriateKind: ipld.ReprKindSet_JustBytes, ActualKind: ipld.ReprKind_@Kind@}
 }
-func (x @Kind@Assembler) AssignLink(Link) error  {
+func (x @Kind@Assembler) AssignLink(Link) error {
 	return ipld.ErrWrongKind{TypeName: x.TypeName, MethodName: "AssignLink", AppropriateKind: ipld.ReprKindSet_JustLink, ActualKind: ipld.ReprKind_@Kind@}
 }
