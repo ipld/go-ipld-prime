@@ -190,15 +190,15 @@ func (plainMap__Assembler) AssignString(string) error {
 func (plainMap__Assembler) AssignBytes([]byte) error {
 	return mixins.MapAssembler{"map"}.AssignBytes(nil)
 }
+func (plainMap__Assembler) AssignLink(ipld.Link) error {
+	return mixins.MapAssembler{"map"}.AssignLink(nil)
+}
 func (na *plainMap__Assembler) AssignNode(v ipld.Node) error {
 	// todo: apply a generic 'copy' function.
 	// todo: probably can also shortcut to copying na.t and na.m if it's our same concrete type?
 	//  (can't quite just `na.w = v`, because we don't have 'freeze' features, and we don't wanna open door to mutation of 'v'.)
 	//   (wait... actually, probably we can?  'Assign' is a "finish" method.  we can&should invalidate the wip pointer here.)
 	panic("later")
-}
-func (plainMap__Assembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"map"}.AssignLink(nil)
 }
 func (plainMap__Assembler) Style() ipld.NodeStyle { panic("later") }
 

@@ -127,16 +127,16 @@ func (plainInt__Assembler) AssignString(string) error {
 func (plainInt__Assembler) AssignBytes([]byte) error {
 	return mixins.IntAssembler{"int"}.AssignBytes(nil)
 }
-func (na *plainInt__Assembler) AssignNode(v ipld.Node) error {
-	if s, err := v.AsInt(); err != nil {
-		return err
-	} else {
-		*na.w = plainInt(s)
-		return nil
-	}
-}
 func (plainInt__Assembler) AssignLink(ipld.Link) error {
 	return mixins.IntAssembler{"int"}.AssignLink(nil)
+}
+func (na *plainInt__Assembler) AssignNode(v ipld.Node) error {
+	if v2, err := v.AsInt(); err != nil {
+		return err
+	} else {
+		*na.w = plainInt(v2)
+		return nil
+	}
 }
 func (plainInt__Assembler) Style() ipld.NodeStyle {
 	return Style__Int{}
