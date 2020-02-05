@@ -69,7 +69,7 @@ func (plainInt) AsLink() (ipld.Link, error) {
 	return nil, ipld.ErrWrongKind{MethodName: "AsLink", AppropriateKind: ipld.ReprKindSet_JustLink, ActualKind: ipld.ReprKind_Int}
 }
 func (plainInt) Style() ipld.NodeStyle {
-	panic("todo")
+	return Style__Int{}
 }
 
 // -- NodeStyle -->
