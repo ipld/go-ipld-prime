@@ -139,7 +139,7 @@ func (ta *_K__Assembler) AssignString(v string) error {
 	return nil
 }
 func (_K__Assembler) AssignBytes([]byte) error { panic("no") }
-func (ta *_K__Assembler) Assign(v ipld.Node) error {
+func (ta *_K__Assembler) AssignNode(v ipld.Node) error {
 	if v2, ok := v.(*K); ok {
 		*ta.w = *v2
 		return nil
@@ -170,7 +170,7 @@ func (ta *_T__Assembler) AssignInt(v int) error {
 func (_T__Assembler) AssignFloat(float64) error   { panic("no") }
 func (_T__Assembler) AssignString(v string) error { panic("no") }
 func (_T__Assembler) AssignBytes([]byte) error    { panic("no") }
-func (ta *_T__Assembler) Assign(v ipld.Node) error {
+func (ta *_T__Assembler) AssignNode(v ipld.Node) error {
 	if v2, ok := v.(*T); ok {
 		*ta.w = *v2
 		return nil
@@ -359,7 +359,7 @@ func (_Map_K_T__Assembler) AssignInt(v int) error                           { pa
 func (_Map_K_T__Assembler) AssignFloat(float64) error                       { panic("no") }
 func (_Map_K_T__Assembler) AssignString(v string) error                     { panic("no") }
 func (_Map_K_T__Assembler) AssignBytes([]byte) error                        { panic("no") }
-func (ta *_Map_K_T__Assembler) Assign(v ipld.Node) error {
+func (ta *_Map_K_T__Assembler) AssignNode(v ipld.Node) error {
 	if v2, ok := v.(*Map_K_T); ok {
 		*ta.w = *v2
 		ta.w = nil // block further mutation
@@ -452,7 +452,7 @@ func (mka *_Map_K_T__KeyAssembler) AssignString(v string) error {
 	return nil
 }
 func (_Map_K_T__KeyAssembler) AssignBytes([]byte) error { panic("no") }
-func (mka *_Map_K_T__KeyAssembler) Assign(v ipld.Node) error {
+func (mka *_Map_K_T__KeyAssembler) AssignNode(v ipld.Node) error {
 	vs, err := v.AsString()
 	if err != nil {
 		return fmt.Errorf("cannot assign non-string node into map key assembler") // FIXME:errors: this doesn't quite fit in ErrWrongKind cleanly; new error type?
@@ -479,8 +479,8 @@ func (mva *_Map_K_T__ValueAssembler) AssignInt(v int) error {
 func (mva *_Map_K_T__ValueAssembler) AssignFloat(float64) error   { panic("todo") }
 func (mva *_Map_K_T__ValueAssembler) AssignString(v string) error { panic("todo") }
 func (mva *_Map_K_T__ValueAssembler) AssignBytes([]byte) error    { panic("todo") }
-func (mva *_Map_K_T__ValueAssembler) Assign(v ipld.Node) error {
-	if err := mva.ca.Assign(v); err != nil {
+func (mva *_Map_K_T__ValueAssembler) AssignNode(v ipld.Node) error {
+	if err := mva.ca.AssignNode(v); err != nil {
 		return err
 	}
 	mva.flush()

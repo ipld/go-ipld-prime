@@ -25,7 +25,7 @@ type NodeAssembler interface {
 	AssignString(string) error
 	AssignBytes([]byte) error
 
-	Assign(Node) error // if you already have a completely constructed subtree, this method puts the whole thing in place at once.
+	AssignNode(Node) error // if you already have a completely constructed subtree, this method puts the whole thing in place at once.
 
 	Style() NodeStyle // you probably don't need this (because you should be able to just feed data and check errors), but it's here.
 }

@@ -118,7 +118,7 @@ func (na *plainString__Assembler) AssignString(v string) error {
 	return nil
 }
 func (plainString__Assembler) AssignBytes([]byte) error { panic("no") }
-func (na *plainString__Assembler) Assign(v ipld.Node) error {
+func (na *plainString__Assembler) AssignNode(v ipld.Node) error {
 	if s, err := v.AsString(); err != nil {
 		return err
 	} else {

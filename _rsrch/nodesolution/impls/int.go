@@ -113,7 +113,7 @@ func (na *plainInt__Assembler) AssignInt(v int) error {
 func (plainInt__Assembler) AssignFloat(float64) error { panic("no") }
 func (plainInt__Assembler) AssignString(string) error { panic("no") }
 func (plainInt__Assembler) AssignBytes([]byte) error  { panic("no") }
-func (na *plainInt__Assembler) Assign(v ipld.Node) error {
+func (na *plainInt__Assembler) AssignNode(v ipld.Node) error {
 	if s, err := v.AsInt(); err != nil {
 		return err
 	} else {

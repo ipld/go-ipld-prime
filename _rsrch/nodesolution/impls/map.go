@@ -176,7 +176,7 @@ func (plainMap__Assembler) AssignInt(int) error                                 
 func (plainMap__Assembler) AssignFloat(float64) error                              { panic("no") }
 func (plainMap__Assembler) AssignString(v string) error                            { panic("no") }
 func (plainMap__Assembler) AssignBytes([]byte) error                               { panic("no") }
-func (na *plainMap__Assembler) Assign(v ipld.Node) error {
+func (na *plainMap__Assembler) AssignNode(v ipld.Node) error {
 	// todo: apply a generic 'copy' function.
 	// todo: probably can also shortcut to copying na.t and na.m if it's our same concrete type?
 	//  (can't quite just `na.w = v`, because we don't have 'freeze' features, and we don't wanna open door to mutation of 'v'.)
@@ -273,7 +273,7 @@ func (mka *plainMap__KeyAssembler) AssignString(v string) error {
 	return nil
 }
 func (plainMap__KeyAssembler) AssignBytes([]byte) error { panic("no") }
-func (mka *plainMap__KeyAssembler) Assign(v ipld.Node) error {
+func (mka *plainMap__KeyAssembler) AssignNode(v ipld.Node) error {
 	vs, err := v.AsString()
 	if err != nil {
 		return fmt.Errorf("cannot assign non-string node into map key assembler") // FIXME:errors: this doesn't quite fit in ErrWrongKind cleanly; new error type?
@@ -298,15 +298,15 @@ func (mva *plainMap__ValueAssembler) AssignNull() error     { panic("todo") }
 func (mva *plainMap__ValueAssembler) AssignBool(bool) error { panic("todo") }
 func (mva *plainMap__ValueAssembler) AssignInt(v int) error {
 	vb := plainInt(v)
-	return mva.Assign(&vb)
+	return mva.AssignNode(&vb)
 }
 func (mva *plainMap__ValueAssembler) AssignFloat(float64) error { panic("todo") }
 func (mva *plainMap__ValueAssembler) AssignString(v string) error {
 	vb := plainString(v)
-	return mva.Assign(&vb)
+	return mva.AssignNode(&vb)
 }
 func (mva *plainMap__ValueAssembler) AssignBytes([]byte) error { panic("todo") }
-func (mva *plainMap__ValueAssembler) Assign(v ipld.Node) error {
+func (mva *plainMap__ValueAssembler) AssignNode(v ipld.Node) error {
 	l := len(mva.ma.w.t) - 1
 	mva.ma.w.t[l].v = v
 	mva.ma.w.m[string(mva.ma.w.t[l].k)] = v
@@ -341,5 +341,5 @@ func (ma *plainMap__ValueAssemblerMap) Finish() error {
 	if err := ma.ca.Finish(); err != nil {
 		return err
 	}
-	return ma.p.va.Assign(ma.ca.w)
+	return ma.p.va.AssignNode(ma.ca.w)
 }

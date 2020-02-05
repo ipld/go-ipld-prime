@@ -53,14 +53,14 @@ is "any", then that's the style and builder we should get!
 ### nodestyles meet recursive assemblers
 
 Asking for a NodeStyle in a recursive assembly process tells you about what
-kind of node would be accepted in an `Assign(Node)` call.
+kind of node would be accepted in an `AssignNode(Node)` call.
 It does *not* make any remark on the fact it's a key assembler or value assembler
 and might be wrapped with additional rules (such as map key uniqueness, field
 name expectations, etc).
 
-(Note that it's also not an exclusive statement about what `Assign(Node)` will
+(Note that it's also not an exclusive statement about what `AssignNode(Node)` will
 accept; e.g. in many situations, while a `MyStringType` might be the style
-returned, any string kinded node can be used in `Assign(Node)` and will be
+returned, any string kinded node can be used in `AssignNode(Node)` and will be
 appropriately converted.)
 
 Any of these paths counts as "recursive assembly process":

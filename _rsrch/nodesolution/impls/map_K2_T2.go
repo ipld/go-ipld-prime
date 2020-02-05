@@ -205,7 +205,7 @@ func (_K2__Assembler) AssignInt(v int) error                             { panic
 func (_K2__Assembler) AssignFloat(float64) error                         { panic("no") }
 func (_K2__Assembler) AssignString(v string) error                       { panic("no") }
 func (_K2__Assembler) AssignBytes([]byte) error                          { panic("no") }
-func (ta *_K2__Assembler) Assign(v ipld.Node) error {
+func (ta *_K2__Assembler) AssignNode(v ipld.Node) error {
 	if v2, ok := v.(*K2); ok {
 		*ta.w = *v2
 		return nil
@@ -387,7 +387,7 @@ func (_T2__Assembler) AssignInt(int) error                             { panic("
 func (_T2__Assembler) AssignFloat(float64) error                       { panic("no") }
 func (_T2__Assembler) AssignString(v string) error                     { panic("no") }
 func (_T2__Assembler) AssignBytes([]byte) error                        { panic("no") }
-func (ta *_T2__Assembler) Assign(v ipld.Node) error {
+func (ta *_T2__Assembler) AssignNode(v ipld.Node) error {
 	if v2, ok := v.(*T2); ok {
 		*ta.w = *v2
 		return nil
