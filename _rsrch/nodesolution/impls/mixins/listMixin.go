@@ -83,6 +83,6 @@ func (x ListAssembler) AssignString(string) error {
 func (x ListAssembler) AssignBytes([]byte) error {
 	return ipld.ErrWrongKind{TypeName: x.TypeName, MethodName: "AssignBytes", AppropriateKind: ipld.ReprKindSet_JustBytes, ActualKind: ipld.ReprKind_List}
 }
-func (x ListAssembler) AssignLink(Link) error {
+func (x ListAssembler) AssignLink(ipld.Link) error {
 	return ipld.ErrWrongKind{TypeName: x.TypeName, MethodName: "AssignLink", AppropriateKind: ipld.ReprKindSet_JustLink, ActualKind: ipld.ReprKind_List}
 }

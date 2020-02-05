@@ -92,6 +92,6 @@ func (x IntAssembler) AssignString(string) error {
 func (x IntAssembler) AssignBytes([]byte) error {
 	return ipld.ErrWrongKind{TypeName: x.TypeName, MethodName: "AssignBytes", AppropriateKind: ipld.ReprKindSet_JustBytes, ActualKind: ipld.ReprKind_Int}
 }
-func (x IntAssembler) AssignLink(Link) error {
+func (x IntAssembler) AssignLink(ipld.Link) error {
 	return ipld.ErrWrongKind{TypeName: x.TypeName, MethodName: "AssignLink", AppropriateKind: ipld.ReprKindSet_JustLink, ActualKind: ipld.ReprKind_Int}
 }

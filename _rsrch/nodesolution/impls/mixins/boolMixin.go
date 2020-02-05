@@ -92,6 +92,6 @@ func (x BoolAssembler) AssignString(string) error {
 func (x BoolAssembler) AssignBytes([]byte) error {
 	return ipld.ErrWrongKind{TypeName: x.TypeName, MethodName: "AssignBytes", AppropriateKind: ipld.ReprKindSet_JustBytes, ActualKind: ipld.ReprKind_Bool}
 }
-func (x BoolAssembler) AssignLink(Link) error {
+func (x BoolAssembler) AssignLink(ipld.Link) error {
 	return ipld.ErrWrongKind{TypeName: x.TypeName, MethodName: "AssignLink", AppropriateKind: ipld.ReprKindSet_JustLink, ActualKind: ipld.ReprKind_Bool}
 }
