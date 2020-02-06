@@ -386,7 +386,8 @@ func (ma *_Map_K_T__Assembler) AssembleDirectly(k string) (ipld.NodeAssembler, e
 	l := len(ma.w.t)
 	ma.w.t = append(ma.w.t, _Map_K_T__entry{k: K{k}})
 	ma.w.m[K{k}] = &ma.w.t[l].v
-	// Init the value assembler with a pointer to its target and yield it.
+	// Init the value assembler with a pointer to its target and to whole 'ma' and yield it.
+	ma.va.ma = ma
 	ma.va.ca.w = &ma.w.t[l].v
 	return &ma.va, nil
 }
@@ -400,7 +401,8 @@ func (ma *_Map_K_T__Assembler) AssembleKey() ipld.NodeAssembler {
 	// Extend entry table.
 	l := len(ma.w.t)
 	ma.w.t = append(ma.w.t, _Map_K_T__entry{})
-	// Init the key assembler with a pointer to its target and yield it.
+	// Init the key assembler with a pointer to its target and to whole 'ma' and yield it.
+	ma.ka.ma = ma
 	ma.ka.ca.w = &ma.w.t[l].k
 	return &ma.ka
 }
@@ -410,7 +412,8 @@ func (ma *_Map_K_T__Assembler) AssembleValue() ipld.NodeAssembler {
 		panic("misuse")
 	}
 	ma.state = maState_midValue
-	// Init the value assembler with a pointer to its target and yield it.
+	// Init the value assembler with a pointer to its targetand to whole 'ma' and yield it.
+	ma.va.ma = ma
 	ma.va.ca.w = &ma.w.t[len(ma.w.t)-1].v
 	return &ma.va
 }
@@ -450,6 +453,7 @@ func (mka *_Map_K_T__KeyAssembler) AssignString(v string) error {
 	mka.ma.w.m[K{v}] = &mka.ma.w.t[len(mka.ma.w.t)-1].v
 	// Update parent assembler state: clear to proceed.
 	mka.ma.state = maState_expectValue
+	mka.ma = nil // invalidate self to prevent further incorrect use.
 	return nil
 }
 func (_Map_K_T__KeyAssembler) AssignBytes([]byte) error   { panic("no") }
@@ -491,12 +495,14 @@ func (mva *_Map_K_T__ValueAssembler) AssignNode(v ipld.Node) error {
 }
 func (mva *_Map_K_T__ValueAssembler) flush() {
 	// The child assembler already assigned directly into the target memory,
-	//  and should have invalided its 'w' pointer when it was finished doing so,
 	//  so there's not much to do here... except update the assembler state machine.
-	// We also don't check the previous state because:
-	//  A) the appropriate time to do that would've been *before* assignments; and
-	//  B) if we were in a wrong state, we should've gotten a nil ptr panic when assigning 'w' content.
+	// We also don't check the previous state because context makes us already sure:
+	//  A) the appropriate time to do that would've been *before* assignments;
+	//  A.2) accordingly, we did so before exposing this value assembler at all; and
+	//  B) if we were in a wrong state because someone holds onto this too long,
+	//   the invalidation we're about to do on `mva.ma` will make .
 	mva.ma.state = maState_initial
+	mva.ma = nil // invalidate self to prevent further incorrect use.
 }
 func (_Map_K_T__ValueAssembler) Style() ipld.NodeStyle { panic("later") }
 

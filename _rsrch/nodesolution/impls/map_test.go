@@ -151,6 +151,30 @@ func CheckMapStrInt(t *testing.T, ns ipld.NodeStyle) {
 			//  (and if it's clever, it'll differ from untyped, which will mean no assertion possible!).
 		}
 	})
+	t.Run("using expired child assemblers should panic", func(t *testing.T) {
+		nb := ns.NewBuilder()
+		ma, err := nb.BeginMap(3)
+		must.NotError(err)
+
+		// Assemble a key, and then try to assign it again.  Latter should fail.
+		ka := ma.AssembleKey()
+		must.NotError(ka.AssignString("whee"))
+		func() {
+			defer func() { recover() }()
+			ka.AssignString("woo")
+			t.Fatal("must not be reached")
+		}()
+
+		// Assemble a value, and then try to assign it again.  Latter should fail.
+		// (This does assume your system can continue after disregarding the last error.)
+		va := ma.AssembleValue()
+		must.NotError(va.AssignInt(1))
+		func() {
+			defer func() { recover() }()
+			va.AssignInt(2)
+			t.Fatal("must not be reached")
+		}()
+	})
 	t.Run("builder reset works", func(t *testing.T) {
 		// TODO
 	})

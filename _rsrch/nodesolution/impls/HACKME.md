@@ -108,3 +108,33 @@ Related to the above heading.
 
 Maps and lists in this package do their own internal handling of scalars,
 using unexported features inside the package, because they can more efficient.
+
+### when to invalidate the 'w' pointers
+
+The 'w' pointer -- short for 'wip' node pointer -- has an interesting lifecycle.
+
+In a NodeAssembler, the 'w' pointer should be intialized before the assembler is used.
+This means either the matching NodeBuilder type does so; or,
+if we're inside recursive structure, the parent assembler did so.
+
+The 'w' pointer is used throughout the life of the assembler.
+
+When assembly becomes "finished", the 'w' pointer should be set to nil,
+in order to make it impossible to continue to mutate that node.
+However, this doesn't *quite* work... because in the case of builders (at the root),
+we need to continue to hold onto the node between when it becomes "finished"
+and when Build is called, allowing us to return it (and then finally nil 'w').
+
+This has some kinda wild implications.  In recursive structures, it means the
+child assembler wrapper type is the one who takes reponsibility for nilling out
+the 'w' pointer at the same time as it updates the parent's state machine to
+proceed with the next entry.  In the case of scalars at the root of a build,
+it means *you can actually use the assign method more than once*.
+
+We could normalize the case with scalars at the root of a tree by adding another
+piece of memory to the scalar builders... but currently we haven't bothered.
+We're not in trouble on compositional correctness because nothing's visible
+until Build is called (whereas recursives have to be a lot stricter around this,
+because if something gets validated and finished, it's already essential that
+it now be unable to mutate out of the validated state, even if it's also not
+yet 'visible').
