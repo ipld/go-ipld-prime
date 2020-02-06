@@ -232,19 +232,33 @@ func (lva *plainList__ValueAssembler) BeginList(sizeHint int) (ipld.ListNodeAsse
 	_, err := la.ca.BeginList(sizeHint)
 	return &la, err
 }
-func (lva *plainList__ValueAssembler) AssignNull() error     { panic("todo") }
-func (lva *plainList__ValueAssembler) AssignBool(bool) error { panic("todo") }
+func (lva *plainList__ValueAssembler) AssignNull() error {
+	return lva.AssignNode(ipld.Null)
+}
+func (lva *plainList__ValueAssembler) AssignBool(v bool) error {
+	vb := plainBool(v)
+	return lva.AssignNode(&vb)
+}
 func (lva *plainList__ValueAssembler) AssignInt(v int) error {
 	vb := plainInt(v)
 	return lva.AssignNode(&vb)
 }
-func (lva *plainList__ValueAssembler) AssignFloat(float64) error { panic("todo") }
+func (lva *plainList__ValueAssembler) AssignFloat(v float64) error {
+	vb := plainFloat(v)
+	return lva.AssignNode(&vb)
+}
 func (lva *plainList__ValueAssembler) AssignString(v string) error {
 	vb := plainString(v)
 	return lva.AssignNode(&vb)
 }
-func (lva *plainList__ValueAssembler) AssignBytes([]byte) error   { panic("todo") }
-func (lva *plainList__ValueAssembler) AssignLink(ipld.Link) error { panic("todo") }
+func (lva *plainList__ValueAssembler) AssignBytes(v []byte) error {
+	vb := plainBytes(v)
+	return lva.AssignNode(&vb)
+}
+func (lva *plainList__ValueAssembler) AssignLink(v ipld.Link) error {
+	vb := plainLink{v}
+	return lva.AssignNode(&vb)
+}
 func (lva *plainList__ValueAssembler) AssignNode(v ipld.Node) error {
 	lva.la.w.x = append(lva.la.w.x, v)
 	lva.la.state = laState_initial
