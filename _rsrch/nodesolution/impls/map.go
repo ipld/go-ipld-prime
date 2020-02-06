@@ -376,5 +376,7 @@ func (ma *plainMap__ValueAssemblerMap) Finish() error {
 	if err := ma.ca.Finish(); err != nil {
 		return err
 	}
-	return ma.p.va.AssignNode(ma.ca.w)
+	w := ma.ca.w
+	ma.ca.w = nil
+	return ma.p.va.AssignNode(w)
 }
