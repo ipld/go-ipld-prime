@@ -386,8 +386,7 @@ func (ma *_Map_K_T__Assembler) AssembleDirectly(k string) (ipld.NodeAssembler, e
 	l := len(ma.w.t)
 	ma.w.t = append(ma.w.t, _Map_K_T__entry{k: K{k}})
 	ma.w.m[K{k}] = &ma.w.t[l].v
-	// Init the value assembler with a pointer to its target and to whole 'ma' and yield it.
-	ma.va.ma = ma
+	// Init the value assembler with a pointer to its target and yield it.
 	ma.va.ca.w = &ma.w.t[l].v
 	return &ma.va, nil
 }
@@ -412,8 +411,7 @@ func (ma *_Map_K_T__Assembler) AssembleValue() ipld.NodeAssembler {
 		panic("misuse")
 	}
 	ma.state = maState_midValue
-	// Init the value assembler with a pointer to its targetand to whole 'ma' and yield it.
-	ma.va.ma = ma
+	// Init the value assembler with a pointer to its target and yield it.
 	ma.va.ca.w = &ma.w.t[len(ma.w.t)-1].v
 	return &ma.va
 }
@@ -500,9 +498,10 @@ func (mva *_Map_K_T__ValueAssembler) flush() {
 	//  A) the appropriate time to do that would've been *before* assignments;
 	//  A.2) accordingly, we did so before exposing this value assembler at all; and
 	//  B) if we were in a wrong state because someone holds onto this too long,
-	//   the invalidation we're about to do on `mva.ma` will make .
+	//   the invalidation we're about to do on `mva.ca.w` will make it impossible
+	//    for them to make changes in appropriately.
 	mva.ma.state = maState_initial
-	mva.ma = nil // invalidate self to prevent further incorrect use.
+	mva.ca.w = nil
 }
 func (_Map_K_T__ValueAssembler) Style() ipld.NodeStyle { panic("later") }
 

@@ -174,6 +174,16 @@ func CheckMapStrInt(t *testing.T, ns ipld.NodeStyle) {
 			va.AssignInt(2)
 			t.Fatal("must not be reached")
 		}()
+
+		// ... and neither of these should've had visible effects!
+		wish.Wish(t, ma.Finish(), wish.ShouldEqual, nil)
+		n := nb.Build()
+		wish.Wish(t, n.Length(), wish.ShouldEqual, 1)
+		v, err := n.LookupString("whee")
+		wish.Wish(t, err, wish.ShouldEqual, nil)
+		v2, err := v.AsInt()
+		wish.Wish(t, err, wish.ShouldEqual, nil)
+		wish.Wish(t, v2, wish.ShouldEqual, 1)
 	})
 	t.Run("builder reset works", func(t *testing.T) {
 		// TODO
