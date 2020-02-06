@@ -200,7 +200,9 @@ func (na *plainMap__Assembler) AssignNode(v ipld.Node) error {
 	//   (wait... actually, probably we can?  'Assign' is a "finish" method.  we can&should invalidate the wip pointer here.)
 	panic("later")
 }
-func (plainMap__Assembler) Style() ipld.NodeStyle { panic("later") }
+func (plainMap__Assembler) Style() ipld.NodeStyle {
+	return Style__Map{}
+}
 
 // -- MapNodeAssembler -->
 
@@ -262,8 +264,12 @@ func (ma *plainMap__Assembler) Finish() error {
 	// validators could run and report errors promptly, if this type had any.
 	return nil
 }
-func (plainMap__Assembler) KeyStyle() ipld.NodeStyle   { panic("later") }
-func (plainMap__Assembler) ValueStyle() ipld.NodeStyle { panic("later") }
+func (plainMap__Assembler) KeyStyle() ipld.NodeStyle {
+	return Style__String{}
+}
+func (plainMap__Assembler) ValueStyle() ipld.NodeStyle {
+	return Style__Any{}
+}
 
 // -- MapNodeAssembler.KeyAssembler -->
 
@@ -314,7 +320,9 @@ func (mka *plainMap__KeyAssembler) AssignNode(v ipld.Node) error {
 	}
 	return mka.AssignString(vs)
 }
-func (plainMap__KeyAssembler) Style() ipld.NodeStyle { panic("later") } // probably should give the style of plainString, which could say "only stores string kind" (though we haven't made such a feature part of the interface yet).
+func (plainMap__KeyAssembler) Style() ipld.NodeStyle {
+	return Style__String{}
+}
 
 // -- MapNodeAssembler.ValueAssembler -->
 
@@ -367,7 +375,9 @@ func (mva *plainMap__ValueAssembler) AssignNode(v ipld.Node) error {
 	mva.ma = nil // invalidate self to prevent further incorrect use.
 	return nil
 }
-func (plainMap__ValueAssembler) Style() ipld.NodeStyle { panic("later") }
+func (plainMap__ValueAssembler) Style() ipld.NodeStyle {
+	return Style__Any{}
+}
 
 type plainMap__ValueAssemblerMap struct {
 	ca plainMap__Assembler
@@ -387,8 +397,12 @@ func (ma *plainMap__ValueAssemblerMap) AssembleKey() ipld.NodeAssembler {
 func (ma *plainMap__ValueAssemblerMap) AssembleValue() ipld.NodeAssembler {
 	return ma.ca.AssembleValue()
 }
-func (plainMap__ValueAssemblerMap) KeyStyle() ipld.NodeStyle   { panic("later") }
-func (plainMap__ValueAssemblerMap) ValueStyle() ipld.NodeStyle { panic("later") }
+func (plainMap__ValueAssemblerMap) KeyStyle() ipld.NodeStyle {
+	return Style__String{}
+}
+func (plainMap__ValueAssemblerMap) ValueStyle() ipld.NodeStyle {
+	return Style__Any{}
+}
 
 func (ma *plainMap__ValueAssemblerMap) Finish() error {
 	if err := ma.ca.Finish(); err != nil {
@@ -411,7 +425,9 @@ type plainMap__ValueAssemblerList struct {
 func (la *plainMap__ValueAssemblerList) AssembleValue() ipld.NodeAssembler {
 	return la.ca.AssembleValue()
 }
-func (plainMap__ValueAssemblerList) ValueStyle() ipld.NodeStyle { panic("later") }
+func (plainMap__ValueAssemblerList) ValueStyle() ipld.NodeStyle {
+	return Style__Any{}
+}
 
 func (la *plainMap__ValueAssemblerList) Finish() error {
 	if err := la.ca.Finish(); err != nil {
