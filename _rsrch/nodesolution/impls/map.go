@@ -223,7 +223,7 @@ func (ma *plainMap__Assembler) AssembleDirectly(k string) (ipld.NodeAssembler, e
 	return &ma.va, nil
 }
 
-// AssembleKey is part of conforming to MapAssembler, which we do on
+// AssembleKey is part of conforming to MapNodeAssembler, which we do on
 // plainMap__Assembler so that BeginMap can just return a retyped pointer rather than new object.
 func (ma *plainMap__Assembler) AssembleKey() ipld.NodeAssembler {
 	// Sanity check, then update, assembler state.
@@ -238,7 +238,7 @@ func (ma *plainMap__Assembler) AssembleKey() ipld.NodeAssembler {
 	return &ma.ka
 }
 
-// AssembleValue is part of conforming to MapAssembler, which we do on
+// AssembleValue is part of conforming to MapNodeAssembler, which we do on
 // plainMap__Assembler so that BeginMap can just return a retyped pointer rather than new object.
 func (ma *plainMap__Assembler) AssembleValue() ipld.NodeAssembler {
 	// Sanity check, then update, assembler state.
@@ -251,7 +251,7 @@ func (ma *plainMap__Assembler) AssembleValue() ipld.NodeAssembler {
 	return &ma.va
 }
 
-// Finish is part of conforming to MapAssembler, which we do on
+// Finish is part of conforming to MapNodeAssembler, which we do on
 // plainMap__Assembler so that BeginMap can just return a retyped pointer rather than new object.
 func (ma *plainMap__Assembler) Finish() error {
 	// Sanity check, then update, assembler state.
