@@ -34,23 +34,51 @@ If this causes the slightest irritation, we'll standardize to pointer inhabitant
 
 ### about nodestyles
 
-A `Node`'s `Style()` property varies based on how it was constructed.
+`ipld.NodeStyle` is a type that opaquely represents some information about how
+a node was constructed and is implemented.  The general contract for what
+should happen when asking a node for its style
+(via the `ipld.Node.Style() NodeStyle` interface) is that style should be
+effective instructions for how one could build a copy of that node, using
+the same implementation details.
 
-If something was *made* as a `plainString` -- i.e.,
+By example, if something was made as a `plainString` -- i.e.,
 either via `String()` or via `Style__String{}.NewBuilder()` --
 then its `Style()` will be `Style__String`.
 
-If something was made as an "any" -- i.e.,
-via `Style__Any{}.NewBuilder()` which then *happened* to be assigned a string value --
-then while the builder will still return something functionally equivalent to `plainString`,
-it will carry a `Style()` property that returns `Style__Any`.
+Note there are also limits to this: if a node was built in a flexible way,
+the style it reports later may only report what it is now, and not return
+that same flexibility again.
+By example, if something was made as an "any" -- i.e.,
+via `Style__Any{}.NewBuilder()`, and then *happened* to be assigned a string value --
+the resulting string node will carry a `Style()` property that returns
+`Style__String` -- **not** `Style__Any`.
 
-This is important because the `traversal` package may want to do a
-transformation on some data, and use the `Style()` property to find out
-which builder to use for the new data -- and if the value allowed in a position
-is "any", then that's the style and builder we should get!
+#### nodestyles meet generic transformation
 
-### nodestyles meet recursive assemblers
+One of the core purposes of the `NodeStyle` interface (and all the different
+ways you can get it from existing data) is to enable the `traversal` package
+(or other user-written packages like it) to do transformations on data.
+
+// work-in-progress warning: generic transformations are not fully implemented.
+
+When implementating a transformation that works over unknown data,
+the signiture of function a user provides is roughly:
+`func(oldValue Node, acceptableValues NodeStyle) (Node, error)`.
+(This signiture may vary by the strategy taken by the transformation -- this
+signiture is useful because it's capable of no-op'ing; an alternative signiture
+might give the user a `NodeAssembler` instead of the `NodeStyle`.)
+
+In this situation, the transformation system determines the `NodeStyle`
+(or `NodeAssembler`) to use by asking the parent value of the one we're visiting.
+This is because we want to give the update function the ability to create
+any kind of value that would be accepted in this position -- not just create a
+value of the same style as the one currently there!  It is for this reason
+the `oldValue.Style()` property can't be used directly.
+
+At the root of such a transformation, we use the `node.Style()` property to
+determine how to get started building a new value.
+
+#### nodestyles meet recursive assemblers
 
 Asking for a NodeStyle in a recursive assembly process tells you about what
 kind of node would be accepted in an `AssignNode(Node)` call.
@@ -59,7 +87,7 @@ and might be wrapped with additional rules (such as map key uniqueness, field
 name expectations, etc).
 
 (Note that it's also not an exclusive statement about what `AssignNode(Node)` will
-accept; e.g. in many situations, while a `MyStringType` might be the style
+accept; e.g. in many situations, while a `Style__MyStringType` might be the style
 returned, any string kinded node can be used in `AssignNode(Node)` and will be
 appropriately converted.)
 

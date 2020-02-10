@@ -16,18 +16,18 @@ var (
 //
 // REVIEW: if there's any point in keeping this around.  It's here for completeness,
 // but not currently used anywhere in package, and also not currently exported.
-type anyNode struct {
-	kind ipld.ReprKind
-
-	plainMap
-	plainList
-	plainBool
-	plainInt
-	plainFloat
-	plainString
-	plainBytes
-	plainLink
-}
+// type anyNode struct {
+// 	kind ipld.ReprKind
+//
+// 	plainMap
+// 	plainList
+// 	plainBool
+// 	plainInt
+// 	plainFloat
+// 	plainString
+// 	plainBytes
+// 	plainLink
+// }
 
 // -- Node interface methods -->
 
@@ -195,62 +195,6 @@ func (nb *anyBuilder) Build() ipld.Node {
 //  until we also implement something that goes full-hog on amortization
 //   and actually has a slab of `anyNode`.  Which so far, nothing does.
 //    See "REVIEW" comment on anyNode.
-type anyAssembler struct {
-	w *anyNode
-}
-
-// -- Additional typedefs for maintaining 'any' style property -->
-
-// FIXME: utility and design value of these is in question.
-
-type anyInhabitedByMap plainMap
-
-func (anyInhabitedByMap) Style() ipld.NodeStyle {
-	return Style__Any{}
-}
-
-type anyInhabitedByList plainList
-
-func (anyInhabitedByList) Style() ipld.NodeStyle {
-	return Style__Any{}
-}
-
-// FIXME: impossible: type anyInhabitedByNull ipld.nullNode
-// this might be problematic but a situation hasn't been encountered yet;
-//  we'll procede deciding on how to address when we get an encounter.
-
-type anyInhabitedByBool plainBool
-
-func (anyInhabitedByBool) Style() ipld.NodeStyle {
-	return Style__Any{}
-}
-
-type anyInhabitedByInt plainInt
-
-func (anyInhabitedByInt) Style() ipld.NodeStyle {
-	return Style__Any{}
-}
-
-type anyInhabitedByFloat plainFloat
-
-func (anyInhabitedByFloat) Style() ipld.NodeStyle {
-	return Style__Any{}
-}
-
-type anyInhabitedByString plainString
-
-func (anyInhabitedByString) Style() ipld.NodeStyle {
-	return Style__Any{}
-}
-
-type anyInhabitedByBytes plainBytes
-
-func (anyInhabitedByBytes) Style() ipld.NodeStyle {
-	return Style__Any{}
-}
-
-type anyInhabitedByLink plainLink
-
-func (anyInhabitedByLink) Style() ipld.NodeStyle {
-	return Style__Any{}
-}
+// type anyAssembler struct {
+// 	w *anyNode
+// }
