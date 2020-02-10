@@ -17,10 +17,16 @@ var (
 // REVIEW: if there's any point in keeping this around.  It's here for completeness,
 // but not currently used anywhere in package, and also not currently exported.
 type anyNode struct {
+	kind ipld.ReprKind
+
 	plainMap
-	plainString
+	plainList
+	plainBool
 	plainInt
-	// TODO: more of these embeds for the remaining kinds.
+	plainFloat
+	plainString
+	plainBytes
+	plainLink
 }
 
 // -- Node interface methods -->
@@ -48,17 +54,23 @@ func (Style__Any) NewBuilder() ipld.NodeBuilder {
 // we'd have all the extra bytes of anyNode still reachable in GC terms
 // for as long as that handle to the interior of it remains live.
 type anyBuilder struct {
-	kind ipld.ReprKind // used to select which builder to delegate 'Build' to!  Set on first interaction.
+	// kind is set on first interaction, and used to select which builder to delegate 'Build' to!
+	// As soon as it's been set to a value other than zero (being "Invalid"), all other Assign/Begin calls will fail since something is already in progress.
+	// May also be set to the magic value '99', which means "i dunno, I'm just carrying another node of unknown style".
+	kind ipld.ReprKind
 
 	// Only one of the following ends up being used...
 	//  but we don't know in advance which one, so all are embeded here.
 	//   This uses excessive space, but amortizes allocations, and all will be
 	//    freed as soon as the builder is done.
+	// Builders are only used for recursives;
+	//  scalars are simple enough we just do them directly.
+	// 'scalarNode' may also hold another Node of unknown style (possibly not even from this package),
+	//  in which case this is indicated by 'kind==99'.
 
-	mapBuilder    plainMap__Builder
-	stringBuilder plainString__Builder
-	intBuilder    plainInt__Builder
-	// TODO: more of these embeds for the remaining kinds.
+	mapBuilder  plainMap__Builder
+	listBuilder plainList__Builder
+	scalarNode  ipld.Node
 }
 
 func (nb *anyBuilder) Reset() {
@@ -70,10 +82,16 @@ func (nb *anyBuilder) BeginMap(sizeHint int) (ipld.MapNodeAssembler, error) {
 		panic("misuse")
 	}
 	nb.kind = ipld.ReprKind_Map
+	nb.mapBuilder.w = &plainMap{}
 	return nb.mapBuilder.BeginMap(sizeHint)
 }
 func (nb *anyBuilder) BeginList(sizeHint int) (ipld.ListNodeAssembler, error) {
-	panic("soon")
+	if nb.kind != ipld.ReprKind_Invalid {
+		panic("misuse")
+	}
+	nb.kind = ipld.ReprKind_List
+	nb.listBuilder.w = &plainList{}
+	return nb.listBuilder.BeginList(sizeHint)
 }
 func (nb *anyBuilder) AssignNull() error {
 	if nb.kind != ipld.ReprKind_Invalid {
@@ -83,34 +101,60 @@ func (nb *anyBuilder) AssignNull() error {
 	return nil
 }
 func (nb *anyBuilder) AssignBool(v bool) error {
-	panic("soon")
+	if nb.kind != ipld.ReprKind_Invalid {
+		panic("misuse")
+	}
+	nb.kind = ipld.ReprKind_Bool
+	nb.scalarNode = Bool(v)
+	return nil
 }
 func (nb *anyBuilder) AssignInt(v int) error {
 	if nb.kind != ipld.ReprKind_Invalid {
 		panic("misuse")
 	}
 	nb.kind = ipld.ReprKind_Int
-	return nb.intBuilder.AssignInt(v)
+	nb.scalarNode = Int(v)
+	return nil
 }
 func (nb *anyBuilder) AssignFloat(v float64) error {
-	panic("soon")
+	if nb.kind != ipld.ReprKind_Invalid {
+		panic("misuse")
+	}
+	nb.kind = ipld.ReprKind_Float
+	nb.scalarNode = Float(v)
+	return nil
 }
 func (nb *anyBuilder) AssignString(v string) error {
 	if nb.kind != ipld.ReprKind_Invalid {
 		panic("misuse")
 	}
 	nb.kind = ipld.ReprKind_String
-	return nb.stringBuilder.AssignString(v)
+	nb.scalarNode = String(v)
+	return nil
 }
 func (nb *anyBuilder) AssignBytes(v []byte) error {
-	panic("soon")
+	if nb.kind != ipld.ReprKind_Invalid {
+		panic("misuse")
+	}
+	nb.kind = ipld.ReprKind_Bytes
+	nb.scalarNode = Bytes(v)
+	return nil
 }
 func (nb *anyBuilder) AssignLink(v ipld.Link) error {
-	panic("soon")
+	if nb.kind != ipld.ReprKind_Invalid {
+		panic("misuse")
+	}
+	nb.kind = ipld.ReprKind_Link
+	nb.scalarNode = Link(v)
+	return nil
 }
 func (nb *anyBuilder) AssignNode(v ipld.Node) error {
-	// TODO what to do here?  should we just... keep it, in another `Node` field?
-	panic("soon")
+	if nb.kind != ipld.ReprKind_Invalid {
+		panic("misuse")
+	}
+	nb.kind = 99
+	nb.scalarNode = v
+	return nil
 }
 func (anyBuilder) Style() ipld.NodeStyle {
 	return Style__Any{}
@@ -123,22 +167,23 @@ func (nb *anyBuilder) Build() ipld.Node {
 	case ipld.ReprKind_Map:
 		return nb.mapBuilder.Build()
 	case ipld.ReprKind_List:
-		panic("soon")
+		return nb.listBuilder.Build()
 	case ipld.ReprKind_Null:
-		//return ipld.Null
-		panic("soon")
+		return ipld.Null
 	case ipld.ReprKind_Bool:
-		panic("soon")
+		return nb.scalarNode
 	case ipld.ReprKind_Int:
-		return nb.intBuilder.Build()
+		return nb.scalarNode
 	case ipld.ReprKind_Float:
-		panic("soon")
+		return nb.scalarNode
 	case ipld.ReprKind_String:
-		return nb.stringBuilder.Build()
+		return nb.scalarNode
 	case ipld.ReprKind_Bytes:
-		panic("soon")
+		return nb.scalarNode
 	case ipld.ReprKind_Link:
-		panic("soon")
+		return nb.scalarNode
+	case 99:
+		return nb.scalarNode
 	default:
 		panic("unreachable")
 	}
@@ -156,9 +201,27 @@ type anyAssembler struct {
 
 // -- Additional typedefs for maintaining 'any' style property -->
 
-type anyInhabitedByString plainString
+// FIXME: utility and design value of these is in question.
 
-func (anyInhabitedByString) Style() ipld.NodeStyle {
+type anyInhabitedByMap plainMap
+
+func (anyInhabitedByMap) Style() ipld.NodeStyle {
+	return Style__Any{}
+}
+
+type anyInhabitedByList plainList
+
+func (anyInhabitedByList) Style() ipld.NodeStyle {
+	return Style__Any{}
+}
+
+// FIXME: impossible: type anyInhabitedByNull ipld.nullNode
+// this might be problematic but a situation hasn't been encountered yet;
+//  we'll procede deciding on how to address when we get an encounter.
+
+type anyInhabitedByBool plainBool
+
+func (anyInhabitedByBool) Style() ipld.NodeStyle {
 	return Style__Any{}
 }
 
@@ -168,4 +231,26 @@ func (anyInhabitedByInt) Style() ipld.NodeStyle {
 	return Style__Any{}
 }
 
-// TODO: more of these typedefs for the remaining kinds.
+type anyInhabitedByFloat plainFloat
+
+func (anyInhabitedByFloat) Style() ipld.NodeStyle {
+	return Style__Any{}
+}
+
+type anyInhabitedByString plainString
+
+func (anyInhabitedByString) Style() ipld.NodeStyle {
+	return Style__Any{}
+}
+
+type anyInhabitedByBytes plainBytes
+
+func (anyInhabitedByBytes) Style() ipld.NodeStyle {
+	return Style__Any{}
+}
+
+type anyInhabitedByLink plainLink
+
+func (anyInhabitedByLink) Style() ipld.NodeStyle {
+	return Style__Any{}
+}
