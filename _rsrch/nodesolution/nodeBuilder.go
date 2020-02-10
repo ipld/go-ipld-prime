@@ -28,7 +28,16 @@ type NodeAssembler interface {
 
 	AssignNode(Node) error // if you already have a completely constructed subtree, this method puts the whole thing in place at once.
 
-	Style() NodeStyle // you probably don't need this (because you should be able to just feed data and check errors), but it's here.
+	// Style returns a NodeStyle describing what kind of value we're assembling.
+	//
+	// You often don't need this (because you should be able to
+	// just feed data and check errors), but it's here.
+	//
+	// Using `this.Style().NewBuilder()` to produce a new `Node`,
+	// then giving that node to `this.AssignNode(n)` should always work.
+	// (Note that this is not necessarily an _exclusive_ statement on what
+	// sort of values will be accepted by `this.AssignNode(n)`.)
+	Style() NodeStyle
 }
 
 // MapNodeAssembler assembles a map node!  (You guessed it.)
@@ -54,8 +63,32 @@ type MapNodeAssembler interface {
 
 	Finish() error
 
-	KeyStyle() NodeStyle   // you probably don't need this (because you should be able to just feed data and check errors), but it's here.
-	ValueStyle() NodeStyle // you probably don't need this (because you should be able to just feed data and check errors), but it's here.
+	// KeyStyle returns a NodeStyle that knows how to build keys of a type this map uses.
+	//
+	// You often don't need this (because you should be able to
+	// just feed data and check errors), but it's here.
+	//
+	// For all Data Model maps, this will answer with a basic concept of "string".
+	// For Schema typed maps, this may answer with a more complex type (potentially even a struct type).
+	KeyStyle() NodeStyle
+
+	// ValueStyle returns a NodeStyle that knows how to build values this map can contain.
+	//
+	// You often don't need this (because you should be able to
+	// just feed data and check errors), but it's here.
+	//
+	// ValueStyle requires a parameter describing the key in order to say what
+	// NodeStyle will be acceptable as a value for that key, because when using
+	// struct types (or union types) from the Schemas system, they behave as maps
+	// but have different acceptable types for each field (or member, for unions).
+	// For plain maps (that is, not structs or unions masquerading as maps),
+	// the empty string can be used as a parameter, and the returned NodeStyle
+	// can be assumed applicable for all values.
+	// Using an empty string for a struct or union will return a nil NodeStyle.
+	// (Design note: a string is sufficient for the parameter here rather than
+	// a full Node, because the only cases where the value types vary are also
+	// cases where the keys may not be complex.)
+	ValueStyle(k string) NodeStyle
 }
 
 type ListNodeAssembler interface {
@@ -63,7 +96,15 @@ type ListNodeAssembler interface {
 
 	Finish() error
 
-	ValueStyle() NodeStyle // you probably don't need this (because you should be able to just feed data and check errors), but it's here.
+	// ValueStyle returns a NodeStyle that knows how to build values this map can contain.
+	//
+	// You often don't need this (because you should be able to
+	// just feed data and check errors), but it's here.
+	//
+	// In contrast to the `MapNodeAssembler.ValueStyle(key)` function,
+	// to determine the ValueStyle for lists we need no parameters;
+	// lists always contain one value type (even if it's "any").
+	ValueStyle() NodeStyle
 }
 
 type NodeBuilder interface {
@@ -86,29 +127,6 @@ type NodeBuilder interface {
 	// (Otherwise, it's unnecessary, and may cause an unwanted allocation).
 	Reset()
 }
-
-// Complex keys: What do they come from?  (What arrre they _good_ for? (Absolutely nothin, say it again))
-// - in the Data Model, they don't exist.  They just... don't exist.
-//   - json and javascript could never real deal reliably with numbers, so we just... nope.
-//   - maps keyed by multiple kinds are also beyond the pale in many host languages, so, again... nope.
-// - in the schema types layer, they can exist.
-//   - a couple things can reach it:
-//     - `type X struct {...} representation stringjoin`
-//     - `type X struct {...} representation stringpairs`
-//     - `type X map {...} representation stringpairs` // *maybe*.  go won't allow using this as a map key except in string form anyway.
-//     - we don't know what the syntax would look like for a type-level int, but, haven't ruled it out either.
-//   - but when feeding data in via representation: it's all strings, of course.
-//   - if we have codegen and are app author, we can use native methods that pass-by-value.
-//   - so it's ONLY when doing generic code, or typed but not using codegen, that we face these apis.
-// - and it's ONLY -- this should go without saying, but let's say it -- relevant when thinking about map keys.
-//   - structs can't have complex keys.  field names are strings.  done.
-//   - lists can't have complex keys.  obvious category error.
-//   - enums can't have complex keys.  because we said so; or, obvious category error; take your pick.
-//   - why is this important?  well, it means complex keys only exist in a place where values are all going to use the same style/builder.
-//     - which means `AssembleInsertion() (NodeAssembler, NodeAssembler)` is actually kinda back on the table.
-//       - though since it would only work in *some* cases... still serious questions about whether that'd be a good API to show off.
-//       - we still also need to be able to get a NodeAssembler for streaming in value content when handling structs, so, then we'd end up with two APIs for this?
-//         - yeah, this design still does not go good places; abort.
 
 // Hey what actually happens if you make it interally do `map[Node]Thingy` and all keys are concretely `K` (*not* `*K`)?
 //  - You get the boxing to happen once, at least.

@@ -292,7 +292,7 @@ func (ma *plainList__ValueAssemblerMap) AssembleValue() ipld.NodeAssembler {
 func (plainList__ValueAssemblerMap) KeyStyle() ipld.NodeStyle {
 	return Style__String{}
 }
-func (plainList__ValueAssemblerMap) ValueStyle() ipld.NodeStyle {
+func (plainList__ValueAssemblerMap) ValueStyle(_ string) ipld.NodeStyle {
 	return Style__Any{}
 }
 

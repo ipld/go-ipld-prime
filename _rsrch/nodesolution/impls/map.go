@@ -267,7 +267,7 @@ func (ma *plainMap__Assembler) Finish() error {
 func (plainMap__Assembler) KeyStyle() ipld.NodeStyle {
 	return Style__String{}
 }
-func (plainMap__Assembler) ValueStyle() ipld.NodeStyle {
+func (plainMap__Assembler) ValueStyle(_ string) ipld.NodeStyle {
 	return Style__Any{}
 }
 
@@ -400,7 +400,7 @@ func (ma *plainMap__ValueAssemblerMap) AssembleValue() ipld.NodeAssembler {
 func (plainMap__ValueAssemblerMap) KeyStyle() ipld.NodeStyle {
 	return Style__String{}
 }
-func (plainMap__ValueAssemblerMap) ValueStyle() ipld.NodeStyle {
+func (plainMap__ValueAssemblerMap) ValueStyle(_ string) ipld.NodeStyle {
 	return Style__Any{}
 }
 

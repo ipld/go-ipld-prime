@@ -268,8 +268,8 @@ func (ma *_K2__Assembler) Finish() error {
 	// validators could run and report errors promptly, if this type had any.
 	return nil
 }
-func (_K2__Assembler) KeyStyle() ipld.NodeStyle   { panic("later") }
-func (_K2__Assembler) ValueStyle() ipld.NodeStyle { panic("later") }
+func (_K2__Assembler) KeyStyle() ipld.NodeStyle           { panic("later") }
+func (_K2__Assembler) ValueStyle(k string) ipld.NodeStyle { panic("later") }
 
 func (T2) ReprKind() ipld.ReprKind {
 	return ipld.ReprKind_Map
@@ -412,8 +412,8 @@ func (ta *_T2__Assembler) AssembleValue() ipld.NodeAssembler {
 func (ta *_T2__Assembler) Finish() error {
 	panic("soon")
 }
-func (_T2__Assembler) KeyStyle() ipld.NodeStyle   { panic("later") }
-func (_T2__Assembler) ValueStyle() ipld.NodeStyle { panic("later") }
+func (_T2__Assembler) KeyStyle() ipld.NodeStyle           { panic("later") }
+func (_T2__Assembler) ValueStyle(k string) ipld.NodeStyle { panic("later") }
 
 // --- okay, now the type of interest: the map. --->
 /*	ipldsch:

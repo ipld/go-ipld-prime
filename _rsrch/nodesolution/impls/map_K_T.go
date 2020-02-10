@@ -424,8 +424,8 @@ func (ma *_Map_K_T__Assembler) Finish() error {
 	// validators could run and report errors promptly, if this type had any.
 	return nil
 }
-func (_Map_K_T__Assembler) KeyStyle() ipld.NodeStyle   { panic("later") }
-func (_Map_K_T__Assembler) ValueStyle() ipld.NodeStyle { panic("later") }
+func (_Map_K_T__Assembler) KeyStyle() ipld.NodeStyle           { panic("later") }
+func (_Map_K_T__Assembler) ValueStyle(_ string) ipld.NodeStyle { panic("later") }
 
 func (_Map_K_T__KeyAssembler) BeginMap(sizeHint int) (ipld.MapNodeAssembler, error)   { panic("no") }
 func (_Map_K_T__KeyAssembler) BeginList(sizeHint int) (ipld.ListNodeAssembler, error) { panic("no") }
