@@ -127,15 +127,3 @@ type NodeBuilder interface {
 	// (Otherwise, it's unnecessary, and may cause an unwanted allocation).
 	Reset()
 }
-
-// Hey what actually happens if you make it interally do `map[Node]Thingy` and all keys are concretely `K` (*not* `*K`)?
-//  - You get the boxing to happen once, at least.
-//  - But a boxing alloc does happen for *every single* key.
-//  - Equality and equality-dependent behaviors are correct.
-//  - But equality and lookups will be a tad (just a tad -- a few nanos) slower, because of all the interface checks.
-// To say I'm disappointed by the idea of an alloc per key is an understatement.
-// And it would end up with a bunch of `Node` iface flying around filled with non-pointer types, and that... is a source of unusualness that I suspect will bring major antijoy.
-// But if you're going to iterate a thing literally twice, it would be preferable to the other status quo's.
-//  (Except for the `[]Entry{K,V}` strategy or equivalently `[]K,[]V` strategy.  Those can still do batched-alloc keys.)
-//   (Holy crap.  Actually... those can even return immutable keys during mid-construction.  Which fixes... oh my... one of the biggest issues that got us here.  Uh.)
-//    (No, Falsey.  It could; but if you actually held onto those, and had to resize the array, you'd end up holding onto multiple arrays, and not be happy.  It would, in effect, be a feature you'd never want to use, unless you knew in a fractal of detail what you were doing, and even then, it's harder to imagine good rather than footgunny uses.)
