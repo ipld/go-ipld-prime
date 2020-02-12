@@ -139,9 +139,3 @@ type NodeBuilder interface {
 //  (Except for the `[]Entry{K,V}` strategy or equivalently `[]K,[]V` strategy.  Those can still do batched-alloc keys.)
 //   (Holy crap.  Actually... those can even return immutable keys during mid-construction.  Which fixes... oh my... one of the biggest issues that got us here.  Uh.)
 //    (No, Falsey.  It could; but if you actually held onto those, and had to resize the array, you'd end up holding onto multiple arrays, and not be happy.  It would, in effect, be a feature you'd never want to use, unless you knew in a fractal of detail what you were doing, and even then, it's harder to imagine good rather than footgunny uses.)
-
-// Something to consider for typed but non-codegen map implementations: `k struct{ body string; offsets [10]int }`.
-//  This could make it possible to create the typed node relatively cheaply (no parsing).
-//  But unclear if this is useful on the whole.  Doesn't avoid many allocs.  Doesn't make eq for map cheaper.
-//  And obviously, it has a limit on how complex of a struct it works for (the array must be fixed size and not slice, in order to be comparable).
-//  The less ornate option of just have a double map `{ keys map[string]Node; values map[string]Node }`, or `map[string]struct{k, v Node}` might remain superior to this idea.
