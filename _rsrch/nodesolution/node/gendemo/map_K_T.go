@@ -1,4 +1,4 @@
-package impls
+package gendemo
 
 // Map_K_T and this file is how a codegen'd map type would work.  it's allowed to use concrete key and value types.
 

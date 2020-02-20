@@ -1,9 +1,9 @@
-package impls
+package basicnode
 
 import (
 	"testing"
 
-	"github.com/ipld/go-ipld-prime/_rsrch/nodesolution/impls/tests"
+	"github.com/ipld/go-ipld-prime/_rsrch/nodesolution/node/mixins/tests"
 )
 
 func TestAnyBeingString(t *testing.T) {
@@ -11,9 +11,9 @@ func TestAnyBeingString(t *testing.T) {
 }
 
 func TestAnyBeingMapStrInt(t *testing.T) {
-	CheckMapStrInt(t, Style__Any{})
+	tests.SpecTestMapStrInt(t, Style__Any{})
 }
 
 func TestAnyBeingMapStrMapStrInt(t *testing.T) {
-	CheckMapStrMapStrInt(t, Style__Any{})
+	tests.SpecTestMapStrMapStrInt(t, Style__Any{})
 }

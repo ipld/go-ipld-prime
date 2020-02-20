@@ -1,3 +1,5 @@
+hackme: NodeBuilder and NodeAssembler behaviors
+===============================================
 
 high level rules of builders and assemblers
 -------------------------------------------

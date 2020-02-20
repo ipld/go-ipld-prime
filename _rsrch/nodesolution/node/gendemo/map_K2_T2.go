@@ -1,4 +1,4 @@
-package impls
+package gendemo
 
 // Map_K2_T2 and this file is how a codegen'd map type would work.  it's allowed to use concrete key and value types.
 // In constrast with Map_K_T, this one has both complex keys and a struct for the value.
@@ -17,6 +17,9 @@ import (
 
 // Note how we're not able to use `int` in the structs, but instead `plainInt`: this is so we can take address of those fields directly and return them as nodes.
 //  We don't currently have concrete exported types that allow us to do this.  Maybe we should?
+
+type plainString string // FIXME placeholder, doesn't actually implement Node.  we need our own type in the same package for this.
+type plainInt int       // FIXME placeholder, doesn't actually implement Node.  we need our own type in the same package for this.
 
 type K2 struct{ u, i plainString }
 type T2 struct{ a, b, c, d plainInt }
@@ -110,83 +113,22 @@ func (itr *_K2_MapIterator) Done() bool {
 	return itr.idx >= 2
 }
 
+// maState is an enum of the state machine for a map assembler.
+// (this might be something to export reusably, but it's also very much an impl detail that need not be seen, so, dubious.)
+type maState uint8
+
+const (
+	maState_initial     maState = iota // also the 'expect key or finish' state
+	maState_midKey                     // waiting for a 'finished' state in the KeyAssembler.
+	maState_expectValue                // 'AssembleValue' is the only valid next step
+	maState_midValue                   // waiting for a 'finished' state in the ValueAssembler.
+	maState_finished                   // 'w' will also be nil, but this is a politer statement
+)
+
 type _K2__Assembler struct {
 	w *K2
 
 	state maState
-
-	// ca_u // this field is primitive kind and we know it, so we can just do a bunch of stuff directly.
-	// ca_i // this field is primitive kind and we know it, so we can just do a bunch of stuff directly.
-	// ^ not at all sure this is true, we need SOMETHING to yield, and it's not a uniform thing in general like it is for maps.
-	// ^ and it's not clear we're saving much by trying to avoid it or specialize it.  it'll get largely inlined anyway.  ... wait
-	// holy kjott i continue to need finish checkers in all places and
-	// i do not want
-	// to generate a wrapper PER FIELD TYPE.
-	// that was possible for maps because it's just one, but here?!  oh my god.  no.
-	// we need interfaces for this.  we do.
-	//...
-	// `typed.wrapper` can use just one monomorphic type, i think.
-	// datamodel stuff alone just doesn't have this issue.
-	// codegen'd stuff is the only one who has an issue here.
-	// not sure if that observation offers any usefully clearer path to solution.
-	//...
-	// if would seem to imply that if we do use an interface here, it can actually (bizarrely enough) be an unexported one.
-	// the idea of pointers in every assembler to a callback, and the parent just sets that like it does the 'w' node, is also still on the table.
-	//  (as long as we can verify that we won't accidentally spawn a new closure alloc to do that -- but this should be easy enough.)
-	//  what to do if this is nil bothers me, but... actually, i think a fixed noop is best; there's already constructors fencing all assemblers, so we can do this.
-	// or we can indeed generate a type per field, and that's honestly gonna be at least one more thing inlined rather than funcptr call,
-	//  if at fairly horrendous cost in GLOC as well as binary size.
-	//  it's the same cost in memory, surprisingly: either a ptr to the callback, or the generated type has a pointer to the parent 'w'.
-	//...
-	// okay, so i'm coming towards prefering the callback, given the realizations about {moot memory size + unexportability + no nil checks needed}.
-	// an interesting consequence of this, though, is that yep, every codegen'd package emitted is going to have its own typedefs of primitives.
-	//  but this is just a "sigh" thing, not any kind of problem, since we already defacto expect most packages providing Node to have their own on these.
-	//...
-	// we could also make a single va{*ca,*maState} per type and have it do a bunch of delegating calls.
-	//  the result of this would be a vtable jump for the delegation (otherwise we have unreusablity)... but that's similar to the update hook idea;
-	//  and at the same time, it's adding two words to the parent assembler, instead of a word to every field's assembler, which is likely better.
-	//  ... hang on, no, this is nontrivial for recursives: we don't want to have to decorate every intermediate key and value assemble call in a map builder just to keep control on the stack so we can intercept the 'finish'; that's *way* worse than just one ptrfunc jump at the end.
-	//...
-	// a single clear correct choice is not yet clear here.  some further analysis may be needed.
-
-	// - untyped maps can have two more types: plainMap__ValueAssemblerMap and plainMap__ValueAssemblerList...
-	//   - and all they do is override the Finish method.
-	//   - they have to be allocated as pointers, but this ain't news.
-	// - typed maps can be basically the same, in fact.
-	//   - the Map__K__V__ValueAssembler will also vary scalar values, but this ain't news.
-	// - structs...
-	//   - honestly, is a type per field so bad?  do types have a meaningful cost, when you're not banging them out at the keyboard?
-	//     - i don't think they do but actually come to think of it i'd love to measure that.
-	//       - okayyyyyy.  ballpark it at 42kb per type, if you believe `go build -o`.  wow; that's a lot more than I expected.
-	//       - or 11kb per type if you believe the change in size of 'impls.test' binaries produced as a sideeffect of '-memprofile'.
-	//         - why are these different?  no idea.  the thing from `go build -o` is an 'ar' file rather than binary, though.
-	//         - pretty sure this is a more accurate number than 42.
-	//       - this is for the addition of 'plainMap__ValueAssemblerMap', to be specific.
-	//       - now, just for context, this comment block here has gotte up to 4.4kb, so, uh.  lol.  kilobytes go fast.
-	//       - it depends a LOT on how many methods the type has.  embedding the node interface can actually be a lot.
-	//         - there's a measurable difference between {every method on NodeAssembler} and {just MapNodeAssembler} methods.
-	//         - also depends on how exactly the methods either inline or autogenerate; some forms of autogen are much longer than others (some just JMP; others do a ton of setup and then CALL).
-	//           - and I don't at present have a predictive understanding of why this is.
-	//       - okay, the 'plainMap__ValueAssemblerMap' type is down to adding 9717 bytes after bothering to get more unneeded autogen methods out.  So we also have some control over this.
-	//     - approaching ballparks from the other side: schema-schema has about 37 fields in it.
-	//       - so we if take '11kb' as a random number, that means generating a type per field might add about .4mb to final binaries in this practical example.
-	//         - is that acceptable?  it's not great, but I think it's probably fine, also.  I'd usually rather pay that than lose run speed.
-
-	// in review: what are we balancing?
-	// - AS: asm size
-	// - BM: builder mem
-	// - SP: execution speed
-	// - AC: allocation count -- but only because of its outsized impact on SP.
-	//
-	// I care about SP>BM>AS.
-	//  (Unless BM gets > 2x, or AS gets really out of hand.)
-	//  (BM also has a special cond where if it increases on recursive kinds, but not on scalars,
-	//   we regard that as half price, because generally most of a tree is leaves.)
-
-	// So in this case, the question is "did AS get 'really out of hand'" if we choose the type-per-field route.
-	//  And the answer seems to be leaning towards "good question... but no, it's not (quite) 'really out of hand'".
-
-	// Go figure: in this situation, SP>BM>AS does seem to resolve to generating more code and more types.
 
 	isset_u bool
 	isset_i bool

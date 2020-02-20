@@ -1,8 +1,8 @@
-package impls
+package basicnode
 
 import (
 	ipld "github.com/ipld/go-ipld-prime/_rsrch/nodesolution"
-	"github.com/ipld/go-ipld-prime/_rsrch/nodesolution/impls/mixins"
+	"github.com/ipld/go-ipld-prime/_rsrch/nodesolution/node/mixins"
 )
 
 var (
