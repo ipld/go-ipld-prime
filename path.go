@@ -97,6 +97,10 @@ func NewPathNocopy(segments []PathSegment) Path {
 // in particular, note that ".." does not mean "go up", nor does "." mean "stay here" --
 // correspondingly, there isn't anything to "clean" in the same sense as
 // 'filepath.Clean' from the standard library filesystem path packages would.
+//
+// If the provided string contains unprintable characters, or non-UTF-8
+// or non-NFC-canonicalized bytes, no remark will be made about this,
+// and those bytes will remain part of the PathSegments in the resulting Path.
 func ParsePath(pth string) Path {
 	// FUTURE: we should probably have some escaping mechanism which makes
 	//  it possible to encode a slash in a segment.  Specification needed.
@@ -119,6 +123,10 @@ func ParsePath(pth string) Path {
 // empty segments or with segments containing "/") can be encoded unambiguously.
 // For Path values containing these problematic segments, ParsePath applied
 // to the string returned from this function may return a nonequal Path value.
+//
+// No escaping for unprintable characters is provided.
+// No guarantee that the resulting string is UTF-8 nor NFC canonicalized
+// is provided unless all the constituent PathSegment had those properties.
 func (p Path) String() string {
 	l := len(p.segments)
 	if l == 0 {
