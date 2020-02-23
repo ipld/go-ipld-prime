@@ -4,37 +4,99 @@ import (
 	"strings"
 )
 
-// Path is used in describing progress in a traversal;
-// and can also be used as an instruction for a specific traverse.
+// Path describes a series of steps across a tree or DAG of Node,
+// where each segment in the path is a map key or list index
+// (literaly, Path is a slice of PathSegment values).
+// Path is used in describing progress in a traversal; and
+// can also be used as an instruction for traversing from one Node to another.
+// Path values will also often be encountered as part of error messages.
 //
+// (Note that Paths are useful as an instruction for traversing from
+// *one* Node to *one* other Node; to do a walk from one Node and visit
+// *several* Nodes based on some sort of pattern, look to IPLD Selectors,
+// and the 'traversal/selector' package in this project.)
+//
+// Path values are always relative.
+// Observe how 'traversal.Focus' requires both a Node and a Path argument --
+// where to start, and where to go, respectively.
+// Similarly, error values which include a Path will be speaking in reference
+// to the "starting Node" in whatever context they arose from.
+//
+// The canonical form of a Path is as a list of PathSegment.
+// Each PathSegment is a string; by convention, the string should be
+// in UTF-8 encoding and use NFC normalization, but all operations
+// will regard the string as its constituent eight-bit bytes.
+//
+// There are no illegal or magical characters in IPLD Paths
+// (in particular, do not mistake them for UNIX system paths).
 // IPLD Paths can only go down: that is, each segment must traverse one node.
 // There is no ".." which means "go up";
-// and there is no "." which means "stay here";
-// and it is not valid to have an empty path segment.
+// and there is no "." which means "stay here".
+// IPLD Paths have no magic behavior around characters such as "~".
+// IPLD Paths do not have a concept of "globs" nor behave specially
+// for a path segment string of "*" (but you may wish to see 'Selectors'
+// for globbing-like features that traverse over IPLD data).
 //
-// (Note: path strings as interpreted by UnixFS may certainly have concepts
-// of ".." and "."!  But UnixFS is built upon IPLD; IPLD has no idea of this.)
+// An empty string is a valid PathSegment.
+// (This leads to some unfortunate complications when wishing to represent
+// paths in a simple string format; however, consider that maps do exist
+// in serialized data in the wild where an empty string is used as the key:
+// it is important we be able to correctly describe and address this!)
 //
-// Paths are representable as strings.  When represented as a string, each
-// segment is separated by a "/" character.
-// (It follows that path segments may not themselves contain a "/" character.)
-// (Note: escaping may be specified and supported in the future; currently, it is not.)
+// A string of "/" is a valid PathSegment.
+// (As with empty strings, this is unfortunate (in particular, because it
+// very much doesn't match up well with expectations popularized by UNIX-like
+// filesystems); but, as with empty strings, maps which contain such a key
+// certainly exist, and it is important that we be able to regard them!)
 //
+// For an IPLD Path to be represented as a string, an encoding system
+// including escaping is necessary.  At present, there is not a single
+// canonical specification for such an escaping; we expect to decide one
+// in the future, but this is not yet settled and done.
+// (This implementation has a 'String' method, but it contains caveats
+// and may be ambiguous for some content.  This may be fixed in the future.)
 type Path struct {
 	segments []PathSegment
 }
 
-// ParsePath converts a string to an IPLD Path, parsing the string into a segmented Path.
+// NewPath returns a Path composed of the given segments.
 //
-// Each segment of the path string should be separated by a "/" character.
+// This constructor function does a defensive copy,
+// in case your segments slice should mutate in the future.
+// (Use NewPathNocopy if this is a performance concern,
+// and you're sure you know what you're doing.)
+func NewPath(segments []PathSegment) Path {
+	p := Path{make([]PathSegment, len(segments))}
+	copy(p.segments, segments)
+	return p
+}
+
+// NewPathNocopy is identical to NewPath but trusts that
+// the segments slice you provide will not be mutated.
+func NewPathNocopy(segments []PathSegment) Path {
+	return Path{segments}
+}
+
+// ParsePath converts a string to an IPLD Path, doing a basic parsing of the
+// string using "/" as a delimiter to produce a segmented Path.
+// This is a handy, but not a general-purpose nor spec-compliant (!),
+// way to create a Path: it cannot represent all valid paths.
 //
 // Multiple subsequent "/" characters will be silently collapsed.
 // E.g., `"foo///bar"` will be treated equivalently to `"foo/bar"`.
 // Prefixed and suffixed extraneous "/" characters are also discarded.
+// This makes this constructor incapable of handling some possible Path values
+// (specifically: paths with empty segements cannot be created with this constructor).
 //
-// No "cleaning" of the path occurs.  See the documentation of the Path struct;
+// There is no escaping mechanism used by this function.
+// This makes this constructor incapable of handling some possible Path values
+// (specifically, a path segment containing "/" cannot be created, because it
+// will always be intepreted as a segment separator).
+//
+// No other "cleaning" of the path occurs.  See the documentation of the Path struct;
 // in particular, note that ".." does not mean "go up", nor does "." mean "stay here" --
-// correspondingly, there isn't anything to "clean".
+// correspondingly, there isn't anything to "clean" in the same sense as
+// 'filepath.Clean' from the standard library filesystem path packages would.
 func ParsePath(pth string) Path {
 	// FUTURE: we should probably have some escaping mechanism which makes
 	//  it possible to encode a slash in a segment.  Specification needed.
@@ -49,6 +111,14 @@ func ParsePath(pth string) Path {
 
 // String representation of a Path is simply the join of each segment with '/'.
 // It does not include a leading nor trailing slash.
+//
+// This is a handy, but not a general-purpose nor spec-compliant (!),
+// way to reduce a Path to a string.
+// There is no escaping mechanism used by this function,
+// and as a result, not all possible valid Path values (such as those with
+// empty segments or with segments containing "/") can be encoded unambiguously.
+// For Path values containing these problematic segments, ParsePath applied
+// to the string returned from this function may return a nonequal Path value.
 func (p Path) String() string {
 	l := len(p.segments)
 	if l == 0 {

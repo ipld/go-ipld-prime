@@ -15,10 +15,12 @@ import (
 // Internally, PathSegment will store either a string or an integer,
 // depending on how it was constructed,
 // and will automatically convert to the other on request.
-// (This means if two pieces of code communicate using PathSegment, one producing ints and the other expecting ints, they will work together efficiently.)
+// (This means if two pieces of code communicate using PathSegment,
+// one producing ints and the other expecting ints,
+// then they will work together efficiently.)
 // PathSegment in a Path produced by ParsePath generally have all strings internally,
-// because there is distinction possible when parsing a Path string
-// (and attempting to pre-parse all strings into ints "in case" would waste time in almost all cases).
+// because there is no distinction possible when parsing a Path string
+// (and attempting to pre-parse all strings into ints "just in case" would waste time in almost all cases).
 type PathSegment struct {
 	/*
 		A quick implementation note about the Go compiler and "union" semantics:
