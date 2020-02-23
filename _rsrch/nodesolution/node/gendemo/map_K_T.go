@@ -1,4 +1,4 @@
-package impls
+package gendemo
 
 // Map_K_T and this file is how a codegen'd map type would work.  it's allowed to use concrete key and value types.
 
@@ -33,10 +33,10 @@ func (K) LookupSegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return nil, ipld.ErrWrongKind{MethodName: "LookupSegment", AppropriateKind: ipld.ReprKindSet_Recursive, ActualKind: ipld.ReprKind_String}
 }
 func (K) MapIterator() ipld.MapIterator {
-	panic("no")
+	return nil
 }
 func (K) ListIterator() ipld.ListIterator {
-	panic("no")
+	return nil
 }
 func (K) Length() int {
 	return -1
@@ -85,10 +85,10 @@ func (T) LookupSegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return nil, ipld.ErrWrongKind{MethodName: "LookupSegment", AppropriateKind: ipld.ReprKindSet_Recursive, ActualKind: ipld.ReprKind_Int}
 }
 func (T) MapIterator() ipld.MapIterator {
-	panic("no")
+	return nil
 }
 func (T) ListIterator() ipld.ListIterator {
-	panic("no")
+	return nil
 }
 func (T) Length() int {
 	return -1
@@ -139,7 +139,7 @@ func (ta *_K__Assembler) AssignString(v string) error {
 	return nil
 }
 func (_K__Assembler) AssignBytes([]byte) error { panic("no") }
-func (ta *_K__Assembler) Assign(v ipld.Node) error {
+func (ta *_K__Assembler) AssignNode(v ipld.Node) error {
 	if v2, ok := v.(*K); ok {
 		*ta.w = *v2
 		return nil
@@ -170,7 +170,7 @@ func (ta *_T__Assembler) AssignInt(v int) error {
 func (_T__Assembler) AssignFloat(float64) error   { panic("no") }
 func (_T__Assembler) AssignString(v string) error { panic("no") }
 func (_T__Assembler) AssignBytes([]byte) error    { panic("no") }
-func (ta *_T__Assembler) Assign(v ipld.Node) error {
+func (ta *_T__Assembler) AssignNode(v ipld.Node) error {
 	if v2, ok := v.(*T); ok {
 		*ta.w = *v2
 		return nil
@@ -235,7 +235,7 @@ func (n *Map_K_T) MapIterator() ipld.MapIterator {
 	return &_Map_K_T_MapIterator{n, 0}
 }
 func (Map_K_T) ListIterator() ipld.ListIterator {
-	panic("no")
+	return nil
 }
 func (n *Map_K_T) Length() int {
 	return len(n.t)
@@ -306,7 +306,7 @@ func (Type__Map_K_T) NewBuilder() ipld.NodeBuilder {
 //   - AssignString -- delegates to _K__Assembler (which may run validations); then checks for repeated key, errors if so; in case of either of those errors, un-extends 'w.t'.
 //   - Assign -- more or less does one of the other two, above or below.
 //   - BeginMap -- doesn't apply in this case (key is not complex), but if it was/did...
-//     - Done -- is implemented on _Map_K_T__KeyAssembler and delegates to _K__Assembler, because must do the repeated key check.
+//     - Finish -- is implemented on _Map_K_T__KeyAssembler and delegates to _K__Assembler, because must do the repeated key check.
 // - (okay, the key is now confirmed.  but, keep in mind: we still might need to back out if the value assignment errors.)
 // - AssembleValue -- sets up 'va.ca.w' to point to the 'v' in the very tail of 'w.t'.
 // - ...
@@ -318,7 +318,7 @@ type _Map_K_T__Assembler struct {
 	ka _Map_K_T__KeyAssembler
 	va _Map_K_T__ValueAssembler
 
-	midappend bool // FUTURE: probably extend this into a bigger clearer state machine to enable more and better error messaging.
+	state maState
 }
 type _Map_K_T__Builder struct {
 	_Map_K_T__Assembler
@@ -332,11 +332,10 @@ type _Map_K_T__ValueAssembler struct {
 	ca _T__Assembler
 }
 
-func (nb *_Map_K_T__Builder) Build() (ipld.Node, error) {
-	// FUTURE: run validator logic here if applicable.
+func (nb *_Map_K_T__Builder) Build() ipld.Node {
 	result := nb.w
 	nb.w = nil
-	return result, nil
+	return result
 }
 func (nb *_Map_K_T__Builder) Reset() {
 	*nb = _Map_K_T__Builder{}
@@ -360,7 +359,8 @@ func (_Map_K_T__Assembler) AssignInt(v int) error                           { pa
 func (_Map_K_T__Assembler) AssignFloat(float64) error                       { panic("no") }
 func (_Map_K_T__Assembler) AssignString(v string) error                     { panic("no") }
 func (_Map_K_T__Assembler) AssignBytes([]byte) error                        { panic("no") }
-func (ta *_Map_K_T__Assembler) Assign(v ipld.Node) error {
+func (_Map_K_T__Assembler) AssignLink(ipld.Link) error                      { panic("no") }
+func (ta *_Map_K_T__Assembler) AssignNode(v ipld.Node) error {
 	if v2, ok := v.(*Map_K_T); ok {
 		*ta.w = *v2
 		ta.w = nil // block further mutation
@@ -372,10 +372,11 @@ func (ta *_Map_K_T__Assembler) Assign(v ipld.Node) error {
 func (_Map_K_T__Assembler) Style() ipld.NodeStyle { panic("later") }
 
 func (ma *_Map_K_T__Assembler) AssembleDirectly(k string) (ipld.NodeAssembler, error) {
-	// Sanity check assembler state.
-	if ma.midappend == true {
+	// Sanity check, then update, assembler state.
+	if ma.state != maState_initial {
 		panic("misuse")
 	}
+	ma.state = maState_midValue
 	// Check for dup keys; error if so.
 	_, exists := ma.w.m[K{k}]
 	if exists {
@@ -392,36 +393,39 @@ func (ma *_Map_K_T__Assembler) AssembleDirectly(k string) (ipld.NodeAssembler, e
 
 func (ma *_Map_K_T__Assembler) AssembleKey() ipld.NodeAssembler {
 	// Sanity check, then update, assembler state.
-	if ma.midappend == true {
+	if ma.state != maState_initial {
 		panic("misuse")
 	}
-	ma.midappend = true
+	ma.state = maState_midKey
 	// Extend entry table.
 	l := len(ma.w.t)
 	ma.w.t = append(ma.w.t, _Map_K_T__entry{})
-	// Init the key assembler with a pointer to its target and yield it.
+	// Init the key assembler with a pointer to its target and to whole 'ma' and yield it.
+	ma.ka.ma = ma
 	ma.ka.ca.w = &ma.w.t[l].k
 	return &ma.ka
 }
 func (ma *_Map_K_T__Assembler) AssembleValue() ipld.NodeAssembler {
-	// Sanity check assembler state.
-	if ma.midappend == false {
+	// Sanity check, then update, assembler state.
+	if ma.state != maState_expectValue {
 		panic("misuse")
 	}
+	ma.state = maState_midValue
 	// Init the value assembler with a pointer to its target and yield it.
 	ma.va.ca.w = &ma.w.t[len(ma.w.t)-1].v
 	return &ma.va
 }
-func (ta *_Map_K_T__Assembler) Done() error {
-	// Sanity check assembler state.
-	if ta.midappend == true {
+func (ma *_Map_K_T__Assembler) Finish() error {
+	// Sanity check, then update, assembler state.
+	if ma.state != maState_initial {
 		panic("misuse")
 	}
+	ma.state = maState_finished
 	// validators could run and report errors promptly, if this type had any.
 	return nil
 }
-func (_Map_K_T__Assembler) KeyStyle() ipld.NodeStyle   { panic("later") }
-func (_Map_K_T__Assembler) ValueStyle() ipld.NodeStyle { panic("later") }
+func (_Map_K_T__Assembler) KeyStyle() ipld.NodeStyle           { panic("later") }
+func (_Map_K_T__Assembler) ValueStyle(_ string) ipld.NodeStyle { panic("later") }
 
 func (_Map_K_T__KeyAssembler) BeginMap(sizeHint int) (ipld.MapNodeAssembler, error)   { panic("no") }
 func (_Map_K_T__KeyAssembler) BeginList(sizeHint int) (ipld.ListNodeAssembler, error) { panic("no") }
@@ -445,10 +449,14 @@ func (mka *_Map_K_T__KeyAssembler) AssignString(v string) error {
 	// Update the map to point into the entry value!
 	//  (Hopefully the go compiler recognizes our assignment after existence check and optimizes appropriately.)
 	mka.ma.w.m[K{v}] = &mka.ma.w.t[len(mka.ma.w.t)-1].v
+	// Update parent assembler state: clear to proceed.
+	mka.ma.state = maState_expectValue
+	mka.ma = nil // invalidate self to prevent further incorrect use.
 	return nil
 }
-func (_Map_K_T__KeyAssembler) AssignBytes([]byte) error { panic("no") }
-func (mka *_Map_K_T__KeyAssembler) Assign(v ipld.Node) error {
+func (_Map_K_T__KeyAssembler) AssignBytes([]byte) error   { panic("no") }
+func (_Map_K_T__KeyAssembler) AssignLink(ipld.Link) error { panic("no") }
+func (mka *_Map_K_T__KeyAssembler) AssignNode(v ipld.Node) error {
 	vs, err := v.AsString()
 	if err != nil {
 		return fmt.Errorf("cannot assign non-string node into map key assembler") // FIXME:errors: this doesn't quite fit in ErrWrongKind cleanly; new error type?
@@ -475,8 +483,9 @@ func (mva *_Map_K_T__ValueAssembler) AssignInt(v int) error {
 func (mva *_Map_K_T__ValueAssembler) AssignFloat(float64) error   { panic("todo") }
 func (mva *_Map_K_T__ValueAssembler) AssignString(v string) error { panic("todo") }
 func (mva *_Map_K_T__ValueAssembler) AssignBytes([]byte) error    { panic("todo") }
-func (mva *_Map_K_T__ValueAssembler) Assign(v ipld.Node) error {
-	if err := mva.ca.Assign(v); err != nil {
+func (mva *_Map_K_T__ValueAssembler) AssignLink(ipld.Link) error  { panic("todo") }
+func (mva *_Map_K_T__ValueAssembler) AssignNode(v ipld.Node) error {
+	if err := mva.ca.AssignNode(v); err != nil {
 		return err
 	}
 	mva.flush()
@@ -484,9 +493,15 @@ func (mva *_Map_K_T__ValueAssembler) Assign(v ipld.Node) error {
 }
 func (mva *_Map_K_T__ValueAssembler) flush() {
 	// The child assembler already assigned directly into the target memory,
-	//  and should have invalided its 'w' pointer when it was done doing so,
 	//  so there's not much to do here... except update the assembler state machine.
-	mva.ma.midappend = false
+	// We also don't check the previous state because context makes us already sure:
+	//  A) the appropriate time to do that would've been *before* assignments;
+	//  A.2) accordingly, we did so before exposing this value assembler at all; and
+	//  B) if we were in a wrong state because someone holds onto this too long,
+	//   the invalidation we're about to do on `mva.ca.w` will make it impossible
+	//    for them to make changes in appropriately.
+	mva.ma.state = maState_initial
+	mva.ca.w = nil
 }
 func (_Map_K_T__ValueAssembler) Style() ipld.NodeStyle { panic("later") }
 

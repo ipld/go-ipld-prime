@@ -1,4 +1,4 @@
-package impls
+package gendemo
 
 // Map_K2_T2 and this file is how a codegen'd map type would work.  it's allowed to use concrete key and value types.
 // In constrast with Map_K_T, this one has both complex keys and a struct for the value.
@@ -14,9 +14,6 @@ import (
 	type K2 struct { u string, i string } representation stringjoin (":")
 	type T2 struct { a int, b int, c int, d int }
 */
-
-// Note how we're not able to use `int` in the structs, but instead `plainInt`: this is so we can take address of those fields directly and return them as nodes.
-//  We don't currently have concrete exported types that allow us to do this.  Maybe we should?
 
 type K2 struct{ u, i plainString }
 type T2 struct{ a, b, c, d plainInt }
@@ -51,7 +48,7 @@ func (n *K2) MapIterator() ipld.MapIterator {
 	return &_K2_MapIterator{n, 0}
 }
 func (K2) ListIterator() ipld.ListIterator {
-	panic("no")
+	return nil
 }
 func (K2) Length() int {
 	return -1
@@ -110,6 +107,106 @@ func (itr *_K2_MapIterator) Done() bool {
 	return itr.idx >= 2
 }
 
+// maState is an enum of the state machine for a map assembler.
+// (this might be something to export reusably, but it's also very much an impl detail that need not be seen, so, dubious.)
+type maState uint8
+
+const (
+	maState_initial     maState = iota // also the 'expect key or finish' state
+	maState_midKey                     // waiting for a 'finished' state in the KeyAssembler.
+	maState_expectValue                // 'AssembleValue' is the only valid next step
+	maState_midValue                   // waiting for a 'finished' state in the ValueAssembler.
+	maState_finished                   // 'w' will also be nil, but this is a politer statement
+)
+
+type _K2__Assembler struct {
+	w *K2
+
+	state maState
+
+	isset_u bool
+	isset_i bool
+}
+type _K2__ReprAssembler struct {
+	w *K2
+
+	// note how this is totally different than the type-level assembler -- that's map-like, this is string.
+}
+
+func (ta *_K2__Assembler) BeginMap(_ int) (ipld.MapNodeAssembler, error) { panic("no") }
+func (_K2__Assembler) BeginList(_ int) (ipld.ListNodeAssembler, error)   { panic("no") }
+func (_K2__Assembler) AssignNull() error                                 { panic("no") }
+func (_K2__Assembler) AssignBool(bool) error                             { panic("no") }
+func (_K2__Assembler) AssignInt(v int) error                             { panic("no") }
+func (_K2__Assembler) AssignFloat(float64) error                         { panic("no") }
+func (_K2__Assembler) AssignString(v string) error                       { panic("no") }
+func (_K2__Assembler) AssignBytes([]byte) error                          { panic("no") }
+func (ta *_K2__Assembler) AssignNode(v ipld.Node) error {
+	if v2, ok := v.(*K2); ok {
+		*ta.w = *v2
+		return nil
+	}
+	panic("todo implement generic copy and use it here")
+}
+func (_K2__Assembler) Style() ipld.NodeStyle { panic("later") }
+
+func (ma *_K2__Assembler) AssembleDirectly(k string) (ipld.NodeAssembler, error) {
+	// Sanity check, then update, assembler state.
+	if ma.state != maState_initial {
+		panic("misuse")
+	}
+	ma.state = maState_midValue
+	// Figure out which field we're addressing,
+	//  check if it's already been assigned (error if so),
+	//   grab a pointer to it and init its value assembler with that,
+	//    and yield that value assembler.
+	//  (Note that `isset_foo` bools may be inside the 'ma.w' node if
+	//   that field is optional; if it's required, they stay in 'ma'.)
+	switch k {
+	case "u":
+		if ma.isset_u {
+			return nil, ipld.ErrRepeatedMapKey{plainString("u")} // REVIEW: interesting to note this is a place we *keep* needing a basic string node impl, *everywhere*.
+		}
+		// TODO initialize the field child assembler 'w' *and* 'finish' callback to us; return it.
+		panic("todo")
+	case "i":
+		// TODO same as above
+		panic("todo")
+	default:
+		panic("invalid field key")
+	}
+}
+
+func (ma *_K2__Assembler) AssembleKey() ipld.NodeAssembler {
+	// Sanity check, then update, assembler state.
+	if ma.state != maState_initial {
+		panic("misuse")
+	}
+	ma.state = maState_midKey
+	// TODO return a fairly dummy assembler which just contains a string switch (probably sharing code with AssembleDirectly).
+	panic("todo")
+}
+func (ma *_K2__Assembler) AssembleValue() ipld.NodeAssembler {
+	// Sanity check, then update, assembler state.
+	if ma.state != maState_expectValue {
+		panic("misuse")
+	}
+	ma.state = maState_midValue
+	// TODO initialize the field child assembler 'w' *and* 'finish' callback to us; return it.
+	panic("todo")
+}
+func (ma *_K2__Assembler) Finish() error {
+	// Sanity check assembler state.
+	if ma.state != maState_initial {
+		panic("misuse")
+	}
+	ma.state = maState_finished
+	// validators could run and report errors promptly, if this type had any.
+	return nil
+}
+func (_K2__Assembler) KeyStyle() ipld.NodeStyle           { panic("later") }
+func (_K2__Assembler) ValueStyle(k string) ipld.NodeStyle { panic("later") }
+
 func (T2) ReprKind() ipld.ReprKind {
 	return ipld.ReprKind_Map
 }
@@ -144,7 +241,7 @@ func (n *T2) MapIterator() ipld.MapIterator {
 	return &_T2_MapIterator{n, 0}
 }
 func (T2) ListIterator() ipld.ListIterator {
-	panic("no")
+	return nil
 }
 func (T2) Length() int {
 	return -1
@@ -209,13 +306,6 @@ func (itr *_T2_MapIterator) Done() bool {
 	return itr.idx >= 4
 }
 
-type _K2__Assembler struct {
-	w *K2
-}
-type _K2__ReprAssembler struct {
-	w *K2
-}
-
 type _T2__Assembler struct {
 	w *T2
 }
@@ -233,7 +323,7 @@ func (_T2__Assembler) AssignInt(int) error                             { panic("
 func (_T2__Assembler) AssignFloat(float64) error                       { panic("no") }
 func (_T2__Assembler) AssignString(v string) error                     { panic("no") }
 func (_T2__Assembler) AssignBytes([]byte) error                        { panic("no") }
-func (ta *_T2__Assembler) Assign(v ipld.Node) error {
+func (ta *_T2__Assembler) AssignNode(v ipld.Node) error {
 	if v2, ok := v.(*T2); ok {
 		*ta.w = *v2
 		return nil
@@ -255,11 +345,11 @@ func (ta *_T2__Assembler) AssembleValue() ipld.NodeAssembler {
 	// also fun
 	panic("soon")
 }
-func (ta *_T2__Assembler) Done() error {
+func (ta *_T2__Assembler) Finish() error {
 	panic("soon")
 }
-func (_T2__Assembler) KeyStyle() ipld.NodeStyle   { panic("later") }
-func (_T2__Assembler) ValueStyle() ipld.NodeStyle { panic("later") }
+func (_T2__Assembler) KeyStyle() ipld.NodeStyle           { panic("later") }
+func (_T2__Assembler) ValueStyle(k string) ipld.NodeStyle { panic("later") }
 
 // --- okay, now the type of interest: the map. --->
 /*	ipldsch:
