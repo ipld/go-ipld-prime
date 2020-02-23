@@ -51,9 +51,10 @@ type PathSegment struct {
 		we're using the first tactic.
 
 		(We also currently get away with having no extra discriminator bit
-		because empty string is not considered a valid segment,
+		because we use a signed int for indexes, and negative values aren't valid there,
 		and thus we can use it as a sentinel value.
-		This may change if the IPLD Path spec comes to other conclusions about this.)
+		(Fun note: Empty strings were originally used for this sentinel,
+		but it turns out empty strings are valid PathSegment themselves, so!))
 	*/
 
 	s string
@@ -65,13 +66,13 @@ type PathSegment struct {
 // (Note: there is currently no escaping specified for PathSegments,
 // so this is currently functionally equivalent to PathSegmentOfString.)
 func ParsePathSegment(s string) PathSegment {
-	return PathSegment{s: s}
+	return PathSegment{s: s, i: -1}
 }
 
 // PathSegmentOfString boxes a string into a PathSegment.
 // It does not attempt to parse any escaping; use ParsePathSegment for that.
 func PathSegmentOfString(s string) PathSegment {
-	return PathSegment{s: s}
+	return PathSegment{s: s, i: -1}
 }
 
 // PathSegmentOfString boxes an int into a PathSegment.
@@ -83,7 +84,7 @@ func PathSegmentOfInt(i int) PathSegment {
 // but this is considered an implementation detail that's non-semantic.
 // If it returns false, it implicitly means "containsInt", as these are the only options.
 func (ps PathSegment) containsString() bool {
-	return ps.s != ""
+	return ps.i < 0
 }
 
 // String returns the PathSegment as a string.
