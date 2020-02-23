@@ -12,7 +12,7 @@ var (
 	_ ipld.NodeAssembler = &plainInt__Assembler{}
 )
 
-func Int(value int) ipld.Node {
+func NewInt(value int) ipld.Node {
 	return plainInt(value)
 }
 

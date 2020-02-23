@@ -217,7 +217,7 @@ func (ma *plainMap__Assembler) AssembleDirectly(k string) (ipld.NodeAssembler, e
 	// Check for dup keys; error if so.
 	_, exists := ma.w.m[k]
 	if exists {
-		return nil, ipld.ErrRepeatedMapKey{String(k)}
+		return nil, ipld.ErrRepeatedMapKey{plainString(k)}
 	}
 	ma.w.t = append(ma.w.t, plainMap__Entry{k: plainString(k)})
 	// Make value assembler valid by giving it pointer back to whole 'ma'; yield it.

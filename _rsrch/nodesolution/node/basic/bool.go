@@ -12,7 +12,7 @@ var (
 	_ ipld.NodeAssembler = &plainBool__Assembler{}
 )
 
-func Bool(value bool) ipld.Node {
+func NewBool(value bool) ipld.Node {
 	return plainBool(value)
 }
 

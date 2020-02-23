@@ -12,7 +12,7 @@ var (
 	_ ipld.NodeAssembler = &plainString__Assembler{}
 )
 
-func String(value string) ipld.Node {
+func NewString(value string) ipld.Node {
 	return plainString(value)
 }
 

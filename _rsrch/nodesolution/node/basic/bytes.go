@@ -12,7 +12,7 @@ var (
 	_ ipld.NodeAssembler = &plainBytes__Assembler{}
 )
 
-func Bytes(value []byte) ipld.Node {
+func NewBytes(value []byte) ipld.Node {
 	return plainBytes(value)
 }
 

@@ -12,7 +12,7 @@ var (
 	_ ipld.NodeAssembler = &plainLink__Assembler{}
 )
 
-func Link(value ipld.Link) ipld.Node {
+func NewLink(value ipld.Link) ipld.Node {
 	return &plainLink{value}
 }
 

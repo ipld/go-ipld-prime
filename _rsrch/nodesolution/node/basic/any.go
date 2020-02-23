@@ -105,7 +105,7 @@ func (nb *anyBuilder) AssignBool(v bool) error {
 		panic("misuse")
 	}
 	nb.kind = ipld.ReprKind_Bool
-	nb.scalarNode = Bool(v)
+	nb.scalarNode = NewBool(v)
 	return nil
 }
 func (nb *anyBuilder) AssignInt(v int) error {
@@ -113,7 +113,7 @@ func (nb *anyBuilder) AssignInt(v int) error {
 		panic("misuse")
 	}
 	nb.kind = ipld.ReprKind_Int
-	nb.scalarNode = Int(v)
+	nb.scalarNode = NewInt(v)
 	return nil
 }
 func (nb *anyBuilder) AssignFloat(v float64) error {
@@ -121,7 +121,7 @@ func (nb *anyBuilder) AssignFloat(v float64) error {
 		panic("misuse")
 	}
 	nb.kind = ipld.ReprKind_Float
-	nb.scalarNode = Float(v)
+	nb.scalarNode = NewFloat(v)
 	return nil
 }
 func (nb *anyBuilder) AssignString(v string) error {
@@ -129,7 +129,7 @@ func (nb *anyBuilder) AssignString(v string) error {
 		panic("misuse")
 	}
 	nb.kind = ipld.ReprKind_String
-	nb.scalarNode = String(v)
+	nb.scalarNode = NewString(v)
 	return nil
 }
 func (nb *anyBuilder) AssignBytes(v []byte) error {
@@ -137,7 +137,7 @@ func (nb *anyBuilder) AssignBytes(v []byte) error {
 		panic("misuse")
 	}
 	nb.kind = ipld.ReprKind_Bytes
-	nb.scalarNode = Bytes(v)
+	nb.scalarNode = NewBytes(v)
 	return nil
 }
 func (nb *anyBuilder) AssignLink(v ipld.Link) error {
@@ -145,7 +145,7 @@ func (nb *anyBuilder) AssignLink(v ipld.Link) error {
 		panic("misuse")
 	}
 	nb.kind = ipld.ReprKind_Link
-	nb.scalarNode = Link(v)
+	nb.scalarNode = NewLink(v)
 	return nil
 }
 func (nb *anyBuilder) AssignNode(v ipld.Node) error {

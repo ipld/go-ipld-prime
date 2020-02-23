@@ -12,7 +12,7 @@ var (
 	_ ipld.NodeAssembler = &plainFloat__Assembler{}
 )
 
-func Float(value float64) ipld.Node {
+func NewFloat(value float64) ipld.Node {
 	return plainFloat(value)
 }
 
