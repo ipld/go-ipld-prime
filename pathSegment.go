@@ -27,6 +27,15 @@ import (
 // PathSegment in a Path produced by ParsePath generally have all strings internally,
 // because there is no distinction possible when parsing a Path string
 // (and attempting to pre-parse all strings into ints "just in case" would waste time in almost all cases).
+//
+// Be cautious of attempting to use PathSegment as a map key!
+// Due to the implementation detail of internal storage, it's possible for
+// PathSegment values which are "equal" per PathSegment.Equal's definition
+// to still be unequal in the eyes of golang's native maps.
+// You should probably use the string values of the PathSegment as map keys.
+// (This has the additional bonus of hitting a special fastpath that the golang
+// built-in maps have specifically for plain string keys.)
+//
 type PathSegment struct {
 	/*
 		A quick implementation note about the Go compiler and "union" semantics:
@@ -111,9 +120,14 @@ func (ps PathSegment) Index() (int, error) {
 }
 
 // Equals checks if two PathSegment values are equal.
-// This is equivalent to checking if their strings are equal --
-// if one of the PathSegment values is backed by an int and the other is a string,
-// they may still be "equal".
+//
+// Because PathSegment is "stringly typed", this comparison does not
+// regard if one of the segments is stored as a string and one is stored as an int;
+// if string values of two segments are equal, they are "equal" overall.
+// In other words, `PathSegmentOfInt(2).Equals(PathSegmentOfString("2")) == true`!
+// (You should still typically prefer this method over converting two segments
+// to string and comparing those, because even though that may be functionally
+// correct, this method will be faster if they're both ints internally.)
 func (x PathSegment) Equals(o PathSegment) bool {
 	if !x.containsString() && !o.containsString() {
 		return x.i == o.i
