@@ -1,7 +1,7 @@
 hackme
 ======
 
-Design rational are documented here.
+Design rationale are documented here.
 
 This doc is not necessary reading for users of this package,
 but if you're considering submitting patches -- or just trying to understand
