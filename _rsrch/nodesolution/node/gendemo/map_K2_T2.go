@@ -15,12 +15,6 @@ import (
 	type T2 struct { a int, b int, c int, d int }
 */
 
-// Note how we're not able to use `int` in the structs, but instead `plainInt`: this is so we can take address of those fields directly and return them as nodes.
-//  We don't currently have concrete exported types that allow us to do this.  Maybe we should?
-
-type plainString string // FIXME placeholder, doesn't actually implement Node.  we need our own type in the same package for this.
-type plainInt int       // FIXME placeholder, doesn't actually implement Node.  we need our own type in the same package for this.
-
 type K2 struct{ u, i plainString }
 type T2 struct{ a, b, c, d plainInt }
 
