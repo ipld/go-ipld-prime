@@ -6,6 +6,12 @@ import (
 
 // PathSegment can describe either a key in a map, or an index in a list.
 //
+// Create a PathSegment via either ParsePathSegment, PathSegmentOfString,
+// or PathSegmentOfInt; or, via one of the constructors of Path,
+// which will implicitly create PathSegment internally.
+// Using PathSegment's natural zero value directly is discouraged
+// (it will act like ParsePathSegment("0"), which likely not what you'd expect).
+//
 // Path segments are "stringly typed" -- they may be interpreted as either strings or ints depending on context.
 // A path segment of "123" will be used as a string when traversing a node of map kind;
 // and it will be converted to an integer when traversing a node of list kind.

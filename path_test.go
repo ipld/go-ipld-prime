@@ -26,3 +26,10 @@ func TestParsePath(t *testing.T) {
 		Wish(t, ParsePath(`0/\//2`).segments, ShouldEqual, []PathSegment{{s: "0"}, {s: `\`}, {s: "2"}})
 	})
 }
+
+func TestPathSegmentZeroValue(t *testing.T) {
+	Wish(t, PathSegment{}.String(), ShouldEqual, "0")
+	i, err := PathSegment{}.Index()
+	Wish(t, err, ShouldEqual, nil)
+	Wish(t, i, ShouldEqual, 0)
+}
