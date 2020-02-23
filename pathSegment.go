@@ -62,13 +62,13 @@ func ParsePathSegment(s string) PathSegment {
 	return PathSegment{s: s}
 }
 
-// PathSegmentOfString boxes a string into a PathSegement.
+// PathSegmentOfString boxes a string into a PathSegment.
 // It does not attempt to parse any escaping; use ParsePathSegment for that.
 func PathSegmentOfString(s string) PathSegment {
 	return PathSegment{s: s}
 }
 
-// PathSegmentOfString boxes an int into a PathSegement.
+// PathSegmentOfString boxes an int into a PathSegment.
 func PathSegmentOfInt(i int) PathSegment {
 	return PathSegment{i: i}
 }
