@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	refmtjson "github.com/polydawn/refmt/json"
+	"github.com/polydawn/refmt/tok"
 
 	ipld "github.com/ipld/go-ipld-prime/_rsrch/nodesolution"
 	"github.com/ipld/go-ipld-prime/_rsrch/nodesolution/codec"
@@ -34,4 +35,27 @@ func SpecBenchmarkMarshalMapStrInt_3n(b *testing.B, ns ipld.NodeStyle) {
 	if err != nil {
 		panic(err)
 	}
+}
+
+func SpecBenchmarkMarshalToNullMapStrInt_3n(b *testing.B, ns ipld.NodeStyle) {
+	nb := ns.NewBuilder()
+	must.NotError(codec.Unmarshal(nb, refmtjson.NewDecoder(bytes.NewBufferString(`{"whee":1,"woot":2,"waga":3}`))))
+	n := nb.Build()
+	b.ResetTimer()
+	var err error
+	encoder := &nullTokenSink{}
+	for i := 0; i < b.N; i++ {
+		var buf bytes.Buffer
+		err = codec.Marshal(n, encoder)
+		sink = buf
+	}
+	if err != nil {
+		panic(err)
+	}
+}
+
+type nullTokenSink struct{}
+
+func (nullTokenSink) Step(_ *tok.Token) (bool, error) {
+	return false, nil
 }

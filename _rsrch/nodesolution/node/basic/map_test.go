@@ -38,4 +38,6 @@ func BenchmarkUnmarshalMapStrInt_3n(b *testing.B) {
 func BenchmarkMarshalMapStrInt_3n(b *testing.B) {
 	tests.SpecBenchmarkMarshalMapStrInt_3n(b, Style__Map{})
 }
-
+func BenchmarkMarshalToNullMapStrInt_3n(b *testing.B) {
+	tests.SpecBenchmarkMarshalToNullMapStrInt_3n(b, Style__Map{})
+}
