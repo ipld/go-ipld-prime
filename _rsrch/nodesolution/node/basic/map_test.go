@@ -30,3 +30,12 @@ func BenchmarkMapStrInt_25n_AssembleDirectly(b *testing.B) {
 func BenchmarkMapStrInt_25n_Iteration(b *testing.B) {
 	tests.SpecBenchmarkMapStrInt_25n_Iteration(b, Style__Map{})
 }
+
+func BenchmarkUnmarshalMapStrInt_3n(b *testing.B) {
+	tests.SpecBenchmarkUnmarshalMapStrInt_3n(b, Style__Map{})
+}
+
+func BenchmarkMarshalMapStrInt_3n(b *testing.B) {
+	tests.SpecBenchmarkMarshalMapStrInt_3n(b, Style__Map{})
+}
+

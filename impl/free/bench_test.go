@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	ipld "github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/tests"
 )
 
 var sink interface{}
@@ -81,6 +82,16 @@ func BenchmarkMap25nGenericMapIterationSimpleKeys(b *testing.B) {
 			sink = v
 		}
 	}
+}
+
+// benchmarks covering encoding -->
+
+func BenchmarkUnmarshalMapStrInt_3n(b *testing.B) {
+	tests.SpecBenchmarkUnmarshalMapStrInt_3n(b, NodeBuilder())
+}
+
+func BenchmarkMarshalMapStrInt_3n(b *testing.B) {
+	tests.SpecBenchmarkMarshalMapStrInt_3n(b, NodeBuilder())
 }
 
 // copy of helper functions from must package, because import cycles, sigh -->
