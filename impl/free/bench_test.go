@@ -96,8 +96,11 @@ func BenchmarkMarshalMapStrInt_3n(b *testing.B) {
 
 // benchmarks covering traversal -->
 
-func BenchmarkWalkMapStrInt_3n(b *testing.B) {
-	tests.SpecBenchmarkWalkMapStrInt_3n(b, NodeBuilder())
+func BenchmarkSpec_Walk_Map3StrInt(b *testing.B) {
+	tests.BenchmarkSpec_Walk_Map3StrInt(b, NodeBuilder())
+}
+func BenchmarkSpec_Walk_MapNStrMap3StrInt(b *testing.B) {
+	tests.BenchmarkSpec_Walk_MapNStrMap3StrInt(b, NodeBuilder())
 }
 
 // copy of helper functions from must package, because import cycles, sigh -->

@@ -49,3 +49,10 @@ func MapNStrInt(n int) string {
 		return fmt.Sprintf(`"k%d":%d`, i, i)
 	}) + `}`
 }
+
+func MapNStrMap3StrInt(n int) string {
+	return `{` + ents(n, func(i int) string {
+		return fmt.Sprintf(`"k%d":`, i) +
+			fmt.Sprintf(`{"whee":%d,"woot":%d,"waga":%d}`, i*3+1, i*3+2, i*3+3)
+	}) + `}`
+}
