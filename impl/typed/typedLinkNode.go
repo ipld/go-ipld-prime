@@ -2,7 +2,7 @@ package typed
 
 import "github.com/ipld/go-ipld-prime"
 
-// typed.LinkNode is a superset of the typed.Node interface, and has one additional behavior.
+// typed.LinkNode is a superset of the schema.TypedNode interface, and has one additional behavior.
 //
 // A typed.LinkNode contains a hint for the appropriate node builder to use for loading data
 // on the other side of the link contained within the node, so that it can be assembled

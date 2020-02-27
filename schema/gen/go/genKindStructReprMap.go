@@ -50,12 +50,12 @@ func (gk generateStructReprMapNode) EmitNodeMethodLookupString(w io.Writer) {
 			{{- range $field := .Type.Fields }}
 			case "{{ $field | $type.RepresentationStrategy.GetFieldKey }}":
 				{{- if $field.IsOptional }}
-				if rn.n.d.{{ $field.Name | titlize}}.Maybe == typed.Maybe_Absent {
+				if rn.n.d.{{ $field.Name | titlize}}.Maybe == schema.Maybe_Absent {
 					return ipld.Undef, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
 				}
 				{{- end}}
 				{{- if $field.IsNullable }}
-				if rn.n.d.{{ $field.Name | titlize}}.Maybe == typed.Maybe_Null {
+				if rn.n.d.{{ $field.Name | titlize}}.Maybe == schema.Maybe_Null {
 					return ipld.Null, nil
 				}
 				{{- end}}
@@ -66,7 +66,7 @@ func (gk generateStructReprMapNode) EmitNodeMethodLookupString(w io.Writer) {
 				{{- end}}
 			{{- end}}
 			default:
-				return nil, typed.ErrNoSuchField{Type: nil /*TODO*/, FieldName: key}
+				return nil, schema.ErrNoSuchField{Type: nil /*TODO*/, FieldName: key}
 			}
 		}
 	`, w, gk)
@@ -110,13 +110,13 @@ func (gk generateStructReprMapNode) EmitNodeMethodMapIterator(w io.Writer) {
 				case {{ $i }}:
 					k = String{"{{ $field | $type.RepresentationStrategy.GetFieldKey }}"}
 					{{- if $field.IsOptional }}
-					if itr.node.d.{{ $field.Name | titlize}}.Maybe == typed.Maybe_Absent {
+					if itr.node.d.{{ $field.Name | titlize}}.Maybe == schema.Maybe_Absent {
 						itr.idx++
 						continue
 					}
 					{{- end}}
 					{{- if $field.IsNullable }}
-					if itr.node.d.{{ $field.Name | titlize}}.Maybe == typed.Maybe_Null {
+					if itr.node.d.{{ $field.Name | titlize}}.Maybe == schema.Maybe_Null {
 						v = ipld.Null
 						break
 					}
@@ -150,7 +150,7 @@ func (gk generateStructReprMapNode) EmitNodeMethodLength(w io.Writer) {
 			l := {{ len .Type.Fields }}
 			{{- range $field := .Type.Fields }}
 			{{- if $field.IsOptional }}
-			if rn.n.d.{{ $field.Name | titlize}}.Maybe == typed.Maybe_Absent {
+			if rn.n.d.{{ $field.Name | titlize}}.Maybe == schema.Maybe_Absent {
 				l--
 			}
 			{{- end}}
@@ -220,7 +220,7 @@ func (gk generateStructReprMapNb) EmitNodebuilderMethodCreateMap(w io.Writer) {
 			mb := &{{ .Type | mungeTypeReprNodeMapBuilderIdent }}{v:&{{ .Type | mungeTypeNodeIdent }}{}}
 			{{- range $field := .Type.Fields }}
 			{{- if $field.IsOptional }}
-			mb.v.d.{{ $field.Name | titlize }}.Maybe = typed.Maybe_Absent
+			mb.v.d.{{ $field.Name | titlize }}.Maybe = schema.Maybe_Absent
 			{{- end}}
 			{{- end}}
 			return mb, nil
@@ -247,7 +247,7 @@ func (gk generateStructReprMapNb) EmitNodebuilderMethodCreateMap(w io.Writer) {
 				}
 				{{- if $field.IsNullable }}
 				if v.IsNull() {
-					mb.v.d.{{ $field.Name | titlize}}.Maybe = typed.Maybe_Null
+					mb.v.d.{{ $field.Name | titlize}}.Maybe = schema.Maybe_Null
 					mb.{{ $field.Name }}__isset = true
 					return nil
 				}
@@ -256,9 +256,9 @@ func (gk generateStructReprMapNb) EmitNodebuilderMethodCreateMap(w io.Writer) {
 					panic("type mismatch on struct field assignment: cannot assign null to non-nullable field") // FIXME need an error type for this
 				}
 				{{- end}}
-				tv, ok := v.(typed.Node)
+				tv, ok := v.(schema.TypedNode)
 				if !ok {
-					panic("need typed.Node for insertion into struct") // FIXME need an error type for this
+					panic("need schema.TypedNode for insertion into struct") // FIXME need an error type for this
 				}
 				x, ok := v.({{ $field.Type | mungeTypeNodeIdent }})
 				if !ok {
@@ -271,12 +271,12 @@ func (gk generateStructReprMapNb) EmitNodebuilderMethodCreateMap(w io.Writer) {
 				mb.v.d.{{ $field.Name | titlize}} = x
 				{{- end}}
 				{{- if $field.IsOptional }}
-				mb.v.d.{{ $field.Name | titlize}}.Maybe = typed.Maybe_Value
+				mb.v.d.{{ $field.Name | titlize}}.Maybe = schema.Maybe_Value
 				{{- end}}
 				mb.{{ $field.Name }}__isset = true
 			{{- end}}
 			default:
-				return typed.ErrNoSuchField{Type: nil /*TODO:typelit*/, FieldName: ks}
+				return schema.ErrNoSuchField{Type: nil /*TODO:typelit*/, FieldName: ks}
 			}
 			return nil
 		}
@@ -307,7 +307,7 @@ func (gk generateStructReprMapNb) EmitNodebuilderMethodCreateMap(w io.Writer) {
 				return {{ $field.Type | mungeNodebuilderConstructorIdent }}()
 			{{- end}}
 			default:
-				panic(typed.ErrNoSuchField{Type: nil /*TODO:typelit*/, FieldName: ks})
+				panic(schema.ErrNoSuchField{Type: nil /*TODO:typelit*/, FieldName: ks})
 			}
 			return nil
 		}

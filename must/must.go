@@ -18,7 +18,7 @@ package must
 
 import (
 	ipld "github.com/ipld/go-ipld-prime"
-	"github.com/ipld/go-ipld-prime/impl/typed"
+	"github.com/ipld/go-ipld-prime/schema"
 )
 
 // must.NotError simply panics if given an error.
@@ -47,18 +47,18 @@ func Node(n ipld.Node, e error) ipld.Node {
 
 // must.TypedNode helps write pointfree/chainable-style code
 // by taking a Node and an error and transforming any error into a panic.
-// It will also cast the `ipld.Node` to a `typed.Node`, panicking if impossible.
+// It will also cast the `ipld.Node` to a `schema.TypedNode`, panicking if impossible.
 //
 // Because golang supports implied destructuring of multiple-return functions
 // into arguments for another funtion of matching arity, it can be used like this:
 //
 //		must.TypedNode(SomeNodeBuilder{}.CreateString("a"))
 //
-func TypedNode(n ipld.Node, e error) typed.Node {
+func TypedNode(n ipld.Node, e error) schema.TypedNode {
 	if e != nil {
 		panic(e)
 	}
-	return n.(typed.Node)
+	return n.(schema.TypedNode)
 }
 
 // must.True panics if the given bool is false.

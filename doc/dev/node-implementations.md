@@ -26,7 +26,7 @@ Concerns:
 - 2. Performance
 
 A `Node` implementation must of course conform with the Data Model.
-Some nodes (especially, those that also implement `typed.Node`) may also
+Some nodes (especially, those that also implement `schema.TypedNode`) may also
 have additional constraints.
 
 A `Node` implementation must maintain immutablity, or it shatters abstractions
@@ -70,7 +70,7 @@ Castability for strings is safe when the `Node` is "general" (i.e. has no constr
 With no constraints, there's no Correctness concern;
 and since strings are immutable, there's no Immutablity concern.
 
-Castability for strings is often *unsafe* when the `Node` is a `typed.Node`.
+Castability for strings is often *unsafe* when the `Node` is a `schema.TypedNode`.
 Typed nodes may have additional constraints, so we would have a Correctness problem.
 (Note that the way we handle constraints in codegeneration means users can add
 them *after* the code is generated, so the generation system can't presume
@@ -94,7 +94,7 @@ If the struct type is unexported, the concern is absolved:
 the zero value can't be initialized outside the package.
 
 If the `Node` implementation has no other constraints
-(e.g., it's not also a `typed.Node` in addition to just an `ipld.Node`),
+(e.g., it's not also a `schema.TypedNode` in addition to just an `ipld.Node`),
 the concern is (alomst certainly) absolved:
 the zero value is simply a valid value.
 

@@ -98,7 +98,7 @@ allowed to contain pointers (including cyclic references), etc.
 The reified schema can be computed purely from the schema declaration.
 
 The reified schema implementation lives in `go-ipld-prime//typed/system`,
-and `go-ipld-prime//typed.Node` notably has a `Type() typesystem.Type` method
+and `go-ipld-prime//schema.TypedNode` notably has a `Type() typesystem.Type` method
 which provides the reified schema information for any typed node.
 
 Note that multiple disjoint `typesystem.Universe` instances can exist in the

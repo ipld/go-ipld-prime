@@ -31,10 +31,10 @@ package ipld
 // `reflect.Type` handle it can use to create a new value of that native type;
 // similarly, schema-typed Nodes will yield a NodeBuilder that keeps the schema
 // info and type constraints from that Node!
-// (Continuing the typed.Node example: if you have a typed.Node that is
+// (Continuing the schema.TypedNode example: if you have a schema.TypedNode that is
 // constrained to be of some `type Foo = {Bar:Baz}` type, then any new Node
 // produced from its NodeBuilder will still answer
-// `n.(typed.Node).Type().Name()` as `Foo`; and if
+// `n.(schema.TypedNode).Type().Name()` as `Foo`; and if
 // `n.NodeBuilder().AmendMap().Insert(...)` is called with nodes of unmatching
 // type given to the insertion, the builder will error!)
 //

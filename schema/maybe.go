@@ -1,4 +1,4 @@
-package typed
+package schema
 
 type Maybe uint8
 

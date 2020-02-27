@@ -81,7 +81,7 @@ func (nb *nodeBuilder) CreateMap(fn MapBuildingClosure) ipld.Node {
 	if err != nil {
 		panic(Error{err})
 	}
-	fn(mapBuilder{mb}, nb, nb) // FUTURE: check for typed.NodeBuilder; need to specialize latter params before calling down if so.
+	fn(mapBuilder{mb}, nb, nb) // FUTURE: check for schema.TypedNodeBuilder; need to specialize latter params before calling down if so.
 	n, err := mb.Build()
 	if err != nil {
 		panic(Error{err})
@@ -93,7 +93,7 @@ func (nb *nodeBuilder) AmendMap(fn MapBuildingClosure) ipld.Node {
 	if err != nil {
 		panic(Error{err})
 	}
-	fn(mapBuilder{mb}, nb, nb) // FUTURE: check for typed.NodeBuilder; need to specialize latter params before calling down if so.
+	fn(mapBuilder{mb}, nb, nb) // FUTURE: check for schema.TypedNodeBuilder; need to specialize latter params before calling down if so.
 	n, err := mb.Build()
 	if err != nil {
 		panic(Error{err})
@@ -105,7 +105,7 @@ func (nb *nodeBuilder) CreateList(fn ListBuildingClosure) ipld.Node {
 	if err != nil {
 		panic(Error{err})
 	}
-	fn(listBuilder{lb}, nb) // FUTURE: check for typed.NodeBuilder; need to specialize latter params before calling down if so.
+	fn(listBuilder{lb}, nb) // FUTURE: check for schema.TypedNodeBuilder; need to specialize latter params before calling down if so.
 	n, err := lb.Build()
 	if err != nil {
 		panic(Error{err})
@@ -117,7 +117,7 @@ func (nb *nodeBuilder) AmendList(fn ListBuildingClosure) ipld.Node {
 	if err != nil {
 		panic(Error{err})
 	}
-	fn(listBuilder{lb}, nb) // FUTURE: check for typed.NodeBuilder; need to specialize latter params before calling down if so.
+	fn(listBuilder{lb}, nb) // FUTURE: check for schema.TypedNodeBuilder; need to specialize latter params before calling down if so.
 	n, err := lb.Build()
 	if err != nil {
 		panic(Error{err})

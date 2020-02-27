@@ -36,7 +36,7 @@ func Unmarshal(nb ipld.NodeBuilder, tokSrc shared.TokenSource) (ipld.Node, error
 // starts with the first token already primed.  Necessary to get recursion
 //  to flow right without a peek+unpeek system.
 func unmarshal(nb ipld.NodeBuilder, tokSrc shared.TokenSource, tk *tok.Token) (ipld.Node, error) {
-	// FUTURE: check for typed.NodeBuilder that's going to parse a Link (they can slurp any token kind they want).
+	// FUTURE: check for schema.TypedNodeBuilder that's going to parse a Link (they can slurp any token kind they want).
 	switch tk.Type {
 	case tok.TMapOpen:
 		mb, err := nb.CreateMap()

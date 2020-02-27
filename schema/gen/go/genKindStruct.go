@@ -60,11 +60,11 @@ func (gk generateKindStruct) EmitNativeBuilder(w io.Writer) {
 			{{- if or $field.IsOptional $field.IsNullable }}
 			{{- /* if both modifiers present, anything goes */ -}}
 			{{- else if $field.IsOptional }}
-			if b.{{ $field.Name | titlize }}.Maybe == typed.Maybe_Null {
+			if b.{{ $field.Name | titlize }}.Maybe == schema.Maybe_Null {
 				return {{ $field.Type | mungeTypeNodeIdent }}{}, fmt.Errorf("cannot be absent")
 			}
 			{{- else if $field.IsNullable }}
-			if b.{{ $field.Name | titlize }}.Maybe == typed.Maybe_Absent {
+			if b.{{ $field.Name | titlize }}.Maybe == schema.Maybe_Absent {
 				return {{ $field.Type | mungeTypeNodeIdent }}{}, fmt.Errorf("cannot be null")
 			}
 			{{- end}}
@@ -88,12 +88,12 @@ func (gk generateKindStruct) EmitNativeBuilder(w io.Writer) {
 func (gk generateKindStruct) EmitNativeMaybe(w io.Writer) {
 	doTemplate(`
 		type Maybe{{ .Type | mungeTypeNodeIdent }} struct {
-			Maybe typed.Maybe
+			Maybe schema.Maybe
 			Value {{ .Type | mungeTypeNodeIdent }}
 		}
 
 		func (m Maybe{{ .Type | mungeTypeNodeIdent }}) Must() {{ .Type | mungeTypeNodeIdent }} {
-			if m.Maybe != typed.Maybe_Value {
+			if m.Maybe != schema.Maybe_Value {
 				panic("unbox of a maybe rejected")
 			}
 			return m.Value

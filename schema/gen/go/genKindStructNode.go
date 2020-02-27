@@ -11,7 +11,7 @@ import (
 func (gk generateKindStruct) EmitNodeType(w io.Writer) {
 	doTemplate(`
 		var _ ipld.Node = {{ .Type | mungeTypeNodeIdent }}{}
-		var _ typed.Node = {{ .Type | mungeTypeNodeIdent }}{}
+		var _ schema.TypedNode = {{ .Type | mungeTypeNodeIdent }}{}
 
 	`, w, gk)
 }
@@ -39,12 +39,12 @@ func (gk generateKindStruct) EmitNodeMethodLookupString(w io.Writer) {
 			{{- range $field := .Type.Fields }}
 			case "{{ $field.Name }}":
 				{{- if $field.IsOptional }}
-				if x.d.{{ $field.Name | titlize }}.Maybe == typed.Maybe_Absent {
+				if x.d.{{ $field.Name | titlize }}.Maybe == schema.Maybe_Absent {
 					return ipld.Undef, nil
 				}
 				{{- end}}
 				{{- if $field.IsNullable }}
-				if x.d.{{ $field.Name | titlize }}.Maybe == typed.Maybe_Null {
+				if x.d.{{ $field.Name | titlize }}.Maybe == schema.Maybe_Null {
 					return ipld.Null, nil
 				}
 				{{- end}}
@@ -55,7 +55,7 @@ func (gk generateKindStruct) EmitNodeMethodLookupString(w io.Writer) {
 				{{- end}}
 			{{- end}}
 			default:
-				return nil, typed.ErrNoSuchField{Type: nil /*TODO*/, FieldName: key}
+				return nil, schema.ErrNoSuchField{Type: nil /*TODO*/, FieldName: key}
 			}
 		}
 	`, w, gk)
@@ -95,13 +95,13 @@ func (gk generateKindStruct) EmitNodeMethodMapIterator(w io.Writer) {
 			case {{ $i }}:
 				k = String{"{{ $field.Name }}"}
 				{{- if $field.IsOptional }}
-				if itr.node.d.{{ $field.Name | titlize  }}.Maybe == typed.Maybe_Absent {
+				if itr.node.d.{{ $field.Name | titlize  }}.Maybe == schema.Maybe_Absent {
 					v = ipld.Undef
 					break
 				}
 				{{- end}}
 				{{- if $field.IsNullable }}
-				if itr.node.d.{{ $field.Name | titlize }}.Maybe == typed.Maybe_Null {
+				if itr.node.d.{{ $field.Name | titlize }}.Maybe == schema.Maybe_Null {
 					v = ipld.Null
 					break
 				}
@@ -178,8 +178,8 @@ func (gk generateNbKindStruct) EmitNodebuilderMethodCreateMap(w io.Writer) {
 	//  - This builder, being all about semantics and not at all about serialization,
 	//      is order-insensitive.
 	//  - We don't specially handle being given 'undef' as a value.
-	//      It just falls into the "need a typed.Node" error bucket.
-	//  - We only accept *codegenerated values* -- a typed.Node created
+	//      It just falls into the "need a schema.TypedNode" error bucket.
+	//  - We only accept *codegenerated values* -- a schema.TypedNode created
 	//      in the same schema universe *isn't accepted*.
 	//        REVIEW: We could try to accept those, but it might have perf/sloc costs,
 	//          and it's hard to imagine a user story that gets here.
@@ -195,7 +195,7 @@ func (gk generateNbKindStruct) EmitNodebuilderMethodCreateMap(w io.Writer) {
 			mb := &{{ .Type | mungeTypeNodeMapBuilderIdent }}{v:&{{ .Type | mungeTypeNodeIdent }}{}}
 			{{- range $field := .Type.Fields }}
 			{{- if $field.IsOptional }}
-			mb.v.d.{{ $field.Name | titlize }}.Maybe = typed.Maybe_Absent
+			mb.v.d.{{ $field.Name | titlize }}.Maybe = schema.Maybe_Absent
 			{{- end}}
 			{{- end}}
 			return mb, nil
@@ -221,7 +221,7 @@ func (gk generateNbKindStruct) EmitNodebuilderMethodCreateMap(w io.Writer) {
 			case "{{ $field.Name }}":
 				{{- if $field.IsNullable }}
 				if v.IsNull() {
-					mb.v.d.{{ $field.Name | titlize}}.Maybe = typed.Maybe_Null
+					mb.v.d.{{ $field.Name | titlize}}.Maybe = schema.Maybe_Null
 					{{- if not $field.IsOptional }}
 					mb.{{ $field.Name }}__isset = true
 					{{- end}}
@@ -232,9 +232,9 @@ func (gk generateNbKindStruct) EmitNodebuilderMethodCreateMap(w io.Writer) {
 					panic("type mismatch on struct field assignment: cannot assign null to non-nullable field") // FIXME need an error type for this
 				}
 				{{- end}}
-				tv, ok := v.(typed.Node)
+				tv, ok := v.(schema.TypedNode)
 				if !ok {
-					panic("need typed.Node for insertion into struct") // FIXME need an error type for this
+					panic("need schema.TypedNode for insertion into struct") // FIXME need an error type for this
 				}
 				x, ok := v.({{ $field.Type | mungeTypeNodeIdent }})
 				if !ok {
@@ -247,13 +247,13 @@ func (gk generateNbKindStruct) EmitNodebuilderMethodCreateMap(w io.Writer) {
 				mb.v.d.{{ $field.Name | titlize}} = x
 				{{- end}}
 				{{- if $field.IsOptional }}
-				mb.v.d.{{ $field.Name | titlize}}.Maybe = typed.Maybe_Value
+				mb.v.d.{{ $field.Name | titlize}}.Maybe = schema.Maybe_Value
 				{{- else}}
 				mb.{{ $field.Name }}__isset = true
 				{{- end}}
 			{{- end}}
 			default:
-				return typed.ErrNoSuchField{Type: nil /*TODO:typelit*/, FieldName: ks}
+				return schema.ErrNoSuchField{Type: nil /*TODO:typelit*/, FieldName: ks}
 			}
 			return nil
 		}
@@ -283,7 +283,7 @@ func (gk generateNbKindStruct) EmitNodebuilderMethodCreateMap(w io.Writer) {
 				return {{ $field.Type | mungeNodebuilderConstructorIdent }}()
 			{{- end}}
 			default:
-				panic(typed.ErrNoSuchField{Type: nil /*TODO:typelit*/, FieldName: ks})
+				panic(schema.ErrNoSuchField{Type: nil /*TODO:typelit*/, FieldName: ks})
 			}
 			return nil
 		}

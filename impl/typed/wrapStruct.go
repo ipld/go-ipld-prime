@@ -8,7 +8,7 @@ import (
 	"github.com/ipld/go-ipld-prime/schema"
 )
 
-var _ Node = wrapnodeStruct{}
+var _ schema.TypedNode = wrapnodeStruct{}
 
 type wrapnodeStruct struct {
 	ipld.Node
@@ -16,7 +16,7 @@ type wrapnodeStruct struct {
 }
 
 // Most of the 'nope' methods from the inner node are fine;
-// we add the extra things required for typed.Node;
+// we add the extra things required for schema.TypedNode;
 // we decorate the getters and iterators to handle the distinct path around optionals
 // and return a different error for missing fields;
 // length becomes fixed to a constant;
@@ -42,7 +42,7 @@ func (tn wrapnodeStruct) LookupString(key string) (ipld.Node, error) {
 		}
 		return nil, e1
 	}
-	return nil, ErrNoSuchField{Type: tn.typ, FieldName: key}
+	return nil, schema.ErrNoSuchField{Type: tn.typ, FieldName: key}
 }
 
 func (tn wrapnodeStruct) MapIterator() ipld.MapIterator {
@@ -168,10 +168,10 @@ func (mb *wrapnodeStruct_MapBuilder) Insert(k, v ipld.Node) error {
 	// Check that the field exists at all.
 	field := mb.typ.Field(ks)
 	if field == nil {
-		return ErrNoSuchField{Type: mb.typ, FieldName: ks}
+		return schema.ErrNoSuchField{Type: mb.typ, FieldName: ks}
 	}
 	// Check that the value is assignable to this field, or return error.
-	vt, ok := v.(Node)
+	vt, ok := v.(schema.TypedNode)
 	switch {
 	case v.IsNull():
 		if !field.IsNullable() {
@@ -184,7 +184,7 @@ func (mb *wrapnodeStruct_MapBuilder) Insert(k, v ipld.Node) error {
 		}
 		// if typed node, and it matches: carry on.
 	default:
-		return fmt.Errorf("need typed.Node for insertion into struct") // FUTURE: maybe if it's a basic enough thing we sholud attempt coerce?
+		return fmt.Errorf("need schema.TypedNode for insertion into struct") // FUTURE: maybe if it's a basic enough thing we sholud attempt coerce?
 	}
 	// Insert the value, and note it's now been set.
 	if err := mb.utmb.Insert(k, v); err != nil {

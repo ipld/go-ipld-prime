@@ -11,7 +11,7 @@ import (
 func (gk generateKindInt) EmitNodeType(w io.Writer) {
 	doTemplate(`
 		var _ ipld.Node = {{ .Type | mungeTypeNodeIdent }}{}
-		var _ typed.Node = {{ .Type | mungeTypeNodeIdent }}{}
+		var _ schema.TypedNode = {{ .Type | mungeTypeNodeIdent }}{}
 
 	`, w, gk)
 }

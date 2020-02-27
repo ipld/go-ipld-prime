@@ -59,13 +59,13 @@ type Type interface {
 	//
 	// Note that a schema.Kind is a different enum than ipld.ReprKind;
 	// and furthermore, there's no strict relationship between them.
-	// typed.Node values can be described by *two* distinct ReprKinds:
+	// schema.TypedNode values can be described by *two* distinct ReprKinds:
 	// one which describes how the Node itself will act,
 	// and another which describes how the Node presents for serialization.
 	// For some combinations of Type and representation strategy, one or both
 	// of the ReprKinds can be determined statically; but not always:
 	// it can sometimes be necessary to inspect the value quite concretely
-	// (e.g., `typed.Node{}.Representation().ReprKind()`) in order to find
+	// (e.g., `schema.TypedNode{}.Representation().ReprKind()`) in order to find
 	// out exactly how a node will be serialized!  This is because some types
 	// can vary in representation kind based on their value (specifically,
 	// kinded-representation unions have this property).

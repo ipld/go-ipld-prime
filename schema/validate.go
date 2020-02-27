@@ -26,7 +26,7 @@ package schema
 	---
 
 	We may also need to consider distinct reification paths: we may want one
-	that returns a new node tree which is eagerly converted to typed.Node
+	that returns a new node tree which is eagerly converted to schema.TypedNode
 	recursively; and another that returns a lazyNode which wraps things
 	with their typed node constraints only as they're requested.
 	(Note that the latter would have interesting implications for any code
@@ -37,8 +37,8 @@ package schema
 	A further fun issue which needs consideration: well, I'll just save a snip
 	of prospective docs I wrote while trying to iterate on these functions:
 
-		// Note that using Validate on a node that's already a typed.Node is likely
-		// to be nonsensical.  In many schemas, the typed.Node tree is actually a
+		// Note that using Validate on a node that's already a schema.TypedNode is likely
+		// to be nonsensical.  In many schemas, the schema.TypedNode tree is actually a
 		// different depth than its representational tree (e.g. unions can cause this),
 
 	... and that's ... that's a fairly sizable issue that needs resolving.
@@ -62,7 +62,7 @@ package schema
 	---
 
 	And finally: both "Validate" and "Reify" methods might actually belong
-	in the typed.Node package -- if they make *any* reference to `typed.Node`,
+	in the schema.TypedNode package -- if they make *any* reference to `schema.TypedNode`,
 	then they have no choice (otherwise, cyclic imports would occur).
 	If we make a "Validate" that works purely on the schema.Type info, and
 	returns *only* errors: only then we can have it in the schema package.
