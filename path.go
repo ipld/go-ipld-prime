@@ -49,6 +49,12 @@ import (
 // filesystems); but, as with empty strings, maps which contain such a key
 // certainly exist, and it is important that we be able to regard them!)
 //
+// A string starting, ending, or otherwise containing the NUL (\x00) byte
+// is also a valid PathSegment.  This follows from the rule of "a string is
+// regarded as its constituent eight-bit bytes": an all-zero byte is not exceptional.
+// In golang, this doesn't pose particular difficulty, but note this would be
+// of marked concern for languages which have "C-style nul-terminated strings".
+//
 // For an IPLD Path to be represented as a string, an encoding system
 // including escaping is necessary.  At present, there is not a single
 // canonical specification for such an escaping; we expect to decide one
