@@ -50,3 +50,24 @@ type TypedNode interface {
 	// if the streatgy is "tuple", then it will be ReprKind=="list".
 	Representation() ipld.Node
 }
+
+// schema.TypedLinkNode is a superset of the schema.TypedNode interface, and has one additional behavior.
+//
+// A schema.TypedLinkNode contains a hint for the appropriate node builder to use for loading data
+// on the other side of the link contained within the node, so that it can be assembled
+// into a node representation and validated against the schema as quickly as possible
+//
+// So, for example, if you wanted to support loading the other side of a link
+// with a code-gen'd node builder while utilizing the automatic loading facilities
+// of the traversal package, you could write a LinkNodeBuilderChooser as follows:
+//
+//		func LinkNodeBuilderChooser(lnk ipld.Link, lnkCtx ipld.LinkContext) ipld.NodeBuilder {
+//			if tlnkNd, ok := lnkCtx.LinkNode.(schema.TypedLinkNode); ok {
+//				return tlnkNd.LinkTargetNodeBuilder()
+//			}
+//			return ipldfree.NodeBuilder()
+//		}
+//
+type TypedLinkNode interface {
+	LinkTargetNodeBuilder() ipld.NodeBuilder
+}
