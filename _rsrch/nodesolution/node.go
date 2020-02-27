@@ -71,12 +71,12 @@ type Node interface {
 	// Lookup is the equivalent of LookupString, but takes a reified Node
 	// as a parameter instead of a plain string.
 	// This mechanism is useful if working with typed maps (if the key types
-	// have constraints, and you already have a reified `typed.Node` value,
+	// have constraints, and you already have a reified `schema.TypedNode` value,
 	// using that value can save parsing and validation costs);
 	// and may simply be convenient if you already have a Node value in hand.
 	//
 	// (When writing generic functions over Node, a good rule of thumb is:
-	// when handling a map, check for `typed.Node`, and in this case prefer
+	// when handling a map, check for `schema.TypedNode`, and in this case prefer
 	// the Lookup(Node) method; otherwise, favor LookupString; typically
 	// implementations will have their fastest paths thusly.)
 	Lookup(key Node) (Node, error)
@@ -126,7 +126,7 @@ type Node interface {
 
 	// Undefined nodes are returned when traversing a struct field that is
 	// defined by a schema but unset in the data.  (Undefined nodes are not
-	// possible otherwise; you'll only see them from `typed.Node`.)
+	// possible otherwise; you'll only see them from `schema.TypedNode`.)
 	// The undefined flag is necessary so iterating over structs can
 	// unambiguously make the distinction between values that are
 	// present-and-null versus values that are absent.

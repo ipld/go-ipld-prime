@@ -50,12 +50,12 @@ func (gk generateKindList) EmitNativeMaybe(w io.Writer) {
 	// TODO this can most likely be extracted and DRY'd, just not 100% sure yet
 	doTemplate(`
 		type Maybe{{ .Type | mungeTypeNodeIdent }} struct {
-			Maybe typed.Maybe
+			Maybe schema.Maybe
 			Value {{ .Type | mungeTypeNodeIdent }}
 		}
 
 		func (m Maybe{{ .Type | mungeTypeNodeIdent }}) Must() {{ .Type | mungeTypeNodeIdent }} {
-			if m.Maybe != typed.Maybe_Value {
+			if m.Maybe != schema.Maybe_Value {
 				panic("unbox of a maybe rejected")
 			}
 			return m.Value

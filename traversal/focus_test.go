@@ -130,14 +130,14 @@ func TestFocusWithLinkLoading(t *testing.T) {
 				t.Errorf("should not be reached; no way to load this path")
 				return nil
 			})
-			Wish(t, err.Error(), ShouldEqual, `error traversing node at "nested/alink": could not load link "`+leafAlphaLnk.String()+`": no link loader configured`)
+			Wish(t, err.Error(), ShouldEqual, `error traversing node at "nested/alink": could not load link "`+leafAlphaLnk.String()+`": no LinkNodeBuilderChooser configured`)
 		})
 		t.Run("mid-path link should fail", func(t *testing.T) {
 			err := traversal.Focus(rootNode, ipld.ParsePath("linkedMap/nested/nonlink"), func(prog traversal.Progress, n ipld.Node) error {
 				t.Errorf("should not be reached; no way to load this path")
 				return nil
 			})
-			Wish(t, err.Error(), ShouldEqual, `error traversing node at "linkedMap": could not load link "`+middleMapNodeLnk.String()+`": no link loader configured`)
+			Wish(t, err.Error(), ShouldEqual, `error traversing node at "linkedMap": could not load link "`+middleMapNodeLnk.String()+`": no LinkNodeBuilderChooser configured`)
 		})
 	})
 	t.Run("link traversal with loader should work", func(t *testing.T) {
@@ -145,6 +145,9 @@ func TestFocusWithLinkLoading(t *testing.T) {
 			Cfg: &traversal.Config{
 				LinkLoader: func(lnk ipld.Link, _ ipld.LinkContext) (io.Reader, error) {
 					return bytes.NewBuffer(storage[lnk]), nil
+				},
+				LinkNodeBuilderChooser: func(_ ipld.Link, _ ipld.LinkContext) (ipld.NodeBuilder, error) {
+					return ipldfree.NodeBuilder(), nil
 				},
 			},
 		}.Focus(rootNode, ipld.ParsePath("linkedMap/nested/nonlink"), func(prog traversal.Progress, n ipld.Node) error {

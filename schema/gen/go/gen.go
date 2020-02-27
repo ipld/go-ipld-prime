@@ -30,7 +30,7 @@ type typedNodeGenerator interface {
 	EmitNativeBuilder(io.Writer)   // typically emits some kind of struct that has a Build method.
 	EmitNativeMaybe(io.Writer)     // a pointer-free 'maybe' mechanism is generated for all types.
 
-	// -- the typed.Node.Type method and vars -->
+	// -- the schema.TypedNode.Type method and vars -->
 
 	EmitTypedNodeMethodType(io.Writer) // these emit dummies for now
 
@@ -100,7 +100,6 @@ func EmitFileHeader(packageName string, w io.Writer) {
 	fmt.Fprintf(w, "package %s\n\n", packageName)
 	fmt.Fprintf(w, "import (\n")
 	fmt.Fprintf(w, "\tipld \"github.com/ipld/go-ipld-prime\"\n")
-	fmt.Fprintf(w, "\t\"github.com/ipld/go-ipld-prime/impl/typed\"\n")
 	fmt.Fprintf(w, "\t\"github.com/ipld/go-ipld-prime/schema\"\n")
 	fmt.Fprintf(w, ")\n\n")
 	fmt.Fprintf(w, "// Code generated go-ipld-prime DO NOT EDIT.\n\n")

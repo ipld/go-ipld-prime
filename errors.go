@@ -43,7 +43,7 @@ func (e ErrWrongKind) Error() string {
 // ErrNotExists may be returned from the lookup functions of the Node interface
 // to indicate a missing value.
 //
-// Note that typed.ErrNoSuchField is another type of error which sometimes
+// Note that schema.ErrNoSuchField is another type of error which sometimes
 // occurs in similar places as ErrNotExists.  ErrNoSuchField is preferred
 // when handling data with constraints provided by a schema that mean that
 // a field can *never* exist (as differentiated from a map key which is
@@ -64,7 +64,7 @@ func (e ErrNotExists) Error() string {
 type ErrInvalidKey struct {
 	Reason string
 
-	// Perhaps typed.ErrNoSuchField could be folded into this?
+	// Perhaps schema.ErrNoSuchField could be folded into this?
 	// Perhaps Reason could be replaced by an enum of "NoSuchField"|"NotAString"|"ConstraintRejected"?
 	// Might be hard to get rid of the freetext field entirely -- constraints may be nontrivial to describe.
 }

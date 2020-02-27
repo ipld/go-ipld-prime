@@ -35,8 +35,8 @@ or new codecs, or new higher-order order functions!)
 - `github.com/ipld/go-ipld-prime/encoding/dagcbor` -- implementations of marshalling and unmarshalling as CBOR (a fast, binary serialization format).
 - `github.com/ipld/go-ipld-prime/encoding/dagjson` -- implementations of marshalling and unmarshalling as JSON (a popular human readable format).
 - `github.com/ipld/go-ipld-prime/linking/cid` -- imported as `cidlink` -- provides concrete implementations of `Link` as a CID.  Also, the multicodec registry.
-- `github.com/ipld/go-ipld-prime/schema` -- contains the `schema.Type` declarations, which represent IPLD Schema type information.
-- `github.com/ipld/go-ipld-prime/impl/typed` -- contains the `typed.Node` interface, which enhances the basic `Node` to have additional features described by IPLD Schemas.
+- `github.com/ipld/go-ipld-prime/schema` -- contains the `schema.Type` and `schema.TypedNode` interface declarations, which represent IPLD Schema type information.
+- `github.com/ipld/go-ipld-prime/impl/typed` -- provides concrete implementations of `schema.TypedNode` which decorate a basic `Node` at runtime to have additional features described by IPLD Schemas.
 
 
 

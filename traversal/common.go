@@ -6,12 +6,15 @@ import (
 	"io"
 
 	ipld "github.com/ipld/go-ipld-prime"
-	ipldfree "github.com/ipld/go-ipld-prime/impl/free"
-	"github.com/ipld/go-ipld-prime/impl/typed"
+	"github.com/ipld/go-ipld-prime/schema"
 )
 
 // init sets all the values in TraveralConfig to reasonable defaults
 // if they're currently the zero value.
+//
+// Note that you're absolutely going to need to replace the
+// LinkLoader and LinkNodeBuilderChooser if you want automatic link traversal;
+// the defaults return error and/or panic.
 func (tc *Config) init() {
 	if tc.Ctx == nil {
 		tc.Ctx = context.Background()
@@ -22,11 +25,11 @@ func (tc *Config) init() {
 		}
 	}
 	if tc.LinkNodeBuilderChooser == nil {
-		tc.LinkNodeBuilderChooser = func(lnk ipld.Link, lnkCtx ipld.LinkContext) ipld.NodeBuilder {
-			if tlnkNd, ok := lnkCtx.LinkNode.(typed.LinkNode); ok {
-				return tlnkNd.ReferencedNodeBuilder()
+		tc.LinkNodeBuilderChooser = func(lnk ipld.Link, lnkCtx ipld.LinkContext) (ipld.NodeBuilder, error) {
+			if tlnkNd, ok := lnkCtx.LinkNode.(schema.TypedLinkNode); ok {
+				return tlnkNd.LinkTargetNodeBuilder(), nil
 			}
-			return ipldfree.NodeBuilder()
+			return nil, fmt.Errorf("no LinkNodeBuilderChooser configured")
 		}
 	}
 	if tc.LinkStorer == nil {

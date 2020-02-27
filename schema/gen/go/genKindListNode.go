@@ -11,7 +11,7 @@ import (
 func (gk generateKindList) EmitNodeType(w io.Writer) {
 	doTemplate(`
 		var _ ipld.Node = {{ .Type | mungeTypeNodeIdent }}{}
-		var _ typed.Node = {{ .Type | mungeTypeNodeIdent }}{}
+		var _ schema.TypedNode = {{ .Type | mungeTypeNodeIdent }}{}
 
 	`, w, gk)
 }
@@ -151,8 +151,8 @@ func (gk generateNbKindList) EmitNodebuilderMethodCreateList(w io.Writer) {
 	//  - This builder, being all about semantics and not at all about serialization,
 	//      is order-insensitive.
 	//  - We don't specially handle being given 'undef' as a value.
-	//      It just falls into the "need a typed.Node" error bucket.
-	//  - We only accept *codegenerated values* -- a typed.Node created
+	//      It just falls into the "need a schema.TypedNode" error bucket.
+	//  - We only accept *codegenerated values* -- a schema.TypedNode created
 	//      in the same schema universe *isn't accepted*.
 	//        REVIEW: We could try to accept those, but it might have perf/sloc costs,
 	//          and it's hard to imagine a user story that gets here.
@@ -214,9 +214,9 @@ func (gk generateNbKindList) EmitNodebuilderMethodCreateList(w io.Writer) {
 				panic("type mismatch on struct field assignment: cannot assign null to non-nullable field") // FIXME need an error type for this
 			}
 			{{- end}}
-			tv, ok := v.(typed.Node)
+			tv, ok := v.(schema.TypedNode)
 			if !ok {
-				panic("need typed.Node for insertion into struct") // FIXME need an error type for this
+				panic("need schema.TypedNode for insertion into struct") // FIXME need an error type for this
 			}
 			_, ok = v.({{ .Type.ValueType | mungeTypeNodeIdent }})
 			if !ok {

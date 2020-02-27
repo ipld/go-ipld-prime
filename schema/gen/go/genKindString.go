@@ -72,12 +72,12 @@ func (gk generateKindString) EmitNativeBuilder(w io.Writer) {
 func (gk generateKindString) EmitNativeMaybe(w io.Writer) {
 	doTemplate(`
 		type Maybe{{ .Type | mungeTypeNodeIdent }} struct {
-			Maybe typed.Maybe
+			Maybe schema.Maybe
 			Value {{ .Type | mungeTypeNodeIdent }}
 		}
 
 		func (m Maybe{{ .Type | mungeTypeNodeIdent }}) Must() {{ .Type | mungeTypeNodeIdent }} {
-			if m.Maybe != typed.Maybe_Value {
+			if m.Maybe != schema.Maybe_Value {
 				panic("unbox of a maybe rejected")
 			}
 			return m.Value

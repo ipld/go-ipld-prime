@@ -53,4 +53,4 @@ type Config struct {
 // In a more complex example, a program using `bind` over native Go types
 // could decide what kind of native type is expected, and return a
 // `bind.NodeBuilder` for that specific concrete native type.
-type NodeBuilderChooser func(ipld.Link, ipld.LinkContext) ipld.NodeBuilder
+type NodeBuilderChooser func(ipld.Link, ipld.LinkContext) (ipld.NodeBuilder, error)

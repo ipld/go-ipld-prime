@@ -13,7 +13,7 @@ import (
 	"github.com/ipld/go-ipld-prime/encoding"
 	"github.com/ipld/go-ipld-prime/fluent"
 	ipldfree "github.com/ipld/go-ipld-prime/impl/free"
-	"github.com/ipld/go-ipld-prime/impl/typed"
+	"github.com/ipld/go-ipld-prime/schema"
 )
 
 // TokenSourceBucket acts like a TokenSource by yielding tokens from a pre-made
@@ -65,7 +65,7 @@ func TestScalarUnmarshal(t *testing.T) {
 func TestGeneratedStructs(t *testing.T) {
 	t.Run("struct with map repr", func(t *testing.T) {
 		var (
-			v0, v1, v2, v3, v4 typed.Node
+			v0, v1, v2, v3, v4 schema.TypedNode
 		)
 		t.Run("type-level build and read", func(t *testing.T) {
 			t.Run("all fields set", func(t *testing.T) {
@@ -76,7 +76,7 @@ func TestGeneratedStructs(t *testing.T) {
 				mb.Insert(ipldfree.String("f3"), plz(String__NodeBuilder().CreateString("c")))
 				mb.Insert(ipldfree.String("f4"), plz(String__NodeBuilder().CreateString("d")))
 				n, err := mb.Build()
-				v0 = n.(typed.Node)
+				v0 = n.(schema.TypedNode)
 
 				Wish(t, err, ShouldEqual, nil)
 				Wish(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
@@ -93,7 +93,7 @@ func TestGeneratedStructs(t *testing.T) {
 				mb.Insert(ipldfree.String("f3"), plz(String__NodeBuilder().CreateString("c")))
 				mb.Insert(ipldfree.String("f4"), ipld.Null)
 				n, err := mb.Build()
-				v1 = n.(typed.Node)
+				v1 = n.(schema.TypedNode)
 
 				Wish(t, err, ShouldEqual, nil)
 				Wish(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
@@ -111,7 +111,7 @@ func TestGeneratedStructs(t *testing.T) {
 				mb.Insert(ipldfree.String("f3"), ipld.Null)
 				mb.Insert(ipldfree.String("f4"), plz(String__NodeBuilder().CreateString("d")))
 				n, err := mb.Build()
-				v2 = n.(typed.Node)
+				v2 = n.(schema.TypedNode)
 
 				Wish(t, err, ShouldEqual, nil)
 				Wish(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
@@ -128,7 +128,7 @@ func TestGeneratedStructs(t *testing.T) {
 				mb.Insert(ipldfree.String("f3"), plz(String__NodeBuilder().CreateString("c")))
 				mb.Insert(ipldfree.String("f4"), plz(String__NodeBuilder().CreateString("d")))
 				n, err := mb.Build()
-				v3 = n.(typed.Node)
+				v3 = n.(schema.TypedNode)
 
 				Wish(t, err, ShouldEqual, nil)
 				Wish(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
@@ -145,7 +145,7 @@ func TestGeneratedStructs(t *testing.T) {
 				mb.Insert(ipldfree.String("f2"), plz(String__NodeBuilder().CreateString("b")))
 				mb.Insert(ipldfree.String("f4"), plz(String__NodeBuilder().CreateString("d")))
 				n, err := mb.Build()
-				v4 = n.(typed.Node)
+				v4 = n.(schema.TypedNode)
 
 				Wish(t, err, ShouldEqual, nil)
 				Wish(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
