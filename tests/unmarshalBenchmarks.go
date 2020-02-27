@@ -8,6 +8,7 @@ import (
 
 	ipld "github.com/ipld/go-ipld-prime"
 	"github.com/ipld/go-ipld-prime/encoding"
+	"github.com/ipld/go-ipld-prime/tests/corpus"
 )
 
 // All of the marshalling and unmarshalling benchmark specs use JSON.
@@ -21,12 +22,15 @@ import (
 
 var sink interface{}
 
-func SpecBenchmarkUnmarshalMapStrInt_3n(b *testing.B, nb ipld.NodeBuilder) {
+func BenchmarkSpec_Unmarshal_Map3StrInt(b *testing.B, nb ipld.NodeBuilder) {
+	msg := corpus.Map3StrInt()
+	b.ResetTimer()
+
 	var err error
 	for i := 0; i < b.N; i++ {
-		sink, err = encoding.Unmarshal(nb, refmtjson.NewDecoder(bytes.NewBufferString(`{"whee":1,"woot":2,"waga":3}`)))
+		sink, err = encoding.Unmarshal(nb, refmtjson.NewDecoder(bytes.NewBufferString(msg)))
 	}
 	if err != nil {
-		panic(err)
+		b.Fatalf("unmarshal errored: %s", err)
 	}
 }

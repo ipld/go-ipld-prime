@@ -86,12 +86,12 @@ func BenchmarkMap25nGenericMapIterationSimpleKeys(b *testing.B) {
 
 // benchmarks covering encoding -->
 
-func BenchmarkUnmarshalMapStrInt_3n(b *testing.B) {
-	tests.SpecBenchmarkUnmarshalMapStrInt_3n(b, NodeBuilder())
+func BenchmarkSpec_Marshal_Map3StrInt(b *testing.B) {
+	tests.BenchmarkSpec_Marshal_Map3StrInt(b, NodeBuilder())
 }
 
-func BenchmarkMarshalMapStrInt_3n(b *testing.B) {
-	tests.SpecBenchmarkMarshalMapStrInt_3n(b, NodeBuilder())
+func BenchmarkSpec_Unmarshal_Map3StrInt(b *testing.B) {
+	tests.BenchmarkSpec_Unmarshal_Map3StrInt(b, NodeBuilder())
 }
 
 // benchmarks covering traversal -->
