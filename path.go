@@ -43,7 +43,7 @@ import (
 // in serialized data in the wild where an empty string is used as the key:
 // it is important we be able to correctly describe and address this!)
 //
-// A string of "/" is a valid PathSegment.
+// A string containing "/" (or even being simply "/"!) is a valid PathSegment.
 // (As with empty strings, this is unfortunate (in particular, because it
 // very much doesn't match up well with expectations popularized by UNIX-like
 // filesystems); but, as with empty strings, maps which contain such a key
