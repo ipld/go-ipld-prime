@@ -2,6 +2,7 @@ package tests
 
 import (
 	"bytes"
+	"fmt"
 	"testing"
 
 	refmtjson "github.com/polydawn/refmt/json"
@@ -21,16 +22,47 @@ import (
 //    and unmarshalling, thus having a back-of-the-envelope baseline to compare.
 
 func BenchmarkSpec_Marshal_Map3StrInt(b *testing.B, nb ipld.NodeBuilder) {
-	node := mustNodeFromJsonString(nb, corpus.Map3StrInt())
+	msg := corpus.Map3StrInt()
+	node := mustNodeFromJsonString(nb, msg)
 	b.ResetTimer()
 
+	var buf bytes.Buffer
 	var err error
 	for i := 0; i < b.N; i++ {
-		var buf bytes.Buffer
+		buf = bytes.Buffer{}
 		err = encoding.Marshal(node, refmtjson.NewEncoder(&buf, refmtjson.EncodeOptions{}))
-		sink = buf
 	}
+
+	b.StopTimer()
 	if err != nil {
 		b.Fatalf("marshal errored: %s", err)
+	}
+	if buf.String() != msg {
+		b.Fatalf("marshal didn't match corpus")
+	}
+}
+
+func BenchmarkSpec_Marshal_MapNStrMap3StrInt(b *testing.B, nb ipld.NodeBuilder) {
+	for _, n := range []int{0, 1, 2, 4, 8, 16, 32} {
+		b.Run(fmt.Sprintf("n=%d", n), func(b *testing.B) {
+			msg := corpus.MapNStrMap3StrInt(n)
+			node := mustNodeFromJsonString(nb, msg)
+			b.ResetTimer()
+
+			var buf bytes.Buffer
+			var err error
+			for i := 0; i < b.N; i++ {
+				buf = bytes.Buffer{}
+				err = encoding.Marshal(node, refmtjson.NewEncoder(&buf, refmtjson.EncodeOptions{}))
+			}
+
+			b.StopTimer()
+			if err != nil {
+				b.Fatalf("marshal errored: %s", err)
+			}
+			if buf.String() != msg {
+				b.Fatalf("marshal didn't match corpus")
+			}
+		})
 	}
 }

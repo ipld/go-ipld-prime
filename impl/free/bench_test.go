@@ -89,9 +89,15 @@ func BenchmarkMap25nGenericMapIterationSimpleKeys(b *testing.B) {
 func BenchmarkSpec_Marshal_Map3StrInt(b *testing.B) {
 	tests.BenchmarkSpec_Marshal_Map3StrInt(b, NodeBuilder())
 }
+func BenchmarkSpec_Marshal_MapNStrMap3StrInt(b *testing.B) {
+	tests.BenchmarkSpec_Marshal_MapNStrMap3StrInt(b, NodeBuilder())
+}
 
 func BenchmarkSpec_Unmarshal_Map3StrInt(b *testing.B) {
 	tests.BenchmarkSpec_Unmarshal_Map3StrInt(b, NodeBuilder())
+}
+func BenchmarkSpec_Unmarshal_MapNStrMap3StrInt(b *testing.B) {
+	tests.BenchmarkSpec_Unmarshal_MapNStrMap3StrInt(b, NodeBuilder())
 }
 
 // benchmarks covering traversal -->
