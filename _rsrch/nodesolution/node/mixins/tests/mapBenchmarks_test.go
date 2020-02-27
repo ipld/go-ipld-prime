@@ -28,6 +28,15 @@ func BenchmarkMapStrInt_3n_BaselineJsonUnmarshalMapSimpleKeys(b *testing.B) {
 	}
 }
 
+func BenchmarkMapStrInt_3n_BaselineJsonMarshalMapSimpleKeys(b *testing.B) {
+	var x = map[string]int{"whee": 1, "woot": 2, "waga": 3}
+	for i := 0; i < b.N; i++ {
+		bs, err := json.Marshal(x)
+		must.NotError(err)
+		sink = bs
+	}
+}
+
 var sink_s string
 var sink_i int
 
