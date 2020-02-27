@@ -67,11 +67,16 @@ func (prog Progress) Focus(n ipld.Node, p ipld.Path, fn VisitFn) error {
 				LinkNode:   n,
 				ParentNode: prev,
 			}
+			// Pick what in-memory format we will build.
+			nb, err := prog.Cfg.LinkNodeBuilderChooser(lnk, lnkCtx)
+			if err != nil {
+				return fmt.Errorf("error traversing node at %q: could not load link %q: %s", p.Truncate(i+1), lnk, err)
+			}
 			// Load link!
 			next, err := lnk.Load(
 				prog.Cfg.Ctx,
 				lnkCtx,
-				prog.Cfg.LinkNodeBuilderChooser(lnk, lnkCtx),
+				nb,
 				prog.Cfg.LinkLoader,
 			)
 			if err != nil {

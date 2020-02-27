@@ -124,6 +124,9 @@ func TestWalkMatching(t *testing.T) {
 				LinkLoader: func(lnk ipld.Link, _ ipld.LinkContext) (io.Reader, error) {
 					return bytes.NewBuffer(storage[lnk]), nil
 				},
+				LinkNodeBuilderChooser: func(_ ipld.Link, _ ipld.LinkContext) (ipld.NodeBuilder, error) {
+					return ipldfree.NodeBuilder(), nil
+				},
 			},
 		}.WalkMatching(middleMapNode, s, func(prog traversal.Progress, n ipld.Node) error {
 			switch order {
@@ -167,6 +170,9 @@ func TestWalkMatching(t *testing.T) {
 				LinkLoader: func(lnk ipld.Link, _ ipld.LinkContext) (io.Reader, error) {
 					return bytes.NewBuffer(storage[lnk]), nil
 				},
+				LinkNodeBuilderChooser: func(_ ipld.Link, _ ipld.LinkContext) (ipld.NodeBuilder, error) {
+					return ipldfree.NodeBuilder(), nil
+				},
 			},
 		}.WalkMatching(middleListNode, s, func(prog traversal.Progress, n ipld.Node) error {
 			switch order {
@@ -208,6 +214,9 @@ func TestWalkMatching(t *testing.T) {
 			Cfg: &traversal.Config{
 				LinkLoader: func(lnk ipld.Link, _ ipld.LinkContext) (io.Reader, error) {
 					return bytes.NewBuffer(storage[lnk]), nil
+				},
+				LinkNodeBuilderChooser: func(_ ipld.Link, _ ipld.LinkContext) (ipld.NodeBuilder, error) {
+					return ipldfree.NodeBuilder(), nil
 				},
 			},
 		}.WalkMatching(rootNode, s, func(prog traversal.Progress, n ipld.Node) error {

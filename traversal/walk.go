@@ -127,11 +127,16 @@ func (prog Progress) loadLink(v ipld.Node, parent ipld.Node) (ipld.Node, error) 
 		LinkNode:   v,
 		ParentNode: parent,
 	}
+	// Pick what in-memory format we will build.
+	nb, err := prog.Cfg.LinkNodeBuilderChooser(lnk, lnkCtx)
+	if err != nil {
+		return nil, fmt.Errorf("error traversing node at %q: could not load link %q: %s", prog.Path, lnk, err)
+	}
 	// Load link!
 	v, err = lnk.Load(
 		prog.Cfg.Ctx,
 		lnkCtx,
-		prog.Cfg.LinkNodeBuilderChooser(lnk, lnkCtx),
+		nb,
 		prog.Cfg.LinkLoader,
 	)
 	if err != nil {
