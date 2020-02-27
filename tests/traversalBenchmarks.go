@@ -8,25 +8,19 @@ import (
 
 	ipld "github.com/ipld/go-ipld-prime"
 	"github.com/ipld/go-ipld-prime/encoding"
+	"github.com/ipld/go-ipld-prime/must"
 	"github.com/ipld/go-ipld-prime/tests/corpus"
 	"github.com/ipld/go-ipld-prime/traversal"
 	"github.com/ipld/go-ipld-prime/traversal/selector"
 )
 
 func SpecBenchmarkWalkMapStrInt_3n(b *testing.B, nb ipld.NodeBuilder) {
-	n, err := encoding.Unmarshal(nb, refmtjson.NewDecoder(bytes.NewBufferString(corpus.Map3StrInt())))
-	if err != nil {
-		panic(err)
-	}
-	seldefn, err := encoding.Unmarshal(nb, refmtjson.NewDecoder(bytes.NewBufferString(`{"a":{">":{".":{}}}}`)))
-	if err != nil {
-		panic(err)
-	}
+	n := must.Node(encoding.Unmarshal(nb, refmtjson.NewDecoder(bytes.NewBufferString(corpus.Map3StrInt()))))
+	seldefn := must.Node(encoding.Unmarshal(nb, refmtjson.NewDecoder(bytes.NewBufferString(`{"a":{">":{".":{}}}}`))))
 	sel, err := selector.ParseSelector(seldefn)
-	if err != nil {
-		panic(err)
-	}
+	must.NotError(err)
 	b.ResetTimer()
+
 	var visitCountSanityCheck int
 	for i := 0; i < b.N; i++ {
 		visitCountSanityCheck = 0
