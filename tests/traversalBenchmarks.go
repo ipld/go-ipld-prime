@@ -27,9 +27,15 @@ func SpecBenchmarkWalkMapStrInt_3n(b *testing.B, nb ipld.NodeBuilder) {
 		panic(err)
 	}
 	b.ResetTimer()
+	var visitCountSanityCheck int
 	for i := 0; i < b.N; i++ {
+		visitCountSanityCheck = 0
 		traversal.WalkMatching(n, sel, func(tp traversal.Progress, n ipld.Node) error {
-			return nil // no need to do anything here; just care about exercising the walk internals.
+			visitCountSanityCheck++ // this sanity check is sufficiently cheap to be worth it
+			return nil              // no need to do anything here; just care about exercising the walk internals.
 		})
+	}
+	if visitCountSanityCheck != 3 {
+		b.Fatalf("visitCountSanityCheck should be 3, got %d", visitCountSanityCheck)
 	}
 }
