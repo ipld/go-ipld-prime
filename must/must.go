@@ -60,3 +60,10 @@ func TypedNode(n ipld.Node, e error) typed.Node {
 	}
 	return n.(typed.Node)
 }
+
+// must.True panics if the given bool is false.
+func True(v bool) {
+	if !v {
+		panic("must.True")
+	}
+}
