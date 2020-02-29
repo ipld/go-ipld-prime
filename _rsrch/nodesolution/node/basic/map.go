@@ -20,6 +20,9 @@ var (
 type plainMap struct {
 	m map[string]ipld.Node // string key -- even if a runtime schema wrapper is using us for storage, we must have a comparable type here, and string is all we know.
 	t []plainMap__Entry    // table for fast iteration, order keeping, and yielding pointers to enable alloc/conv amortization.
+
+	itr     plainMap_MapIterator // iterator for amortized use: first call to MapIterator is "free" because it returns this.
+	itrUsed bool
 }
 
 type plainMap__Entry struct {
@@ -54,7 +57,12 @@ func (n *plainMap) LookupSegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupString(seg.String())
 }
 func (n *plainMap) MapIterator() ipld.MapIterator {
-	return &plainMap_MapIterator{n, 0}
+	if n.itrUsed {
+		return &plainMap_MapIterator{n, 0}
+	}
+	n.itrUsed = true
+	n.itr.n = n
+	return &n.itr
 }
 func (plainMap) ListIterator() ipld.ListIterator {
 	return nil

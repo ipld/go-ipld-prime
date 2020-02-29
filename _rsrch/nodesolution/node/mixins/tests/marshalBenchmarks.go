@@ -66,12 +66,16 @@ func BenchmarkSpec_Marshal_MapNStrMap3StrInt(b *testing.B, ns ipld.NodeStyle) {
 	for _, n := range []int{0, 1, 2, 4, 8, 16, 32} {
 		b.Run(fmt.Sprintf("n=%d", n), func(b *testing.B) {
 			msg := corpus.MapNStrMap3StrInt(n)
-			node := mustNodeFromJsonString(ns.NewBuilder(), msg)
 			b.ResetTimer()
 
 			var buf bytes.Buffer
 			var err error
 			for i := 0; i < b.N; i++ {
+				b.StopTimer()
+				// Create fresh node every time so single-use amortizers like iterators show up in the score.
+				node := mustNodeFromJsonString(ns.NewBuilder(), msg)
+				b.StartTimer()
+
 				buf = bytes.Buffer{}
 				err = codec.Marshal(node, refmtjson.NewEncoder(&buf, refmtjson.EncodeOptions{}))
 			}
