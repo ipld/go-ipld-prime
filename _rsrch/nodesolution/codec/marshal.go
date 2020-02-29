@@ -21,18 +21,22 @@ import (
 // implementation and need to be encoded in a schemafree way.)
 func Marshal(n ipld.Node, sink shared.TokenSink) error {
 	var tk tok.Token
+	return marshal(n, &tk, sink)
+}
+
+func marshal(n ipld.Node, tk *tok.Token, sink shared.TokenSink) error {
 	switch n.ReprKind() {
 	case ipld.ReprKind_Invalid:
 		return fmt.Errorf("cannot traverse a node that is undefined")
 	case ipld.ReprKind_Null:
 		tk.Type = tok.TNull
-		_, err := sink.Step(&tk)
+		_, err := sink.Step(tk)
 		return err
 	case ipld.ReprKind_Map:
 		// Emit start of map.
 		tk.Type = tok.TMapOpen
 		tk.Length = n.Length()
-		if _, err := sink.Step(&tk); err != nil {
+		if _, err := sink.Step(tk); err != nil {
 			return err
 		}
 		// Emit map contents (and recurse).
@@ -46,23 +50,23 @@ func Marshal(n ipld.Node, sink shared.TokenSink) error {
 			if err != nil {
 				return err
 			}
-			if _, err := sink.Step(&tk); err != nil {
+			if _, err := sink.Step(tk); err != nil {
 				return err
 			}
-			if err := Marshal(v, sink); err != nil {
+			if err := marshal(v, tk, sink); err != nil {
 				return err
 			}
 		}
 		// Emit map close.
 		tk.Type = tok.TMapClose
-		_, err := sink.Step(&tk)
+		_, err := sink.Step(tk)
 		return err
 	case ipld.ReprKind_List:
 		// Emit start of list.
 		tk.Type = tok.TArrOpen
 		l := n.Length()
 		tk.Length = l
-		if _, err := sink.Step(&tk); err != nil {
+		if _, err := sink.Step(tk); err != nil {
 			return err
 		}
 		// Emit list contents (and recurse).
@@ -71,13 +75,13 @@ func Marshal(n ipld.Node, sink shared.TokenSink) error {
 			if err != nil {
 				return err
 			}
-			if err := Marshal(v, sink); err != nil {
+			if err := marshal(v, tk, sink); err != nil {
 				return err
 			}
 		}
 		// Emit list close.
 		tk.Type = tok.TArrClose
-		_, err := sink.Step(&tk)
+		_, err := sink.Step(tk)
 		return err
 	case ipld.ReprKind_Bool:
 		v, err := n.AsBool()
@@ -86,7 +90,7 @@ func Marshal(n ipld.Node, sink shared.TokenSink) error {
 		}
 		tk.Type = tok.TBool
 		tk.Bool = v
-		_, err = sink.Step(&tk)
+		_, err = sink.Step(tk)
 		return err
 	case ipld.ReprKind_Int:
 		v, err := n.AsInt()
@@ -95,7 +99,7 @@ func Marshal(n ipld.Node, sink shared.TokenSink) error {
 		}
 		tk.Type = tok.TInt
 		tk.Int = int64(v)
-		_, err = sink.Step(&tk)
+		_, err = sink.Step(tk)
 		return err
 	case ipld.ReprKind_Float:
 		v, err := n.AsFloat()
@@ -104,7 +108,7 @@ func Marshal(n ipld.Node, sink shared.TokenSink) error {
 		}
 		tk.Type = tok.TFloat64
 		tk.Float64 = v
-		_, err = sink.Step(&tk)
+		_, err = sink.Step(tk)
 		return err
 	case ipld.ReprKind_String:
 		v, err := n.AsString()
@@ -113,7 +117,7 @@ func Marshal(n ipld.Node, sink shared.TokenSink) error {
 		}
 		tk.Type = tok.TString
 		tk.Str = v
-		_, err = sink.Step(&tk)
+		_, err = sink.Step(tk)
 		return err
 	case ipld.ReprKind_Bytes:
 		v, err := n.AsBytes()
@@ -122,7 +126,7 @@ func Marshal(n ipld.Node, sink shared.TokenSink) error {
 		}
 		tk.Type = tok.TBytes
 		tk.Bytes = v
-		_, err = sink.Step(&tk)
+		_, err = sink.Step(tk)
 		return err
 	case ipld.ReprKind_Link:
 		return fmt.Errorf("link emission not supported by this codec without a schema!  (maybe you want dag-cbor or dag-json)")
