@@ -1,5 +1,13 @@
 package fluent
 
+type Error struct {
+	Err error
+}
+
+func (e Error) Error() string {
+	return e.Err.Error()
+}
+
 // Recover invokes a function within a panic-recovering context, and returns
 // any raised fluent.Error values; any other values are re-panicked.
 //

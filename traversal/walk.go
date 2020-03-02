@@ -128,12 +128,13 @@ func (prog Progress) loadLink(v ipld.Node, parent ipld.Node) (ipld.Node, error) 
 		ParentNode: parent,
 	}
 	// Pick what in-memory format we will build.
-	nb, err := prog.Cfg.LinkNodeBuilderChooser(lnk, lnkCtx)
+	ns, err := prog.Cfg.LinkTargetNodeStyleChooser(lnk, lnkCtx)
 	if err != nil {
 		return nil, fmt.Errorf("error traversing node at %q: could not load link %q: %s", prog.Path, lnk, err)
 	}
+	nb := ns.NewBuilder()
 	// Load link!
-	v, err = lnk.Load(
+	err = lnk.Load(
 		prog.Cfg.Ctx,
 		lnkCtx,
 		nb,
@@ -142,7 +143,7 @@ func (prog Progress) loadLink(v ipld.Node, parent ipld.Node) (ipld.Node, error) 
 	if err != nil {
 		return nil, fmt.Errorf("error traversing node at %q: could not load link %q: %s", prog.Path, lnk, err)
 	}
-	return v, nil
+	return nb.Build(), nil
 }
 
 func (prog Progress) WalkTransforming(n ipld.Node, s selector.Selector, fn TransformFn) (ipld.Node, error) {

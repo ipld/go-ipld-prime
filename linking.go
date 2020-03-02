@@ -31,12 +31,16 @@ import (
 // using it purely for json/cbor via the encoding packages and
 // foregoing the advanced traversal features around transparent link loading.
 type Link interface {
-	// Load returns a Node identified by the Link.
+	// Load consumes serial data from a Loader and funnels the parsed
+	// data into a NodeAssembler.
 	//
 	// The provided Loader function is used to get a reader for the raw
 	// serialized content; the Link contains an understanding of how to
-	// select a decoder (and hasher for verification, etc).
-	Load(context.Context, LinkContext, NodeBuilder, Loader) (Node, error)
+	// select a decoder (and hasher for verification, etc); and the
+	// NodeAssembler accumulates the final results (which you can
+	// presumably access from elsewhere; Load is designed not to know
+	// about this).
+	Load(context.Context, LinkContext, NodeAssembler, Loader) error
 
 	// LinkBuilder returns a handle to any parameters of the Link which
 	// are needed to create a new Link of the same style but with new content.

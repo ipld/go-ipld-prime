@@ -67,3 +67,25 @@ func True(v bool) {
 		panic("must.True")
 	}
 }
+
+// must.String unboxes the given Node via AsString,
+// panicking in the case that the Node isn't of string kind,
+// and otherwise returning the bare native string.
+func String(n ipld.Node) string {
+	if v, err := n.AsString(); err != nil {
+		panic(err)
+	} else {
+		return v
+	}
+}
+
+// must.Int unboxes the given Node via AsInt,
+// panicking in the case that the Node isn't of int kind,
+// and otherwise returning the bare native int.
+func Int(n ipld.Node) int {
+	if v, err := n.AsInt(); err != nil {
+		panic(err)
+	} else {
+		return v
+	}
+}

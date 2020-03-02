@@ -1,4 +1,4 @@
-package fluent
+package fluent_test
 
 import (
 	"testing"
@@ -6,25 +6,29 @@ import (
 	. "github.com/warpfork/go-wish"
 
 	ipld "github.com/ipld/go-ipld-prime"
-	ipldfree "github.com/ipld/go-ipld-prime/impl/free"
+	"github.com/ipld/go-ipld-prime/fluent"
+	basicnode "github.com/ipld/go-ipld-prime/node/basic"
 )
 
 func TestRecover(t *testing.T) {
-	t.Run("simple lookup error should capture", func(t *testing.T) {
+	t.Run("simple build error should capture", func(t *testing.T) {
 		Wish(t,
-			Recover(func() {
-				WrapNode(&ipldfree.Node{}).LookupIndex(0).AsString()
+			fluent.Recover(func() {
+				fluent.MustBuild(basicnode.Style__String{}, func(fna fluent.NodeAssembler) {
+					fna.AssignInt(9)
+				})
 				t.Fatal("should not be reached")
 			}),
 			ShouldEqual,
-			Error{ipld.ErrWrongKind{MethodName: "LookupIndex", AppropriateKind: ipld.ReprKindSet_JustList, ActualKind: ipld.ReprKind_Invalid}},
+			fluent.Error{ipld.ErrWrongKind{TypeName: "string", MethodName: "AssignInt", AppropriateKind: ipld.ReprKindSet_JustInt, ActualKind: ipld.ReprKind_String}},
 		)
 	})
-	t.Run("correct lookup should return nil", func(t *testing.T) {
+	t.Run("correct build should return nil", func(t *testing.T) {
 		Wish(t,
-			Recover(func() {
-				n, _ := ipldfree.NodeBuilder().CreateString("foo")
-				WrapNode(n).AsString()
+			fluent.Recover(func() {
+				fluent.MustBuild(basicnode.Style__String{}, func(fna fluent.NodeAssembler) {
+					fna.AssignString("fine")
+				})
 			}),
 			ShouldEqual,
 			nil,
@@ -34,7 +38,7 @@ func TestRecover(t *testing.T) {
 		Wish(t,
 			func() (r interface{}) {
 				defer func() { r = recover() }()
-				Recover(func() {
+				fluent.Recover(func() {
 					panic("fuqawds")
 				})
 				return

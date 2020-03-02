@@ -13,10 +13,11 @@ import (
 
 	cid "github.com/ipfs/go-cid"
 	ipld "github.com/ipld/go-ipld-prime"
-	_ "github.com/ipld/go-ipld-prime/encoding/dagjson"
+
+	_ "github.com/ipld/go-ipld-prime/codec/dagjson"
 	"github.com/ipld/go-ipld-prime/fluent"
-	ipldfree "github.com/ipld/go-ipld-prime/impl/free"
 	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
+	basicnode "github.com/ipld/go-ipld-prime/node/basic"
 	"github.com/ipld/go-ipld-prime/traversal"
 )
 
@@ -24,29 +25,28 @@ import (
 // We assume all the builders and serialization must Just Work here.
 
 var storage = make(map[ipld.Link][]byte)
-var fnb = fluent.WrapNodeBuilder(ipldfree.NodeBuilder()) // just for the other fixture building
 var (
-	leafAlpha, leafAlphaLnk         = encode(fnb.CreateString("alpha"))
-	leafBeta, leafBetaLnk           = encode(fnb.CreateString("beta"))
-	middleMapNode, middleMapNodeLnk = encode(fnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-		mb.Insert(knb.CreateString("foo"), vnb.CreateBool(true))
-		mb.Insert(knb.CreateString("bar"), vnb.CreateBool(false))
-		mb.Insert(knb.CreateString("nested"), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-			mb.Insert(knb.CreateString("alink"), vnb.CreateLink(leafAlphaLnk))
-			mb.Insert(knb.CreateString("nonlink"), vnb.CreateString("zoo"))
-		}))
+	leafAlpha, leafAlphaLnk         = encode(basicnode.NewString("alpha"))
+	leafBeta, leafBetaLnk           = encode(basicnode.NewString("beta"))
+	middleMapNode, middleMapNodeLnk = encode(fluent.MustBuildMap(basicnode.Style__Map{}, 3, func(na fluent.MapNodeAssembler) {
+		na.AssembleDirectly("foo").AssignBool(true)
+		na.AssembleDirectly("bar").AssignBool(false)
+		na.AssembleDirectly("nested").CreateMap(2, func(na fluent.MapNodeAssembler) {
+			na.AssembleDirectly("alink").AssignLink(leafAlphaLnk)
+			na.AssembleDirectly("nonlink").AssignString("zoo")
+		})
 	}))
-	middleListNode, middleListNodeLnk = encode(fnb.CreateList(func(lb fluent.ListBuilder, vnb fluent.NodeBuilder) {
-		lb.Append(vnb.CreateLink(leafAlphaLnk))
-		lb.Append(vnb.CreateLink(leafAlphaLnk))
-		lb.Append(vnb.CreateLink(leafBetaLnk))
-		lb.Append(vnb.CreateLink(leafAlphaLnk))
+	middleListNode, middleListNodeLnk = encode(fluent.MustBuildList(basicnode.Style__List{}, 4, func(na fluent.ListNodeAssembler) {
+		na.AssembleValue().AssignLink(leafAlphaLnk)
+		na.AssembleValue().AssignLink(leafAlphaLnk)
+		na.AssembleValue().AssignLink(leafBetaLnk)
+		na.AssembleValue().AssignLink(leafAlphaLnk)
 	}))
-	rootNode, rootNodeLnk = encode(fnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-		mb.Insert(knb.CreateString("plain"), vnb.CreateString("olde string"))
-		mb.Insert(knb.CreateString("linkedString"), vnb.CreateLink(leafAlphaLnk))
-		mb.Insert(knb.CreateString("linkedMap"), vnb.CreateLink(middleMapNodeLnk))
-		mb.Insert(knb.CreateString("linkedList"), vnb.CreateLink(middleListNodeLnk))
+	rootNode, rootNodeLnk = encode(fluent.MustBuildMap(basicnode.Style__Map{}, 4, func(na fluent.MapNodeAssembler) {
+		na.AssembleDirectly("plain").AssignString("olde string")
+		na.AssembleDirectly("linkedString").AssignLink(leafAlphaLnk)
+		na.AssembleDirectly("linkedMap").AssignLink(middleMapNodeLnk)
+		na.AssembleDirectly("linkedList").AssignLink(middleListNodeLnk)
 	}))
 )
 
@@ -98,8 +98,8 @@ func init() {
 // covers Focus used on one already-loaded Node; no link-loading exercised.
 func TestFocusSingleTree(t *testing.T) {
 	t.Run("empty path on scalar node returns start node", func(t *testing.T) {
-		err := traversal.Focus(fnb.CreateString("x"), ipld.Path{}, func(prog traversal.Progress, n ipld.Node) error {
-			Wish(t, n, ShouldEqual, fnb.CreateString("x"))
+		err := traversal.Focus(basicnode.NewString("x"), ipld.Path{}, func(prog traversal.Progress, n ipld.Node) error {
+			Wish(t, n, ShouldEqual, basicnode.NewString("x"))
 			Wish(t, prog.Path.String(), ShouldEqual, ipld.Path{}.String())
 			return nil
 		})
@@ -107,7 +107,7 @@ func TestFocusSingleTree(t *testing.T) {
 	})
 	t.Run("one step path on map node works", func(t *testing.T) {
 		err := traversal.Focus(middleMapNode, ipld.ParsePath("foo"), func(prog traversal.Progress, n ipld.Node) error {
-			Wish(t, n, ShouldEqual, fnb.CreateBool(true))
+			Wish(t, n, ShouldEqual, basicnode.NewBool(true))
 			Wish(t, prog.Path, ShouldEqual, ipld.ParsePath("foo"))
 			return nil
 		})
@@ -115,7 +115,7 @@ func TestFocusSingleTree(t *testing.T) {
 	})
 	t.Run("two step path on map node works", func(t *testing.T) {
 		err := traversal.Focus(middleMapNode, ipld.ParsePath("nested/nonlink"), func(prog traversal.Progress, n ipld.Node) error {
-			Wish(t, n, ShouldEqual, fnb.CreateString("zoo"))
+			Wish(t, n, ShouldEqual, basicnode.NewString("zoo"))
 			Wish(t, prog.Path, ShouldEqual, ipld.ParsePath("nested/nonlink"))
 			return nil
 		})
@@ -130,14 +130,14 @@ func TestFocusWithLinkLoading(t *testing.T) {
 				t.Errorf("should not be reached; no way to load this path")
 				return nil
 			})
-			Wish(t, err.Error(), ShouldEqual, `error traversing node at "nested/alink": could not load link "`+leafAlphaLnk.String()+`": no LinkNodeBuilderChooser configured`)
+			Wish(t, err.Error(), ShouldEqual, `error traversing node at "nested/alink": could not load link "`+leafAlphaLnk.String()+`": no LinkTargetNodeStyleChooser configured`)
 		})
 		t.Run("mid-path link should fail", func(t *testing.T) {
 			err := traversal.Focus(rootNode, ipld.ParsePath("linkedMap/nested/nonlink"), func(prog traversal.Progress, n ipld.Node) error {
 				t.Errorf("should not be reached; no way to load this path")
 				return nil
 			})
-			Wish(t, err.Error(), ShouldEqual, `error traversing node at "linkedMap": could not load link "`+middleMapNodeLnk.String()+`": no LinkNodeBuilderChooser configured`)
+			Wish(t, err.Error(), ShouldEqual, `error traversing node at "linkedMap": could not load link "`+middleMapNodeLnk.String()+`": no LinkTargetNodeStyleChooser configured`)
 		})
 	})
 	t.Run("link traversal with loader should work", func(t *testing.T) {
@@ -146,12 +146,12 @@ func TestFocusWithLinkLoading(t *testing.T) {
 				LinkLoader: func(lnk ipld.Link, _ ipld.LinkContext) (io.Reader, error) {
 					return bytes.NewBuffer(storage[lnk]), nil
 				},
-				LinkNodeBuilderChooser: func(_ ipld.Link, _ ipld.LinkContext) (ipld.NodeBuilder, error) {
-					return ipldfree.NodeBuilder(), nil
+				LinkTargetNodeStyleChooser: func(_ ipld.Link, _ ipld.LinkContext) (ipld.NodeStyle, error) {
+					return basicnode.Style__Any{}, nil
 				},
 			},
 		}.Focus(rootNode, ipld.ParsePath("linkedMap/nested/nonlink"), func(prog traversal.Progress, n ipld.Node) error {
-			Wish(t, n, ShouldEqual, fnb.CreateString("zoo"))
+			Wish(t, n, ShouldEqual, basicnode.NewString("zoo"))
 			Wish(t, prog.Path, ShouldEqual, ipld.ParsePath("linkedMap/nested/nonlink"))
 			Wish(t, prog.LastBlock.Link, ShouldEqual, middleMapNodeLnk)
 			Wish(t, prog.LastBlock.Path, ShouldEqual, ipld.ParsePath("linkedMap"))

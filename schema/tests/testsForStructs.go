@@ -6,7 +6,6 @@ import (
 	. "github.com/warpfork/go-wish"
 
 	ipld "github.com/ipld/go-ipld-prime"
-	ipldfree "github.com/ipld/go-ipld-prime/impl/free"
 	"github.com/ipld/go-ipld-prime/schema"
 )
 
@@ -21,24 +20,27 @@ func TestFoo(t *testing.T, newNb func(typ schema.Type) ipld.NodeBuilder) {
 		},
 		schema.StructRepresentation_Map{},
 	)
-	nbString := newNb(tString)
-	nbStroct := newNb(tStroct)
 	var n1 ipld.Node
 	t.Run("test building", func(t *testing.T) {
 		t.Run("all values valid", func(t *testing.T) {
-			mb, err := nbStroct.CreateMap()
+			nb := newNb(tStroct)
+			ma, err := nb.BeginMap(3)
 			Wish(t, err, ShouldEqual, nil)
-			// Set 'f1' to a valid, typed string.
-			v, _ := nbString.CreateString("asdf")
-			Wish(t, mb.Insert(ipldfree.String("f1"), v), ShouldEqual, nil)
+			// Set 'f1' to a valid string.
+			va, err := ma.AssembleDirectly("f1")
+			Wish(t, err, ShouldEqual, nil)
+			Wish(t, va.AssignString("asdf"), ShouldEqual, nil)
 			// Skip setting 'f2' -- it's optional.
 			// Set 'f3' to null.  Nulls aren't typed.
-			Wish(t, mb.Insert(ipldfree.String("f3"), ipld.Null), ShouldEqual, nil)
-			// Set 'f4' to a valid, typed string.
-			v, _ = nbString.CreateString("qwer")
-			Wish(t, mb.Insert(ipldfree.String("f4"), v), ShouldEqual, nil)
-			n1, err = mb.Build()
+			va, err = ma.AssembleDirectly("f3")
 			Wish(t, err, ShouldEqual, nil)
+			Wish(t, va.AssignNull(), ShouldEqual, nil)
+			// Set 'f4' to a valid string.
+			va, err = ma.AssembleDirectly("f4")
+			Wish(t, err, ShouldEqual, nil)
+			Wish(t, va.AssignString("qwer"), ShouldEqual, nil)
+			Wish(t, ma.Finish(), ShouldEqual, nil)
+			n1 = nb.Build()
 		})
 		t.Run("wrong type rejected", func(t *testing.T) {
 
@@ -57,7 +59,9 @@ func TestFoo(t *testing.T, newNb func(typ schema.Type) ipld.NodeBuilder) {
 		t.Run("regular fields", func(t *testing.T) {
 			v, err := n1.LookupString("f1")
 			Wish(t, err, ShouldEqual, nil)
-			v2, _ := nbString.CreateString("asdf")
+			nb := newNb(tString)
+			Require(t, nb.AssignString("asdf"), ShouldEqual, nil)
+			v2 := nb.Build()
 			Wish(t, v, ShouldEqual, v2)
 		})
 		t.Run("optional absent fields", func(t *testing.T) {

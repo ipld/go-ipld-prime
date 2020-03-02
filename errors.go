@@ -10,6 +10,8 @@ import (
 //
 // For example, calling AsString on a map will return ErrWrongKind.
 // Calling Lookup on an int will similarly return ErrWrongKind.
+//
+// REVIEW: would it improve clarity to call this 'ErrWrongKindForNodeStyle'?
 type ErrWrongKind struct {
 	// TypeName may optionally indicate the named type of a node the function
 	// was called on (if the node was typed!), or, may be the empty string.
@@ -56,21 +58,12 @@ func (e ErrNotExists) Error() string {
 	return fmt.Sprintf("key not found: %q", e.Segment)
 }
 
-// ErrInvalidKey may be returned from lookup functions on the Node interface
-// when a key is invalid.
-//
-// Common examples of this are when `Lookup(Node)` is used with a non-string Node;
-// typed nodes also introduce other reasons a key may be invalid.
-type ErrInvalidKey struct {
-	Reason string
-
-	// Perhaps schema.ErrNoSuchField could be folded into this?
-	// Perhaps Reason could be replaced by an enum of "NoSuchField"|"NotAString"|"ConstraintRejected"?
-	// Might be hard to get rid of the freetext field entirely -- constraints may be nontrivial to describe.
+type ErrRepeatedMapKey struct {
+	Key Node
 }
 
-func (e ErrInvalidKey) Error() string {
-	return fmt.Sprintf("invalid key: %s", e.Reason)
+func (e ErrRepeatedMapKey) Error() string {
+	return fmt.Sprintf("cannot repeat map key (\"%s\")", e.Key)
 }
 
 // ErrIteratorOverread is returned when calling 'Next' on a MapIterator or
@@ -80,3 +73,10 @@ type ErrIteratorOverread struct{}
 func (e ErrIteratorOverread) Error() string {
 	return "iterator overread"
 }
+
+type ErrCannotBeNull struct{} // Review: arguably either ErrInvalidKindForNodeStyle.
+
+type ErrInvalidStructKey struct{}         // only possible for typed nodes -- specifically, struct types.
+type ErrMissingRequiredField struct{}     // only possible for typed nodes -- specifically, struct types.
+type ErrListOverrun struct{}              // only possible for typed nodes -- specifically, struct types with list (aka tuple) representations.
+type ErrInvalidUnionDiscriminant struct{} // only possible for typed nodes -- specifically, union types.

@@ -10,8 +10,10 @@ type MulticodecDecodeTable map[uint64]MulticodecDecoder
 
 type MulticodecEncodeTable map[uint64]MulticodecEncoder
 
-// MulticodecDecoder builds an ipld.Node by unmarshalling bytes and applying
-// an ipld.NodeBuilder.
+// MulticodecDecoder builds an ipld.Node by unmarshalling bytes and funnelling
+// the data tree into an ipld.NodeAssembler.  The resulting Node is not
+// returned; typically you call this function with an ipld.NodeBuilder,
+// and you can extract the result from there.
 //
 // MulticodecDecoder are used by registering them in a MulticodecDecoderTable,
 // which makes them available to be used internally by cidlink.Link.Load.
@@ -22,7 +24,7 @@ type MulticodecEncodeTable map[uint64]MulticodecEncoder
 // that know how to fastpath their work *if* we're doing a cbor decode;
 // if possible, detect and use that; if not, fall back to general generic
 // NodeBuilder usage.
-type MulticodecDecoder func(ipld.NodeBuilder, io.Reader) (ipld.Node, error)
+type MulticodecDecoder func(ipld.NodeAssembler, io.Reader) error
 
 // MulticodecEncoder marshals and ipld.Node into bytes and sends them to
 // an io.Writer.

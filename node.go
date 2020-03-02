@@ -104,8 +104,7 @@ type Node interface {
 
 	// MapIterator returns an iterator which yields key-value pairs
 	// traversing the node.
-	// If the node kind is anything other than a map, the iterator will
-	// yield error values.
+	// If the node kind is anything other than a map, nil will be returned.
 	//
 	// The iterator will yield every entry in the map; that is, it
 	// can be expected that itr.Next will be called node.Length times
@@ -114,8 +113,7 @@ type Node interface {
 
 	// ListIterator returns an iterator which yields key-value pairs
 	// traversing the node.
-	// If the node kind is anything other than a list, the iterator will
-	// yield error values.
+	// If the node kind is anything other than a list, nil will be returned.
 	//
 	// The iterator will yield every entry in the list; that is, it
 	// can be expected that itr.Next will be called node.Length times
@@ -142,49 +140,63 @@ type Node interface {
 	AsBytes() ([]byte, error)
 	AsLink() (Link, error)
 
-	// NodeBuilder returns a NodeBuilder which can be used to build
-	// new nodes of the same implementation type as this one.
+	// Style returns a NodeStyle which can describe some properties of this node's implementation,
+	// and also be used to get a NodeBuilder,
+	// which can be use to create new nodes with the same implementation as this one.
 	//
-	// For map and list nodes, the NodeBuilder's append-oriented methods
-	// will work using this node's values as a base.
-	// If this is a typed node, the NodeBuilder will carry the same
-	// typesystem constraints as this Node.
+	// For typed nodes, the NodeStyle will also implement schema.Type.
 	//
-	// (This feature is used by the traversal package, especially in
-	// e.g. traversal.Transform, for doing tree updates while keeping the
-	// existing implementation preferences and doing as many operations
-	// in copy-on-write fashions as possible.)
+	// For Advanced Data Layouts, the NodeStyle will encapsulate any additional
+	// parameters and configuration of the ADL, and will also (usually)
+	// implement NodeStyleSupportingAmend.
 	//
-	// ---
+	// Calling this method should not cause an allocation.
+	Style() NodeStyle
+}
+
+// NodeStyle describes a node implementation (all Node have a NodeStyle),
+// and a NodeStyle can always be used to get a NodeBuilder.
+//
+// A NodeStyle may also provide other information about implementation;
+// such information is specific to this library ("style" isn't a concept
+// you'll find in the IPLD Specifications), and is usually provided through
+// feature-detection interfaces (for example, see NodeStyleSupportingAmend).
+//
+// Generic algorithms for working with IPLD Nodes make use of NodeStyle
+// to get builders for new nodes when creating data, and can also use the
+// feature-detection interfaces to help decide what kind of operations
+// will be optimal to use on a given node implementation.
+//
+// Note that NodeStyle is not the same as schema.Type.
+// NodeStyle is a (golang-specific!) way to reflect upon the implementation
+// and in-memory layout of some IPLD data.
+// schema.Type is information about how a group of nodes is related in a schema
+// (if they have one!) and the rules that the type mandates the node must follow.
+// (Every node must have a style; but schema types are an optional feature.)
+type NodeStyle interface {
+	// NewBuilder returns a NodeBuilder that can be used to create a new Node.
 	//
-	// More specifically, the contract of a NodeBuilder returned by this method
-	// is that it should be able to "replace" this node with a new one of
-	// similar properties.
-	// E.g., for a string, the builder must be able to build a new string.
-	// For a map, the builder must be able to build a new map.
-	// For a *struct* (when using typed nodes), the builder must be able to
-	// build new structs of the name type.
-	// Note that the promise doesn't extend further: there's no requirement
-	// that the builder be able to build maps if this node's kind is "string"
-	// (you can see why this lack-of-contract is important when considering
-	// typed nodes: if this node has a struct type, then should the builder
-	// be able to build other structs of different types?  Of course not;
-	// there'd be no way to define which other types to build!).
-	// For nulls, this means the builder doesn't have to do much at all!
-	//
-	// (Some Nodes may return a NodeBuilder that can be used for much more
-	// than replacing their own kind: for example, Node implementations from
-	// the ipldfree package tend to return a NodeBuilder than can build any
-	// other ipldfree.Node (e.g. even the builder obtained from a string node
-	// will be able to build maps).  This is not required by the contract;
-	// such packages only do so out of internal implementation convenience.)
-	//
-	// This "able to replace" behavior also has a specific application regarding
-	// nodes implementing Advanced Data Layouts: it means that the NodeBuilder
-	// returned by this method must produce a new Node using that same ADL.
-	// For example, if a Node is a map implemented by some sort of HAMT, its
-	// NodeBuilder must also produce a new HAMT.
-	NodeBuilder() NodeBuilder
+	// Note that calling NewBuilder often performs an allocation
+	// (while in contrast, getting a NodeStyle typically does not!) --
+	// this may be consequential when writing high performance code.
+	NewBuilder() NodeBuilder
+}
+
+// NodeStyleSupportingAmend is a feature-detection interface that can be
+// used on a NodeStyle to see if it's possible to build new nodes of this style
+// while sharing some internal data in a copy-on-write way.
+//
+// For example, Nodes using an Advanced Data Layout will typically
+// support this behavior, and since ADLs are often used for handling large
+// volumes of data, detecting and using this feature can result in significant
+// performance savings.
+type NodeStyleSupportingAmend interface {
+	AmendingBuilder(base Node) NodeBuilder
+	// FUTURE: probably also needs a `AmendingWithout(base Node, filter func(k,v) bool) NodeBuilder`, or similar.
+	//  ("deletion" based APIs are also possible but both more complicated in interfaces added, and prone to accidentally quadratic usage.)
+	// FUTURE: there should be some stdlib `Copy` (?) methods that automatically look for this feature, and fallback if absent.
+	//  Might include a wide range of point `Transform`, etc, methods.
+	// FUTURE: consider putting this (and others like it) in a `feature` package, if there begin to be enough of them and docs get crowded.
 }
 
 // MapIterator is an interface for traversing map nodes.

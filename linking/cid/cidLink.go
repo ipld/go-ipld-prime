@@ -19,19 +19,19 @@ type Link struct {
 	cid.Cid
 }
 
-func (lnk Link) Load(ctx context.Context, lnkCtx ipld.LinkContext, nb ipld.NodeBuilder, loader ipld.Loader) (ipld.Node, error) {
+func (lnk Link) Load(ctx context.Context, lnkCtx ipld.LinkContext, na ipld.NodeAssembler, loader ipld.Loader) error {
 	// Open the byte reader.
 	r, err := loader(lnk, lnkCtx)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	// Tee into hash checking and unmarshalling.
 	mcDecoder, exists := multicodecDecodeTable[lnk.Prefix().Codec]
 	if !exists {
-		return nil, fmt.Errorf("no decoder registered for multicodec %d", lnk.Prefix().Codec)
+		return fmt.Errorf("no decoder registered for multicodec %d", lnk.Prefix().Codec)
 	}
 	var hasher bytes.Buffer // multihash only exports bulk use, which is... really inefficient and should be fixed.
-	node, decodeErr := mcDecoder(nb, io.TeeReader(r, &hasher))
+	decodeErr := mcDecoder(na, io.TeeReader(r, &hasher))
 	// Error checking order here is tricky.
 	//  If decoding errored out, we should still run the reader to the end, to check the hash.
 	//  (We still don't implement this by running the hash to the end first, because that would increase the high-water memory requirement.)
@@ -40,20 +40,20 @@ func (lnk Link) Load(ctx context.Context, lnkCtx ipld.LinkContext, nb ipld.NodeB
 	if decodeErr != nil {
 		_, err := io.Copy(&hasher, r)
 		if err != nil {
-			return nil, err
+			return err
 		}
 	}
 	cid, err := lnk.Prefix().Sum(hasher.Bytes())
 	if err != nil {
-		return nil, err
+		return err
 	}
 	if cid != lnk.Cid {
-		return nil, fmt.Errorf("hash mismatch!  %q (actual) != %q (expected)", cid, lnk.Cid)
+		return fmt.Errorf("hash mismatch!  %q (actual) != %q (expected)", cid, lnk.Cid)
 	}
 	if decodeErr != nil {
-		return nil, decodeErr
+		return decodeErr
 	}
-	return node, nil
+	return nil
 }
 func (lnk Link) LinkBuilder() ipld.LinkBuilder {
 	return LinkBuilder{lnk.Cid.Prefix()}

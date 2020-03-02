@@ -8,9 +8,9 @@ import (
 	. "github.com/warpfork/go-wish"
 
 	ipld "github.com/ipld/go-ipld-prime"
-	_ "github.com/ipld/go-ipld-prime/encoding/dagjson"
+	_ "github.com/ipld/go-ipld-prime/codec/dagjson"
 	"github.com/ipld/go-ipld-prime/fluent"
-	ipldfree "github.com/ipld/go-ipld-prime/impl/free"
+	basicnode "github.com/ipld/go-ipld-prime/node/basic"
 	"github.com/ipld/go-ipld-prime/traversal"
 	"github.com/ipld/go-ipld-prime/traversal/selector"
 	"github.com/ipld/go-ipld-prime/traversal/selector/builder"
@@ -18,27 +18,27 @@ import (
 
 /* Remember, we've got the following fixtures in scope:
 var (
-	leafAlpha, leafAlphaLnk         = encode(fnb.CreateString("alpha"))
-	leafBeta, leafBetaLnk           = encode(fnb.CreateString("beta"))
-	middleMapNode, middleMapNodeLnk = encode(fnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-		mb.Insert(knb.CreateString("foo"), vnb.CreateBool(true))
-		mb.Insert(knb.CreateString("bar"), vnb.CreateBool(false))
-		mb.Insert(knb.CreateString("nested"), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-			mb.Insert(knb.CreateString("alink"), vnb.CreateLink(leafAlphaLnk))
-			mb.Insert(knb.CreateString("nonlink"), vnb.CreateString("zoo"))
-		}))
+	leafAlpha, leafAlphaLnk         = encode(basicnode.NewString("alpha"))
+	leafBeta, leafBetaLnk           = encode(basicnode.NewString("beta"))
+	middleMapNode, middleMapNodeLnk = encode(fluent.MustBuildMap(basicnode.Style__Map{}, 3, func(na fluent.MapNodeAssembler) {
+		na.AssembleDirectly("foo").AssignBool(true)
+		na.AssembleDirectly("bar").AssignBool(false)
+		na.AssembleDirectly("nested").CreateMap(2, func(na fluent.MapNodeAssembler) {
+			na.AssembleDirectly("alink").AssignLink(leafAlphaLnk)
+			na.AssembleDirectly("nonlink").AssignString("zoo")
+		})
 	}))
-	middleListNode, middleListNodeLnk = encode(fnb.CreateList(func(lb fluent.ListBuilder, vnb fluent.NodeBuilder) {
-		lb.Append(vnb.CreateLink(leafAlphaLnk))
-		lb.Append(vnb.CreateLink(leafAlphaLnk))
-		lb.Append(vnb.CreateLink(leafBetaLnk))
-		lb.Append(vnb.CreateLink(leafAlphaLnk))
+	middleListNode, middleListNodeLnk = encode(fluent.MustBuildList(basicnode.Style__List{}, 4, func(na fluent.ListNodeAssembler) {
+		na.AssembleValue().AssignLink(leafAlphaLnk)
+		na.AssembleValue().AssignLink(leafAlphaLnk)
+		na.AssembleValue().AssignLink(leafBetaLnk)
+		na.AssembleValue().AssignLink(leafAlphaLnk)
 	}))
-	rootNode, rootNodeLnk = encode(fnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-		mb.Insert(knb.CreateString("plain"), vnb.CreateString("olde string"))
-		mb.Insert(knb.CreateString("linkedString"), vnb.CreateLink(leafAlphaLnk))
-		mb.Insert(knb.CreateString("linkedMap"), vnb.CreateLink(middleMapNodeLnk))
-		mb.Insert(knb.CreateString("linkedList"), vnb.CreateLink(middleListNodeLnk))
+	rootNode, rootNodeLnk = encode(fluent.MustBuildMap(basicnode.Style__Map{}, 4, func(na fluent.MapNodeAssembler) {
+		na.AssembleDirectly("plain").AssignString("olde string")
+		na.AssembleDirectly("linkedString").AssignLink(leafAlphaLnk)
+		na.AssembleDirectly("linkedMap").AssignLink(middleMapNodeLnk)
+		na.AssembleDirectly("linkedList").AssignLink(middleListNodeLnk)
 	}))
 )
 */
@@ -47,10 +47,10 @@ var (
 // all cases here use one already-loaded Node; no link-loading exercised.
 
 func TestWalkMatching(t *testing.T) {
-	ssb := builder.NewSelectorSpecBuilder(ipldfree.NodeBuilder())
+	ssb := builder.NewSelectorSpecBuilder(basicnode.Style__Any{})
 	t.Run("traverse selecting true should visit the root", func(t *testing.T) {
-		err := traversal.WalkMatching(fnb.CreateString("x"), selector.Matcher{}, func(prog traversal.Progress, n ipld.Node) error {
-			Wish(t, n, ShouldEqual, fnb.CreateString("x"))
+		err := traversal.WalkMatching(basicnode.NewString("x"), selector.Matcher{}, func(prog traversal.Progress, n ipld.Node) error {
+			Wish(t, n, ShouldEqual, basicnode.NewString("x"))
 			Wish(t, prog.Path.String(), ShouldEqual, ipld.Path{}.String())
 			return nil
 		})
@@ -75,10 +75,10 @@ func TestWalkMatching(t *testing.T) {
 		err = traversal.WalkMatching(middleMapNode, s, func(prog traversal.Progress, n ipld.Node) error {
 			switch order {
 			case 0:
-				Wish(t, n, ShouldEqual, fnb.CreateBool(true))
+				Wish(t, n, ShouldEqual, basicnode.NewBool(true))
 				Wish(t, prog.Path.String(), ShouldEqual, "foo")
 			case 1:
-				Wish(t, n, ShouldEqual, fnb.CreateBool(false))
+				Wish(t, n, ShouldEqual, basicnode.NewBool(false))
 				Wish(t, prog.Path.String(), ShouldEqual, "bar")
 			}
 			order++
@@ -100,10 +100,10 @@ func TestWalkMatching(t *testing.T) {
 		err = traversal.WalkMatching(middleMapNode, s, func(prog traversal.Progress, n ipld.Node) error {
 			switch order {
 			case 0:
-				Wish(t, n, ShouldEqual, fnb.CreateBool(true))
+				Wish(t, n, ShouldEqual, basicnode.NewBool(true))
 				Wish(t, prog.Path.String(), ShouldEqual, "foo")
 			case 1:
-				Wish(t, n, ShouldEqual, fnb.CreateString("zoo"))
+				Wish(t, n, ShouldEqual, basicnode.NewString("zoo"))
 				Wish(t, prog.Path.String(), ShouldEqual, "nested/nonlink")
 			}
 			order++
@@ -124,8 +124,8 @@ func TestWalkMatching(t *testing.T) {
 				LinkLoader: func(lnk ipld.Link, _ ipld.LinkContext) (io.Reader, error) {
 					return bytes.NewBuffer(storage[lnk]), nil
 				},
-				LinkNodeBuilderChooser: func(_ ipld.Link, _ ipld.LinkContext) (ipld.NodeBuilder, error) {
-					return ipldfree.NodeBuilder(), nil
+				LinkTargetNodeStyleChooser: func(_ ipld.Link, _ ipld.LinkContext) (ipld.NodeStyle, error) {
+					return basicnode.Style__Any{}, nil
 				},
 			},
 		}.WalkMatching(middleMapNode, s, func(prog traversal.Progress, n ipld.Node) error {
@@ -134,25 +134,25 @@ func TestWalkMatching(t *testing.T) {
 				Wish(t, n, ShouldEqual, middleMapNode)
 				Wish(t, prog.Path.String(), ShouldEqual, "")
 			case 1:
-				Wish(t, n, ShouldEqual, fnb.CreateBool(true))
+				Wish(t, n, ShouldEqual, basicnode.NewBool(true))
 				Wish(t, prog.Path.String(), ShouldEqual, "foo")
 			case 2:
-				Wish(t, n, ShouldEqual, fnb.CreateBool(false))
+				Wish(t, n, ShouldEqual, basicnode.NewBool(false))
 				Wish(t, prog.Path.String(), ShouldEqual, "bar")
 			case 3:
-				Wish(t, n, ShouldEqual, fnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-					mb.Insert(knb.CreateString("alink"), vnb.CreateLink(leafAlphaLnk))
-					mb.Insert(knb.CreateString("nonlink"), vnb.CreateString("zoo"))
+				Wish(t, n, ShouldEqual, fluent.MustBuildMap(basicnode.Style__Map{}, 2, func(na fluent.MapNodeAssembler) {
+					na.AssembleDirectly("alink").AssignLink(leafAlphaLnk)
+					na.AssembleDirectly("nonlink").AssignString("zoo")
 				}))
 				Wish(t, prog.Path.String(), ShouldEqual, "nested")
 			case 4:
-				Wish(t, n, ShouldEqual, fnb.CreateString("alpha"))
+				Wish(t, n, ShouldEqual, basicnode.NewString("alpha"))
 				Wish(t, prog.Path.String(), ShouldEqual, "nested/alink")
 				Wish(t, prog.LastBlock.Path.String(), ShouldEqual, "nested/alink")
 				Wish(t, prog.LastBlock.Link.String(), ShouldEqual, leafAlphaLnk.String())
 
 			case 5:
-				Wish(t, n, ShouldEqual, fnb.CreateString("zoo"))
+				Wish(t, n, ShouldEqual, basicnode.NewString("zoo"))
 				Wish(t, prog.Path.String(), ShouldEqual, "nested/nonlink")
 			}
 			order++
@@ -170,24 +170,24 @@ func TestWalkMatching(t *testing.T) {
 				LinkLoader: func(lnk ipld.Link, _ ipld.LinkContext) (io.Reader, error) {
 					return bytes.NewBuffer(storage[lnk]), nil
 				},
-				LinkNodeBuilderChooser: func(_ ipld.Link, _ ipld.LinkContext) (ipld.NodeBuilder, error) {
-					return ipldfree.NodeBuilder(), nil
+				LinkTargetNodeStyleChooser: func(_ ipld.Link, _ ipld.LinkContext) (ipld.NodeStyle, error) {
+					return basicnode.Style__Any{}, nil
 				},
 			},
 		}.WalkMatching(middleListNode, s, func(prog traversal.Progress, n ipld.Node) error {
 			switch order {
 			case 0:
-				Wish(t, n, ShouldEqual, fnb.CreateString("alpha"))
+				Wish(t, n, ShouldEqual, basicnode.NewString("alpha"))
 				Wish(t, prog.Path.String(), ShouldEqual, "0")
 				Wish(t, prog.LastBlock.Path.String(), ShouldEqual, "0")
 				Wish(t, prog.LastBlock.Link.String(), ShouldEqual, leafAlphaLnk.String())
 			case 1:
-				Wish(t, n, ShouldEqual, fnb.CreateString("alpha"))
+				Wish(t, n, ShouldEqual, basicnode.NewString("alpha"))
 				Wish(t, prog.Path.String(), ShouldEqual, "1")
 				Wish(t, prog.LastBlock.Path.String(), ShouldEqual, "1")
 				Wish(t, prog.LastBlock.Link.String(), ShouldEqual, leafAlphaLnk.String())
 			case 2:
-				Wish(t, n, ShouldEqual, fnb.CreateString("beta"))
+				Wish(t, n, ShouldEqual, basicnode.NewString("beta"))
 				Wish(t, prog.Path.String(), ShouldEqual, "2")
 				Wish(t, prog.LastBlock.Path.String(), ShouldEqual, "2")
 				Wish(t, prog.LastBlock.Link.String(), ShouldEqual, leafBetaLnk.String())
@@ -215,44 +215,44 @@ func TestWalkMatching(t *testing.T) {
 				LinkLoader: func(lnk ipld.Link, _ ipld.LinkContext) (io.Reader, error) {
 					return bytes.NewBuffer(storage[lnk]), nil
 				},
-				LinkNodeBuilderChooser: func(_ ipld.Link, _ ipld.LinkContext) (ipld.NodeBuilder, error) {
-					return ipldfree.NodeBuilder(), nil
+				LinkTargetNodeStyleChooser: func(_ ipld.Link, _ ipld.LinkContext) (ipld.NodeStyle, error) {
+					return basicnode.Style__Any{}, nil
 				},
 			},
 		}.WalkMatching(rootNode, s, func(prog traversal.Progress, n ipld.Node) error {
 			switch order {
 			case 0:
-				Wish(t, n, ShouldEqual, fnb.CreateString("alpha"))
+				Wish(t, n, ShouldEqual, basicnode.NewString("alpha"))
 				Wish(t, prog.Path.String(), ShouldEqual, "linkedList/0")
 				Wish(t, prog.LastBlock.Path.String(), ShouldEqual, "linkedList/0")
 				Wish(t, prog.LastBlock.Link.String(), ShouldEqual, leafAlphaLnk.String())
 			case 1:
-				Wish(t, n, ShouldEqual, fnb.CreateString("alpha"))
+				Wish(t, n, ShouldEqual, basicnode.NewString("alpha"))
 				Wish(t, prog.Path.String(), ShouldEqual, "linkedList/1")
 				Wish(t, prog.LastBlock.Path.String(), ShouldEqual, "linkedList/1")
 				Wish(t, prog.LastBlock.Link.String(), ShouldEqual, leafAlphaLnk.String())
 			case 2:
-				Wish(t, n, ShouldEqual, fnb.CreateString("beta"))
+				Wish(t, n, ShouldEqual, basicnode.NewString("beta"))
 				Wish(t, prog.Path.String(), ShouldEqual, "linkedList/2")
 				Wish(t, prog.LastBlock.Path.String(), ShouldEqual, "linkedList/2")
 				Wish(t, prog.LastBlock.Link.String(), ShouldEqual, leafBetaLnk.String())
 			case 3:
-				Wish(t, n, ShouldEqual, fnb.CreateString("alpha"))
+				Wish(t, n, ShouldEqual, basicnode.NewString("alpha"))
 				Wish(t, prog.Path.String(), ShouldEqual, "linkedList/3")
 				Wish(t, prog.LastBlock.Path.String(), ShouldEqual, "linkedList/3")
 				Wish(t, prog.LastBlock.Link.String(), ShouldEqual, leafAlphaLnk.String())
 			case 4:
-				Wish(t, n, ShouldEqual, fnb.CreateBool(true))
+				Wish(t, n, ShouldEqual, basicnode.NewBool(true))
 				Wish(t, prog.Path.String(), ShouldEqual, "linkedMap/foo")
 				Wish(t, prog.LastBlock.Path.String(), ShouldEqual, "linkedMap")
 				Wish(t, prog.LastBlock.Link.String(), ShouldEqual, middleMapNodeLnk.String())
 			case 5:
-				Wish(t, n, ShouldEqual, fnb.CreateString("zoo"))
+				Wish(t, n, ShouldEqual, basicnode.NewString("zoo"))
 				Wish(t, prog.Path.String(), ShouldEqual, "linkedMap/nested/nonlink")
 				Wish(t, prog.LastBlock.Path.String(), ShouldEqual, "linkedMap")
 				Wish(t, prog.LastBlock.Link.String(), ShouldEqual, middleMapNodeLnk.String())
 			case 6:
-				Wish(t, n, ShouldEqual, fnb.CreateString("alpha"))
+				Wish(t, n, ShouldEqual, basicnode.NewString("alpha"))
 				Wish(t, prog.Path.String(), ShouldEqual, "linkedMap/nested/alink")
 				Wish(t, prog.LastBlock.Path.String(), ShouldEqual, "linkedMap/nested/alink")
 				Wish(t, prog.LastBlock.Link.String(), ShouldEqual, leafAlphaLnk.String())
