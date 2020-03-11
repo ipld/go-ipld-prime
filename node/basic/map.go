@@ -428,7 +428,7 @@ type plainMap__ValueAssemblerList struct {
 func (la *plainMap__ValueAssemblerList) AssembleValue() ipld.NodeAssembler {
 	return la.ca.AssembleValue()
 }
-func (plainMap__ValueAssemblerList) ValueStyle() ipld.NodeStyle {
+func (plainMap__ValueAssemblerList) ValueStyle(_ int) ipld.NodeStyle {
 	return Style__Any{}
 }
 

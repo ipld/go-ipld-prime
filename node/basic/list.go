@@ -217,7 +217,7 @@ func (la *plainList__Assembler) Finish() error {
 	// validators could run and report errors promptly, if this type had any.
 	return nil
 }
-func (plainList__Assembler) ValueStyle() ipld.NodeStyle {
+func (plainList__Assembler) ValueStyle(_ int) ipld.NodeStyle {
 	return Style__Any{}
 }
 
@@ -320,7 +320,7 @@ type plainList__ValueAssemblerList struct {
 func (la *plainList__ValueAssemblerList) AssembleValue() ipld.NodeAssembler {
 	return la.ca.AssembleValue()
 }
-func (plainList__ValueAssemblerList) ValueStyle() ipld.NodeStyle {
+func (plainList__ValueAssemblerList) ValueStyle(_ int) ipld.NodeStyle {
 	return Style__Any{}
 }
 

@@ -101,10 +101,18 @@ type ListAssembler interface {
 	// You often don't need this (because you should be able to
 	// just feed data and check errors), but it's here.
 	//
-	// In contrast to the `MapAssembler.ValueStyle(key)` function,
-	// to determine the ValueStyle for lists we need no parameters;
-	// lists always contain one value type (even if it's "any").
-	ValueStyle() NodeStyle
+	// ValueStyle, much like the matching method on the MapAssembler interface,
+	// requires a parameter specifying the index in the list in order to say
+	// what NodeStyle will be acceptable as a value at that position.
+	// For many lists (and *all* lists which operate exclusively at the Data Model level),
+	// this will return the same NodeStyle regardless of the value of 'idx';
+	// the only time this value will vary is when operating with a Schema,
+	// and handling the representation NodeAssembler for a struct type with
+	// a representation of a list kind.
+	// If you know you are operating in a situation that won't have varying
+	// NodeStyles, it is acceptable to call `ValueStyle(0)` and use the
+	// resulting NodeStyle for all reasoning.
+	ValueStyle(idx int) NodeStyle
 }
 
 type NodeBuilder interface {

@@ -72,7 +72,7 @@ type MapAssembler interface {
 type ListAssembler interface {
 	AssembleValue() NodeAssembler
 
-	ValueStyle() ipld.NodeStyle
+	ValueStyle(idx int) ipld.NodeStyle
 }
 
 type nodeAssembler struct {
@@ -174,6 +174,6 @@ type listNodeAssembler struct {
 func (fla *listNodeAssembler) AssembleValue() NodeAssembler {
 	return &nodeAssembler{fla.la.AssembleValue()}
 }
-func (fla *listNodeAssembler) ValueStyle() ipld.NodeStyle {
-	return fla.la.ValueStyle()
+func (fla *listNodeAssembler) ValueStyle(idx int) ipld.NodeStyle {
+	return fla.la.ValueStyle(idx)
 }
