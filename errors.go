@@ -10,8 +10,6 @@ import (
 //
 // For example, calling AsString on a map will return ErrWrongKind.
 // Calling Lookup on an int will similarly return ErrWrongKind.
-//
-// REVIEW: would it improve clarity to call this 'ErrWrongKindForNodeStyle'?
 type ErrWrongKind struct {
 	// TypeName may optionally indicate the named type of a node the function
 	// was called on (if the node was typed!), or, may be the empty string.
