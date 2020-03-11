@@ -20,8 +20,8 @@ func TestParseExploreRecursive(t *testing.T) {
 		Wish(t, err, ShouldEqual, fmt.Errorf("selector spec parse rejected: selector body must be a map"))
 	})
 	t.Run("parsing map node without sequence field should error", func(t *testing.T) {
-		sn := fluent.MustBuildMap(basicnode.Style__Map{}, 1, func(na fluent.MapNodeAssembler) {
-			na.AssembleDirectly(SelectorKey_Limit).CreateMap(1, func(na fluent.MapNodeAssembler) {
+		sn := fluent.MustBuildMap(basicnode.Style__Map{}, 1, func(na fluent.MapAssembler) {
+			na.AssembleDirectly(SelectorKey_Limit).CreateMap(1, func(na fluent.MapAssembler) {
 				na.AssembleDirectly(SelectorKey_LimitDepth).AssignInt(2)
 			})
 		})
@@ -29,64 +29,64 @@ func TestParseExploreRecursive(t *testing.T) {
 		Wish(t, err, ShouldEqual, fmt.Errorf("selector spec parse rejected: sequence field must be present in ExploreRecursive selector"))
 	})
 	t.Run("parsing map node without limit field should error", func(t *testing.T) {
-		sn := fluent.MustBuildMap(basicnode.Style__Map{}, 1, func(na fluent.MapNodeAssembler) {
-			na.AssembleDirectly(SelectorKey_Sequence).CreateMap(1, func(na fluent.MapNodeAssembler) {
-				na.AssembleDirectly(SelectorKey_Matcher).CreateMap(0, func(na fluent.MapNodeAssembler) {})
+		sn := fluent.MustBuildMap(basicnode.Style__Map{}, 1, func(na fluent.MapAssembler) {
+			na.AssembleDirectly(SelectorKey_Sequence).CreateMap(1, func(na fluent.MapAssembler) {
+				na.AssembleDirectly(SelectorKey_Matcher).CreateMap(0, func(na fluent.MapAssembler) {})
 			})
 		})
 		_, err := ParseContext{}.ParseExploreRecursive(sn)
 		Wish(t, err, ShouldEqual, fmt.Errorf("selector spec parse rejected: limit field must be present in ExploreRecursive selector"))
 	})
 	t.Run("parsing map node with limit field that is not a map should fail", func(t *testing.T) {
-		sn := fluent.MustBuildMap(basicnode.Style__Map{}, 2, func(na fluent.MapNodeAssembler) {
+		sn := fluent.MustBuildMap(basicnode.Style__Map{}, 2, func(na fluent.MapAssembler) {
 			na.AssembleDirectly(SelectorKey_Limit).AssignString("cheese")
-			na.AssembleDirectly(SelectorKey_Sequence).CreateMap(1, func(na fluent.MapNodeAssembler) {
-				na.AssembleDirectly(SelectorKey_Matcher).CreateMap(0, func(na fluent.MapNodeAssembler) {})
+			na.AssembleDirectly(SelectorKey_Sequence).CreateMap(1, func(na fluent.MapAssembler) {
+				na.AssembleDirectly(SelectorKey_Matcher).CreateMap(0, func(na fluent.MapAssembler) {})
 			})
 		})
 		_, err := ParseContext{}.ParseExploreRecursive(sn)
 		Wish(t, err, ShouldEqual, fmt.Errorf("selector spec parse rejected: limit in ExploreRecursive is a keyed union and thus must be a map"))
 	})
 	t.Run("parsing map node with limit field that is not a single entry map should fail", func(t *testing.T) {
-		sn := fluent.MustBuildMap(basicnode.Style__Map{}, 2, func(na fluent.MapNodeAssembler) {
-			na.AssembleDirectly(SelectorKey_Limit).CreateMap(2, func(na fluent.MapNodeAssembler) {
+		sn := fluent.MustBuildMap(basicnode.Style__Map{}, 2, func(na fluent.MapAssembler) {
+			na.AssembleDirectly(SelectorKey_Limit).CreateMap(2, func(na fluent.MapAssembler) {
 				na.AssembleDirectly(SelectorKey_LimitDepth).AssignInt(2)
-				na.AssembleDirectly(SelectorKey_LimitNone).CreateMap(0, func(na fluent.MapNodeAssembler) {})
+				na.AssembleDirectly(SelectorKey_LimitNone).CreateMap(0, func(na fluent.MapAssembler) {})
 			})
-			na.AssembleDirectly(SelectorKey_Sequence).CreateMap(1, func(na fluent.MapNodeAssembler) {
-				na.AssembleDirectly(SelectorKey_Matcher).CreateMap(0, func(na fluent.MapNodeAssembler) {})
+			na.AssembleDirectly(SelectorKey_Sequence).CreateMap(1, func(na fluent.MapAssembler) {
+				na.AssembleDirectly(SelectorKey_Matcher).CreateMap(0, func(na fluent.MapAssembler) {})
 			})
 		})
 		_, err := ParseContext{}.ParseExploreRecursive(sn)
 		Wish(t, err, ShouldEqual, fmt.Errorf("selector spec parse rejected: limit in ExploreRecursive is a keyed union and thus must be a single-entry map"))
 	})
 	t.Run("parsing map node with limit field that does not have a known key should fail", func(t *testing.T) {
-		sn := fluent.MustBuildMap(basicnode.Style__Map{}, 2, func(na fluent.MapNodeAssembler) {
-			na.AssembleDirectly(SelectorKey_Limit).CreateMap(1, func(na fluent.MapNodeAssembler) {
+		sn := fluent.MustBuildMap(basicnode.Style__Map{}, 2, func(na fluent.MapAssembler) {
+			na.AssembleDirectly(SelectorKey_Limit).CreateMap(1, func(na fluent.MapAssembler) {
 				na.AssembleDirectly("applesauce").AssignInt(2)
 			})
-			na.AssembleDirectly(SelectorKey_Sequence).CreateMap(1, func(na fluent.MapNodeAssembler) {
-				na.AssembleDirectly(SelectorKey_Matcher).CreateMap(0, func(na fluent.MapNodeAssembler) {})
+			na.AssembleDirectly(SelectorKey_Sequence).CreateMap(1, func(na fluent.MapAssembler) {
+				na.AssembleDirectly(SelectorKey_Matcher).CreateMap(0, func(na fluent.MapAssembler) {})
 			})
 		})
 		_, err := ParseContext{}.ParseExploreRecursive(sn)
 		Wish(t, err, ShouldEqual, fmt.Errorf("selector spec parse rejected: \"applesauce\" is not a known member of the limit union in ExploreRecursive"))
 	})
 	t.Run("parsing map node with limit field of type depth that is not an int should error", func(t *testing.T) {
-		sn := fluent.MustBuildMap(basicnode.Style__Map{}, 2, func(na fluent.MapNodeAssembler) {
-			na.AssembleDirectly(SelectorKey_Limit).CreateMap(1, func(na fluent.MapNodeAssembler) {
+		sn := fluent.MustBuildMap(basicnode.Style__Map{}, 2, func(na fluent.MapAssembler) {
+			na.AssembleDirectly(SelectorKey_Limit).CreateMap(1, func(na fluent.MapAssembler) {
 				na.AssembleDirectly(SelectorKey_LimitDepth).AssignString("cheese")
 			})
-			na.AssembleDirectly(SelectorKey_Sequence).CreateMap(1, func(na fluent.MapNodeAssembler) {
-				na.AssembleDirectly(SelectorKey_Matcher).CreateMap(0, func(na fluent.MapNodeAssembler) {})
+			na.AssembleDirectly(SelectorKey_Sequence).CreateMap(1, func(na fluent.MapAssembler) {
+				na.AssembleDirectly(SelectorKey_Matcher).CreateMap(0, func(na fluent.MapAssembler) {})
 			})
 		})
 		_, err := ParseContext{}.ParseExploreRecursive(sn)
 		Wish(t, err, ShouldEqual, fmt.Errorf("selector spec parse rejected: limit field of type depth must be a number in ExploreRecursive selector"))
 	})
 	t.Run("parsing map node with sequence field with invalid selector node should return child's error", func(t *testing.T) {
-		sn := fluent.MustBuildMap(basicnode.Style__Map{}, 2, func(na fluent.MapNodeAssembler) {
-			na.AssembleDirectly(SelectorKey_Limit).CreateMap(1, func(na fluent.MapNodeAssembler) {
+		sn := fluent.MustBuildMap(basicnode.Style__Map{}, 2, func(na fluent.MapAssembler) {
+			na.AssembleDirectly(SelectorKey_Limit).CreateMap(1, func(na fluent.MapAssembler) {
 				na.AssembleDirectly(SelectorKey_LimitDepth).AssignInt(2)
 			})
 			na.AssembleDirectly(SelectorKey_Sequence).AssignInt(0)
@@ -95,14 +95,14 @@ func TestParseExploreRecursive(t *testing.T) {
 		Wish(t, err, ShouldEqual, fmt.Errorf("selector spec parse rejected: selector is a keyed union and thus must be a map"))
 	})
 	t.Run("parsing map node with sequence field with valid selector w/o ExploreRecursiveEdge should not parse", func(t *testing.T) {
-		sn := fluent.MustBuildMap(basicnode.Style__Map{}, 2, func(na fluent.MapNodeAssembler) {
-			na.AssembleDirectly(SelectorKey_Limit).CreateMap(1, func(na fluent.MapNodeAssembler) {
+		sn := fluent.MustBuildMap(basicnode.Style__Map{}, 2, func(na fluent.MapAssembler) {
+			na.AssembleDirectly(SelectorKey_Limit).CreateMap(1, func(na fluent.MapAssembler) {
 				na.AssembleDirectly(SelectorKey_LimitDepth).AssignInt(2)
 			})
-			na.AssembleDirectly(SelectorKey_Sequence).CreateMap(1, func(na fluent.MapNodeAssembler) {
-				na.AssembleDirectly(SelectorKey_ExploreAll).CreateMap(1, func(na fluent.MapNodeAssembler) {
-					na.AssembleDirectly(SelectorKey_Next).CreateMap(1, func(na fluent.MapNodeAssembler) {
-						na.AssembleDirectly(SelectorKey_Matcher).CreateMap(0, func(na fluent.MapNodeAssembler) {})
+			na.AssembleDirectly(SelectorKey_Sequence).CreateMap(1, func(na fluent.MapAssembler) {
+				na.AssembleDirectly(SelectorKey_ExploreAll).CreateMap(1, func(na fluent.MapAssembler) {
+					na.AssembleDirectly(SelectorKey_Next).CreateMap(1, func(na fluent.MapAssembler) {
+						na.AssembleDirectly(SelectorKey_Matcher).CreateMap(0, func(na fluent.MapAssembler) {})
 					})
 				})
 			})
@@ -111,19 +111,19 @@ func TestParseExploreRecursive(t *testing.T) {
 		Wish(t, err, ShouldEqual, fmt.Errorf("selector spec parse rejected: ExploreRecursive must have at least one ExploreRecursiveEdge"))
 	})
 	t.Run("parsing map node that is ExploreRecursiveEdge without ExploreRecursive parent should not parse", func(t *testing.T) {
-		sn := fluent.MustBuildMap(basicnode.Style__Map{}, 0, func(na fluent.MapNodeAssembler) {})
+		sn := fluent.MustBuildMap(basicnode.Style__Map{}, 0, func(na fluent.MapAssembler) {})
 		_, err := ParseContext{}.ParseExploreRecursiveEdge(sn)
 		Wish(t, err, ShouldEqual, fmt.Errorf("selector spec parse rejected: ExploreRecursiveEdge must be beneath ExploreRecursive"))
 	})
 	t.Run("parsing map node with sequence field with valid selector node should parse", func(t *testing.T) {
-		sn := fluent.MustBuildMap(basicnode.Style__Map{}, 2, func(na fluent.MapNodeAssembler) {
-			na.AssembleDirectly(SelectorKey_Limit).CreateMap(1, func(na fluent.MapNodeAssembler) {
+		sn := fluent.MustBuildMap(basicnode.Style__Map{}, 2, func(na fluent.MapAssembler) {
+			na.AssembleDirectly(SelectorKey_Limit).CreateMap(1, func(na fluent.MapAssembler) {
 				na.AssembleDirectly(SelectorKey_LimitDepth).AssignInt(2)
 			})
-			na.AssembleDirectly(SelectorKey_Sequence).CreateMap(1, func(na fluent.MapNodeAssembler) {
-				na.AssembleDirectly(SelectorKey_ExploreAll).CreateMap(1, func(na fluent.MapNodeAssembler) {
-					na.AssembleDirectly(SelectorKey_Next).CreateMap(1, func(na fluent.MapNodeAssembler) {
-						na.AssembleDirectly(SelectorKey_ExploreRecursiveEdge).CreateMap(0, func(na fluent.MapNodeAssembler) {})
+			na.AssembleDirectly(SelectorKey_Sequence).CreateMap(1, func(na fluent.MapAssembler) {
+				na.AssembleDirectly(SelectorKey_ExploreAll).CreateMap(1, func(na fluent.MapAssembler) {
+					na.AssembleDirectly(SelectorKey_Next).CreateMap(1, func(na fluent.MapAssembler) {
+						na.AssembleDirectly(SelectorKey_ExploreRecursiveEdge).CreateMap(0, func(na fluent.MapAssembler) {})
 					})
 				})
 			})
@@ -134,14 +134,14 @@ func TestParseExploreRecursive(t *testing.T) {
 	})
 
 	t.Run("parsing map node with sequence field with valid selector node and limit type none should parse", func(t *testing.T) {
-		sn := fluent.MustBuildMap(basicnode.Style__Map{}, 2, func(na fluent.MapNodeAssembler) {
-			na.AssembleDirectly(SelectorKey_Limit).CreateMap(1, func(na fluent.MapNodeAssembler) {
-				na.AssembleDirectly(SelectorKey_LimitNone).CreateMap(0, func(na fluent.MapNodeAssembler) {})
+		sn := fluent.MustBuildMap(basicnode.Style__Map{}, 2, func(na fluent.MapAssembler) {
+			na.AssembleDirectly(SelectorKey_Limit).CreateMap(1, func(na fluent.MapAssembler) {
+				na.AssembleDirectly(SelectorKey_LimitNone).CreateMap(0, func(na fluent.MapAssembler) {})
 			})
-			na.AssembleDirectly(SelectorKey_Sequence).CreateMap(1, func(na fluent.MapNodeAssembler) {
-				na.AssembleDirectly(SelectorKey_ExploreAll).CreateMap(1, func(na fluent.MapNodeAssembler) {
-					na.AssembleDirectly(SelectorKey_Next).CreateMap(1, func(na fluent.MapNodeAssembler) {
-						na.AssembleDirectly(SelectorKey_ExploreRecursiveEdge).CreateMap(0, func(na fluent.MapNodeAssembler) {})
+			na.AssembleDirectly(SelectorKey_Sequence).CreateMap(1, func(na fluent.MapAssembler) {
+				na.AssembleDirectly(SelectorKey_ExploreAll).CreateMap(1, func(na fluent.MapAssembler) {
+					na.AssembleDirectly(SelectorKey_Next).CreateMap(1, func(na fluent.MapAssembler) {
+						na.AssembleDirectly(SelectorKey_ExploreRecursiveEdge).CreateMap(0, func(na fluent.MapAssembler) {})
 					})
 				})
 			})

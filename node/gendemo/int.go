@@ -98,10 +98,10 @@ type plainInt__Assembler struct {
 	w *plainInt
 }
 
-func (plainInt__Assembler) BeginMap(sizeHint int) (ipld.MapNodeAssembler, error) {
+func (plainInt__Assembler) BeginMap(sizeHint int) (ipld.MapAssembler, error) {
 	return mixins.IntAssembler{"gendemo.Int"}.BeginMap(0)
 }
-func (plainInt__Assembler) BeginList(sizeHint int) (ipld.ListNodeAssembler, error) {
+func (plainInt__Assembler) BeginList(sizeHint int) (ipld.ListAssembler, error) {
 	return mixins.IntAssembler{"gendemo.Int"}.BeginList(0)
 }
 func (plainInt__Assembler) AssignNull() error {

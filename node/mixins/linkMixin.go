@@ -71,10 +71,10 @@ type LinkAssembler struct {
 	TypeName string
 }
 
-func (x LinkAssembler) BeginMap(sizeHint int) (ipld.MapNodeAssembler, error) {
+func (x LinkAssembler) BeginMap(sizeHint int) (ipld.MapAssembler, error) {
 	return nil, ipld.ErrWrongKind{TypeName: x.TypeName, MethodName: "BeginMap", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: ipld.ReprKind_Link}
 }
-func (x LinkAssembler) BeginList(sizeHint int) (ipld.ListNodeAssembler, error) {
+func (x LinkAssembler) BeginList(sizeHint int) (ipld.ListAssembler, error) {
 	return nil, ipld.ErrWrongKind{TypeName: x.TypeName, MethodName: "BeginList", AppropriateKind: ipld.ReprKindSet_JustList, ActualKind: ipld.ReprKind_Link}
 }
 func (x LinkAssembler) AssignNull() error {

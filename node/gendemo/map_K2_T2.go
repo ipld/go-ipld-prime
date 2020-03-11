@@ -133,8 +133,8 @@ type _K2__ReprAssembler struct {
 	// note how this is totally different than the type-level assembler -- that's map-like, this is string.
 }
 
-func (ta *_K2__Assembler) BeginMap(_ int) (ipld.MapNodeAssembler, error) { panic("no") }
-func (_K2__Assembler) BeginList(_ int) (ipld.ListNodeAssembler, error)   { panic("no") }
+func (ta *_K2__Assembler) BeginMap(_ int) (ipld.MapAssembler, error) { panic("no") }
+func (_K2__Assembler) BeginList(_ int) (ipld.ListAssembler, error)   { panic("no") }
 func (_K2__Assembler) AssignNull() error                                 { panic("no") }
 func (_K2__Assembler) AssignBool(bool) error                             { panic("no") }
 func (_K2__Assembler) AssignInt(v int) error                             { panic("no") }
@@ -313,10 +313,10 @@ type _T2__ReprAssembler struct {
 	w *T2
 }
 
-func (ta *_T2__Assembler) BeginMap(_ int) (ipld.MapNodeAssembler, error) {
+func (ta *_T2__Assembler) BeginMap(_ int) (ipld.MapAssembler, error) {
 	return ta, nil
 }
-func (_T2__Assembler) BeginList(_ int) (ipld.ListNodeAssembler, error) { panic("no") }
+func (_T2__Assembler) BeginList(_ int) (ipld.ListAssembler, error) { panic("no") }
 func (_T2__Assembler) AssignNull() error                               { panic("no") }
 func (_T2__Assembler) AssignBool(bool) error                           { panic("no") }
 func (_T2__Assembler) AssignInt(int) error                             { panic("no") }

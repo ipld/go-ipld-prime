@@ -77,7 +77,7 @@ func (nb *anyBuilder) Reset() {
 	*nb = anyBuilder{}
 }
 
-func (nb *anyBuilder) BeginMap(sizeHint int) (ipld.MapNodeAssembler, error) {
+func (nb *anyBuilder) BeginMap(sizeHint int) (ipld.MapAssembler, error) {
 	if nb.kind != ipld.ReprKind_Invalid {
 		panic("misuse")
 	}
@@ -85,7 +85,7 @@ func (nb *anyBuilder) BeginMap(sizeHint int) (ipld.MapNodeAssembler, error) {
 	nb.mapBuilder.w = &plainMap{}
 	return nb.mapBuilder.BeginMap(sizeHint)
 }
-func (nb *anyBuilder) BeginList(sizeHint int) (ipld.ListNodeAssembler, error) {
+func (nb *anyBuilder) BeginList(sizeHint int) (ipld.ListAssembler, error) {
 	if nb.kind != ipld.ReprKind_Invalid {
 		panic("misuse")
 	}

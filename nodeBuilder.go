@@ -16,8 +16,8 @@ package ipld
 // language without first-class/compile-time support for them (as golang is)
 // would tend to push complexity and costs to execution time; we'd rather not.)
 type NodeAssembler interface {
-	BeginMap(sizeHint int) (MapNodeAssembler, error)
-	BeginList(sizeHint int) (ListNodeAssembler, error)
+	BeginMap(sizeHint int) (MapAssembler, error)
+	BeginList(sizeHint int) (ListAssembler, error)
 	AssignNull() error
 	AssignBool(bool) error
 	AssignInt(int) error
@@ -40,9 +40,9 @@ type NodeAssembler interface {
 	Style() NodeStyle
 }
 
-// MapNodeAssembler assembles a map node!  (You guessed it.)
+// MapAssembler assembles a map node!  (You guessed it.)
 //
-// Methods on MapNodeAssembler must be called in a valid order:
+// Methods on MapAssembler must be called in a valid order:
 // assemble a key, then assemble a value, then loop as long as desired;
 // when finished, call 'Finish'.
 //
@@ -55,7 +55,7 @@ type NodeAssembler interface {
 // Note that the NodeAssembler yielded from AssembleKey has additional behavior:
 // if the node assembled there matches a key already present in the map,
 // that assembler will emit the error!
-type MapNodeAssembler interface {
+type MapAssembler interface {
 	AssembleKey() NodeAssembler   // must be followed by call to AssembleValue.
 	AssembleValue() NodeAssembler // must be called immediately after AssembleKey.
 
@@ -91,7 +91,7 @@ type MapNodeAssembler interface {
 	ValueStyle(k string) NodeStyle
 }
 
-type ListNodeAssembler interface {
+type ListAssembler interface {
 	AssembleValue() NodeAssembler
 
 	Finish() error
@@ -101,7 +101,7 @@ type ListNodeAssembler interface {
 	// You often don't need this (because you should be able to
 	// just feed data and check errors), but it's here.
 	//
-	// In contrast to the `MapNodeAssembler.ValueStyle(key)` function,
+	// In contrast to the `MapAssembler.ValueStyle(key)` function,
 	// to determine the ValueStyle for lists we need no parameters;
 	// lists always contain one value type (even if it's "any").
 	ValueStyle() NodeStyle

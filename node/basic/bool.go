@@ -103,10 +103,10 @@ type plainBool__Assembler struct {
 	w *plainBool
 }
 
-func (plainBool__Assembler) BeginMap(sizeHint int) (ipld.MapNodeAssembler, error) {
+func (plainBool__Assembler) BeginMap(sizeHint int) (ipld.MapAssembler, error) {
 	return mixins.BoolAssembler{"bool"}.BeginMap(0)
 }
-func (plainBool__Assembler) BeginList(sizeHint int) (ipld.ListNodeAssembler, error) {
+func (plainBool__Assembler) BeginList(sizeHint int) (ipld.ListAssembler, error) {
 	return mixins.BoolAssembler{"bool"}.BeginList(0)
 }
 func (plainBool__Assembler) AssignNull() error {

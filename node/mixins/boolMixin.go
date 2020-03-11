@@ -71,10 +71,10 @@ type BoolAssembler struct {
 	TypeName string
 }
 
-func (x BoolAssembler) BeginMap(sizeHint int) (ipld.MapNodeAssembler, error) {
+func (x BoolAssembler) BeginMap(sizeHint int) (ipld.MapAssembler, error) {
 	return nil, ipld.ErrWrongKind{TypeName: x.TypeName, MethodName: "BeginMap", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: ipld.ReprKind_Bool}
 }
-func (x BoolAssembler) BeginList(sizeHint int) (ipld.ListNodeAssembler, error) {
+func (x BoolAssembler) BeginList(sizeHint int) (ipld.ListAssembler, error) {
 	return nil, ipld.ErrWrongKind{TypeName: x.TypeName, MethodName: "BeginList", AppropriateKind: ipld.ReprKindSet_JustList, ActualKind: ipld.ReprKind_Bool}
 }
 func (x BoolAssembler) AssignNull() error {

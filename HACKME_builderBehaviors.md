@@ -7,7 +7,7 @@ high level rules of builders and assemblers
 - Errors should be returned as soon as possible.
 	- That means an error like "repeated key in map" should be returned by the key assembler!
 		- Either 'NodeAssembler.AssignString' should return this (for simple keys on untyped maps, or on structs, etc)...
-		- ... or 'MapNodeAssembler.Finish' (in the case of complex keys in a typed map).
+		- ... or 'MapAssembler.Finish' (in the case of complex keys in a typed map).
 
 - Logical integrity checks must be done locally -- recursive types rely on their contained types to report errors, and the recursive type wraps the assemblers of their contained type in order to check and correctly invalidate/rollback the recursive construction.
 
@@ -40,8 +40,8 @@ but the caller tries to continue anyway.
 	- assigning a key with 'AssembleKey':
 		- in case of success: clearly 'AssembleValue' should be ready to use next.
 		- in case of failure from repeated key:
-			- the error must be returned immediately from either the 'NodeAssembler.AssignString' or the 'MapNodeAssembler.Finish' method.
-				- 'AssignString' for any simple keys; 'MapNodeAssembler.Finish' may be relevant in the case of complex keys in a typed map.
+			- the error must be returned immediately from either the 'NodeAssembler.AssignString' or the 'MapAssembler.Finish' method.
+				- 'AssignString' for any simple keys; 'MapAssembler.Finish' may be relevant in the case of complex keys in a typed map.
 				- implementers take note: this implies the `NodeAssembler` returned by `AssembleKey` has some way to refer to the map assembler that spawned it.
 			- no side effect should be visible if 'AssembleKey' is called again next.
 				- (typically this doesn't require extra code for the string case, but it may require some active zeroing in the complex key case.)

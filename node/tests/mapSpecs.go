@@ -142,7 +142,7 @@ func SpecTestMapStrMapStrInt(t *testing.T, ns ipld.NodeStyle) {
 		ma, err := nb.BeginMap(3)
 		must.NotError(err)
 		must.NotError(ma.AssembleKey().AssignString("whee"))
-		func(ma ipld.MapNodeAssembler, err error) {
+		func(ma ipld.MapAssembler, err error) {
 			must.NotError(ma.AssembleKey().AssignString("m1k1"))
 			must.NotError(ma.AssembleValue().AssignInt(1))
 			must.NotError(ma.AssembleKey().AssignString("m1k2"))
@@ -150,7 +150,7 @@ func SpecTestMapStrMapStrInt(t *testing.T, ns ipld.NodeStyle) {
 			must.NotError(ma.Finish())
 		}(ma.AssembleValue().BeginMap(2))
 		must.NotError(ma.AssembleKey().AssignString("woot"))
-		func(ma ipld.MapNodeAssembler, err error) {
+		func(ma ipld.MapAssembler, err error) {
 			must.NotError(ma.AssembleKey().AssignString("m2k1"))
 			must.NotError(ma.AssembleValue().AssignInt(3))
 			must.NotError(ma.AssembleKey().AssignString("m2k2"))
@@ -158,7 +158,7 @@ func SpecTestMapStrMapStrInt(t *testing.T, ns ipld.NodeStyle) {
 			must.NotError(ma.Finish())
 		}(ma.AssembleValue().BeginMap(2))
 		must.NotError(ma.AssembleKey().AssignString("waga"))
-		func(ma ipld.MapNodeAssembler, err error) {
+		func(ma ipld.MapAssembler, err error) {
 			must.NotError(ma.AssembleKey().AssignString("m3k1"))
 			must.NotError(ma.AssembleValue().AssignInt(5))
 			must.NotError(ma.AssembleKey().AssignString("m3k2"))

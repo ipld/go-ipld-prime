@@ -18,7 +18,7 @@ func TestParseExploreRange(t *testing.T) {
 		Wish(t, err, ShouldEqual, fmt.Errorf("selector spec parse rejected: selector body must be a map"))
 	})
 	t.Run("parsing map node without next field should error", func(t *testing.T) {
-		sn := fluent.MustBuildMap(basicnode.Style__Map{}, 2, func(na fluent.MapNodeAssembler) {
+		sn := fluent.MustBuildMap(basicnode.Style__Map{}, 2, func(na fluent.MapAssembler) {
 			na.AssembleDirectly(SelectorKey_Start).AssignInt(2)
 			na.AssembleDirectly(SelectorKey_End).AssignInt(3)
 		})
@@ -26,60 +26,60 @@ func TestParseExploreRange(t *testing.T) {
 		Wish(t, err, ShouldEqual, fmt.Errorf("selector spec parse rejected: next field must be present in ExploreRange selector"))
 	})
 	t.Run("parsing map node without start field should error", func(t *testing.T) {
-		sn := fluent.MustBuildMap(basicnode.Style__Map{}, 2, func(na fluent.MapNodeAssembler) {
+		sn := fluent.MustBuildMap(basicnode.Style__Map{}, 2, func(na fluent.MapAssembler) {
 			na.AssembleDirectly(SelectorKey_End).AssignInt(3)
-			na.AssembleDirectly(SelectorKey_Next).CreateMap(1, func(na fluent.MapNodeAssembler) {
-				na.AssembleDirectly(SelectorKey_Matcher).CreateMap(0, func(na fluent.MapNodeAssembler) {})
+			na.AssembleDirectly(SelectorKey_Next).CreateMap(1, func(na fluent.MapAssembler) {
+				na.AssembleDirectly(SelectorKey_Matcher).CreateMap(0, func(na fluent.MapAssembler) {})
 			})
 		})
 		_, err := ParseContext{}.ParseExploreRange(sn)
 		Wish(t, err, ShouldEqual, fmt.Errorf("selector spec parse rejected: start field must be present in ExploreRange selector"))
 	})
 	t.Run("parsing map node with start field that is not an int should error", func(t *testing.T) {
-		sn := fluent.MustBuildMap(basicnode.Style__Map{}, 3, func(na fluent.MapNodeAssembler) {
+		sn := fluent.MustBuildMap(basicnode.Style__Map{}, 3, func(na fluent.MapAssembler) {
 			na.AssembleDirectly(SelectorKey_Start).AssignString("cheese")
 			na.AssembleDirectly(SelectorKey_End).AssignInt(3)
-			na.AssembleDirectly(SelectorKey_Next).CreateMap(1, func(na fluent.MapNodeAssembler) {
-				na.AssembleDirectly(SelectorKey_Matcher).CreateMap(0, func(na fluent.MapNodeAssembler) {})
+			na.AssembleDirectly(SelectorKey_Next).CreateMap(1, func(na fluent.MapAssembler) {
+				na.AssembleDirectly(SelectorKey_Matcher).CreateMap(0, func(na fluent.MapAssembler) {})
 			})
 		})
 		_, err := ParseContext{}.ParseExploreRange(sn)
 		Wish(t, err, ShouldEqual, fmt.Errorf("selector spec parse rejected: start field must be a number in ExploreRange selector"))
 	})
 	t.Run("parsing map node without end field should error", func(t *testing.T) {
-		sn := fluent.MustBuildMap(basicnode.Style__Map{}, 2, func(na fluent.MapNodeAssembler) {
+		sn := fluent.MustBuildMap(basicnode.Style__Map{}, 2, func(na fluent.MapAssembler) {
 			na.AssembleDirectly(SelectorKey_Start).AssignInt(2)
-			na.AssembleDirectly(SelectorKey_Next).CreateMap(1, func(na fluent.MapNodeAssembler) {
-				na.AssembleDirectly(SelectorKey_Matcher).CreateMap(0, func(na fluent.MapNodeAssembler) {})
+			na.AssembleDirectly(SelectorKey_Next).CreateMap(1, func(na fluent.MapAssembler) {
+				na.AssembleDirectly(SelectorKey_Matcher).CreateMap(0, func(na fluent.MapAssembler) {})
 			})
 		})
 		_, err := ParseContext{}.ParseExploreRange(sn)
 		Wish(t, err, ShouldEqual, fmt.Errorf("selector spec parse rejected: end field must be present in ExploreRange selector"))
 	})
 	t.Run("parsing map node with end field that is not an int should error", func(t *testing.T) {
-		sn := fluent.MustBuildMap(basicnode.Style__Map{}, 3, func(na fluent.MapNodeAssembler) {
+		sn := fluent.MustBuildMap(basicnode.Style__Map{}, 3, func(na fluent.MapAssembler) {
 			na.AssembleDirectly(SelectorKey_Start).AssignInt(2)
 			na.AssembleDirectly(SelectorKey_End).AssignString("cheese")
-			na.AssembleDirectly(SelectorKey_Next).CreateMap(1, func(na fluent.MapNodeAssembler) {
-				na.AssembleDirectly(SelectorKey_Matcher).CreateMap(0, func(na fluent.MapNodeAssembler) {})
+			na.AssembleDirectly(SelectorKey_Next).CreateMap(1, func(na fluent.MapAssembler) {
+				na.AssembleDirectly(SelectorKey_Matcher).CreateMap(0, func(na fluent.MapAssembler) {})
 			})
 		})
 		_, err := ParseContext{}.ParseExploreRange(sn)
 		Wish(t, err, ShouldEqual, fmt.Errorf("selector spec parse rejected: end field must be a number in ExploreRange selector"))
 	})
 	t.Run("parsing map node where end is not greater than start should error", func(t *testing.T) {
-		sn := fluent.MustBuildMap(basicnode.Style__Map{}, 3, func(na fluent.MapNodeAssembler) {
+		sn := fluent.MustBuildMap(basicnode.Style__Map{}, 3, func(na fluent.MapAssembler) {
 			na.AssembleDirectly(SelectorKey_Start).AssignInt(3)
 			na.AssembleDirectly(SelectorKey_End).AssignInt(2)
-			na.AssembleDirectly(SelectorKey_Next).CreateMap(1, func(na fluent.MapNodeAssembler) {
-				na.AssembleDirectly(SelectorKey_Matcher).CreateMap(0, func(na fluent.MapNodeAssembler) {})
+			na.AssembleDirectly(SelectorKey_Next).CreateMap(1, func(na fluent.MapAssembler) {
+				na.AssembleDirectly(SelectorKey_Matcher).CreateMap(0, func(na fluent.MapAssembler) {})
 			})
 		})
 		_, err := ParseContext{}.ParseExploreRange(sn)
 		Wish(t, err, ShouldEqual, fmt.Errorf("selector spec parse rejected: end field must be greater than start field in ExploreRange selector"))
 	})
 	t.Run("parsing map node with next field with invalid selector node should return child's error", func(t *testing.T) {
-		sn := fluent.MustBuildMap(basicnode.Style__Map{}, 3, func(na fluent.MapNodeAssembler) {
+		sn := fluent.MustBuildMap(basicnode.Style__Map{}, 3, func(na fluent.MapAssembler) {
 			na.AssembleDirectly(SelectorKey_Start).AssignInt(2)
 			na.AssembleDirectly(SelectorKey_End).AssignInt(3)
 			na.AssembleDirectly(SelectorKey_Next).AssignInt(0)
@@ -89,11 +89,11 @@ func TestParseExploreRange(t *testing.T) {
 	})
 
 	t.Run("parsing map node with next field with valid selector node should parse", func(t *testing.T) {
-		sn := fluent.MustBuildMap(basicnode.Style__Map{}, 3, func(na fluent.MapNodeAssembler) {
+		sn := fluent.MustBuildMap(basicnode.Style__Map{}, 3, func(na fluent.MapAssembler) {
 			na.AssembleDirectly(SelectorKey_Start).AssignInt(2)
 			na.AssembleDirectly(SelectorKey_End).AssignInt(3)
-			na.AssembleDirectly(SelectorKey_Next).CreateMap(1, func(na fluent.MapNodeAssembler) {
-				na.AssembleDirectly(SelectorKey_Matcher).CreateMap(0, func(na fluent.MapNodeAssembler) {})
+			na.AssembleDirectly(SelectorKey_Next).CreateMap(1, func(na fluent.MapAssembler) {
+				na.AssembleDirectly(SelectorKey_Matcher).CreateMap(0, func(na fluent.MapAssembler) {})
 			})
 		})
 		s, err := ParseContext{}.ParseExploreRange(sn)
@@ -105,11 +105,11 @@ func TestParseExploreRange(t *testing.T) {
 func TestExploreRangeExplore(t *testing.T) {
 	s := ExploreRange{Matcher{}, 3, 4, []ipld.PathSegment{ipld.PathSegmentOfInt(3)}}
 	t.Run("exploring should return nil unless node is a list", func(t *testing.T) {
-		n := fluent.MustBuildMap(basicnode.Style__Map{}, 0, func(na fluent.MapNodeAssembler) {})
+		n := fluent.MustBuildMap(basicnode.Style__Map{}, 0, func(na fluent.MapAssembler) {})
 		returnedSelector := s.Explore(n, ipld.PathSegmentOfInt(3))
 		Wish(t, returnedSelector, ShouldEqual, nil)
 	})
-	n := fluent.MustBuildList(basicnode.Style__List{}, 4, func(na fluent.ListNodeAssembler) {
+	n := fluent.MustBuildList(basicnode.Style__List{}, 4, func(na fluent.ListAssembler) {
 		na.AssembleValue().AssignInt(0)
 		na.AssembleValue().AssignInt(1)
 		na.AssembleValue().AssignInt(2)

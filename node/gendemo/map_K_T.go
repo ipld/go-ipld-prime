@@ -128,8 +128,8 @@ type _K__ReprAssembler struct {
 	w *K
 }
 
-func (_K__Assembler) BeginMap(_ int) (ipld.MapNodeAssembler, error)   { panic("no") }
-func (_K__Assembler) BeginList(_ int) (ipld.ListNodeAssembler, error) { panic("no") }
+func (_K__Assembler) BeginMap(_ int) (ipld.MapAssembler, error)   { panic("no") }
+func (_K__Assembler) BeginList(_ int) (ipld.ListAssembler, error) { panic("no") }
 func (_K__Assembler) AssignNull() error                               { panic("no") }
 func (_K__Assembler) AssignBool(bool) error                           { panic("no") }
 func (_K__Assembler) AssignInt(v int) error                           { panic("no") }
@@ -159,8 +159,8 @@ type _T__ReprAssembler struct {
 	w *T
 }
 
-func (_T__Assembler) BeginMap(_ int) (ipld.MapNodeAssembler, error)   { panic("no") }
-func (_T__Assembler) BeginList(_ int) (ipld.ListNodeAssembler, error) { panic("no") }
+func (_T__Assembler) BeginMap(_ int) (ipld.MapAssembler, error)   { panic("no") }
+func (_T__Assembler) BeginList(_ int) (ipld.ListAssembler, error) { panic("no") }
 func (_T__Assembler) AssignNull() error                               { panic("no") }
 func (_T__Assembler) AssignBool(bool) error                           { panic("no") }
 func (ta *_T__Assembler) AssignInt(v int) error {
@@ -342,17 +342,17 @@ func (nb *_Map_K_T__Builder) Reset() {
 	nb.w = &Map_K_T{}
 }
 
-func (na *_Map_K_T__Assembler) BeginMap(sizeHint int) (ipld.MapNodeAssembler, error) {
+func (na *_Map_K_T__Assembler) BeginMap(sizeHint int) (ipld.MapAssembler, error) {
 	// Allocate storage space.
 	na.w.t = make([]_Map_K_T__entry, 0, sizeHint)
 	na.w.m = make(map[K]*T, sizeHint)
 	// Initialize the key and value assemblers with pointers back to the whole.
 	na.ka.ma = na
 	na.va.ma = na
-	// That's it; return self as the MapNodeAssembler.  We already have all the right methods on this structure.
+	// That's it; return self as the MapAssembler.  We already have all the right methods on this structure.
 	return na, nil
 }
-func (_Map_K_T__Assembler) BeginList(_ int) (ipld.ListNodeAssembler, error) { panic("no") }
+func (_Map_K_T__Assembler) BeginList(_ int) (ipld.ListAssembler, error) { panic("no") }
 func (_Map_K_T__Assembler) AssignNull() error                               { panic("no") }
 func (_Map_K_T__Assembler) AssignBool(bool) error                           { panic("no") }
 func (_Map_K_T__Assembler) AssignInt(v int) error                           { panic("no") }
@@ -427,8 +427,8 @@ func (ma *_Map_K_T__Assembler) Finish() error {
 func (_Map_K_T__Assembler) KeyStyle() ipld.NodeStyle           { panic("later") }
 func (_Map_K_T__Assembler) ValueStyle(_ string) ipld.NodeStyle { panic("later") }
 
-func (_Map_K_T__KeyAssembler) BeginMap(sizeHint int) (ipld.MapNodeAssembler, error)   { panic("no") }
-func (_Map_K_T__KeyAssembler) BeginList(sizeHint int) (ipld.ListNodeAssembler, error) { panic("no") }
+func (_Map_K_T__KeyAssembler) BeginMap(sizeHint int) (ipld.MapAssembler, error)   { panic("no") }
+func (_Map_K_T__KeyAssembler) BeginList(sizeHint int) (ipld.ListAssembler, error) { panic("no") }
 func (_Map_K_T__KeyAssembler) AssignNull() error                                      { panic("no") }
 func (_Map_K_T__KeyAssembler) AssignBool(bool) error                                  { panic("no") }
 func (_Map_K_T__KeyAssembler) AssignInt(int) error                                    { panic("no") }
@@ -465,10 +465,10 @@ func (mka *_Map_K_T__KeyAssembler) AssignNode(v ipld.Node) error {
 }
 func (_Map_K_T__KeyAssembler) Style() ipld.NodeStyle { panic("later") } // probably should give the style of plainString, which could say "only stores string kind" (though we haven't made such a feature part of the interface yet).
 
-func (mva *_Map_K_T__ValueAssembler) BeginMap(sizeHint int) (ipld.MapNodeAssembler, error) {
+func (mva *_Map_K_T__ValueAssembler) BeginMap(sizeHint int) (ipld.MapAssembler, error) {
 	panic("todo") // We would add the additional required methods to 'mva' to save another type... but in this case it's also clear to us at codegen time this method can just error.
 }
-func (mva *_Map_K_T__ValueAssembler) BeginList(sizeHint int) (ipld.ListNodeAssembler, error) {
+func (mva *_Map_K_T__ValueAssembler) BeginList(sizeHint int) (ipld.ListAssembler, error) {
 	panic("todo") // We would add the additional required methods to 'mva' to save another type... but in this case it's also clear to us at codegen time this method can just error.
 }
 func (mva *_Map_K_T__ValueAssembler) AssignNull() error     { panic("todo") } // All these scalar rejections also clear to us at codegen time.  We can report them without delegation.  Should?  Debatable; but will save SLOC.

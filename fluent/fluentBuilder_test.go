@@ -23,10 +23,10 @@ func TestBuild(t *testing.T) {
 	})
 	t.Run("map build should work", func(t *testing.T) {
 		n := fluent.MustBuild(basicnode.Style__Map{}, func(fna fluent.NodeAssembler) {
-			fna.CreateMap(3, func(fma fluent.MapNodeAssembler) {
+			fna.CreateMap(3, func(fma fluent.MapAssembler) {
 				fma.AssembleDirectly("k1").AssignString("fine")
 				fma.AssembleDirectly("k2").AssignString("super")
-				fma.AssembleDirectly("k3").CreateMap(3, func(fma fluent.MapNodeAssembler) {
+				fma.AssembleDirectly("k3").CreateMap(3, func(fma fluent.MapAssembler) {
 					fma.AssembleDirectly("k31").AssignString("thanks")
 					fma.AssembleDirectly("k32").AssignString("for")
 					fma.AssembleDirectly("k33").AssignString("asking")
@@ -45,10 +45,10 @@ func TestBuild(t *testing.T) {
 	})
 	t.Run("list build should work", func(t *testing.T) {
 		n := fluent.MustBuild(basicnode.Style__List{}, func(fna fluent.NodeAssembler) {
-			fna.CreateList(1, func(fla fluent.ListNodeAssembler) {
-				fla.AssembleValue().CreateList(1, func(fla fluent.ListNodeAssembler) {
-					fla.AssembleValue().CreateList(1, func(fla fluent.ListNodeAssembler) {
-						fla.AssembleValue().CreateList(1, func(fla fluent.ListNodeAssembler) {
+			fna.CreateList(1, func(fla fluent.ListAssembler) {
+				fla.AssembleValue().CreateList(1, func(fla fluent.ListAssembler) {
+					fla.AssembleValue().CreateList(1, func(fla fluent.ListAssembler) {
+						fla.AssembleValue().CreateList(1, func(fla fluent.ListAssembler) {
 							fla.AssembleValue().AssignInt(2)
 						})
 					})

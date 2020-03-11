@@ -108,12 +108,12 @@ appropriately converted.)
 
 Any of these paths counts as "recursive assembly process":
 
-- `MapNodeAssembler.KeyStyle()`
-- `MapNodeAssembler.ValueStyle(string)`
-- `MapNodeAssembler.AssembleKey().Style()`
-- `MapNodeAssembler.AssembleValue().Style()`
-- `ListNodeAssembler.ValueStyle()`
-- `ListNodeAssembler.AssembleValue().Style()`
+- `MapAssembler.KeyStyle()`
+- `MapAssembler.ValueStyle(string)`
+- `MapAssembler.AssembleKey().Style()`
+- `MapAssembler.AssembleValue().Style()`
+- `ListAssembler.ValueStyle()`
+- `ListAssembler.AssembleValue().Style()`
 
 ### NodeStyle for carrying ADL configuration
 

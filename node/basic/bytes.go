@@ -103,10 +103,10 @@ type plainBytes__Assembler struct {
 	w *plainBytes
 }
 
-func (plainBytes__Assembler) BeginMap(sizeHint int) (ipld.MapNodeAssembler, error) {
+func (plainBytes__Assembler) BeginMap(sizeHint int) (ipld.MapAssembler, error) {
 	return mixins.BytesAssembler{"bytes"}.BeginMap(0)
 }
-func (plainBytes__Assembler) BeginList(sizeHint int) (ipld.ListNodeAssembler, error) {
+func (plainBytes__Assembler) BeginList(sizeHint int) (ipld.ListAssembler, error) {
 	return mixins.BytesAssembler{"bytes"}.BeginList(0)
 }
 func (plainBytes__Assembler) AssignNull() error {

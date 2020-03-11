@@ -71,10 +71,10 @@ type BytesAssembler struct {
 	TypeName string
 }
 
-func (x BytesAssembler) BeginMap(sizeHint int) (ipld.MapNodeAssembler, error) {
+func (x BytesAssembler) BeginMap(sizeHint int) (ipld.MapAssembler, error) {
 	return nil, ipld.ErrWrongKind{TypeName: x.TypeName, MethodName: "BeginMap", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: ipld.ReprKind_Bytes}
 }
-func (x BytesAssembler) BeginList(sizeHint int) (ipld.ListNodeAssembler, error) {
+func (x BytesAssembler) BeginList(sizeHint int) (ipld.ListAssembler, error) {
 	return nil, ipld.ErrWrongKind{TypeName: x.TypeName, MethodName: "BeginList", AppropriateKind: ipld.ReprKindSet_JustList, ActualKind: ipld.ReprKind_Bytes}
 }
 func (x BytesAssembler) AssignNull() error {

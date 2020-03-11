@@ -59,7 +59,7 @@ type MapAssembler struct {
 	TypeName string
 }
 
-func (x MapAssembler) BeginList(sizeHint int) (ipld.ListNodeAssembler, error) {
+func (x MapAssembler) BeginList(sizeHint int) (ipld.ListAssembler, error) {
 	return nil, ipld.ErrWrongKind{TypeName: x.TypeName, MethodName: "BeginList", AppropriateKind: ipld.ReprKindSet_JustList, ActualKind: ipld.ReprKind_Map}
 }
 func (x MapAssembler) AssignNull() error {

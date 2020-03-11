@@ -28,21 +28,21 @@ var storage = make(map[ipld.Link][]byte)
 var (
 	leafAlpha, leafAlphaLnk         = encode(basicnode.NewString("alpha"))
 	leafBeta, leafBetaLnk           = encode(basicnode.NewString("beta"))
-	middleMapNode, middleMapNodeLnk = encode(fluent.MustBuildMap(basicnode.Style__Map{}, 3, func(na fluent.MapNodeAssembler) {
+	middleMapNode, middleMapNodeLnk = encode(fluent.MustBuildMap(basicnode.Style__Map{}, 3, func(na fluent.MapAssembler) {
 		na.AssembleDirectly("foo").AssignBool(true)
 		na.AssembleDirectly("bar").AssignBool(false)
-		na.AssembleDirectly("nested").CreateMap(2, func(na fluent.MapNodeAssembler) {
+		na.AssembleDirectly("nested").CreateMap(2, func(na fluent.MapAssembler) {
 			na.AssembleDirectly("alink").AssignLink(leafAlphaLnk)
 			na.AssembleDirectly("nonlink").AssignString("zoo")
 		})
 	}))
-	middleListNode, middleListNodeLnk = encode(fluent.MustBuildList(basicnode.Style__List{}, 4, func(na fluent.ListNodeAssembler) {
+	middleListNode, middleListNodeLnk = encode(fluent.MustBuildList(basicnode.Style__List{}, 4, func(na fluent.ListAssembler) {
 		na.AssembleValue().AssignLink(leafAlphaLnk)
 		na.AssembleValue().AssignLink(leafAlphaLnk)
 		na.AssembleValue().AssignLink(leafBetaLnk)
 		na.AssembleValue().AssignLink(leafAlphaLnk)
 	}))
-	rootNode, rootNodeLnk = encode(fluent.MustBuildMap(basicnode.Style__Map{}, 4, func(na fluent.MapNodeAssembler) {
+	rootNode, rootNodeLnk = encode(fluent.MustBuildMap(basicnode.Style__Map{}, 4, func(na fluent.MapAssembler) {
 		na.AssembleDirectly("plain").AssignString("olde string")
 		na.AssembleDirectly("linkedString").AssignLink(leafAlphaLnk)
 		na.AssembleDirectly("linkedMap").AssignLink(middleMapNodeLnk)

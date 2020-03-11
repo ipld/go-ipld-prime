@@ -103,10 +103,10 @@ type plainString__Assembler struct {
 	w *plainString
 }
 
-func (plainString__Assembler) BeginMap(sizeHint int) (ipld.MapNodeAssembler, error) {
+func (plainString__Assembler) BeginMap(sizeHint int) (ipld.MapAssembler, error) {
 	return mixins.StringAssembler{"gendemo.String"}.BeginMap(0)
 }
-func (plainString__Assembler) BeginList(sizeHint int) (ipld.ListNodeAssembler, error) {
+func (plainString__Assembler) BeginList(sizeHint int) (ipld.ListAssembler, error) {
 	return mixins.StringAssembler{"gendemo.String"}.BeginList(0)
 }
 func (plainString__Assembler) AssignNull() error {

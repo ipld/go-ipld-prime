@@ -103,10 +103,10 @@ type plainFloat__Assembler struct {
 	w *plainFloat
 }
 
-func (plainFloat__Assembler) BeginMap(sizeHint int) (ipld.MapNodeAssembler, error) {
+func (plainFloat__Assembler) BeginMap(sizeHint int) (ipld.MapAssembler, error) {
 	return mixins.FloatAssembler{"float"}.BeginMap(0)
 }
-func (plainFloat__Assembler) BeginList(sizeHint int) (ipld.ListNodeAssembler, error) {
+func (plainFloat__Assembler) BeginList(sizeHint int) (ipld.ListAssembler, error) {
 	return mixins.FloatAssembler{"float"}.BeginList(0)
 }
 func (plainFloat__Assembler) AssignNull() error {

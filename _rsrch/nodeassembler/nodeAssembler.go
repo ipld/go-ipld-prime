@@ -32,8 +32,8 @@ Maybe.  Let's see.
 */
 
 type NodeAssembler interface {
-	BeginMap() MapNodeAssembler
-	BeginList() ListNodeAssembler
+	BeginMap() MapAssembler
+	BeginList() ListAssembler
 	AssignNull()
 	AssignBool(bool)
 	AssignInt(int)
@@ -45,7 +45,7 @@ type NodeAssembler interface {
 	CheckError() error // where are these stored?  when each child is done, could check this.  and have it stored in each child.  means each allocs (nonzero struct)... but isn't that true anyway?  yeah.  well, except now you're apparently getting that for scalars, which is bad.
 }
 
-type MapNodeAssembler interface {
+type MapAssembler interface {
 	AssembleKey() MapKeyAssembler
 
 	Insert(string, Node)
@@ -61,7 +61,7 @@ type MapValueAssembler interface {
 	NodeAssembler
 }
 
-type ListNodeAssembler interface {
+type ListAssembler interface {
 	AssembleValue() NodeAssembler
 
 	Append(Node)
@@ -80,9 +80,9 @@ type Node interface {
 
 func demo() {
 	var nb NodeBuilder
-	func(mb MapNodeAssembler) {
+	func(mb MapAssembler) {
 		mb.AssembleKey().AssignString("key")
-		func(mb MapNodeAssembler) {
+		func(mb MapAssembler) {
 			mb.AssembleKey().AssignString("nested")
 			mb.AssembleValue().AssignBool(true)
 			mb.Done()
@@ -129,6 +129,6 @@ Notes:
 	- a natively-typed assign method that works by value is the only way to minimize all the costs at once.
 	- we do still need it though: `Assign2(Node,Node)` is the only way to copy an existing typed map key generically (without the temp-copy lamented above for the `AssembleKey.Assign` chain).
 - the `Append` and `Assign` method names might be too terse -- we didn't leave space for the natively typed methods, which we generally want to be the shortest ones.
-- 'Assign' being a symbol on both NodeAssemler and MapNodeAssembler with different arity might be unfortunate -- would make it impossible to supply both with one concrete type.
+- 'Assign' being a symbol on both NodeAssemler and MapAssembler with different arity might be unfortunate -- would make it impossible to supply both with one concrete type.
 
 */

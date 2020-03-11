@@ -147,16 +147,16 @@ const (
 	laState_finished                // 'w' will also be nil, but this is a politer statement
 )
 
-func (plainList__Assembler) BeginMap(sizeHint int) (ipld.MapNodeAssembler, error) {
+func (plainList__Assembler) BeginMap(sizeHint int) (ipld.MapAssembler, error) {
 	return mixins.ListAssembler{"list"}.BeginMap(0)
 }
-func (na *plainList__Assembler) BeginList(sizeHint int) (ipld.ListNodeAssembler, error) {
+func (na *plainList__Assembler) BeginList(sizeHint int) (ipld.ListAssembler, error) {
 	if sizeHint < 0 {
 		sizeHint = 0
 	}
 	// Allocate storage space.
 	na.w.x = make([]ipld.Node, 0, sizeHint)
-	// That's it; return self as the ListNodeAssembler.  We already have all the right methods on this structure.
+	// That's it; return self as the ListAssembler.  We already have all the right methods on this structure.
 	return na, nil
 }
 func (plainList__Assembler) AssignNull() error {
@@ -191,9 +191,9 @@ func (plainList__Assembler) Style() ipld.NodeStyle {
 	return Style__List{}
 }
 
-// -- ListNodeAssembler -->
+// -- ListAssembler -->
 
-// AssembleValue is part of conforming to ListNodeAssembler, which we do on
+// AssembleValue is part of conforming to ListAssembler, which we do on
 // plainList__Assembler so that BeginList can just return a retyped pointer rather than new object.
 func (la *plainList__Assembler) AssembleValue() ipld.NodeAssembler {
 	// Sanity check, then update, assembler state.
@@ -206,7 +206,7 @@ func (la *plainList__Assembler) AssembleValue() ipld.NodeAssembler {
 	return &la.va
 }
 
-// Finish is part of conforming to ListNodeAssembler, which we do on
+// Finish is part of conforming to ListAssembler, which we do on
 // plainList__Assembler so that BeginList can just return a retyped pointer rather than new object.
 func (la *plainList__Assembler) Finish() error {
 	// Sanity check, then update, assembler state.
@@ -221,16 +221,16 @@ func (plainList__Assembler) ValueStyle() ipld.NodeStyle {
 	return Style__Any{}
 }
 
-// -- ListNodeAssembler.ValueAssembler -->
+// -- ListAssembler.ValueAssembler -->
 
-func (lva *plainList__ValueAssembler) BeginMap(sizeHint int) (ipld.MapNodeAssembler, error) {
+func (lva *plainList__ValueAssembler) BeginMap(sizeHint int) (ipld.MapAssembler, error) {
 	ma := plainList__ValueAssemblerMap{}
 	ma.ca.w = &plainMap{}
 	ma.p = lva.la
 	_, err := ma.ca.BeginMap(sizeHint)
 	return &ma, err
 }
-func (lva *plainList__ValueAssembler) BeginList(sizeHint int) (ipld.ListNodeAssembler, error) {
+func (lva *plainList__ValueAssembler) BeginList(sizeHint int) (ipld.ListAssembler, error) {
 	la := plainList__ValueAssemblerList{}
 	la.ca.w = &plainList{}
 	la.p = lva.la

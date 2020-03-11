@@ -104,10 +104,10 @@ type plainLink__Assembler struct {
 	w *plainLink
 }
 
-func (plainLink__Assembler) BeginMap(sizeHint int) (ipld.MapNodeAssembler, error) {
+func (plainLink__Assembler) BeginMap(sizeHint int) (ipld.MapAssembler, error) {
 	return mixins.LinkAssembler{"link"}.BeginMap(0)
 }
-func (plainLink__Assembler) BeginList(sizeHint int) (ipld.ListNodeAssembler, error) {
+func (plainLink__Assembler) BeginList(sizeHint int) (ipld.ListAssembler, error) {
 	return mixins.LinkAssembler{"link"}.BeginList(0)
 }
 func (plainLink__Assembler) AssignNull() error {

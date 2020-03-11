@@ -18,10 +18,10 @@ func MustBuild(ns ipld.NodeStyle, fn func(NodeAssembler)) ipld.Node {
 	fn(WrapAssembler(nb))
 	return nb.Build()
 }
-func MustBuildMap(ns ipld.NodeStyle, sizeHint int, fn func(MapNodeAssembler)) ipld.Node {
+func MustBuildMap(ns ipld.NodeStyle, sizeHint int, fn func(MapAssembler)) ipld.Node {
 	return MustBuild(ns, func(fna NodeAssembler) { fna.CreateMap(sizeHint, fn) })
 }
-func MustBuildList(ns ipld.NodeStyle, sizeHint int, fn func(ListNodeAssembler)) ipld.Node {
+func MustBuildList(ns ipld.NodeStyle, sizeHint int, fn func(ListAssembler)) ipld.Node {
 	return MustBuild(ns, func(fna NodeAssembler) { fna.CreateList(sizeHint, fn) })
 }
 
@@ -35,8 +35,8 @@ func WrapAssembler(na ipld.NodeAssembler) NodeAssembler {
 // and all recursive operations take a function as a parameter,
 // within which you will receive another {Map,List,}NodeAssembler.
 type NodeAssembler interface {
-	CreateMap(sizeHint int, fn func(MapNodeAssembler))
-	CreateList(sizeHint int, fn func(ListNodeAssembler))
+	CreateMap(sizeHint int, fn func(MapAssembler))
+	CreateList(sizeHint int, fn func(ListAssembler))
 	AssignNull()
 	AssignBool(bool)
 	AssignInt(int)
@@ -49,12 +49,12 @@ type NodeAssembler interface {
 	Style() ipld.NodeStyle
 }
 
-// MapNodeAssembler is the same as the interface in the core package, except:
+// MapAssembler is the same as the interface in the core package, except:
 // instead of returning errors, any error will cause panic
 // (and you can collect these with `fluent.Recover`);
 // and all recursive operations take a function as a parameter,
 // within which you will receive another {Map,List,}NodeAssembler.
-type MapNodeAssembler interface {
+type MapAssembler interface {
 	AssembleKey() NodeAssembler
 	AssembleValue() NodeAssembler
 
@@ -64,12 +64,12 @@ type MapNodeAssembler interface {
 	ValueStyle(k string) ipld.NodeStyle
 }
 
-// ListNodeAssembler is the same as the interface in the core package, except:
+// ListAssembler is the same as the interface in the core package, except:
 // instead of returning errors, any error will cause panic
 // (and you can collect these with `fluent.Recover`);
 // and all recursive operations take a function as a parameter,
 // within which you will receive another {Map,List,}NodeAssembler.
-type ListNodeAssembler interface {
+type ListAssembler interface {
 	AssembleValue() NodeAssembler
 
 	ValueStyle() ipld.NodeStyle
@@ -79,7 +79,7 @@ type nodeAssembler struct {
 	na ipld.NodeAssembler
 }
 
-func (fna *nodeAssembler) CreateMap(sizeHint int, fn func(MapNodeAssembler)) {
+func (fna *nodeAssembler) CreateMap(sizeHint int, fn func(MapAssembler)) {
 	if ma, err := fna.na.BeginMap(sizeHint); err != nil {
 		panic(Error{err})
 	} else {
@@ -89,7 +89,7 @@ func (fna *nodeAssembler) CreateMap(sizeHint int, fn func(MapNodeAssembler)) {
 		}
 	}
 }
-func (fna *nodeAssembler) CreateList(sizeHint int, fn func(ListNodeAssembler)) {
+func (fna *nodeAssembler) CreateList(sizeHint int, fn func(ListAssembler)) {
 	if la, err := fna.na.BeginList(sizeHint); err != nil {
 		panic(Error{err})
 	} else {
@@ -144,7 +144,7 @@ func (fna *nodeAssembler) Style() ipld.NodeStyle {
 }
 
 type mapNodeAssembler struct {
-	ma ipld.MapNodeAssembler
+	ma ipld.MapAssembler
 }
 
 func (fma *mapNodeAssembler) AssembleKey() NodeAssembler {
@@ -168,7 +168,7 @@ func (fma *mapNodeAssembler) ValueStyle(k string) ipld.NodeStyle {
 }
 
 type listNodeAssembler struct {
-	la ipld.ListNodeAssembler
+	la ipld.ListAssembler
 }
 
 func (fla *listNodeAssembler) AssembleValue() NodeAssembler {

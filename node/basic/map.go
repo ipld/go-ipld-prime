@@ -162,17 +162,17 @@ const (
 	maState_finished                   // 'w' will also be nil, but this is a politer statement
 )
 
-func (na *plainMap__Assembler) BeginMap(sizeHint int) (ipld.MapNodeAssembler, error) {
+func (na *plainMap__Assembler) BeginMap(sizeHint int) (ipld.MapAssembler, error) {
 	if sizeHint < 0 {
 		sizeHint = 0
 	}
 	// Allocate storage space.
 	na.w.t = make([]plainMap__Entry, 0, sizeHint)
 	na.w.m = make(map[string]ipld.Node, sizeHint)
-	// That's it; return self as the MapNodeAssembler.  We already have all the right methods on this structure.
+	// That's it; return self as the MapAssembler.  We already have all the right methods on this structure.
 	return na, nil
 }
-func (plainMap__Assembler) BeginList(sizeHint int) (ipld.ListNodeAssembler, error) {
+func (plainMap__Assembler) BeginList(sizeHint int) (ipld.ListAssembler, error) {
 	return mixins.MapAssembler{"map"}.BeginList(0)
 }
 func (plainMap__Assembler) AssignNull() error {
@@ -207,7 +207,7 @@ func (plainMap__Assembler) Style() ipld.NodeStyle {
 	return Style__Map{}
 }
 
-// -- MapNodeAssembler -->
+// -- MapAssembler -->
 
 // AssembleDirectly is part of conforming to MapAssembler, which we do on
 // plainMap__Assembler so that BeginMap can just return a retyped pointer rather than new object.
@@ -228,7 +228,7 @@ func (ma *plainMap__Assembler) AssembleDirectly(k string) (ipld.NodeAssembler, e
 	return &ma.va, nil
 }
 
-// AssembleKey is part of conforming to MapNodeAssembler, which we do on
+// AssembleKey is part of conforming to MapAssembler, which we do on
 // plainMap__Assembler so that BeginMap can just return a retyped pointer rather than new object.
 func (ma *plainMap__Assembler) AssembleKey() ipld.NodeAssembler {
 	// Sanity check, then update, assembler state.
@@ -243,7 +243,7 @@ func (ma *plainMap__Assembler) AssembleKey() ipld.NodeAssembler {
 	return &ma.ka
 }
 
-// AssembleValue is part of conforming to MapNodeAssembler, which we do on
+// AssembleValue is part of conforming to MapAssembler, which we do on
 // plainMap__Assembler so that BeginMap can just return a retyped pointer rather than new object.
 func (ma *plainMap__Assembler) AssembleValue() ipld.NodeAssembler {
 	// Sanity check, then update, assembler state.
@@ -256,7 +256,7 @@ func (ma *plainMap__Assembler) AssembleValue() ipld.NodeAssembler {
 	return &ma.va
 }
 
-// Finish is part of conforming to MapNodeAssembler, which we do on
+// Finish is part of conforming to MapAssembler, which we do on
 // plainMap__Assembler so that BeginMap can just return a retyped pointer rather than new object.
 func (ma *plainMap__Assembler) Finish() error {
 	// Sanity check, then update, assembler state.
@@ -274,12 +274,12 @@ func (plainMap__Assembler) ValueStyle(_ string) ipld.NodeStyle {
 	return Style__Any{}
 }
 
-// -- MapNodeAssembler.KeyAssembler -->
+// -- MapAssembler.KeyAssembler -->
 
-func (plainMap__KeyAssembler) BeginMap(sizeHint int) (ipld.MapNodeAssembler, error) {
+func (plainMap__KeyAssembler) BeginMap(sizeHint int) (ipld.MapAssembler, error) {
 	return mixins.StringAssembler{"string"}.BeginMap(0)
 }
-func (plainMap__KeyAssembler) BeginList(sizeHint int) (ipld.ListNodeAssembler, error) {
+func (plainMap__KeyAssembler) BeginList(sizeHint int) (ipld.ListAssembler, error) {
 	return mixins.StringAssembler{"string"}.BeginList(0)
 }
 func (plainMap__KeyAssembler) AssignNull() error {
@@ -327,16 +327,16 @@ func (plainMap__KeyAssembler) Style() ipld.NodeStyle {
 	return Style__String{}
 }
 
-// -- MapNodeAssembler.ValueAssembler -->
+// -- MapAssembler.ValueAssembler -->
 
-func (mva *plainMap__ValueAssembler) BeginMap(sizeHint int) (ipld.MapNodeAssembler, error) {
+func (mva *plainMap__ValueAssembler) BeginMap(sizeHint int) (ipld.MapAssembler, error) {
 	ma := plainMap__ValueAssemblerMap{}
 	ma.ca.w = &plainMap{}
 	ma.p = mva.ma
 	_, err := ma.ca.BeginMap(sizeHint)
 	return &ma, err
 }
-func (mva *plainMap__ValueAssembler) BeginList(sizeHint int) (ipld.ListNodeAssembler, error) {
+func (mva *plainMap__ValueAssembler) BeginList(sizeHint int) (ipld.ListAssembler, error) {
 	la := plainMap__ValueAssemblerList{}
 	la.ca.w = &plainList{}
 	la.p = mva.ma
