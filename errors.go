@@ -56,6 +56,12 @@ func (e ErrNotExists) Error() string {
 	return fmt.Sprintf("key not found: %q", e.Segment)
 }
 
+// ErrRepeatedMapKey is an error indicating that a key was inserted
+// into a map that already contains that key.
+//
+// This error may be returned by any methods that add data to a map --
+// any of the methods on a NodeAssembler that was yielded by MapAssembler.AssignKey(),
+// or from the MapAssembler.AssignDirectly() method.
 type ErrRepeatedMapKey struct {
 	Key Node
 }
