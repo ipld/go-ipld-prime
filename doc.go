@@ -38,7 +38,7 @@
 //   - schema -- interfaces for working with IPLD Schemas and Nodes
 //        which use Schema types and constraints
 //
-// Note that since packages in this interface are the core of the library,
+// Note that since interfaces in this package are the core of the library,
 // choices made here maximize correctness and performance -- these choices
 // are *not* always the choices that would maximize ergonomics.
 // (Ergonomics can come on top; performance generally can't.)
