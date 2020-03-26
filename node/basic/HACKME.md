@@ -65,25 +65,41 @@ if we're inside recursive structure, the parent assembler did so.
 
 The 'w' pointer is used throughout the life of the assembler.
 
-When assembly becomes "finished", the 'w' pointer should be set to nil,
-in order to make it impossible to continue to mutate that node.
-However, this doesn't *quite* work... because in the case of builders (at the root),
+Setting the 'w' pointer to nil is one of two mechanisms used internally
+to mark that assembly has become "finished" (the other mechanism is using
+an internal state enum field).
+Setting the 'w' pointer to nil has two advantages:
+one is that it makes it *impossible* to continue to mutate the target node;
+the other is that we need no *additional* memory to track this state change.
+However, we can't use the strategy of nilling 'w' in all cases: in particular,
+when in the NodeBuilder at the root of some construction,
 we need to continue to hold onto the node between when it becomes "finished"
-and when Build is called, allowing us to return it (and then finally nil 'w').
+and when Build is called; otherwise we can't actually return the value!
+Different stratgies are therefore used in different parts of this package.
 
-This has some kinda wild implications.  In recursive structures, it means the
-child assembler wrapper type is the one who takes reponsibility for nilling out
-the 'w' pointer at the same time as it updates the parent's state machine to
-proceed with the next entry.  In the case of scalars at the root of a build,
-it means *you can actually use the assign method more than once*.
+Maps and lists use an internal state enum, because they already have one,
+and so they might as well; there's no additional cost to this.
+Since they can use this state to guard against additional mutations after "finish",
+the map and list assemblers don't bother to nil their own 'w' at all.
 
-We could normalize the case with scalars at the root of a tree by adding another
-piece of memory to the scalar builders... but currently we haven't bothered.
-We're not in trouble on compositional correctness because nothing's visible
-until Build is called (whereas recursives have to be a lot stricter around this,
-because if something gets validated and finished, it's already essential that
-it now be unable to mutate out of the validated state, even if it's also not
-yet 'visible').
+During recursion to assemble values _inside_ maps and lists, it's interesting:
+the child assembler wrapper type takes reponsibility for nilling out
+the 'w' pointer in the child assembler's state, doing this at the same time as
+it updates the parent's state machine to clear proceeding with the next entry.
+
+In the case of scalars at the root of a build, we took a shortcut:
+we actually don't fence against repeat mutations at all.
+*You can actually use the assign method more than once*.
+We can do this without breaking safety contracts because the scalars
+all have a pass-by-value phase somewhere in their lifecycle
+(calling `nb.AssignString("x")`, then `n := nb.Build()`, then `nb.AssignString("y")`
+won't error if `nb` is a freestanding builder for strings... but it also
+won't result in mutating `n` to contain `"y"`, so overall, it's safe).
+
+We could normalize the case with scalars at the root of a tree so that they
+error more aggressively... but currently we haven't bothered, since this would
+require adding another piece of memory to the scalar builders; and meanwhile
+we're not in trouble on compositional correctness.
 
 Note that these remarks are for the `basicnode` package, but may also
 apply to other implementations too (e.g., our codegen output follows similar

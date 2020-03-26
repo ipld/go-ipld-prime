@@ -197,11 +197,39 @@ func (plainMap__Assembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"map"}.AssignLink(nil)
 }
 func (na *plainMap__Assembler) AssignNode(v ipld.Node) error {
-	// todo: apply a generic 'copy' function.
-	// todo: probably can also shortcut to copying na.t and na.m if it's our same concrete type?
-	//  (can't quite just `na.w = v`, because we don't have 'freeze' features, and we don't wanna open door to mutation of 'v'.)
-	//   (wait... actually, probably we can?  'Assign' is a "finish" method.  we can&should invalidate the wip pointer here.)
-	panic("later")
+	// Sanity check, then update, assembler state.
+	if na.state != maState_initial {
+		panic("misuse")
+	}
+	na.state = maState_finished
+	// Copy the content.
+	if v2, ok := v.(*plainMap); ok { // if our own type: shortcut.
+		// Copy the structure by value.
+		//  This means we'll have pointers into the same internal maps and slices;
+		//   this is okay, because the Node type promises it's immutable, and we are going to instantly finish ourselves to also maintain that.
+		*na.w = *v2
+		return nil
+	}
+	// If the above shortcut didn't work, resort to a generic copy.
+	//  We call AssignNode for all the child values, giving them a chance to hit shortcuts even if we didn't.
+	if v.ReprKind() != ipld.ReprKind_Map {
+		return ipld.ErrWrongKind{TypeName: "map", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	}
+	itr := v.MapIterator()
+	for !itr.Done() {
+		k, v, err := itr.Next()
+		if err != nil {
+			return err
+		}
+		if err := na.AssembleKey().AssignNode(k); err != nil {
+			return err
+		}
+		if err := na.AssembleValue().AssignNode(v); err != nil {
+			return err
+		}
+	}
+	// validators could run and report errors promptly, if this type had any -- same as for regular Finish.
+	return nil
 }
 func (plainMap__Assembler) Style() ipld.NodeStyle {
 	return Style__Map{}
