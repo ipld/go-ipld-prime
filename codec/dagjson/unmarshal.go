@@ -161,7 +161,7 @@ func (st *unmarshalState) unmarshal(na ipld.NodeAssembler, tokSrc shared.TokenSo
 			default:
 				return fmt.Errorf("unexpected %s token while expecting map key", st.tk[0].Type)
 			}
-			mva, err := ma.AssembleDirectly(st.tk[0].Str)
+			mva, err := ma.AssembleEntry(st.tk[0].Str)
 			if err != nil { // return in error if the key was rejected
 				return err
 			}

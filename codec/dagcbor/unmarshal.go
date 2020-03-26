@@ -70,7 +70,7 @@ func unmarshal(na ipld.NodeAssembler, tokSrc shared.TokenSource, tk *tok.Token) 
 			if observedLen > expectLen {
 				return fmt.Errorf("unexpected continuation of map elements beyond declared length")
 			}
-			mva, err := ma.AssembleDirectly(tk.Str)
+			mva, err := ma.AssembleEntry(tk.Str)
 			if err != nil { // return in error if the key was rejected
 				return err
 			}

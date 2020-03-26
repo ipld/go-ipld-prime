@@ -14,8 +14,8 @@ func TestMap(t *testing.T) {
 func BenchmarkMapStrInt_3n_AssembleStandard(b *testing.B) {
 	tests.SpecBenchmarkMapStrInt_3n_AssembleStandard(b, Style__Map{})
 }
-func BenchmarkMapStrInt_3n_AssembleDirectly(b *testing.B) {
-	tests.SpecBenchmarkMapStrInt_3n_AssembleDirectly(b, Style__Map{})
+func BenchmarkMapStrInt_3n_AssembleEntry(b *testing.B) {
+	tests.SpecBenchmarkMapStrInt_3n_AssembleEntry(b, Style__Map{})
 }
 func BenchmarkMapStrInt_3n_Iteration(b *testing.B) {
 	tests.SpecBenchmarkMapStrInt_3n_Iteration(b, Style__Map{})
@@ -24,8 +24,8 @@ func BenchmarkMapStrInt_3n_Iteration(b *testing.B) {
 func BenchmarkMapStrInt_25n_AssembleStandard(b *testing.B) {
 	tests.SpecBenchmarkMapStrInt_25n_AssembleStandard(b, Style__Map{})
 }
-func BenchmarkMapStrInt_25n_AssembleDirectly(b *testing.B) {
-	tests.SpecBenchmarkMapStrInt_25n_AssembleDirectly(b, Style__Map{})
+func BenchmarkMapStrInt_25n_AssembleEntry(b *testing.B) {
+	tests.SpecBenchmarkMapStrInt_25n_AssembleEntry(b, Style__Map{})
 }
 func BenchmarkMapStrInt_25n_Iteration(b *testing.B) {
 	tests.SpecBenchmarkMapStrInt_25n_Iteration(b, Style__Map{})

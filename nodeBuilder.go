@@ -59,7 +59,7 @@ type MapAssembler interface {
 	AssembleKey() NodeAssembler   // must be followed by call to AssembleValue.
 	AssembleValue() NodeAssembler // must be called immediately after AssembleKey.
 
-	AssembleDirectly(k string) (NodeAssembler, error) // shortcut combining AssembleKey and AssembleValue into one step; valid when the key is a string kind.
+	AssembleEntry(k string) (NodeAssembler, error) // shortcut combining AssembleKey and AssembleValue into one step; valid when the key is a string kind.
 
 	Finish() error
 

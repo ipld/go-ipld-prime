@@ -58,7 +58,7 @@ type MapAssembler interface {
 	AssembleKey() NodeAssembler
 	AssembleValue() NodeAssembler
 
-	AssembleDirectly(k string) NodeAssembler
+	AssembleEntry(k string) NodeAssembler
 
 	KeyStyle() ipld.NodeStyle
 	ValueStyle(k string) ipld.NodeStyle
@@ -153,8 +153,8 @@ func (fma *mapNodeAssembler) AssembleKey() NodeAssembler {
 func (fma *mapNodeAssembler) AssembleValue() NodeAssembler {
 	return &nodeAssembler{fma.ma.AssembleValue()}
 }
-func (fma *mapNodeAssembler) AssembleDirectly(k string) NodeAssembler {
-	va, err := fma.ma.AssembleDirectly(k)
+func (fma *mapNodeAssembler) AssembleEntry(k string) NodeAssembler {
+	va, err := fma.ma.AssembleEntry(k)
 	if err != nil {
 		panic(Error{err})
 	}

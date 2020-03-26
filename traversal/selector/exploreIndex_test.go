@@ -19,15 +19,15 @@ func TestParseExploreIndex(t *testing.T) {
 	})
 	t.Run("parsing map node without next field should error", func(t *testing.T) {
 		sn := fluent.MustBuildMap(basicnode.Style__Map{}, 1, func(na fluent.MapAssembler) {
-			na.AssembleDirectly(SelectorKey_Index).AssignInt(2)
+			na.AssembleEntry(SelectorKey_Index).AssignInt(2)
 		})
 		_, err := ParseContext{}.ParseExploreIndex(sn)
 		Wish(t, err, ShouldEqual, fmt.Errorf("selector spec parse rejected: next field must be present in ExploreIndex selector"))
 	})
 	t.Run("parsing map node without index field should error", func(t *testing.T) {
 		sn := fluent.MustBuildMap(basicnode.Style__Map{}, 1, func(na fluent.MapAssembler) {
-			na.AssembleDirectly(SelectorKey_Next).CreateMap(1, func(na fluent.MapAssembler) {
-				na.AssembleDirectly(SelectorKey_Matcher).CreateMap(0, func(na fluent.MapAssembler) {})
+			na.AssembleEntry(SelectorKey_Next).CreateMap(1, func(na fluent.MapAssembler) {
+				na.AssembleEntry(SelectorKey_Matcher).CreateMap(0, func(na fluent.MapAssembler) {})
 			})
 		})
 		_, err := ParseContext{}.ParseExploreIndex(sn)
@@ -35,9 +35,9 @@ func TestParseExploreIndex(t *testing.T) {
 	})
 	t.Run("parsing map node with index field that is not an int should error", func(t *testing.T) {
 		sn := fluent.MustBuildMap(basicnode.Style__Map{}, 2, func(na fluent.MapAssembler) {
-			na.AssembleDirectly(SelectorKey_Index).AssignString("cheese")
-			na.AssembleDirectly(SelectorKey_Next).CreateMap(1, func(na fluent.MapAssembler) {
-				na.AssembleDirectly(SelectorKey_Matcher).CreateMap(0, func(na fluent.MapAssembler) {})
+			na.AssembleEntry(SelectorKey_Index).AssignString("cheese")
+			na.AssembleEntry(SelectorKey_Next).CreateMap(1, func(na fluent.MapAssembler) {
+				na.AssembleEntry(SelectorKey_Matcher).CreateMap(0, func(na fluent.MapAssembler) {})
 			})
 		})
 		_, err := ParseContext{}.ParseExploreIndex(sn)
@@ -45,17 +45,17 @@ func TestParseExploreIndex(t *testing.T) {
 	})
 	t.Run("parsing map node with next field with invalid selector node should return child's error", func(t *testing.T) {
 		sn := fluent.MustBuildMap(basicnode.Style__Map{}, 2, func(na fluent.MapAssembler) {
-			na.AssembleDirectly(SelectorKey_Index).AssignInt(2)
-			na.AssembleDirectly(SelectorKey_Next).AssignInt(0)
+			na.AssembleEntry(SelectorKey_Index).AssignInt(2)
+			na.AssembleEntry(SelectorKey_Next).AssignInt(0)
 		})
 		_, err := ParseContext{}.ParseExploreIndex(sn)
 		Wish(t, err, ShouldEqual, fmt.Errorf("selector spec parse rejected: selector is a keyed union and thus must be a map"))
 	})
 	t.Run("parsing map node with next field with valid selector node should parse", func(t *testing.T) {
 		sn := fluent.MustBuildMap(basicnode.Style__Map{}, 2, func(na fluent.MapAssembler) {
-			na.AssembleDirectly(SelectorKey_Index).AssignInt(2)
-			na.AssembleDirectly(SelectorKey_Next).CreateMap(1, func(na fluent.MapAssembler) {
-				na.AssembleDirectly(SelectorKey_Matcher).CreateMap(0, func(na fluent.MapAssembler) {})
+			na.AssembleEntry(SelectorKey_Index).AssignInt(2)
+			na.AssembleEntry(SelectorKey_Next).CreateMap(1, func(na fluent.MapAssembler) {
+				na.AssembleEntry(SelectorKey_Matcher).CreateMap(0, func(na fluent.MapAssembler) {})
 			})
 		})
 		s, err := ParseContext{}.ParseExploreIndex(sn)

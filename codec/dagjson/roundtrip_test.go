@@ -11,17 +11,17 @@ import (
 )
 
 var n = fluent.MustBuildMap(basicnode.Style__Map{}, 4, func(na fluent.MapAssembler) {
-	na.AssembleDirectly("plain").AssignString("olde string")
-	na.AssembleDirectly("map").CreateMap(2, func(na fluent.MapAssembler) {
-		na.AssembleDirectly("one").AssignInt(1)
-		na.AssembleDirectly("two").AssignInt(2)
+	na.AssembleEntry("plain").AssignString("olde string")
+	na.AssembleEntry("map").CreateMap(2, func(na fluent.MapAssembler) {
+		na.AssembleEntry("one").AssignInt(1)
+		na.AssembleEntry("two").AssignInt(2)
 	})
-	na.AssembleDirectly("list").CreateList(2, func(na fluent.ListAssembler) {
+	na.AssembleEntry("list").CreateList(2, func(na fluent.ListAssembler) {
 		na.AssembleValue().AssignString("three")
 		na.AssembleValue().AssignString("four")
 	})
-	na.AssembleDirectly("nested").CreateMap(1, func(na fluent.MapAssembler) {
-		na.AssembleDirectly("deeper").CreateList(1, func(na fluent.ListAssembler) {
+	na.AssembleEntry("nested").CreateMap(1, func(na fluent.MapAssembler) {
+		na.AssembleEntry("deeper").CreateList(1, func(na fluent.ListAssembler) {
 			na.AssembleValue().AssignString("things")
 		})
 	})

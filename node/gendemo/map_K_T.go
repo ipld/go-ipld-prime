@@ -161,8 +161,8 @@ type _T__ReprAssembler struct {
 
 func (_T__Assembler) BeginMap(_ int) (ipld.MapAssembler, error)   { panic("no") }
 func (_T__Assembler) BeginList(_ int) (ipld.ListAssembler, error) { panic("no") }
-func (_T__Assembler) AssignNull() error                               { panic("no") }
-func (_T__Assembler) AssignBool(bool) error                           { panic("no") }
+func (_T__Assembler) AssignNull() error                           { panic("no") }
+func (_T__Assembler) AssignBool(bool) error                       { panic("no") }
 func (ta *_T__Assembler) AssignInt(v int) error {
 	ta.w.x = v
 	return nil
@@ -371,7 +371,7 @@ func (ta *_Map_K_T__Assembler) AssignNode(v ipld.Node) error {
 }
 func (_Map_K_T__Assembler) Style() ipld.NodeStyle { panic("later") }
 
-func (ma *_Map_K_T__Assembler) AssembleDirectly(k string) (ipld.NodeAssembler, error) {
+func (ma *_Map_K_T__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, error) {
 	// Sanity check, then update, assembler state.
 	if ma.state != maState_initial {
 		panic("misuse")

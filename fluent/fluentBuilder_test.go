@@ -24,12 +24,12 @@ func TestBuild(t *testing.T) {
 	t.Run("map build should work", func(t *testing.T) {
 		n := fluent.MustBuild(basicnode.Style__Map{}, func(fna fluent.NodeAssembler) {
 			fna.CreateMap(3, func(fma fluent.MapAssembler) {
-				fma.AssembleDirectly("k1").AssignString("fine")
-				fma.AssembleDirectly("k2").AssignString("super")
-				fma.AssembleDirectly("k3").CreateMap(3, func(fma fluent.MapAssembler) {
-					fma.AssembleDirectly("k31").AssignString("thanks")
-					fma.AssembleDirectly("k32").AssignString("for")
-					fma.AssembleDirectly("k33").AssignString("asking")
+				fma.AssembleEntry("k1").AssignString("fine")
+				fma.AssembleEntry("k2").AssignString("super")
+				fma.AssembleEntry("k3").CreateMap(3, func(fma fluent.MapAssembler) {
+					fma.AssembleEntry("k31").AssignString("thanks")
+					fma.AssembleEntry("k32").AssignString("for")
+					fma.AssembleEntry("k33").AssignString("asking")
 				})
 			})
 		})

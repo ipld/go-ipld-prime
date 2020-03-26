@@ -27,16 +27,16 @@ func TestFoo(t *testing.T, newNb func(typ schema.Type) ipld.NodeBuilder) {
 			ma, err := nb.BeginMap(3)
 			Wish(t, err, ShouldEqual, nil)
 			// Set 'f1' to a valid string.
-			va, err := ma.AssembleDirectly("f1")
+			va, err := ma.AssembleEntry("f1")
 			Wish(t, err, ShouldEqual, nil)
 			Wish(t, va.AssignString("asdf"), ShouldEqual, nil)
 			// Skip setting 'f2' -- it's optional.
 			// Set 'f3' to null.  Nulls aren't typed.
-			va, err = ma.AssembleDirectly("f3")
+			va, err = ma.AssembleEntry("f3")
 			Wish(t, err, ShouldEqual, nil)
 			Wish(t, va.AssignNull(), ShouldEqual, nil)
 			// Set 'f4' to a valid string.
-			va, err = ma.AssembleDirectly("f4")
+			va, err = ma.AssembleEntry("f4")
 			Wish(t, err, ShouldEqual, nil)
 			Wish(t, va.AssignString("qwer"), ShouldEqual, nil)
 			Wish(t, ma.Finish(), ShouldEqual, nil)

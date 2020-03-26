@@ -20,7 +20,7 @@ func TestParseExploreUnion(t *testing.T) {
 	t.Run("parsing list node where one node is invalid should return child's error", func(t *testing.T) {
 		sn := fluent.MustBuildList(basicnode.Style__List{}, 2, func(na fluent.ListAssembler) {
 			na.AssembleValue().CreateMap(1, func(na fluent.MapAssembler) {
-				na.AssembleDirectly(SelectorKey_Matcher).CreateMap(0, func(na fluent.MapAssembler) {})
+				na.AssembleEntry(SelectorKey_Matcher).CreateMap(0, func(na fluent.MapAssembler) {})
 			})
 			na.AssembleValue().AssignInt(2)
 		})
@@ -31,13 +31,13 @@ func TestParseExploreUnion(t *testing.T) {
 	t.Run("parsing map node with next field with valid selector node should parse", func(t *testing.T) {
 		sn := fluent.MustBuildList(basicnode.Style__List{}, 2, func(na fluent.ListAssembler) {
 			na.AssembleValue().CreateMap(1, func(na fluent.MapAssembler) {
-				na.AssembleDirectly(SelectorKey_Matcher).CreateMap(0, func(na fluent.MapAssembler) {})
+				na.AssembleEntry(SelectorKey_Matcher).CreateMap(0, func(na fluent.MapAssembler) {})
 			})
 			na.AssembleValue().CreateMap(1, func(na fluent.MapAssembler) {
-				na.AssembleDirectly(SelectorKey_ExploreIndex).CreateMap(2, func(na fluent.MapAssembler) {
-					na.AssembleDirectly(SelectorKey_Index).AssignInt(2)
-					na.AssembleDirectly(SelectorKey_Next).CreateMap(1, func(na fluent.MapAssembler) {
-						na.AssembleDirectly(SelectorKey_Matcher).CreateMap(0, func(na fluent.MapAssembler) {})
+				na.AssembleEntry(SelectorKey_ExploreIndex).CreateMap(2, func(na fluent.MapAssembler) {
+					na.AssembleEntry(SelectorKey_Index).AssignInt(2)
+					na.AssembleEntry(SelectorKey_Next).CreateMap(1, func(na fluent.MapAssembler) {
+						na.AssembleEntry(SelectorKey_Matcher).CreateMap(0, func(na fluent.MapAssembler) {})
 					})
 				})
 			})

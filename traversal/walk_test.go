@@ -21,11 +21,11 @@ var (
 	leafAlpha, leafAlphaLnk         = encode(basicnode.NewString("alpha"))
 	leafBeta, leafBetaLnk           = encode(basicnode.NewString("beta"))
 	middleMapNode, middleMapNodeLnk = encode(fluent.MustBuildMap(basicnode.Style__Map{}, 3, func(na fluent.MapAssembler) {
-		na.AssembleDirectly("foo").AssignBool(true)
-		na.AssembleDirectly("bar").AssignBool(false)
-		na.AssembleDirectly("nested").CreateMap(2, func(na fluent.MapAssembler) {
-			na.AssembleDirectly("alink").AssignLink(leafAlphaLnk)
-			na.AssembleDirectly("nonlink").AssignString("zoo")
+		na.AssembleEntry("foo").AssignBool(true)
+		na.AssembleEntry("bar").AssignBool(false)
+		na.AssembleEntry("nested").CreateMap(2, func(na fluent.MapAssembler) {
+			na.AssembleEntry("alink").AssignLink(leafAlphaLnk)
+			na.AssembleEntry("nonlink").AssignString("zoo")
 		})
 	}))
 	middleListNode, middleListNodeLnk = encode(fluent.MustBuildList(basicnode.Style__List{}, 4, func(na fluent.ListAssembler) {
@@ -35,10 +35,10 @@ var (
 		na.AssembleValue().AssignLink(leafAlphaLnk)
 	}))
 	rootNode, rootNodeLnk = encode(fluent.MustBuildMap(basicnode.Style__Map{}, 4, func(na fluent.MapAssembler) {
-		na.AssembleDirectly("plain").AssignString("olde string")
-		na.AssembleDirectly("linkedString").AssignLink(leafAlphaLnk)
-		na.AssembleDirectly("linkedMap").AssignLink(middleMapNodeLnk)
-		na.AssembleDirectly("linkedList").AssignLink(middleListNodeLnk)
+		na.AssembleEntry("plain").AssignString("olde string")
+		na.AssembleEntry("linkedString").AssignLink(leafAlphaLnk)
+		na.AssembleEntry("linkedMap").AssignLink(middleMapNodeLnk)
+		na.AssembleEntry("linkedList").AssignLink(middleListNodeLnk)
 	}))
 )
 */
@@ -141,8 +141,8 @@ func TestWalkMatching(t *testing.T) {
 				Wish(t, prog.Path.String(), ShouldEqual, "bar")
 			case 3:
 				Wish(t, n, ShouldEqual, fluent.MustBuildMap(basicnode.Style__Map{}, 2, func(na fluent.MapAssembler) {
-					na.AssembleDirectly("alink").AssignLink(leafAlphaLnk)
-					na.AssembleDirectly("nonlink").AssignString("zoo")
+					na.AssembleEntry("alink").AssignLink(leafAlphaLnk)
+					na.AssembleEntry("nonlink").AssignString("zoo")
 				}))
 				Wish(t, prog.Path.String(), ShouldEqual, "nested")
 			case 4:

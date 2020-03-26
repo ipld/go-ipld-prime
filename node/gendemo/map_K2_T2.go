@@ -150,7 +150,7 @@ func (ta *_K2__Assembler) AssignNode(v ipld.Node) error {
 }
 func (_K2__Assembler) Style() ipld.NodeStyle { panic("later") }
 
-func (ma *_K2__Assembler) AssembleDirectly(k string) (ipld.NodeAssembler, error) {
+func (ma *_K2__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, error) {
 	// Sanity check, then update, assembler state.
 	if ma.state != maState_initial {
 		panic("misuse")
@@ -183,7 +183,7 @@ func (ma *_K2__Assembler) AssembleKey() ipld.NodeAssembler {
 		panic("misuse")
 	}
 	ma.state = maState_midKey
-	// TODO return a fairly dummy assembler which just contains a string switch (probably sharing code with AssembleDirectly).
+	// TODO return a fairly dummy assembler which just contains a string switch (probably sharing code with AssembleEntry).
 	panic("todo")
 }
 func (ma *_K2__Assembler) AssembleValue() ipld.NodeAssembler {
@@ -333,7 +333,7 @@ func (ta *_T2__Assembler) AssignNode(v ipld.Node) error {
 }
 func (_T2__Assembler) Style() ipld.NodeStyle { panic("later") }
 
-func (ta *_T2__Assembler) AssembleDirectly(string) (ipld.NodeAssembler, error) {
+func (ta *_T2__Assembler) AssembleEntry(string) (ipld.NodeAssembler, error) {
 	// this'll be fun
 	panic("soon")
 }
