@@ -105,14 +105,41 @@ Note that these remarks are for the `basicnode` package, but may also
 apply to other implementations too (e.g., our codegen output follows similar
 overall logic).
 
-### nodestyles are implemented as exported concrete types
+### nodestyles are available through a singleton
 
-This is sorta arbitrary.  We could equally easily make them exported as
-package scope vars (which happen to be singletons), or as functions
-(which happen to have fixed returns).
+Every NodeStyle available from this package is exposed as a field
+in a struct of which there's one public exported instance available,
+called 'Style'.
 
-These choices affect syntax, but not really semantics.
+This means you can use it like this:
 
-In any of these cases, we'd still end up with concrete types per style
-(so that there's a place to hang the methods)... so, it seemed simplest
-to just export them.
+```go
+nbm := basicnode.Style.Map.NewBuilder()
+nbs := basicnode.Style.String.NewBuilder()
+nba := basicnode.Style.Any.NewBuilder()
+// etc
+```
+
+(If you're interested in the performance of this: it's free!
+Methods called at the end of the chain are inlinable.
+Since all of the types of the structures on the way there are zero-member
+structs, the compiler can effectively treat them as constants,
+and thus freely elide any memory dereferences that would
+otherwise be necessary to get methods on such a value.)
+
+### nodestyles are (also) available as exported concrete types
+
+The 'Style' singleton is one way to access the NodeStyle in this package;
+their exported types are another equivalent way.
+
+```go
+basicnode.Style.Map = basicnode.Style__Map{}
+```
+
+It is recommended to use the singleton style;
+they compile to identical assembly, and the singleton is syntactically prettier.
+
+We may make these concrete types unexported in the future.
+A decision on this is deferred until some time has passed and
+we can accumulate reasonable certainty that there's no need for an exported type
+(such as type assertions, etc).
