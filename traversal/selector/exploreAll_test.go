@@ -4,36 +4,36 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/ipld/go-ipld-prime/fluent"
-	ipldfree "github.com/ipld/go-ipld-prime/impl/free"
 	. "github.com/warpfork/go-wish"
+
+	"github.com/ipld/go-ipld-prime/fluent"
+	basicnode "github.com/ipld/go-ipld-prime/node/basic"
 )
 
 func TestParseExploreAll(t *testing.T) {
-	fnb := fluent.WrapNodeBuilder(ipldfree.NodeBuilder()) // just for the other fixture building
 	t.Run("parsing non map node should error", func(t *testing.T) {
-		sn := fnb.CreateInt(0)
+		sn := basicnode.NewInt(0)
 		_, err := ParseContext{}.ParseExploreAll(sn)
 		Wish(t, err, ShouldEqual, fmt.Errorf("selector spec parse rejected: selector body must be a map"))
 	})
 	t.Run("parsing map node without next field should error", func(t *testing.T) {
-		sn := fnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {})
+		sn := fluent.MustBuildMap(basicnode.Style__Map{}, 0, func(na fluent.MapAssembler) {})
 		_, err := ParseContext{}.ParseExploreAll(sn)
 		Wish(t, err, ShouldEqual, fmt.Errorf("selector spec parse rejected: next field must be present in ExploreAll selector"))
 	})
 
 	t.Run("parsing map node without next field with invalid selector node should return child's error", func(t *testing.T) {
-		sn := fnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-			mb.Insert(knb.CreateString(SelectorKey_Next), vnb.CreateInt(0))
+		sn := fluent.MustBuildMap(basicnode.Style__Map{}, 1, func(na fluent.MapAssembler) {
+			na.AssembleEntry(SelectorKey_Next).AssignInt(0)
 		})
 		_, err := ParseContext{}.ParseExploreAll(sn)
 		Wish(t, err, ShouldEqual, fmt.Errorf("selector spec parse rejected: selector is a keyed union and thus must be a map"))
 	})
 	t.Run("parsing map node with next field with valid selector node should parse", func(t *testing.T) {
-		sn := fnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-			mb.Insert(knb.CreateString(SelectorKey_Next), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-				mb.Insert(knb.CreateString(SelectorKey_Matcher), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {}))
-			}))
+		sn := fluent.MustBuildMap(basicnode.Style__Map{}, 1, func(na fluent.MapAssembler) {
+			na.AssembleEntry(SelectorKey_Next).CreateMap(1, func(na fluent.MapAssembler) {
+				na.AssembleEntry(SelectorKey_Matcher).CreateMap(0, func(na fluent.MapAssembler) {})
+			})
 		})
 		s, err := ParseContext{}.ParseExploreAll(sn)
 		Wish(t, err, ShouldEqual, nil)

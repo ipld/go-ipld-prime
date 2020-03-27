@@ -9,7 +9,7 @@
 // Here in the godoc, the first couple of types to look at should be:
 //
 //   - Node
-//   - NodeBuilder
+//   - NodeBuilder (and NodeAssembler)
 //
 // These types provide a generic description of the data model.
 //
@@ -27,12 +27,24 @@
 //
 // Particularly interesting subpackages include:
 //
-//   - impl/* -- various Node + NodeBuilder implementations
-//   - encoding/* -- functions for serializing and deserializing Nodes
-//   - linking/* -- various Link + LinkBuilder implementation
+//   - node/* -- various Node + NodeBuilder implementations
+//   - node/basic -- the first Node implementation you should try
+//   - codec/* -- functions for serializing and deserializing Nodes
+//   - linking/* -- various Link + LinkBuilder implementations
 //   - traversal -- functions for walking Node graphs (including
 //        automatic link loading) and visiting
-//   - typed -- Node implementations with constraints
-//   - fluent -- Node interfaces with streamlined error handling
+//   - must -- helpful functions for streamlining error handling
+//   - fluent -- alternative Node interfaces that flip errors to panics
+//   - schema -- interfaces for working with IPLD Schemas and Nodes
+//        which use Schema types and constraints
+//
+// Note that since interfaces in this package are the core of the library,
+// choices made here maximize correctness and performance -- these choices
+// are *not* always the choices that would maximize ergonomics.
+// (Ergonomics can come on top; performance generally can't.)
+// You can check out the 'must' or 'fluent' packages for more ergonomics;
+// 'traversal' provides some ergnomics features for certain uses;
+// any use of schemas with codegen tooling will provide more ergnomic options;
+// or you can make your own function decorators that do what *you* need.
 //
 package ipld

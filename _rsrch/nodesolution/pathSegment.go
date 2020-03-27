@@ -1,1 +1,0 @@
-../../pathSegment.go

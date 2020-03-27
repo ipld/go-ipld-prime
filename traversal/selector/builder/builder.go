@@ -42,11 +42,10 @@ type ExploreFieldsSpecBuildingClosure func(ExploreFieldsSpecBuilder)
 // selectors in ExploreFields
 type ExploreFieldsSpecBuilder interface {
 	Insert(k string, v SelectorSpec)
-	Delete(k string)
 }
 
 type selectorSpecBuilder struct {
-	fnb fluent.NodeBuilder
+	ns ipld.NodeStyle
 }
 
 type selectorSpec struct {
@@ -61,113 +60,108 @@ func (ss selectorSpec) Selector() (selector.Selector, error) {
 	return selector.ParseSelector(ss.n)
 }
 
-// NewSelectorSpecBuilder creates a SelectorSpecBuilder from an underlying ipld NodeBuilder
-func NewSelectorSpecBuilder(nb ipld.NodeBuilder) SelectorSpecBuilder {
-	fnb := fluent.WrapNodeBuilder(nb)
-	return &selectorSpecBuilder{fnb}
+// NewSelectorSpecBuilder creates a SelectorSpecBuilder which will store
+// data in the format determined by the given ipld.NodeStyle.
+func NewSelectorSpecBuilder(ns ipld.NodeStyle) SelectorSpecBuilder {
+	return &selectorSpecBuilder{ns}
 }
 
 func (ssb *selectorSpecBuilder) ExploreRecursiveEdge() SelectorSpec {
 	return selectorSpec{
-		ssb.fnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-			mb.Insert(knb.CreateString(selector.SelectorKey_ExploreRecursiveEdge), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {}))
+		fluent.MustBuildMap(ssb.ns, 1, func(na fluent.MapAssembler) {
+			na.AssembleEntry(selector.SelectorKey_ExploreRecursiveEdge).CreateMap(0, func(na fluent.MapAssembler) {})
 		}),
 	}
 }
 
 func (ssb *selectorSpecBuilder) ExploreRecursive(limit selector.RecursionLimit, sequence SelectorSpec) SelectorSpec {
 	return selectorSpec{
-		ssb.fnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-			mb.Insert(knb.CreateString(selector.SelectorKey_ExploreRecursive), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-				mb.Insert(knb.CreateString(selector.SelectorKey_Limit), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
+		fluent.MustBuildMap(ssb.ns, 1, func(na fluent.MapAssembler) {
+			na.AssembleEntry(selector.SelectorKey_ExploreRecursive).CreateMap(2, func(na fluent.MapAssembler) {
+				na.AssembleEntry(selector.SelectorKey_Limit).CreateMap(1, func(na fluent.MapAssembler) {
 					switch limit.Mode() {
 					case selector.RecursionLimit_Depth:
-						mb.Insert(knb.CreateString(selector.SelectorKey_LimitDepth), vnb.CreateInt(limit.Depth()))
+						na.AssembleEntry(selector.SelectorKey_LimitDepth).AssignInt(limit.Depth())
 					case selector.RecursionLimit_None:
-						mb.Insert(knb.CreateString(selector.SelectorKey_LimitNone), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {}))
+						na.AssembleEntry(selector.SelectorKey_LimitNone).CreateMap(0, func(na fluent.MapAssembler) {})
 					default:
 						panic("Unsupported recursion limit type")
 					}
-				}))
-				mb.Insert(knb.CreateString(selector.SelectorKey_Sequence), sequence.Node())
-			}))
+				})
+				na.AssembleEntry(selector.SelectorKey_Sequence).AssignNode(sequence.Node())
+			})
 		}),
 	}
 }
 
 func (ssb *selectorSpecBuilder) ExploreAll(next SelectorSpec) SelectorSpec {
 	return selectorSpec{
-		ssb.fnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-			mb.Insert(knb.CreateString(selector.SelectorKey_ExploreAll), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-				mb.Insert(knb.CreateString(selector.SelectorKey_Next), next.Node())
-			}))
+		fluent.MustBuildMap(ssb.ns, 1, func(na fluent.MapAssembler) {
+			na.AssembleEntry(selector.SelectorKey_ExploreAll).CreateMap(1, func(na fluent.MapAssembler) {
+				na.AssembleEntry(selector.SelectorKey_Next).AssignNode(next.Node())
+			})
 		}),
 	}
 }
 func (ssb *selectorSpecBuilder) ExploreIndex(index int, next SelectorSpec) SelectorSpec {
 	return selectorSpec{
-		ssb.fnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-			mb.Insert(knb.CreateString(selector.SelectorKey_ExploreIndex), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-				mb.Insert(knb.CreateString(selector.SelectorKey_Index), vnb.CreateInt(index))
-				mb.Insert(knb.CreateString(selector.SelectorKey_Next), next.Node())
-			}))
+		fluent.MustBuildMap(ssb.ns, 1, func(na fluent.MapAssembler) {
+			na.AssembleEntry(selector.SelectorKey_ExploreIndex).CreateMap(2, func(na fluent.MapAssembler) {
+				na.AssembleEntry(selector.SelectorKey_Index).AssignInt(index)
+				na.AssembleEntry(selector.SelectorKey_Next).AssignNode(next.Node())
+			})
 		}),
 	}
 }
 
 func (ssb *selectorSpecBuilder) ExploreRange(start int, end int, next SelectorSpec) SelectorSpec {
 	return selectorSpec{
-		ssb.fnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-			mb.Insert(knb.CreateString(selector.SelectorKey_ExploreRange), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-				mb.Insert(knb.CreateString(selector.SelectorKey_Start), vnb.CreateInt(start))
-				mb.Insert(knb.CreateString(selector.SelectorKey_End), vnb.CreateInt(end))
-				mb.Insert(knb.CreateString(selector.SelectorKey_Next), next.Node())
-			}))
+		fluent.MustBuildMap(ssb.ns, 1, func(na fluent.MapAssembler) {
+			na.AssembleEntry(selector.SelectorKey_ExploreRange).CreateMap(3, func(na fluent.MapAssembler) {
+				na.AssembleEntry(selector.SelectorKey_Start).AssignInt(start)
+				na.AssembleEntry(selector.SelectorKey_End).AssignInt(end)
+				na.AssembleEntry(selector.SelectorKey_Next).AssignNode(next.Node())
+			})
 		}),
 	}
 }
 
 func (ssb *selectorSpecBuilder) ExploreUnion(members ...SelectorSpec) SelectorSpec {
 	return selectorSpec{
-		ssb.fnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-			mb.Insert(knb.CreateString(selector.SelectorKey_ExploreUnion), vnb.CreateList(func(lb fluent.ListBuilder, vnb fluent.NodeBuilder) {
+		fluent.MustBuildMap(ssb.ns, 1, func(na fluent.MapAssembler) {
+			na.AssembleEntry(selector.SelectorKey_ExploreUnion).CreateList(len(members), func(na fluent.ListAssembler) {
 				for _, member := range members {
-					lb.Append(member.Node())
+					na.AssembleValue().AssignNode(member.Node())
 				}
-			}))
+			})
 		}),
 	}
 }
 
 func (ssb *selectorSpecBuilder) ExploreFields(specBuilder ExploreFieldsSpecBuildingClosure) SelectorSpec {
 	return selectorSpec{
-		ssb.fnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-			mb.Insert(knb.CreateString(selector.SelectorKey_ExploreFields), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-				mb.Insert(knb.CreateString(selector.SelectorKey_Fields), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-					specBuilder(exploreFieldsSpecBuilder{mb, knb})
-				}))
-			}))
+		fluent.MustBuildMap(ssb.ns, 1, func(na fluent.MapAssembler) {
+			na.AssembleEntry(selector.SelectorKey_ExploreFields).CreateMap(1, func(na fluent.MapAssembler) {
+				na.AssembleEntry(selector.SelectorKey_Fields).CreateMap(-1, func(na fluent.MapAssembler) {
+					specBuilder(exploreFieldsSpecBuilder{na})
+				})
+			})
 		}),
 	}
 }
 
 func (ssb *selectorSpecBuilder) Matcher() SelectorSpec {
 	return selectorSpec{
-		ssb.fnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-			mb.Insert(knb.CreateString(selector.SelectorKey_Matcher), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {}))
+		fluent.MustBuildMap(ssb.ns, 1, func(na fluent.MapAssembler) {
+			na.AssembleEntry(selector.SelectorKey_Matcher).CreateMap(0, func(na fluent.MapAssembler) {})
 		}),
 	}
 }
 
 type exploreFieldsSpecBuilder struct {
-	mb  fluent.MapBuilder
-	knb fluent.NodeBuilder
+	na fluent.MapAssembler
 }
 
 func (efsb exploreFieldsSpecBuilder) Insert(field string, s SelectorSpec) {
-	efsb.mb.Insert(efsb.knb.CreateString(field), s.Node())
-}
-
-func (efsb exploreFieldsSpecBuilder) Delete(field string) {
-	efsb.mb.Delete(efsb.knb.CreateString(field))
+	efsb.na.AssembleEntry(field).AssignNode(s.Node())
 }

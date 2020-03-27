@@ -38,19 +38,19 @@ type Progress struct {
 }
 
 type Config struct {
-	Ctx                    context.Context    // Context carried through a traversal.  Optional; use it if you need cancellation.
-	LinkLoader             ipld.Loader        // Loader used for automatic link traversal.
-	LinkNodeBuilderChooser NodeBuilderChooser // Chooser for Node implementations to produce during automatic link traversal.
-	LinkStorer             ipld.Storer        // Storer used if any mutation features (e.g. traversal.Transform) are used.
+	Ctx                        context.Context            // Context carried through a traversal.  Optional; use it if you need cancellation.
+	LinkLoader                 ipld.Loader                // Loader used for automatic link traversal.
+	LinkTargetNodeStyleChooser LinkTargetNodeStyleChooser // Chooser for Node implementations to produce during automatic link traversal.
+	LinkStorer                 ipld.Storer                // Storer used if any mutation features (e.g. traversal.Transform) are used.
 }
 
-// NodeBuilderChooser is a function that returns a NodeBuilder based on
-// the information in a Link its LinkContext.
+// LinkTargetNodeStyleChooser is a function that returns a NodeStyle based on
+// the information in a Link and/or its LinkContext.
 //
-// A NodeBuilderChooser can be used in a traversal.Config to be clear about
+// A LinkTargetNodeStyleChooser can be used in a traversal.Config to be clear about
 // what kind of Node implementation to use when loading a Link.
-// In a simple example, it could constantly return an `ipldfree.NodeBuilder`.
+// In a simple example, it could constantly return a `basicnode.Style__Any{}`.
 // In a more complex example, a program using `bind` over native Go types
 // could decide what kind of native type is expected, and return a
 // `bind.NodeBuilder` for that specific concrete native type.
-type NodeBuilderChooser func(ipld.Link, ipld.LinkContext) (ipld.NodeBuilder, error)
+type LinkTargetNodeStyleChooser func(ipld.Link, ipld.LinkContext) (ipld.NodeStyle, error)

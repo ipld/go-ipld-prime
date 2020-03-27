@@ -1,161 +1,137 @@
 package ipld
 
-// NodeBuilder is an interface that describes creating new Node instances.
+// NodeAssembler is the interface that describes all the ways we can set values
+// in a node that's under construction.
 //
-// The Node interface is entirely read-only methods; a Node is immutable.
-// Thus, we need a NodeBuilder system for creating new ones; the builder
-// is mutable, and when we're done accumulating mutations, we take the
-// accumulated data and produce an immutable Node out of it.
+// To create a Node, you should start with a NodeBuilder (which contains a
+// superset of the NodeAssembler methods, and can return the finished Node
+// from its `Build` method).
 //
-// Separating mutation into NodeBuilder and keeping Node immutable makes
-// it possible to perform caching (or rather, memoization, since there's no
-// such thing as cache invalidation for immutable systems) of computed
-// properties of Node; use copy-on-write algorithms for memory efficiency;
-// and to generally build pleasant APIs.
-//
-// Each package in `go-ipld-prime//impl/*` that implements ipld.Node also
-// has a NodeBuilder implementation that produces new nodes of that same
-// package's type.
-//
-// The Node interface includes a method which returns a NodeBuilder;
-// this builder must be able to produce a new node of the same concrete
-// implementation as the original node.
-// This is useful for algorithms that work on trees of nodes: this NodeBuilder
-// getter will be used when an update deep in the tree causes a need to
-// create several new nodes to propagate the change up through parent nodes.
-//
-// NodeBuilder instances obtained from `Node.NodeBuilder()` may carry some
-// additional logic or constraints with them to the new Node they produce.
-// For example, a Node which is implemented using reflection to bind to a
-// natively-typed struct will yield a NodeBuilder which contains a
-// `reflect.Type` handle it can use to create a new value of that native type;
-// similarly, schema-typed Nodes will yield a NodeBuilder that keeps the schema
-// info and type constraints from that Node!
-// (Continuing the schema.TypedNode example: if you have a schema.TypedNode that is
-// constrained to be of some `type Foo = {Bar:Baz}` type, then any new Node
-// produced from its NodeBuilder will still answer
-// `n.(schema.TypedNode).Type().Name()` as `Foo`; and if
-// `n.NodeBuilder().AmendMap().Insert(...)` is called with nodes of unmatching
-// type given to the insertion, the builder will error!)
-//
-// The NodeBuilder retrieved from a Node can also be used to do *updates*:
-// consider the AmendMap and AmendList methods.  These methods are useful
-// not just for programmer convenience, but also because they can reuse memory,
-// sharing any common segments of memory with the earlier Node.
-// (In the NodeBuilder exposed by the `go-ipld-prime//impl/*` packages, these
-// methods are equivalent to their Create* counterparts.  As there's no
-// "existing" node for them to refer to, it's treated the same as amending
-// an empty node.)
-type NodeBuilder interface {
-	CreateMap() (MapBuilder, error)
-	AmendMap() (MapBuilder, error)
-	CreateList() (ListBuilder, error)
-	AmendList() (ListBuilder, error)
-	CreateNull() (Node, error)
-	CreateBool(bool) (Node, error)
-	CreateInt(int) (Node, error)
-	CreateFloat(float64) (Node, error)
-	CreateString(string) (Node, error)
-	CreateBytes([]byte) (Node, error)
-	CreateLink(Link) (Node, error)
-}
+// Why do both this and the NodeBuilder interface exist?
+// When creating trees of nodes, recursion works over the NodeAssembler interface.
+// This is important to efficient library internals, because avoiding the
+// requirement to be able to return a Node at any random point in the process
+// relieves internals from needing to implement 'freeze' features.
+// (This is useful in turn because implementing those 'freeze' features in a
+// language without first-class/compile-time support for them (as golang is)
+// would tend to push complexity and costs to execution time; we'd rather not.)
+type NodeAssembler interface {
+	BeginMap(sizeHint int) (MapAssembler, error)
+	BeginList(sizeHint int) (ListAssembler, error)
+	AssignNull() error
+	AssignBool(bool) error
+	AssignInt(int) error
+	AssignFloat(float64) error
+	AssignString(string) error
+	AssignBytes([]byte) error
+	AssignLink(Link) error
 
-// MapBuilder is an interface for creating new Node instances of kind map.
-//
-// A MapBuilder is generally obtained by getting a NodeBuilder first,
-// and then using CreateMap or AmendMap to begin.
-//
-// Methods mutate the builder's internal state; when done, call Build to
-// produce a new immutable Node from the internal state.
-// (After calling Build, future mutations may be rejected.)
-//
-// Insertion methods error if the key already exists.
-//
-// The BuilderForKeys and BuilderForValue functions return NodeBuilders
-// that can be used to produce values for insertion.
-// If you already have the data you're inserting, you can use those Nodes;
-// if you don't, use these builders.
-// (This is particularly relevant for typed nodes and bind nodes, since those
-// have internal specializations, and not all NodeBuilders for them are equal.)
-// Note that BuilderForValue requires a key as a parameter!
-// This is because typed nodes which are structs may return different builders
-// per field, specific to the field's type.
-//
-// You may be interested in the fluent package's fluent.MapBuilder equivalent
-// for common usage with less error-handling boilerplate requirements.
-type MapBuilder interface {
-	Insert(k, v Node) error
-	Delete(k Node) error
-	Build() (Node, error)
+	AssignNode(Node) error // if you already have a completely constructed subtree, this method puts the whole thing in place at once.
 
-	BuilderForKeys() NodeBuilder
-	BuilderForValue(k string) NodeBuilder
-
-	// FIXME we might need a way to reject invalid 'k' for BuilderForValue.
-	//  We certainly can't wait until the insert, because we need the value builder before that (duh!).
-	//  However, you probably should've applied the BuilderForKeys to the key value already,
-	//   and that should've told you about most errors...?
-	//   Hrm.  Not sure if we wanna rely on this.
-	//  Panic?  or return an error, and be sad about breaking chaining of calls?  or return a curried-error thunk?
-	//  Or can we shift all the responsibility to BuilderForKeys after all (with panic as 'unreachable' fallback)?
+	// Style returns a NodeStyle describing what kind of value we're assembling.
 	//
-	// - for maps with typed keys that have constraints, the rejection should've come from the key builder.  fine.
-	//   - builderForValue also doesn't need to vary at all in this case; you could've given an empty 'k' and cached that one.
-	//     - though note we haven't exposed a way to *detect* that yet (and it's questioned whether we should until more profiling/optimization info comes in).
-	// - for structs, the rejection *could* come from the key builder, but we haven't decided if that's required or not.
-	//   - requiring a builder for keys that whitelists the valid keys but still returns plain string nodes is viable...
-	//     - but a little odd looking, since the returned thing is going to be a plain untyped string kind node.
-	//       - in other words, the type wouldn't carry info about the constraints it has passed through; not wrong, but perhaps a design smell.
-	//     - for codegen'd impls, this would be compiled into a string switch and be pretty cheap.  viable.
-	//     - for runtime-wrapper typed.Node impls... still viable, but a little heavier.
+	// You often don't need this (because you should be able to
+	// just feed data and check errors), but it's here.
+	//
+	// Using `this.Style().NewBuilder()` to produce a new `Node`,
+	// then giving that node to `this.AssignNode(n)` should always work.
+	// (Note that this is not necessarily an _exclusive_ statement on what
+	// sort of values will be accepted by `this.AssignNode(n)`.)
+	Style() NodeStyle
 }
 
-// ListBuilder is an interface for creating new Node instances of kind list.
+// MapAssembler assembles a map node!  (You guessed it.)
 //
-// A ListBuilder is generally obtained by getting a NodeBuilder first,
-// and then using CreateList or AmendList to begin.
+// Methods on MapAssembler must be called in a valid order:
+// assemble a key, then assemble a value, then loop as long as desired;
+// when finished, call 'Finish'.
 //
-// Methods mutate the builder's internal state; when done, call Build to
-// produce a new immutable Node from the internal state.
-// (After calling Build, future mutations may be rejected.)
+// Incorrect order invocations will panic.
+// Calling AssembleKey twice in a row will panic;
+// calling AssembleValue before finishing using the NodeAssembler from AssembleKey will panic;
+// calling AssembleValue twice in a row will panic;
+// etc.
 //
-// Methods may error when handling typed lists if non-matching types are inserted.
-//
-// The BuilderForValue function returns a NodeBuilder
-// that can be used to produce values for insertion.
-// If you already have the data you're inserting, you can use those Nodes;
-// if you don't, use these builders.
-// (This is particularly relevant for typed nodes and bind nodes, since those
-// have internal specializations, and not all NodeBuilders for them are equal.)
-// Note that BuilderForValue requires an index as a parameter!
-// In most cases, this is not relevant and the method returns a constant NodeBuilder;
-// however, typed nodes which are structs and have list representations may
-// return different builders per index, corresponding to the types of its fields.
-//
-// You may be interested in the fluent package's fluent.ListBuilder equivalent
-// for common usage with less error-handling boilerplate requirements.
-type ListBuilder interface {
-	AppendAll([]Node) error
-	Append(v Node) error
-	Set(idx int, v Node) error
-	Build() (Node, error)
+// Note that the NodeAssembler yielded from AssembleKey has additional behavior:
+// if the node assembled there matches a key already present in the map,
+// that assembler will emit the error!
+type MapAssembler interface {
+	AssembleKey() NodeAssembler   // must be followed by call to AssembleValue.
+	AssembleValue() NodeAssembler // must be called immediately after AssembleKey.
 
-	BuilderForValue(idx int) NodeBuilder
+	AssembleEntry(k string) (NodeAssembler, error) // shortcut combining AssembleKey and AssembleValue into one step; valid when the key is a string kind.
 
-	// FIXME the question about rejection of invalid idx applies here as well,
-	//  for all the same reasons it came up for BuilderForValue on maps:
-	//   structs with tuple representation provoke all the exact same issues.
+	Finish() error
+
+	// KeyStyle returns a NodeStyle that knows how to build keys of a type this map uses.
+	//
+	// You often don't need this (because you should be able to
+	// just feed data and check errors), but it's here.
+	//
+	// For all Data Model maps, this will answer with a basic concept of "string".
+	// For Schema typed maps, this may answer with a more complex type (potentially even a struct type).
+	KeyStyle() NodeStyle
+
+	// ValueStyle returns a NodeStyle that knows how to build values this map can contain.
+	//
+	// You often don't need this (because you should be able to
+	// just feed data and check errors), but it's here.
+	//
+	// ValueStyle requires a parameter describing the key in order to say what
+	// NodeStyle will be acceptable as a value for that key, because when using
+	// struct types (or union types) from the Schemas system, they behave as maps
+	// but have different acceptable types for each field (or member, for unions).
+	// For plain maps (that is, not structs or unions masquerading as maps),
+	// the empty string can be used as a parameter, and the returned NodeStyle
+	// can be assumed applicable for all values.
+	// Using an empty string for a struct or union will return a nil NodeStyle.
+	// (Design note: a string is sufficient for the parameter here rather than
+	// a full Node, because the only cases where the value types vary are also
+	// cases where the keys may not be complex.)
+	ValueStyle(k string) NodeStyle
 }
 
-// future: add AppendIterator() methods (when we've implemented iterators!)
+type ListAssembler interface {
+	AssembleValue() NodeAssembler
 
-// future: add InsertConverting(map[string]interface{}) and similar methods.
-//  (some open questions about how useful that is, given ipldbind should likely be more efficient, depending on use case.)
+	Finish() error
 
-// future: define key ordering semantics during map insertion.
-//  methods for re-ordering will probably be wanted someday.
+	// ValueStyle returns a NodeStyle that knows how to build values this map can contain.
+	//
+	// You often don't need this (because you should be able to
+	// just feed data and check errors), but it's here.
+	//
+	// ValueStyle, much like the matching method on the MapAssembler interface,
+	// requires a parameter specifying the index in the list in order to say
+	// what NodeStyle will be acceptable as a value at that position.
+	// For many lists (and *all* lists which operate exclusively at the Data Model level),
+	// this will return the same NodeStyle regardless of the value of 'idx';
+	// the only time this value will vary is when operating with a Schema,
+	// and handling the representation NodeAssembler for a struct type with
+	// a representation of a list kind.
+	// If you know you are operating in a situation that won't have varying
+	// NodeStyles, it is acceptable to call `ValueStyle(0)` and use the
+	// resulting NodeStyle for all reasoning.
+	ValueStyle(idx int) NodeStyle
+}
 
-// review: MapBuilder.Delete as an API is dangerously prone to usage which is accidentally quadratic.
-//  https://accidentallyquadratic.tumblr.com/post/157496054437/ruby-reject describes a similar issue.
-//   an internal implementation which accumulates oplogs is one fix, but not a joy either (not alloc free).
-//   a totally different API -- say, `NodeBuilder.AmendMapWithout(...)` -- might be the best approach.
+type NodeBuilder interface {
+	NodeAssembler
+
+	// Build returns the new value after all other assembly has been completed.
+	//
+	// A method on the NodeAssembler that finishes assembly of the data must
+	// be called first (e.g., any of the "Assign*" methods, or "Finish" if
+	// the assembly was for a map or a list); that finishing method still has
+	// all responsibility for validating the assembled data and returning
+	// any errors from that process.
+	// (Correspondingly, there is no error return from this method.)
+	Build() Node
+
+	// Resets the builder.  It can hereafter be used again.
+	// Reusing a NodeBuilder can reduce allocations and improve performance.
+	//
+	// Only call this if you're going to reuse the builder.
+	// (Otherwise, it's unnecessary, and may cause an unwanted allocation).
+	Reset()
+}

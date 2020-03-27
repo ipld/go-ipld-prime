@@ -4,43 +4,43 @@ import (
 	"fmt"
 	"testing"
 
+	. "github.com/warpfork/go-wish"
+
 	ipld "github.com/ipld/go-ipld-prime"
 	"github.com/ipld/go-ipld-prime/fluent"
-	ipldfree "github.com/ipld/go-ipld-prime/impl/free"
-	. "github.com/warpfork/go-wish"
+	basicnode "github.com/ipld/go-ipld-prime/node/basic"
 )
 
 func TestParseExploreUnion(t *testing.T) {
-	fnb := fluent.WrapNodeBuilder(ipldfree.NodeBuilder()) // just for the other fixture building
 	t.Run("parsing non list node should error", func(t *testing.T) {
-		sn := fnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {})
+		sn := fluent.MustBuildMap(basicnode.Style__Map{}, 0, func(na fluent.MapAssembler) {})
 		_, err := ParseContext{}.ParseExploreUnion(sn)
 		Wish(t, err, ShouldEqual, fmt.Errorf("selector spec parse rejected: explore union selector must be a list"))
 	})
 	t.Run("parsing list node where one node is invalid should return child's error", func(t *testing.T) {
-		sn := fnb.CreateList(func(lb fluent.ListBuilder, vnb fluent.NodeBuilder) {
-			lb.Append(vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-				mb.Insert(knb.CreateString(SelectorKey_Matcher), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {}))
-			}))
-			lb.Append(vnb.CreateInt(2))
+		sn := fluent.MustBuildList(basicnode.Style__List{}, 2, func(na fluent.ListAssembler) {
+			na.AssembleValue().CreateMap(1, func(na fluent.MapAssembler) {
+				na.AssembleEntry(SelectorKey_Matcher).CreateMap(0, func(na fluent.MapAssembler) {})
+			})
+			na.AssembleValue().AssignInt(2)
 		})
 		_, err := ParseContext{}.ParseExploreUnion(sn)
 		Wish(t, err, ShouldEqual, fmt.Errorf("selector spec parse rejected: selector is a keyed union and thus must be a map"))
 	})
 
 	t.Run("parsing map node with next field with valid selector node should parse", func(t *testing.T) {
-		sn := fnb.CreateList(func(lb fluent.ListBuilder, vnb fluent.NodeBuilder) {
-			lb.Append(vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-				mb.Insert(knb.CreateString(SelectorKey_Matcher), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {}))
-			}))
-			lb.Append(vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-				mb.Insert(knb.CreateString(SelectorKey_ExploreIndex), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-					mb.Insert(knb.CreateString(SelectorKey_Index), vnb.CreateInt(2))
-					mb.Insert(knb.CreateString(SelectorKey_Next), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {
-						mb.Insert(knb.CreateString(SelectorKey_Matcher), vnb.CreateMap(func(mb fluent.MapBuilder, knb fluent.NodeBuilder, vnb fluent.NodeBuilder) {}))
-					}))
-				}))
-			}))
+		sn := fluent.MustBuildList(basicnode.Style__List{}, 2, func(na fluent.ListAssembler) {
+			na.AssembleValue().CreateMap(1, func(na fluent.MapAssembler) {
+				na.AssembleEntry(SelectorKey_Matcher).CreateMap(0, func(na fluent.MapAssembler) {})
+			})
+			na.AssembleValue().CreateMap(1, func(na fluent.MapAssembler) {
+				na.AssembleEntry(SelectorKey_ExploreIndex).CreateMap(2, func(na fluent.MapAssembler) {
+					na.AssembleEntry(SelectorKey_Index).AssignInt(2)
+					na.AssembleEntry(SelectorKey_Next).CreateMap(1, func(na fluent.MapAssembler) {
+						na.AssembleEntry(SelectorKey_Matcher).CreateMap(0, func(na fluent.MapAssembler) {})
+					})
+				})
+			})
 		})
 		s, err := ParseContext{}.ParseExploreUnion(sn)
 		Wish(t, err, ShouldEqual, nil)
@@ -49,9 +49,11 @@ func TestParseExploreUnion(t *testing.T) {
 }
 
 func TestExploreUnionExplore(t *testing.T) {
-	fnb := fluent.WrapNodeBuilder(ipldfree.NodeBuilder()) // just for the other fixture building
-	n := fnb.CreateList(func(lb fluent.ListBuilder, vnb fluent.NodeBuilder) {
-		lb.AppendAll([]ipld.Node{fnb.CreateInt(0), fnb.CreateInt(1), fnb.CreateInt(2), fnb.CreateInt(3)})
+	n := fluent.MustBuildList(basicnode.Style__List{}, 4, func(na fluent.ListAssembler) {
+		na.AssembleValue().AssignInt(0)
+		na.AssembleValue().AssignInt(1)
+		na.AssembleValue().AssignInt(2)
+		na.AssembleValue().AssignInt(3)
 	})
 	t.Run("exploring should return nil if all member selectors return nil when explored", func(t *testing.T) {
 		s := ExploreUnion{[]Selector{Matcher{}, ExploreIndex{Matcher{}, [1]ipld.PathSegment{ipld.PathSegmentOfInt(2)}}}}
@@ -98,8 +100,7 @@ func TestExploreUnionInterests(t *testing.T) {
 }
 
 func TestExploreUnionDecide(t *testing.T) {
-	fnb := fluent.WrapNodeBuilder(ipldfree.NodeBuilder()) // just for the other fixture building
-	n := fnb.CreateInt(2)
+	n := basicnode.NewInt(2)
 	t.Run("if any member selector returns true, decide should be true", func(t *testing.T) {
 		s := ExploreUnion{[]Selector{
 			ExploreAll{Matcher{}},
