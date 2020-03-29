@@ -76,3 +76,12 @@ func (x ReprKindSet) String() string {
 	s += x[len(x)-1].String()
 	return s
 }
+
+func (x ReprKindSet) Contains(e ReprKind) bool {
+	for _, v := range x {
+		if v == e {
+			return true
+		}
+	}
+	return false
+}

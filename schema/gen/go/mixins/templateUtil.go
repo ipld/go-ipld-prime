@@ -1,4 +1,4 @@
-package gengo
+package mixins
 
 import (
 	"io"
