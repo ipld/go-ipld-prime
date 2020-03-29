@@ -87,6 +87,9 @@ func EmitEntireType(tg TypeGenerator, w io.Writer) {
 	tg.EmitTypedNodeMethodRepresentation(w)
 
 	rng := tg.GetRepresentationNodeGen()
+	if rng == nil { // FIXME: hack to save me from stubbing tons right now, remove when done
+		return
+	}
 	EmitNode(rng, w)
 }
 

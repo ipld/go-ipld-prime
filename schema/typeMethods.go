@@ -135,6 +135,12 @@ func (f StructField) IsOptional() bool { return f.optional }
 // or either, or neither.
 func (f StructField) IsNullable() bool { return f.nullable }
 
+// IsMaybe returns true if the field value is allowed to be either null or absent.
+//
+// This is a simple "or" of the two properties,
+// but this method is a shorthand that turns out useful often.
+func (f StructField) IsMaybe() bool { return f.nullable || f.optional }
+
 func (t TypeStruct) RepresentationStrategy() StructRepresentation {
 	return t.representation
 }

@@ -65,9 +65,37 @@ underreviewed
 	- may also just want to shield it entirely.
 		- might be easier than having its enum component include an 'invalid' state which can kick you in the shins at runtime.
 			- roughly the same decision we previously considered for other types (aside from the word for such an enum already existing here).
+			- if we make the zero state be 'absent' rather than introducing a new 'invalid' state, that makes this less bad.
 		- can't think of significant arguments against this.  returning pointers to maybes embedded in larger structures does seem to be the way to go anyway.
 - it's an adjunct parameter whether the value field in the MaybeT is a pointer; may vary for each T.
 	- need to sometimes use pointers: for cycle-breaking!
 	- want customizability of optimism (oversize-allocation versus alloc-count-amortization).
 		- is it possible to want different Maybe implementation strategies in different areas?  Perhaps, but hopefully vanishingly unlikely in practice.  Do not want to support this; complexity add high.
 	- thinking this may want to default to useptr=yes.  less likely to generate end user surprise.  can opt into noptr fastness when/where you know it works.
+	- there are a couple very predictable places where we *do* want useptr=no, also.
+		- strings!  and other scalars.  essentially *never* useful to have a ptr to those inside their MaybeT.
+- MaybeT should be an alias of `*_T_Maybe`.
+	- Sure, sometimes we could get along fine by passing them around by value.
+		- But sometimes -- when they contain a large value and don't use a ptr internally -- we don't want to.
+			- And we don't want that to then embroil into *this* MaybeT requiring you to *handle* it externally as a ptr at the same time when some MaybeT2 requires the opposite.
+	- Coincidentally, removes a fair number of conditionalizations of '&' when returning fields.
+		- Not a factor in the decision, but a nice bonus.
+		- A bunch of remaining conditionals in templates also all consistently move to the end of their area, which is... sort of pleasing.
+	- This means we get to "shield" it entirely.
+		- Not a factor in the decision (perhaps surprisingly).  But doesn't hurt.
+			- The zero values of the maybe type already didn't threaten to reveal zeros of the T, as long as the field was private and the zero state for maybes isn't 'Maybe_Value'.
+		- We could also just use an exported `*MaybeT`.  But I see no reason to favor this.
+	- Since we've already resolved to embed MaybeT values (rather than bitpack their states together), there's no cost to this.
+		- When speciated methods return a `MaybeT`, it's an internal pointer to existing memory.
+		- When creating a populated maybe...
+			- If it's a useptr=yes, this might mean you get two allocs... except I think the outer one should optimize out:
+				- the conversion into maybe should be inlinable, and that should make the whole thing escape-analyzable to get rid of the maybe alloc?
+			- If it's a useptr=no, construction is probably going to involve a big ol' memcopy.
+				- This is unfortunate, but I can't think of a way around it short of doing the full dance of a builder.
+				- This probably won't be an issue in practice, if we're imagining useptr=no is only likely to be used on fairly small values.
+			- We can also just try to avoid the freestanding creation of maybes entirely.
+				- The ideal look and field of speciated builders has not been determined.  SetAbsent, etc, methods are certainly in bounds.
+	- Structs and lists can certainly amortize these.
+		- Maps would turn tricky, except we're already happy with having an internal slice in those too.  So, it's covered.
+			- Interestingly, maps also have the ability to easily store all of (null,absent,value{...}) in them, without extra space.
+				- But considering the thing about slices-in-maps, that may not be relevant.  We want quick linear iterator-friendly reads of Maybe state too.

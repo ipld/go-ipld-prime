@@ -7,7 +7,7 @@ import (
 )
 
 type AdjunctCfg struct {
-	typeSymbolOverrides       map[schema.Type]string
+	typeSymbolOverrides       map[schema.TypeName]string
 	fieldSymbolLowerOverrides map[schema.StructField]string
 	fieldSymbolUpperOverrides map[schema.StructField]string
 
@@ -26,7 +26,7 @@ type AdjunctCfg struct {
 // etc.
 // (Most such augmentations are not configurable.)
 func (cfg *AdjunctCfg) TypeSymbol(t schema.Type) string {
-	if x, ok := cfg.typeSymbolOverrides[t]; ok {
+	if x, ok := cfg.typeSymbolOverrides[t.Name()]; ok {
 		return x
 	}
 	return string(t.Name()) // presumed already upper

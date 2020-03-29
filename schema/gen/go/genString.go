@@ -50,13 +50,14 @@ func (g stringGenerator) EmitNativeBuilder(w io.Writer) {
 }
 
 func (g stringGenerator) EmitNativeMaybe(w io.Writer) {
-	// REVIEW: can this be extracted to the mixins package?  it doesn't even vary for kind.
-	// REVIEW: what conventions and interfaces are required around Maybe types is very non-finalized.
+	// REVIEW: can this be extracted to the mixins package?  it doesn't appear to vary for kind.
+	//  We *do* somtimes need to vary this for whether or not 'v' is a pointer.  For strings: it's not.  For others?  Depends.
 	doTemplate(`
-		type Maybe{{ .Type | TypeSymbol }} struct {
+		type _{{ .Type | TypeSymbol }}__Maybe struct {
 			m schema.Maybe
-			n {{ .Type | TypeSymbol }}
+			v {{ .Type | TypeSymbol }}
 		}
+		type Maybe{{ .Type | TypeSymbol }} = *_{{ .Type | TypeSymbol }}__Maybe
 
 		func (m Maybe{{ .Type | TypeSymbol }}) IsNull() bool {
 			return m.m == schema.Maybe_Null
@@ -71,7 +72,7 @@ func (g stringGenerator) EmitNativeMaybe(w io.Writer) {
 			if !m.Exists() {
 				panic("unbox of a maybe rejected")
 			}
-			return m.n
+			return m.v
 		}
 	`, w, g.AdjCfg, g)
 }
@@ -128,7 +129,7 @@ func (g stringGenerator) EmitNodeMethodAsString(w io.Writer) {
 func (g stringGenerator) EmitNodeMethodStyle(w io.Writer) {
 	doTemplate(`
 		func ({{ .Type | TypeSymbol }}) Style() ipld.NodeStyle {
-			return nil // TODO
+			return _{{ .Type | TypeSymbol }}__Style{}
 		}
 	`, w, g.AdjCfg, g)
 }
