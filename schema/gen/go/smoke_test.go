@@ -19,9 +19,11 @@ func TestSmoke(t *testing.T) {
 	var f *os.File
 
 	pkgName := "whee"
+	adjCfg := &AdjunctCfg{}
+
 	tString := schema.SpawnString("String")
 
 	f = openOrPanic("_test/tString.go")
 	EmitFileHeader(pkgName, f)
-	EmitEntireType(NewStringReprStringGenerator(pkgName, tString, ""), f)
+	EmitEntireType(NewStringReprStringGenerator(pkgName, tString, adjCfg), f)
 }

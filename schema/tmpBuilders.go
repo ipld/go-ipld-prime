@@ -33,12 +33,18 @@ func SpawnList(name TypeName, typ Type, nullable bool) TypeList {
 }
 
 func SpawnStruct(name TypeName, fields []StructField, repr StructRepresentation) TypeStruct {
-	fieldsMap := make(map[string]StructField, len(fields))
-	for _, field := range fields {
-		fieldsMap[field.name] = field
+	v := TypeStruct{
+		anyType{name, nil},
+		fields,
+		make(map[string]StructField, len(fields)),
+		repr,
 	}
-	return TypeStruct{anyType{name, nil}, fields, fieldsMap, repr}
+	for i := range fields {
+		fields[i].parent = &v
+		v.fieldsMap[fields[i].name] = fields[i]
+	}
+	return v
 }
 func SpawnStructField(name string, typ Type, optional bool, nullable bool) StructField {
-	return StructField{name, typ, optional, nullable}
+	return StructField{nil /*populated later*/, name, typ, optional, nullable}
 }

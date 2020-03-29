@@ -9,21 +9,17 @@ import (
 
 var _ TypeGenerator = &stringReprStringGenerator{}
 
-func NewStringReprStringGenerator(pkgName string, typ schema.TypeString, symbolOverride string) TypeGenerator {
-	symbol := string(typ.Name())
-	if symbolOverride != "" {
-		symbol = symbolOverride
-	}
+func NewStringReprStringGenerator(pkgName string, typ schema.TypeString, adjCfg *AdjunctCfg) TypeGenerator {
 	return stringReprStringGenerator{
 		stringGenerator{
+			adjCfg,
 			mixins.StringTraits{
 				pkgName,
 				string(typ.Name()),
-				symbol,
+				adjCfg.TypeSymbol(typ),
 			},
 			pkgName,
 			typ,
-			symbol,
 		},
 	}
 }
@@ -44,13 +40,13 @@ func (g stringReprStringReprGenerator) EmitNodeType(w io.Writer) {
 	// Since this is a "natural" representation... there's just a type alias here.
 	//  No new functions are necessary.
 	doTemplate(`
-		type _{{ .Symbol }}__Repr = _{{ .Symbol }}
-	`, w, g)
+		type _{{ .Type | TypeSymbol }}__Repr = _{{ .Type | TypeSymbol }}
+	`, w, g.AdjCfg, g)
 }
 func (g stringReprStringReprGenerator) EmitNodeTypeAssertions(w io.Writer) {
 	doTemplate(`
-		var _ ipld.Node = &_{{ .Symbol }}__Repr{}
-	`, w, g)
+		var _ ipld.Node = &_{{ .Type | TypeSymbol }}__Repr{}
+	`, w, g.AdjCfg, g)
 
 }
 func (stringReprStringReprGenerator) EmitNodeMethodReprKind(io.Writer)      {}

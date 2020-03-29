@@ -161,6 +161,7 @@ type TypeStruct struct {
 	representation StructRepresentation
 }
 type StructField struct {
+	parent   *TypeStruct
 	name     string
 	typ      Type
 	optional bool

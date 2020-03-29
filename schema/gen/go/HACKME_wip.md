@@ -11,19 +11,14 @@ the contents are a bit "top-of-the-head".)
 - consistently maintain separatation of **symbol** from **name**
 	- **symbol** is what is used in type and function names in code.
 	- **name** is the string that comes from the schema; it is never modified nor overridable.
-	- we don't _currently_ support symbol customization separate from name, but likely will need to someday.
+- symbol processing all pipes through an adjunct configuration object.
+	- we make this available in the templates via a funcmap so it's available context-free as a nice tidy pipe syntax.
 - the typegen/nodegen/buildergen distinctions and how they turn into a 5-some still checks out.
 - the embeddable starter kits per kind are still a perfectly reasonable idea.
 	- ... though they also get to just shell out to the 'node/mixins' package a ton now, which is nice.
 - we're gonna need to break down the methods for some types more than others.
 	- namely, structs and unions... are gonna want an invok of template per field / member, i think.
 	- there's no particularly useful way to expose that to the top level nodegen interface, afaict.  just do it concretely.
-- for symbols, have "{Situation}Symbol[A/B]"
-	- *don't* do a "titlize" function; that works but is lazy and will obstruct rather than ease customizabilty later.
-	- ... what are A and B?  Upper/Lower?  Exported/Unexported?
-	- not all things have this: type symbols effectively never appear in lowercase.
-	- things that do: fields, for example.
-		- interesting because `Field{{ .FieldSymbolUpper }}` is something we'll probably see, and it's not *exactly* the case that the capital letter effects export in this case.
 - generally do a pass on all templates to use consistent abbreviations for variable names.
 - use a lot more pointers in method types, according to the understandings of the low cost of internal pointers.
 
@@ -76,18 +71,3 @@ underreviewed
 	- want customizability of optimism (oversize-allocation versus alloc-count-amortization).
 		- is it possible to want different Maybe implementation strategies in different areas?  Perhaps, but hopefully vanishingly unlikely in practice.  Do not want to support this; complexity add high.
 	- thinking this may want to default to useptr=yes.  less likely to generate end user surprise.  can opt into noptr fastness when/where you know it works.
-
-### where does any name override info live
-
-- we've currently hacked the idea of type name overrides into place but mostly because they're at the top and don't fractilate.
-	- this doesn't generalize to fields.
-- putting it in the schema.Type area makes the easiest to access, but seems weird because it sure doesn't have anything to do with not-codegen inspection.
-- is it the case that any/all "adjunct" info shouldn't survive into the schema.Type interface?
-	- probably
-- seems like we're gonna have to build a tree of adjunct info and pipe type and field references into functions on that after all.
-	- whee.
-	- although note this still doesn't mean a single thing will appear in the funcmap.  this isn't a repeat of the 'titlize' mistake.
-	- FIXME yeah this is needed ALL over.  when dealing with fields in a struct: you also need to get their symbol override, if any.
-		- this is probably going to require schema.StructField to sprout a parent ptr ...wellll maybe, alternatives exist
-		- `{{ .Adjutant.FieldSymbol($type, $field) }}` ?
-		- `{{ $field | $adjutant.SymbolForField }}` ?

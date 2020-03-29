@@ -8,10 +8,10 @@ import (
 )
 
 type stringGenerator struct {
+	AdjCfg *AdjunctCfg
 	mixins.StringTraits
 	PkgName string
 	Type    schema.TypeString
-	Symbol  string // defaults to Type.Name but can be overriden.
 }
 
 // --- native content and specializations --->
@@ -21,9 +21,9 @@ func (g stringGenerator) EmitNativeType(w io.Writer) {
 	//  while also having the advantage of meaning we can block direct casting,
 	//   which is desirable because the compiler then ensures our validate methods can't be evaded.
 	doTemplate(`
-		type _{{ .Symbol }} struct{ x string }
-		type {{ .Symbol }} = *_{{ .Symbol }}
-	`, w, g)
+		type _{{ .Type | TypeSymbol }} struct{ x string }
+		type {{ .Type | TypeSymbol }} = *_{{ .Type | TypeSymbol }}
+	`, w, g.AdjCfg, g)
 }
 
 func (g stringGenerator) EmitNativeAccessors(w io.Writer) {
@@ -31,10 +31,10 @@ func (g stringGenerator) EmitNativeAccessors(w io.Writer) {
 	//  this method unboxes without needing to return an error that's statically impossible,
 	//   which makes it easier to use in chaining.
 	doTemplate(`
-		func (n {{ .Symbol }}) String() string {
+		func (n {{ .Type | TypeSymbol }}) String() string {
 			return n.x
 		}
-	`, w, g)
+	`, w, g.AdjCfg, g)
 }
 
 func (g stringGenerator) EmitNativeBuilder(w io.Writer) {
@@ -42,38 +42,38 @@ func (g stringGenerator) EmitNativeBuilder(w io.Writer) {
 	// REVIEW: if this is useful and should be on by default; it also adds a decent amount of noise to a package.
 	// FUTURE: should engage validation flow.
 	doTemplate(`
-		func New{{ .Symbol }}(v string) {{ .Symbol }} {
-			n := _{{ .Symbol }}{v}
+		func New{{ .Type | TypeSymbol }}(v string) {{ .Type | TypeSymbol }} {
+			n := _{{ .Type | TypeSymbol }}{v}
 			return &n
 		}
-	`, w, g)
+	`, w, g.AdjCfg, g)
 }
 
 func (g stringGenerator) EmitNativeMaybe(w io.Writer) {
 	// REVIEW: can this be extracted to the mixins package?  it doesn't even vary for kind.
 	// REVIEW: what conventions and interfaces are required around Maybe types is very non-finalized.
 	doTemplate(`
-		type Maybe{{ .Symbol }} struct {
+		type Maybe{{ .Type | TypeSymbol }} struct {
 			m schema.Maybe
-			n {{ .Symbol }}
+			n {{ .Type | TypeSymbol }}
 		}
 
-		func (m Maybe{{ .Symbol }}) IsNull() bool {
+		func (m Maybe{{ .Type | TypeSymbol }}) IsNull() bool {
 			return m.m == schema.Maybe_Null
 		}
-		func (m Maybe{{ .Symbol }}) IsUndefined() bool {
+		func (m Maybe{{ .Type | TypeSymbol }}) IsUndefined() bool {
 			return m.m == schema.Maybe_Absent
 		}
-		func (m Maybe{{ .Symbol }}) Exists() bool {
+		func (m Maybe{{ .Type | TypeSymbol }}) Exists() bool {
 			return m.m == schema.Maybe_Value
 		}
-		func (m Maybe{{ .Symbol }}) Must() *{{ .Symbol }} {
+		func (m Maybe{{ .Type | TypeSymbol }}) Must() *{{ .Type | TypeSymbol }} {
 			if !m.Exists() {
 				panic("unbox of a maybe rejected")
 			}
 			return &m.n
 		}
-	`, w, g)
+	`, w, g.AdjCfg, g)
 }
 
 // --- type info --->
@@ -81,27 +81,27 @@ func (g stringGenerator) EmitNativeMaybe(w io.Writer) {
 func (g stringGenerator) EmitTypeConst(w io.Writer) {
 	doTemplate(`
 		// TODO EmitTypeConst
-	`, w, g)
+	`, w, g.AdjCfg, g)
 }
 
 // --- TypedNode interface satisfaction --->
 
 func (g stringGenerator) EmitTypedNodeMethodType(w io.Writer) {
 	doTemplate(`
-		func ({{ .Symbol }}) Type() schema.Type {
+		func ({{ .Type | TypeSymbol }}) Type() schema.Type {
 			return nil /*TODO:typelit*/
 		}
-	`, w, g)
+	`, w, g.AdjCfg, g)
 }
 
 func (g stringGenerator) EmitTypedNodeMethodRepresentation(w io.Writer) {
 	// Perhaps surprisingly, the way to get the representation node pointer
 	//  does not actually depend on what the representation strategy is.
 	doTemplate(`
-		func (n {{ .Symbol }}) Representation() ipld.Node {
-			return (*_{{ .Symbol }}__Repr)(n)
+		func (n {{ .Type | TypeSymbol }}) Representation() ipld.Node {
+			return (*_{{ .Type | TypeSymbol }}__Repr)(n)
 		}
-	`, w, g)
+	`, w, g.AdjCfg, g)
 }
 
 // --- Node interface satisfaction --->
@@ -112,101 +112,101 @@ func (g stringGenerator) EmitNodeType(w io.Writer) {
 
 func (g stringGenerator) EmitNodeTypeAssertions(w io.Writer) {
 	doTemplate(`
-		var _ ipld.Node = ({{ .Symbol }})(&_{{ .Symbol }}{})
-		var _ schema.TypedNode = ({{ .Symbol }})(&_{{ .Symbol }}{})
-	`, w, g)
+		var _ ipld.Node = ({{ .Type | TypeSymbol }})(&_{{ .Type | TypeSymbol }}{})
+		var _ schema.TypedNode = ({{ .Type | TypeSymbol }})(&_{{ .Type | TypeSymbol }}{})
+	`, w, g.AdjCfg, g)
 }
 
 func (g stringGenerator) EmitNodeMethodAsString(w io.Writer) {
 	doTemplate(`
-		func (n {{ .Symbol }}) AsString() (string, error) {
+		func (n {{ .Type | TypeSymbol }}) AsString() (string, error) {
 			return n.x, nil
 		}
-	`, w, g)
+	`, w, g.AdjCfg, g)
 }
 
 func (g stringGenerator) EmitNodeMethodStyle(w io.Writer) {
 	doTemplate(`
-		func ({{ .Symbol }}) Style() ipld.NodeStyle {
+		func ({{ .Type | TypeSymbol }}) Style() ipld.NodeStyle {
 			return nil // TODO
 		}
-	`, w, g)
+	`, w, g.AdjCfg, g)
 }
 
 func (g stringGenerator) EmitNodeStyleType(w io.Writer) {
 	doTemplate(`
-		type _{{ .Symbol }}__Style struct{}
+		type _{{ .Type | TypeSymbol }}__Style struct{}
 
-		func (_{{ .Symbol }}__Style) NewBuilder() ipld.NodeBuilder {
-			var nb _{{ .Symbol }}__Builder
+		func (_{{ .Type | TypeSymbol }}__Style) NewBuilder() ipld.NodeBuilder {
+			var nb _{{ .Type | TypeSymbol }}__Builder
 			nb.Reset()
 			return &nb
 		}
-	`, w, g)
+	`, w, g.AdjCfg, g)
 }
 
 // --- NodeBuilder and NodeAssembler --->
 
 func (g stringGenerator) EmitNodeBuilder(w io.Writer) {
 	doTemplate(`
-		type _{{ .Symbol }}__Builder struct {
-			_{{ .Symbol }}__Assembler
+		type _{{ .Type | TypeSymbol }}__Builder struct {
+			_{{ .Type | TypeSymbol }}__Assembler
 		}
 
-		func (nb *_{{ .Symbol }}__Builder) Build() ipld.Node {
+		func (nb *_{{ .Type | TypeSymbol }}__Builder) Build() ipld.Node {
 			return nb.w
 		}
-		func (nb *_{{ .Symbol }}__Builder) Reset() {
-			var w _{{ .Symbol }}
-			*nb = _{{ .Symbol }}__Builder{_{{ .Symbol }}__Assembler{w: &w}}
+		func (nb *_{{ .Type | TypeSymbol }}__Builder) Reset() {
+			var w _{{ .Type | TypeSymbol }}
+			*nb = _{{ .Type | TypeSymbol }}__Builder{_{{ .Type | TypeSymbol }}__Assembler{w: &w}}
 		}
-	`, w, g)
+	`, w, g.AdjCfg, g)
 }
 
 func (g stringGenerator) EmitNodeAssembler(w io.Writer) {
 	doTemplate(`
-		type _{{ .Symbol }}__Assembler struct {
-			w *_{{ .Symbol }}
+		type _{{ .Type | TypeSymbol }}__Assembler struct {
+			w *_{{ .Type | TypeSymbol }}
 		}
 
-		func (_{{ .Symbol }}__Assembler) BeginMap(sizeHint int) (ipld.MapAssembler, error) {
+		func (_{{ .Type | TypeSymbol }}__Assembler) BeginMap(sizeHint int) (ipld.MapAssembler, error) {
 			return mixins.StringAssembler{"{{ .PkgName }}.{{ .Type.Name }}"}.BeginMap(0)
 		}
-		func (_{{ .Symbol }}__Assembler) BeginList(sizeHint int) (ipld.ListAssembler, error) {
+		func (_{{ .Type | TypeSymbol }}__Assembler) BeginList(sizeHint int) (ipld.ListAssembler, error) {
 			return mixins.StringAssembler{"{{ .PkgName }}.{{ .Type.Name }}"}.BeginList(0)
 		}
-		func (_{{ .Symbol }}__Assembler) AssignNull() error {
+		func (_{{ .Type | TypeSymbol }}__Assembler) AssignNull() error {
 			return mixins.StringAssembler{"{{ .PkgName }}.{{ .Type.Name }}"}.AssignNull()
 		}
-		func (_{{ .Symbol }}__Assembler) AssignBool(bool) error {
+		func (_{{ .Type | TypeSymbol }}__Assembler) AssignBool(bool) error {
 			return mixins.StringAssembler{"{{ .PkgName }}.{{ .Type.Name }}"}.AssignBool(false)
 		}
-		func (_{{ .Symbol }}__Assembler) AssignInt(int) error {
+		func (_{{ .Type | TypeSymbol }}__Assembler) AssignInt(int) error {
 			return mixins.StringAssembler{"{{ .PkgName }}.{{ .Type.Name }}"}.AssignInt(0)
 		}
-		func (_{{ .Symbol }}__Assembler) AssignFloat(float64) error {
+		func (_{{ .Type | TypeSymbol }}__Assembler) AssignFloat(float64) error {
 			return mixins.StringAssembler{"{{ .PkgName }}.{{ .Type.Name }}"}.AssignFloat(0)
 		}
-		func (na *_{{ .Symbol }}__Assembler) AssignString(v string) error {
-			*na.w = _{{ .Symbol }}{v}
+		func (na *_{{ .Type | TypeSymbol }}__Assembler) AssignString(v string) error {
+			*na.w = _{{ .Type | TypeSymbol }}{v}
 			return nil
 		}
-		func (_{{ .Symbol }}__Assembler) AssignBytes([]byte) error {
+		func (_{{ .Type | TypeSymbol }}__Assembler) AssignBytes([]byte) error {
 			return mixins.StringAssembler{"{{ .PkgName }}.{{ .Type.Name }}"}.AssignBytes(nil)
 		}
-		func (_{{ .Symbol }}__Assembler) AssignLink(ipld.Link) error {
+		func (_{{ .Type | TypeSymbol }}__Assembler) AssignLink(ipld.Link) error {
 			return mixins.StringAssembler{"{{ .PkgName }}.{{ .Type.Name }}"}.AssignLink(nil)
 		}
-		func (na *_{{ .Symbol }}__Assembler) AssignNode(v ipld.Node) error {
+		func (na *_{{ .Type | TypeSymbol }}__Assembler) AssignNode(v ipld.Node) error {
 			if v2, err := v.AsString(); err != nil {
 				return err
 			} else {
-				*na.w = _{{ .Symbol }}{v2}
+				*na.w = _{{ .Type | TypeSymbol }}{v2}
 				return nil
 			}
 		}
-		func (_{{ .Symbol }}__Assembler) Style() ipld.NodeStyle {
-			return _{{ .Symbol }}__Style{}
+		func (_{{ .Type | TypeSymbol }}__Assembler) Style() ipld.NodeStyle {
+			return _{{ .Type | TypeSymbol }}__Style{}
 		}
-	`, w, g)
+	`, w, g.AdjCfg, g)
 }
