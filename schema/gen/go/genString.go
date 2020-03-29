@@ -67,11 +67,11 @@ func (g stringGenerator) EmitNativeMaybe(w io.Writer) {
 		func (m Maybe{{ .Type | TypeSymbol }}) Exists() bool {
 			return m.m == schema.Maybe_Value
 		}
-		func (m Maybe{{ .Type | TypeSymbol }}) Must() *{{ .Type | TypeSymbol }} {
+		func (m Maybe{{ .Type | TypeSymbol }}) Must() {{ .Type | TypeSymbol }} {
 			if !m.Exists() {
 				panic("unbox of a maybe rejected")
 			}
-			return &m.n
+			return m.n
 		}
 	`, w, g.AdjCfg, g)
 }
