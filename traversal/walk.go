@@ -57,6 +57,8 @@ func WalkTransforming(n ipld.Node, s selector.Selector, fn TransformFn) (ipld.No
 // This is important to note because when walking DAGs with Links,
 // it means you may visit the same node multiple times
 // due to having reached it via a different path.
+// (You can prevent this by using a LinkLoader function which memoizes a set of
+// already-visited Links, and returns a SkipMe when encountering them again.)
 //
 // WalkMatching (and the other traversal functions) can be used again again inside the VisitFn!
 // By using the traversal.Progress handed to the VisitFn,
@@ -122,6 +124,9 @@ func (prog Progress) walkAdv_iterateAll(n ipld.Node, s selector.Selector, fn Adv
 				progNext.LastBlock.Link = lnk
 				v, err = progNext.loadLink(v, n)
 				if err != nil {
+					if _, ok := err.(SkipMe); ok {
+						return nil
+					}
 					return err
 				}
 			}
@@ -151,6 +156,9 @@ func (prog Progress) walkAdv_iterateSelective(n ipld.Node, attn []ipld.PathSegme
 				progNext.LastBlock.Link = lnk
 				v, err = progNext.loadLink(v, n)
 				if err != nil {
+					if _, ok := err.(SkipMe); ok {
+						return nil
+					}
 					return err
 				}
 			}
@@ -189,6 +197,9 @@ func (prog Progress) loadLink(v ipld.Node, parent ipld.Node) (ipld.Node, error) 
 		prog.Cfg.LinkLoader,
 	)
 	if err != nil {
+		if _, ok := err.(SkipMe); ok {
+			return nil, err
+		}
 		return nil, fmt.Errorf("error traversing node at %q: could not load link %q: %s", prog.Path, lnk, err)
 	}
 	return nb.Build(), nil
