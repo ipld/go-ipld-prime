@@ -47,7 +47,6 @@ func (g stringReprStringReprGenerator) EmitNodeTypeAssertions(w io.Writer) {
 	doTemplate(`
 		var _ ipld.Node = &_{{ .Type | TypeSymbol }}__Repr{}
 	`, w, g.AdjCfg, g)
-
 }
 func (stringReprStringReprGenerator) EmitNodeMethodReprKind(io.Writer)      {}
 func (stringReprStringReprGenerator) EmitNodeMethodLookupString(io.Writer)  {}

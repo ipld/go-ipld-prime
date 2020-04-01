@@ -133,7 +133,7 @@ func (g structGenerator) EmitNodeMethodLookup(w io.Writer) {
 		func (n {{ .Type | TypeSymbol }}) Lookup(key ipld.Node) (ipld.Node, error) {
 			ks, err := key.AsString()
 			if err != nil {
-				return nil, ipld.ErrInvalidKey{"got " + key.ReprKind().String() + ", need string"}
+				return nil, err
 			}
 			return n.LookupString(ks)
 		}
@@ -285,4 +285,15 @@ func (g structGenerator) EmitNodeAssembler(w io.Writer) {
 			return _{{ .Type | TypeSymbol }}__Style{}
 		}
 	`, w, g.AdjCfg, g)
+	for _, field := range g.Type.Fields() {
+		g.emitFieldValueAssembler(field, w)
+	}
+}
+
+func (g structGenerator) emitFieldValueAssembler(f schema.StructField, w io.Writer) {
+	// TODO for Any, this should do a whole Thing;
+	// TODO for any specific type, we should be able to tersely create a new type that embeds its assembler and wraps the one method that's valid for finishing its kind.
+	doTemplate(`
+
+	`, w, g.AdjCfg, f)
 }
