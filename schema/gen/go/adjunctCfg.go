@@ -10,6 +10,7 @@ type AdjunctCfg struct {
 	typeSymbolOverrides       map[schema.TypeName]string
 	fieldSymbolLowerOverrides map[schema.StructField]string
 	fieldSymbolUpperOverrides map[schema.StructField]string
+	maybeUsesPtr              map[schema.TypeName]bool // treat absent as true
 
 	// note: PkgName doesn't appear in here, because it's...
 	//  not adjunct data.  it's a generation invocation parameter.
@@ -44,4 +45,11 @@ func (cfg *AdjunctCfg) FieldSymbolUpper(f schema.StructField) string {
 		return x
 	}
 	return strings.Title(f.Name())
+}
+
+func (cfg *AdjunctCfg) MaybeUsesPtr(t schema.Type) bool {
+	if x, ok := cfg.maybeUsesPtr[t.Name()]; ok {
+		return x
+	}
+	return true
 }

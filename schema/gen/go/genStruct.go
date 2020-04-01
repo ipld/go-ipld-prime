@@ -115,8 +115,8 @@ func (g structGenerator) EmitNodeMethodLookupString(w io.Writer) {
 					return ipld.Null, nil
 				}
 				{{- end}}
-				{{- if or $field.IsOptional $field.IsNullable }}
-				return n.{{ $field | FieldSymbolLower }}.v, nil
+				{{- if $field.IsMaybe }}
+				return {{if not (MaybeUsesPtr $field.Type) }}&{{end}}n.{{ $field | FieldSymbolLower }}.v, nil
 				{{- else}}
 				return &n.{{ $field | FieldSymbolLower }}, nil
 				{{- end}}
@@ -174,8 +174,8 @@ func (g structGenerator) EmitNodeMethodMapIterator(w io.Writer) {
 					break
 				}
 				{{- end}}
-				{{- if or $field.IsOptional $field.IsNullable }}
-				v = itr.n.{{ $field | FieldSymbolLower}}.v
+				{{- if $field.IsMaybe }}
+				v = {{if not (MaybeUsesPtr $field.Type) }}&{{end}}itr.n.{{ $field | FieldSymbolLower}}.v
 				{{- else}}
 				v = &itr.n.{{ $field | FieldSymbolLower}}
 				{{- end}}
@@ -265,18 +265,28 @@ func (g structBuilderGenerator) EmitNodeBuilderMethods(w io.Writer) {
 			*nb = _{{ .Type | TypeSymbol }}__Builder{_{{ .Type | TypeSymbol }}__Assembler{w: &w, state: maState_initial}}
 		}
 	`, w, g.AdjCfg, g)
+	// While for scalars we cover up all the assembler methods that are prepared to handle null,
+	//  here, it's unfeasible: would result in deep bifrucations.
 }
 func (g structBuilderGenerator) EmitNodeAssemblerType(w io.Writer) {
 	// - 'w' is the "**w**ip" pointer.
 	// - 'state' is what it says on the tin.
 	// - 's' is a bitfield for what's been **s**et.
 	// - 'f' is the **f**ocused field that will be assembled next.
+	// - 'z' is used to denote a null (in case we're used in a context that's acceptable).  z for **z**ilch.
+	// - 'fcb' is the **f**inish **c**all**b**ack, supplied by the parent if we're a child assembler.
 	doTemplate(`
 		type _{{ .Type | TypeSymbol }}__Assembler struct {
 			w *_{{ .Type | TypeSymbol }}
 			state maState
 			s int
 			f int
+			z bool
+			fcb func() error
+
+			{{range $field := .Type.Fields -}}
+			ca_{{ $field | FieldSymbolLower }} _{{ $field.Type | TypeSymbol }}__Assembler
+			{{end -}}
 		}
 
 		var (
@@ -297,6 +307,27 @@ func (g structBuilderGenerator) EmitNodeAssemblerMethodBeginMap(w io.Writer) {
 		}
 	`, w, g.AdjCfg, g)
 }
+func (g structBuilderGenerator) EmitNodeAssemblerMethodAssignNull(w io.Writer) {
+	// Twist: All generated assemblers quietly accept null... and if used in a context they shouldn't,
+	//  either this method gets overriden (this is the case for NodeBuilders),
+	//  or the 'na.fcb' (short for "finish callback") returns the rejection.
+	//  We *do* need a nil check for 'fcb' (unlike with scalars, there's just too much dupe code if we try to make builders inherit no methods).
+	//  We don't pass any args to 'fcb' because we assume it comes from something that can already see this whole struct.
+	doTemplate(`
+		func (na *_{{ .Type | TypeSymbol }}__Assembler) AssignNull() error {
+			if na.state != maState_initial {
+				panic("misuse")
+			}
+			na.z = true
+			na.state = maState_finished
+			if na.fcb != nil {
+				return na.fcb()
+			} else {
+				return nil
+			}
+		}
+	`, w, g.AdjCfg, g)
+}
 func (g structBuilderGenerator) EmitNodeAssemblerMethodAssignNode(w io.Writer) {
 	doTemplate(`
 		func (na *_{{ .Type | TypeSymbol }}__Assembler) AssignNode(v ipld.Node) error {
@@ -306,7 +337,14 @@ func (g structBuilderGenerator) EmitNodeAssemblerMethodAssignNode(w io.Writer) {
 			if v2, ok := v.(*_{{ .Type | TypeSymbol }}); ok {
 				*na.w = *v2
 				na.state = maState_finished
-				return nil
+				if na.fcb != nil {
+					return na.fcb()
+				} else {
+					return nil
+				}
+			}
+			if v.ReprKind() == ipld.ReprKind_Null {
+				return na.AssignNull()
 			}
 			if v.ReprKind() != ipld.ReprKind_Map {
 				return ipld.ErrWrongKind{TypeName: "{{ .PkgName }}.{{ .Type.Name }}", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
@@ -336,6 +374,7 @@ func (g structBuilderGenerator) EmitNodeAssemblerOtherBits(w io.Writer) {
 	}
 }
 func (g structBuilderGenerator) emitMapAssemblerMethods(w io.Writer) {
+	// FUTURE: some of the setup of the child assemblers could probably be DRY'd up.
 	doTemplate(`
 		func (ma *_{{ .Type | TypeSymbol }}__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, error) {
 			if ma.state != maState_initial {
@@ -350,8 +389,13 @@ func (g structBuilderGenerator) emitMapAssemblerMethods(w io.Writer) {
 				}
 				ma.s += fieldBit__{{ $type | TypeSymbol }}_{{ $field | FieldSymbolUpper }}
 				ma.state = maState_midValue
-				ma.f = {{ $i }} // REVIEW not sure if this matters in this path; suspect not.
-				return &relevantChildValueAssembler, nil
+				{{- if $field.IsMaybe }}
+				ma.ca_{{ $field | FieldSymbolLower }}.w = {{if not (MaybeUsesPtr $field.Type) }}&{{end}}ma.w.{{ $field | FieldSymbolLower }}.v
+				{{- else}}
+				ma.ca_{{ $field | FieldSymbolLower }}.w = &ma.w.{{ $field | FieldSymbolLower }}
+				{{- end}}
+				ma.ca_{{ $field | FieldSymbolLower }}.fcb = ma.fcb_{{ $field | FieldSymbolLower }}
+				return &ma.ca_{{ $field | FieldSymbolLower }}, nil
 			{{- end}}
 			default:
 				return nil, ipld.ErrInvalidKey{TypeName:"{{ $type.Name }}", Key:&_String{k}}
@@ -361,10 +405,32 @@ func (g structBuilderGenerator) emitMapAssemblerMethods(w io.Writer) {
 			return ma
 		}
 		func (ma *_{{ .Type | TypeSymbol }}__Assembler) AssembleValue() ipld.NodeAssembler {
-			return &relevantChildValueAssembler
+			if ma.state != maState_expectValue {
+				panic("misuse")
+			}
+			ma.state = maState_midValue
+			switch ma.f {
+			{{- range $i, $field := .Type.Fields }}
+			case {{ $i }}:
+				{{- if $field.IsMaybe }}
+				ma.ca_{{ $field | FieldSymbolLower }}.w = {{if not (MaybeUsesPtr $field.Type) }}&{{end}}ma.w.{{ $field | FieldSymbolLower }}.v
+				{{- else}}
+				ma.ca_{{ $field | FieldSymbolLower }}.w = &ma.w.{{ $field | FieldSymbolLower }}
+				{{- end}}
+				ma.ca_{{ $field | FieldSymbolLower }}.fcb = ma.fcb_{{ $field | FieldSymbolLower }}
+				return &ma.ca_{{ $field | FieldSymbolLower }}
+			{{- end}}
+			default:
+				panic("unreachable")
+			}
 		}
 		func (ma *_{{ .Type | TypeSymbol }}__Assembler) Finish() error {
-			panic("todo structbuilder mapassembler finish")
+			//FIXME check if all required fields are set
+			if ma.fcb != nil {
+				return ma.fcb()
+			} else {
+				return nil
+			}
 		}
 		func (ma *_{{ .Type | TypeSymbol }}__Assembler) KeyStyle() ipld.NodeStyle {
 			return _String__Style{}
@@ -380,8 +446,7 @@ func (g structBuilderGenerator) emitKeyAssembler(w io.Writer) {
 	`, w, g.AdjCfg, g)
 	stubs := mixins.StringAssemblerTraits{
 		g.PkgName,
-		g.TypeName,
-		"", // unexercised here.
+		g.TypeName + ".KeyAssembler",
 		"_" + g.AdjCfg.TypeSymbol(g.Type) + "__Key",
 	}
 	stubs.EmitNodeAssemblerMethodBeginMap(w)
@@ -414,7 +479,15 @@ func (g structBuilderGenerator) emitKeyAssembler(w io.Writer) {
 	`, w, g.AdjCfg, g)
 	stubs.EmitNodeAssemblerMethodAssignBytes(w)
 	stubs.EmitNodeAssemblerMethodAssignLink(w)
-	stubs.EmitNodeAssemblerMethodAssignNode(w)
+	doTemplate(`
+		func (ka *_{{ .Type | TypeSymbol }}__KeyAssembler) AssignNode(v ipld.Node) error {
+			if v2, err := v.AsString(); err != nil {
+				return err
+			} else {
+				return ka.AssignString(v2)
+			}
+		}
+	`, w, g.AdjCfg, g)
 
 }
 func (g structBuilderGenerator) emitFieldValueAssembler(f schema.StructField, w io.Writer) {
@@ -436,7 +509,31 @@ func (g structBuilderGenerator) emitFieldValueAssembler(f schema.StructField, w 
 	//  If you're handling a MaybeT, the 'finishCb' can set the null state even though the '_T__Assembler' can't see the '_MaybeT.m'!
 	//  Similarly: '_T__ReprAssembler' sprouts 'z bool' and 'finishCb func()' and does double duty.
 
+	// Generate the finisher callbacks that we'll insert into child assemblers.
 	doTemplate(`
-		// todo child assembler for field {{ .Name }}
-	`, w, g.AdjCfg, f)
+		func (na *_{{ .Type | TypeSymbol }}__Assembler) fcb_{{ .Field | FieldSymbolLower }}() error {
+			{{- if .Field.IsNullable }}
+			if na.ca_{{ .Field | FieldSymbolLower }}.z == true {
+				na.w.{{ .Field | FieldSymbolLower }}.m = schema.Maybe_Null
+			}
+			{{- else}}
+			if na.ca_{{ .Field | FieldSymbolLower }}.z == true {
+				return mixins.MapAssembler{"{{ .PkgName }}.{{ .TypeName }}"}.AssignNull()
+			}
+			{{- end}}
+			na.ca_{{ .Field | FieldSymbolLower }}.w = nil
+			na.state = maState_initial
+			return nil
+		}
+	`, w, g.AdjCfg, struct {
+		PkgName  string
+		Type     schema.TypeStruct
+		TypeName string
+		Field    schema.StructField
+	}{
+		g.PkgName,
+		g.Type,
+		g.TypeName,
+		f,
+	})
 }

@@ -19,7 +19,11 @@ func TestSmoke(t *testing.T) {
 	var f *os.File
 
 	pkgName := "whee"
-	adjCfg := &AdjunctCfg{}
+	adjCfg := &AdjunctCfg{
+		maybeUsesPtr: map[schema.TypeName]bool{
+			"String": false,
+		},
+	}
 
 	f = openOrPanic("_test/minima.go")
 	EmitInternalEnums(pkgName, f)

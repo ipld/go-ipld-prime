@@ -13,6 +13,7 @@ func doTemplate(tmplstr string, w io.Writer, adjCfg *AdjunctCfg, data interface{
 			"TypeSymbol":       adjCfg.TypeSymbol,
 			"FieldSymbolLower": adjCfg.FieldSymbolLower,
 			"FieldSymbolUpper": adjCfg.FieldSymbolUpper,
+			"MaybeUsesPtr":     adjCfg.MaybeUsesPtr,
 			"add":              func(a, b int) int { return a + b },
 		}).
 		Parse(wish.Dedent(tmplstr)))

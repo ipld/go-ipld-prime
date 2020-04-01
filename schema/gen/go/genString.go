@@ -51,11 +51,10 @@ func (g stringGenerator) EmitNativeBuilder(w io.Writer) {
 
 func (g stringGenerator) EmitNativeMaybe(w io.Writer) {
 	// REVIEW: can this be extracted to the mixins package?  it doesn't appear to vary for kind.
-	//  We *do* somtimes need to vary this for whether or not 'v' is a pointer.  For strings: it's not.  For others?  Depends.
 	doTemplate(`
 		type _{{ .Type | TypeSymbol }}__Maybe struct {
 			m schema.Maybe
-			v {{ .Type | TypeSymbol }}
+			v {{if not (MaybeUsesPtr .Type) }}_{{end}}{{ .Type | TypeSymbol }}
 		}
 		type Maybe{{ .Type | TypeSymbol }} = *_{{ .Type | TypeSymbol }}__Maybe
 
@@ -68,11 +67,23 @@ func (g stringGenerator) EmitNativeMaybe(w io.Writer) {
 		func (m Maybe{{ .Type | TypeSymbol }}) Exists() bool {
 			return m.m == schema.Maybe_Value
 		}
+		func (m Maybe{{ .Type | TypeSymbol }}) AsNode() ipld.Node {
+			switch m.m {
+				case schema.Maybe_Absent:
+					return ipld.Undef
+				case schema.Maybe_Null:
+					return ipld.Null
+				case schema.Maybe_Value:
+					return {{if not (MaybeUsesPtr .Type) }}&{{end}}m.v
+				default:
+					panic("unreachable")
+			}
+		}
 		func (m Maybe{{ .Type | TypeSymbol }}) Must() {{ .Type | TypeSymbol }} {
 			if !m.Exists() {
 				panic("unbox of a maybe rejected")
 			}
-			return m.v
+			return {{if not (MaybeUsesPtr .Type) }}&{{end}}m.v
 		}
 	`, w, g.AdjCfg, g)
 }
@@ -154,7 +165,6 @@ func (g stringGenerator) GetNodeBuilderGenerator() NodeBuilderGenerator {
 		mixins.StringAssemblerTraits{
 			g.PkgName,
 			g.TypeName,
-			"_" + g.AdjCfg.TypeSymbol(g.Type),
 			"_" + g.AdjCfg.TypeSymbol(g.Type) + "__",
 		},
 		g.PkgName,
@@ -186,11 +196,66 @@ func (g stringBuilderGenerator) EmitNodeBuilderMethods(w io.Writer) {
 			*nb = _{{ .Type | TypeSymbol }}__Builder{_{{ .Type | TypeSymbol }}__Assembler{w: &w}}
 		}
 	`, w, g.AdjCfg, g)
+	// Cover up all the assembler methods that are prepared to handle null;
+	//  this saves them from having to check for a nil 'fcb'.
+	doTemplate(`
+		func (nb *_{{ .Type | TypeSymbol }}__Builder) AssignNull() error {
+			return mixins.StringAssembler{"{{ .PkgName }}.{{ .TypeName }}"}.AssignNull()
+		}
+		func (na *_{{ .Type | TypeSymbol }}__Builder) AssignString(v string) error {
+			*na.w = _{{ .Type | TypeSymbol }}{v}
+			return nil
+		}
+		func (na *_{{ .Type | TypeSymbol }}__Builder) AssignNode(v ipld.Node) error {
+			if v2, err := v.AsString(); err != nil {
+				return err
+			} else {
+				return na.AssignString(v2)
+			}
+		}
+	`, w, g.AdjCfg, g)
 }
 func (g stringBuilderGenerator) EmitNodeAssemblerType(w io.Writer) {
 	doTemplate(`
 		type _{{ .Type | TypeSymbol }}__Assembler struct {
 			w *_{{ .Type | TypeSymbol }}
+			z bool
+			fcb func() error
+		}
+	`, w, g.AdjCfg, g)
+}
+func (g stringBuilderGenerator) EmitNodeAssemblerMethodAssignNull(w io.Writer) {
+	// Twist: All generated assemblers quietly accept null... and if used in a context they shouldn't,
+	//  either this method gets overriden (this is the case for NodeBuilders),
+	//  or the 'na.fcb' (short for "finish callback") returns the rejection.
+	//  We don't need a nil check for 'fcb' because all parent assemblers use it.
+	//  We don't pass any args to 'fcb' because we assume it comes from something that can already see this whole struct.
+	doTemplate(`
+		func (na *_{{ .Type | TypeSymbol }}__Assembler) AssignNull() error {
+			na.z = true
+			return na.fcb()
+		}
+	`, w, g.AdjCfg, g)
+}
+func (g stringBuilderGenerator) EmitNodeAssemblerMethodAssignString(w io.Writer) {
+	doTemplate(`
+		func (na *_{{ .Type | TypeSymbol }}__Assembler) AssignString(v string) error {
+			*na.w = _{{ .Type | TypeSymbol }}{v}
+			return na.fcb()
+		}
+	`, w, g.AdjCfg, g)
+}
+func (g stringBuilderGenerator) EmitNodeAssemblerMethodAssignNode(w io.Writer) {
+	doTemplate(`
+		func (na *_{{ .Type | TypeSymbol }}__Assembler) AssignNode(v ipld.Node) error {
+			if v.IsNull() {
+				return na.AssignNull()
+			}
+			if v2, err := v.AsString(); err != nil {
+				return err
+			} else {
+				return na.AssignString(v2)
+			}
 		}
 	`, w, g.AdjCfg, g)
 }
