@@ -402,7 +402,11 @@ func (g structBuilderGenerator) emitMapAssemblerMethods(w io.Writer) {
 			}
 		}
 		func (ma *_{{ .Type | TypeSymbol }}__Assembler) AssembleKey() ipld.NodeAssembler {
-			return ma
+			if ma.state != maState_initial {
+				panic("misuse")
+			}
+			ma.state = maState_midKey
+			return (*_{{ .Type | TypeSymbol }}__KeyAssembler)(ma)
 		}
 		func (ma *_{{ .Type | TypeSymbol }}__Assembler) AssembleValue() ipld.NodeAssembler {
 			if ma.state != maState_expectValue {
@@ -425,7 +429,11 @@ func (g structBuilderGenerator) emitMapAssemblerMethods(w io.Writer) {
 			}
 		}
 		func (ma *_{{ .Type | TypeSymbol }}__Assembler) Finish() error {
+			if ma.state != maState_initial {
+				panic("misuse")
+			}
 			//FIXME check if all required fields are set
+			ma.state = maState_finished
 			if ma.fcb != nil {
 				return ma.fcb()
 			} else {
@@ -487,6 +495,9 @@ func (g structBuilderGenerator) emitKeyAssembler(w io.Writer) {
 				return ka.AssignString(v2)
 			}
 		}
+		func (_{{ .Type | TypeSymbol }}__KeyAssembler) Style() ipld.NodeStyle {
+			return _String__Style{}
+		}
 	`, w, g.AdjCfg, g)
 
 }
@@ -525,20 +536,22 @@ func (g structBuilderGenerator) emitFieldValueAssembler(f schema.StructField, w 
 	//     (If the maybe doesn't use pointer types, the pointer is to the embed location; no action needed.)
 	doTemplate(`
 		func (na *_{{ .Type | TypeSymbol }}__Assembler) fcb_{{ .Field | FieldSymbolLower }}() error {
-			{{- if not .Field.IsNullable }}
+			{{- if .Field.IsNullable }}
+			if na.ca_{{ .Field | FieldSymbolLower }}.z == true {
+				na.w.{{ .Field | FieldSymbolLower }}.m = schema.Maybe_Null
+			} else {
+				na.w.{{ .Field | FieldSymbolLower }}.m = schema.Maybe_Value
+			}
+			{{- else}}
 			if na.ca_{{ .Field | FieldSymbolLower }}.z == true {
 				return mixins.MapAssembler{"{{ .PkgName }}.{{ .Field.Type.Name }}"}.AssignNull()
 			}
 			{{- end}}
-			{{- if .Field.IsMaybe }}
-			{{- if .Field.IsNullable }}
-			if na.ca_{{ .Field | FieldSymbolLower }}.z == true {
-				na.w.{{ .Field | FieldSymbolLower }}.m = schema.Maybe_Null
-			}
+			{{- if and .Field.IsOptional (not .Field.IsNullable) }}
+			na.w.{{ .Field | FieldSymbolLower }}.m = schema.Maybe_Value
 			{{- end}}
-			{{- if .Field.Type | MaybeUsesPtr }}
+			{{- if and .Field.IsMaybe (.Field.Type | MaybeUsesPtr) }}
 			na.w.{{ .Field | FieldSymbolLower }}.v = na.ca_{{ .Field | FieldSymbolLower }}.w
-			{{- end}}
 			{{- end}}
 			na.ca_{{ .Field | FieldSymbolLower }}.w = nil
 			na.state = maState_initial
