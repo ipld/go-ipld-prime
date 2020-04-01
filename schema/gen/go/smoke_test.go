@@ -28,10 +28,12 @@ func TestSmoke(t *testing.T) {
 
 	tStroct := schema.SpawnStruct("Stroct",
 		[]schema.StructField{
-			schema.SpawnStructField("f1", tString, false, false),
-			schema.SpawnStructField("f2", tString, true, false),
-			schema.SpawnStructField("f3", tString, true, true),
-			schema.SpawnStructField("f4", tString, false, true),
+			// Every field in this struct (including their order) is exercising an interesting case...
+			schema.SpawnStructField("f1", tString, false, false), // plain field.
+			schema.SpawnStructField("f2", tString, true, false),  // optional; later we have more than one optional field, nonsequentially.
+			schema.SpawnStructField("f3", tString, false, true),  // nullable; but required.
+			schema.SpawnStructField("f4", tString, true, true),   // optional and nullable; trailing optional.
+			schema.SpawnStructField("f5", tString, true, false),  // optional; and the second one in a row, trailing.
 		},
 		schema.StructRepresentation_Map{},
 	)

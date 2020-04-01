@@ -2,6 +2,7 @@ package gengo
 
 import (
 	"io"
+	"strconv"
 
 	"github.com/ipld/go-ipld-prime/schema"
 	"github.com/ipld/go-ipld-prime/schema/gen/go/mixins"
@@ -104,19 +105,57 @@ func (g structReprMapReprGenerator) EmitNodeMethodLookup(w io.Writer) {
 }
 
 func (g structReprMapReprGenerator) EmitNodeMethodMapIterator(w io.Writer) {
+	// The 'idx' int is what field we'll yield next.
 	// Note that this iterator doesn't mention fields that are absent.
-	// FIXME significant issues here, continue doesn't work, and also continue shouldn't drive off a cliff if it's encountered at the end.
+	//  This makes things a bit trickier -- especially the 'Done' predicate,
+	//   since it may have to do lookahead if there's any optionals at the end of the structure!
+	//  It also means 'idx' can jump ahead by more than one per Next call in order to skip over absent fields.
+	// TODO : support for implicits is still future work.
+
+	// First: Count how many trailing fields are optional.
+	//  The 'Done' predicate gets more complex when in the trailing optionals.
+	fields := g.Type.Fields()
+	fieldCount := len(fields)
+	beginTrailingOptionalField := fieldCount
+	for i := fieldCount - 1; i >= 0; i-- {
+		if !fields[i].IsOptional() {
+			break
+		}
+		beginTrailingOptionalField = i
+	}
+	haveTrailingOptionals := beginTrailingOptionalField < fieldCount
+
+	// Now: finally we can get on with the actual templating.
+	// FIXME: this is still yielding type-level keys -- should handle rename directives.
 	doTemplate(`
 		func (n *_{{ .Type | TypeSymbol }}__Repr) MapIterator() ipld.MapIterator {
+			{{- if .HaveTrailingOptionals }}
+			end := {{ len .Type.Fields }}`+
+		func() string { // this next part was too silly in templates due to lack of reverse ranging.
+			v := "\n"
+			for i := fieldCount - 1; i >= beginTrailingOptionalField; i-- {
+				v += "\t\t\tif n." + g.AdjCfg.FieldSymbolLower(fields[i]) + ".m == schema.Maybe_Absent {\n"
+				v += "\t\t\t\tend = " + strconv.Itoa(i) + "\n"
+				v += "\t\t\t} else {\n"
+				v += "\t\t\t\tgoto done\n"
+				v += "\t\t\t}\n"
+			}
+			return v
+		}()+`done:
+			return &_{{ .Type | TypeSymbol }}__ReprMapItr{n, 0, end}
+			{{- else}}
 			return &_{{ .Type | TypeSymbol }}__ReprMapItr{n, 0}
+			{{- end}}
 		}
 
 		type _{{ .Type | TypeSymbol }}__ReprMapItr struct {
-			n {{ .Type | TypeSymbol }}
-			idx  int
+			n   *_{{ .Type | TypeSymbol }}__Repr
+			idx int
+			{{if .HaveTrailingOptionals }}end int{{end}}
 		}
 
 		func (itr *_{{ .Type | TypeSymbol }}__ReprMapItr) Next() (k ipld.Node, v ipld.Node, _ error) {
+		advance:
 			if itr.idx >= {{ len .Type.Fields }} {
 				return nil, nil, ipld.ErrIteratorOverread{}
 			}
@@ -128,7 +167,7 @@ func (g structReprMapReprGenerator) EmitNodeMethodMapIterator(w io.Writer) {
 				{{- if $field.IsOptional }}
 				if itr.n.{{ $field | FieldSymbolLower }}.m == schema.Maybe_Absent {
 					itr.idx++
-					continue
+					goto advance
 				}
 				{{- end}}
 				{{- if $field.IsNullable }}
@@ -149,10 +188,24 @@ func (g structReprMapReprGenerator) EmitNodeMethodMapIterator(w io.Writer) {
 			itr.idx++
 			return
 		}
+		{{- if .HaveTrailingOptionals }}
+		func (itr *_{{ .Type | TypeSymbol }}__ReprMapItr) Done() bool {
+			return itr.idx >= itr.end
+		}
+		{{- else}}
 		func (itr *_{{ .Type | TypeSymbol }}__ReprMapItr) Done() bool {
 			return itr.idx >= {{ len .Type.Fields }}
 		}
-	`, w, g.AdjCfg, g)
+		{{- end}}
+	`, w, g.AdjCfg, struct {
+		Type                       schema.TypeStruct
+		HaveTrailingOptionals      bool
+		BeginTrailingOptionalField int
+	}{
+		g.Type,
+		haveTrailingOptionals,
+		beginTrailingOptionalField,
+	})
 }
 
 func (g structReprMapReprGenerator) EmitNodeMethodLength(w io.Writer) {
