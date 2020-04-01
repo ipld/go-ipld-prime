@@ -182,16 +182,18 @@ func (plainList__Assembler) AssignLink(ipld.Link) error {
 }
 func (na *plainList__Assembler) AssignNode(v ipld.Node) error {
 	// Sanity check, then update, assembler state.
+	//  Update of state to 'finished' comes later; where exactly depends on if shortcuts apply.
 	if na.state != laState_initial {
 		panic("misuse")
 	}
-	na.state = laState_finished
 	// Copy the content.
 	if v2, ok := v.(*plainList); ok { // if our own type: shortcut.
 		// Copy the structure by value.
 		//  This means we'll have pointers into the same internal maps and slices;
 		//   this is okay, because the Node type promises it's immutable, and we are going to instantly finish ourselves to also maintain that.
+		// FIXME: the shortcut behaves differently than the long way: it discards any existing progress.  Doesn't violate immut, but is odd.
 		*na.w = *v2
+		na.state = laState_finished
 		return nil
 	}
 	// If the above shortcut didn't work, resort to a generic copy.
@@ -209,8 +211,7 @@ func (na *plainList__Assembler) AssignNode(v ipld.Node) error {
 			return err
 		}
 	}
-	// validators could run and report errors promptly, if this type had any -- same as for regular Finish.
-	return nil
+	return na.Finish()
 }
 func (plainList__Assembler) Style() ipld.NodeStyle {
 	return Style__List{}

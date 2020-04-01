@@ -197,17 +197,19 @@ func (plainMap__Assembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"map"}.AssignLink(nil)
 }
 func (na *plainMap__Assembler) AssignNode(v ipld.Node) error {
-	// Sanity check, then update, assembler state.
+	// Sanity check assembler state.
+	//  Update of state to 'finished' comes later; where exactly depends on if shortcuts apply.
 	if na.state != maState_initial {
 		panic("misuse")
 	}
-	na.state = maState_finished
 	// Copy the content.
 	if v2, ok := v.(*plainMap); ok { // if our own type: shortcut.
 		// Copy the structure by value.
 		//  This means we'll have pointers into the same internal maps and slices;
 		//   this is okay, because the Node type promises it's immutable, and we are going to instantly finish ourselves to also maintain that.
+		// FIXME: the shortcut behaves differently than the long way: it discards any existing progress.  Doesn't violate immut, but is odd.
 		*na.w = *v2
+		na.state = maState_finished
 		return nil
 	}
 	// If the above shortcut didn't work, resort to a generic copy.
@@ -228,8 +230,7 @@ func (na *plainMap__Assembler) AssignNode(v ipld.Node) error {
 			return err
 		}
 	}
-	// validators could run and report errors promptly, if this type had any -- same as for regular Finish.
-	return nil
+	return na.Finish()
 }
 func (plainMap__Assembler) Style() ipld.NodeStyle {
 	return Style__Map{}
@@ -240,16 +241,17 @@ func (plainMap__Assembler) Style() ipld.NodeStyle {
 // AssembleEntry is part of conforming to MapAssembler, which we do on
 // plainMap__Assembler so that BeginMap can just return a retyped pointer rather than new object.
 func (ma *plainMap__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, error) {
-	// Sanity check, then update, assembler state.
+	// Sanity check assembler state.
+	//  Update of state comes after possible key rejection.
 	if ma.state != maState_initial {
 		panic("misuse")
 	}
-	ma.state = maState_midValue
 	// Check for dup keys; error if so.
 	_, exists := ma.w.m[k]
 	if exists {
 		return nil, ipld.ErrRepeatedMapKey{plainString(k)}
 	}
+	ma.state = maState_midValue
 	ma.w.t = append(ma.w.t, plainMap__Entry{k: plainString(k)})
 	// Make value assembler valid by giving it pointer back to whole 'ma'; yield it.
 	ma.va.ma = ma
@@ -264,8 +266,6 @@ func (ma *plainMap__Assembler) AssembleKey() ipld.NodeAssembler {
 		panic("misuse")
 	}
 	ma.state = maState_midKey
-	// Extend entry table.
-	ma.w.t = append(ma.w.t, plainMap__Entry{})
 	// Make key assembler valid by giving it pointer back to whole 'ma'; yield it.
 	ma.ka.ma = ma
 	return &ma.ka
@@ -324,14 +324,18 @@ func (plainMap__KeyAssembler) AssignFloat(float64) error {
 }
 func (mka *plainMap__KeyAssembler) AssignString(v string) error {
 	// Check for dup keys; error if so.
+	//  (And, backtrack state to accepting keys again so we don't get eternally wedged here.)
 	_, exists := mka.ma.w.m[v]
 	if exists {
+		mka.ma.state = maState_initial
+		mka.ma = nil // invalidate self to prevent further incorrect use.
 		return ipld.ErrRepeatedMapKey{plainString(v)}
 	}
 	// Assign the key into the end of the entry table;
 	//  we'll be doing map insertions after we get the value in hand.
 	//  (There's no need to delegate to another assembler for the key type,
 	//   because we're just at Data Model level here, which only regards plain strings.)
+	mka.ma.w.t = append(mka.ma.w.t, plainMap__Entry{})
 	mka.ma.w.t[len(mka.ma.w.t)-1].k = plainString(v)
 	// Update parent assembler state: clear to proceed.
 	mka.ma.state = maState_expectValue
