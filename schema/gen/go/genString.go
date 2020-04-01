@@ -148,12 +148,36 @@ func (g stringGenerator) EmitNodeStyleType(w io.Writer) {
 
 // --- NodeBuilder and NodeAssembler --->
 
-func (g stringGenerator) EmitNodeBuilder(w io.Writer) {
+func (g stringGenerator) GetNodeBuilderGenerator() NodeBuilderGenerator {
+	return stringBuilderGenerator{
+		g.AdjCfg,
+		mixins.StringAssemblerTraits{
+			g.PkgName,
+			g.TypeName,
+			"_" + g.AdjCfg.TypeSymbol(g.Type),
+			"_" + g.AdjCfg.TypeSymbol(g.Type) + "__",
+		},
+		g.PkgName,
+		g.Type,
+	}
+}
+
+type stringBuilderGenerator struct {
+	AdjCfg *AdjunctCfg
+	mixins.StringAssemblerTraits
+	PkgName string
+	Type    schema.TypeString
+}
+
+func (g stringBuilderGenerator) EmitNodeBuilderType(w io.Writer) {
 	doTemplate(`
 		type _{{ .Type | TypeSymbol }}__Builder struct {
 			_{{ .Type | TypeSymbol }}__Assembler
 		}
-
+	`, w, g.AdjCfg, g)
+}
+func (g stringBuilderGenerator) EmitNodeBuilderMethods(w io.Writer) {
+	doTemplate(`
 		func (nb *_{{ .Type | TypeSymbol }}__Builder) Build() ipld.Node {
 			return nb.w
 		}
@@ -163,51 +187,13 @@ func (g stringGenerator) EmitNodeBuilder(w io.Writer) {
 		}
 	`, w, g.AdjCfg, g)
 }
-
-func (g stringGenerator) EmitNodeAssembler(w io.Writer) {
+func (g stringBuilderGenerator) EmitNodeAssemblerType(w io.Writer) {
 	doTemplate(`
 		type _{{ .Type | TypeSymbol }}__Assembler struct {
 			w *_{{ .Type | TypeSymbol }}
 		}
-
-		func (_{{ .Type | TypeSymbol }}__Assembler) BeginMap(sizeHint int) (ipld.MapAssembler, error) {
-			return mixins.StringAssembler{"{{ .PkgName }}.{{ .Type.Name }}"}.BeginMap(0)
-		}
-		func (_{{ .Type | TypeSymbol }}__Assembler) BeginList(sizeHint int) (ipld.ListAssembler, error) {
-			return mixins.StringAssembler{"{{ .PkgName }}.{{ .Type.Name }}"}.BeginList(0)
-		}
-		func (_{{ .Type | TypeSymbol }}__Assembler) AssignNull() error {
-			return mixins.StringAssembler{"{{ .PkgName }}.{{ .Type.Name }}"}.AssignNull()
-		}
-		func (_{{ .Type | TypeSymbol }}__Assembler) AssignBool(bool) error {
-			return mixins.StringAssembler{"{{ .PkgName }}.{{ .Type.Name }}"}.AssignBool(false)
-		}
-		func (_{{ .Type | TypeSymbol }}__Assembler) AssignInt(int) error {
-			return mixins.StringAssembler{"{{ .PkgName }}.{{ .Type.Name }}"}.AssignInt(0)
-		}
-		func (_{{ .Type | TypeSymbol }}__Assembler) AssignFloat(float64) error {
-			return mixins.StringAssembler{"{{ .PkgName }}.{{ .Type.Name }}"}.AssignFloat(0)
-		}
-		func (na *_{{ .Type | TypeSymbol }}__Assembler) AssignString(v string) error {
-			*na.w = _{{ .Type | TypeSymbol }}{v}
-			return nil
-		}
-		func (_{{ .Type | TypeSymbol }}__Assembler) AssignBytes([]byte) error {
-			return mixins.StringAssembler{"{{ .PkgName }}.{{ .Type.Name }}"}.AssignBytes(nil)
-		}
-		func (_{{ .Type | TypeSymbol }}__Assembler) AssignLink(ipld.Link) error {
-			return mixins.StringAssembler{"{{ .PkgName }}.{{ .Type.Name }}"}.AssignLink(nil)
-		}
-		func (na *_{{ .Type | TypeSymbol }}__Assembler) AssignNode(v ipld.Node) error {
-			if v2, err := v.AsString(); err != nil {
-				return err
-			} else {
-				*na.w = _{{ .Type | TypeSymbol }}{v2}
-				return nil
-			}
-		}
-		func (_{{ .Type | TypeSymbol }}__Assembler) Style() ipld.NodeStyle {
-			return _{{ .Type | TypeSymbol }}__Style{}
-		}
 	`, w, g.AdjCfg, g)
+}
+func (g stringBuilderGenerator) EmitNodeAssemblerOtherBits(w io.Writer) {
+	// Nothing needed here for string kinds.
 }

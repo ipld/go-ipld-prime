@@ -56,3 +56,37 @@ func (g MapTraits) EmitNodeMethodAsBytes(w io.Writer) {
 func (g MapTraits) EmitNodeMethodAsLink(w io.Writer) {
 	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Map}.emitNodeMethodAsLink(w)
 }
+
+type MapAssemblerTraits struct {
+	PkgName       string
+	TypeName      string // see doc in kindAssemblerTraitsGenerator
+	AppliedPrefix string // see doc in kindAssemblerTraitsGenerator
+}
+
+func (g MapAssemblerTraits) EmitNodeAssemblerMethodBeginList(w io.Writer) {
+	kindAssemblerTraitsGenerator{g.PkgName, g.TypeName, g.AppliedPrefix, ipld.ReprKind_Map}.emitNodeAssemblerMethodBeginList(w)
+}
+func (g MapAssemblerTraits) EmitNodeAssemblerMethodAssignNull(w io.Writer) {
+	kindAssemblerTraitsGenerator{g.PkgName, g.TypeName, g.AppliedPrefix, ipld.ReprKind_Map}.emitNodeAssemblerMethodAssignNull(w)
+}
+func (g MapAssemblerTraits) EmitNodeAssemblerMethodAssignBool(w io.Writer) {
+	kindAssemblerTraitsGenerator{g.PkgName, g.TypeName, g.AppliedPrefix, ipld.ReprKind_Map}.emitNodeAssemblerMethodAssignBool(w)
+}
+func (g MapAssemblerTraits) EmitNodeAssemblerMethodAssignInt(w io.Writer) {
+	kindAssemblerTraitsGenerator{g.PkgName, g.TypeName, g.AppliedPrefix, ipld.ReprKind_Map}.emitNodeAssemblerMethodAssignInt(w)
+}
+func (g MapAssemblerTraits) EmitNodeAssemblerMethodAssignFloat(w io.Writer) {
+	kindAssemblerTraitsGenerator{g.PkgName, g.TypeName, g.AppliedPrefix, ipld.ReprKind_Map}.emitNodeAssemblerMethodAssignFloat(w)
+}
+func (g MapAssemblerTraits) EmitNodeAssemblerMethodAssignString(w io.Writer) {
+	kindAssemblerTraitsGenerator{g.PkgName, g.TypeName, g.AppliedPrefix, ipld.ReprKind_Map}.emitNodeAssemblerMethodAssignString(w)
+}
+func (g MapAssemblerTraits) EmitNodeAssemblerMethodAssignBytes(w io.Writer) {
+	kindAssemblerTraitsGenerator{g.PkgName, g.TypeName, g.AppliedPrefix, ipld.ReprKind_Map}.emitNodeAssemblerMethodAssignBytes(w)
+}
+func (g MapAssemblerTraits) EmitNodeAssemblerMethodAssignLink(w io.Writer) {
+	kindAssemblerTraitsGenerator{g.PkgName, g.TypeName, g.AppliedPrefix, ipld.ReprKind_Map}.emitNodeAssemblerMethodAssignLink(w)
+}
+func (g MapAssemblerTraits) EmitNodeAssemblerMethodStyle(w io.Writer) {
+	kindAssemblerTraitsGenerator{g.PkgName, g.TypeName, g.AppliedPrefix, ipld.ReprKind_Map}.emitNodeAssemblerMethodStyle(w)
+}

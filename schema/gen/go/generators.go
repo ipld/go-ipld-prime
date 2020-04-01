@@ -34,7 +34,7 @@ type TypeGenerator interface {
 	//    (these vary!)
 
 	EmitTypedNodeMethodRepresentation(io.Writer)
-	GetRepresentationNodeGen() NodeGenerator // includes transitively the matched nodebuilderGenerator
+	GetRepresentationNodeGen() NodeGenerator // includes transitively the matched NodeBuilderGenerator
 }
 
 type NodeGenerator interface {
@@ -58,8 +58,25 @@ type NodeGenerator interface {
 	EmitNodeMethodAsLink(io.Writer)
 	EmitNodeMethodStyle(io.Writer)
 	EmitNodeStyleType(io.Writer)
-	EmitNodeBuilder(io.Writer)   // the whole thing
-	EmitNodeAssembler(io.Writer) // the whole thing
+	GetNodeBuilderGenerator() NodeBuilderGenerator // assembler features also included inside
+}
+
+type NodeBuilderGenerator interface {
+	EmitNodeBuilderType(io.Writer)
+	EmitNodeBuilderMethods(io.Writer) // not many, so just slung them together.
+	EmitNodeAssemblerType(io.Writer)  // you can call this and not EmitNodeBuilderType in some situations.
+	EmitNodeAssemblerMethodBeginMap(io.Writer)
+	EmitNodeAssemblerMethodBeginList(io.Writer)
+	EmitNodeAssemblerMethodAssignNull(io.Writer)
+	EmitNodeAssemblerMethodAssignBool(io.Writer)
+	EmitNodeAssemblerMethodAssignInt(io.Writer)
+	EmitNodeAssemblerMethodAssignFloat(io.Writer)
+	EmitNodeAssemblerMethodAssignString(io.Writer)
+	EmitNodeAssemblerMethodAssignBytes(io.Writer)
+	EmitNodeAssemblerMethodAssignLink(io.Writer)
+	EmitNodeAssemblerMethodAssignNode(io.Writer)
+	EmitNodeAssemblerMethodStyle(io.Writer)
+	EmitNodeAssemblerOtherBits(io.Writer) // key and value child assemblers are done here.
 }
 
 // EmitFileHeader emits a baseline package header that will
@@ -116,6 +133,23 @@ func EmitNode(ng NodeGenerator, w io.Writer) {
 
 	ng.EmitNodeStyleType(w)
 
-	ng.EmitNodeBuilder(w)
-	ng.EmitNodeAssembler(w)
+	nbg := ng.GetNodeBuilderGenerator()
+	if nbg == nil { // FIXME: hack to save me from stubbing tons right now, remove when done
+		return
+	}
+	nbg.EmitNodeBuilderType(w)
+	nbg.EmitNodeBuilderMethods(w)
+	nbg.EmitNodeAssemblerType(w)
+	nbg.EmitNodeAssemblerMethodBeginMap(w)
+	nbg.EmitNodeAssemblerMethodBeginList(w)
+	nbg.EmitNodeAssemblerMethodAssignNull(w)
+	nbg.EmitNodeAssemblerMethodAssignBool(w)
+	nbg.EmitNodeAssemblerMethodAssignInt(w)
+	nbg.EmitNodeAssemblerMethodAssignFloat(w)
+	nbg.EmitNodeAssemblerMethodAssignString(w)
+	nbg.EmitNodeAssemblerMethodAssignBytes(w)
+	nbg.EmitNodeAssemblerMethodAssignLink(w)
+	nbg.EmitNodeAssemblerMethodAssignNode(w)
+	nbg.EmitNodeAssemblerMethodStyle(w)
+	nbg.EmitNodeAssemblerOtherBits(w)
 }

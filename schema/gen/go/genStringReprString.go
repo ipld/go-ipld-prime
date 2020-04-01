@@ -29,11 +29,15 @@ type stringReprStringGenerator struct {
 }
 
 func (g stringReprStringGenerator) GetRepresentationNodeGen() NodeGenerator {
-	return stringReprStringReprGenerator{g.stringGenerator}
+	return stringReprStringReprGenerator{
+		g.AdjCfg,
+		g.Type,
+	}
 }
 
 type stringReprStringReprGenerator struct {
-	stringGenerator
+	AdjCfg *AdjunctCfg
+	Type   schema.TypeString
 }
 
 func (g stringReprStringReprGenerator) EmitNodeType(w io.Writer) {
@@ -66,5 +70,24 @@ func (stringReprStringReprGenerator) EmitNodeMethodAsBytes(io.Writer)       {}
 func (stringReprStringReprGenerator) EmitNodeMethodAsLink(io.Writer)        {}
 func (stringReprStringReprGenerator) EmitNodeMethodStyle(io.Writer)         {}
 func (stringReprStringReprGenerator) EmitNodeStyleType(io.Writer)           {}
-func (stringReprStringReprGenerator) EmitNodeBuilder(io.Writer)             {}
-func (stringReprStringReprGenerator) EmitNodeAssembler(io.Writer)           {}
+func (stringReprStringReprGenerator) GetNodeBuilderGenerator() NodeBuilderGenerator {
+	return stringReprStringReprBuilderGenerator{}
+}
+
+type stringReprStringReprBuilderGenerator struct{}
+
+func (stringReprStringReprBuilderGenerator) EmitNodeBuilderType(io.Writer)                 {}
+func (stringReprStringReprBuilderGenerator) EmitNodeBuilderMethods(io.Writer)              {}
+func (stringReprStringReprBuilderGenerator) EmitNodeAssemblerType(io.Writer)               {}
+func (stringReprStringReprBuilderGenerator) EmitNodeAssemblerMethodBeginMap(io.Writer)     {}
+func (stringReprStringReprBuilderGenerator) EmitNodeAssemblerMethodBeginList(io.Writer)    {}
+func (stringReprStringReprBuilderGenerator) EmitNodeAssemblerMethodAssignNull(io.Writer)   {}
+func (stringReprStringReprBuilderGenerator) EmitNodeAssemblerMethodAssignBool(io.Writer)   {}
+func (stringReprStringReprBuilderGenerator) EmitNodeAssemblerMethodAssignInt(io.Writer)    {}
+func (stringReprStringReprBuilderGenerator) EmitNodeAssemblerMethodAssignFloat(io.Writer)  {}
+func (stringReprStringReprBuilderGenerator) EmitNodeAssemblerMethodAssignString(io.Writer) {}
+func (stringReprStringReprBuilderGenerator) EmitNodeAssemblerMethodAssignBytes(io.Writer)  {}
+func (stringReprStringReprBuilderGenerator) EmitNodeAssemblerMethodAssignLink(io.Writer)   {}
+func (stringReprStringReprBuilderGenerator) EmitNodeAssemblerMethodAssignNode(io.Writer)   {}
+func (stringReprStringReprBuilderGenerator) EmitNodeAssemblerMethodStyle(io.Writer)        {}
+func (stringReprStringReprBuilderGenerator) EmitNodeAssemblerOtherBits(io.Writer)          {}

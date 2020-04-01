@@ -250,12 +250,35 @@ func (g structReprMapReprGenerator) EmitNodeStyleType(w io.Writer) {
 
 // --- NodeBuilder and NodeAssembler --->
 
-func (g structReprMapReprGenerator) EmitNodeBuilder(w io.Writer) {
+func (g structReprMapReprGenerator) GetNodeBuilderGenerator() NodeBuilderGenerator {
+	return structReprMapReprBuilderGenerator{
+		g.AdjCfg,
+		mixins.MapAssemblerTraits{
+			g.PkgName,
+			g.TypeName,
+			"_" + g.AdjCfg.TypeSymbol(g.Type) + "__Repr",
+		},
+		g.PkgName,
+		g.Type,
+	}
+}
+
+type structReprMapReprBuilderGenerator struct {
+	AdjCfg *AdjunctCfg
+	mixins.MapAssemblerTraits
+	PkgName string
+	Type    schema.TypeStruct
+}
+
+func (g structReprMapReprBuilderGenerator) EmitNodeBuilderType(w io.Writer) {
 	doTemplate(`
 		type _{{ .Type | TypeSymbol }}__ReprBuilder struct {
 			_{{ .Type | TypeSymbol }}__ReprAssembler
 		}
-
+	`, w, g.AdjCfg, g)
+}
+func (g structReprMapReprBuilderGenerator) EmitNodeBuilderMethods(w io.Writer) {
+	doTemplate(`
 		func (nb *_{{ .Type | TypeSymbol }}__ReprBuilder) Build() ipld.Node {
 			if nb.state != maState_finished {
 				panic("invalid state: assembler for {{ .PkgName }}.{{ .Type.Name }}.Repr must be 'finished' before Build can be called!")
@@ -268,47 +291,38 @@ func (g structReprMapReprGenerator) EmitNodeBuilder(w io.Writer) {
 		}
 	`, w, g.AdjCfg, g)
 }
-
-func (g structReprMapReprGenerator) EmitNodeAssembler(w io.Writer) {
-	// FIXME this is getting egregious; it's high time to break EmitNodeAssembler down into a generator with more reusable parts.
+func (g structReprMapReprBuilderGenerator) EmitNodeAssemblerType(w io.Writer) {
 	doTemplate(`
 		type _{{ .Type | TypeSymbol }}__ReprAssembler struct {
 			w *_{{ .Type | TypeSymbol }}
 			state maState
 		}
-
+	`, w, g.AdjCfg, g)
+}
+func (g structReprMapReprBuilderGenerator) EmitNodeAssemblerMethodBeginMap(w io.Writer) {
+	doTemplate(`
 		func (na *_{{ .Type | TypeSymbol }}__ReprAssembler) BeginMap(sizeHint int) (ipld.MapAssembler, error) {
-			panic("todo structassembler reprmap beginmap")
-		}
-		func (_{{ .Type | TypeSymbol }}__ReprAssembler) BeginList(sizeHint int) (ipld.ListAssembler, error) {
-			return mixins.MapAssembler{"{{ .PkgName }}.{{ .Type.Name }}.Repr"}.BeginList(0)
-		}
-		func (_{{ .Type | TypeSymbol }}__ReprAssembler) AssignNull() error {
-			return mixins.MapAssembler{"{{ .PkgName }}.{{ .Type.Name }}.Repr"}.AssignNull()
-		}
-		func (_{{ .Type | TypeSymbol }}__ReprAssembler) AssignBool(bool) error {
-			return mixins.MapAssembler{"{{ .PkgName }}.{{ .Type.Name }}.Repr"}.AssignBool(false)
-		}
-		func (_{{ .Type | TypeSymbol }}__ReprAssembler) AssignInt(int) error {
-			return mixins.MapAssembler{"{{ .PkgName }}.{{ .Type.Name }}.Repr"}.AssignInt(0)
-		}
-		func (_{{ .Type | TypeSymbol }}__ReprAssembler) AssignFloat(float64) error {
-			return mixins.MapAssembler{"{{ .PkgName }}.{{ .Type.Name }}.Repr"}.AssignFloat(0)
-		}
-		func (_{{ .Type | TypeSymbol }}__ReprAssembler) AssignString(v string) error {
-			return mixins.MapAssembler{"{{ .PkgName }}.{{ .Type.Name }}.Repr"}.AssignString("")
-		}
-		func (_{{ .Type | TypeSymbol }}__ReprAssembler) AssignBytes([]byte) error {
-			return mixins.MapAssembler{"{{ .PkgName }}.{{ .Type.Name }}.Repr"}.AssignBytes(nil)
-		}
-		func (_{{ .Type | TypeSymbol }}__ReprAssembler) AssignLink(ipld.Link) error {
-			return mixins.MapAssembler{"{{ .PkgName }}.{{ .Type.Name }}.Repr"}.AssignLink(nil)
-		}
-		func (na *_{{ .Type | TypeSymbol }}__ReprAssembler) AssignNode(v ipld.Node) error {
-			panic("todo structassembler assignNode")
-		}
-		func (_{{ .Type | TypeSymbol }}__ReprAssembler) Style() ipld.NodeStyle {
-			return _{{ .Type | TypeSymbol }}__ReprStyle{}
+			panic("todo structReprMapReprBuilderGenerator BeginMap")
 		}
 	`, w, g.AdjCfg, g)
+}
+func (g structReprMapReprBuilderGenerator) EmitNodeAssemblerMethodAssignNode(w io.Writer) {
+	doTemplate(`
+		func (na *_{{ .Type | TypeSymbol }}__ReprAssembler) AssignNode(v ipld.Node) error {
+			panic("todo structReprMapReprBuilderGenerator AssignNode")
+		}
+	`, w, g.AdjCfg, g)
+}
+func (g structReprMapReprBuilderGenerator) EmitNodeAssemblerOtherBits(w io.Writer) {
+	// TODO key assembler goes here.  or in a small helper method for org purposes, whatever.
+	for _, field := range g.Type.Fields() {
+		g.emitFieldValueAssembler(field, w)
+	}
+}
+func (g structReprMapReprBuilderGenerator) emitFieldValueAssembler(f schema.StructField, w io.Writer) {
+	// TODO for Any, this should do a whole Thing;
+	// TODO for any specific type, we should be able to tersely create a new type that embeds its assembler and wraps the one method that's valid for finishing its kind.
+	doTemplate(`
+		// todo child assembler for field {{ .Name }}
+	`, w, g.AdjCfg, f)
 }
