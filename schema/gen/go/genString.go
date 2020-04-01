@@ -228,7 +228,7 @@ func (g stringBuilderGenerator) EmitNodeAssemblerMethodAssignNull(w io.Writer) {
 	// Twist: All generated assemblers quietly accept null... and if used in a context they shouldn't,
 	//  either this method gets overriden (this is the case for NodeBuilders),
 	//  or the 'na.fcb' (short for "finish callback") returns the rejection.
-	//  We don't need a nil check for 'fcb' because all parent assemblers use it.
+	//  We don't need a nil check for 'fcb' because all parent assemblers use it, and root builders override all relevant methods.
 	//  We don't pass any args to 'fcb' because we assume it comes from something that can already see this whole struct.
 	doTemplate(`
 		func (na *_{{ .Type | TypeSymbol }}__Assembler) AssignNull() error {
@@ -240,6 +240,12 @@ func (g stringBuilderGenerator) EmitNodeAssemblerMethodAssignNull(w io.Writer) {
 func (g stringBuilderGenerator) EmitNodeAssemblerMethodAssignString(w io.Writer) {
 	doTemplate(`
 		func (na *_{{ .Type | TypeSymbol }}__Assembler) AssignString(v string) error {
+			{{- if .Type | MaybeUsesPtr }}
+			if na.w == nil {
+				na.w = &_{{ .Type | TypeSymbol }}{v}
+				return na.fcb()
+			}
+			{{- end}}
 			*na.w = _{{ .Type | TypeSymbol }}{v}
 			return na.fcb()
 		}

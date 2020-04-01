@@ -510,16 +510,35 @@ func (g structBuilderGenerator) emitFieldValueAssembler(f schema.StructField, w 
 	//  Similarly: '_T__ReprAssembler' sprouts 'z bool' and 'finishCb func()' and does double duty.
 
 	// Generate the finisher callbacks that we'll insert into child assemblers.
+	//  In all cases, it's responsible for advancing the parent's state machine.
+	//  If it's not a maybe:
+	//   If the child assembler 'z' is true, raise error.
+	//  If it's a maybe:
+	//   If it's not nullable:
+	//    If the child assembler 'z' is true, raise error.
+	//    If the maybe uses pointer types, we copy out the pointer.
+	//   If it is nullable:
+	//    If the child assembler 'z' is true, set 'm' to 'Null'.
+	//    If the child assembler 'z' is false:
+	//     If the maybe uses pointer types, we copy out the pointer.
+	//      (The pointer will not be nil.  Absent would've been on a divergent track much earlier.)
+	//     (If the maybe doesn't use pointer types, the pointer is to the embed location; no action needed.)
 	doTemplate(`
 		func (na *_{{ .Type | TypeSymbol }}__Assembler) fcb_{{ .Field | FieldSymbolLower }}() error {
+			{{- if not .Field.IsNullable }}
+			if na.ca_{{ .Field | FieldSymbolLower }}.z == true {
+				return mixins.MapAssembler{"{{ .PkgName }}.{{ .Field.Type.Name }}"}.AssignNull()
+			}
+			{{- end}}
+			{{- if .Field.IsMaybe }}
 			{{- if .Field.IsNullable }}
 			if na.ca_{{ .Field | FieldSymbolLower }}.z == true {
 				na.w.{{ .Field | FieldSymbolLower }}.m = schema.Maybe_Null
 			}
-			{{- else}}
-			if na.ca_{{ .Field | FieldSymbolLower }}.z == true {
-				return mixins.MapAssembler{"{{ .PkgName }}.{{ .TypeName }}"}.AssignNull()
-			}
+			{{- end}}
+			{{- if .Field.Type | MaybeUsesPtr }}
+			na.w.{{ .Field | FieldSymbolLower }}.v = na.ca_{{ .Field | FieldSymbolLower }}.w
+			{{- end}}
 			{{- end}}
 			na.ca_{{ .Field | FieldSymbolLower }}.w = nil
 			na.state = maState_initial
