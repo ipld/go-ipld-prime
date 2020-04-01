@@ -65,7 +65,6 @@ func (g StringTraits) EmitNodeMethodAsLink(w io.Writer) {
 type StringAssemblerTraits struct {
 	PkgName       string
 	TypeName      string // see doc in kindAssemblerTraitsGenerator
-	TypeSymbol    string // the core symbol of the typed value (we assume the 'w' pointer will be a pointer to this type)
 	AppliedPrefix string // see doc in kindAssemblerTraitsGenerator
 }
 
@@ -87,33 +86,11 @@ func (g StringAssemblerTraits) EmitNodeAssemblerMethodAssignInt(w io.Writer) {
 func (g StringAssemblerTraits) EmitNodeAssemblerMethodAssignFloat(w io.Writer) {
 	kindAssemblerTraitsGenerator{g.PkgName, g.TypeName, g.AppliedPrefix, ipld.ReprKind_String}.emitNodeAssemblerMethodAssignFloat(w)
 }
-func (g StringAssemblerTraits) EmitNodeAssemblerMethodAssignString(w io.Writer) {
-	// REVIEW: unresolved if this is worth the effort or not; makes this trait need to know TypeSymbol;
-	//  others are shaping up such that things that know TypeSymbol have been over the line for reusability anyway;
-	//   should this one really be special?
-	doTemplate(`
-		func (na *{{ .AppliedPrefix }}Assembler) AssignString(v string) error {
-			*na.w = {{ .TypeSymbol }}{v}
-			return nil
-		}
-	`, w, g)
-}
 func (g StringAssemblerTraits) EmitNodeAssemblerMethodAssignBytes(w io.Writer) {
 	kindAssemblerTraitsGenerator{g.PkgName, g.TypeName, g.AppliedPrefix, ipld.ReprKind_String}.emitNodeAssemblerMethodAssignBytes(w)
 }
 func (g StringAssemblerTraits) EmitNodeAssemblerMethodAssignLink(w io.Writer) {
 	kindAssemblerTraitsGenerator{g.PkgName, g.TypeName, g.AppliedPrefix, ipld.ReprKind_String}.emitNodeAssemblerMethodAssignLink(w)
-}
-func (g StringAssemblerTraits) EmitNodeAssemblerMethodAssignNode(w io.Writer) {
-	doTemplate(`
-		func (na *{{ .AppliedPrefix }}Assembler) AssignNode(v ipld.Node) error {
-			if v2, err := v.AsString(); err != nil {
-				return err
-			} else {
-				return na.AssignString(v2)
-			}
-		}
-	`, w, g)
 }
 func (g StringAssemblerTraits) EmitNodeAssemblerMethodStyle(w io.Writer) {
 	kindAssemblerTraitsGenerator{g.PkgName, g.TypeName, g.AppliedPrefix, ipld.ReprKind_String}.emitNodeAssemblerMethodStyle(w)

@@ -19,12 +19,19 @@ func TestSmoke(t *testing.T) {
 	var f *os.File
 
 	pkgName := "whee"
-	adjCfg := &AdjunctCfg{}
+	adjCfg := &AdjunctCfg{
+		maybeUsesPtr: map[schema.TypeName]bool{
+			"String": false,
+			"Strang": true,
+		},
+	}
 
 	f = openOrPanic("_test/minima.go")
 	EmitInternalEnums(pkgName, f)
 
 	tString := schema.SpawnString("String")
+
+	tStrang := schema.SpawnString("Strang") // MaybeUsesPtr==true
 
 	tStroct := schema.SpawnStruct("Stroct",
 		[]schema.StructField{
@@ -38,6 +45,18 @@ func TestSmoke(t *testing.T) {
 		schema.StructRepresentation_Map{},
 	)
 
+	tStract := schema.SpawnStruct("Stract",
+		[]schema.StructField{
+			// Exactly like Stroct, except all the fields are Strang, and so all the maybes use ptrs.
+			schema.SpawnStructField("f1", tStrang, false, false), // plain field.
+			schema.SpawnStructField("f2", tStrang, true, false),  // optional; later we have more than one optional field, nonsequentially.
+			schema.SpawnStructField("f3", tStrang, false, true),  // nullable; but required.
+			schema.SpawnStructField("f4", tStrang, true, true),   // optional and nullable; trailing optional.
+			schema.SpawnStructField("f5", tStrang, true, false),  // optional; and the second one in a row, trailing.
+		},
+		schema.StructRepresentation_Map{},
+	)
+
 	f = openOrPanic("_test/tString.go")
 	EmitFileHeader(pkgName, f)
 	EmitEntireType(NewStringReprStringGenerator(pkgName, tString, adjCfg), f)
@@ -45,4 +64,12 @@ func TestSmoke(t *testing.T) {
 	f = openOrPanic("_test/tStroct.go")
 	EmitFileHeader(pkgName, f)
 	EmitEntireType(NewStructReprMapGenerator(pkgName, tStroct, adjCfg), f)
+
+	f = openOrPanic("_test/tStrang.go")
+	EmitFileHeader(pkgName, f)
+	EmitEntireType(NewStringReprStringGenerator(pkgName, tStrang, adjCfg), f)
+
+	f = openOrPanic("_test/tStract.go")
+	EmitFileHeader(pkgName, f)
+	EmitEntireType(NewStructReprMapGenerator(pkgName, tStract, adjCfg), f)
 }

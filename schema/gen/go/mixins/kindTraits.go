@@ -234,7 +234,7 @@ func (g kindAssemblerTraitsGenerator) emitNodeAssemblerMethodAssignNull(w io.Wri
 		panic("gen internals error: you should've overriden this")
 	}
 	doTemplate(`
-		func ({{ .AppliedPrefix }}Assembler) AssignNull() error {
+		func (na *{{ .AppliedPrefix }}Assembler) AssignNull() error {
 			return mixins.{{ .Kind }}Assembler{"{{ .PkgName }}.{{ .TypeName }}"}.AssignNull()
 		}
 	`, w, g)

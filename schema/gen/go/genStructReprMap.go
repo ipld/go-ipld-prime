@@ -80,7 +80,7 @@ func (g structReprMapReprGenerator) EmitNodeMethodLookupString(w io.Writer) {
 				}
 				{{- end}}
 				{{- if or $field.IsOptional $field.IsNullable }}
-				return n.{{ $field | FieldSymbolLower }}.v, nil
+				return {{if not (MaybeUsesPtr $field.Type) }}&{{end}}n.{{ $field | FieldSymbolLower }}.v, nil
 				{{- else}}
 				return &n.{{ $field | FieldSymbolLower }}, nil
 				{{- end}}
@@ -177,7 +177,7 @@ func (g structReprMapReprGenerator) EmitNodeMethodMapIterator(w io.Writer) {
 				}
 				{{- end}}
 				{{- if or $field.IsOptional $field.IsNullable }}
-				v = itr.n.{{ $field | FieldSymbolLower}}.v
+				v = {{if not (MaybeUsesPtr $field.Type) }}&{{end}}itr.n.{{ $field | FieldSymbolLower}}.v
 				{{- else}}
 				v = &itr.n.{{ $field | FieldSymbolLower}}
 				{{- end}}

@@ -10,6 +10,7 @@ type AdjunctCfg struct {
 	typeSymbolOverrides       map[schema.TypeName]string
 	fieldSymbolLowerOverrides map[schema.StructField]string
 	fieldSymbolUpperOverrides map[schema.StructField]string
+	maybeUsesPtr              map[schema.TypeName]bool // treat absent as true
 
 	// note: PkgName doesn't appear in here, because it's...
 	//  not adjunct data.  it's a generation invocation parameter.
@@ -44,4 +45,17 @@ func (cfg *AdjunctCfg) FieldSymbolUpper(f schema.StructField) string {
 		return x
 	}
 	return strings.Title(f.Name())
+}
+
+func (cfg *AdjunctCfg) MaybeUsesPtr(t schema.Type) bool {
+	if x, ok := cfg.maybeUsesPtr[t.Name()]; ok {
+		return x
+	}
+	// FUTURE: we could make this default vary based on sizeof the type.
+	//  It's generally true that for scalars it should be false by default; and that's easy to do.
+	//   It would actually *remove* special cases from the prelude, which would be a win.
+	//  Maps and lists should also probably default off...?
+	//   (I have a feeling something might get touchy there.  Review when implementing those.)
+	//  Perhaps structs and unions are the only things likely to benefit from pointers.
+	return true
 }
