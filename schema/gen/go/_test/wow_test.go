@@ -25,6 +25,12 @@ func plzStr(n ipld.Node, e error) string {
 		panic(ok)
 	}
 }
+func erp(n ipld.Node, e error) interface{} {
+	if e != nil {
+		return e
+	}
+	return n
+}
 
 // This targets both "Stroct" and "Stract",
 // expecting both to be functionally equivalent
@@ -64,6 +70,31 @@ func TestGeneratedStructWithVariousFieldOptionality(t *testing.T) {
 		Wish(t, plzStr(n.LookupString("f4")), ShouldEqual, "d")
 		Wish(t, plzStr(n.LookupString("f5")), ShouldEqual, "e")
 	}
+	build_vvzvv := func(t *testing.T, ns ipld.NodeStyle) schema.TypedNode {
+		nb := ns.NewBuilder()
+		ma, err := nb.BeginMap(5)
+		Require(t, err, ShouldEqual, nil)
+		Wish(t, ma.AssembleKey().AssignString("f1"), ShouldEqual, nil)
+		Wish(t, ma.AssembleValue().AssignString("a"), ShouldEqual, nil)
+		Wish(t, ma.AssembleKey().AssignString("f2"), ShouldEqual, nil)
+		Wish(t, ma.AssembleValue().AssignString("b"), ShouldEqual, nil)
+		Wish(t, ma.AssembleKey().AssignString("f3"), ShouldEqual, nil)
+		Wish(t, ma.AssembleValue().AssignNull(), ShouldEqual, nil)
+		Wish(t, ma.AssembleKey().AssignString("f4"), ShouldEqual, nil)
+		Wish(t, ma.AssembleValue().AssignString("d"), ShouldEqual, nil)
+		Wish(t, ma.AssembleKey().AssignString("f5"), ShouldEqual, nil)
+		Wish(t, ma.AssembleValue().AssignString("e"), ShouldEqual, nil)
+		Wish(t, ma.Finish(), ShouldEqual, nil)
+		return nb.Build().(schema.TypedNode)
+	}
+	testLookups_vvzvv := func(t *testing.T, n ipld.Node) {
+		Wish(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
+		Wish(t, plzStr(n.LookupString("f1")), ShouldEqual, "a")
+		Wish(t, plzStr(n.LookupString("f2")), ShouldEqual, "b")
+		Wish(t, erp(n.LookupString("f3")), ShouldEqual, ipld.Null)
+		Wish(t, plzStr(n.LookupString("f4")), ShouldEqual, "d")
+		Wish(t, plzStr(n.LookupString("f5")), ShouldEqual, "e")
+	}
 
 	t.Run("on stroct", func(t *testing.T) {
 		t.Run("type-level build and read", func(t *testing.T) {
@@ -82,6 +113,22 @@ func TestGeneratedStructWithVariousFieldOptionality(t *testing.T) {
 
 				// Test lookup methods.
 				testLookups_vvvvv(t, n)
+			})
+			t.Run("setting null nullable", func(t *testing.T) {
+				// Test building.
+				n := build_vvzvv(t, _Stroct__Style{})
+
+				// Assert directly against expected memory state.
+				Wish(t, n, ShouldEqual, &_Stroct{
+					f1: _String{"a"},
+					f2: _String__Maybe{schema.Maybe_Value, _String{"b"}},
+					f3: _String__Maybe{schema.Maybe_Null, _String{""}},
+					f4: _String__Maybe{schema.Maybe_Value, _String{"d"}},
+					f5: _String__Maybe{schema.Maybe_Value, _String{"e"}},
+				})
+
+				// Test lookup methods.
+				testLookups_vvzvv(t, n)
 			})
 		})
 	})
@@ -102,6 +149,22 @@ func TestGeneratedStructWithVariousFieldOptionality(t *testing.T) {
 
 				// Test lookup methods.
 				testLookups_vvvvv(t, n)
+			})
+			t.Run("setting null nullable", func(t *testing.T) {
+				// Test building.
+				n := build_vvzvv(t, _Stract__Style{})
+
+				// Assert directly against expected memory state.
+				Wish(t, n, ShouldEqual, &_Stract{
+					f1: _Strang{"a"},
+					f2: _Strang__Maybe{schema.Maybe_Value, &_Strang{"b"}},
+					f3: _Strang__Maybe{schema.Maybe_Null, nil},
+					f4: _Strang__Maybe{schema.Maybe_Value, &_Strang{"d"}},
+					f5: _Strang__Maybe{schema.Maybe_Value, &_Strang{"e"}},
+				})
+
+				// Test lookup methods.
+				testLookups_vvzvv(t, n)
 			})
 		})
 	})
