@@ -70,6 +70,34 @@ func (e ErrRepeatedMapKey) Error() string {
 	return fmt.Sprintf("cannot repeat map key (\"%s\")", e.Key)
 }
 
+// ErrInvalidKey indicates a key is invalid for some reason.
+//
+// This is only possible for typed nodes; specifically, it may show up when
+// handling struct types, or maps with interesting key types.
+// (Other kinds of key invalidity that happen for untyped maps
+// fall under ErrRepeatedMapKey or ErrWrongKind.)
+// (Union types use ErrInvalidUnionDiscriminant instead of ErrInvalidKey,
+// even when their representation strategy is maplike.)
+type ErrInvalidKey struct {
+	// TypeName will indicate the named type of a node the function was called on.
+	TypeName string
+
+	// Key is the key that was rejected.
+	Key Node
+
+	// Reason, if set, may provide details (for example, the reason a key couldn't be converted to a type).
+	// If absent, it'll be presumed "no such field".
+	Reason error
+}
+
+func (e ErrInvalidKey) Error() string {
+	if e.Reason == nil {
+		return fmt.Sprintf("invalid key for map %s: \"%s\": no such field", e.TypeName, e.Key)
+	} else {
+		return fmt.Sprintf("invalid key for map %s: \"%s\": %s", e.TypeName, e.Key, e.Reason)
+	}
+}
+
 // ErrIteratorOverread is returned when calling 'Next' on a MapIterator or
 // ListIterator when it is already done.
 type ErrIteratorOverread struct{}
@@ -80,7 +108,6 @@ func (e ErrIteratorOverread) Error() string {
 
 type ErrCannotBeNull struct{} // Review: arguably either ErrInvalidKindForNodeStyle.
 
-type ErrInvalidStructKey struct{}         // only possible for typed nodes -- specifically, struct types.
 type ErrMissingRequiredField struct{}     // only possible for typed nodes -- specifically, struct types.
 type ErrListOverrun struct{}              // only possible for typed nodes -- specifically, struct types with list (aka tuple) representations.
 type ErrInvalidUnionDiscriminant struct{} // only possible for typed nodes -- specifically, union types.

@@ -354,7 +354,7 @@ func (g structBuilderGenerator) emitMapAssemblerMethods(w io.Writer) {
 				return &relevantChildValueAssembler, nil
 			{{- end}}
 			default:
-				return nil, ipld.InvalidKeyError{}
+				return nil, ipld.ErrInvalidKey{TypeName:"{{ $type.Name }}", Key:&_String{k}}
 			}
 		}
 		func (ma *_{{ .Type | TypeSymbol }}__Assembler) AssembleKey() ipld.NodeAssembler {
@@ -407,7 +407,7 @@ func (g structBuilderGenerator) emitKeyAssembler(w io.Writer) {
 				ka.f = {{ $i }}
 			{{- end}}
 			default:
-				return ipld.InvalidKeyError{}
+				return ipld.ErrInvalidKey{TypeName:"{{ $type.Name }}", Key:&_String{k}}
 			}
 			return nil
 		}
