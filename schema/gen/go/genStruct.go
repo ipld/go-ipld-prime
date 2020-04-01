@@ -267,32 +267,155 @@ func (g structBuilderGenerator) EmitNodeBuilderMethods(w io.Writer) {
 	`, w, g.AdjCfg, g)
 }
 func (g structBuilderGenerator) EmitNodeAssemblerType(w io.Writer) {
+	// - 'w' is the "**w**ip" pointer.
+	// - 'state' is what it says on the tin.
+	// - 's' is a bitfield for what's been **s**et.
+	// - 'f' is the **f**ocused field that will be assembled next.
 	doTemplate(`
 		type _{{ .Type | TypeSymbol }}__Assembler struct {
 			w *_{{ .Type | TypeSymbol }}
 			state maState
+			s int
+			f int
 		}
+
+		var (
+			{{- $type := .Type -}} {{- /* ranging modifies dot, unhelpfully */ -}}
+			{{- range $i, $field := .Type.Fields }}
+			fieldBit__{{ $type | TypeSymbol }}_{{ $field | FieldSymbolUpper }} = 1 << {{ $i }}
+			{{- end}}
+			fieldBits__{{ $type | TypeSymbol }}_sufficient = 0 {{- range $i, $field := .Type.Fields }}{{if not $field.IsOptional }} + 1 << {{ $i }}{{end}}{{end}}
+		)
 	`, w, g.AdjCfg, g)
 }
 func (g structBuilderGenerator) EmitNodeAssemblerMethodBeginMap(w io.Writer) {
+	// We currently disregard sizeHint.  It's not relevant to us.
+	//  We could check it strictly and emit errors; presently, we don't.
 	doTemplate(`
 		func (na *_{{ .Type | TypeSymbol }}__Assembler) BeginMap(sizeHint int) (ipld.MapAssembler, error) {
-			panic("todo structBuilderGenerator BeginMap")
+			return na, nil
 		}
 	`, w, g.AdjCfg, g)
 }
 func (g structBuilderGenerator) EmitNodeAssemblerMethodAssignNode(w io.Writer) {
 	doTemplate(`
 		func (na *_{{ .Type | TypeSymbol }}__Assembler) AssignNode(v ipld.Node) error {
-			panic("todo structBuilderGenerator AssignNode")
+			if na.state != maState_initial {
+				panic("misuse")
+			}
+			if v2, ok := v.(*_{{ .Type | TypeSymbol }}); ok {
+				*na.w = *v2
+				na.state = maState_finished
+				return nil
+			}
+			if v.ReprKind() != ipld.ReprKind_Map {
+				return ipld.ErrWrongKind{TypeName: "{{ .PkgName }}.{{ .Type.Name }}", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+			}
+			itr := v.MapIterator()
+			for !itr.Done() {
+				k, v, err := itr.Next()
+				if err != nil {
+					return err
+				}
+				if err := na.AssembleKey().AssignNode(k); err != nil {
+					return err
+				}
+				if err := na.AssembleValue().AssignNode(v); err != nil {
+					return err
+				}
+			}
+			return na.Finish()
 		}
 	`, w, g.AdjCfg, g)
 }
 func (g structBuilderGenerator) EmitNodeAssemblerOtherBits(w io.Writer) {
-	// TODO key assembler goes here.  or in a small helper method for org purposes, whatever.
+	g.emitMapAssemblerMethods(w)
+	g.emitKeyAssembler(w)
 	for _, field := range g.Type.Fields() {
 		g.emitFieldValueAssembler(field, w)
 	}
+}
+func (g structBuilderGenerator) emitMapAssemblerMethods(w io.Writer) {
+	doTemplate(`
+		func (ma *_{{ .Type | TypeSymbol }}__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, error) {
+			if ma.state != maState_initial {
+				panic("misuse")
+			}
+			switch k {
+			{{- $type := .Type -}} {{- /* ranging modifies dot, unhelpfully */ -}}
+			{{- range $i, $field := .Type.Fields }}
+			case "{{ $field.Name }}":
+				if ma.s & fieldBit__{{ $type | TypeSymbol }}_{{ $field | FieldSymbolUpper }} != 0 {
+					return nil, ipld.ErrRepeatedMapKey{&fieldName__{{ $type | TypeSymbol }}_{{ $field | FieldSymbolUpper }}}
+				}
+				ma.s += fieldBit__{{ $type | TypeSymbol }}_{{ $field | FieldSymbolUpper }}
+				ma.state = maState_midValue
+				ma.f = {{ $i }} // REVIEW not sure if this matters in this path; suspect not.
+				return &relevantChildValueAssembler, nil
+			{{- end}}
+			default:
+				return nil, ipld.InvalidKeyError{}
+			}
+		}
+		func (ma *_{{ .Type | TypeSymbol }}__Assembler) AssembleKey() ipld.NodeAssembler {
+			return ma
+		}
+		func (ma *_{{ .Type | TypeSymbol }}__Assembler) AssembleValue() ipld.NodeAssembler {
+			return &relevantChildValueAssembler
+		}
+		func (ma *_{{ .Type | TypeSymbol }}__Assembler) Finish() error {
+			panic("todo structbuilder mapassembler finish")
+		}
+		func (ma *_{{ .Type | TypeSymbol }}__Assembler) KeyStyle() ipld.NodeStyle {
+			return _String__Style{}
+		}
+		func (ma *_{{ .Type | TypeSymbol }}__Assembler) ValueStyle(k string) ipld.NodeStyle {
+			panic("todo structbuilder mapassembler valuestyle")
+		}
+	`, w, g.AdjCfg, g)
+}
+func (g structBuilderGenerator) emitKeyAssembler(w io.Writer) {
+	doTemplate(`
+		type _{{ .Type | TypeSymbol }}__KeyAssembler _{{ .Type | TypeSymbol }}__Assembler
+	`, w, g.AdjCfg, g)
+	stubs := mixins.StringAssemblerTraits{
+		g.PkgName,
+		g.TypeName,
+		"", // unexercised here.
+		"_" + g.AdjCfg.TypeSymbol(g.Type) + "__Key",
+	}
+	stubs.EmitNodeAssemblerMethodBeginMap(w)
+	stubs.EmitNodeAssemblerMethodBeginList(w)
+	stubs.EmitNodeAssemblerMethodAssignNull(w)
+	stubs.EmitNodeAssemblerMethodAssignBool(w)
+	stubs.EmitNodeAssemblerMethodAssignInt(w)
+	stubs.EmitNodeAssemblerMethodAssignFloat(w)
+	doTemplate(`
+		func (ka *_{{ .Type | TypeSymbol }}__KeyAssembler) AssignString(k string) error {
+			if ka.state != maState_midKey {
+				panic("misuse")
+			}
+			switch k {
+			{{- $type := .Type -}} {{- /* ranging modifies dot, unhelpfully */ -}}
+			{{- range $i, $field := .Type.Fields }}
+			case "{{ $field.Name }}":
+				if ka.s & fieldBit__{{ $type | TypeSymbol }}_{{ $field | FieldSymbolUpper }} != 0 {
+					return ipld.ErrRepeatedMapKey{&fieldName__{{ $type | TypeSymbol }}_{{ $field | FieldSymbolUpper }}}
+				}
+				ka.s += fieldBit__{{ $type | TypeSymbol }}_{{ $field | FieldSymbolUpper }}
+				ka.state = maState_expectValue
+				ka.f = {{ $i }}
+			{{- end}}
+			default:
+				return ipld.InvalidKeyError{}
+			}
+			return nil
+		}
+	`, w, g.AdjCfg, g)
+	stubs.EmitNodeAssemblerMethodAssignBytes(w)
+	stubs.EmitNodeAssemblerMethodAssignLink(w)
+	stubs.EmitNodeAssemblerMethodAssignNode(w)
+
 }
 func (g structBuilderGenerator) emitFieldValueAssembler(f schema.StructField, w io.Writer) {
 	// TODO for Any, this should do a whole Thing;
