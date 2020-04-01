@@ -420,6 +420,22 @@ func (g structBuilderGenerator) emitKeyAssembler(w io.Writer) {
 func (g structBuilderGenerator) emitFieldValueAssembler(f schema.StructField, w io.Writer) {
 	// TODO for Any, this should do a whole Thing;
 	// TODO for any specific type, we should be able to tersely create a new type that embeds its assembler and wraps the one method that's valid for finishing its kind.
+
+	// yes, do lets use unexported 'func()' callbacks for finishers, and thus generate WAY less types.
+	// adding a word of memory to every builder?  not really.  the childbuilders would anyway for '*p' instead.  toplevels grow, true; but they frankly don't matter: 'one' doesn't show up on an asymtote.
+	// is it an indirect call that can't be inlined?  yeah.  but... good lord; there's enough of them in the area already.  this one won't tip anything over.
+	// one per field anyway?  probably, at least on the first pass.  easier to write; minimal consequence; can optimize size later.
+
+	// '_MaybeT__Assembler'?  probably, yes -- the 'w' pointer has to be a different type, or things would get dumb.  ugh, every valid assign method is near-dupe but not quite.  shikata ga nai?
+	// will there be '_MaybeT__ReprAssembler'?  probably, yes -- how would there not be?
+	// Wild alternative: every '_T__Assembler' has a 'null bool' in addition to the 'finishCb func()'.  If used a context where null isn't valid: check it during finish.
+	//  Scalar builders used as a root can do this via an overriden finisher method (literally, the AssignNull) on the Builder; easy peasy.
+	//  Child assemblers can do it during the 'finishCb'.
+	//  It's important to still return the possible rejection of null in the AssignNull method.
+	//   But I think this shakes out: finishCb gets called at the end of *any* finisher method -- **that includes AssignNull**.
+	//  If you're handling a MaybeT, the 'finishCb' can set the null state even though the '_T__Assembler' can't see the '_MaybeT.m'!
+	//  Similarly: '_T__ReprAssembler' sprouts 'z bool' and 'finishCb func()' and does double duty.
+
 	doTemplate(`
 		// todo child assembler for field {{ .Name }}
 	`, w, g.AdjCfg, f)
