@@ -23,6 +23,17 @@ the contents are a bit "top-of-the-head".)
 - use a lot more pointers in method types, according to the understandings of the low cost of internal pointers.
 
 
+corners needing mention in docs
+-------------------------------
+
+- iterating a type-level node with optional fields can yield the field and a maybe containing absent.
+	- ...which is funny because if you feed that into a type-level builder, it doesn't like that absent.  it wants you to not feed that field.
+	- alternatively, accepting explicit puts of absent: worse: we'd have to keep state track that it's been put, but to none, and reject future puts.
+		- REVIEW: maybe this isn't as bad as first thought.  I think we end up with that state bit anyway.
+		- REVIEW: maybe we should turn this on its head entirely: would it be clearer and more consistent if building a struct without explicitly assigning undef to any optional fields is actually *rejected* when using the type-level assemblers?
+	- alternatively, not yielding them on iterate: worse: generic printer for structs would end up not reporting fields, and that would be both wrong and hard to hack your way out of without writing a metric ton more code that inspects the type info, which would ruin the point of the monomorphic methods in the first place to a much higher degree than this need to handle undefined/absent does.
+
+
 underreviewed
 -------------
 
@@ -99,3 +110,11 @@ underreviewed
 		- Maps would turn tricky, except we're already happy with having an internal slice in those too.  So, it's covered.
 			- Interestingly, maps also have the ability to easily store all of (null,absent,value{...}) in them, without extra space.
 				- But considering the thing about slices-in-maps, that may not be relevant.  We want quick linear iterator-friendly reads of Maybe state too.
+- We discarded the idea of sometimes collapsing a maybe with one mode (e.g., 'optional' or 'nullable' but not 'optional nullable') down to one pointer and no struct.
+	- mostly because it just fell off the plate of considerations.  we could still try to do this, and save a word of memory in some cases.
+	- if we did this, complexity increases.
+		- take the already existing total complexity of maybes with-and-without-useptr and for the three combos... and double it again.  ow.
+	- if we did this, the typedef of `type MaybeT = *_T__Maybe` wouldn't work anymore.
+		- satisfying that type would mean any case that uses a pointer without embedded maybe struct would now need allocations.
+		  - this would be unacceptably high performance cost, so, we'd then end up needed to pursue more type signatures to avoid those costs...
+		- this might actually be a pretty hard-stop reason not to pursue this possibilty.  exposing *more* user-facing complexity in this area, in the form of more types in the golang code the user has to reason about despite having no equivalent in the IPLD Schema, is strongly undesirable.
