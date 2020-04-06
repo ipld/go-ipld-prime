@@ -270,8 +270,49 @@ func TestGeneratedStructWithVariousFieldOptionality(t *testing.T) {
 				testIterationRepr_vvzuu(t, n.Representation())
 			})
 		})
+		t.Run("repr-level build and read", func(t *testing.T) {
+			t.Run("all fields set", func(t *testing.T) {
+				// Test building.
+				n := build_vvvvv(t, _Stroct__ReprStyle{})
+
+				// Assert directly against expected memory state.
+				Wish(t, n, ShouldEqual, &_Stroct{
+					f1: _String{"a"},
+					f2: _String__Maybe{schema.Maybe_Value, _String{"b"}},
+					f3: _String__Maybe{schema.Maybe_Value, _String{"c"}},
+					f4: _String__Maybe{schema.Maybe_Value, _String{"d"}},
+					f5: _String__Maybe{schema.Maybe_Value, _String{"e"}},
+				})
+
+				// Test lookup methods.
+				testLookups_vvvvv(t, n.Representation())
+				testIteration_vvvvv(t, n.Representation())
+			})
+			t.Run("setting nulls", func(t *testing.T) {
+				// Test building.
+				n := build_vvzzv(t, _Stroct__ReprStyle{})
+
+				// Assert directly against expected memory state.
+				Wish(t, n, ShouldEqual, &_Stroct{
+					f1: _String{"a"},
+					f2: _String__Maybe{schema.Maybe_Value, _String{"b"}},
+					f3: _String__Maybe{schema.Maybe_Null, _String{""}},
+					f4: _String__Maybe{schema.Maybe_Null, _String{""}},
+					f5: _String__Maybe{schema.Maybe_Value, _String{"e"}},
+				})
+
+				// Test lookup methods.
+				testLookups_vvzzv(t, n.Representation())
+			})
+		})
 	})
 	t.Run("on stract", func(t *testing.T) {
+		// Tests targeting `Stract` are *identical* to tests above on `Stroct`,
+		//  except for a different concrete type.
+		// The point of these is to be reasonably convinced that MaybeT using pointers works,
+		//  and after that feels established, we don't exhaustively test the rest.
+		// (Improvable?  Should be exhaustive?  Maybe.
+		//  It's mostly the concrete type asserts that make this hard.  Maybe those aren't worth having.)
 		t.Run("type-level build and read", func(t *testing.T) {
 			t.Run("all fields set", func(t *testing.T) {
 				// Test building.

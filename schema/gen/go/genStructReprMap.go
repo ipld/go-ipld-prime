@@ -290,19 +290,68 @@ func (g structReprMapReprBuilderGenerator) EmitNodeBuilderMethods(w io.Writer) {
 			*nb = _{{ .Type | TypeSymbol }}__ReprBuilder{_{{ .Type | TypeSymbol }}__ReprAssembler{w: &w, state: maState_initial}}
 		}
 	`, w, g.AdjCfg, g)
+	// Cover up some of the assembler methods that are prepared to handle null;
+	//  this saves them from having to check for a nil 'fcb'.
+	//  (The MapBuilder.Finish method still has to check for nil 'fcb', though;
+	//   it's far too much duplicate code to make two MapBuilder types for that.)
+	doTemplate(`
+		func (nb *_{{ .Type | TypeSymbol }}__ReprBuilder) AssignNull() error {
+			return mixins.MapAssembler{"{{ .PkgName }}.{{ .TypeName }}"}.AssignNull()
+		}
+		func (nb *_{{ .Type | TypeSymbol }}__ReprBuilder) AssignNode(v ipld.Node) error {
+			if v2, err := v.AsString(); err != nil {
+				return err
+			} else {
+				return nb.AssignString(v2)
+			}
+		}
+	`, w, g.AdjCfg, g)
 }
 func (g structReprMapReprBuilderGenerator) EmitNodeAssemblerType(w io.Writer) {
+	// - 'w' is the "**w**ip" pointer.
+	// - 'state' is what it says on the tin.
+	// - 's' is a bitfield for what's been **s**et.
+	// - 'f' is the **f**ocused field that will be assembled next.
+	// - 'z' is used to denote a null (in case we're used in a context that's acceptable).  z for **z**ilch.
+	// - 'fcb' is the **f**inish **c**all**b**ack, supplied by the parent if we're a child assembler.
 	doTemplate(`
 		type _{{ .Type | TypeSymbol }}__ReprAssembler struct {
 			w *_{{ .Type | TypeSymbol }}
 			state maState
+			s int
+			f int
+			z bool
+			fcb func() error
+
+			{{range $field := .Type.Fields -}}
+			ca_{{ $field | FieldSymbolLower }} _{{ $field.Type | TypeSymbol }}__ReprAssembler
+			{{end -}}
 		}
 	`, w, g.AdjCfg, g)
 }
 func (g structReprMapReprBuilderGenerator) EmitNodeAssemblerMethodBeginMap(w io.Writer) {
+	// We currently disregard sizeHint.  It's not relevant to us.
+	//  We could check it strictly and emit errors; presently, we don't.
 	doTemplate(`
-		func (na *_{{ .Type | TypeSymbol }}__ReprAssembler) BeginMap(sizeHint int) (ipld.MapAssembler, error) {
-			panic("todo structReprMapReprBuilderGenerator BeginMap")
+		func (na *_{{ .Type | TypeSymbol }}__ReprAssembler) BeginMap(int) (ipld.MapAssembler, error) {
+			return na, nil
+		}
+	`, w, g.AdjCfg, g)
+}
+func (g structReprMapReprBuilderGenerator) EmitNodeAssemblerMethodAssignNull(w io.Writer) {
+	// All assemblers have the infrastructure and memory to potentially accept null...
+	//  if used within some parent structure, the handling or the rejection of null must be supplied by the 'fcb';
+	//  or if used in a NodeBuilder (where null isn't valid) this method gets overriden.
+	//  We don't need a nil check for 'fcb' because all parent assemblers use it, and root builders override this method.
+	//  We don't pass any args to 'fcb' because we assume it comes from something that can already see this whole struct.
+	doTemplate(`
+		func (na *_{{ .Type | TypeSymbol }}__ReprAssembler) AssignNull() error {
+			if na.state != maState_initial {
+				panic("misuse")
+			}
+			na.z = true
+			na.state = maState_finished
+			return nil
 		}
 	`, w, g.AdjCfg, g)
 }

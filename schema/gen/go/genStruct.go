@@ -265,8 +265,21 @@ func (g structBuilderGenerator) EmitNodeBuilderMethods(w io.Writer) {
 			*nb = _{{ .Type | TypeSymbol }}__Builder{_{{ .Type | TypeSymbol }}__Assembler{w: &w, state: maState_initial}}
 		}
 	`, w, g.AdjCfg, g)
-	// While for scalars we cover up all the assembler methods that are prepared to handle null,
-	//  here, it's unfeasible: would result in deep bifrucations.
+	// Cover up some of the assembler methods that are prepared to handle null;
+	//  this saves them from having to check for a nil 'fcb'.
+	//  (The MapBuilder.Finish method still has to check for nil 'fcb', though;
+	//   it's far too much duplicate code to make two MapBuilder types for that.)
+	doTemplate(`
+		func (nb *_{{ .Type | TypeSymbol }}__Builder) AssignNull() error {
+			return mixins.MapAssembler{"{{ .PkgName }}.{{ .TypeName }}"}.AssignNull()
+		}
+		func (nb *_{{ .Type | TypeSymbol }}__Builder) AssignNode(v ipld.Node) error {
+			if nb.state != maState_initial {
+				panic("misuse")
+			}
+			return nb.assignNode(v)
+		}
+	`, w, g.AdjCfg, g)
 }
 func (g structBuilderGenerator) EmitNodeAssemblerType(w io.Writer) {
 	// - 'w' is the "**w**ip" pointer.
@@ -302,16 +315,16 @@ func (g structBuilderGenerator) EmitNodeAssemblerMethodBeginMap(w io.Writer) {
 	// We currently disregard sizeHint.  It's not relevant to us.
 	//  We could check it strictly and emit errors; presently, we don't.
 	doTemplate(`
-		func (na *_{{ .Type | TypeSymbol }}__Assembler) BeginMap(sizeHint int) (ipld.MapAssembler, error) {
+		func (na *_{{ .Type | TypeSymbol }}__Assembler) BeginMap(int) (ipld.MapAssembler, error) {
 			return na, nil
 		}
 	`, w, g.AdjCfg, g)
 }
 func (g structBuilderGenerator) EmitNodeAssemblerMethodAssignNull(w io.Writer) {
-	// Twist: All generated assemblers quietly accept null... and if used in a context they shouldn't,
-	//  either this method gets overriden (this is the case for NodeBuilders),
-	//  or the 'na.fcb' (short for "finish callback") returns the rejection.
-	//  We *do* need a nil check for 'fcb' (unlike with scalars, there's just too much dupe code if we try to make builders inherit no methods).
+	// All assemblers have the infrastructure and memory to potentially accept null...
+	//  if used within some parent structure, the handling or the rejection of null must be supplied by the 'fcb';
+	//  or if used in a NodeBuilder (where null isn't valid) this method gets overriden.
+	//  We don't need a nil check for 'fcb' because all parent assemblers use it, and root builders override this method.
 	//  We don't pass any args to 'fcb' because we assume it comes from something that can already see this whole struct.
 	doTemplate(`
 		func (na *_{{ .Type | TypeSymbol }}__Assembler) AssignNull() error {
@@ -320,11 +333,7 @@ func (g structBuilderGenerator) EmitNodeAssemblerMethodAssignNull(w io.Writer) {
 			}
 			na.z = true
 			na.state = maState_finished
-			if na.fcb != nil {
-				return na.fcb()
-			} else {
-				return nil
-			}
+			return na.fcb()
 		}
 	`, w, g.AdjCfg, g)
 }
@@ -334,6 +343,12 @@ func (g structBuilderGenerator) EmitNodeAssemblerMethodAssignNode(w io.Writer) {
 			if na.state != maState_initial {
 				panic("misuse")
 			}
+			if v.ReprKind() == ipld.ReprKind_Null {
+				return na.AssignNull()
+			}
+			return na.assignNode(v)
+		}
+		func (na *_{{ .Type | TypeSymbol }}__Assembler) assignNode(v ipld.Node) error {
 			if v2, ok := v.(*_{{ .Type | TypeSymbol }}); ok {
 				*na.w = *v2
 				na.state = maState_finished
@@ -342,9 +357,6 @@ func (g structBuilderGenerator) EmitNodeAssemblerMethodAssignNode(w io.Writer) {
 				} else {
 					return nil
 				}
-			}
-			if v.ReprKind() == ipld.ReprKind_Null {
-				return na.AssignNull()
 			}
 			if v.ReprKind() != ipld.ReprKind_Map {
 				return ipld.ErrWrongKind{TypeName: "{{ .PkgName }}.{{ .Type.Name }}", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}

@@ -202,15 +202,15 @@ func (g stringBuilderGenerator) EmitNodeBuilderMethods(w io.Writer) {
 		func (nb *_{{ .Type | TypeSymbol }}__Builder) AssignNull() error {
 			return mixins.StringAssembler{"{{ .PkgName }}.{{ .TypeName }}"}.AssignNull()
 		}
-		func (na *_{{ .Type | TypeSymbol }}__Builder) AssignString(v string) error {
-			*na.w = _{{ .Type | TypeSymbol }}{v}
+		func (nb *_{{ .Type | TypeSymbol }}__Builder) AssignString(v string) error {
+			*nb.w = _{{ .Type | TypeSymbol }}{v}
 			return nil
 		}
-		func (na *_{{ .Type | TypeSymbol }}__Builder) AssignNode(v ipld.Node) error {
+		func (nb *_{{ .Type | TypeSymbol }}__Builder) AssignNode(v ipld.Node) error {
 			if v2, err := v.AsString(); err != nil {
 				return err
 			} else {
-				return na.AssignString(v2)
+				return nb.AssignString(v2)
 			}
 		}
 	`, w, g.AdjCfg, g)
@@ -238,6 +238,9 @@ func (g stringBuilderGenerator) EmitNodeAssemblerMethodAssignNull(w io.Writer) {
 	`, w, g.AdjCfg, g)
 }
 func (g stringBuilderGenerator) EmitNodeAssemblerMethodAssignString(w io.Writer) {
+	// This method contains a branch to support MaybeUsesPtr because new memory may need to be allocated.
+	//  This allocation only happens if the 'w' ptr is nil, which means we're being used on a Maybe;
+	//  otherwise, the 'w' ptr should already be set, and we fill that memory location without allocating, as usual.
 	doTemplate(`
 		func (na *_{{ .Type | TypeSymbol }}__Assembler) AssignString(v string) error {
 			{{- if .Type | MaybeUsesPtr }}
