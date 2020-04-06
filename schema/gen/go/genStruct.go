@@ -410,7 +410,7 @@ func (g structBuilderGenerator) emitMapAssemblerMethods(w io.Writer) {
 				return &ma.ca_{{ $field | FieldSymbolLower }}, nil
 			{{- end}}
 			default:
-				return nil, ipld.ErrInvalidKey{TypeName:"{{ $type.Name }}", Key:&_String{k}}
+				return nil, ipld.ErrInvalidKey{TypeName:"{{ .PkgName }}.{{ .Type.Name }}", Key:&_String{k}}
 			}
 		}
 		func (ma *_{{ .Type | TypeSymbol }}__Assembler) AssembleKey() ipld.NodeAssembler {
@@ -492,7 +492,7 @@ func (g structBuilderGenerator) emitKeyAssembler(w io.Writer) {
 				ka.f = {{ $i }}
 			{{- end}}
 			default:
-				return ipld.ErrInvalidKey{TypeName:"{{ $type.Name }}", Key:&_String{k}}
+				return ipld.ErrInvalidKey{TypeName:"{{ .PkgName }}.{{ .Type.Name }}", Key:&_String{k}}
 			}
 			return nil
 		}
@@ -511,7 +511,6 @@ func (g structBuilderGenerator) emitKeyAssembler(w io.Writer) {
 			return _String__Style{}
 		}
 	`, w, g.AdjCfg, g)
-
 }
 func (g structBuilderGenerator) emitFieldValueAssembler(f schema.StructField, w io.Writer) {
 	// TODO for Any, this should do a whole Thing;

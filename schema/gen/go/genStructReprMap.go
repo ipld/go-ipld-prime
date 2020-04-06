@@ -299,11 +299,10 @@ func (g structReprMapReprBuilderGenerator) EmitNodeBuilderMethods(w io.Writer) {
 			return mixins.MapAssembler{"{{ .PkgName }}.{{ .TypeName }}"}.AssignNull()
 		}
 		func (nb *_{{ .Type | TypeSymbol }}__ReprBuilder) AssignNode(v ipld.Node) error {
-			if v2, err := v.AsString(); err != nil {
-				return err
-			} else {
-				return nb.AssignString(v2)
+			if nb.state != maState_initial {
+				panic("misuse")
 			}
+			return nb.assignNode(v)
 		}
 	`, w, g.AdjCfg, g)
 }
@@ -358,20 +357,211 @@ func (g structReprMapReprBuilderGenerator) EmitNodeAssemblerMethodAssignNull(w i
 func (g structReprMapReprBuilderGenerator) EmitNodeAssemblerMethodAssignNode(w io.Writer) {
 	doTemplate(`
 		func (na *_{{ .Type | TypeSymbol }}__ReprAssembler) AssignNode(v ipld.Node) error {
-			panic("todo structReprMapReprBuilderGenerator AssignNode")
+			if na.state != maState_initial {
+				panic("misuse")
+			}
+			if v.ReprKind() == ipld.ReprKind_Null {
+				return na.AssignNull()
+			}
+			return na.assignNode(v)
+		}
+		func (na *_{{ .Type | TypeSymbol }}__ReprAssembler) assignNode(v ipld.Node) error {
+			if v2, ok := v.(*_{{ .Type | TypeSymbol }}); ok {
+				*na.w = *v2
+				na.state = maState_finished
+				if na.fcb != nil {
+					return na.fcb()
+				} else {
+					return nil
+				}
+			}
+			if v.ReprKind() != ipld.ReprKind_Map {
+				return ipld.ErrWrongKind{TypeName: "{{ .PkgName }}.{{ .Type.Name }}", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+			}
+			itr := v.MapIterator()
+			for !itr.Done() {
+				k, v, err := itr.Next()
+				if err != nil {
+					return err
+				}
+				if err := na.AssembleKey().AssignNode(k); err != nil {
+					return err
+				}
+				if err := na.AssembleValue().AssignNode(v); err != nil {
+					return err
+				}
+			}
+			return na.Finish()
 		}
 	`, w, g.AdjCfg, g)
 }
 func (g structReprMapReprBuilderGenerator) EmitNodeAssemblerOtherBits(w io.Writer) {
-	// TODO key assembler goes here.  or in a small helper method for org purposes, whatever.
+	g.emitMapAssemblerMethods(w)
+	g.emitKeyAssembler(w)
 	for _, field := range g.Type.Fields() {
 		g.emitFieldValueAssembler(field, w)
 	}
 }
-func (g structReprMapReprBuilderGenerator) emitFieldValueAssembler(f schema.StructField, w io.Writer) {
-	// TODO for Any, this should do a whole Thing;
-	// TODO for any specific type, we should be able to tersely create a new type that embeds its assembler and wraps the one method that's valid for finishing its kind.
+func (g structReprMapReprBuilderGenerator) emitMapAssemblerMethods(w io.Writer) {
+	// FUTURE: some of the setup of the child assemblers could probably be DRY'd up.
 	doTemplate(`
-		// todo child assembler for field {{ .Name }}
-	`, w, g.AdjCfg, f)
+		func (ma *_{{ .Type | TypeSymbol }}__ReprAssembler) AssembleEntry(k string) (ipld.NodeAssembler, error) {
+			if ma.state != maState_initial {
+				panic("misuse")
+			}
+			switch k {
+			{{- $type := .Type -}} {{- /* ranging modifies dot, unhelpfully */ -}}
+			{{- range $i, $field := .Type.Fields }}
+			case "{{ $field | $type.RepresentationStrategy.GetFieldKey }}":
+				if ma.s & fieldBit__{{ $type | TypeSymbol }}_{{ $field | FieldSymbolUpper }} != 0 {
+					return nil, ipld.ErrRepeatedMapKey{&fieldName__{{ $type | TypeSymbol }}_{{ $field | FieldSymbolUpper }}}
+				}
+				ma.s += fieldBit__{{ $type | TypeSymbol }}_{{ $field | FieldSymbolUpper }}
+				ma.state = maState_midValue
+				{{- if $field.IsMaybe }}
+				ma.ca_{{ $field | FieldSymbolLower }}.w = {{if not (MaybeUsesPtr $field.Type) }}&{{end}}ma.w.{{ $field | FieldSymbolLower }}.v
+				{{- else}}
+				ma.ca_{{ $field | FieldSymbolLower }}.w = &ma.w.{{ $field | FieldSymbolLower }}
+				{{- end}}
+				ma.ca_{{ $field | FieldSymbolLower }}.fcb = ma.fcb_{{ $field | FieldSymbolLower }}
+				return &ma.ca_{{ $field | FieldSymbolLower }}, nil
+			{{- end}}
+			default:
+				return nil, ipld.ErrInvalidKey{TypeName:"{{ .PkgName }}.{{ .Type.Name }}.Repr", Key:&_String{k}}
+			}
+		}
+		func (ma *_{{ .Type | TypeSymbol }}__ReprAssembler) AssembleKey() ipld.NodeAssembler {
+			if ma.state != maState_initial {
+				panic("misuse")
+			}
+			ma.state = maState_midKey
+			return (*_{{ .Type | TypeSymbol }}__ReprKeyAssembler)(ma)
+		}
+		func (ma *_{{ .Type | TypeSymbol }}__ReprAssembler) AssembleValue() ipld.NodeAssembler {
+			if ma.state != maState_expectValue {
+				panic("misuse")
+			}
+			ma.state = maState_midValue
+			switch ma.f {
+			{{- range $i, $field := .Type.Fields }}
+			case {{ $i }}:
+				{{- if $field.IsMaybe }}
+				ma.ca_{{ $field | FieldSymbolLower }}.w = {{if not (MaybeUsesPtr $field.Type) }}&{{end}}ma.w.{{ $field | FieldSymbolLower }}.v
+				{{- else}}
+				ma.ca_{{ $field | FieldSymbolLower }}.w = &ma.w.{{ $field | FieldSymbolLower }}
+				{{- end}}
+				ma.ca_{{ $field | FieldSymbolLower }}.fcb = ma.fcb_{{ $field | FieldSymbolLower }}
+				return &ma.ca_{{ $field | FieldSymbolLower }}
+			{{- end}}
+			default:
+				panic("unreachable")
+			}
+		}
+		func (ma *_{{ .Type | TypeSymbol }}__ReprAssembler) Finish() error {
+			if ma.state != maState_initial {
+				panic("misuse")
+			}
+			//FIXME check if all required fields are set
+			ma.state = maState_finished
+			if ma.fcb != nil {
+				return ma.fcb()
+			} else {
+				return nil
+			}
+		}
+		func (ma *_{{ .Type | TypeSymbol }}__ReprAssembler) KeyStyle() ipld.NodeStyle {
+			return _String__Style{}
+		}
+		func (ma *_{{ .Type | TypeSymbol }}__ReprAssembler) ValueStyle(k string) ipld.NodeStyle {
+			panic("todo structbuilder mapassembler repr valuestyle")
+		}
+	`, w, g.AdjCfg, g)
+}
+func (g structReprMapReprBuilderGenerator) emitKeyAssembler(w io.Writer) {
+	doTemplate(`
+		type _{{ .Type | TypeSymbol }}__ReprKeyAssembler _{{ .Type | TypeSymbol }}__ReprAssembler
+	`, w, g.AdjCfg, g)
+	stubs := mixins.StringAssemblerTraits{
+		g.PkgName,
+		g.TypeName + ".ReprKeyAssembler",
+		"_" + g.AdjCfg.TypeSymbol(g.Type) + "__ReprKey",
+	}
+	stubs.EmitNodeAssemblerMethodBeginMap(w)
+	stubs.EmitNodeAssemblerMethodBeginList(w)
+	stubs.EmitNodeAssemblerMethodAssignNull(w)
+	stubs.EmitNodeAssemblerMethodAssignBool(w)
+	stubs.EmitNodeAssemblerMethodAssignInt(w)
+	stubs.EmitNodeAssemblerMethodAssignFloat(w)
+	doTemplate(`
+		func (ka *_{{ .Type | TypeSymbol }}__ReprKeyAssembler) AssignString(k string) error {
+			if ka.state != maState_midKey {
+				panic("misuse")
+			}
+			switch k {
+			{{- $type := .Type -}} {{- /* ranging modifies dot, unhelpfully */ -}}
+			{{- range $i, $field := .Type.Fields }}
+			case "{{ $field | $type.RepresentationStrategy.GetFieldKey }}":
+				if ka.s & fieldBit__{{ $type | TypeSymbol }}_{{ $field | FieldSymbolUpper }} != 0 {
+					return ipld.ErrRepeatedMapKey{&fieldName__{{ $type | TypeSymbol }}_{{ $field | FieldSymbolUpper }}}
+				}
+				ka.s += fieldBit__{{ $type | TypeSymbol }}_{{ $field | FieldSymbolUpper }}
+				ka.state = maState_expectValue
+				ka.f = {{ $i }}
+			{{- end}}
+			default:
+				return ipld.ErrInvalidKey{TypeName:"{{ .PkgName }}.{{ .Type.Name }}.Repr", Key:&_String{k}}
+			}
+			return nil
+		}
+	`, w, g.AdjCfg, g)
+	stubs.EmitNodeAssemblerMethodAssignBytes(w)
+	stubs.EmitNodeAssemblerMethodAssignLink(w)
+	doTemplate(`
+		func (ka *_{{ .Type | TypeSymbol }}__ReprKeyAssembler) AssignNode(v ipld.Node) error {
+			if v2, err := v.AsString(); err != nil {
+				return err
+			} else {
+				return ka.AssignString(v2)
+			}
+		}
+		func (_{{ .Type | TypeSymbol }}__ReprKeyAssembler) Style() ipld.NodeStyle {
+			return _String__Style{}
+		}
+	`, w, g.AdjCfg, g)
+}
+func (g structReprMapReprBuilderGenerator) emitFieldValueAssembler(f schema.StructField, w io.Writer) {
+	doTemplate(`
+		func (na *_{{ .Type | TypeSymbol }}__ReprAssembler) fcb_{{ .Field | FieldSymbolLower }}() error {
+			{{- if .Field.IsNullable }}
+			if na.ca_{{ .Field | FieldSymbolLower }}.z == true {
+				na.w.{{ .Field | FieldSymbolLower }}.m = schema.Maybe_Null
+			} else {
+				na.w.{{ .Field | FieldSymbolLower }}.m = schema.Maybe_Value
+			}
+			{{- else}}
+			if na.ca_{{ .Field | FieldSymbolLower }}.z == true {
+				return mixins.MapAssembler{"{{ .PkgName }}.{{ .Field.Type.Name }}"}.AssignNull()
+			}
+			{{- end}}
+			{{- if and .Field.IsOptional (not .Field.IsNullable) }}
+			na.w.{{ .Field | FieldSymbolLower }}.m = schema.Maybe_Value
+			{{- end}}
+			{{- if and .Field.IsMaybe (.Field.Type | MaybeUsesPtr) }}
+			na.w.{{ .Field | FieldSymbolLower }}.v = na.ca_{{ .Field | FieldSymbolLower }}.w
+			{{- end}}
+			na.ca_{{ .Field | FieldSymbolLower }}.w = nil
+			na.state = maState_initial
+			return nil
+		}
+	`, w, g.AdjCfg, struct {
+		PkgName  string
+		Type     schema.TypeStruct
+		TypeName string
+		Field    schema.StructField
+	}{
+		g.PkgName,
+		g.Type,
+		g.TypeName,
+		f,
+	})
 }

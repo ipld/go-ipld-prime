@@ -70,15 +70,24 @@ func (stringReprStringReprGenerator) EmitNodeMethodAsBytes(io.Writer)       {}
 func (stringReprStringReprGenerator) EmitNodeMethodAsLink(io.Writer)        {}
 func (stringReprStringReprGenerator) EmitNodeMethodStyle(io.Writer)         {}
 func (stringReprStringReprGenerator) EmitNodeStyleType(io.Writer)           {}
-func (stringReprStringReprGenerator) GetNodeBuilderGenerator() NodeBuilderGenerator {
-	return stringReprStringReprBuilderGenerator{}
+func (g stringReprStringReprGenerator) GetNodeBuilderGenerator() NodeBuilderGenerator {
+	return stringReprStringReprBuilderGenerator{g.AdjCfg, g.Type}
 }
 
-type stringReprStringReprBuilderGenerator struct{}
+type stringReprStringReprBuilderGenerator struct {
+	AdjCfg *AdjunctCfg
+	Type   schema.TypeString
+}
 
-func (stringReprStringReprBuilderGenerator) EmitNodeBuilderType(io.Writer)                 {}
-func (stringReprStringReprBuilderGenerator) EmitNodeBuilderMethods(io.Writer)              {}
-func (stringReprStringReprBuilderGenerator) EmitNodeAssemblerType(io.Writer)               {}
+func (stringReprStringReprBuilderGenerator) EmitNodeBuilderType(io.Writer)    {}
+func (stringReprStringReprBuilderGenerator) EmitNodeBuilderMethods(io.Writer) {}
+func (g stringReprStringReprBuilderGenerator) EmitNodeAssemblerType(w io.Writer) {
+	// Since this is a "natural" representation... there's just a type alias here.
+	//  No new functions are necessary.
+	doTemplate(`
+		type _{{ .Type | TypeSymbol }}__ReprAssembler = _{{ .Type | TypeSymbol }}__Assembler
+	`, w, g.AdjCfg, g)
+}
 func (stringReprStringReprBuilderGenerator) EmitNodeAssemblerMethodBeginMap(io.Writer)     {}
 func (stringReprStringReprBuilderGenerator) EmitNodeAssemblerMethodBeginList(io.Writer)    {}
 func (stringReprStringReprBuilderGenerator) EmitNodeAssemblerMethodAssignNull(io.Writer)   {}
