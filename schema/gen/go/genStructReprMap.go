@@ -54,6 +54,20 @@ func (g structReprMapReprGenerator) EmitNodeType(w io.Writer) {
 	doTemplate(`
 		type _{{ .Type | TypeSymbol }}__Repr _{{ .Type | TypeSymbol }}
 	`, w, g.AdjCfg, g)
+
+	// We do also want some constants for our fields;
+	//  they'll make iterators able to work faster.
+	//  These might be the same strings as the type-level field names
+	//   (in face, they are, unless renames are used)... but that's fine.
+	//    We get simpler code by just doing this unconditionally.
+	doTemplate(`
+		var (
+			{{- $type := .Type -}} {{- /* ranging modifies dot, unhelpfully */ -}}
+			{{- range $field := .Type.Fields }}
+			fieldName__{{ $type | TypeSymbol }}_{{ $field | FieldSymbolUpper }}_serial = _String{"{{ $field | $type.RepresentationStrategy.GetFieldKey }}"}
+			{{- end }}
+		)
+	`, w, g.AdjCfg, g)
 }
 
 func (g structReprMapReprGenerator) EmitNodeTypeAssertions(w io.Writer) {
@@ -126,7 +140,6 @@ func (g structReprMapReprGenerator) EmitNodeMethodMapIterator(w io.Writer) {
 	haveTrailingOptionals := beginTrailingOptionalField < fieldCount
 
 	// Now: finally we can get on with the actual templating.
-	// FIXME: this is still yielding type-level keys -- should handle rename directives.
 	doTemplate(`
 		func (n *_{{ .Type | TypeSymbol }}__Repr) MapIterator() ipld.MapIterator {
 			{{- if .HaveTrailingOptionals }}
@@ -163,7 +176,7 @@ func (g structReprMapReprGenerator) EmitNodeMethodMapIterator(w io.Writer) {
 			{{- $type := .Type -}} {{- /* ranging modifies dot, unhelpfully */ -}}
 			{{- range $i, $field := .Type.Fields }}
 			case {{ $i }}:
-				k = &fieldName__{{ $type | TypeSymbol }}_{{ $field | FieldSymbolUpper }}
+				k = &fieldName__{{ $type | TypeSymbol }}_{{ $field | FieldSymbolUpper }}_serial
 				{{- if $field.IsOptional }}
 				if itr.n.{{ $field | FieldSymbolLower }}.m == schema.Maybe_Absent {
 					itr.idx++
@@ -414,7 +427,7 @@ func (g structReprMapReprBuilderGenerator) emitMapAssemblerMethods(w io.Writer) 
 			{{- range $i, $field := .Type.Fields }}
 			case "{{ $field | $type.RepresentationStrategy.GetFieldKey }}":
 				if ma.s & fieldBit__{{ $type | TypeSymbol }}_{{ $field | FieldSymbolUpper }} != 0 {
-					return nil, ipld.ErrRepeatedMapKey{&fieldName__{{ $type | TypeSymbol }}_{{ $field | FieldSymbolUpper }}}
+					return nil, ipld.ErrRepeatedMapKey{&fieldName__{{ $type | TypeSymbol }}_{{ $field | FieldSymbolUpper }}_serial}
 				}
 				ma.s += fieldBit__{{ $type | TypeSymbol }}_{{ $field | FieldSymbolUpper }}
 				ma.state = maState_midValue
@@ -502,7 +515,7 @@ func (g structReprMapReprBuilderGenerator) emitKeyAssembler(w io.Writer) {
 			{{- range $i, $field := .Type.Fields }}
 			case "{{ $field | $type.RepresentationStrategy.GetFieldKey }}":
 				if ka.s & fieldBit__{{ $type | TypeSymbol }}_{{ $field | FieldSymbolUpper }} != 0 {
-					return ipld.ErrRepeatedMapKey{&fieldName__{{ $type | TypeSymbol }}_{{ $field | FieldSymbolUpper }}}
+					return ipld.ErrRepeatedMapKey{&fieldName__{{ $type | TypeSymbol }}_{{ $field | FieldSymbolUpper }}_serial}
 				}
 				ka.s += fieldBit__{{ $type | TypeSymbol }}_{{ $field | FieldSymbolUpper }}
 				ka.state = maState_expectValue

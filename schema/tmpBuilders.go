@@ -48,3 +48,6 @@ func SpawnStruct(name TypeName, fields []StructField, repr StructRepresentation)
 func SpawnStructField(name string, typ Type, optional bool, nullable bool) StructField {
 	return StructField{nil /*populated later*/, name, typ, optional, nullable}
 }
+func SpawnStructRepresentationMap(renames map[string]string) StructRepresentation_Map {
+	return StructRepresentation_Map{renames, nil}
+}

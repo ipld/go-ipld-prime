@@ -42,7 +42,12 @@ func TestSmoke(t *testing.T) {
 			schema.SpawnStructField("f4", tString, true, true),   // optional and nullable; trailing optional.
 			schema.SpawnStructField("f5", tString, true, false),  // optional; and the second one in a row, trailing.
 		},
-		schema.StructRepresentation_Map{},
+		schema.SpawnStructRepresentationMap(map[string]string{
+			"f1": "r1",
+			"f2": "r2",
+			"f3": "r3",
+			"f4": "r4",
+		}),
 	)
 
 	tStract := schema.SpawnStruct("Stract",
@@ -54,7 +59,12 @@ func TestSmoke(t *testing.T) {
 			schema.SpawnStructField("f4", tStrang, true, true),   // optional and nullable; trailing optional.
 			schema.SpawnStructField("f5", tStrang, true, false),  // optional; and the second one in a row, trailing.
 		},
-		schema.StructRepresentation_Map{},
+		schema.SpawnStructRepresentationMap(map[string]string{
+			"f1": "r1",
+			"f2": "r2",
+			"f3": "r3",
+			"f4": "r4",
+		}),
 	)
 
 	f = openOrPanic("_test/tString.go")

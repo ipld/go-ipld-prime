@@ -89,7 +89,6 @@ func (g structGenerator) EmitNodeType(w io.Writer) {
 			{{- end }}
 		)
 	`, w, g.AdjCfg, g)
-
 }
 
 func (g structGenerator) EmitNodeTypeAssertions(w io.Writer) {

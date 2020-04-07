@@ -177,7 +177,7 @@ func (StructRepresentation_StringJoin) _StructRepresentation()  {}
 
 type StructRepresentation_Map struct {
 	renames   map[string]string
-	implicits map[string]interface{}
+	implicits map[string]ImplicitValue
 }
 type StructRepresentation_Tuple struct{}
 type StructRepresentation_StringPairs struct{ sep1, sep2 string }
@@ -187,3 +187,14 @@ type TypeEnum struct {
 	anyType
 	members []string
 }
+
+// ImplicitValue is an sum type holding values that are implicits.
+// It's not an 'Any' value because it can't be recursive
+// (or to be slightly more specific, it can be one of the recursive kinds,
+// but if so, only its empty value is valid here).
+type ImplicitValue interface{ _ImplicitValue() }
+
+type ImplicitValue_EmptyList struct{}
+type ImplicitValue_EmptyMap struct{}
+type ImplicitValue_String struct{ x string }
+type ImplicitValue_Int struct{ x int }

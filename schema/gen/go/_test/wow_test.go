@@ -73,6 +73,23 @@ func TestGeneratedStructWithVariousFieldOptionality(t *testing.T) {
 		Wish(t, ma.Finish(), ShouldEqual, nil)
 		return nb.Build().(schema.TypedNode)
 	}
+	build_vvvvv_repr := func(t *testing.T, ns ipld.NodeStyle) schema.TypedNode {
+		nb := ns.NewBuilder()
+		ma, err := nb.BeginMap(5)
+		Require(t, err, ShouldEqual, nil)
+		Wish(t, ma.AssembleKey().AssignString("r1"), ShouldEqual, nil)
+		Wish(t, ma.AssembleValue().AssignString("a"), ShouldEqual, nil)
+		Wish(t, ma.AssembleKey().AssignString("r2"), ShouldEqual, nil)
+		Wish(t, ma.AssembleValue().AssignString("b"), ShouldEqual, nil)
+		Wish(t, ma.AssembleKey().AssignString("r3"), ShouldEqual, nil)
+		Wish(t, ma.AssembleValue().AssignString("c"), ShouldEqual, nil)
+		Wish(t, ma.AssembleKey().AssignString("r4"), ShouldEqual, nil)
+		Wish(t, ma.AssembleValue().AssignString("d"), ShouldEqual, nil)
+		Wish(t, ma.AssembleKey().AssignString("f5"), ShouldEqual, nil)
+		Wish(t, ma.AssembleValue().AssignString("e"), ShouldEqual, nil)
+		Wish(t, ma.Finish(), ShouldEqual, nil)
+		return nb.Build().(schema.TypedNode)
+	}
 	testLookups_vvvvv := func(t *testing.T, n ipld.Node) {
 		Wish(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
 		Wish(t, n.Length(), ShouldEqual, 5)
@@ -80,6 +97,15 @@ func TestGeneratedStructWithVariousFieldOptionality(t *testing.T) {
 		Wish(t, plzStr(n.LookupString("f2")), ShouldEqual, "b")
 		Wish(t, plzStr(n.LookupString("f3")), ShouldEqual, "c")
 		Wish(t, plzStr(n.LookupString("f4")), ShouldEqual, "d")
+		Wish(t, plzStr(n.LookupString("f5")), ShouldEqual, "e")
+	}
+	testLookups_vvvvv_repr := func(t *testing.T, n ipld.Node) {
+		Wish(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
+		Wish(t, n.Length(), ShouldEqual, 5)
+		Wish(t, plzStr(n.LookupString("r1")), ShouldEqual, "a")
+		Wish(t, plzStr(n.LookupString("r2")), ShouldEqual, "b")
+		Wish(t, plzStr(n.LookupString("r3")), ShouldEqual, "c")
+		Wish(t, plzStr(n.LookupString("r4")), ShouldEqual, "d")
 		Wish(t, plzStr(n.LookupString("f5")), ShouldEqual, "e")
 	}
 	testIteration_vvvvv := func(t *testing.T, n ipld.Node) {
@@ -110,6 +136,34 @@ func TestGeneratedStructWithVariousFieldOptionality(t *testing.T) {
 		Wish(t, v, ShouldEqual, nil)
 		Wish(t, err, ShouldEqual, ipld.ErrIteratorOverread{})
 	}
+	testIteration_vvvvv_repr := func(t *testing.T, n ipld.Node) {
+		itr := n.MapIterator()
+		Wish(t, itr.Done(), ShouldEqual, false)
+		k, v, _ := itr.Next()
+		Wish(t, str(k), ShouldEqual, "r1")
+		Wish(t, str(v), ShouldEqual, "a")
+		Wish(t, itr.Done(), ShouldEqual, false)
+		k, v, _ = itr.Next()
+		Wish(t, str(k), ShouldEqual, "r2")
+		Wish(t, str(v), ShouldEqual, "b")
+		Wish(t, itr.Done(), ShouldEqual, false)
+		k, v, _ = itr.Next()
+		Wish(t, str(k), ShouldEqual, "r3")
+		Wish(t, str(v), ShouldEqual, "c")
+		Wish(t, itr.Done(), ShouldEqual, false)
+		k, v, _ = itr.Next()
+		Wish(t, str(k), ShouldEqual, "r4")
+		Wish(t, str(v), ShouldEqual, "d")
+		Wish(t, itr.Done(), ShouldEqual, false)
+		k, v, _ = itr.Next()
+		Wish(t, str(k), ShouldEqual, "f5")
+		Wish(t, str(v), ShouldEqual, "e")
+		Wish(t, itr.Done(), ShouldEqual, true)
+		k, v, err := itr.Next()
+		Wish(t, k, ShouldEqual, nil)
+		Wish(t, v, ShouldEqual, nil)
+		Wish(t, err, ShouldEqual, ipld.ErrIteratorOverread{})
+	}
 	build_vvzzv := func(t *testing.T, ns ipld.NodeStyle) schema.TypedNode {
 		nb := ns.NewBuilder()
 		ma, err := nb.BeginMap(5)
@@ -121,6 +175,23 @@ func TestGeneratedStructWithVariousFieldOptionality(t *testing.T) {
 		Wish(t, ma.AssembleKey().AssignString("f3"), ShouldEqual, nil)
 		Wish(t, ma.AssembleValue().AssignNull(), ShouldEqual, nil)
 		Wish(t, ma.AssembleKey().AssignString("f4"), ShouldEqual, nil)
+		Wish(t, ma.AssembleValue().AssignNull(), ShouldEqual, nil)
+		Wish(t, ma.AssembleKey().AssignString("f5"), ShouldEqual, nil)
+		Wish(t, ma.AssembleValue().AssignString("e"), ShouldEqual, nil)
+		Wish(t, ma.Finish(), ShouldEqual, nil)
+		return nb.Build().(schema.TypedNode)
+	}
+	build_vvzzv_repr := func(t *testing.T, ns ipld.NodeStyle) schema.TypedNode {
+		nb := ns.NewBuilder()
+		ma, err := nb.BeginMap(5)
+		Require(t, err, ShouldEqual, nil)
+		Wish(t, ma.AssembleKey().AssignString("r1"), ShouldEqual, nil)
+		Wish(t, ma.AssembleValue().AssignString("a"), ShouldEqual, nil)
+		Wish(t, ma.AssembleKey().AssignString("r2"), ShouldEqual, nil)
+		Wish(t, ma.AssembleValue().AssignString("b"), ShouldEqual, nil)
+		Wish(t, ma.AssembleKey().AssignString("r3"), ShouldEqual, nil)
+		Wish(t, ma.AssembleValue().AssignNull(), ShouldEqual, nil)
+		Wish(t, ma.AssembleKey().AssignString("r4"), ShouldEqual, nil)
 		Wish(t, ma.AssembleValue().AssignNull(), ShouldEqual, nil)
 		Wish(t, ma.AssembleKey().AssignString("f5"), ShouldEqual, nil)
 		Wish(t, ma.AssembleValue().AssignString("e"), ShouldEqual, nil)
@@ -158,15 +229,15 @@ func TestGeneratedStructWithVariousFieldOptionality(t *testing.T) {
 		Wish(t, erp(n.LookupString("f4")), ShouldEqual, ipld.Undef)
 		Wish(t, plzStr(n.LookupString("f5")), ShouldEqual, "e")
 	}
-	testIterationRepr_vuvuv := func(t *testing.T, n ipld.Node) {
+	testIteration_vuvuv_repr := func(t *testing.T, n ipld.Node) {
 		itr := n.MapIterator()
 		Wish(t, itr.Done(), ShouldEqual, false)
 		k, v, _ := itr.Next()
-		Wish(t, str(k), ShouldEqual, "f1")
+		Wish(t, str(k), ShouldEqual, "r1")
 		Wish(t, str(v), ShouldEqual, "a")
 		Wish(t, itr.Done(), ShouldEqual, false)
 		k, v, _ = itr.Next()
-		Wish(t, str(k), ShouldEqual, "f3")
+		Wish(t, str(k), ShouldEqual, "r3")
 		Wish(t, str(v), ShouldEqual, "c")
 		Wish(t, itr.Done(), ShouldEqual, false)
 		k, v, _ = itr.Next()
@@ -191,19 +262,19 @@ func TestGeneratedStructWithVariousFieldOptionality(t *testing.T) {
 		Wish(t, ma.Finish(), ShouldEqual, nil)
 		return nb.Build().(schema.TypedNode)
 	}
-	testIterationRepr_vvzuu := func(t *testing.T, n ipld.Node) {
+	testIteration_vvzuu_repr := func(t *testing.T, n ipld.Node) {
 		itr := n.MapIterator()
 		Wish(t, itr.Done(), ShouldEqual, false)
 		k, v, _ := itr.Next()
-		Wish(t, str(k), ShouldEqual, "f1")
+		Wish(t, str(k), ShouldEqual, "r1")
 		Wish(t, str(v), ShouldEqual, "a")
 		Wish(t, itr.Done(), ShouldEqual, false)
 		k, v, _ = itr.Next()
-		Wish(t, str(k), ShouldEqual, "f2")
+		Wish(t, str(k), ShouldEqual, "r2")
 		Wish(t, str(v), ShouldEqual, "b")
 		Wish(t, itr.Done(), ShouldEqual, false)
 		k, v, _ = itr.Next()
-		Wish(t, str(k), ShouldEqual, "f3")
+		Wish(t, str(k), ShouldEqual, "r3")
 		Wish(t, v, ShouldEqual, ipld.Null)
 		Wish(t, itr.Done(), ShouldEqual, true)
 		k, v, err := itr.Next()
@@ -262,18 +333,18 @@ func TestGeneratedStructWithVariousFieldOptionality(t *testing.T) {
 
 				// Test lookup methods.
 				testLookups_vuvuv(t, n)
-				testIterationRepr_vuvuv(t, n.Representation())
+				testIteration_vuvuv_repr(t, n.Representation())
 			})
 			t.Run("absent trailing optionals", func(t *testing.T) {
 				// Trailing optionals are especially touchy in a few details of iterators.
 				n := build_vvzuu(t, _Stract__Style{})
-				testIterationRepr_vvzuu(t, n.Representation())
+				testIteration_vvzuu_repr(t, n.Representation())
 			})
 		})
 		t.Run("repr-level build and read", func(t *testing.T) {
 			t.Run("all fields set", func(t *testing.T) {
 				// Test building.
-				n := build_vvvvv(t, _Stroct__ReprStyle{})
+				n := build_vvvvv_repr(t, _Stroct__ReprStyle{})
 
 				// Assert directly against expected memory state.
 				Wish(t, n, ShouldEqual, &_Stroct{
@@ -285,12 +356,12 @@ func TestGeneratedStructWithVariousFieldOptionality(t *testing.T) {
 				})
 
 				// Test lookup methods.
-				testLookups_vvvvv(t, n.Representation())
-				testIteration_vvvvv(t, n.Representation())
+				testLookups_vvvvv_repr(t, n.Representation())
+				testIteration_vvvvv_repr(t, n.Representation())
 			})
 			t.Run("setting nulls", func(t *testing.T) {
 				// Test building.
-				n := build_vvzzv(t, _Stroct__ReprStyle{})
+				n := build_vvzzv_repr(t, _Stroct__ReprStyle{})
 
 				// Assert directly against expected memory state.
 				Wish(t, n, ShouldEqual, &_Stroct{
@@ -302,7 +373,7 @@ func TestGeneratedStructWithVariousFieldOptionality(t *testing.T) {
 				})
 
 				// Test lookup methods.
-				testLookups_vvzzv(t, n.Representation())
+				testLookups_vvzzv(t, n)
 			})
 		})
 	})
@@ -362,12 +433,36 @@ func TestGeneratedStructWithVariousFieldOptionality(t *testing.T) {
 
 				// Test lookup methods.
 				testLookups_vuvuv(t, n)
-				testIterationRepr_vuvuv(t, n.Representation())
+				testIteration_vuvuv_repr(t, n.Representation())
 			})
 			t.Run("absent trailing optionals", func(t *testing.T) {
 				// Trailing optionals are especially touchy in a few details of iterators.
 				n := build_vvzuu(t, _Stract__Style{})
-				testIterationRepr_vvzuu(t, n.Representation())
+				testIteration_vvzuu_repr(t, n.Representation()) // ow
+			})
+		})
+		// These following tests check that the renames behavior of map representations work.
+		t.Run("representatiosn with renames build and read", func(t *testing.T) {
+			t.Run("all fields set", func(t *testing.T) {
+				// Test building.
+				n := build_vvvvv_repr(t, _Stract__ReprStyle{})
+
+				// Assert directly against expected memory state.
+				Wish(t, n, ShouldEqual, &_Stract{
+					f1: _Strang{"a"},
+					f2: _Strang__Maybe{schema.Maybe_Value, &_Strang{"b"}},
+					f3: _Strang__Maybe{schema.Maybe_Value, &_Strang{"c"}},
+					f4: _Strang__Maybe{schema.Maybe_Value, &_Strang{"d"}},
+					f5: _Strang__Maybe{schema.Maybe_Value, &_Strang{"e"}},
+				})
+
+				// Test lookup methods... for the type-level node.
+				testLookups_vvvvv(t, n)
+				testIteration_vvvvv(t, n)
+
+				// Now test lookups and iterations for the representation.
+				testLookups_vvvvv_repr(t, n.Representation())
+				testIteration_vvvvv_repr(t, n.Representation())
 			})
 		})
 	})
