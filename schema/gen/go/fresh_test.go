@@ -5,28 +5,10 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"plugin"
 	"testing"
 
-	"github.com/ipld/go-ipld-prime"
 	"github.com/ipld/go-ipld-prime/schema"
 )
-
-func invokeBuildPlugin(prefix string) {
-	cmd := exec.Command("go", "build", "-o=./_test/"+prefix+"/obj.so", "-buildmode=plugin", "./_test/"+prefix)
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	if err := cmd.Run(); err != nil {
-		panic(err)
-	}
-}
-func loadPlugin(prefix string) *plugin.Plugin {
-	plg, err := plugin.Open("./_test/" + prefix + "/obj.so")
-	if err != nil {
-		panic(err)
-	}
-	return plg
-}
 
 func withFile(filename string, fn func(io.Writer)) {
 	// Rm-rf the whole "./_test" dir at your leasure.
@@ -48,7 +30,7 @@ func genAndCompilerAndTest(
 	pkgName string,
 	ts schema.TypeSystem,
 	adjCfg *AdjunctCfg,
-	tests func(t *testing.T, getStyleByName func(string) ipld.NodeStyle),
+	testFnName string, // disturbing, i know
 ) {
 	t.Run("generate", func(t *testing.T) {
 		// Emit fixed bits.
@@ -92,17 +74,32 @@ func genAndCompilerAndTest(
 		})
 
 		t.Run("compile", func(t *testing.T) {
-			invokeBuildPlugin(prefix)
-			plg := loadPlugin(prefix)
+			withFile(prefix+"/test_test.go", func(w io.Writer) {
+				doTemplate(`
+					package `+pkgName+`
 
-			sym, err := plg.Lookup("GetStyleByName")
-			if err != nil {
+					import "testing"
+					import "github.com/ipld/go-ipld-prime/schema/gen/go/tests"
+
+					func TestAll(t *testing.T)  {
+						tests.{{ . }}(t, GetStyleByName)
+					}
+				`, w, adjCfg, testFnName)
+			})
+			cmd := exec.Command("go", "test", "-run=^$", "./_test/"+prefix)
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			if err := cmd.Run(); err != nil {
 				panic(err)
 			}
-			getStyleByName := sym.(func(string) ipld.NodeStyle)
 
 			t.Run("test", func(t *testing.T) {
-				tests(t, getStyleByName)
+				cmd := exec.Command("go", "test", "-v", "./_test/"+prefix)
+				cmd.Stdout = os.Stdout
+				cmd.Stderr = os.Stderr
+				if err := cmd.Run(); err != nil {
+					panic(err)
+				}
 			})
 		})
 	})
@@ -119,21 +116,8 @@ func TestFancier(t *testing.T) {
 	adjCfg.maybeUsesPtr["String"] = false
 
 	prefix := "foo"
-	pkgName := "main" // has to be 'main' for plugins to work.  this stricture makes little sense to me, but i didn't write the rules.
-	genAndCompilerAndTest(t, prefix, pkgName, ts, adjCfg, func(t *testing.T, getStyleByName func(string) ipld.NodeStyle) {
-		ns := getStyleByName("String")
-		t.Run("string operations work", func(t *testing.T) {
-			nb := ns.NewBuilder()
-			nb.AssignString("woiu")
-			n := nb.Build()
-			t.Logf("%v\n", n)
-		})
-		t.Run("null is rejected", func(t *testing.T) {
-			nb := ns.NewBuilder()
-			nb.AssignNull()
-
-		})
-	})
+	pkgName := prefix
+	genAndCompilerAndTest(t, prefix, pkgName, ts, adjCfg, "ExerciseString")
 }
 
 func TestFanciest(t *testing.T) {
@@ -147,19 +131,6 @@ func TestFanciest(t *testing.T) {
 	adjCfg.maybeUsesPtr["String"] = true
 
 	prefix := "bar"
-	pkgName := "main" // has to be 'main' for plugins to work.  this stricture makes little sense to me, but i didn't write the rules.
-	genAndCompilerAndTest(t, prefix, pkgName, ts, adjCfg, func(t *testing.T, getStyleByName func(string) ipld.NodeStyle) {
-		ns := getStyleByName("String")
-		t.Run("string operations work", func(t *testing.T) {
-			nb := ns.NewBuilder()
-			nb.AssignString("woiu")
-			n := nb.Build()
-			t.Logf("%v\n", n)
-		})
-		t.Run("null is rejected", func(t *testing.T) {
-			nb := ns.NewBuilder()
-			nb.AssignNull()
-
-		})
-	})
+	pkgName := prefix
+	genAndCompilerAndTest(t, prefix, pkgName, ts, adjCfg, "ExerciseString")
 }
