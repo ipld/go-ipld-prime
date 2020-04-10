@@ -1,10 +1,13 @@
 package gengo
 
 import (
+	"encoding/json"
 	"io"
 	"os"
 	"os/exec"
+	"path"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/ipld/go-ipld-prime/schema"
@@ -86,7 +89,7 @@ func genAndCompilerAndTest(
 					}
 				`, w, adjCfg, testFnName)
 			})
-			cmd := exec.Command("go", "test", "-run=^$", "./_test/"+prefix)
+			cmd := exec.Command("go", "build", "./_test/"+prefix)
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
 			if err := cmd.Run(); err != nil {
@@ -94,15 +97,72 @@ func genAndCompilerAndTest(
 			}
 
 			t.Run("test", func(t *testing.T) {
-				cmd := exec.Command("go", "test", "-v", "./_test/"+prefix)
-				cmd.Stdout = os.Stdout
+				cmd := exec.Command("go", "test", "-json", "./_test/"+prefix)
+				var p io.Reader
+				p, _ = cmd.StdoutPipe()
 				cmd.Stderr = os.Stderr
-				if err := cmd.Run(); err != nil {
+				if err := cmd.Start(); err != nil {
+					panic(err)
+				}
+				//p = io.TeeReader(p, os.Stdout) // uncomment to see it plain
+				dec := json.NewDecoder(p)
+				recurse(t, dec)
+				if err := cmd.Wait(); err != nil {
 					panic(err)
 				}
 			})
 		})
 	})
+}
+
+// This function tries to reconstruct the 't.Run' tree from a child process,
+// but it's not at all correct.
+// Since the messages come out of order (more than one thing starts before its
+// siblings finish, etc), a lot of buffering would be needed to make this right.
+func recurse(t *testing.T, dec *json.Decoder) {
+	for dec.More() {
+		type msg struct {
+			Action  string
+			Package string
+			Test    string
+			Output  string
+			Elapsed float32
+		}
+		var st msg
+		if err := dec.Decode(&st); err != nil {
+			panic(err)
+		}
+		switch st.Action {
+		case "run":
+			t.Run(path.Base(st.Test), func(t *testing.T) {
+				// munch one message, because it's reliably the thing announcing "=== RUN" for itself on output.
+				if err := dec.Decode(&st); err != nil {
+					panic(err)
+				}
+				recurse(t, dec)
+			})
+		case "pass":
+			return
+		case "output":
+			trimmed := strings.TrimLeft(st.Output, " ")
+			// Filter out "--- PASS" output.  i don't see any unambiguous way to do this;
+			//  'println' in the tests can easily write the same magic strings.
+			//   (Double fun?  It seems 'go test -json' will even itself be
+			//    confused by such strings, and turn them into nonsense json anyway.
+			//     Really, there's no winning possible anywhere near here.)
+			switch {
+			case strings.HasPrefix(trimmed, "--- PASS: "):
+				continue
+			case trimmed == "PASS\n":
+				continue
+			case strings.HasPrefix(trimmed, "ok  \t"):
+				continue
+			}
+			t.Logf("%s", trimmed)
+		default:
+			panic(st.Action)
+		}
+	}
 }
 
 func TestFancier(t *testing.T) {
