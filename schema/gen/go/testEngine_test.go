@@ -57,12 +57,23 @@ func genAndCompilerAndTest(
 		})
 
 		// Emit a file for each type.
+		//  This contains a bunch of big switches for type and representation strategy,
+		//   which will probably get hoisted out to an exported feature at some point.
 		for _, typ := range ts.GetTypes() {
 			withFile(prefix+"/t"+typ.Name().String()+".go", func(f io.Writer) {
 				EmitFileHeader(pkgName, f)
 				switch t2 := typ.(type) {
 				case schema.TypeString:
 					EmitEntireType(NewStringReprStringGenerator(pkgName, t2, adjCfg), f)
+				case schema.TypeStruct:
+					switch t2.RepresentationStrategy().(type) {
+					case schema.StructRepresentation_Map:
+						EmitEntireType(NewStructReprMapGenerator(pkgName, t2, adjCfg), f)
+					default:
+						panic("unrecognized struct representation strategy")
+					}
+				default:
+					panic("add more type switches here :)")
 				}
 			})
 		}
@@ -104,62 +115,6 @@ func genAndCompilerAndTest(
 			t.Run("test", func(t *testing.T) {
 				tests(t, getStyleByName)
 			})
-		})
-	})
-}
-
-func TestFancier(t *testing.T) {
-	ts := schema.TypeSystem{}
-	ts.Init()
-	adjCfg := &AdjunctCfg{
-		maybeUsesPtr: map[schema.TypeName]bool{},
-	}
-
-	ts.Accumulate(schema.SpawnString("String"))
-	adjCfg.maybeUsesPtr["String"] = false
-
-	prefix := "foo"
-	pkgName := "main" // has to be 'main' for plugins to work.  this stricture makes little sense to me, but i didn't write the rules.
-	genAndCompilerAndTest(t, prefix, pkgName, ts, adjCfg, func(t *testing.T, getStyleByName func(string) ipld.NodeStyle) {
-		ns := getStyleByName("String")
-		t.Run("string operations work", func(t *testing.T) {
-			nb := ns.NewBuilder()
-			nb.AssignString("woiu")
-			n := nb.Build()
-			t.Logf("%v\n", n)
-		})
-		t.Run("null is rejected", func(t *testing.T) {
-			nb := ns.NewBuilder()
-			nb.AssignNull()
-
-		})
-	})
-}
-
-func TestFanciest(t *testing.T) {
-	ts := schema.TypeSystem{}
-	ts.Init()
-	adjCfg := &AdjunctCfg{
-		maybeUsesPtr: map[schema.TypeName]bool{},
-	}
-
-	ts.Accumulate(schema.SpawnString("String"))
-	adjCfg.maybeUsesPtr["String"] = true
-
-	prefix := "bar"
-	pkgName := "main" // has to be 'main' for plugins to work.  this stricture makes little sense to me, but i didn't write the rules.
-	genAndCompilerAndTest(t, prefix, pkgName, ts, adjCfg, func(t *testing.T, getStyleByName func(string) ipld.NodeStyle) {
-		ns := getStyleByName("String")
-		t.Run("string operations work", func(t *testing.T) {
-			nb := ns.NewBuilder()
-			nb.AssignString("woiu")
-			n := nb.Build()
-			t.Logf("%v\n", n)
-		})
-		t.Run("null is rejected", func(t *testing.T) {
-			nb := ns.NewBuilder()
-			nb.AssignNull()
-
 		})
 	})
 }
