@@ -51,3 +51,18 @@ func SpawnStructField(name string, typ Type, optional bool, nullable bool) Struc
 func SpawnStructRepresentationMap(renames map[string]string) StructRepresentation_Map {
 	return StructRepresentation_Map{renames, nil}
 }
+
+// The methods relating to TypeSystem are also mutation-heavy and placeholdery.
+
+func (ts *TypeSystem) Init() {
+	ts.namedTypes = make(map[TypeName]Type)
+}
+func (ts *TypeSystem) Accumulate(typ Type) {
+	ts.namedTypes[typ.Name()] = typ
+}
+func (ts TypeSystem) GetTypes() map[TypeName]Type {
+	return ts.namedTypes
+}
+func (ts TypeSystem) TypeByName(n string) Type {
+	return ts.namedTypes[TypeName(n)]
+}
