@@ -341,7 +341,7 @@ func TestStructsContainingMaybe(t *testing.T) {
 
 		prefix := "stroct"
 		pkgName := "main"
-		genAndCompilerAndTest(t, prefix, pkgName, ts, adjCfg, func(t *testing.T, getStyleByName func(string) ipld.NodeStyle) {
+		genAndCompileAndTest(t, prefix, pkgName, ts, adjCfg, func(t *testing.T, getStyleByName func(string) ipld.NodeStyle) {
 			test(t, getStyleByName("Stroct"), getStyleByName("Stroct.Repr"))
 		})
 	})
@@ -350,7 +350,7 @@ func TestStructsContainingMaybe(t *testing.T) {
 
 		prefix := "stroct2"
 		pkgName := "main"
-		genAndCompilerAndTest(t, prefix, pkgName, ts, adjCfg, func(t *testing.T, getStyleByName func(string) ipld.NodeStyle) {
+		genAndCompileAndTest(t, prefix, pkgName, ts, adjCfg, func(t *testing.T, getStyleByName func(string) ipld.NodeStyle) {
 			test(t, getStyleByName("Stroct"), getStyleByName("Stroct.Repr"))
 		})
 	})

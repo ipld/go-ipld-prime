@@ -20,7 +20,7 @@ func TestString(t *testing.T) {
 
 	prefix := "justString"
 	pkgName := "main" // has to be 'main' for plugins to work.  this stricture makes little sense to me, but i didn't write the rules.
-	genAndCompilerAndTest(t, prefix, pkgName, ts, adjCfg, func(t *testing.T, getStyleByName func(string) ipld.NodeStyle) {
+	genAndCompileAndTest(t, prefix, pkgName, ts, adjCfg, func(t *testing.T, getStyleByName func(string) ipld.NodeStyle) {
 		ns := getStyleByName("String")
 		t.Run("create string", func(t *testing.T) {
 			nb := ns.NewBuilder()
