@@ -17,7 +17,7 @@ func buildGennedCode(t *testing.T, prefix string, pkgName string) {
 	//    so 'pkgName' in practice is almost always "main").
 	//  I dunno, friend.  I didn't write the rules.
 	if pkgName == "main" {
-		withFile(prefix+"/main.go", func(w io.Writer) {
+		withFile("./_test/"+prefix+"/main.go", func(w io.Writer) {
 			fmt.Fprintf(w, "package %s\n\n", pkgName)
 			fmt.Fprintf(w, "func main() {}\n")
 		})
