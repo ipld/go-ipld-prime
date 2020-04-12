@@ -6,6 +6,8 @@ import (
 
 type TypeName string // = ast.TypeName
 
+func (tn TypeName) String() string { return string(tn) }
+
 // typesystem.Type is an union interface; each of the `Type*` concrete types
 // in this package are one of its members.
 //

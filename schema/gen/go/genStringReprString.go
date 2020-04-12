@@ -69,7 +69,13 @@ func (stringReprStringReprGenerator) EmitNodeMethodAsString(io.Writer)      {}
 func (stringReprStringReprGenerator) EmitNodeMethodAsBytes(io.Writer)       {}
 func (stringReprStringReprGenerator) EmitNodeMethodAsLink(io.Writer)        {}
 func (stringReprStringReprGenerator) EmitNodeMethodStyle(io.Writer)         {}
-func (stringReprStringReprGenerator) EmitNodeStyleType(io.Writer)           {}
+func (g stringReprStringReprGenerator) EmitNodeStyleType(w io.Writer) {
+	// Since this is a "natural" representation... there's just a type alias here.
+	//  No new functions are necessary.
+	doTemplate(`
+		type _{{ .Type | TypeSymbol }}__ReprStyle = _{{ .Type | TypeSymbol }}__Style
+	`, w, g.AdjCfg, g)
+}
 func (g stringReprStringReprGenerator) GetNodeBuilderGenerator() NodeBuilderGenerator {
 	return stringReprStringReprBuilderGenerator{g.AdjCfg, g.Type}
 }

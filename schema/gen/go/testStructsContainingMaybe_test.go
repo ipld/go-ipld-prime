@@ -1,57 +1,22 @@
-package whee
+package gengo
 
 import (
 	"testing"
 
 	. "github.com/warpfork/go-wish"
 
-	ipld "github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime"
 	"github.com/ipld/go-ipld-prime/schema"
 )
 
-func plz(n ipld.Node, e error) ipld.Node {
-	if e != nil {
-		panic(e)
-	}
-	return n
-}
-func plzStr(n ipld.Node, e error) string {
-	if e != nil {
-		panic(e)
-	}
-	if s, ok := n.AsString(); ok == nil {
-		return s
-	} else {
-		panic(ok)
-	}
-}
-func str(n ipld.Node) string {
-	if s, ok := n.AsString(); ok == nil {
-		return s
-	} else {
-		panic(ok)
-	}
-}
-func erp(n ipld.Node, e error) interface{} {
-	if e != nil {
-		return e
-	}
-	return n
-}
-
-// This targets both "Stroct" and "Stract",
-// expecting both to be functionally equivalent
-// (because they should be -- only varying in field type name, and whether the maybe of that type uses pointers).
+// TestStructsContainingMaybe checks all the variations of "nullable" and "optional" on struct fields.
+// It does this twice: once for the child maybes being implemented with pointers,
+// and once with maybes implemented as embeds.
+// The child values are scalars.
 //
-// Most of what we're targetting here is if all the matrices of
-// nullable and optional support are working correctly.
-//
-// The type-level generic builder is exercised,
-// and the type-level generic accessors are exercised,
-// including both lookup and length methods.
-// No iterators are exercised (marshal/unmarshal are good at that).  // Okay, yes they are.
-// No representations are exercised (that's a whole 'nother topic).  // Okay, reads are.  ReprBuilds aren't.
-func TestGeneratedStructWithVariousFieldOptionality(t *testing.T) {
+// Both type-level generic build and access as well as representation build and access are exercised;
+// the representation used is map (the native representation for structs).
+func TestStructsContainingMaybe(t *testing.T) {
 	// There's a lot of cases to cover so a shorthand labels helper funcs:
 	//  - 'v' -- value in that entry
 	//  - 'z' -- null in that entry
@@ -283,187 +248,110 @@ func TestGeneratedStructWithVariousFieldOptionality(t *testing.T) {
 		Wish(t, err, ShouldEqual, ipld.ErrIteratorOverread{})
 	}
 
-	t.Run("on stroct", func(t *testing.T) {
-		t.Run("type-level build and read", func(t *testing.T) {
-			t.Run("all fields set", func(t *testing.T) {
-				// Test building.
-				n := build_vvvvv(t, _Stroct__Style{})
-
-				// Assert directly against expected memory state.
-				Wish(t, n, ShouldEqual, &_Stroct{
-					f1: _String{"a"},
-					f2: _String__Maybe{schema.Maybe_Value, _String{"b"}},
-					f3: _String__Maybe{schema.Maybe_Value, _String{"c"}},
-					f4: _String__Maybe{schema.Maybe_Value, _String{"d"}},
-					f5: _String__Maybe{schema.Maybe_Value, _String{"e"}},
+	// Okay, now the test actions:
+	test := func(t *testing.T, ns ipld.NodeStyle, nsr ipld.NodeStyle) {
+		t.Run("all fields set", func(t *testing.T) {
+			t.Run("typed-create", func(t *testing.T) {
+				n := build_vvvvv(t, ns)
+				t.Run("typed-read", func(t *testing.T) {
+					testLookups_vvvvv(t, n)
+					testIteration_vvvvv(t, n)
 				})
-
-				// Test lookup methods.
-				testLookups_vvvvv(t, n)
-				testIteration_vvvvv(t, n)
-			})
-			t.Run("setting nulls", func(t *testing.T) {
-				// Test building.
-				n := build_vvzzv(t, _Stroct__Style{})
-
-				// Assert directly against expected memory state.
-				Wish(t, n, ShouldEqual, &_Stroct{
-					f1: _String{"a"},
-					f2: _String__Maybe{schema.Maybe_Value, _String{"b"}},
-					f3: _String__Maybe{schema.Maybe_Null, _String{""}},
-					f4: _String__Maybe{schema.Maybe_Null, _String{""}},
-					f5: _String__Maybe{schema.Maybe_Value, _String{"e"}},
+				t.Run("repr-read", func(t *testing.T) {
+					testLookups_vvvvv_repr(t, n.Representation())
+					testIteration_vvvvv_repr(t, n.Representation())
 				})
-
-				// Test lookup methods.
-				testLookups_vvzzv(t, n)
 			})
-			t.Run("not setting optionals", func(t *testing.T) {
-				// Test building.
-				n := build_vuvuv(t, _Stroct__Style{})
-
-				// Assert directly against expected memory state.
-				Wish(t, n, ShouldEqual, &_Stroct{
-					f1: _String{"a"},
-					f2: _String__Maybe{schema.Maybe_Absent, _String{""}},
-					f3: _String__Maybe{schema.Maybe_Value, _String{"c"}},
-					f4: _String__Maybe{schema.Maybe_Absent, _String{""}},
-					f5: _String__Maybe{schema.Maybe_Value, _String{"e"}},
-				})
-
-				// Test lookup methods.
-				testLookups_vuvuv(t, n)
-				testIteration_vuvuv_repr(t, n.Representation())
-			})
-			t.Run("absent trailing optionals", func(t *testing.T) {
-				// Trailing optionals are especially touchy in a few details of iterators.
-				n := build_vvzuu(t, _Stract__Style{})
-				testIteration_vvzuu_repr(t, n.Representation())
+			t.Run("repr-create", func(t *testing.T) {
+				Wish(t, build_vvvvv_repr(t, nsr), ShouldEqual, build_vvvvv(t, ns))
 			})
 		})
-		t.Run("repr-level build and read", func(t *testing.T) {
-			t.Run("all fields set", func(t *testing.T) {
-				// Test building.
-				n := build_vvvvv_repr(t, _Stroct__ReprStyle{})
-
-				// Assert directly against expected memory state.
-				Wish(t, n, ShouldEqual, &_Stroct{
-					f1: _String{"a"},
-					f2: _String__Maybe{schema.Maybe_Value, _String{"b"}},
-					f3: _String__Maybe{schema.Maybe_Value, _String{"c"}},
-					f4: _String__Maybe{schema.Maybe_Value, _String{"d"}},
-					f5: _String__Maybe{schema.Maybe_Value, _String{"e"}},
+		t.Run("setting nulls", func(t *testing.T) {
+			t.Run("typed-create", func(t *testing.T) {
+				n := build_vvzzv(t, ns)
+				t.Run("typed-read", func(t *testing.T) {
+					testLookups_vvzzv(t, n)
 				})
-
-				// Test lookup methods.
-				testLookups_vvvvv_repr(t, n.Representation())
-				testIteration_vvvvv_repr(t, n.Representation())
-			})
-			t.Run("setting nulls", func(t *testing.T) {
-				// Test building.
-				n := build_vvzzv_repr(t, _Stroct__ReprStyle{})
-
-				// Assert directly against expected memory state.
-				Wish(t, n, ShouldEqual, &_Stroct{
-					f1: _String{"a"},
-					f2: _String__Maybe{schema.Maybe_Value, _String{"b"}},
-					f3: _String__Maybe{schema.Maybe_Null, _String{""}},
-					f4: _String__Maybe{schema.Maybe_Null, _String{""}},
-					f5: _String__Maybe{schema.Maybe_Value, _String{"e"}},
+				t.Run("repr-read", func(t *testing.T) {
+					// nyi
 				})
-
-				// Test lookup methods.
-				testLookups_vvzzv(t, n)
 			})
+			t.Run("repr-create", func(t *testing.T) {
+				Wish(t, build_vvzzv_repr(t, nsr), ShouldEqual, build_vvzzv(t, ns))
+			})
+		})
+		t.Run("absent optionals", func(t *testing.T) {
+			t.Run("typed-create", func(t *testing.T) {
+				n := build_vuvuv(t, ns)
+				t.Run("typed-read", func(t *testing.T) {
+					testLookups_vuvuv(t, n)
+				})
+				t.Run("repr-read", func(t *testing.T) {
+					testIteration_vuvuv_repr(t, n.Representation())
+				})
+			})
+			t.Run("repr-create", func(t *testing.T) {
+				// nyi
+			})
+		})
+		t.Run("absent trailing optionals", func(t *testing.T) {
+			// Trailing optionals are especially touchy in a few details of iterators, so this gets an extra focused test.
+			t.Run("typed-create", func(t *testing.T) {
+				n := build_vvzuu(t, ns)
+				t.Run("typed-read", func(t *testing.T) {
+					// Not very interesting; still returns absent explicitly, same as 'vuvuv' scenario.
+				})
+				t.Run("repr-read", func(t *testing.T) {
+					testIteration_vvzuu_repr(t, n.Representation())
+				})
+			})
+			t.Run("repr-create", func(t *testing.T) {
+				// nyi
+			})
+		})
+	}
+
+	// Do most of the type declarations.
+	ts := schema.TypeSystem{}
+	ts.Init()
+	adjCfg := &AdjunctCfg{
+		maybeUsesPtr: map[schema.TypeName]bool{},
+	}
+	ts.Accumulate(schema.SpawnString("String"))
+	ts.Accumulate(schema.SpawnStruct("Stroct",
+		[]schema.StructField{
+			// Every field in this struct (including their order) is exercising an interesting case...
+			schema.SpawnStructField("f1", ts.TypeByName("String"), false, false), // plain field.
+			schema.SpawnStructField("f2", ts.TypeByName("String"), true, false),  // optional; later we have more than one optional field, nonsequentially.
+			schema.SpawnStructField("f3", ts.TypeByName("String"), false, true),  // nullable; but required.
+			schema.SpawnStructField("f4", ts.TypeByName("String"), true, true),   // optional and nullable; trailing optional.
+			schema.SpawnStructField("f5", ts.TypeByName("String"), true, false),  // optional; and the second one in a row, trailing.
+		},
+		schema.SpawnStructRepresentationMap(map[string]string{
+			"f1": "r1",
+			"f2": "r2",
+			"f3": "r3",
+			"f4": "r4",
+		}),
+	))
+
+	// And finally, launch tests! ...while specializing the adjunct config a bit.
+	t.Run("maybe-using-embed", func(t *testing.T) {
+		adjCfg.maybeUsesPtr["String"] = false
+
+		prefix := "stroct"
+		pkgName := "main"
+		genAndCompileAndTest(t, prefix, pkgName, ts, adjCfg, func(t *testing.T, getStyleByName func(string) ipld.NodeStyle) {
+			test(t, getStyleByName("Stroct"), getStyleByName("Stroct.Repr"))
 		})
 	})
-	t.Run("on stract", func(t *testing.T) {
-		// Tests targeting `Stract` are *identical* to tests above on `Stroct`,
-		//  except for a different concrete type.
-		// The point of these is to be reasonably convinced that MaybeT using pointers works,
-		//  and after that feels established, we don't exhaustively test the rest.
-		// (Improvable?  Should be exhaustive?  Maybe.
-		//  It's mostly the concrete type asserts that make this hard.  Maybe those aren't worth having.)
-		t.Run("type-level build and read", func(t *testing.T) {
-			t.Run("all fields set", func(t *testing.T) {
-				// Test building.
-				n := build_vvvvv(t, _Stract__Style{})
+	t.Run("maybe-using-ptr", func(t *testing.T) {
+		adjCfg.maybeUsesPtr["String"] = false
 
-				// Assert directly against expected memory state.
-				Wish(t, n, ShouldEqual, &_Stract{
-					f1: _Strang{"a"},
-					f2: _Strang__Maybe{schema.Maybe_Value, &_Strang{"b"}},
-					f3: _Strang__Maybe{schema.Maybe_Value, &_Strang{"c"}},
-					f4: _Strang__Maybe{schema.Maybe_Value, &_Strang{"d"}},
-					f5: _Strang__Maybe{schema.Maybe_Value, &_Strang{"e"}},
-				})
-
-				// Test lookup methods.
-				testLookups_vvvvv(t, n)
-				testIteration_vvvvv(t, n)
-			})
-			t.Run("setting nulls", func(t *testing.T) {
-				// Test building.
-				n := build_vvzzv(t, _Stract__Style{})
-
-				// Assert directly against expected memory state.
-				Wish(t, n, ShouldEqual, &_Stract{
-					f1: _Strang{"a"},
-					f2: _Strang__Maybe{schema.Maybe_Value, &_Strang{"b"}},
-					f3: _Strang__Maybe{schema.Maybe_Null, nil},
-					f4: _Strang__Maybe{schema.Maybe_Null, nil},
-					f5: _Strang__Maybe{schema.Maybe_Value, &_Strang{"e"}},
-				})
-
-				// Test lookup methods.
-				testLookups_vvzzv(t, n)
-			})
-			t.Run("not setting optionals", func(t *testing.T) {
-				// Test building.
-				n := build_vuvuv(t, _Stract__Style{})
-
-				// Assert directly against expected memory state.
-				Wish(t, n, ShouldEqual, &_Stract{
-					f1: _Strang{"a"},
-					f2: _Strang__Maybe{schema.Maybe_Absent, nil},
-					f3: _Strang__Maybe{schema.Maybe_Value, &_Strang{"c"}},
-					f4: _Strang__Maybe{schema.Maybe_Absent, nil},
-					f5: _Strang__Maybe{schema.Maybe_Value, &_Strang{"e"}},
-				})
-
-				// Test lookup methods.
-				testLookups_vuvuv(t, n)
-				testIteration_vuvuv_repr(t, n.Representation())
-			})
-			t.Run("absent trailing optionals", func(t *testing.T) {
-				// Trailing optionals are especially touchy in a few details of iterators.
-				n := build_vvzuu(t, _Stract__Style{})
-				testIteration_vvzuu_repr(t, n.Representation()) // ow
-			})
-		})
-		// These following tests check that the renames behavior of map representations work.
-		t.Run("representatiosn with renames build and read", func(t *testing.T) {
-			t.Run("all fields set", func(t *testing.T) {
-				// Test building.
-				n := build_vvvvv_repr(t, _Stract__ReprStyle{})
-
-				// Assert directly against expected memory state.
-				Wish(t, n, ShouldEqual, &_Stract{
-					f1: _Strang{"a"},
-					f2: _Strang__Maybe{schema.Maybe_Value, &_Strang{"b"}},
-					f3: _Strang__Maybe{schema.Maybe_Value, &_Strang{"c"}},
-					f4: _Strang__Maybe{schema.Maybe_Value, &_Strang{"d"}},
-					f5: _Strang__Maybe{schema.Maybe_Value, &_Strang{"e"}},
-				})
-
-				// Test lookup methods... for the type-level node.
-				testLookups_vvvvv(t, n)
-				testIteration_vvvvv(t, n)
-
-				// Now test lookups and iterations for the representation.
-				testLookups_vvvvv_repr(t, n.Representation())
-				testIteration_vvvvv_repr(t, n.Representation())
-			})
+		prefix := "stroct2"
+		pkgName := "main"
+		genAndCompileAndTest(t, prefix, pkgName, ts, adjCfg, func(t *testing.T, getStyleByName func(string) ipld.NodeStyle) {
+			test(t, getStyleByName("Stroct"), getStyleByName("Stroct.Repr"))
 		})
 	})
 }
