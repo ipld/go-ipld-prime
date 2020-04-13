@@ -346,7 +346,7 @@ func TestStructsContainingMaybe(t *testing.T) {
 		})
 	})
 	t.Run("maybe-using-ptr", func(t *testing.T) {
-		adjCfg.maybeUsesPtr["String"] = false
+		adjCfg.maybeUsesPtr["String"] = true
 
 		prefix := "stroct2"
 		pkgName := "main"
