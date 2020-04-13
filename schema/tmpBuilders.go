@@ -43,6 +43,14 @@ func SpawnStruct(name TypeName, fields []StructField, repr StructRepresentation)
 		fields[i].parent = &v
 		v.fieldsMap[fields[i].name] = fields[i]
 	}
+	switch repr.(type) {
+	case StructRepresentation_Stringjoin:
+		for _, f := range fields {
+			if f.IsMaybe() {
+				panic("neither nullable nor optional is supported on struct stringjoin representation")
+			}
+		}
+	}
 	return v
 }
 func SpawnStructField(name string, typ Type, optional bool, nullable bool) StructField {
@@ -50,6 +58,9 @@ func SpawnStructField(name string, typ Type, optional bool, nullable bool) Struc
 }
 func SpawnStructRepresentationMap(renames map[string]string) StructRepresentation_Map {
 	return StructRepresentation_Map{renames, nil}
+}
+func SpawnStructRepresentationStringjoin(delim string) StructRepresentation_Stringjoin {
+	return StructRepresentation_Stringjoin{delim}
 }
 
 // The methods relating to TypeSystem are also mutation-heavy and placeholdery.

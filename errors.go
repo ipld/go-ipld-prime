@@ -87,6 +87,7 @@ type ErrInvalidKey struct {
 
 	// Reason, if set, may provide details (for example, the reason a key couldn't be converted to a type).
 	// If absent, it'll be presumed "no such field".
+	// ErrUnmatchable may show up as a reason for typed maps with complex keys.
 	Reason error
 }
 
@@ -96,6 +97,26 @@ func (e ErrInvalidKey) Error() string {
 	} else {
 		return fmt.Sprintf("invalid key for map %s: \"%s\": %s", e.TypeName, e.Key, e.Reason)
 	}
+}
+
+// ErrUnmatchable is the catch-all type for parse errors in schema representation work.
+//
+// REVIEW: are builders at type level ever going to return this?  i don't think so.
+// REVIEW: can this ever be triggered during the marshalling direction?  perhaps not.
+// REVIEW: do things like ErrWrongKind end up being wrapped by this?  that doesn't seem pretty.
+// REVIEW: do natural representations ever trigger this?  i don't think so.  maybe that's a hint towards a better name.
+// REVIEW: are user validation functions encouraged to return this?  or something else?
+//
+type ErrUnmatchable struct {
+	// TypeName will indicate the named type of a node the function was called on.
+	TypeName string
+
+	// Reason must always be present.  ErrUnmatchable doesn't say much otherwise.
+	Reason error
+}
+
+func (e ErrUnmatchable) Error() string {
+	return fmt.Sprintf("parsing of %s rejected: %s", e.TypeName, e.Reason)
 }
 
 // ErrIteratorOverread is returned when calling 'Next' on a MapIterator or

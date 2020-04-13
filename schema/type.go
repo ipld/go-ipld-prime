@@ -175,7 +175,7 @@ type StructRepresentation interface{ _StructRepresentation() }
 func (StructRepresentation_Map) _StructRepresentation()         {}
 func (StructRepresentation_Tuple) _StructRepresentation()       {}
 func (StructRepresentation_StringPairs) _StructRepresentation() {}
-func (StructRepresentation_StringJoin) _StructRepresentation()  {}
+func (StructRepresentation_Stringjoin) _StructRepresentation()  {}
 
 type StructRepresentation_Map struct {
 	renames   map[string]string
@@ -183,7 +183,7 @@ type StructRepresentation_Map struct {
 }
 type StructRepresentation_Tuple struct{}
 type StructRepresentation_StringPairs struct{ sep1, sep2 string }
-type StructRepresentation_StringJoin struct{ sep string }
+type StructRepresentation_Stringjoin struct{ sep string }
 
 type TypeEnum struct {
 	anyType

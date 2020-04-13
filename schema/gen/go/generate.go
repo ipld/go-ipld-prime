@@ -27,6 +27,8 @@ func Generate(pth string, pkgName string, ts schema.TypeSystem, adjCfg *AdjunctC
 				switch t2.RepresentationStrategy().(type) {
 				case schema.StructRepresentation_Map:
 					EmitEntireType(NewStructReprMapGenerator(pkgName, t2, adjCfg), f)
+				case schema.StructRepresentation_Stringjoin:
+					EmitEntireType(NewStructReprStringjoinGenerator(pkgName, t2, adjCfg), f)
 				default:
 					panic("unrecognized struct representation strategy")
 				}

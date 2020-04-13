@@ -85,8 +85,23 @@ type stringReprStringReprBuilderGenerator struct {
 	Type   schema.TypeString
 }
 
-func (stringReprStringReprBuilderGenerator) EmitNodeBuilderType(io.Writer)    {}
-func (stringReprStringReprBuilderGenerator) EmitNodeBuilderMethods(io.Writer) {}
+func (stringReprStringReprBuilderGenerator) EmitNodeBuilderType(io.Writer) {}
+func (g stringReprStringReprBuilderGenerator) EmitNodeBuilderMethods(w io.Writer) {
+	// Generate a single-step construction function -- this is easy to do for a scalar,
+	//  and all representations of scalar kind can be expected to have a method like this.
+	// The function is attached to the nodestyle for convenient namespacing;
+	//  it needs no new memory, so it would be inappropriate to attach to the builder or assembler.
+	// The function is directly used internally by anything else that might involve recursive destructuring on the same scalar kind
+	//  (for example, structs using stringjoin strategies that have one of this type as a field, etc).
+	// REVIEW: We could make an immut-safe verion of this and export it on the NodeStyle too, as `FromString(string)`.
+	// FUTURE: should engage validation flow.
+	doTemplate(`
+		func (_{{ .Type | TypeSymbol }}__ReprStyle) construct(w *_{{ .Type | TypeSymbol }}, v string) error {
+			*w = _{{ .Type | TypeSymbol }}{v}
+			return nil
+		}
+	`, w, g.AdjCfg, g)
+}
 func (g stringReprStringReprBuilderGenerator) EmitNodeAssemblerType(w io.Writer) {
 	// Since this is a "natural" representation... there's just a type alias here.
 	//  No new functions are necessary.

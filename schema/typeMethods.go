@@ -152,6 +152,10 @@ func (r StructRepresentation_Map) GetFieldKey(field StructField) string {
 	return field.name
 }
 
+func (r StructRepresentation_Stringjoin) GetDelim() string {
+	return r.sep
+}
+
 // Members returns a slice the strings which are valid inhabitants of this enum.
 func (t TypeEnum) Members() []string {
 	a := make([]string, len(t.members))
