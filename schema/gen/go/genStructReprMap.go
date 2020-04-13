@@ -309,7 +309,7 @@ func (g structReprMapReprBuilderGenerator) EmitNodeBuilderMethods(w io.Writer) {
 	//   it's far too much duplicate code to make two MapBuilder types for that.)
 	doTemplate(`
 		func (nb *_{{ .Type | TypeSymbol }}__ReprBuilder) AssignNull() error {
-			return mixins.MapAssembler{"{{ .PkgName }}.{{ .TypeName }}"}.AssignNull()
+			return mixins.MapAssembler{"{{ .PkgName }}.{{ .TypeName }}.Repr"}.AssignNull()
 		}
 		func (nb *_{{ .Type | TypeSymbol }}__ReprBuilder) AssignNode(v ipld.Node) error {
 			if nb.state != maState_initial {
