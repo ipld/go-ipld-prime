@@ -126,9 +126,19 @@ func (g structReprMapReprGenerator) EmitNodeMethodMapIterator(w io.Writer) {
 	//  It also means 'idx' can jump ahead by more than one per Next call in order to skip over absent fields.
 	// TODO : support for implicits is still future work.
 
-	// First: Count how many trailing fields are optional.
-	//  The 'Done' predicate gets more complex when in the trailing optionals.
+	// First: Determine if there are any optionals at all.
+	//  If there are none, some control flow symbols need to not be emitted.
 	fields := g.Type.Fields()
+	haveOptionals := false
+	for _, field := range fields {
+		if field.IsOptional() {
+			haveOptionals = true
+			break
+		}
+	}
+
+	// Second: Count how many trailing fields are optional.
+	//  The 'Done' predicate gets more complex when in the trailing optionals.
 	fieldCount := len(fields)
 	beginTrailingOptionalField := fieldCount
 	for i := fieldCount - 1; i >= 0; i-- {
@@ -168,7 +178,7 @@ func (g structReprMapReprGenerator) EmitNodeMethodMapIterator(w io.Writer) {
 		}
 
 		func (itr *_{{ .Type | TypeSymbol }}__ReprMapItr) Next() (k ipld.Node, v ipld.Node, _ error) {
-		advance:
+		{{ if .HaveOptionals }}advance:{{end -}}
 			if itr.idx >= {{ len .Type.Fields }} {
 				return nil, nil, ipld.ErrIteratorOverread{}
 			}
@@ -212,10 +222,12 @@ func (g structReprMapReprGenerator) EmitNodeMethodMapIterator(w io.Writer) {
 		{{- end}}
 	`, w, g.AdjCfg, struct {
 		Type                       schema.TypeStruct
+		HaveOptionals              bool
 		HaveTrailingOptionals      bool
 		BeginTrailingOptionalField int
 	}{
 		g.Type,
+		haveOptionals,
 		haveTrailingOptionals,
 		beginTrailingOptionalField,
 	})
