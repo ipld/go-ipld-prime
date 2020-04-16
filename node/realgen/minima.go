@@ -7,7 +7,13 @@ import (
 // Code generated go-ipld-prime DO NOT EDIT.
 
 const (
-	midvalue = schema.Maybe(4)
+	// The 'Maybe' enum does double-duty in this package as a state machine for assembler completion.
+	// The 'Maybe_Absent' value gains the additional semantic of "clear to assign (but not null)"
+	//  (which works because if you're *in* a value assembler, "absent" as a final result is already off the table).
+	// Additionally, we get a few extra states that we cram into the same area of bits:
+
+	midvalue  = schema.Maybe(4) // used by assemblers of recursives to block AssignNull after BeginX.
+	allowNull = schema.Maybe(5) // used by parent assemblers to tell child a transition to Maybe_Null is allowed.
 )
 
 type maState uint8

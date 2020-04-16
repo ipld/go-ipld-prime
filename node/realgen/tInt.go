@@ -121,31 +121,20 @@ type _Int__Builder struct {
 }
 
 func (nb *_Int__Builder) Build() ipld.Node {
+	if *nb.m != schema.Maybe_Value {
+		panic("invalid state: cannot call Build on an assembler that's not finished")
+	}
 	return nb.w
 }
 func (nb *_Int__Builder) Reset() {
 	var w _Int
-	*nb = _Int__Builder{_Int__Assembler{w: &w}}
-}
-func (nb *_Int__Builder) AssignNull() error {
-	return mixins.StringAssembler{"realgen.Int"}.AssignNull()
-}
-func (nb *_Int__Builder) AssignInt(v int) error {
-	*nb.w = _Int{v}
-	return nil
-}
-func (nb *_Int__Builder) AssignNode(v ipld.Node) error {
-	if v2, err := v.AsInt(); err != nil {
-		return err
-	} else {
-		return nb.AssignInt(v2)
-	}
+	var m schema.Maybe
+	*nb = _Int__Builder{_Int__Assembler{&w, &m}}
 }
 
 type _Int__Assembler struct {
-	w   *_Int
-	z   bool
-	fcb func() error
+	w *_Int
+	m *schema.Maybe
 }
 
 func (_Int__Assembler) BeginMap(sizeHint int) (ipld.MapAssembler, error) {
@@ -155,19 +144,31 @@ func (_Int__Assembler) BeginList(sizeHint int) (ipld.ListAssembler, error) {
 	return mixins.IntAssembler{"realgen.Int"}.BeginList(0)
 }
 func (na *_Int__Assembler) AssignNull() error {
-	na.z = true
-	return na.fcb()
+	switch *na.m {
+	case allowNull:
+		*na.m = schema.Maybe_Null
+		return nil
+	case schema.Maybe_Absent:
+		return mixins.StringAssembler{"realgen.Int"}.AssignNull()
+	case schema.Maybe_Value, schema.Maybe_Null:
+		panic("invalid state: cannot assign into assembler that's already finished")
+	}
+	panic("unreachable")
 }
 func (_Int__Assembler) AssignBool(bool) error {
 	return mixins.IntAssembler{"realgen.Int"}.AssignBool(false)
 }
 func (na *_Int__Assembler) AssignInt(v int) error {
-	if na.w == nil {
-		na.w = &_Int{v}
-		return na.fcb()
+	switch *na.m {
+	case schema.Maybe_Value, schema.Maybe_Null:
+		panic("invalid state: cannot assign into assembler that's already finished")
 	}
-	*na.w = _Int{v}
-	return na.fcb()
+	if na.w == nil {
+		na.w = &_Int{}
+	}
+	na.w.x = v
+	*na.m = schema.Maybe_Value
+	return nil
 }
 func (_Int__Assembler) AssignFloat(float64) error {
 	return mixins.IntAssembler{"realgen.Int"}.AssignFloat(0)
@@ -184,6 +185,20 @@ func (_Int__Assembler) AssignLink(ipld.Link) error {
 func (na *_Int__Assembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
+	}
+	if v2, ok := v.(*_Int); ok {
+		switch *na.m {
+		case schema.Maybe_Value, schema.Maybe_Null:
+			panic("invalid state: cannot assign into assembler that's already finished")
+		}
+		if na.w == nil {
+			na.w = v2
+			*na.m = schema.Maybe_Value
+			return nil
+		}
+		*na.w = *v2
+		*na.m = schema.Maybe_Value
+		return nil
 	}
 	if v2, err := v.AsInt(); err != nil {
 		return err

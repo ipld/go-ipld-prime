@@ -148,26 +148,18 @@ func (nb *_Msg3__Builder) Build() ipld.Node {
 }
 func (nb *_Msg3__Builder) Reset() {
 	var w _Msg3
-	*nb = _Msg3__Builder{_Msg3__Assembler{w: &w, state: maState_initial}}
-}
-func (nb *_Msg3__Builder) AssignNull() error {
-	return mixins.MapAssembler{"realgen.Msg3"}.AssignNull()
-}
-func (nb *_Msg3__Builder) AssignNode(v ipld.Node) error {
-	if nb.state != maState_initial {
-		panic("misuse")
-	}
-	return nb.assignNode(v)
+	var m schema.Maybe
+	*nb = _Msg3__Builder{_Msg3__Assembler{w: &w, m: &m, state: maState_initial}}
 }
 
 type _Msg3__Assembler struct {
 	w     *_Msg3
+	m     *schema.Maybe
 	state maState
 	s     int
 	f     int
-	z     bool
-	fcb   func() error
 
+	cm      schema.Maybe
 	ca_whee _Int__Assembler
 	ca_woot _Int__Assembler
 	ca_waga _Int__Assembler
@@ -181,18 +173,34 @@ var (
 )
 
 func (na *_Msg3__Assembler) BeginMap(int) (ipld.MapAssembler, error) {
+	switch *na.m {
+	case schema.Maybe_Value, schema.Maybe_Null:
+		panic("invalid state: cannot assign into assembler that's already finished")
+	case midvalue:
+		panic("invalid state: it makes no sense to 'begin' twice on the same assembler!")
+	}
+	*na.m = midvalue
+	if na.w == nil {
+		na.w = &_Msg3{}
+	}
 	return na, nil
 }
 func (_Msg3__Assembler) BeginList(sizeHint int) (ipld.ListAssembler, error) {
 	return mixins.MapAssembler{"realgen.Msg3"}.BeginList(0)
 }
 func (na *_Msg3__Assembler) AssignNull() error {
-	if na.state != maState_initial {
-		panic("misuse")
+	switch *na.m {
+	case allowNull:
+		*na.m = schema.Maybe_Null
+		return nil
+	case schema.Maybe_Absent:
+		return mixins.StringAssembler{"realgen.Msg3"}.AssignNull()
+	case schema.Maybe_Value, schema.Maybe_Null:
+		panic("invalid state: cannot assign into assembler that's already finished")
+	case midvalue:
+		panic("invalid state: cannot assign null into an assembler that's already begun working on recursive structures!")
 	}
-	na.z = true
-	na.state = maState_finished
-	return na.fcb()
+	panic("unreachable")
 }
 func (_Msg3__Assembler) AssignBool(bool) error {
 	return mixins.MapAssembler{"realgen.Msg3"}.AssignBool(false)
@@ -213,23 +221,24 @@ func (_Msg3__Assembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"realgen.Msg3"}.AssignLink(nil)
 }
 func (na *_Msg3__Assembler) AssignNode(v ipld.Node) error {
-	if na.state != maState_initial {
-		panic("misuse")
-	}
-	if v.ReprKind() == ipld.ReprKind_Null {
+	if v.IsNull() {
 		return na.AssignNull()
 	}
-	return na.assignNode(v)
-}
-func (na *_Msg3__Assembler) assignNode(v ipld.Node) error {
 	if v2, ok := v.(*_Msg3); ok {
-		*na.w = *v2
-		na.state = maState_finished
-		if na.fcb != nil {
-			return na.fcb()
-		} else {
+		switch *na.m {
+		case schema.Maybe_Value, schema.Maybe_Null:
+			panic("invalid state: cannot assign into assembler that's already finished")
+		case midvalue:
+			panic("invalid state: cannot assign null into an assembler that's already begun working on recursive structures!")
+		}
+		if na.w == nil {
+			na.w = v2
+			*na.m = schema.Maybe_Value
 			return nil
 		}
+		*na.w = *v2
+		*na.m = schema.Maybe_Value
+		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
 		return ipld.ErrWrongKind{TypeName: "realgen.Msg3", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
@@ -252,9 +261,53 @@ func (na *_Msg3__Assembler) assignNode(v ipld.Node) error {
 func (_Msg3__Assembler) Style() ipld.NodeStyle {
 	return _Msg3__Style{}
 }
+func (ma *_Msg3__Assembler) valueFinishTidy() bool {
+	switch ma.f {
+	case 0:
+		switch ma.cm {
+		case schema.Maybe_Value:
+			ma.cm = schema.Maybe_Absent
+			ma.state = maState_initial
+			return true
+		default:
+			return false
+		}
+	case 1:
+		switch ma.cm {
+		case schema.Maybe_Value:
+			ma.cm = schema.Maybe_Absent
+			ma.state = maState_initial
+			return true
+		default:
+			return false
+		}
+	case 2:
+		switch ma.cm {
+		case schema.Maybe_Value:
+			ma.cm = schema.Maybe_Absent
+			ma.state = maState_initial
+			return true
+		default:
+			return false
+		}
+	default:
+		panic("unreachable")
+	}
+}
 func (ma *_Msg3__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, error) {
-	if ma.state != maState_initial {
-		panic("misuse")
+	switch ma.state {
+	case maState_initial:
+		// carry on
+	case maState_midKey:
+		panic("invalid state: AssembleEntry cannot be called when in the middle of assembling another key")
+	case maState_expectValue:
+		panic("invalid state: AssembleEntry cannot be called when expecting start of value assembly")
+	case maState_midValue:
+		if !ma.valueFinishTidy() {
+			panic("invalid state: AssembleEntry cannot be called when in the middle of assembling a value")
+		} // if tidy success: carry on
+	case maState_finished:
+		panic("invalid state: AssembleEntry cannot be called on an assembler that's already finished")
 	}
 	switch k {
 	case "whee":
@@ -264,7 +317,7 @@ func (ma *_Msg3__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, error) 
 		ma.s += fieldBit__Msg3_Whee
 		ma.state = maState_midValue
 		ma.ca_whee.w = &ma.w.whee
-		ma.ca_whee.fcb = ma.fcb_whee
+		ma.ca_whee.m = &ma.cm
 		return &ma.ca_whee, nil
 	case "woot":
 		if ma.s&fieldBit__Msg3_Woot != 0 {
@@ -273,7 +326,7 @@ func (ma *_Msg3__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, error) 
 		ma.s += fieldBit__Msg3_Woot
 		ma.state = maState_midValue
 		ma.ca_woot.w = &ma.w.woot
-		ma.ca_woot.fcb = ma.fcb_woot
+		ma.ca_woot.m = &ma.cm
 		return &ma.ca_woot, nil
 	case "waga":
 		if ma.s&fieldBit__Msg3_Waga != 0 {
@@ -282,52 +335,80 @@ func (ma *_Msg3__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, error) 
 		ma.s += fieldBit__Msg3_Waga
 		ma.state = maState_midValue
 		ma.ca_waga.w = &ma.w.waga
-		ma.ca_waga.fcb = ma.fcb_waga
+		ma.ca_waga.m = &ma.cm
 		return &ma.ca_waga, nil
 	default:
 		return nil, ipld.ErrInvalidKey{TypeName: "realgen.Msg3", Key: &_String{k}}
 	}
 }
 func (ma *_Msg3__Assembler) AssembleKey() ipld.NodeAssembler {
-	if ma.state != maState_initial {
-		panic("misuse")
+	switch ma.state {
+	case maState_initial:
+		// carry on
+	case maState_midKey:
+		panic("invalid state: AssembleKey cannot be called when in the middle of assembling another key")
+	case maState_expectValue:
+		panic("invalid state: AssembleKey cannot be called when expecting start of value assembly")
+	case maState_midValue:
+		if !ma.valueFinishTidy() {
+			panic("invalid state: AssembleKey cannot be called when in the middle of assembling a value")
+		} // if tidy success: carry on
+	case maState_finished:
+		panic("invalid state: AssembleKey cannot be called on an assembler that's already finished")
 	}
 	ma.state = maState_midKey
 	return (*_Msg3__KeyAssembler)(ma)
 }
 func (ma *_Msg3__Assembler) AssembleValue() ipld.NodeAssembler {
-	if ma.state != maState_expectValue {
-		panic("misuse")
+	switch ma.state {
+	case maState_initial:
+		panic("invalid state: AssembleValue cannot be called when no key is primed")
+	case maState_midKey:
+		panic("invalid state: AssembleValue cannot be called when in the middle of assembling a key")
+	case maState_expectValue:
+		// carry on
+	case maState_midValue:
+		panic("invalid state: AssembleValue cannot be called when in the middle of assembling another value")
+	case maState_finished:
+		panic("invalid state: AssembleValue cannot be called on an assembler that's already finished")
 	}
 	ma.state = maState_midValue
 	switch ma.f {
 	case 0:
 		ma.ca_whee.w = &ma.w.whee
-		ma.ca_whee.fcb = ma.fcb_whee
+		ma.ca_whee.m = &ma.cm
 		return &ma.ca_whee
 	case 1:
 		ma.ca_woot.w = &ma.w.woot
-		ma.ca_woot.fcb = ma.fcb_woot
+		ma.ca_woot.m = &ma.cm
 		return &ma.ca_woot
 	case 2:
 		ma.ca_waga.w = &ma.w.waga
-		ma.ca_waga.fcb = ma.fcb_waga
+		ma.ca_waga.m = &ma.cm
 		return &ma.ca_waga
 	default:
 		panic("unreachable")
 	}
 }
 func (ma *_Msg3__Assembler) Finish() error {
-	if ma.state != maState_initial {
-		panic("misuse")
+	switch ma.state {
+	case maState_initial:
+		// carry on
+	case maState_midKey:
+		panic("invalid state: Finish cannot be called when in the middle of assembling a key")
+	case maState_expectValue:
+		panic("invalid state: Finish cannot be called when expecting start of value assembly")
+	case maState_midValue:
+		if !ma.valueFinishTidy() {
+			panic("invalid state: Finish cannot be called when in the middle of assembling a value")
+		} // if tidy success: carry on
+	case maState_finished:
+		panic("invalid state: Finish cannot be called on an assembler that's already finished")
 	}
 	//FIXME check if all required fields are set
 	ma.state = maState_finished
-	if ma.fcb != nil {
-		return ma.fcb()
-	} else {
-		return nil
-	}
+	*ma.m = schema.Maybe_Value
+	return nil
 }
 func (ma *_Msg3__Assembler) KeyStyle() ipld.NodeStyle {
 	return _String__Style{}
@@ -358,7 +439,7 @@ func (_Msg3__KeyAssembler) AssignFloat(float64) error {
 }
 func (ka *_Msg3__KeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
-		panic("misuse")
+		panic("misuse: KeyAssembler held beyond its valid lifetime")
 	}
 	switch k {
 	case "whee":
@@ -402,30 +483,6 @@ func (ka *_Msg3__KeyAssembler) AssignNode(v ipld.Node) error {
 }
 func (_Msg3__KeyAssembler) Style() ipld.NodeStyle {
 	return _String__Style{}
-}
-func (na *_Msg3__Assembler) fcb_whee() error {
-	if na.ca_whee.z == true {
-		return mixins.MapAssembler{"realgen.Int"}.AssignNull()
-	}
-	na.ca_whee.w = nil
-	na.state = maState_initial
-	return nil
-}
-func (na *_Msg3__Assembler) fcb_woot() error {
-	if na.ca_woot.z == true {
-		return mixins.MapAssembler{"realgen.Int"}.AssignNull()
-	}
-	na.ca_woot.w = nil
-	na.state = maState_initial
-	return nil
-}
-func (na *_Msg3__Assembler) fcb_waga() error {
-	if na.ca_waga.z == true {
-		return mixins.MapAssembler{"realgen.Int"}.AssignNull()
-	}
-	na.ca_waga.w = nil
-	na.state = maState_initial
-	return nil
 }
 func (Msg3) Type() schema.Type {
 	return nil /*TODO:typelit*/
@@ -558,45 +615,52 @@ func (nb *_Msg3__ReprBuilder) Build() ipld.Node {
 }
 func (nb *_Msg3__ReprBuilder) Reset() {
 	var w _Msg3
-	*nb = _Msg3__ReprBuilder{_Msg3__ReprAssembler{w: &w, state: maState_initial}}
-}
-func (nb *_Msg3__ReprBuilder) AssignNull() error {
-	return mixins.MapAssembler{"realgen.Msg3.Repr.Repr"}.AssignNull()
-}
-func (nb *_Msg3__ReprBuilder) AssignNode(v ipld.Node) error {
-	if nb.state != maState_initial {
-		panic("misuse")
-	}
-	return nb.assignNode(v)
+	var m schema.Maybe
+	*nb = _Msg3__ReprBuilder{_Msg3__ReprAssembler{w: &w, m: &m, state: maState_initial}}
 }
 
 type _Msg3__ReprAssembler struct {
 	w     *_Msg3
+	m     *schema.Maybe
 	state maState
 	s     int
 	f     int
-	z     bool
-	fcb   func() error
 
+	cm      schema.Maybe
 	ca_whee _Int__ReprAssembler
 	ca_woot _Int__ReprAssembler
 	ca_waga _Int__ReprAssembler
 }
 
 func (na *_Msg3__ReprAssembler) BeginMap(int) (ipld.MapAssembler, error) {
+	switch *na.m {
+	case schema.Maybe_Value, schema.Maybe_Null:
+		panic("invalid state: cannot assign into assembler that's already finished")
+	case midvalue:
+		panic("invalid state: it makes no sense to 'begin' twice on the same assembler!")
+	}
+	*na.m = midvalue
+	if na.w == nil {
+		na.w = &_Msg3{}
+	}
 	return na, nil
 }
 func (_Msg3__ReprAssembler) BeginList(sizeHint int) (ipld.ListAssembler, error) {
 	return mixins.MapAssembler{"realgen.Msg3.Repr"}.BeginList(0)
 }
 func (na *_Msg3__ReprAssembler) AssignNull() error {
-	if na.state != maState_initial {
-		panic("misuse")
+	switch *na.m {
+	case allowNull:
+		*na.m = schema.Maybe_Null
+		return nil
+	case schema.Maybe_Absent:
+		return mixins.StringAssembler{"realgen.Msg3.Repr"}.AssignNull()
+	case schema.Maybe_Value, schema.Maybe_Null:
+		panic("invalid state: cannot assign into assembler that's already finished")
+	case midvalue:
+		panic("invalid state: cannot assign null into an assembler that's already begun working on recursive structures!")
 	}
-	na.z = true
-	na.state = maState_finished
-	// FIXME is this... not... missing a call to fcb?
-	return nil
+	panic("unreachable")
 }
 func (_Msg3__ReprAssembler) AssignBool(bool) error {
 	return mixins.MapAssembler{"realgen.Msg3.Repr"}.AssignBool(false)
@@ -617,26 +681,27 @@ func (_Msg3__ReprAssembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"realgen.Msg3.Repr"}.AssignLink(nil)
 }
 func (na *_Msg3__ReprAssembler) AssignNode(v ipld.Node) error {
-	if na.state != maState_initial {
-		panic("misuse")
-	}
-	if v.ReprKind() == ipld.ReprKind_Null {
+	if v.IsNull() {
 		return na.AssignNull()
 	}
-	return na.assignNode(v)
-}
-func (na *_Msg3__ReprAssembler) assignNode(v ipld.Node) error {
 	if v2, ok := v.(*_Msg3); ok {
-		*na.w = *v2
-		na.state = maState_finished
-		if na.fcb != nil {
-			return na.fcb()
-		} else {
+		switch *na.m {
+		case schema.Maybe_Value, schema.Maybe_Null:
+			panic("invalid state: cannot assign into assembler that's already finished")
+		case midvalue:
+			panic("invalid state: cannot assign null into an assembler that's already begun working on recursive structures!")
+		}
+		if na.w == nil {
+			na.w = v2
+			*na.m = schema.Maybe_Value
 			return nil
 		}
+		*na.w = *v2
+		*na.m = schema.Maybe_Value
+		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "realgen.Msg3", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "realgen.Msg3.Repr", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -656,9 +721,53 @@ func (na *_Msg3__ReprAssembler) assignNode(v ipld.Node) error {
 func (_Msg3__ReprAssembler) Style() ipld.NodeStyle {
 	return _Msg3__ReprStyle{}
 }
+func (ma *_Msg3__ReprAssembler) valueFinishTidy() bool {
+	switch ma.f {
+	case 0:
+		switch ma.cm {
+		case schema.Maybe_Value:
+			ma.cm = schema.Maybe_Absent
+			ma.state = maState_initial
+			return true
+		default:
+			return false
+		}
+	case 1:
+		switch ma.cm {
+		case schema.Maybe_Value:
+			ma.cm = schema.Maybe_Absent
+			ma.state = maState_initial
+			return true
+		default:
+			return false
+		}
+	case 2:
+		switch ma.cm {
+		case schema.Maybe_Value:
+			ma.cm = schema.Maybe_Absent
+			ma.state = maState_initial
+			return true
+		default:
+			return false
+		}
+	default:
+		panic("unreachable")
+	}
+}
 func (ma *_Msg3__ReprAssembler) AssembleEntry(k string) (ipld.NodeAssembler, error) {
-	if ma.state != maState_initial {
-		panic("misuse")
+	switch ma.state {
+	case maState_initial:
+		// carry on
+	case maState_midKey:
+		panic("invalid state: AssembleEntry cannot be called when in the middle of assembling another key")
+	case maState_expectValue:
+		panic("invalid state: AssembleEntry cannot be called when expecting start of value assembly")
+	case maState_midValue:
+		if !ma.valueFinishTidy() {
+			panic("invalid state: AssembleEntry cannot be called when in the middle of assembling a value")
+		} // if tidy success: carry on
+	case maState_finished:
+		panic("invalid state: AssembleEntry cannot be called on an assembler that's already finished")
 	}
 	switch k {
 	case "whee":
@@ -668,7 +777,7 @@ func (ma *_Msg3__ReprAssembler) AssembleEntry(k string) (ipld.NodeAssembler, err
 		ma.s += fieldBit__Msg3_Whee
 		ma.state = maState_midValue
 		ma.ca_whee.w = &ma.w.whee
-		ma.ca_whee.fcb = ma.fcb_whee
+		ma.ca_whee.m = &ma.cm
 		return &ma.ca_whee, nil
 	case "woot":
 		if ma.s&fieldBit__Msg3_Woot != 0 {
@@ -677,7 +786,7 @@ func (ma *_Msg3__ReprAssembler) AssembleEntry(k string) (ipld.NodeAssembler, err
 		ma.s += fieldBit__Msg3_Woot
 		ma.state = maState_midValue
 		ma.ca_woot.w = &ma.w.woot
-		ma.ca_woot.fcb = ma.fcb_woot
+		ma.ca_woot.m = &ma.cm
 		return &ma.ca_woot, nil
 	case "waga":
 		if ma.s&fieldBit__Msg3_Waga != 0 {
@@ -686,52 +795,80 @@ func (ma *_Msg3__ReprAssembler) AssembleEntry(k string) (ipld.NodeAssembler, err
 		ma.s += fieldBit__Msg3_Waga
 		ma.state = maState_midValue
 		ma.ca_waga.w = &ma.w.waga
-		ma.ca_waga.fcb = ma.fcb_waga
+		ma.ca_waga.m = &ma.cm
 		return &ma.ca_waga, nil
 	default:
 		return nil, ipld.ErrInvalidKey{TypeName: "realgen.Msg3.Repr", Key: &_String{k}}
 	}
 }
 func (ma *_Msg3__ReprAssembler) AssembleKey() ipld.NodeAssembler {
-	if ma.state != maState_initial {
-		panic("misuse")
+	switch ma.state {
+	case maState_initial:
+		// carry on
+	case maState_midKey:
+		panic("invalid state: AssembleKey cannot be called when in the middle of assembling another key")
+	case maState_expectValue:
+		panic("invalid state: AssembleKey cannot be called when expecting start of value assembly")
+	case maState_midValue:
+		if !ma.valueFinishTidy() {
+			panic("invalid state: AssembleKey cannot be called when in the middle of assembling a value")
+		} // if tidy success: carry on
+	case maState_finished:
+		panic("invalid state: AssembleKey cannot be called on an assembler that's already finished")
 	}
 	ma.state = maState_midKey
 	return (*_Msg3__ReprKeyAssembler)(ma)
 }
 func (ma *_Msg3__ReprAssembler) AssembleValue() ipld.NodeAssembler {
-	if ma.state != maState_expectValue {
-		panic("misuse")
+	switch ma.state {
+	case maState_initial:
+		panic("invalid state: AssembleValue cannot be called when no key is primed")
+	case maState_midKey:
+		panic("invalid state: AssembleValue cannot be called when in the middle of assembling a key")
+	case maState_expectValue:
+		// carry on
+	case maState_midValue:
+		panic("invalid state: AssembleValue cannot be called when in the middle of assembling another value")
+	case maState_finished:
+		panic("invalid state: AssembleValue cannot be called on an assembler that's already finished")
 	}
 	ma.state = maState_midValue
 	switch ma.f {
 	case 0:
 		ma.ca_whee.w = &ma.w.whee
-		ma.ca_whee.fcb = ma.fcb_whee
+		ma.ca_whee.m = &ma.cm
 		return &ma.ca_whee
 	case 1:
 		ma.ca_woot.w = &ma.w.woot
-		ma.ca_woot.fcb = ma.fcb_woot
+		ma.ca_woot.m = &ma.cm
 		return &ma.ca_woot
 	case 2:
 		ma.ca_waga.w = &ma.w.waga
-		ma.ca_waga.fcb = ma.fcb_waga
+		ma.ca_waga.m = &ma.cm
 		return &ma.ca_waga
 	default:
 		panic("unreachable")
 	}
 }
 func (ma *_Msg3__ReprAssembler) Finish() error {
-	if ma.state != maState_initial {
-		panic("misuse")
+	switch ma.state {
+	case maState_initial:
+		// carry on
+	case maState_midKey:
+		panic("invalid state: Finish cannot be called when in the middle of assembling a key")
+	case maState_expectValue:
+		panic("invalid state: Finish cannot be called when expecting start of value assembly")
+	case maState_midValue:
+		if !ma.valueFinishTidy() {
+			panic("invalid state: Finish cannot be called when in the middle of assembling a value")
+		} // if tidy success: carry on
+	case maState_finished:
+		panic("invalid state: Finish cannot be called on an assembler that's already finished")
 	}
 	//FIXME check if all required fields are set
 	ma.state = maState_finished
-	if ma.fcb != nil {
-		return ma.fcb()
-	} else {
-		return nil
-	}
+	*ma.m = schema.Maybe_Value
+	return nil
 }
 func (ma *_Msg3__ReprAssembler) KeyStyle() ipld.NodeStyle {
 	return _String__Style{}
@@ -762,7 +899,7 @@ func (_Msg3__ReprKeyAssembler) AssignFloat(float64) error {
 }
 func (ka *_Msg3__ReprKeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
-		panic("misuse")
+		panic("misuse: KeyAssembler held beyond its valid lifetime")
 	}
 	switch k {
 	case "whee":
@@ -806,28 +943,4 @@ func (ka *_Msg3__ReprKeyAssembler) AssignNode(v ipld.Node) error {
 }
 func (_Msg3__ReprKeyAssembler) Style() ipld.NodeStyle {
 	return _String__Style{}
-}
-func (na *_Msg3__ReprAssembler) fcb_whee() error {
-	if na.ca_whee.z == true {
-		return mixins.MapAssembler{"realgen.Int"}.AssignNull()
-	}
-	na.ca_whee.w = nil
-	na.state = maState_initial
-	return nil
-}
-func (na *_Msg3__ReprAssembler) fcb_woot() error {
-	if na.ca_woot.z == true {
-		return mixins.MapAssembler{"realgen.Int"}.AssignNull()
-	}
-	na.ca_woot.w = nil
-	na.state = maState_initial
-	return nil
-}
-func (na *_Msg3__ReprAssembler) fcb_waga() error {
-	if na.ca_waga.z == true {
-		return mixins.MapAssembler{"realgen.Int"}.AssignNull()
-	}
-	na.ca_waga.w = nil
-	na.state = maState_initial
-	return nil
 }

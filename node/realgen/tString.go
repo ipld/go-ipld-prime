@@ -121,31 +121,20 @@ type _String__Builder struct {
 }
 
 func (nb *_String__Builder) Build() ipld.Node {
+	if *nb.m != schema.Maybe_Value {
+		panic("invalid state: cannot call Build on an assembler that's not finished")
+	}
 	return nb.w
 }
 func (nb *_String__Builder) Reset() {
 	var w _String
-	*nb = _String__Builder{_String__Assembler{w: &w}}
-}
-func (nb *_String__Builder) AssignNull() error {
-	return mixins.StringAssembler{"realgen.String"}.AssignNull()
-}
-func (nb *_String__Builder) AssignString(v string) error {
-	*nb.w = _String{v}
-	return nil
-}
-func (nb *_String__Builder) AssignNode(v ipld.Node) error {
-	if v2, err := v.AsString(); err != nil {
-		return err
-	} else {
-		return nb.AssignString(v2)
-	}
+	var m schema.Maybe
+	*nb = _String__Builder{_String__Assembler{&w, &m}}
 }
 
 type _String__Assembler struct {
-	w   *_String
-	z   bool
-	fcb func() error
+	w *_String
+	m *schema.Maybe
 }
 
 func (_String__Assembler) BeginMap(sizeHint int) (ipld.MapAssembler, error) {
@@ -155,8 +144,16 @@ func (_String__Assembler) BeginList(sizeHint int) (ipld.ListAssembler, error) {
 	return mixins.StringAssembler{"realgen.String"}.BeginList(0)
 }
 func (na *_String__Assembler) AssignNull() error {
-	na.z = true
-	return na.fcb()
+	switch *na.m {
+	case allowNull:
+		*na.m = schema.Maybe_Null
+		return nil
+	case schema.Maybe_Absent:
+		return mixins.StringAssembler{"realgen.String"}.AssignNull()
+	case schema.Maybe_Value, schema.Maybe_Null:
+		panic("invalid state: cannot assign into assembler that's already finished")
+	}
+	panic("unreachable")
 }
 func (_String__Assembler) AssignBool(bool) error {
 	return mixins.StringAssembler{"realgen.String"}.AssignBool(false)
@@ -168,12 +165,16 @@ func (_String__Assembler) AssignFloat(float64) error {
 	return mixins.StringAssembler{"realgen.String"}.AssignFloat(0)
 }
 func (na *_String__Assembler) AssignString(v string) error {
-	if na.w == nil {
-		na.w = &_String{v}
-		return na.fcb()
+	switch *na.m {
+	case schema.Maybe_Value, schema.Maybe_Null:
+		panic("invalid state: cannot assign into assembler that's already finished")
 	}
-	*na.w = _String{v}
-	return na.fcb()
+	if na.w == nil {
+		na.w = &_String{}
+	}
+	na.w.x = v
+	*na.m = schema.Maybe_Value
+	return nil
 }
 func (_String__Assembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{"realgen.String"}.AssignBytes(nil)
@@ -184,6 +185,20 @@ func (_String__Assembler) AssignLink(ipld.Link) error {
 func (na *_String__Assembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
+	}
+	if v2, ok := v.(*_String); ok {
+		switch *na.m {
+		case schema.Maybe_Value, schema.Maybe_Null:
+			panic("invalid state: cannot assign into assembler that's already finished")
+		}
+		if na.w == nil {
+			na.w = v2
+			*na.m = schema.Maybe_Value
+			return nil
+		}
+		*na.w = *v2
+		*na.m = schema.Maybe_Value
+		return nil
 	}
 	if v2, err := v.AsString(); err != nil {
 		return err

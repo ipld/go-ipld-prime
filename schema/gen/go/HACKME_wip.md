@@ -37,26 +37,60 @@ corners needing mention in docs
 implementation detail notes
 ---------------------------
 
-- lots of assemblers end up with an unexported 'assignNode' method.
-	- this is all part of the dance of support for nullables.
-	- the 'assignNode' method handles everything after the node is known to not be null.
-	- it works out like this:
-		- the builder's exported AssignNode function calls 'assignNode' directly, and unconditionally rejects null.
-		- the builder's AssignNull function is stubbed to "no".
-		- the assembler's AssignNode function calls either AssignNull *or* 'assignNode'.
-		- the assembler's AssignNull function works.  (conditional on the 'fcb'.)
-	- is this necessary?  it seems like it's a giant quest to avoid checking for nil 'fcb', but if that's only on root builders... fuckkit?
-		- yeah, let's stop doing this, now.
-		- remove it from the existing occurances in a separate commit.
-	- no, it's all because if you try to let the assembler's AssignNode fall through, it won't call the builder's AssignNode,
-	  and there's also not much for good ways to do a dummy 'fcb'.
-		- ... you sure?  just put one on the builder; it ain't that hard and we're still in O(1) town.
-		- seriously doubting that the instruction for checking for nil 'fcb' is gonna even register.
-	- abort: this design is wrong at a bigger scale, see below
+### how state machines and maybes work
 
-- halt, back up: 'fcb' is critically bad.  getting a method into a function interface still causes an alloc.
-	- no, it does not matter what its attached to.  the alloc is to create a tuple of {ptrToThing,addrOfFunc}.  that's not a one-word thing.  gg no re.
-	- this entire vicinity needs rethink and replacement.  an allocation here is an unacceptable cost.
+Assemblers for recursive stuff have state machines that are used to insure
+orderly transitions between each key and value assembly,
+and that a complete entry has been assembled before the next entry or the finish.
+(For example, you can't go key-then-key in a map,
+nor start a value and then start another value before finishing the first one in a list,
+nor finish a map when you've just inserted a key and no value, and so forth.)
+
+One part of this is straightforward: we simply implement state machines,
+using bog-standard patterns around a typed uint and logical transition guards
+in all the relevant functions.  Done and done.  Except...
+
+How do child assemblers signal to their parent that they've become finished?
+Theoretically, easy; in practice, to work efficiently...
+This poses a bit of an implementation challenge.
+
+One obvious solution is to put a callback field in assemblers, and have
+the parent assembler supply the child assembler with a callback that can
+update the parent's state machine when the child becomes finished.
+This is logically correct, but practically, problematic and Not Fast:
+it requires generating a closure of some kind which composes the function
+pointer with the pointer to that parent assembler: and since this is two words
+of memory, it implies an allocation and (unfortunately) a heap escape.
+An allocation per child key and value in a recursive structure is unacceptable;
+we want to set a _much_ higher bar for performance here.
+
+So, we move on to less obvious solutions: we're all in the same package here,
+so we can twiddle the bits of our neighboring structures quite directly, yes?
+What if we just have assemblers contain pointers to a state machine uint,
+and they do a fixed-value compare-and-swap when they're done?
+This is terrifyingly direct and has no abstractions, yes indeed: but
+we do generally assume control all the code in this package for any of our
+correctness constraints, so this is in-bounds (if admittedly uncomfortable).
+
+Now let's combine that with one more concern: nullables.  When an assembler
+is not at the root of a document, it may need to accept null values.
+We could do this by generating distinct assembler types for use in positions
+where nulls are allowed; but though such an approach would work, it is bulky.
+We'd much rather be able to reuse assembler types in either scenario.
+
+So, let's have assemblers contain two pointers:
+the already-familiar 'w' pointer, and also an 'm' pointer.
+The 'm' pointer effectively communicates up whether the child has become finished
+when it becomes either 'Maybe_Null' or 'Maybe_Value'.
+
+We add a few new states to the 'm' value, and use it to hint in both directions:
+assemblers will assume nulls are not an acceptable transition *unless* the 'm'
+value comes initialized with a hint that we are in a situation where they work.
+
+The costs here are "some": it's another pointer indirection and memory set.
+However, compared to the alternatives, it's pretty good: versus an allocation
+(in the callback approach), this is a huge win; and we're even pretty safe to
+bet that that pointer indirection is going to land in a cache line already hot.
 
 
 underreviewed

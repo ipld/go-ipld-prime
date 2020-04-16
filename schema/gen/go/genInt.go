@@ -190,29 +190,15 @@ func (g intBuilderGenerator) EmitNodeBuilderType(w io.Writer) {
 func (g intBuilderGenerator) EmitNodeBuilderMethods(w io.Writer) {
 	doTemplate(`
 		func (nb *_{{ .Type | TypeSymbol }}__Builder) Build() ipld.Node {
+			if *nb.m != schema.Maybe_Value {
+				panic("invalid state: cannot call Build on an assembler that's not finished")
+			}
 			return nb.w
 		}
 		func (nb *_{{ .Type | TypeSymbol }}__Builder) Reset() {
 			var w _{{ .Type | TypeSymbol }}
-			*nb = _{{ .Type | TypeSymbol }}__Builder{_{{ .Type | TypeSymbol }}__Assembler{w: &w}}
-		}
-	`, w, g.AdjCfg, g)
-	// Cover up all the assembler methods that are prepared to handle null;
-	//  this saves them from having to check for a nil 'fcb'.
-	doTemplate(`
-		func (nb *_{{ .Type | TypeSymbol }}__Builder) AssignNull() error {
-			return mixins.StringAssembler{"{{ .PkgName }}.{{ .TypeName }}"}.AssignNull()
-		}
-		func (nb *_{{ .Type | TypeSymbol }}__Builder) AssignInt(v int) error {
-			*nb.w = _{{ .Type | TypeSymbol }}{v}
-			return nil
-		}
-		func (nb *_{{ .Type | TypeSymbol }}__Builder) AssignNode(v ipld.Node) error {
-			if v2, err := v.AsInt(); err != nil {
-				return err
-			} else {
-				return nb.AssignInt(v2)
-			}
+			var m schema.Maybe
+			*nb = _{{ .Type | TypeSymbol }}__Builder{_{{ .Type | TypeSymbol }}__Assembler{&w, &m}}
 		}
 	`, w, g.AdjCfg, g)
 }
@@ -220,21 +206,23 @@ func (g intBuilderGenerator) EmitNodeAssemblerType(w io.Writer) {
 	doTemplate(`
 		type _{{ .Type | TypeSymbol }}__Assembler struct {
 			w *_{{ .Type | TypeSymbol }}
-			z bool
-			fcb func() error
+			m *schema.Maybe
 		}
 	`, w, g.AdjCfg, g)
 }
 func (g intBuilderGenerator) EmitNodeAssemblerMethodAssignNull(w io.Writer) {
-	// Twist: All generated assemblers quietly accept null... and if used in a context they shouldn't,
-	//  either this method gets overriden (this is the case for NodeBuilders),
-	//  or the 'na.fcb' (short for "finish callback") returns the rejection.
-	//  We don't need a nil check for 'fcb' because all parent assemblers use it, and root builders override all relevant methods.
-	//  We don't pass any args to 'fcb' because we assume it comes from something that can already see this whole struct.
 	doTemplate(`
 		func (na *_{{ .Type | TypeSymbol }}__Assembler) AssignNull() error {
-			na.z = true
-			return na.fcb()
+			switch *na.m {
+			case allowNull:
+				*na.m = schema.Maybe_Null
+				return nil
+			case schema.Maybe_Absent:
+				return mixins.StringAssembler{"{{ .PkgName }}.{{ .TypeName }}"}.AssignNull()
+			case schema.Maybe_Value, schema.Maybe_Null:
+				panic("invalid state: cannot assign into assembler that's already finished")
+			}
+			panic("unreachable")
 		}
 	`, w, g.AdjCfg, g)
 }
@@ -244,22 +232,46 @@ func (g intBuilderGenerator) EmitNodeAssemblerMethodAssignInt(w io.Writer) {
 	//  otherwise, the 'w' ptr should already be set, and we fill that memory location without allocating, as usual.
 	doTemplate(`
 		func (na *_{{ .Type | TypeSymbol }}__Assembler) AssignInt(v int) error {
+			switch *na.m {
+			case schema.Maybe_Value, schema.Maybe_Null:
+				panic("invalid state: cannot assign into assembler that's already finished")
+			}
 			{{- if .Type | MaybeUsesPtr }}
 			if na.w == nil {
-				na.w = &_{{ .Type | TypeSymbol }}{v}
-				return na.fcb()
+				na.w = &_{{ .Type | TypeSymbol }}{}
 			}
 			{{- end}}
-			*na.w = _{{ .Type | TypeSymbol }}{v}
-			return na.fcb()
+			na.w.x = v
+			*na.m = schema.Maybe_Value
+			return nil
 		}
 	`, w, g.AdjCfg, g)
 }
 func (g intBuilderGenerator) EmitNodeAssemblerMethodAssignNode(w io.Writer) {
+	// AssignNode goes through three phases:
+	// 1. is it null?  Jump over to AssignNull (which may or may not reject it).
+	// 2. is it our own type?  Handle specially -- we might be able to do efficient things.
+	// 3. is it the right kind to morph into us?  Do so.
 	doTemplate(`
 		func (na *_{{ .Type | TypeSymbol }}__Assembler) AssignNode(v ipld.Node) error {
 			if v.IsNull() {
 				return na.AssignNull()
+			}
+			if v2, ok := v.(*_{{ .Type | TypeSymbol }}); ok {
+				switch *na.m {
+				case schema.Maybe_Value, schema.Maybe_Null:
+					panic("invalid state: cannot assign into assembler that's already finished")
+				}
+				{{- if .Type | MaybeUsesPtr }}
+				if na.w == nil {
+					na.w = v2
+					*na.m = schema.Maybe_Value
+					return nil
+				}
+				{{- end}}
+				*na.w = *v2
+				*na.m = schema.Maybe_Value
+				return nil
 			}
 			if v2, err := v.AsInt(); err != nil {
 				return err
