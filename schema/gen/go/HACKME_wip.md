@@ -34,6 +34,31 @@ corners needing mention in docs
 	- alternatively, not yielding them on iterate: worse: generic printer for structs would end up not reporting fields, and that would be both wrong and hard to hack your way out of without writing a metric ton more code that inspects the type info, which would ruin the point of the monomorphic methods in the first place to a much higher degree than this need to handle undefined/absent does.
 
 
+implementation detail notes
+---------------------------
+
+- lots of assemblers end up with an unexported 'assignNode' method.
+	- this is all part of the dance of support for nullables.
+	- the 'assignNode' method handles everything after the node is known to not be null.
+	- it works out like this:
+		- the builder's exported AssignNode function calls 'assignNode' directly, and unconditionally rejects null.
+		- the builder's AssignNull function is stubbed to "no".
+		- the assembler's AssignNode function calls either AssignNull *or* 'assignNode'.
+		- the assembler's AssignNull function works.  (conditional on the 'fcb'.)
+	- is this necessary?  it seems like it's a giant quest to avoid checking for nil 'fcb', but if that's only on root builders... fuckkit?
+		- yeah, let's stop doing this, now.
+		- remove it from the existing occurances in a separate commit.
+	- no, it's all because if you try to let the assembler's AssignNode fall through, it won't call the builder's AssignNode,
+	  and there's also not much for good ways to do a dummy 'fcb'.
+		- ... you sure?  just put one on the builder; it ain't that hard and we're still in O(1) town.
+		- seriously doubting that the instruction for checking for nil 'fcb' is gonna even register.
+	- abort: this design is wrong at a bigger scale, see below
+
+- halt, back up: 'fcb' is critically bad.  getting a method into a function interface still causes an alloc.
+	- no, it does not matter what its attached to.  the alloc is to create a tuple of {ptrToThing,addrOfFunc}.  that's not a one-word thing.  gg no re.
+	- this entire vicinity needs rethink and replacement.  an allocation here is an unacceptable cost.
+
+
 underreviewed
 -------------
 
