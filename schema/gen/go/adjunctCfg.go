@@ -6,10 +6,15 @@ import (
 	"github.com/ipld/go-ipld-prime/schema"
 )
 
+type FieldTuple struct {
+	TypeName  schema.TypeName
+	FieldName string
+}
+
 type AdjunctCfg struct {
 	typeSymbolOverrides       map[schema.TypeName]string
-	fieldSymbolLowerOverrides map[schema.StructField]string
-	fieldSymbolUpperOverrides map[schema.StructField]string
+	fieldSymbolLowerOverrides map[FieldTuple]string
+	fieldSymbolUpperOverrides map[FieldTuple]string
 	maybeUsesPtr              map[schema.TypeName]bool // treat absent as true
 
 	// note: PkgName doesn't appear in here, because it's...
@@ -34,14 +39,14 @@ func (cfg *AdjunctCfg) TypeSymbol(t schema.Type) string {
 }
 
 func (cfg *AdjunctCfg) FieldSymbolLower(f schema.StructField) string {
-	if x, ok := cfg.fieldSymbolLowerOverrides[f]; ok {
+	if x, ok := cfg.fieldSymbolLowerOverrides[FieldTuple{f.Type().Name(), f.Name()}]; ok {
 		return x
 	}
 	return f.Name() // presumed already lower
 }
 
 func (cfg *AdjunctCfg) FieldSymbolUpper(f schema.StructField) string {
-	if x, ok := cfg.fieldSymbolUpperOverrides[f]; ok {
+	if x, ok := cfg.fieldSymbolUpperOverrides[FieldTuple{f.Type().Name(), f.Name()}]; ok {
 		return x
 	}
 	return strings.Title(f.Name())
