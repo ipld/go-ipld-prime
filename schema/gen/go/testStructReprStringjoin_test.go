@@ -38,15 +38,14 @@ func TestStructReprStringjoin(t *testing.T) {
 		},
 		schema.SpawnStructRepresentationStringjoin(":"),
 	))
-	// TODO coming soon:
-	// ts.Accumulate(schema.SpawnStruct("Recurzorator",
-	// 	[]schema.StructField{
-	// 		schema.SpawnStructField("foo", ts.TypeByName("String"), false, false),
-	// 		schema.SpawnStructField("zap", ts.TypeByName("ManystringStruct"), false, false),
-	// 		schema.SpawnStructField("bar", ts.TypeByName("String"), false, false),
-	// 	},
-	// 	schema.SpawnStructRepresentationStringjoin("-"),
-	// ))
+	ts.Accumulate(schema.SpawnStruct("Recurzorator",
+		[]schema.StructField{
+			schema.SpawnStructField("foo", ts.TypeByName("String"), false, false),
+			schema.SpawnStructField("zap", ts.TypeByName("ManystringStruct"), false, false),
+			schema.SpawnStructField("bar", ts.TypeByName("String"), false, false),
+		},
+		schema.SpawnStructRepresentationStringjoin("-"),
+	))
 
 	genAndCompileAndTest(t, prefix, pkgName, ts, adjCfg, func(t *testing.T, getStyleByName func(string) ipld.NodeStyle) {
 		t.Run("single field works", func(t *testing.T) {

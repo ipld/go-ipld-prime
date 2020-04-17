@@ -73,14 +73,21 @@ func (g structReprStringjoinReprGenerator) EmitNodeMethodAsString(w io.Writer) {
 	//    - if support for this is added in the future, you can bet all optionals
 	//      will be required to be *either* in a row at the start, or in a row at the end.
 	//      (a 'direction' property might also be needed, so behavior is defined if every field is optional.)
+	//
+	// A speciated String method is also generated here.
+	//  (Organization questionable: if this was at type level, it'd be in the 'EmitNativeAccessors' block,
+	//   but we don't have that in the NodeGenerator interface so we don't have it here.  Maybe that's a mistake.)
 	doTemplate(`
 		func (n *_{{ .Type | TypeSymbol }}__Repr) AsString() (string, error) {
+			return n.String(), nil
+		}
+		func (n *_{{ .Type | TypeSymbol }}__Repr) String() string {
 			return {{ "" }}
 			{{- $type := .Type -}} {{- /* ranging modifies dot, unhelpfully */ -}}
 			{{- range $i, $field := .Type.Fields }}
 			{{- if $i }} + "{{ $type.RepresentationStrategy.GetDelim }}" + {{end -}}
 			(*_{{ $field.Type | TypeSymbol }}__Repr)(&n.{{ $field | FieldSymbolLower }}).String()
-			{{- end}}, nil
+			{{- end}}
 		}
 	`, w, g.AdjCfg, g)
 }
