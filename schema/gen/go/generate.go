@@ -32,6 +32,8 @@ func Generate(pth string, pkgName string, ts schema.TypeSystem, adjCfg *AdjunctC
 				default:
 					panic("unrecognized struct representation strategy")
 				}
+			case schema.TypeMap:
+				EmitEntireType(NewMapReprMapGenerator(pkgName, t2, adjCfg), f)
 			default:
 				panic("add more type switches here :)")
 			}

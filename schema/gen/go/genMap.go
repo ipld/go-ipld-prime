@@ -21,11 +21,10 @@ func (g mapGenerator) EmitNativeType(w io.Writer) {
 	// - 'm' is used for quick lookup.
 	// - 't' is used for both for order maintainence, and for allocation amortization for both keys and values.
 	// Note that the key in 'm' is *not* a pointer.
-	// The value in 'm' is a pointer into 't'.
-	// REVIEW: does m's value need to be a pointer when it's a maybe?  perhaps not.
+	// The value in 'm' is a pointer into 't' (except when it's a maybe; maybes are already pointers).
 	doTemplate(`
 		type _{{ .Type | TypeSymbol }} struct {
-			m map[_{{ .Type.KeyType | TypeSymbol }}]*{{if .Type.ValueIsNullable }}Maybe{{else}}_{{end}}{{ .Type.ValueType | TypeSymbol }}
+			m map[_{{ .Type.KeyType | TypeSymbol }}]{{if .Type.ValueIsNullable }}Maybe{{else}}*_{{end}}{{ .Type.ValueType | TypeSymbol }}
 			t []_{{ .Type | TypeSymbol }}__entry
 		}
 		type {{ .Type | TypeSymbol }} = *_{{ .Type | TypeSymbol }}
@@ -43,24 +42,34 @@ func (g mapGenerator) EmitNativeType(w io.Writer) {
 }
 
 func (g mapGenerator) EmitNativeAccessors(w io.Writer) {
-	// The speciated Lookup method *always* returns a MaybeT,
-	//  because it can always be Absent;
-	//   this saves us from needing multiple returns for an error.
-	// If the MaybeT in question is UsePtr=false and the object is large and the map value isn't nullable,
-	//  then this may cost some unfortunately large memcopies.
-	// REVIEW: should we have a Lookup and a LookupMaybe function?  The former would be have no benefit over the latter if the value is nullable, but so what.
+	// Generate a speciated Lookup as well as LookupMaybe method.
+	// The LookupMaybe method is needed if the map value is nullable and you're going to distinguish nulls
+	//  (and may also be convenient if you would rather handle Maybe_Absent than an error for not-found).
+	// The Lookup method works fine if the map value isn't nullable
+	//  (and should be preferred in that case, because boxing something into a maybe when it wasn't already stored that way costs an alloc(!),
+	//   and may additionally incur a memcpy if the maybe for the value type doesn't use pointers internally).
+	// REVIEW: is there a way we can make this less twisty?  it is VERY unfortunate if the user has to know what sort of map it is to know which method to prefer.
+	//  Maybe the Lookup method on maps that have nullable values should just always have a MaybeT return type?
+	//   But then this means the Lookup method doesn't "need" an error as part of its return signiture, which just shuffles differences around.
 	doTemplate(`
-		func (n *_{{ $type | TypeSymbol }}) LookupMaybe(k {{ .Type.KeyType | TypeSymbol }}) Maybe{{ .Type.ValueType | TypeSymbol }} {
+		func (n *_{{ .Type | TypeSymbol }}) LookupMaybe(k {{ .Type.KeyType | TypeSymbol }}) Maybe{{ .Type.ValueType | TypeSymbol }} {
 			v, ok := n.m[*k]
 			if !ok {
-				return Maybe{{ .Type.ValueType | TypeSymbol }}{m:schema.Maybe_Absent}
+				return &_{{ .Type | TypeSymbol }}__valueAbsent
 			}
 			{{- if .Type.ValueIsNullable }}
-			return *v
+			return v
 			{{- else}}
-			return Maybe{{ .Type.ValueType | TypeSymbol }}{m:schema.Maybe_Value, n:v}
+			return &_{{ .Type.ValueType | TypeSymbol }}__Maybe{
+				m: schema.Maybe_Value,
+				v: {{ if not (MaybeUsesPtr .Type.ValueType) }}*{{end}}v,
+			}
 			{{- end}}
 		}
+
+		var _{{ .Type | TypeSymbol }}__valueAbsent = _{{ .Type.ValueType | TypeSymbol }}__Maybe{m:schema.Maybe_Absent}
+
+		// TODO generate also a plain Lookup method that doesn't box and alloc if this type contains non-nullable values!
 	`, w, g.AdjCfg, g)
 	// FUTURE: also a speciated iterator?
 }
@@ -116,21 +125,59 @@ func (g mapGenerator) EmitNodeTypeAssertions(w io.Writer) {
 }
 
 func (g mapGenerator) EmitNodeMethodLookupString(w io.Writer) {
+	// What should be coercible in which directions (and how surprising that is) is an interesting question.
+	//  Most of the answer comes from considering what needs to be possible when working with PathSegment:
+	//   we *must* be able to accept a string in a PathSegment and be able to use it to navigate a map -- even if the map has complex keys.
+	//   For that to work out, it means if the key type doesn't have a string type kind, we must be willing to reach into its representation and use the fromString there.
+	//  If the key type *does* have a string kind at the type level, we'll use that; no need to consider going through the representation.
 	doTemplate(`
 		func (n {{ .Type | TypeSymbol }}) LookupString(key string) (ipld.Node, error) {
-			// TODO if complex key: use its fromString constructor
-			// TODO if simple key: could use fromString for 'String', i guess?  it should inline?  or we can just do it bare obviously.
-			//  ... yeah, let's standardize this.  these shouldn't even be visibly distinct cases, actually.
+			{{- if eq .Type.KeyType.Kind.String "String" }}
+			k2 := _{{ .Type.KeyType | TypeSymbol }}__Style{}.fromString(key)
+			{{- else}}
+			k2 := _{{ .Type.KeyType | TypeSymbol }}__ReprStyle{}.fromString(key)
+			{{- end}}
+			v, exists := n.m[k2]
+			if !exists {
+				return ipld.Undef, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			}
+			{{- if .Type.ValueIsNullable }}
+			if v.m == schema.Maybe_Null {
+				return ipld.Null, nil
+			}
+			return {{ if not (MaybeUsesPtr .Type.ValueType) }}&{{end}}v.v, nil
+			{{- else}}
+			return v, nil
+			{{- end}}
 		}
 	`, w, g.AdjCfg, g)
 }
 
 func (g mapGenerator) EmitNodeMethodLookup(w io.Writer) {
-	// FIXME maps can have complex keys
+	// LookupNode will procede by cast if it can; or simply error if that doesn't work.
+	//  There's no attempt to turn the node (or its repr) into a string and then reify that into a key;
+	//   if you used a Node here, you should've meant it.
+	// REVIEW: by comparison structs will coerce anything stringish silently...!  so we should figure out if that inconsistency is acceptable, and at least document it if so.
+	// TODO: the error message for not-exists currently doesn't work if the key type kind isn't string -- but... should we just... put String methods on those things anyway, if their repr is string kind?
 	doTemplate(`
 		func (n {{ .Type | TypeSymbol }}) Lookup(key ipld.Node) (ipld.Node, error) {
-			// TODO cast-check it into our key type; flat barf if not match
-			// REVIEW structs will coerce anything stringish silently...!  so we should figure out how to document the inconsistency here.
+			k2, ok := key.({{ .Type.KeyType | TypeSymbol }})
+			if !ok {
+				panic("todo invalid key type error")
+				// 'ipld.ErrInvalidKey{TypeName:"{{ .PkgName }}.{{ .Type.Name }}", Key:&_String{k}}' doesn't quite cut it: need room to explain the type, and it's not guaranteed k can be turned into a string at all
+			}
+			v, exists := n.m[*k2]
+			if !exists {
+				return ipld.Undef, ipld.ErrNotExists{ipld.PathSegmentOfString(k2.String())}
+			}
+			{{- if .Type.ValueIsNullable }}
+			if v.m == schema.Maybe_Null {
+				return ipld.Null, nil
+			}
+			return {{ if not (MaybeUsesPtr .Type.ValueType) }}&{{end}}v.v, nil
+			{{- else}}
+			return v, nil
+			{{- end}}
 		}
 	`, w, g.AdjCfg, g)
 }
@@ -151,13 +198,13 @@ func (g mapGenerator) EmitNodeMethodMapIterator(w io.Writer) {
 				return nil, nil, ipld.ErrIteratorOverread{}
 			}
 			x := itr.n.t[itr.idx]
-			k = x.k
+			k = &x.k
 			{{- if .Type.ValueIsNullable }}
 			switch x.v.m {
 			case schema.Maybe_Null:
 				v = ipld.Null
 			case schema.Maybe_Value:
-				v = {{ if not (MaybeUsesPtr .Type.ValueType) }}&{{end}}x.v.n
+				v = {{ if not (MaybeUsesPtr .Type.ValueType) }}&{{end}}x.v.v
 			}
 			{{- else}}
 			v = &x.v
@@ -270,7 +317,7 @@ func (g mapBuilderGenerator) EmitNodeAssemblerType(w io.Writer) {
 			cm schema.Maybe
 			{{- end}}
 			ka _{{ .Type | TypeSymbol }}__KeyAssembler
-			va _{{ .Type | TypeSymbol }}__ValueAssembler
+			va _{{ .Type.ValueType | TypeSymbol }}__Assembler
 		}
 	`, w, g.AdjCfg, g)
 }
@@ -295,7 +342,7 @@ func (g mapBuilderGenerator) EmitNodeAssemblerMethodBeginMap(w io.Writer) {
 				na.w = &_{{ .Type | TypeSymbol }}{}
 			}
 			{{- end}}
-			na.w.m = make(map[_{{ .Type.KeyType | TypeSymbol }}]*{{if .Type.ValueIsNullable }}Maybe{{else}}_{{end}}{{ .Type.ValueType | TypeSymbol }}, sizeHint)
+			na.w.m = make(map[_{{ .Type.KeyType | TypeSymbol }}]{{if .Type.ValueIsNullable }}Maybe{{else}}*_{{end}}{{ .Type.ValueType | TypeSymbol }}, sizeHint)
 			na.w.t = make([]_{{ .Type | TypeSymbol }}__entry, 0, sizeHint)
 			return na, nil
 		}
@@ -391,22 +438,24 @@ func (g mapBuilderGenerator) emitMapAssemblerChildTidyHelper(w io.Writer) {
 	doTemplate(`
 		func (ma *_{{ .Type | TypeSymbol }}__Assembler) valueFinishTidy() bool {
 			tz := &ma.w.t[len(ma.w.t)-1]
-			switch tz.m {
 			{{- if .Type.ValueIsNullable }}
+			switch tz.v.m {
 			case schema.Maybe_Null:
 				ma.state = maState_initial
 				return true
 			case schema.Maybe_Value:
-				{{- if (MaybeUsesPtr $field.Type) }}
-				tz.v = ma.va.w
+				{{- if (MaybeUsesPtr .Type.ValueType) }}
+				tz.v.v = ma.va.w
 				{{- end}}
 				ma.state = maState_initial
 				return true
 			{{- else}}
+			switch ma.cm {
 			case schema.Maybe_Value:
 				ma.va.w = nil
 				ma.cm = schema.Maybe_Absent
 				ma.state = maState_initial
+				return true
 			{{- end}}
 			default:
 				return false
@@ -434,21 +483,25 @@ func (g mapBuilderGenerator) emitMapAssemblerMethods(w io.Writer) {
 				panic("invalid state: AssembleEntry cannot be called on an assembler that's already finished")
 			}
 
-			// TODO need key reification again
-			//  or invalid key: return nil, ipld.ErrInvalidKey{TypeName:"{{ .PkgName }}.{{ .Type.Name }}", Key:&_String{k}}
-			if _, ok := ma.w.m[k2] {
-				return ipld.ErrRepeatedMapKey{k}
+			{{- if eq .Type.KeyType.Kind.String "String" }}
+			k2 := _{{ .Type.KeyType | TypeSymbol }}__Style{}.fromString(k)
+			{{- else}}
+			k2 := _{{ .Type.KeyType | TypeSymbol }}__ReprStyle{}.fromString(k) // REVIEW: should this coersion indeed be quietly supported here, or is that more confusing than valuable?
+			{{- end}}
+			v, exists := ma.w.m[k2]
+			if _, exists := ma.w.m[k2]; exists {
+				return nil, ipld.ErrRepeatedMapKey{k2}
 			}
 			ma.w.t = append(ma.w.t, _{{ .Type | TypeSymbol }}__entry{k: k2})
 			ma.w.m[k2] = &ma.w.t[len(ma.w.t)-1].v
 			ma.state = maState_midValue
 
 			{{- if .Type.ValueIsNullable }}
-			ma.va.w = ma.w.t[len(ma.w.t)-1].v.n
+			ma.va.w = ma.w.t[len(ma.w.t)-1].v.v
 			ma.va.m = &ma.w.t[len(ma.w.t)-1].v.m
 			ma.w.t[len(ma.w.t)-1].v.m = allowNull
 			{{- else}}
-			ma.va.w = ma.w.t[len(ma.w.t)-1].v.n
+			ma.va.w = &ma.w.t[len(ma.w.t)-1].v
 			ma.va.m = &ma.cm
 			{{- end}}
 			return &ma.va, nil
@@ -485,7 +538,7 @@ func (g mapBuilderGenerator) emitMapAssemblerMethods(w io.Writer) {
 				panic("invalid state: AssembleValue cannot be called on an assembler that's already finished")
 			}
 			ma.state = maState_midValue
-			return &ma.va, nil
+			return &ma.va
 		}
 		func (ma *_{{ .Type | TypeSymbol }}__Assembler) Finish() error {
 			switch ma.state {
@@ -523,8 +576,10 @@ func (g mapBuilderGenerator) emitKeyAssembler(w io.Writer) {
 		g.TypeName + ".KeyAssembler",
 		"_" + g.AdjCfg.TypeSymbol(g.Type) + "__Key",
 	}
+	// FIXME: this is going to need a 'wk' slot.  and need a tidy helper that may be involved in state transitions, like values have.
+	// FIXME: this is... we need to us a child assembler.  this... cannot be replicated here, it's too much complexity.
 	doTemplate(`
-		func (ka *_{{ .Type | TypeSymbol }}__KeyAssembler) BeginMap(_ int) error {
+		func (ka *_{{ .Type | TypeSymbol }}__KeyAssembler) BeginMap(_ int) (ipld.MapAssembler, error) {
 			if ka.state != maState_midKey {
 				panic("misuse: KeyAssembler held beyond its valid lifetime")
 			}
@@ -538,28 +593,33 @@ func (g mapBuilderGenerator) emitKeyAssembler(w io.Writer) {
 	stubs.EmitNodeAssemblerMethodAssignInt(w)
 	stubs.EmitNodeAssemblerMethodAssignFloat(w)
 	// DRY: this is almost entirely the same as the body of the AssembleEntry method except for the final return and where we put 'ka.state'.  extract.
+	// FIXME: as much as it's neat you *could* do direct no-tidy-phase-needed work here, i'm not sure it's gonna fly: if this is the only reason to have a custom ka type, it's probably not worth it.
 	doTemplate(`
 		func (ka *_{{ .Type | TypeSymbol }}__KeyAssembler) AssignString(k string) error {
 			if ka.state != maState_midKey {
 				panic("misuse: KeyAssembler held beyond its valid lifetime")
 			}
 
-			// TODO need key reification again
-			//  or invalid key: return nil, ipld.ErrInvalidKey{TypeName:"{{ .PkgName }}.{{ .Type.Name }}", Key:&_String{k}}
-			if _, ok := ka.w.m[k2] {
-				return ipld.ErrRepeatedMapKey{k}
+			{{- if eq .Type.KeyType.Kind.String "String" }}
+			k2 := _{{ .Type.KeyType | TypeSymbol }}__Style{}.fromString(k)
+			{{- else}}
+			k2 := _{{ .Type.KeyType | TypeSymbol }}__ReprStyle{}.fromString(k) // REVIEW: should this coersion indeed be quietly supported here, or is that more confusing than valuable?
+			{{- end}}
+			v, exists := ka.w.m[k2]
+			if _, exists := ka.w.m[k2]; exists {
+				return ipld.ErrRepeatedMapKey{k2}
 			}
 			ka.w.t = append(ka.w.t, _{{ .Type | TypeSymbol }}__entry{k: k2})
 			ka.w.m[k2] = &ka.w.t[len(ka.w.t)-1].v
 			ka.state = maState_expectValue
 
 			{{- if .Type.ValueIsNullable }}
-			ma.va.w = ma.w.t[len(ma.w.t)-1].v.n
-			ma.va.m = &ma.w.t[len(ma.w.t)-1].v.m
-			ma.w.t[len(ma.w.t)-1].v.m = allowNull
+			ka.va.w = ka.w.t[len(ka.w.t)-1].v.v
+			ka.va.m = &ka.w.t[len(ka.w.t)-1].v.m
+			ka.w.t[len(ka.w.t)-1].v.m = allowNull
 			{{- else}}
-			ma.va.w = ma.w.t[len(ma.w.t)-1].v.n
-			ma.va.m = &ma.cm
+			ka.va.w = &ka.w.t[len(ka.w.t)-1].v
+			ka.va.m = &ka.cm
 			{{- end}}
 			return nil
 		}
