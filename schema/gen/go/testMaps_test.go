@@ -3,9 +3,11 @@ package gengo
 import (
 	"testing"
 
-	//. "github.com/warpfork/go-wish"
+	. "github.com/warpfork/go-wish"
 
 	"github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/fluent"
+	"github.com/ipld/go-ipld-prime/must"
 	"github.com/ipld/go-ipld-prime/schema"
 )
 
@@ -21,13 +23,86 @@ func TestMapsContainingMaybe(t *testing.T) {
 	ts.Accumulate(schema.SpawnMap("Map__String__nullableString",
 		ts.TypeByName("String"), ts.TypeByName("String"), true))
 
+	test := func(t *testing.T, getStyleByName func(string) ipld.NodeStyle) {
+		t.Run("non-nullable", func(t *testing.T) {
+			ns := getStyleByName("Map__String__String")
+			nsr := getStyleByName("Map__String__String.Repr")
+			var n schema.TypedNode
+			t.Run("typed-create", func(t *testing.T) {
+				n = fluent.MustBuildMap(ns, 2, func(ma fluent.MapAssembler) {
+					ma.AssembleEntry("one").AssignString("1")
+					ma.AssembleEntry("two").AssignString("2")
+				}).(schema.TypedNode)
+				t.Run("typed-read", func(t *testing.T) {
+					Require(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
+					Wish(t, n.Length(), ShouldEqual, 2)
+					Wish(t, must.String(must.Node(n.LookupString("one"))), ShouldEqual, "1")
+					Wish(t, must.String(must.Node(n.LookupString("two"))), ShouldEqual, "2")
+					_, err := n.LookupString("miss")
+					Wish(t, err, ShouldBeSameTypeAs, ipld.ErrNotExists{})
+				})
+				t.Run("repr-read", func(t *testing.T) {
+					nr := n.Representation()
+					Require(t, nr.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
+					Wish(t, nr.Length(), ShouldEqual, 2)
+					Wish(t, must.String(must.Node(nr.LookupString("one"))), ShouldEqual, "1")
+					Wish(t, must.String(must.Node(nr.LookupString("two"))), ShouldEqual, "2")
+					_, err := nr.LookupString("miss")
+					Wish(t, err, ShouldBeSameTypeAs, ipld.ErrNotExists{})
+				})
+			})
+			t.Run("repr-create", func(t *testing.T) {
+				nr := fluent.MustBuildMap(nsr, 2, func(ma fluent.MapAssembler) {
+					ma.AssembleEntry("one").AssignString("1")
+					ma.AssembleEntry("two").AssignString("2")
+				})
+				Wish(t, n, ShouldEqual, nr)
+			})
+		})
+		t.Run("nullable", func(t *testing.T) {
+			ns := getStyleByName("Map__String__nullableString")
+			nsr := getStyleByName("Map__String__nullableString.Repr")
+			var n schema.TypedNode
+			t.Run("typed-create", func(t *testing.T) {
+				n = fluent.MustBuildMap(ns, 2, func(ma fluent.MapAssembler) {
+					ma.AssembleEntry("one").AssignString("1")
+					ma.AssembleEntry("none").AssignNull()
+				}).(schema.TypedNode)
+				t.Run("typed-read", func(t *testing.T) {
+					Require(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
+					Wish(t, n.Length(), ShouldEqual, 2)
+					Wish(t, must.String(must.Node(n.LookupString("one"))), ShouldEqual, "1")
+					Wish(t, must.Node(n.LookupString("none")), ShouldEqual, ipld.Null)
+					_, err := n.LookupString("miss")
+					Wish(t, err, ShouldBeSameTypeAs, ipld.ErrNotExists{})
+				})
+				t.Run("repr-read", func(t *testing.T) {
+					nr := n.Representation()
+					Require(t, nr.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
+					Wish(t, nr.Length(), ShouldEqual, 2)
+					Wish(t, must.String(must.Node(nr.LookupString("one"))), ShouldEqual, "1")
+					Wish(t, must.Node(nr.LookupString("none")), ShouldEqual, ipld.Null)
+					_, err := nr.LookupString("miss")
+					Wish(t, err, ShouldBeSameTypeAs, ipld.ErrNotExists{})
+				})
+			})
+			t.Run("repr-create", func(t *testing.T) {
+				nr := fluent.MustBuildMap(nsr, 2, func(ma fluent.MapAssembler) {
+					ma.AssembleEntry("one").AssignString("1")
+					ma.AssembleEntry("none").AssignNull()
+				})
+				Wish(t, n, ShouldEqual, nr)
+			})
+		})
+	}
+
 	t.Run("maybe-using-embed", func(t *testing.T) {
 		adjCfg.maybeUsesPtr["String"] = false
 
 		prefix := "maps-embed"
 		pkgName := "main"
 		genAndCompileAndTest(t, prefix, pkgName, ts, adjCfg, func(t *testing.T, getStyleByName func(string) ipld.NodeStyle) {
-			//test(t, getStyleByName("Stroct"), getStyleByName("Stroct.Repr"))
+			test(t, getStyleByName)
 		})
 	})
 	t.Run("maybe-using-ptr", func(t *testing.T) {
@@ -36,7 +111,7 @@ func TestMapsContainingMaybe(t *testing.T) {
 		prefix := "maps-mptr"
 		pkgName := "main"
 		genAndCompileAndTest(t, prefix, pkgName, ts, adjCfg, func(t *testing.T, getStyleByName func(string) ipld.NodeStyle) {
-			//test(t, getStyleByName("Stroct"), getStyleByName("Stroct.Repr"))
+			test(t, getStyleByName)
 		})
 	})
 }
