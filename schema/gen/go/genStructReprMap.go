@@ -8,7 +8,7 @@ import (
 	"github.com/ipld/go-ipld-prime/schema/gen/go/mixins"
 )
 
-var _ TypeGenerator = &stringReprStringGenerator{}
+var _ TypeGenerator = &structReprMapGenerator{}
 
 func NewStructReprMapGenerator(pkgName string, typ schema.TypeStruct, adjCfg *AdjunctCfg) TypeGenerator {
 	return structReprMapGenerator{
