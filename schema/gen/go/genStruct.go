@@ -274,6 +274,7 @@ func (g structBuilderGenerator) EmitNodeAssemblerType(w io.Writer) {
 	// - 'f' is the **f**ocused field that will be assembled next.
 	//
 	// - 'cm' is **c**hild **m**aybe and is used for the completion message from children that aren't allowed to be nullable (for those that are, their own maybe.m is used).
+	//    ('cm' could be elided for structs where all fields are maybes.  trivial but not yet implemented.)
 	// - the 'ca_*' fields embed **c**hild **a**ssemblers -- these are embedded so we can yield pointers to them without causing new allocations.
 	doTemplate(`
 		type _{{ .Type | TypeSymbol }}__Assembler struct {
@@ -330,7 +331,7 @@ func (g structBuilderGenerator) EmitNodeAssemblerMethodAssignNull(w io.Writer) {
 				*na.m = schema.Maybe_Null
 				return nil
 			case schema.Maybe_Absent:
-				return mixins.StringAssembler{"{{ .PkgName }}.{{ .TypeName }}"}.AssignNull()
+				return mixins.MapAssembler{"{{ .PkgName }}.{{ .TypeName }}"}.AssignNull()
 			case schema.Maybe_Value, schema.Maybe_Null:
 				panic("invalid state: cannot assign into assembler that's already finished")
 			case midvalue:

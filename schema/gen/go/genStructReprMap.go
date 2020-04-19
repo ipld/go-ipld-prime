@@ -373,7 +373,7 @@ func (g structReprMapReprBuilderGenerator) EmitNodeAssemblerMethodAssignNull(w i
 				*na.m = schema.Maybe_Null
 				return nil
 			case schema.Maybe_Absent:
-				return mixins.StringAssembler{"{{ .PkgName }}.{{ .TypeName }}"}.AssignNull()
+				return mixins.MapAssembler{"{{ .PkgName }}.{{ .TypeName }}"}.AssignNull()
 			case schema.Maybe_Value, schema.Maybe_Null:
 				panic("invalid state: cannot assign into assembler that's already finished")
 			case midvalue:
