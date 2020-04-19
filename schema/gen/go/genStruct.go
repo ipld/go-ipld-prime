@@ -410,8 +410,9 @@ func (g structBuilderGenerator) emitMapAssemblerChildTidyHelper(w io.Writer) {
 	// Child assemblers are expected to control their own state machines;
 	//  for values that have maybes, we never change their maybe state again, so the usual logic should hold;
 	//  for values that don't have maybes (and thus share 'cm')...
-	//   actually, we just let that fly.  If the user does this, it's possible to mutate a subsequent field
-	//    with the assembler held from an earlier one, and while that's surely going to look bizarre, it's not unsafe per se.
+	//   We don't bother to nil their 'm' pointer; the worst that can happen is an over-held assembler for that field
+	//    can make a bizarre and broken transition for a subsequent field, which will result in very ugly errors, but isn't unsafe per se.
+	//   We do nil their 'w' pointer, though: we don't want a set to that able to leak in later if we're on the way to Finish!
 	doTemplate(`
 		func (ma *_{{ .Type | TypeSymbol }}__Assembler) valueFinishTidy() bool {
 			switch ma.f {
@@ -445,9 +446,7 @@ func (g structBuilderGenerator) emitMapAssemblerChildTidyHelper(w io.Writer) {
 				{{- else}}
 				switch ma.cm {
 				case schema.Maybe_Value:
-					{{- /* while defense in depth here might avoid some 'wat' outcomes, it's not strictly necessary for safety */ -}}
-					{{- /* ma.ca_{{ $field | FieldSymbolLower }}.w = nil */ -}}
-					{{- /* ma.ca_{{ $field | FieldSymbolLower }}.m = nil */ -}}
+					ma.ca_{{ $field | FieldSymbolLower }}.w = nil
 					ma.cm = schema.Maybe_Absent
 					ma.state = maState_initial
 					return true
