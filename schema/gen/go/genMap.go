@@ -299,24 +299,20 @@ func (g mapBuilderGenerator) EmitNodeAssemblerType(w io.Writer) {
 	// - 'state' is what it says on the tin.  this is used for the map state (the broad transitions between null, start-map, and finish are handled by 'm' for consistency.)
 	// - there's no equivalent of the 'f' (**f**ocused next) field in struct assemblers -- that's implicitly the last row of the 'w.t'.
 	//
-	// - 'cm' is **c**hild **m**aybe and is used for the completion message from children if values aren't allowed to be nullable and thus don't have their own per-value maybe slot we can use.
-	// - 'ka' and 'va' are obviously the key assembler and value assembler respectively.
-	//     Perhaps surprisingly, we can get away with using the value assembler for the value type just straight up, no wrappers necessary.
-	//     TODO keys are probably not that simple, are they.
-	//       Oh lordie.  We can't even do the 'w.m' assignment until key assembly is _finished_ can we.  if it's a complex key, that's... fun.  we'll need another unit of temp space: 'wk'.
-	//       Keys can even be unions.  So they can *definitely* recurse.
-	//       ... critical question: is it always the kind of direct recursion like struct stringjoin reprs, where it's nonstateful?
-	//         Well, at the representation level, yes.  At the type level: no.  Cool!
+	// - 'cm' is **c**hild **m**aybe and is used for the completion message from children.
+	//    It's used for values if values aren't allowed to be nullable and thus don't have their own per-value maybe slot we can use.
+	//    It's always used for key assembly, since keys are never allowed to be nullable and thus etc.
+	// - 'ka' and 'va' are the key assembler and value assembler respectively.
+	//    Perhaps surprisingly, we can get away with using the assemblers for each type just straight up, no wrappers necessary;
+	//     All of the required magic is handled through maybe pointers and some tidy methods used during state transitions.
 	doTemplate(`
 		type _{{ .Type | TypeSymbol }}__Assembler struct {
 			w *_{{ .Type | TypeSymbol }}
 			m *schema.Maybe
 			state maState
 
-			{{- if not .Type.ValueIsNullable }}
 			cm schema.Maybe
-			{{- end}}
-			ka _{{ .Type | TypeSymbol }}__KeyAssembler
+			ka _{{ .Type.KeyType | TypeSymbol }}__Assembler
 			va _{{ .Type.ValueType | TypeSymbol }}__Assembler
 		}
 	`, w, g.AdjCfg, g)
@@ -421,12 +417,51 @@ func (g mapBuilderGenerator) EmitNodeAssemblerMethodAssignNode(w io.Writer) {
 	`, w, g.AdjCfg, g)
 }
 func (g mapBuilderGenerator) EmitNodeAssemblerOtherBits(w io.Writer) {
-	g.emitMapAssemblerChildTidyHelper(w)
+	g.emitMapAssemblerKeyTidyHelper(w)
+	g.emitMapAssemblerValueTidyHelper(w)
 	g.emitMapAssemblerMethods(w)
-	g.emitKeyAssembler(w)
 }
-func (g mapBuilderGenerator) emitMapAssemblerChildTidyHelper(w io.Writer) {
-	// This function attempts to clean up the state machine to acknolwedge child assembly finish.
+func (g mapBuilderGenerator) emitMapAssemblerKeyTidyHelper(w io.Writer) {
+	// This function attempts to clean up the state machine to acknolwedge key assembly finish.
+	//  If the child was finished and we just collected it, return true and update state to maState_expectValue.
+	//   Collecting the child includes updating the 'ma.w.m' to point into the relevant row of 'ma.w.t', since that couldn't be done earlier,
+	//    AND initializing the 'ma.va' (since we're already holding relevant offsets into 'ma.w.t').
+	//  Otherwise, if it wasn't done, return false;
+	//   and the caller is almost certain to emit an error momentarily.
+	// The function will only be called when the current state is maState_midKey.
+	//  (In general, the idea is that if the user is doing things correctly,
+	//   this function will only be called when the child is in fact finished.)
+	// Completion info always comes via 'cm', and we reset it to its initial condition of Maybe_Absent here.
+	//  At the same time, we nil the 'w' pointer for the child assembler; otherwise its own state machine would probably let it modify 'w' again!
+	doTemplate(`
+		func (ma *_{{ .Type | TypeSymbol }}__Assembler) keyFinishTidy() bool {
+			switch ma.cm {
+			case schema.Maybe_Value:
+				ma.ka.w = nil
+				tz := &ma.w.t[len(ma.w.t)-1]
+				ma.cm = schema.Maybe_Absent
+				ma.state = maState_expectValue
+				{{- if .Type.ValueIsNullable }}
+				ma.w.m[tz.k] = tz.v
+				{{- if not (MaybeUsesPtr .Type.ValueType) }}
+				ma.va.w = &tz.v.v
+				{{- end}}
+				ma.va.m = &tz.v.m
+				tz.v.m = allowNull
+				{{- else}}
+				ma.w.m[tz.k] = &tz.v
+				ma.va.w = &tz.v
+				ma.va.m = &ma.cm
+				{{- end}}
+				return true
+			default:
+				return false
+			}
+		}
+	`, w, g.AdjCfg, g)
+}
+func (g mapBuilderGenerator) emitMapAssemblerValueTidyHelper(w io.Writer) {
+	// This function attempts to clean up the state machine to acknolwedge child value assembly finish.
 	//  If the child was finished and we just collected it, return true and update state to maState_initial.
 	//  Otherwise, if it wasn't done, return false;
 	//   and the caller is almost certain to emit an error momentarily.
@@ -437,8 +472,8 @@ func (g mapBuilderGenerator) emitMapAssemblerChildTidyHelper(w io.Writer) {
 	//  At the same time, we nil the 'w' pointer for the child assembler; otherwise its own state machine would probably let it modify 'w' again!
 	doTemplate(`
 		func (ma *_{{ .Type | TypeSymbol }}__Assembler) valueFinishTidy() bool {
-			tz := &ma.w.t[len(ma.w.t)-1]
 			{{- if .Type.ValueIsNullable }}
+			tz := &ma.w.t[len(ma.w.t)-1]
 			switch tz.v.m {
 			case schema.Maybe_Null:
 				ma.state = maState_initial
@@ -486,22 +521,25 @@ func (g mapBuilderGenerator) emitMapAssemblerMethods(w io.Writer) {
 			{{- if eq .Type.KeyType.Kind.String "String" }}
 			k2 := _{{ .Type.KeyType | TypeSymbol }}__Style{}.fromString(k)
 			{{- else}}
-			k2 := _{{ .Type.KeyType | TypeSymbol }}__ReprStyle{}.fromString(k) // REVIEW: should this coersion indeed be quietly supported here, or is that more confusing than valuable?
+			k2 := _{{ .Type.KeyType | TypeSymbol }}__ReprStyle{}.fromString(k) // REVIEW: should this coersion indeed be quietly supported here, or is that more confusing than valuable?  probably shouldn't be supported: the full-on keyAssembler route certainly won't accept this.
 			{{- end}}
 			v, exists := ma.w.m[k2]
 			if _, exists := ma.w.m[k2]; exists {
 				return nil, ipld.ErrRepeatedMapKey{k2}
 			}
 			ma.w.t = append(ma.w.t, _{{ .Type | TypeSymbol }}__entry{k: k2})
-			ma.w.m[k2] = &ma.w.t[len(ma.w.t)-1].v
+			tz := &ma.w.t[len(ma.w.t)-1]
+			ma.w.m[k2] = &tz.v
 			ma.state = maState_midValue
 
 			{{- if .Type.ValueIsNullable }}
-			ma.va.w = ma.w.t[len(ma.w.t)-1].v.v
-			ma.va.m = &ma.w.t[len(ma.w.t)-1].v.m
-			ma.w.t[len(ma.w.t)-1].v.m = allowNull
+			{{- if not (MaybeUsesPtr .Type.ValueType) }}
+			ma.va.w = &tz.v.v
+			{{- end}}
+			ma.va.m = &tz.v.m
+			tz.v.m = allowNull
 			{{- else}}
-			ma.va.w = &ma.w.t[len(ma.w.t)-1].v
+			ma.va.w = &tz.v
 			ma.va.m = &ma.cm
 			{{- end}}
 			return &ma.va, nil
@@ -522,14 +560,16 @@ func (g mapBuilderGenerator) emitMapAssemblerMethods(w io.Writer) {
 				panic("invalid state: AssembleKey cannot be called on an assembler that's already finished")
 			}
 			ma.state = maState_midKey
-			return (*_{{ .Type | TypeSymbol }}__KeyAssembler)(ma)
+			return &ma.ka
 		}
 		func (ma *_{{ .Type | TypeSymbol }}__Assembler) AssembleValue() ipld.NodeAssembler {
 			switch ma.state {
 			case maState_initial:
 				panic("invalid state: AssembleValue cannot be called when no key is primed")
 			case maState_midKey:
-				panic("invalid state: AssembleValue cannot be called when in the middle of assembling a key")
+				if !ma.keyFinishTidy() {
+					panic("invalid state: AssembleValue cannot be called when in the middle of assembling a key")
+				} // if tidy success: carry on
 			case maState_expectValue:
 				// carry on
 			case maState_midValue:
@@ -564,74 +604,6 @@ func (g mapBuilderGenerator) emitMapAssemblerMethods(w io.Writer) {
 		}
 		func (ma *_{{ .Type | TypeSymbol }}__Assembler) ValueStyle(_ string) ipld.NodeStyle {
 			return _{{ .Type.ValueType | TypeSymbol }}__Style{}
-		}
-	`, w, g.AdjCfg, g)
-}
-func (g mapBuilderGenerator) emitKeyAssembler(w io.Writer) {
-	doTemplate(`
-		type _{{ .Type | TypeSymbol }}__KeyAssembler _{{ .Type | TypeSymbol }}__Assembler
-	`, w, g.AdjCfg, g)
-	stubs := mixins.StringAssemblerTraits{
-		g.PkgName,
-		g.TypeName + ".KeyAssembler",
-		"_" + g.AdjCfg.TypeSymbol(g.Type) + "__Key",
-	}
-	// FIXME: this is going to need a 'wk' slot.  and need a tidy helper that may be involved in state transitions, like values have.
-	// FIXME: this is... we need to us a child assembler.  this... cannot be replicated here, it's too much complexity.
-	doTemplate(`
-		func (ka *_{{ .Type | TypeSymbol }}__KeyAssembler) BeginMap(_ int) (ipld.MapAssembler, error) {
-			if ka.state != maState_midKey {
-				panic("misuse: KeyAssembler held beyond its valid lifetime")
-			}
-			// TODO this could turn into either a struct (as long as it has a string repr) or a union (same rule (implicitly, can't be kinded))...
-			//   but string reprs don't matter here: both of these act like maps at the type level.
-		}
-	`, w, g.AdjCfg, g)
-	stubs.EmitNodeAssemblerMethodBeginList(w)
-	stubs.EmitNodeAssemblerMethodAssignNull(w)
-	stubs.EmitNodeAssemblerMethodAssignBool(w)
-	stubs.EmitNodeAssemblerMethodAssignInt(w)
-	stubs.EmitNodeAssemblerMethodAssignFloat(w)
-	// DRY: this is almost entirely the same as the body of the AssembleEntry method except for the final return and where we put 'ka.state'.  extract.
-	// FIXME: as much as it's neat you *could* do direct no-tidy-phase-needed work here, i'm not sure it's gonna fly: if this is the only reason to have a custom ka type, it's probably not worth it.
-	doTemplate(`
-		func (ka *_{{ .Type | TypeSymbol }}__KeyAssembler) AssignString(k string) error {
-			if ka.state != maState_midKey {
-				panic("misuse: KeyAssembler held beyond its valid lifetime")
-			}
-
-			{{- if eq .Type.KeyType.Kind.String "String" }}
-			k2 := _{{ .Type.KeyType | TypeSymbol }}__Style{}.fromString(k)
-			{{- else}}
-			k2 := _{{ .Type.KeyType | TypeSymbol }}__ReprStyle{}.fromString(k) // REVIEW: should this coersion indeed be quietly supported here, or is that more confusing than valuable?
-			{{- end}}
-			v, exists := ka.w.m[k2]
-			if _, exists := ka.w.m[k2]; exists {
-				return ipld.ErrRepeatedMapKey{k2}
-			}
-			ka.w.t = append(ka.w.t, _{{ .Type | TypeSymbol }}__entry{k: k2})
-			ka.w.m[k2] = &ka.w.t[len(ka.w.t)-1].v
-			ka.state = maState_expectValue
-
-			{{- if .Type.ValueIsNullable }}
-			ka.va.w = ka.w.t[len(ka.w.t)-1].v.v
-			ka.va.m = &ka.w.t[len(ka.w.t)-1].v.m
-			ka.w.t[len(ka.w.t)-1].v.m = allowNull
-			{{- else}}
-			ka.va.w = &ka.w.t[len(ka.w.t)-1].v
-			ka.va.m = &ka.cm
-			{{- end}}
-			return nil
-		}
-	`, w, g.AdjCfg, g)
-	stubs.EmitNodeAssemblerMethodAssignBytes(w)
-	stubs.EmitNodeAssemblerMethodAssignLink(w)
-	doTemplate(`
-		func (ka *_{{ .Type | TypeSymbol }}__KeyAssembler) AssignNode(v ipld.Node) error {
-			// TODO more key reification
-		}
-		func (_{{ .Type | TypeSymbol }}__KeyAssembler) Style() ipld.NodeStyle {
-			return _{{ .Type.KeyType | TypeSymbol }}__Style{}
 		}
 	`, w, g.AdjCfg, g)
 }
