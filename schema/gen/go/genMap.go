@@ -202,7 +202,7 @@ func (g mapGenerator) EmitNodeMethodMapIterator(w io.Writer) {
 			if itr.idx >= len(itr.n.t) {
 				return nil, nil, ipld.ErrIteratorOverread{}
 			}
-			x := itr.n.t[itr.idx]
+			x := &itr.n.t[itr.idx]
 			k = &x.k
 			{{- if .Type.ValueIsNullable }}
 			switch x.v.m {
