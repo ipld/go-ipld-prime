@@ -28,8 +28,13 @@ func SpawnLink(name TypeName) TypeLink {
 func SpawnLinkReference(name TypeName, referenceType Type) TypeLink {
 	return TypeLink{anyType{name, nil}, referenceType, true}
 }
+
 func SpawnList(name TypeName, typ Type, nullable bool) TypeList {
 	return TypeList{anyType{name, nil}, false, typ, nullable}
+}
+
+func SpawnMap(name TypeName, keyType Type, valueType Type, nullable bool) TypeMap {
+	return TypeMap{anyType{name, nil}, false, keyType, valueType, nullable}
 }
 
 func SpawnStruct(name TypeName, fields []StructField, repr StructRepresentation) TypeStruct {
