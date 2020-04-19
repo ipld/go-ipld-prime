@@ -40,3 +40,22 @@ func TestMapsContainingMaybe(t *testing.T) {
 		})
 	})
 }
+
+func TestMapsContainingMaps(t *testing.T) {
+	ts := schema.TypeSystem{}
+	ts.Init()
+	adjCfg := &AdjunctCfg{
+		maybeUsesPtr: map[schema.TypeName]bool{},
+	}
+	ts.Accumulate(schema.SpawnString("String"))
+	ts.Accumulate(schema.SpawnMap("Map__String__String",
+		ts.TypeByName("String"), ts.TypeByName("String"), false))
+	ts.Accumulate(schema.SpawnMap("Map__String__Map__String__String",
+		ts.TypeByName("String"), ts.TypeByName("Map__String__String"), true))
+
+	prefix := "maps-recursive"
+	pkgName := "main"
+	genAndCompileAndTest(t, prefix, pkgName, ts, adjCfg, func(t *testing.T, getStyleByName func(string) ipld.NodeStyle) {
+		//test(t, getStyleByName("Stroct"), getStyleByName("Stroct.Repr"))
+	})
+}

@@ -43,7 +43,7 @@ func (g structGenerator) EmitNativeBuilder(w io.Writer) {
 }
 
 func (g structGenerator) EmitNativeMaybe(w io.Writer) {
-	// TODO maybes need a lot of questions answered
+	emitNativeMaybe(w, g.AdjCfg, g)
 }
 
 // --- type info --->

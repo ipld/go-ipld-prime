@@ -79,7 +79,7 @@ func (g mapGenerator) EmitNativeBuilder(w io.Writer) {
 }
 
 func (g mapGenerator) EmitNativeMaybe(w io.Writer) {
-	// TODO these really seem to be maximally cookiecutter.  Can we extract them somewhere?
+	emitNativeMaybe(w, g.AdjCfg, g)
 }
 
 // --- type info --->
