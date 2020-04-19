@@ -38,13 +38,25 @@ func (g stringGenerator) EmitNativeAccessors(w io.Writer) {
 }
 
 func (g stringGenerator) EmitNativeBuilder(w io.Writer) {
-	// Scalar types are easy to generate a constructor function for.
-	// REVIEW: if this is useful and should be on by default; it also adds a decent amount of noise to a package.
+	// Generate a single-step construction function -- this is easy to do for a scalar,
+	//  and all representations of scalar kind can be expected to have a method like this.
+	// The function is attached to the nodestyle for convenient namespacing;
+	//  it needs no new memory, so it would be inappropriate to attach to the builder or assembler.
+	// The function is directly used internally by anything else that might involve recursive destructuring on the same scalar kind
+	//  (for example, structs using stringjoin strategies that have one of this type as a field, etc).
 	// FUTURE: should engage validation flow.
 	doTemplate(`
-		func New{{ .Type | TypeSymbol }}(v string) {{ .Type | TypeSymbol }} {
+		func (_{{ .Type | TypeSymbol }}__Style) fromString(w *_{{ .Type | TypeSymbol }}, v string) error {
+			*w = _{{ .Type | TypeSymbol }}{v}
+			return nil
+		}
+	`, w, g.AdjCfg, g)
+	// And generate a publicly exported version of that single-step constructor, too.
+	//  (Just don't expose the details about allocation, because you can't meaningfully use that from outside the package.)
+	doTemplate(`
+		func (_{{ .Type | TypeSymbol }}__Style) FromString(v string) ({{ .Type | TypeSymbol }}, error) {
 			n := _{{ .Type | TypeSymbol }}{v}
-			return &n
+			return &n, nil
 		}
 	`, w, g.AdjCfg, g)
 }

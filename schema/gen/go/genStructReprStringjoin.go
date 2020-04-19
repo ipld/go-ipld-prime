@@ -170,14 +170,14 @@ func (g structReprStringjoinReprBuilderGenerator) EmitNodeBuilderMethods(w io.Wr
 	// REVIEW: We could make an immut-safe verion of this and export it on the NodeStyle too, as `FromString(string)`.
 	// FUTURE: should engage validation flow.
 	doTemplate(`
-		func (_{{ .Type | TypeSymbol }}__ReprStyle) construct(w *_{{ .Type | TypeSymbol }}, v string) error {
+		func (_{{ .Type | TypeSymbol }}__ReprStyle) fromString(w *_{{ .Type | TypeSymbol }}, v string) error {
 			ss, err := mixins.SplitExact(v, "{{ .Type.RepresentationStrategy.GetDelim }}", {{ len .Type.Fields }})
 			if err != nil {
 				return ipld.ErrUnmatchable{TypeName:"{{ .PkgName }}.{{ .Type.Name }}.Repr", Reason: err}
 			}
 			{{- $dot := . -}} {{- /* ranging modifies dot, unhelpfully */ -}}
 			{{- range $i, $field := .Type.Fields }}
-			if err := (_{{ $field.Type | TypeSymbol }}__ReprStyle{}).construct(&w.{{ $field | FieldSymbolLower }}, ss[{{ $i }}]); err != nil {
+			if err := (_{{ $field.Type | TypeSymbol }}__ReprStyle{}).fromString(&w.{{ $field | FieldSymbolLower }}, ss[{{ $i }}]); err != nil {
 				return ipld.ErrUnmatchable{TypeName:"{{ $dot.PkgName }}.{{ $dot.Type.Name }}.Repr", Reason: err}
 			}
 			{{- end}}
@@ -219,7 +219,7 @@ func (g structReprStringjoinReprBuilderGenerator) EmitNodeAssemblerMethodAssignS
 				na.w = &_{{ .Type | TypeSymbol }}{}
 			}
 			{{- end}}
-			if err := (_{{ .Type | TypeSymbol }}__ReprStyle{}).construct(na.w, v); err != nil {
+			if err := (_{{ .Type | TypeSymbol }}__ReprStyle{}).fromString(na.w, v); err != nil {
 				return err
 			}
 			return na.fcb()
