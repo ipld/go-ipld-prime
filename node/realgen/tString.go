@@ -14,9 +14,13 @@ type String = *_String
 func (n String) String() string {
 	return n.x
 }
-func NewString(v string) String {
+func (_String__Style) fromString(w *_String, v string) error {
+	*w = _String{v}
+	return nil
+}
+func (_String__Style) FromString(v string) (String, error) {
 	n := _String{v}
-	return &n
+	return &n, nil
 }
 
 type _String__Maybe struct {
@@ -137,6 +141,7 @@ type _String__Assembler struct {
 	m *schema.Maybe
 }
 
+func (na *_String__Assembler) reset() {}
 func (_String__Assembler) BeginMap(sizeHint int) (ipld.MapAssembler, error) {
 	return mixins.StringAssembler{"realgen.String"}.BeginMap(0)
 }
@@ -221,10 +226,4 @@ type _String__Repr = _String
 var _ ipld.Node = &_String__Repr{}
 
 type _String__ReprStyle = _String__Style
-
-func (_String__ReprStyle) construct(w *_String, v string) error {
-	*w = _String{v}
-	return nil
-}
-
 type _String__ReprAssembler = _String__Assembler

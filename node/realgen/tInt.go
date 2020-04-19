@@ -137,6 +137,7 @@ type _Int__Assembler struct {
 	m *schema.Maybe
 }
 
+func (na *_Int__Assembler) reset() {}
 func (_Int__Assembler) BeginMap(sizeHint int) (ipld.MapAssembler, error) {
 	return mixins.IntAssembler{"realgen.Int"}.BeginMap(0)
 }

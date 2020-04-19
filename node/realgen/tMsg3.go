@@ -25,6 +25,40 @@ func (n _Msg3) FieldWaga() Int {
 	return &n.waga
 }
 
+type _Msg3__Maybe struct {
+	m schema.Maybe
+	v Msg3
+}
+type MaybeMsg3 = *_Msg3__Maybe
+
+func (m MaybeMsg3) IsNull() bool {
+	return m.m == schema.Maybe_Null
+}
+func (m MaybeMsg3) IsUndefined() bool {
+	return m.m == schema.Maybe_Absent
+}
+func (m MaybeMsg3) Exists() bool {
+	return m.m == schema.Maybe_Value
+}
+func (m MaybeMsg3) AsNode() ipld.Node {
+	switch m.m {
+	case schema.Maybe_Absent:
+		return ipld.Undef
+	case schema.Maybe_Null:
+		return ipld.Null
+	case schema.Maybe_Value:
+		return m.v
+	default:
+		panic("unreachable")
+	}
+}
+func (m MaybeMsg3) Must() Msg3 {
+	if !m.Exists() {
+		panic("unbox of a maybe rejected")
+	}
+	return m.v
+}
+
 var (
 	fieldName__Msg3_Whee = _String{"whee"}
 	fieldName__Msg3_Woot = _String{"woot"}
@@ -165,6 +199,14 @@ type _Msg3__Assembler struct {
 	ca_waga _Int__Assembler
 }
 
+func (na *_Msg3__Assembler) reset() {
+	na.state = maState_initial
+	na.s = 0
+	na.ca_whee.reset()
+	na.ca_woot.reset()
+	na.ca_waga.reset()
+}
+
 var (
 	fieldBit__Msg3_Whee        = 1 << 0
 	fieldBit__Msg3_Woot        = 1 << 1
@@ -194,7 +236,7 @@ func (na *_Msg3__Assembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.StringAssembler{"realgen.Msg3"}.AssignNull()
+		return mixins.MapAssembler{"realgen.Msg3"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -266,6 +308,7 @@ func (ma *_Msg3__Assembler) valueFinishTidy() bool {
 	case 0:
 		switch ma.cm {
 		case schema.Maybe_Value:
+			ma.ca_whee.w = nil
 			ma.cm = schema.Maybe_Absent
 			ma.state = maState_initial
 			return true
@@ -275,6 +318,7 @@ func (ma *_Msg3__Assembler) valueFinishTidy() bool {
 	case 1:
 		switch ma.cm {
 		case schema.Maybe_Value:
+			ma.ca_woot.w = nil
 			ma.cm = schema.Maybe_Absent
 			ma.state = maState_initial
 			return true
@@ -284,6 +328,7 @@ func (ma *_Msg3__Assembler) valueFinishTidy() bool {
 	case 2:
 		switch ma.cm {
 		case schema.Maybe_Value:
+			ma.ca_waga.w = nil
 			ma.cm = schema.Maybe_Absent
 			ma.state = maState_initial
 			return true
@@ -506,11 +551,11 @@ func (_Msg3__Repr) ReprKind() ipld.ReprKind {
 func (n *_Msg3__Repr) LookupString(key string) (ipld.Node, error) {
 	switch key {
 	case "whee":
-		return &n.whee, nil
+		return n.whee.Representation(), nil
 	case "woot":
-		return &n.woot, nil
+		return n.woot.Representation(), nil
 	case "waga":
-		return &n.waga, nil
+		return n.waga.Representation(), nil
 	default:
 		return nil, schema.ErrNoSuchField{Type: nil /*TODO*/, FieldName: key}
 	}
@@ -544,13 +589,13 @@ func (itr *_Msg3__ReprMapItr) Next() (k ipld.Node, v ipld.Node, _ error) {
 	switch itr.idx {
 	case 0:
 		k = &fieldName__Msg3_Whee_serial
-		v = &itr.n.whee
+		v = itr.n.whee.Representation()
 	case 1:
 		k = &fieldName__Msg3_Woot_serial
-		v = &itr.n.woot
+		v = itr.n.woot.Representation()
 	case 2:
 		k = &fieldName__Msg3_Waga_serial
-		v = &itr.n.waga
+		v = itr.n.waga.Representation()
 	default:
 		panic("unreachable")
 	}
@@ -632,6 +677,13 @@ type _Msg3__ReprAssembler struct {
 	ca_waga _Int__ReprAssembler
 }
 
+func (na *_Msg3__ReprAssembler) reset() {
+	na.state = maState_initial
+	na.s = 0
+	na.ca_whee.reset()
+	na.ca_woot.reset()
+	na.ca_waga.reset()
+}
 func (na *_Msg3__ReprAssembler) BeginMap(int) (ipld.MapAssembler, error) {
 	switch *na.m {
 	case schema.Maybe_Value, schema.Maybe_Null:
@@ -654,7 +706,7 @@ func (na *_Msg3__ReprAssembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.StringAssembler{"realgen.Msg3.Repr"}.AssignNull()
+		return mixins.MapAssembler{"realgen.Msg3.Repr"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
