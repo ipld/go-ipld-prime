@@ -290,6 +290,14 @@ func (g structBuilderGenerator) EmitNodeAssemblerType(w io.Writer) {
 			{{end -}}
 		}
 
+		func (na *_{{ .Type | TypeSymbol }}__Assembler) reset() {
+			na.state = maState_initial
+			na.s = 0
+			{{- range $field := .Type.Fields }}
+			na.ca_{{ $field | FieldSymbolLower }}.reset()
+			{{- end}}
+		}
+
 		var (
 			{{- $type := .Type -}} {{- /* ranging modifies dot, unhelpfully */ -}}
 			{{- range $i, $field := .Type.Fields }}

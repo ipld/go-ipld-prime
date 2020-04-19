@@ -184,6 +184,8 @@ func (g stringBuilderGenerator) EmitNodeAssemblerType(w io.Writer) {
 			w *_{{ .Type | TypeSymbol }}
 			m *schema.Maybe
 		}
+
+		func (na *_{{ .Type | TypeSymbol }}__Assembler) reset() {}
 	`, w, g.AdjCfg, g)
 }
 func (g stringBuilderGenerator) EmitNodeAssemblerMethodAssignNull(w io.Writer) {

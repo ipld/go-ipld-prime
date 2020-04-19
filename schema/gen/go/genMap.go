@@ -320,6 +320,12 @@ func (g mapBuilderGenerator) EmitNodeAssemblerType(w io.Writer) {
 			ka _{{ .Type.KeyType | TypeSymbol }}__Assembler
 			va _{{ .Type.ValueType | TypeSymbol }}__Assembler
 		}
+
+		func (na *_{{ .Type | TypeSymbol }}__Assembler) reset() {
+			na.state = maState_initial
+			na.ka.reset()
+			na.va.reset()
+		}
 	`, w, g.AdjCfg, g)
 }
 func (g mapBuilderGenerator) EmitNodeAssemblerMethodBeginMap(w io.Writer) {
@@ -457,6 +463,7 @@ func (g mapBuilderGenerator) emitMapAssemblerKeyTidyHelper(w io.Writer) {
 				ma.va.w = &tz.v
 				ma.va.m = &ma.cm
 				{{- end}}
+				ma.ka.reset()
 				return true
 			default:
 				return false
@@ -481,12 +488,14 @@ func (g mapBuilderGenerator) emitMapAssemblerValueTidyHelper(w io.Writer) {
 			switch tz.v.m {
 			case schema.Maybe_Null:
 				ma.state = maState_initial
+				ma.va.reset()
 				return true
 			case schema.Maybe_Value:
 				{{- if (MaybeUsesPtr .Type.ValueType) }}
 				tz.v.v = ma.va.w
 				{{- end}}
 				ma.state = maState_initial
+				ma.va.reset()
 				return true
 			{{- else}}
 			switch ma.cm {
@@ -494,6 +503,7 @@ func (g mapBuilderGenerator) emitMapAssemblerValueTidyHelper(w io.Writer) {
 				ma.va.w = nil
 				ma.cm = schema.Maybe_Absent
 				ma.state = maState_initial
+				ma.va.reset()
 				return true
 			{{- end}}
 			default:

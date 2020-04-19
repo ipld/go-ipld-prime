@@ -173,6 +173,8 @@ func (g intBuilderGenerator) EmitNodeAssemblerType(w io.Writer) {
 			w *_{{ .Type | TypeSymbol }}
 			m *schema.Maybe
 		}
+
+		func (na *_{{ .Type | TypeSymbol }}__Assembler) reset() {}
 	`, w, g.AdjCfg, g)
 }
 func (g intBuilderGenerator) EmitNodeAssemblerMethodAssignNull(w io.Writer) {
