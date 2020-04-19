@@ -36,7 +36,7 @@ func (g mapGenerator) EmitNativeType(w io.Writer) {
 	doTemplate(`
 		type _{{ .Type | TypeSymbol }}__entry struct {
 			k _{{ .Type.KeyType | TypeSymbol }}
-			v {{if .Type.ValueIsNullable }}Maybe{{else}}_{{end}}{{ .Type.ValueType | TypeSymbol }}
+			v _{{ .Type.ValueType | TypeSymbol }}{{if .Type.ValueIsNullable }}__Maybe{{end}}
 		}
 	`, w, g.AdjCfg, g)
 }
@@ -131,15 +131,20 @@ func (g mapGenerator) EmitNodeMethodLookupString(w io.Writer) {
 	//   For that to work out, it means if the key type doesn't have a string type kind, we must be willing to reach into its representation and use the fromString there.
 	//  If the key type *does* have a string kind at the type level, we'll use that; no need to consider going through the representation.
 	doTemplate(`
-		func (n {{ .Type | TypeSymbol }}) LookupString(key string) (ipld.Node, error) {
+		func (n {{ .Type | TypeSymbol }}) LookupString(k string) (ipld.Node, error) {
+			var k2 _{{ .Type.KeyType | TypeSymbol }}
 			{{- if eq .Type.KeyType.Kind.String "String" }}
-			k2 := _{{ .Type.KeyType | TypeSymbol }}__Style{}.fromString(key)
+			if err := (_{{ .Type.KeyType | TypeSymbol }}__Style{}).fromString(&k2, k); err != nil {
+				return nil, err // TODO wrap in some kind of ErrInvalidKey
+			}
 			{{- else}}
-			k2 := _{{ .Type.KeyType | TypeSymbol }}__ReprStyle{}.fromString(key)
+			if err := (_{{ .Type.KeyType | TypeSymbol }}__ReprStyle{}).fromString(&k2, k); err != nil {
+				return nil, err // TODO wrap in some kind of ErrInvalidKey
+			}
 			{{- end}}
 			v, exists := n.m[k2]
 			if !exists {
-				return ipld.Undef, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+				return ipld.Undef, ipld.ErrNotExists{ipld.PathSegmentOfString(k)}
 			}
 			{{- if .Type.ValueIsNullable }}
 			if v.m == schema.Maybe_Null {
@@ -160,8 +165,8 @@ func (g mapGenerator) EmitNodeMethodLookup(w io.Writer) {
 	// REVIEW: by comparison structs will coerce anything stringish silently...!  so we should figure out if that inconsistency is acceptable, and at least document it if so.
 	// TODO: the error message for not-exists currently doesn't work if the key type kind isn't string -- but... should we just... put String methods on those things anyway, if their repr is string kind?
 	doTemplate(`
-		func (n {{ .Type | TypeSymbol }}) Lookup(key ipld.Node) (ipld.Node, error) {
-			k2, ok := key.({{ .Type.KeyType | TypeSymbol }})
+		func (n {{ .Type | TypeSymbol }}) Lookup(k ipld.Node) (ipld.Node, error) {
+			k2, ok := k.({{ .Type.KeyType | TypeSymbol }})
 			if !ok {
 				panic("todo invalid key type error")
 				// 'ipld.ErrInvalidKey{TypeName:"{{ .PkgName }}.{{ .Type.Name }}", Key:&_String{k}}' doesn't quite cut it: need room to explain the type, and it's not guaranteed k can be turned into a string at all
@@ -441,15 +446,14 @@ func (g mapBuilderGenerator) emitMapAssemblerKeyTidyHelper(w io.Writer) {
 				tz := &ma.w.t[len(ma.w.t)-1]
 				ma.cm = schema.Maybe_Absent
 				ma.state = maState_expectValue
+				ma.w.m[tz.k] = &tz.v
 				{{- if .Type.ValueIsNullable }}
-				ma.w.m[tz.k] = tz.v
 				{{- if not (MaybeUsesPtr .Type.ValueType) }}
 				ma.va.w = &tz.v.v
 				{{- end}}
 				ma.va.m = &tz.v.m
 				tz.v.m = allowNull
 				{{- else}}
-				ma.w.m[tz.k] = &tz.v
 				ma.va.w = &tz.v
 				ma.va.m = &ma.cm
 				{{- end}}
@@ -501,6 +505,10 @@ func (g mapBuilderGenerator) emitMapAssemblerValueTidyHelper(w io.Writer) {
 func (g mapBuilderGenerator) emitMapAssemblerMethods(w io.Writer) {
 	// FUTURE: some of the setup of the child assemblers could probably be DRY'd up.
 	// DRY: a lot of the state transition fences again are common for all mapoids, and could probably even be a function over '*state'... crap, except for the valueFinishTidy function, which is definitely not extractable.
+	// REVIEW: there's a copy-by-value of k2 that's avoidable.  But it simplifies the error path.  Worth working on?
+	// REVIEW: processing the key via the reprStyle of the key if it's type kind isn't string is currently supported, but should it be?  or is that more confusing than valuable?
+	//  Very possible that it shouldn't be supported: the full-on keyAssembler route won't accept this, so consistency with that might be best.
+	//  On the other hand, lookups by string *do* support this kind of processing (and it must, or PathSegment utility becomes unacceptably damaged), so either way, something feels surprising.
 	doTemplate(`
 		func (ma *_{{ .Type | TypeSymbol }}__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, error) {
 			switch ma.state {
@@ -518,20 +526,24 @@ func (g mapBuilderGenerator) emitMapAssemblerMethods(w io.Writer) {
 				panic("invalid state: AssembleEntry cannot be called on an assembler that's already finished")
 			}
 
+			var k2 _{{ .Type.KeyType | TypeSymbol }}
 			{{- if eq .Type.KeyType.Kind.String "String" }}
-			k2 := _{{ .Type.KeyType | TypeSymbol }}__Style{}.fromString(k)
+			if err := (_{{ .Type.KeyType | TypeSymbol }}__Style{}).fromString(&k2, k); err != nil {
+				return nil, err // TODO wrap in some kind of ErrInvalidKey
+			}
 			{{- else}}
-			k2 := _{{ .Type.KeyType | TypeSymbol }}__ReprStyle{}.fromString(k) // REVIEW: should this coersion indeed be quietly supported here, or is that more confusing than valuable?  probably shouldn't be supported: the full-on keyAssembler route certainly won't accept this.
+			if err := (_{{ .Type.KeyType | TypeSymbol }}__ReprStyle{}).fromString(&k2, k); err != nil {
+				return nil, err // TODO wrap in some kind of ErrInvalidKey
+			}
 			{{- end}}
-			v, exists := ma.w.m[k2]
 			if _, exists := ma.w.m[k2]; exists {
-				return nil, ipld.ErrRepeatedMapKey{k2}
+				return nil, ipld.ErrRepeatedMapKey{&k2}
 			}
 			ma.w.t = append(ma.w.t, _{{ .Type | TypeSymbol }}__entry{k: k2})
 			tz := &ma.w.t[len(ma.w.t)-1]
-			ma.w.m[k2] = &tz.v
 			ma.state = maState_midValue
 
+			ma.w.m[k2] = &tz.v
 			{{- if .Type.ValueIsNullable }}
 			{{- if not (MaybeUsesPtr .Type.ValueType) }}
 			ma.va.w = &tz.v.v
