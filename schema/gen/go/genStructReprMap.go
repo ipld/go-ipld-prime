@@ -623,7 +623,7 @@ func (g structReprMapReprBuilderGenerator) emitKeyAssembler(w io.Writer) {
 	`, w, g.AdjCfg, g)
 	stubs := mixins.StringAssemblerTraits{
 		g.PkgName,
-		g.TypeName + ".ReprKeyAssembler",
+		g.TypeName + ".KeyAssembler", // ".Repr" is already in `g.TypeName`, so don't stutter the "Repr" part.
 		"_" + g.AdjCfg.TypeSymbol(g.Type) + "__ReprKey",
 	}
 	// This key assembler can disregard any idea of complex keys because it's at the representation level!
