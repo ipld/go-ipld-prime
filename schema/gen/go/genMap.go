@@ -163,7 +163,6 @@ func (g mapGenerator) EmitNodeMethodLookup(w io.Writer) {
 	//  There's no attempt to turn the node (or its repr) into a string and then reify that into a key;
 	//   if you used a Node here, you should've meant it.
 	// REVIEW: by comparison structs will coerce anything stringish silently...!  so we should figure out if that inconsistency is acceptable, and at least document it if so.
-	// TODO: the error message for not-exists currently doesn't work if the key type kind isn't string -- but... should we just... put String methods on those things anyway, if their repr is string kind?
 	doTemplate(`
 		func (n {{ .Type | TypeSymbol }}) Lookup(k ipld.Node) (ipld.Node, error) {
 			k2, ok := k.({{ .Type.KeyType | TypeSymbol }})
