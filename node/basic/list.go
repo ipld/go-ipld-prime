@@ -39,7 +39,7 @@ func (n *plainList) LookupIndex(idx int) (ipld.Node, error) {
 func (n *plainList) LookupSegment(seg ipld.PathSegment) (ipld.Node, error) {
 	idx, err := seg.Index()
 	if err != nil {
-		panic("todo name this kind of error")
+		return nil, ipld.ErrInvalidSegmentForList{TroubleSegment: seg, Reason: err}
 	}
 	return n.LookupIndex(idx)
 }

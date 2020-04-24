@@ -38,5 +38,13 @@ func EmitInternalEnums(packageName string, w io.Writer) {
 			maState_midValue
 			maState_finished
 		)
+
+		type laState uint8
+
+		const (
+			laState_initial  laState = iota
+			laState_midValue
+			laState_finished
+		)
 	`))
 }

@@ -99,6 +99,29 @@ func (e ErrInvalidKey) Error() string {
 	}
 }
 
+// ErrInvalidSegmentForList is returned when using Node.LookupSegment and the
+// given PathSegment can't be applied to a list because it's unparsable as a number.
+type ErrInvalidSegmentForList struct {
+	// TypeName may indicate the named type of a node the function was called on,
+	// or be empty string if working on untyped data.
+	TypeName string
+
+	// TroubleSegment is the segment we couldn't use.
+	TroubleSegment PathSegment
+
+	// Reason may explain more about why the PathSegment couldn't be used;
+	// in practice, it's probably a 'strconv.NumError'.
+	Reason error
+}
+
+func (e ErrInvalidSegmentForList) Error() string {
+	v := "invalid segment for lookup on a list"
+	if e.TypeName != "" {
+		v += " of type " + e.TypeName
+	}
+	return v + fmt.Sprintf(": %q: %s", e.TroubleSegment.s, e)
+}
+
 // ErrUnmatchable is the catch-all type for parse errors in schema representation work.
 //
 // REVIEW: are builders at type level ever going to return this?  i don't think so.
