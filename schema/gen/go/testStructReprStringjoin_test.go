@@ -103,5 +103,42 @@ func TestStructReprStringjoin(t *testing.T) {
 				Wish(t, n, ShouldEqual, nr)
 			})
 		})
+
+		t.Run("nested stringjoin structs work", func(t *testing.T) {
+			ns := getStyleByName("Recurzorator")
+			nsr := getStyleByName("Recurzorator.Repr")
+			var n schema.TypedNode
+			t.Run("typed-create", func(t *testing.T) {
+				n = fluent.MustBuildMap(ns, 3, func(ma fluent.MapAssembler) {
+					ma.AssembleEntry("foo").AssignString("v1")
+					ma.AssembleEntry("zap").CreateMap(2, func(ma fluent.MapAssembler) {
+						ma.AssembleEntry("foo").AssignString("v2")
+						ma.AssembleEntry("bar").AssignString("v3")
+					})
+					ma.AssembleEntry("bar").AssignString("v4")
+				}).(schema.TypedNode)
+				t.Run("typed-read", func(t *testing.T) {
+					Require(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
+					Wish(t, n.Length(), ShouldEqual, 3)
+					Wish(t, must.String(must.Node(n.LookupString("foo"))), ShouldEqual, "v1")
+					Wish(t, must.String(must.Node(n.LookupString("bar"))), ShouldEqual, "v4")
+					n2 := must.Node(n.LookupString("zap"))
+					Wish(t, n2.Length(), ShouldEqual, 2)
+					Wish(t, must.String(must.Node(n2.LookupString("foo"))), ShouldEqual, "v2")
+					Wish(t, must.String(must.Node(n2.LookupString("bar"))), ShouldEqual, "v3")
+				})
+				t.Run("repr-read", func(t *testing.T) {
+					nr := n.Representation()
+					Require(t, nr.ReprKind(), ShouldEqual, ipld.ReprKind_String)
+					Wish(t, must.String(nr), ShouldEqual, "v1-v2:v3-v4")
+				})
+			})
+			t.Run("repr-create", func(t *testing.T) {
+				nr := fluent.MustBuild(nsr, func(na fluent.NodeAssembler) {
+					na.AssignString("v1-v2:v3-v4")
+				})
+				Wish(t, n, ShouldEqual, nr)
+			})
+		})
 	})
 }
