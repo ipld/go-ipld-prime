@@ -581,7 +581,10 @@ func (g mapBuilderGenerator) emitMapAssemblerMethods(w io.Writer) {
 			case maState_finished:
 				panic("invalid state: AssembleKey cannot be called on an assembler that's already finished")
 			}
+			ma.w.t = append(ma.w.t, _{{ .Type | TypeSymbol }}__entry{})
 			ma.state = maState_midKey
+			ma.ka.m = &ma.cm
+			ma.ka.w = &ma.w.t[len(ma.w.t)-1].k
 			return &ma.ka
 		}
 		func (ma *_{{ .Type | TypeSymbol }}__Assembler) AssembleValue() ipld.NodeAssembler {

@@ -181,4 +181,70 @@ func TestMapsContainingMaps(t *testing.T) {
 	})
 }
 
-// soon: challenge mode: a complex key (a struct with stringjoin repr)!
+func TestMapsWithComplexKeys(t *testing.T) {
+	ts := schema.TypeSystem{}
+	ts.Init()
+	adjCfg := &AdjunctCfg{
+		maybeUsesPtr: map[schema.TypeName]bool{},
+	}
+	ts.Accumulate(schema.SpawnString("String"))
+	ts.Accumulate(schema.SpawnStruct("StringyStruct",
+		[]schema.StructField{
+			schema.SpawnStructField("foo", ts.TypeByName("String"), false, false),
+			schema.SpawnStructField("bar", ts.TypeByName("String"), false, false),
+		},
+		schema.SpawnStructRepresentationStringjoin(":"),
+	))
+	ts.Accumulate(schema.SpawnMap("Map__StringyStruct__String",
+		ts.TypeByName("StringyStruct"), ts.TypeByName("String"), false))
+
+	prefix := "maps-cmplx-keys"
+	pkgName := "main"
+	genAndCompileAndTest(t, prefix, pkgName, ts, adjCfg, func(t *testing.T, getStyleByName func(string) ipld.NodeStyle) {
+		ns := getStyleByName("Map__StringyStruct__String")
+		nsr := getStyleByName("Map__StringyStruct__String.Repr")
+		var n schema.TypedNode
+		t.Run("typed-create", func(t *testing.T) {
+			n = fluent.MustBuildMap(ns, 3, func(ma fluent.MapAssembler) {
+				ma.AssembleKey().CreateMap(2, func(ma fluent.MapAssembler) {
+					ma.AssembleEntry("foo").AssignString("a")
+					ma.AssembleEntry("bar").AssignString("b")
+				})
+				ma.AssembleValue().AssignString("1")
+				ma.AssembleKey().CreateMap(2, func(ma fluent.MapAssembler) {
+					ma.AssembleEntry("foo").AssignString("c")
+					ma.AssembleEntry("bar").AssignString("d")
+				})
+				ma.AssembleValue().AssignString("2")
+				ma.AssembleKey().CreateMap(2, func(ma fluent.MapAssembler) {
+					ma.AssembleEntry("foo").AssignString("e")
+					ma.AssembleEntry("bar").AssignString("f")
+				})
+				ma.AssembleValue().AssignString("3")
+			}).(schema.TypedNode)
+			t.Run("typed-read", func(t *testing.T) {
+				Require(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
+				Wish(t, n.Length(), ShouldEqual, 3)
+				n2 := must.Node(n.LookupString("c:d"))
+				Require(t, n2.ReprKind(), ShouldEqual, ipld.ReprKind_String)
+				Wish(t, must.String(n2), ShouldEqual, "2")
+			})
+			t.Run("repr-read", func(t *testing.T) {
+				nr := n.Representation()
+				Require(t, nr.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
+				Wish(t, nr.Length(), ShouldEqual, 3)
+				n2 := must.Node(nr.LookupString("c:d"))
+				Require(t, n2.ReprKind(), ShouldEqual, ipld.ReprKind_String)
+				Wish(t, must.String(n2), ShouldEqual, "2")
+			})
+		})
+		t.Run("repr-create", func(t *testing.T) {
+			nr := fluent.MustBuildMap(nsr, 3, func(ma fluent.MapAssembler) {
+				ma.AssembleEntry("a:b").AssignString("1")
+				ma.AssembleEntry("c:d").AssignString("2")
+				ma.AssembleEntry("e:f").AssignString("3")
+			})
+			Wish(t, n, ShouldEqual, nr)
+		})
+	})
+}

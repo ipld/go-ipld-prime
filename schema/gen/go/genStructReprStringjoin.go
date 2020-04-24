@@ -77,6 +77,10 @@ func (g structReprStringjoinReprGenerator) EmitNodeMethodAsString(w io.Writer) {
 	// A speciated String method is also generated here.
 	//  (Organization questionable: if this was at type level, it'd be in the 'EmitNativeAccessors' block,
 	//   but we don't have that in the NodeGenerator interface so we don't have it here.  Maybe that's a mistake.)
+	//
+	// A String method is *also* generated on the type-level node.
+	//  This might be worth consistency review...
+	//  It's a practical necessity in areas like stringifying for key error messages if used in map keys, for example.
 	doTemplate(`
 		func (n *_{{ .Type | TypeSymbol }}__Repr) AsString() (string, error) {
 			return n.String(), nil
@@ -88,6 +92,9 @@ func (g structReprStringjoinReprGenerator) EmitNodeMethodAsString(w io.Writer) {
 			{{- if $i }} + "{{ $type.RepresentationStrategy.GetDelim }}" + {{end -}}
 			(*_{{ $field.Type | TypeSymbol }}__Repr)(&n.{{ $field | FieldSymbolLower }}).String()
 			{{- end}}
+		}
+		func (n {{ .Type | TypeSymbol }}) String() string {
+			return (*_{{ .Type | TypeSymbol }}__Repr)(n).String()
 		}
 	`, w, g.AdjCfg, g)
 }
