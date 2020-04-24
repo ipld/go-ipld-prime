@@ -38,14 +38,15 @@ func (g intGenerator) EmitNativeAccessors(w io.Writer) {
 }
 
 func (g intGenerator) EmitNativeBuilder(w io.Writer) {
-	// Scalar types are easy to generate a constructor function for.
-	// REVIEW: if this is useful and should be on by default; it also adds a decent amount of noise to a package.
-	//  It might make perfect sense to put it on the NodeStyle instead, as `FromInt(int)`.
+	// Generate a single-step construction function -- this is easy to do for a scalar,
+	//  and all representations of scalar kind can be expected to have a method like this.
+	// The function is attached to the nodestyle for convenient namespacing;
+	//  it needs no new memory, so it would be inappropriate to attach to the builder or assembler.
 	// FUTURE: should engage validation flow.
 	doTemplate(`
-		func New{{ .Type | TypeSymbol }}(v int) {{ .Type | TypeSymbol }} {
+		func (_{{ .Type | TypeSymbol }}__Style) FromInt(v int) ({{ .Type | TypeSymbol }}, error) {
 			n := _{{ .Type | TypeSymbol }}{v}
-			return &n
+			return &n, nil
 		}
 	`, w, g.AdjCfg, g)
 }
