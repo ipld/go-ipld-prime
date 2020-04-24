@@ -3,11 +3,9 @@ package gengo
 import (
 	"fmt"
 	"io"
-)
 
-// Not yet handled:
-//   - the Style access singleton (and this one requires some aggregated input, so may trigger some refactoring).
-//   - reprBuilder
+	"github.com/ipld/go-ipld-prime/schema"
+)
 
 // TypeGenerator gathers all the info for generating all code related to one
 // type in the schema.
@@ -152,4 +150,31 @@ func EmitNode(ng NodeGenerator, w io.Writer) {
 	nbg.EmitNodeAssemblerMethodAssignNode(w)
 	nbg.EmitNodeAssemblerMethodStyle(w)
 	nbg.EmitNodeAssemblerOtherBits(w)
+}
+
+func EmitTypeTable(pkgName string, ts schema.TypeSystem, adjCfg *AdjunctCfg, w io.Writer) {
+	// REVIEW: if "T__Repr" is how we want to expose this.  We could also put 'Repr' accessors on the type/style objects.
+	// FUTURE: types and styles are supposed to be the same.  Some of this text pretends they already are, but work is needed on this.
+	doTemplate(`
+		package `+pkgName+`
+
+		// Type is a struct embeding a NodeStyle/Type for every Node implementation in this package.
+		// One of its major uses is to start the construction of a value.
+		// You can use it like this:
+		//
+		// 		`+pkgName+`.Type.YourTypeName.NewBuilder().BeginMap() //...
+		//
+		// and:
+		//
+		// 		`+pkgName+`.Type.OtherTypeName.NewBuilder().AssignString("x") // ...
+		//
+		var Type typeSlab
+
+		type typeSlab struct {
+			{{- range . }}
+			{{ .Name }}       _{{ . | TypeSymbol }}__Style
+			{{ .Name }}__Repr _{{ . | TypeSymbol }}__ReprStyle
+			{{- end}}
+		}
+	`, w, adjCfg, ts.GetTypes())
 }

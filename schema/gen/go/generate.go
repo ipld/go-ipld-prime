@@ -41,6 +41,11 @@ func Generate(pth string, pkgName string, ts schema.TypeSystem, adjCfg *AdjunctC
 			}
 		})
 	}
+
+	// Emit the unified type table.
+	withFile(filepath.Join(pth, "typeTable.go"), func(f io.Writer) {
+		EmitTypeTable(pkgName, ts, adjCfg, f)
+	})
 }
 
 func withFile(filename string, fn func(io.Writer)) {
