@@ -157,13 +157,8 @@ func (g structReprStringjoinReprBuilderGenerator) EmitNodeBuilderMethods(w io.Wr
 		}
 		func (nb *_{{ .Type | TypeSymbol }}__ReprBuilder) Reset() {
 			var w _{{ .Type | TypeSymbol }}
-			*nb = _{{ .Type | TypeSymbol }}__ReprBuilder{_{{ .Type | TypeSymbol }}__ReprAssembler{w: &w, fcb:nb.fcb_root}}
-		}
-		func (nb *_{{ .Type | TypeSymbol }}__ReprBuilder) fcb_root() error {
-			if nb.z == true {
-				return mixins.StringAssembler{"{{ .PkgName }}.{{ .TypeName }}.Repr"}.AssignNull()
-			}
-			return nil
+			var m schema.Maybe
+			*nb = _{{ .Type | TypeSymbol }}__ReprBuilder{_{{ .Type | TypeSymbol }}__ReprAssembler{&w, &m}}
 		}
 	`, w, g.AdjCfg, g)
 	// Generate a single-step construction function -- this is easy to do for a scalar,
@@ -193,25 +188,28 @@ func (g structReprStringjoinReprBuilderGenerator) EmitNodeBuilderMethods(w io.Wr
 	`, w, g.AdjCfg, g)
 }
 func (g structReprStringjoinReprBuilderGenerator) EmitNodeAssemblerType(w io.Writer) {
-	// - 'w' is the "**w**ip" pointer.
-	// - 'z' is used to denote a null (in case we're used in a context that's acceptable).  z for **z**ilch.
-	// - 'fcb' is the **f**inish **c**all**b**ack, supplied by the parent if we're a child assembler.
 	doTemplate(`
 		type _{{ .Type | TypeSymbol }}__ReprAssembler struct {
 			w *_{{ .Type | TypeSymbol }}
-			z bool
-			fcb func() error
+			m *schema.Maybe
 		}
+
+		func (na *_{{ .Type | TypeSymbol }}__ReprAssembler) reset() {}
 	`, w, g.AdjCfg, g)
 }
 func (g structReprStringjoinReprBuilderGenerator) EmitNodeAssemblerMethodAssignNull(w io.Writer) {
-	// FIXME questions about if a state machine might be necessary here.
-	//  This shouldn't be allowed if AssignString was previously used.
-	//  If 'fcb' is always assigned at start, a nil there can perhaps do double duty?
 	doTemplate(`
 		func (na *_{{ .Type | TypeSymbol }}__ReprAssembler) AssignNull() error {
-			na.z = true
-			return na.fcb()
+			switch *na.m {
+			case allowNull:
+				*na.m = schema.Maybe_Null
+				return nil
+			case schema.Maybe_Absent:
+				return mixins.StringAssembler{"{{ .PkgName }}.{{ .TypeName }}"}.AssignNull()
+			case schema.Maybe_Value, schema.Maybe_Null:
+				panic("invalid state: cannot assign into assembler that's already finished")
+			}
+			panic("unreachable")
 		}
 	`, w, g.AdjCfg, g)
 }
@@ -221,6 +219,10 @@ func (g structReprStringjoinReprBuilderGenerator) EmitNodeAssemblerMethodAssignS
 	//  otherwise, the 'w' ptr should already be set, and we fill that memory location without allocating, as usual.
 	doTemplate(`
 		func (na *_{{ .Type | TypeSymbol }}__ReprAssembler) AssignString(v string) error {
+			switch *na.m {
+			case schema.Maybe_Value, schema.Maybe_Null:
+				panic("invalid state: cannot assign into assembler that's already finished")
+			}
 			{{- if .Type | MaybeUsesPtr }}
 			if na.w == nil {
 				na.w = &_{{ .Type | TypeSymbol }}{}
@@ -229,16 +231,37 @@ func (g structReprStringjoinReprBuilderGenerator) EmitNodeAssemblerMethodAssignS
 			if err := (_{{ .Type | TypeSymbol }}__ReprStyle{}).fromString(na.w, v); err != nil {
 				return err
 			}
-			return na.fcb()
+			*na.m = schema.Maybe_Value
+			return nil
 		}
 	`, w, g.AdjCfg, g)
 }
 
 func (g structReprStringjoinReprBuilderGenerator) EmitNodeAssemblerMethodAssignNode(w io.Writer) {
+	// AssignNode goes through three phases:
+	// 1. is it null?  Jump over to AssignNull (which may or may not reject it).
+	// 2. is it our own type?  Handle specially -- we might be able to do efficient things.
+	// 3. is it the right kind to morph into us?  Do so.
 	doTemplate(`
 		func (na *_{{ .Type | TypeSymbol }}__ReprAssembler) AssignNode(v ipld.Node) error {
 			if v.IsNull() {
 				return na.AssignNull()
+			}
+			if v2, ok := v.(*_{{ .Type | TypeSymbol }}); ok {
+				switch *na.m {
+				case schema.Maybe_Value, schema.Maybe_Null:
+					panic("invalid state: cannot assign into assembler that's already finished")
+				}
+				{{- if .Type | MaybeUsesPtr }}
+				if na.w == nil {
+					na.w = v2
+					*na.m = schema.Maybe_Value
+					return nil
+				}
+				{{- end}}
+				*na.w = *v2
+				*na.m = schema.Maybe_Value
+				return nil
 			}
 			if v2, err := v.AsString(); err != nil {
 				return err
