@@ -4,6 +4,12 @@ import (
 	"io"
 )
 
+/*
+	This file is full of "typical" templates.
+	They may not be used by *every* type and representation,
+	but if they're extracted here, they're at least used by *many*.
+*/
+
 // emitNativeMaybe turns out to be completely agnostic to pretty much everything;
 // it doesn't vary by kind at all, and has never yet ended up needing specialization.
 func emitNativeMaybe(w io.Writer, adjCfg *AdjunctCfg, data interface{}) {
@@ -40,6 +46,21 @@ func emitNativeMaybe(w io.Writer, adjCfg *AdjunctCfg, data interface{}) {
 				panic("unbox of a maybe rejected")
 			}
 			return {{if not (MaybeUsesPtr .Type) }}&{{end}}m.v
+		}
+	`, w, adjCfg, data)
+}
+
+// FUTURE/DRY: unclear how this should be extracted.  (if?  yes.  how?  dunno.)
+// One on hand, it seems tempting to put it in the mixins.
+// On the other hand, it's not at all sane for this to end up also embedded in reprs, so... no.
+// Bifrucate the mixins?  Maybe, but is that going to create more work overall or less?
+func emitTypicalTypedNodeMethodRepresentation(w io.Writer, adjCfg *AdjunctCfg, data interface{}) {
+	// Perhaps surprisingly, the way to get the representation node pointer
+	//  tends not to actually depend on either the node implementation details nor what the representation strategy is.
+	//   It only depends on that they have the same structure -- and there's no textual appearance of the details here.
+	doTemplate(`
+		func (n {{ .Type | TypeSymbol }}) Representation() ipld.Node {
+			return (*_{{ .Type | TypeSymbol }}__Repr)(n)
 		}
 	`, w, adjCfg, data)
 }
