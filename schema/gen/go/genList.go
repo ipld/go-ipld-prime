@@ -196,26 +196,10 @@ type listBuilderGenerator struct {
 }
 
 func (g listBuilderGenerator) EmitNodeBuilderType(w io.Writer) {
-	doTemplate(`
-		type _{{ .Type | TypeSymbol }}__Builder struct {
-			_{{ .Type | TypeSymbol }}__Assembler
-		}
-	`, w, g.AdjCfg, g)
+	emitEmitNodeBuilderType_typical(w, g.AdjCfg, g)
 }
 func (g listBuilderGenerator) EmitNodeBuilderMethods(w io.Writer) {
-	doTemplate(`
-		func (nb *_{{ .Type | TypeSymbol }}__Builder) Build() ipld.Node {
-			if nb.state != laState_finished {
-				panic("invalid state: assembler for {{ .PkgName }}.{{ .Type.Name }} must be 'finished' before Build can be called!")
-			}
-			return nb.w
-		}
-		func (nb *_{{ .Type | TypeSymbol }}__Builder) Reset() {
-			var w _{{ .Type | TypeSymbol }}
-			var m schema.Maybe
-			*nb = _{{ .Type | TypeSymbol }}__Builder{_{{ .Type | TypeSymbol }}__Assembler{w: &w, m: &m, state: laState_initial}}
-		}
-	`, w, g.AdjCfg, g)
+	emitNodeBuilderMethods_typical(w, g.AdjCfg, g)
 }
 func (g listBuilderGenerator) EmitNodeAssemblerType(w io.Writer) {
 	// - 'w' is the "**w**ip" pointer.

@@ -141,36 +141,13 @@ type intBuilderGenerator struct {
 }
 
 func (g intBuilderGenerator) EmitNodeBuilderType(w io.Writer) {
-	doTemplate(`
-		type _{{ .Type | TypeSymbol }}__Builder struct {
-			_{{ .Type | TypeSymbol }}__Assembler
-		}
-	`, w, g.AdjCfg, g)
+	emitEmitNodeBuilderType_typical(w, g.AdjCfg, g)
 }
 func (g intBuilderGenerator) EmitNodeBuilderMethods(w io.Writer) {
-	doTemplate(`
-		func (nb *_{{ .Type | TypeSymbol }}__Builder) Build() ipld.Node {
-			if *nb.m != schema.Maybe_Value {
-				panic("invalid state: cannot call Build on an assembler that's not finished")
-			}
-			return nb.w
-		}
-		func (nb *_{{ .Type | TypeSymbol }}__Builder) Reset() {
-			var w _{{ .Type | TypeSymbol }}
-			var m schema.Maybe
-			*nb = _{{ .Type | TypeSymbol }}__Builder{_{{ .Type | TypeSymbol }}__Assembler{&w, &m}}
-		}
-	`, w, g.AdjCfg, g)
+	emitNodeBuilderMethods_typical(w, g.AdjCfg, g)
 }
 func (g intBuilderGenerator) EmitNodeAssemblerType(w io.Writer) {
-	doTemplate(`
-		type _{{ .Type | TypeSymbol }}__Assembler struct {
-			w *_{{ .Type | TypeSymbol }}
-			m *schema.Maybe
-		}
-
-		func (na *_{{ .Type | TypeSymbol }}__Assembler) reset() {}
-	`, w, g.AdjCfg, g)
+	emitNodeAssemblerType_scalar(w, g.AdjCfg, g)
 }
 func (g intBuilderGenerator) EmitNodeAssemblerMethodAssignNull(w io.Writer) {
 	doTemplate(`
