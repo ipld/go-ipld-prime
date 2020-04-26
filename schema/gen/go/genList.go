@@ -254,23 +254,7 @@ func (g listBuilderGenerator) EmitNodeAssemblerMethodBeginList(w io.Writer) {
 	`, w, g.AdjCfg, g)
 }
 func (g listBuilderGenerator) EmitNodeAssemblerMethodAssignNull(w io.Writer) {
-	// DRY: this seems awfully similar -- almost exact, even -- *even* to anything mapoid (except the mixin type name contains 'List' instead of 'Map').
-	doTemplate(`
-		func (na *_{{ .Type | TypeSymbol }}__Assembler) AssignNull() error {
-			switch *na.m {
-			case allowNull:
-				*na.m = schema.Maybe_Null
-				return nil
-			case schema.Maybe_Absent:
-				return mixins.ListAssembler{"{{ .PkgName }}.{{ .TypeName }}"}.AssignNull()
-			case schema.Maybe_Value, schema.Maybe_Null:
-				panic("invalid state: cannot assign into assembler that's already finished")
-			case midvalue:
-				panic("invalid state: cannot assign null into an assembler that's already begun working on recursive structures!")
-			}
-			panic("unreachable")
-		}
-	`, w, g.AdjCfg, g)
+	emitNodeAssemblerMethodAssignNull_recursive(w, g.AdjCfg, g)
 }
 func (g listBuilderGenerator) EmitNodeAssemblerMethodAssignNode(w io.Writer) {
 	// AssignNode goes through three phases:

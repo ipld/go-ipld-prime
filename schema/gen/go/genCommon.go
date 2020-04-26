@@ -109,14 +109,46 @@ func emitNodeAssemblerType_scalar(w io.Writer, adjCfg *AdjunctCfg, data interfac
 	`, w, adjCfg, data)
 }
 
+func emitNodeAssemblerMethodAssignNull_scalar(w io.Writer, adjCfg *AdjunctCfg, data interface{}) {
+	doTemplate(`
+		func (na *_{{ .Type | TypeSymbol }}__Assembler) AssignNull() error {
+			switch *na.m {
+			case allowNull:
+				*na.m = schema.Maybe_Null
+				return nil
+			case schema.Maybe_Absent:
+				return mixins.{{ .ReprKind.String | title }}Assembler{"{{ .PkgName }}.{{ .TypeName }}"}.AssignNull()
+			case schema.Maybe_Value, schema.Maybe_Null:
+				panic("invalid state: cannot assign into assembler that's already finished")
+			}
+			panic("unreachable")
+		}
+	`, w, adjCfg, data)
+}
+
+// almost the same as the variant for scalars, but also has to check for midvalue state.
+func emitNodeAssemblerMethodAssignNull_recursive(w io.Writer, adjCfg *AdjunctCfg, data interface{}) {
+	doTemplate(`
+		func (na *_{{ .Type | TypeSymbol }}__Assembler) AssignNull() error {
+			switch *na.m {
+			case allowNull:
+				*na.m = schema.Maybe_Null
+				return nil
+			case schema.Maybe_Absent:
+				return mixins.{{ .ReprKind.String | title }}Assembler{"{{ .PkgName }}.{{ .TypeName }}"}.AssignNull()
+			case schema.Maybe_Value, schema.Maybe_Null:
+				panic("invalid state: cannot assign into assembler that's already finished")
+			case midvalue:
+				panic("invalid state: cannot assign null into an assembler that's already begun working on recursive structures!")
+			}
+			panic("unreachable")
+		}
+	`, w, adjCfg, data)
+}
+
 /*
 	Some things that might make it easier to DRY stuff, if they were standard in the 'data' obj:
 
-		- KindUpper
-			- e.g. makes it possible to hoist out 'AssignNull', which needs to refer to a kind-particular mixin type.
-			- also usable for to make 'AssignNode' hoistable for scalars.
-				- works purely textually for scalars, conveniently.
-				- maps and lists would need to branch entirely for the bottom half of the method.
 		- IsRepr
 			- ...?  Somewhat unsure on this one; many different ways to cut this.
 			- Would be used as `{{if .IsRepr}}Repr{{end}}` in some cases, and `{{if .IsRepr}}__Repr{{end}}` in others...

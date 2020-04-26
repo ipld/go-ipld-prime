@@ -67,6 +67,9 @@ type ListAssemblerTraits struct {
 	AppliedPrefix string // see doc in kindAssemblerTraitsGenerator
 }
 
+func (ListAssemblerTraits) ReprKind() ipld.ReprKind {
+	return ipld.ReprKind_List
+}
 func (g ListAssemblerTraits) EmitNodeAssemblerMethodBeginMap(w io.Writer) {
 	kindAssemblerTraitsGenerator{g.PkgName, g.TypeName, g.AppliedPrefix, ipld.ReprKind_List}.emitNodeAssemblerMethodBeginMap(w)
 }

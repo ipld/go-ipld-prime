@@ -2,6 +2,7 @@ package gengo
 
 import (
 	"io"
+	"strings"
 	"text/template"
 
 	wish "github.com/warpfork/go-wish"
@@ -15,6 +16,7 @@ func doTemplate(tmplstr string, w io.Writer, adjCfg *AdjunctCfg, data interface{
 			"FieldSymbolUpper": adjCfg.FieldSymbolUpper,
 			"MaybeUsesPtr":     adjCfg.MaybeUsesPtr,
 			"add":              func(a, b int) int { return a + b },
+			"title":            func(s string) string { return strings.Title(s) },
 		}).
 		// Seriously consider prepending `{{ $dot := . }}` (or 'top', or something).
 		// Or a func into the map that causes `dot` to mean `func() interface{} { return data }`.

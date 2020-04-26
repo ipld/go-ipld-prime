@@ -160,20 +160,7 @@ func (g stringBuilderGenerator) EmitNodeAssemblerType(w io.Writer) {
 	emitNodeAssemblerType_scalar(w, g.AdjCfg, g)
 }
 func (g stringBuilderGenerator) EmitNodeAssemblerMethodAssignNull(w io.Writer) {
-	doTemplate(`
-		func (na *_{{ .Type | TypeSymbol }}__Assembler) AssignNull() error {
-			switch *na.m {
-			case allowNull:
-				*na.m = schema.Maybe_Null
-				return nil
-			case schema.Maybe_Absent:
-				return mixins.StringAssembler{"{{ .PkgName }}.{{ .TypeName }}"}.AssignNull()
-			case schema.Maybe_Value, schema.Maybe_Null:
-				panic("invalid state: cannot assign into assembler that's already finished")
-			}
-			panic("unreachable")
-		}
-	`, w, g.AdjCfg, g)
+	emitNodeAssemblerMethodAssignNull_scalar(w, g.AdjCfg, g)
 }
 func (g stringBuilderGenerator) EmitNodeAssemblerMethodAssignString(w io.Writer) {
 	// This method contains a branch to support MaybeUsesPtr because new memory may need to be allocated.
