@@ -19,10 +19,18 @@ func Generate(pth string, pkgName string, ts schema.TypeSystem, adjCfg *AdjunctC
 		withFile(filepath.Join(pth, "t"+typ.Name().String()+".go"), func(f io.Writer) {
 			EmitFileHeader(pkgName, f)
 			switch t2 := typ.(type) {
+			case schema.TypeBool:
+				EmitEntireType(NewBoolReprBoolGenerator(pkgName, t2, adjCfg), f)
 			case schema.TypeInt:
 				EmitEntireType(NewIntReprIntGenerator(pkgName, t2, adjCfg), f)
+			case schema.TypeFloat:
+				EmitEntireType(NewFloatReprFloatGenerator(pkgName, t2, adjCfg), f)
 			case schema.TypeString:
 				EmitEntireType(NewStringReprStringGenerator(pkgName, t2, adjCfg), f)
+			case schema.TypeBytes:
+				EmitEntireType(NewBytesReprBytesGenerator(pkgName, t2, adjCfg), f)
+			case schema.TypeLink:
+				EmitEntireType(NewLinkReprLinkGenerator(pkgName, t2, adjCfg), f)
 			case schema.TypeStruct:
 				switch t2.RepresentationStrategy().(type) {
 				case schema.StructRepresentation_Map:
