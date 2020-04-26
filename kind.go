@@ -25,25 +25,25 @@ const (
 func (k ReprKind) String() string {
 	switch k {
 	case ReprKind_Invalid:
-		return "Invalid"
+		return "INVALID"
 	case ReprKind_Map:
-		return "Map"
+		return "map"
 	case ReprKind_List:
-		return "List"
+		return "list"
 	case ReprKind_Null:
-		return "Null"
+		return "null"
 	case ReprKind_Bool:
-		return "Bool"
+		return "bool"
 	case ReprKind_Int:
-		return "Int"
+		return "int"
 	case ReprKind_Float:
-		return "Float"
+		return "float"
 	case ReprKind_String:
-		return "String"
+		return "string"
 	case ReprKind_Bytes:
-		return "Bytes"
+		return "bytes"
 	case ReprKind_Link:
-		return "Link"
+		return "link"
 	default:
 		panic("invalid enumeration value!")
 	}
