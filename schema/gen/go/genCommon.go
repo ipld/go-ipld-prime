@@ -50,14 +50,17 @@ func emitNativeMaybe(w io.Writer, adjCfg *AdjunctCfg, data interface{}) {
 	`, w, adjCfg, data)
 }
 
-// FUTURE/DRY: unclear how this should be extracted.  (if?  yes.  how?  dunno.)
-// One on hand, it seems tempting to put it in the mixins.
-// On the other hand, it's not at all sane for this to end up also embedded in reprs, so... no.
-// Bifrucate the mixins?  Maybe, but is that going to create more work overall or less?
+// emitTypicalTypedNodeMethodRepresentation does... what it says on the tin.
+//
+// For most types, the way to get the representation node pointer doesn't
+// textually depend on either the node implementation details nor what the representation strategy is,
+// or really much at all for that matter.
+// It only depends on that they have the same structure, so this cast works.
+//
+// Most (all?) types can use this.  However, it's here rather in the mixins, for two reasons:
+// one, it still seems possible to imagine we'll have a type someday for which this pattern won't hold;
+// and two, mixins are also used in the repr generators, and it wouldn't be all sane for this method to end up also on reprs.
 func emitTypicalTypedNodeMethodRepresentation(w io.Writer, adjCfg *AdjunctCfg, data interface{}) {
-	// Perhaps surprisingly, the way to get the representation node pointer
-	//  tends not to actually depend on either the node implementation details nor what the representation strategy is.
-	//   It only depends on that they have the same structure -- and there's no textual appearance of the details here.
 	doTemplate(`
 		func (n {{ .Type | TypeSymbol }}) Representation() ipld.Node {
 			return (*_{{ .Type | TypeSymbol }}__Repr)(n)

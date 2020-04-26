@@ -84,13 +84,7 @@ func (g stringGenerator) EmitTypedNodeMethodType(w io.Writer) {
 }
 
 func (g stringGenerator) EmitTypedNodeMethodRepresentation(w io.Writer) {
-	// Perhaps surprisingly, the way to get the representation node pointer
-	//  does not actually depend on what the representation strategy is.
-	doTemplate(`
-		func (n {{ .Type | TypeSymbol }}) Representation() ipld.Node {
-			return (*_{{ .Type | TypeSymbol }}__Repr)(n)
-		}
-	`, w, g.AdjCfg, g)
+	emitTypicalTypedNodeMethodRepresentation(w, g.AdjCfg, g)
 }
 
 // --- Node interface satisfaction --->
