@@ -155,59 +155,10 @@ func (g intBuilderGenerator) EmitNodeAssemblerMethodAssignNull(w io.Writer) {
 	emitNodeAssemblerMethodAssignNull_scalar(w, g.AdjCfg, g)
 }
 func (g intBuilderGenerator) EmitNodeAssemblerMethodAssignInt(w io.Writer) {
-	// This method contains a branch to support MaybeUsesPtr because new memory may need to be allocated.
-	//  This allocation only happens if the 'w' ptr is nil, which means we're being used on a Maybe;
-	//  otherwise, the 'w' ptr should already be set, and we fill that memory location without allocating, as usual.
-	doTemplate(`
-		func (na *_{{ .Type | TypeSymbol }}__Assembler) AssignInt(v int) error {
-			switch *na.m {
-			case schema.Maybe_Value, schema.Maybe_Null:
-				panic("invalid state: cannot assign into assembler that's already finished")
-			}
-			{{- if .Type | MaybeUsesPtr }}
-			if na.w == nil {
-				na.w = &_{{ .Type | TypeSymbol }}{}
-			}
-			{{- end}}
-			na.w.x = v
-			*na.m = schema.Maybe_Value
-			return nil
-		}
-	`, w, g.AdjCfg, g)
+	emitNodeAssemblerMethodAssignKind_scalar(w, g.AdjCfg, g)
 }
 func (g intBuilderGenerator) EmitNodeAssemblerMethodAssignNode(w io.Writer) {
-	// AssignNode goes through three phases:
-	// 1. is it null?  Jump over to AssignNull (which may or may not reject it).
-	// 2. is it our own type?  Handle specially -- we might be able to do efficient things.
-	// 3. is it the right kind to morph into us?  Do so.
-	doTemplate(`
-		func (na *_{{ .Type | TypeSymbol }}__Assembler) AssignNode(v ipld.Node) error {
-			if v.IsNull() {
-				return na.AssignNull()
-			}
-			if v2, ok := v.(*_{{ .Type | TypeSymbol }}); ok {
-				switch *na.m {
-				case schema.Maybe_Value, schema.Maybe_Null:
-					panic("invalid state: cannot assign into assembler that's already finished")
-				}
-				{{- if .Type | MaybeUsesPtr }}
-				if na.w == nil {
-					na.w = v2
-					*na.m = schema.Maybe_Value
-					return nil
-				}
-				{{- end}}
-				*na.w = *v2
-				*na.m = schema.Maybe_Value
-				return nil
-			}
-			if v2, err := v.AsInt(); err != nil {
-				return err
-			} else {
-				return na.AssignInt(v2)
-			}
-		}
-	`, w, g.AdjCfg, g)
+	emitNodeAssemblerMethodAssignNode_scalar(w, g.AdjCfg, g)
 }
 func (g intBuilderGenerator) EmitNodeAssemblerOtherBits(w io.Writer) {
 	// Nothing needed here for int kinds.

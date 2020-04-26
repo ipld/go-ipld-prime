@@ -145,3 +145,64 @@ func emitNodeAssemblerMethodAssignNull_recursive(w io.Writer, adjCfg *AdjunctCfg
 		}
 	`, w, adjCfg, data)
 }
+
+// works for the AssignFoo methods for scalar kinds that are just boxing a thing.
+// There's no equivalent of this at all for recursives -- they're too diverse.
+func emitNodeAssemblerMethodAssignKind_scalar(w io.Writer, adjCfg *AdjunctCfg, data interface{}) {
+	// This method contains a branch to support MaybeUsesPtr because new memory may need to be allocated.
+	//  This allocation only happens if the 'w' ptr is nil, which means we're being used on a Maybe;
+	//  otherwise, the 'w' ptr should already be set, and we fill that memory location without allocating, as usual.
+	doTemplate(`
+		func (na *_{{ .Type | TypeSymbol }}__Assembler) Assign{{ .ReprKind.String | title }}(v {{ .ReprKind | KindPrim}}) error {
+			switch *na.m {
+			case schema.Maybe_Value, schema.Maybe_Null:
+				panic("invalid state: cannot assign into assembler that's already finished")
+			}
+			{{- if .Type | MaybeUsesPtr }}
+			if na.w == nil {
+				na.w = &_{{ .Type | TypeSymbol }}{}
+			}
+			{{- end}}
+			na.w.x = v
+			*na.m = schema.Maybe_Value
+			return nil
+		}
+	`, w, adjCfg, data)
+}
+
+// leans heavily on the fact all the AsFoo and AssignFoo methods follow a very consistent textual pattern.
+// FUTURE: may be able to get this to work for recursives, too -- but maps and lists each have very unique bottom thirds of this function.
+func emitNodeAssemblerMethodAssignNode_scalar(w io.Writer, adjCfg *AdjunctCfg, data interface{}) {
+	// AssignNode goes through three phases:
+	// 1. is it null?  Jump over to AssignNull (which may or may not reject it).
+	// 2. is it our own type?  Handle specially -- we might be able to do efficient things.
+	// 3. is it the right kind to morph into us?  Do so.
+	doTemplate(`
+		func (na *_{{ .Type | TypeSymbol }}__Assembler) AssignNode(v ipld.Node) error {
+			if v.IsNull() {
+				return na.AssignNull()
+			}
+			if v2, ok := v.(*_{{ .Type | TypeSymbol }}); ok {
+				switch *na.m {
+				case schema.Maybe_Value, schema.Maybe_Null:
+					panic("invalid state: cannot assign into assembler that's already finished")
+				}
+				{{- if .Type | MaybeUsesPtr }}
+				if na.w == nil {
+					na.w = v2
+					*na.m = schema.Maybe_Value
+					return nil
+				}
+				{{- end}}
+				*na.w = *v2
+				*na.m = schema.Maybe_Value
+				return nil
+			}
+			if v2, err := v.As{{ .ReprKind.String | title }}(); err != nil {
+				return err
+			} else {
+				return na.Assign{{ .ReprKind.String | title }}(v2)
+			}
+		}
+	`, w, adjCfg, data)
+}
