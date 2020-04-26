@@ -12,6 +12,9 @@ type MapTraits struct {
 	TypeSymbol string // see doc in kindTraitsGenerator
 }
 
+func (MapTraits) ReprKind() ipld.ReprKind {
+	return ipld.ReprKind_Map
+}
 func (g MapTraits) EmitNodeMethodReprKind(w io.Writer) {
 	doTemplate(`
 		func ({{ .TypeSymbol }}) ReprKind() ipld.ReprKind {

@@ -67,10 +67,7 @@ func (g listGenerator) EmitNodeType(w io.Writer) {
 }
 
 func (g listGenerator) EmitNodeTypeAssertions(w io.Writer) {
-	doTemplate(`
-		var _ ipld.Node = ({{ .Type | TypeSymbol }})(&_{{ .Type | TypeSymbol }}{})
-		var _ schema.TypedNode = ({{ .Type | TypeSymbol }})(&_{{ .Type | TypeSymbol }}{})
-	`, w, g.AdjCfg, g)
+	emitNodeTypeAssertions_typical(w, g.AdjCfg, g)
 }
 
 func (g listGenerator) EmitNodeMethodLookupIndex(w io.Writer) {
@@ -152,25 +149,11 @@ func (g listGenerator) EmitNodeMethodLength(w io.Writer) {
 }
 
 func (g listGenerator) EmitNodeMethodStyle(w io.Writer) {
-	// REVIEW: this appears to be standard even across kinds; can we extract it?
-	doTemplate(`
-		func ({{ .Type | TypeSymbol }}) Style() ipld.NodeStyle {
-			return _{{ .Type | TypeSymbol }}__Style{}
-		}
-	`, w, g.AdjCfg, g)
+	emitNodeMethodStyle_typical(w, g.AdjCfg, g)
 }
 
 func (g listGenerator) EmitNodeStyleType(w io.Writer) {
-	// REVIEW: this appears to be standard even across kinds; can we extract it?
-	doTemplate(`
-		type _{{ .Type | TypeSymbol }}__Style struct{}
-
-		func (_{{ .Type | TypeSymbol }}__Style) NewBuilder() ipld.NodeBuilder {
-			var nb _{{ .Type | TypeSymbol }}__Builder
-			nb.Reset()
-			return &nb
-		}
-	`, w, g.AdjCfg, g)
+	emitNodeStyleType_typical(w, g.AdjCfg, g)
 }
 
 // --- NodeBuilder and NodeAssembler --->

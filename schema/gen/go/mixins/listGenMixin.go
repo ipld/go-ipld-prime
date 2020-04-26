@@ -12,6 +12,9 @@ type ListTraits struct {
 	TypeSymbol string // see doc in kindTraitsGenerator
 }
 
+func (ListTraits) ReprKind() ipld.ReprKind {
+	return ipld.ReprKind_List
+}
 func (g ListTraits) EmitNodeMethodReprKind(w io.Writer) {
 	doTemplate(`
 		func ({{ .TypeSymbol }}) ReprKind() ipld.ReprKind {

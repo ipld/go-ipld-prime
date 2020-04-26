@@ -17,26 +17,11 @@ type stringGenerator struct {
 // --- native content and specializations --->
 
 func (g stringGenerator) EmitNativeType(w io.Writer) {
-	// Using a struct with a single member is the same size in memory as a typedef,
-	//  while also having the advantage of meaning we can block direct casting,
-	//   which is desirable because the compiler then ensures our validate methods can't be evaded.
-	doTemplate(`
-		type _{{ .Type | TypeSymbol }} struct{ x string }
-		type {{ .Type | TypeSymbol }} = *_{{ .Type | TypeSymbol }}
-	`, w, g.AdjCfg, g)
+	emitNativeType_scalar(w, g.AdjCfg, g)
 }
-
 func (g stringGenerator) EmitNativeAccessors(w io.Writer) {
-	// The node interface's `AsString` method is almost sufficient... but
-	//  this method unboxes without needing to return an error that's statically impossible,
-	//   which makes it easier to use in chaining.
-	doTemplate(`
-		func (n {{ .Type | TypeSymbol }}) String() string {
-			return n.x
-		}
-	`, w, g.AdjCfg, g)
+	emitNativeAccessors_scalar(w, g.AdjCfg, g)
 }
-
 func (g stringGenerator) EmitNativeBuilder(w io.Writer) {
 	// Generate a single-step construction function -- this is easy to do for a scalar,
 	//  and all representations of scalar kind can be expected to have a method like this.
@@ -53,12 +38,7 @@ func (g stringGenerator) EmitNativeBuilder(w io.Writer) {
 	`, w, g.AdjCfg, g)
 	// And generate a publicly exported version of that single-step constructor, too.
 	//  (Just don't expose the details about allocation, because you can't meaningfully use that from outside the package.)
-	doTemplate(`
-		func (_{{ .Type | TypeSymbol }}__Style) FromString(v string) ({{ .Type | TypeSymbol }}, error) {
-			n := _{{ .Type | TypeSymbol }}{v}
-			return &n, nil
-		}
-	`, w, g.AdjCfg, g)
+	emitNativeBuilder_scalar(w, g.AdjCfg, g)
 }
 
 func (g stringGenerator) EmitNativeMaybe(w io.Writer) {
@@ -94,38 +74,16 @@ func (g stringGenerator) EmitNodeType(w io.Writer) {
 }
 
 func (g stringGenerator) EmitNodeTypeAssertions(w io.Writer) {
-	doTemplate(`
-		var _ ipld.Node = ({{ .Type | TypeSymbol }})(&_{{ .Type | TypeSymbol }}{})
-		var _ schema.TypedNode = ({{ .Type | TypeSymbol }})(&_{{ .Type | TypeSymbol }}{})
-	`, w, g.AdjCfg, g)
+	emitNodeTypeAssertions_typical(w, g.AdjCfg, g)
 }
-
 func (g stringGenerator) EmitNodeMethodAsString(w io.Writer) {
-	doTemplate(`
-		func (n {{ .Type | TypeSymbol }}) AsString() (string, error) {
-			return n.x, nil
-		}
-	`, w, g.AdjCfg, g)
+	emitNodeMethodAsKind_scalar(w, g.AdjCfg, g)
 }
-
 func (g stringGenerator) EmitNodeMethodStyle(w io.Writer) {
-	doTemplate(`
-		func ({{ .Type | TypeSymbol }}) Style() ipld.NodeStyle {
-			return _{{ .Type | TypeSymbol }}__Style{}
-		}
-	`, w, g.AdjCfg, g)
+	emitNodeMethodStyle_typical(w, g.AdjCfg, g)
 }
-
 func (g stringGenerator) EmitNodeStyleType(w io.Writer) {
-	doTemplate(`
-		type _{{ .Type | TypeSymbol }}__Style struct{}
-
-		func (_{{ .Type | TypeSymbol }}__Style) NewBuilder() ipld.NodeBuilder {
-			var nb _{{ .Type | TypeSymbol }}__Builder
-			nb.Reset()
-			return &nb
-		}
-	`, w, g.AdjCfg, g)
+	emitNodeStyleType_typical(w, g.AdjCfg, g)
 }
 
 // --- NodeBuilder and NodeAssembler --->

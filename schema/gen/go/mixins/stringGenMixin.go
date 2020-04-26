@@ -12,6 +12,9 @@ type StringTraits struct {
 	TypeSymbol string // see doc in kindTraitsGenerator
 }
 
+func (StringTraits) ReprKind() ipld.ReprKind {
+	return ipld.ReprKind_String
+}
 func (g StringTraits) EmitNodeMethodReprKind(w io.Writer) {
 	doTemplate(`
 		func ({{ .TypeSymbol }}) ReprKind() ipld.ReprKind {

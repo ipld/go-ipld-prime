@@ -50,6 +50,78 @@ func emitNativeMaybe(w io.Writer, adjCfg *AdjunctCfg, data interface{}) {
 	`, w, adjCfg, data)
 }
 
+func emitNativeType_scalar(w io.Writer, adjCfg *AdjunctCfg, data interface{}) {
+	// Using a struct with a single member is the same size in memory as a typedef,
+	//  while also having the advantage of meaning we can block direct casting,
+	//   which is desirable because the compiler then ensures our validate methods can't be evaded.
+	doTemplate(`
+		type _{{ .Type | TypeSymbol }} struct{ x {{ .ReprKind | KindPrim }} }
+		type {{ .Type | TypeSymbol }} = *_{{ .Type | TypeSymbol }}
+	`, w, adjCfg, data)
+}
+
+func emitNativeAccessors_scalar(w io.Writer, adjCfg *AdjunctCfg, data interface{}) {
+	// The node interface's `AsFoo` method is almost sufficient... but
+	//  this method unboxes without needing to return an error that's statically impossible,
+	//   which makes it easier to use in chaining.
+	doTemplate(`
+		func (n {{ .Type | TypeSymbol }}) {{ .ReprKind.String | title }}() {{ .ReprKind | KindPrim }} {
+			return n.x
+		}
+	`, w, adjCfg, data)
+}
+
+func emitNativeBuilder_scalar(w io.Writer, adjCfg *AdjunctCfg, data interface{}) {
+	// Generate a single-step construction function -- this is easy to do for a scalar,
+	//  and all representations of scalar kind can be expected to have a method like this.
+	// The function is attached to the nodestyle for convenient namespacing;
+	//  it needs no new memory, so it would be inappropriate to attach to the builder or assembler.
+	// FUTURE: should engage validation flow.
+	doTemplate(`
+		func (_{{ .Type | TypeSymbol }}__Style) From{{ .ReprKind.String | title }}(v {{ .ReprKind | KindPrim }}) ({{ .Type | TypeSymbol }}, error) {
+			n := _{{ .Type | TypeSymbol }}{v}
+			return &n, nil
+		}
+	`, w, adjCfg, data)
+}
+
+func emitNodeTypeAssertions_typical(w io.Writer, adjCfg *AdjunctCfg, data interface{}) {
+	doTemplate(`
+		var _ ipld.Node = ({{ .Type | TypeSymbol }})(&_{{ .Type | TypeSymbol }}{})
+		var _ schema.TypedNode = ({{ .Type | TypeSymbol }})(&_{{ .Type | TypeSymbol }}{})
+	`, w, adjCfg, data)
+}
+
+func emitNodeMethodAsKind_scalar(w io.Writer, adjCfg *AdjunctCfg, data interface{}) {
+	doTemplate(`
+		func (n {{ .Type | TypeSymbol }}) As{{ .ReprKind.String | title }}() ({{ .ReprKind | KindPrim }}, error) {
+			return n.x, nil
+		}
+	`, w, adjCfg, data)
+}
+
+func emitNodeMethodStyle_typical(w io.Writer, adjCfg *AdjunctCfg, data interface{}) {
+	doTemplate(`
+		func ({{ .Type | TypeSymbol }}) Style() ipld.NodeStyle {
+			return _{{ .Type | TypeSymbol }}__Style{}
+		}
+	`, w, adjCfg, data)
+}
+
+// nodeStyle doesn't really vary textually at all between types and kinds
+// because it's just builders and standard resets.
+func emitNodeStyleType_typical(w io.Writer, adjCfg *AdjunctCfg, data interface{}) {
+	doTemplate(`
+		type _{{ .Type | TypeSymbol }}__Style struct{}
+
+		func (_{{ .Type | TypeSymbol }}__Style) NewBuilder() ipld.NodeBuilder {
+			var nb _{{ .Type | TypeSymbol }}__Builder
+			nb.Reset()
+			return &nb
+		}
+	`, w, adjCfg, data)
+}
+
 // emitTypicalTypedNodeMethodRepresentation does... what it says on the tin.
 //
 // For most types, the way to get the representation node pointer doesn't
@@ -153,7 +225,7 @@ func emitNodeAssemblerMethodAssignKind_scalar(w io.Writer, adjCfg *AdjunctCfg, d
 	//  This allocation only happens if the 'w' ptr is nil, which means we're being used on a Maybe;
 	//  otherwise, the 'w' ptr should already be set, and we fill that memory location without allocating, as usual.
 	doTemplate(`
-		func (na *_{{ .Type | TypeSymbol }}__Assembler) Assign{{ .ReprKind.String | title }}(v {{ .ReprKind | KindPrim}}) error {
+		func (na *_{{ .Type | TypeSymbol }}__Assembler) Assign{{ .ReprKind.String | title }}(v {{ .ReprKind | KindPrim }}) error {
 			switch *na.m {
 			case schema.Maybe_Value, schema.Maybe_Null:
 				panic("invalid state: cannot assign into assembler that's already finished")
