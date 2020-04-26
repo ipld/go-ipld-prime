@@ -58,7 +58,7 @@ func (g structReprMapReprGenerator) EmitNodeType(w io.Writer) {
 	// We do also want some constants for our fields;
 	//  they'll make iterators able to work faster.
 	//  These might be the same strings as the type-level field names
-	//   (in face, they are, unless renames are used)... but that's fine.
+	//   (in fact, they are, unless renames are used)... but that's fine.
 	//    We get simpler code by just doing this unconditionally.
 	doTemplate(`
 		var (
