@@ -180,7 +180,7 @@ func (g intBuilderGenerator) EmitNodeAssemblerMethodAssignNull(w io.Writer) {
 				*na.m = schema.Maybe_Null
 				return nil
 			case schema.Maybe_Absent:
-				return mixins.StringAssembler{"{{ .PkgName }}.{{ .TypeName }}"}.AssignNull()
+				return mixins.IntAssembler{"{{ .PkgName }}.{{ .TypeName }}"}.AssignNull()
 			case schema.Maybe_Value, schema.Maybe_Null:
 				panic("invalid state: cannot assign into assembler that's already finished")
 			}
