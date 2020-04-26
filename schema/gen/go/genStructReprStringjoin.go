@@ -143,6 +143,8 @@ type structReprStringjoinReprBuilderGenerator struct {
 	Type    schema.TypeStruct
 }
 
+func (structReprStringjoinReprBuilderGenerator) IsRepr() bool { return true } // hint used in some generalized templates.
+
 func (g structReprStringjoinReprBuilderGenerator) EmitNodeBuilderType(w io.Writer) {
 	doTemplate(`
 		type _{{ .Type | TypeSymbol }}__ReprBuilder struct {
@@ -198,20 +200,7 @@ func (g structReprStringjoinReprBuilderGenerator) EmitNodeAssemblerType(w io.Wri
 	`, w, g.AdjCfg, g)
 }
 func (g structReprStringjoinReprBuilderGenerator) EmitNodeAssemblerMethodAssignNull(w io.Writer) {
-	doTemplate(`
-		func (na *_{{ .Type | TypeSymbol }}__ReprAssembler) AssignNull() error {
-			switch *na.m {
-			case allowNull:
-				*na.m = schema.Maybe_Null
-				return nil
-			case schema.Maybe_Absent:
-				return mixins.StringAssembler{"{{ .PkgName }}.{{ .TypeName }}"}.AssignNull()
-			case schema.Maybe_Value, schema.Maybe_Null:
-				panic("invalid state: cannot assign into assembler that's already finished")
-			}
-			panic("unreachable")
-		}
-	`, w, g.AdjCfg, g)
+	emitNodeAssemblerMethodAssignNull_scalar(w, g.AdjCfg, g)
 }
 func (g structReprStringjoinReprBuilderGenerator) EmitNodeAssemblerMethodAssignString(w io.Writer) {
 	// This method contains a branch to support MaybeUsesPtr because new memory may need to be allocated.

@@ -237,6 +237,8 @@ type structBuilderGenerator struct {
 	Type    schema.TypeStruct
 }
 
+func (structBuilderGenerator) IsRepr() bool { return false } // hint used in some generalized templates.
+
 func (g structBuilderGenerator) EmitNodeBuilderType(w io.Writer) {
 	emitEmitNodeBuilderType_typical(w, g.AdjCfg, g)
 }

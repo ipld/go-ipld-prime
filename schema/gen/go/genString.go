@@ -150,6 +150,8 @@ type stringBuilderGenerator struct {
 	Type    schema.TypeString
 }
 
+func (stringBuilderGenerator) IsRepr() bool { return false } // hint used in some generalized templates.
+
 func (g stringBuilderGenerator) EmitNodeBuilderType(w io.Writer) {
 	emitEmitNodeBuilderType_typical(w, g.AdjCfg, g)
 }

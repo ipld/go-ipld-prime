@@ -268,6 +268,8 @@ type mapBuilderGenerator struct {
 	Type    schema.TypeMap
 }
 
+func (mapBuilderGenerator) IsRepr() bool { return false } // hint used in some generalized templates.
+
 func (g mapBuilderGenerator) EmitNodeBuilderType(w io.Writer) {
 	emitEmitNodeBuilderType_typical(w, g.AdjCfg, g)
 }

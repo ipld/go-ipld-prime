@@ -111,13 +111,13 @@ func emitNodeAssemblerType_scalar(w io.Writer, adjCfg *AdjunctCfg, data interfac
 
 func emitNodeAssemblerMethodAssignNull_scalar(w io.Writer, adjCfg *AdjunctCfg, data interface{}) {
 	doTemplate(`
-		func (na *_{{ .Type | TypeSymbol }}__Assembler) AssignNull() error {
+		func (na *_{{ .Type | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Assembler) AssignNull() error {
 			switch *na.m {
 			case allowNull:
 				*na.m = schema.Maybe_Null
 				return nil
 			case schema.Maybe_Absent:
-				return mixins.{{ .ReprKind.String | title }}Assembler{"{{ .PkgName }}.{{ .TypeName }}"}.AssignNull()
+				return mixins.{{ .ReprKind.String | title }}Assembler{"{{ .PkgName }}.{{ .TypeName }}{{ if .IsRepr }}.Repr{{end}}"}.AssignNull()
 			case schema.Maybe_Value, schema.Maybe_Null:
 				panic("invalid state: cannot assign into assembler that's already finished")
 			}
@@ -129,13 +129,13 @@ func emitNodeAssemblerMethodAssignNull_scalar(w io.Writer, adjCfg *AdjunctCfg, d
 // almost the same as the variant for scalars, but also has to check for midvalue state.
 func emitNodeAssemblerMethodAssignNull_recursive(w io.Writer, adjCfg *AdjunctCfg, data interface{}) {
 	doTemplate(`
-		func (na *_{{ .Type | TypeSymbol }}__Assembler) AssignNull() error {
+		func (na *_{{ .Type | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Assembler) AssignNull() error {
 			switch *na.m {
 			case allowNull:
 				*na.m = schema.Maybe_Null
 				return nil
 			case schema.Maybe_Absent:
-				return mixins.{{ .ReprKind.String | title }}Assembler{"{{ .PkgName }}.{{ .TypeName }}"}.AssignNull()
+				return mixins.{{ .ReprKind.String | title }}Assembler{"{{ .PkgName }}.{{ .TypeName }}{{ if .IsRepr }}.Repr{{end}}"}.AssignNull()
 			case schema.Maybe_Value, schema.Maybe_Null:
 				panic("invalid state: cannot assign into assembler that's already finished")
 			case midvalue:
@@ -145,14 +145,3 @@ func emitNodeAssemblerMethodAssignNull_recursive(w io.Writer, adjCfg *AdjunctCfg
 		}
 	`, w, adjCfg, data)
 }
-
-/*
-	Some things that might make it easier to DRY stuff, if they were standard in the 'data' obj:
-
-		- IsRepr
-			- ...?  Somewhat unsure on this one; many different ways to cut this.
-			- Would be used as `{{if .IsRepr}}Repr{{end}}` in some cases, and `{{if .IsRepr}}__Repr{{end}}` in others...
-			  which is viable, but somewhat disconcerting?  I dunno, maybe it's fine.
-			- Also would be sometimes used as `{{if .IsRepr}}.Repr{{end}}`, in the middle of some help and error texts.
-
-*/

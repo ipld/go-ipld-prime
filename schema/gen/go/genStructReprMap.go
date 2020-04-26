@@ -295,6 +295,8 @@ type structReprMapReprBuilderGenerator struct {
 	Type    schema.TypeStruct
 }
 
+func (structReprMapReprBuilderGenerator) IsRepr() bool { return true } // hint used in some generalized templates.
+
 func (g structReprMapReprBuilderGenerator) EmitNodeBuilderType(w io.Writer) {
 	doTemplate(`
 		type _{{ .Type | TypeSymbol }}__ReprBuilder struct {
@@ -374,22 +376,7 @@ func (g structReprMapReprBuilderGenerator) EmitNodeAssemblerMethodBeginMap(w io.
 	`, w, g.AdjCfg, g)
 }
 func (g structReprMapReprBuilderGenerator) EmitNodeAssemblerMethodAssignNull(w io.Writer) {
-	doTemplate(`
-		func (na *_{{ .Type | TypeSymbol }}__ReprAssembler) AssignNull() error {
-			switch *na.m {
-			case allowNull:
-				*na.m = schema.Maybe_Null
-				return nil
-			case schema.Maybe_Absent:
-				return mixins.MapAssembler{"{{ .PkgName }}.{{ .TypeName }}"}.AssignNull()
-			case schema.Maybe_Value, schema.Maybe_Null:
-				panic("invalid state: cannot assign into assembler that's already finished")
-			case midvalue:
-				panic("invalid state: cannot assign null into an assembler that's already begun working on recursive structures!")
-			}
-			panic("unreachable")
-		}
-	`, w, g.AdjCfg, g)
+	emitNodeAssemblerMethodAssignNull_recursive(w, g.AdjCfg, g)
 }
 func (g structReprMapReprBuilderGenerator) EmitNodeAssemblerMethodAssignNode(w io.Writer) {
 	// AssignNode goes through three phases:

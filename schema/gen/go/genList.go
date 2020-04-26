@@ -195,6 +195,8 @@ type listBuilderGenerator struct {
 	Type    schema.TypeList
 }
 
+func (listBuilderGenerator) IsRepr() bool { return false } // hint used in some generalized templates.
+
 func (g listBuilderGenerator) EmitNodeBuilderType(w io.Writer) {
 	emitEmitNodeBuilderType_typical(w, g.AdjCfg, g)
 }

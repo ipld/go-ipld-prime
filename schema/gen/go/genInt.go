@@ -140,6 +140,8 @@ type intBuilderGenerator struct {
 	Type    schema.TypeInt
 }
 
+func (intBuilderGenerator) IsRepr() bool { return false } // hint used in some generalized templates.
+
 func (g intBuilderGenerator) EmitNodeBuilderType(w io.Writer) {
 	emitEmitNodeBuilderType_typical(w, g.AdjCfg, g)
 }
