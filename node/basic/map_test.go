@@ -9,6 +9,7 @@ import (
 func TestMap(t *testing.T) {
 	tests.SpecTestMapStrInt(t, Style__Map{})
 	tests.SpecTestMapStrMapStrInt(t, Style__Map{})
+	tests.SpecTestMapStrListStr(t, Style__Map{})
 }
 
 func BenchmarkMapStrInt_3n_AssembleStandard(b *testing.B) {
