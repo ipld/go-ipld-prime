@@ -2,11 +2,17 @@ package dagcbor
 
 import (
 	"bytes"
+	"context"
+	"crypto/rand"
+	"io"
 	"testing"
 
+	cid "github.com/ipfs/go-cid"
 	. "github.com/warpfork/go-wish"
 
+	ipld "github.com/ipld/go-ipld-prime"
 	"github.com/ipld/go-ipld-prime/fluent"
+	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
 	basicnode "github.com/ipld/go-ipld-prime/node/basic"
 )
 
@@ -61,4 +67,38 @@ func TestRoundtripScalar(t *testing.T) {
 		Require(t, err, ShouldEqual, nil)
 		Wish(t, nb.Build(), ShouldEqual, simple)
 	})
+}
+
+func TestRoundtripLinksAndBytes(t *testing.T) {
+	lb := cidlink.LinkBuilder{cid.Prefix{
+		Version:  1,
+		Codec:    0x71,
+		MhType:   0x17,
+		MhLength: 4,
+	}}
+	buf := bytes.Buffer{}
+	lnk, err := lb.Build(context.Background(), ipld.LinkContext{}, n,
+		func(ipld.LinkContext) (io.Writer, ipld.StoreCommitter, error) {
+			return &buf, func(lnk ipld.Link) error { return nil }, nil
+		},
+	)
+	Require(t, err, ShouldEqual, nil)
+
+	var linkByteNode = fluent.MustBuildMap(basicnode.Style__Map{}, 4, func(na fluent.MapAssembler) {
+		nva := na.AssembleEntry("Link")
+		nva.AssignLink(lnk)
+		nva = na.AssembleEntry("Bytes")
+		bytes := make([]byte, 100)
+		_, _ = rand.Read(bytes)
+		nva.AssignBytes(bytes)
+	})
+
+	buf.Reset()
+	err = Encoder(linkByteNode, &buf)
+	Require(t, err, ShouldEqual, nil)
+	nb := basicnode.Style__Map{}.NewBuilder()
+	err = Decoder(nb, &buf)
+	Require(t, err, ShouldEqual, nil)
+	reconstructed := nb.Build()
+	Wish(t, reconstructed, ShouldEqual, linkByteNode)
 }
