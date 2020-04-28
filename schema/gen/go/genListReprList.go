@@ -87,3 +87,32 @@ func (g listReprListReprGenerator) EmitNodeStyleType(w io.Writer) {
 func (g listReprListReprGenerator) GetNodeBuilderGenerator() NodeBuilderGenerator {
 	return nil // TODO
 }
+
+/*
+
+	- lookups are essentially the same except you add a '.Representation' on the end.
+		- *maybe* frumped by dealing with nullable.  hopefully we can write that a textually brief way and let the compiler inline/optimize it.
+		- "cast" yourself back to the type-level node and call that method explicitly, then do the suffix.
+
+	- iterators are in a similar boat to lookups.
+		- still do also definitely need to generate a new named iterator type, though, which... probably bombs a lot.
+			- actually, can we just do one of those `type foo bar` things again?  save a bit of gsloc that way?  probably.
+
+	- infuriatingly, i don't see a way to skimp on the darn stub methods.
+		- to be fair, they're supposed to return a moderately different error message anyway -- ".Repr" in the type name text.
+		- at least we have reduced sloc here in the generator, since the mixin methods apply again.
+
+	- assembler has a different child assembler type to embed (poosibly with radically different logical behavior), so that's deffo a new type.
+		- but a LOT of the logic is subsequently the same right up until that hand-off to the child assembler.
+			- most of the major 'state' and 'm' transition logic is the same (Finish especially)
+			- slice growth and maybe-allocs are the same, because the child node type is the same, even though the repr assembler is divergent
+			- all the 'tidy' logic falls in with the above
+			- we might even be able to extract all of these, if we can make them regard just '*state' and '*m' parameters.
+				- i'm not sure if this would have negative effects on binary size or optimizations though.
+
+	- AssignNode legitimately differs (but only for the bottom third) because... wait, no, *textually*, it's identical.
+		- it calls out to AssembleValue, which will differ in that it calls the Repr assembler for child, but that's it.
+
+	- BeginList is also textually identical except for the type it has to be attached to >:I
+
+*/
