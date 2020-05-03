@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"github.com/ipld/go-ipld-prime/codec/dagjson"
-	"github.com/ipld/go-ipld-prime/node/basic"
+	basicnode "github.com/ipld/go-ipld-prime/node/basic"
 )
 
 func ExampleCreateDataAndMarshal() {
