@@ -286,26 +286,10 @@ type structReprMapReprBuilderGenerator struct {
 func (structReprMapReprBuilderGenerator) IsRepr() bool { return true } // hint used in some generalized templates.
 
 func (g structReprMapReprBuilderGenerator) EmitNodeBuilderType(w io.Writer) {
-	doTemplate(`
-		type _{{ .Type | TypeSymbol }}__ReprBuilder struct {
-			_{{ .Type | TypeSymbol }}__ReprAssembler
-		}
-	`, w, g.AdjCfg, g)
+	emitEmitNodeBuilderType_typical(w, g.AdjCfg, g)
 }
 func (g structReprMapReprBuilderGenerator) EmitNodeBuilderMethods(w io.Writer) {
-	doTemplate(`
-		func (nb *_{{ .Type | TypeSymbol }}__ReprBuilder) Build() ipld.Node {
-			if nb.state != maState_finished {
-				panic("invalid state: assembler for {{ .PkgName }}.{{ .Type.Name }}.Repr must be 'finished' before Build can be called!")
-			}
-			return nb.w
-		}
-		func (nb *_{{ .Type | TypeSymbol }}__ReprBuilder) Reset() {
-			var w _{{ .Type | TypeSymbol }}
-			var m schema.Maybe
-			*nb = _{{ .Type | TypeSymbol }}__ReprBuilder{_{{ .Type | TypeSymbol }}__ReprAssembler{w: &w, m: &m, state: maState_initial}}
-		}
-	`, w, g.AdjCfg, g)
+	emitNodeBuilderMethods_typical(w, g.AdjCfg, g)
 }
 func (g structReprMapReprBuilderGenerator) EmitNodeAssemblerType(w io.Writer) {
 	// - 'w' is the "**w**ip" pointer.

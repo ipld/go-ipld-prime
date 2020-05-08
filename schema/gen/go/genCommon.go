@@ -143,8 +143,8 @@ func emitTypicalTypedNodeMethodRepresentation(w io.Writer, adjCfg *AdjunctCfg, d
 // Turns out basically all builders are just an embed of the corresponding assembler.
 func emitEmitNodeBuilderType_typical(w io.Writer, adjCfg *AdjunctCfg, data interface{}) {
 	doTemplate(`
-		type _{{ .Type | TypeSymbol }}__Builder struct {
-			_{{ .Type | TypeSymbol }}__Assembler
+		type _{{ .Type | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Builder struct {
+			_{{ .Type | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Assembler
 		}
 	`, w, adjCfg, data)
 }
@@ -153,16 +153,16 @@ func emitEmitNodeBuilderType_typical(w io.Writer, adjCfg *AdjunctCfg, data inter
 // We count on the zero value of any addntl non-common fields of the assembler being correct.
 func emitNodeBuilderMethods_typical(w io.Writer, adjCfg *AdjunctCfg, data interface{}) {
 	doTemplate(`
-		func (nb *_{{ .Type | TypeSymbol }}__Builder) Build() ipld.Node {
+		func (nb *_{{ .Type | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Builder) Build() ipld.Node {
 			if *nb.m != schema.Maybe_Value {
 				panic("invalid state: cannot call Build on an assembler that's not finished")
 			}
 			return nb.w
 		}
-		func (nb *_{{ .Type | TypeSymbol }}__Builder) Reset() {
+		func (nb *_{{ .Type | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Builder) Reset() {
 			var w _{{ .Type | TypeSymbol }}
 			var m schema.Maybe
-			*nb = _{{ .Type | TypeSymbol }}__Builder{_{{ .Type | TypeSymbol }}__Assembler{w: &w, m: &m}}
+			*nb = _{{ .Type | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Builder{_{{ .Type | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Assembler{w: &w, m: &m}}
 		}
 	`, w, adjCfg, data)
 }

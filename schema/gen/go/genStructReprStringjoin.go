@@ -146,23 +146,11 @@ type structReprStringjoinReprBuilderGenerator struct {
 func (structReprStringjoinReprBuilderGenerator) IsRepr() bool { return true } // hint used in some generalized templates.
 
 func (g structReprStringjoinReprBuilderGenerator) EmitNodeBuilderType(w io.Writer) {
-	doTemplate(`
-		type _{{ .Type | TypeSymbol }}__ReprBuilder struct {
-			_{{ .Type | TypeSymbol }}__ReprAssembler
-		}
-	`, w, g.AdjCfg, g)
+	emitEmitNodeBuilderType_typical(w, g.AdjCfg, g)
 }
 func (g structReprStringjoinReprBuilderGenerator) EmitNodeBuilderMethods(w io.Writer) {
-	doTemplate(`
-		func (nb *_{{ .Type | TypeSymbol }}__ReprBuilder) Build() ipld.Node {
-			return nb.w
-		}
-		func (nb *_{{ .Type | TypeSymbol }}__ReprBuilder) Reset() {
-			var w _{{ .Type | TypeSymbol }}
-			var m schema.Maybe
-			*nb = _{{ .Type | TypeSymbol }}__ReprBuilder{_{{ .Type | TypeSymbol }}__ReprAssembler{&w, &m}}
-		}
-	`, w, g.AdjCfg, g)
+	emitNodeBuilderMethods_typical(w, g.AdjCfg, g)
+
 	// Generate a single-step construction function -- this is easy to do for a scalar,
 	//  and all representations of scalar kind can be expected to have a method like this.
 	// The function is attached to the nodestyle for convenient namespacing;
