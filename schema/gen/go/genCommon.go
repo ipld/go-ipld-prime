@@ -102,8 +102,8 @@ func emitNodeMethodAsKind_scalar(w io.Writer, adjCfg *AdjunctCfg, data interface
 
 func emitNodeMethodStyle_typical(w io.Writer, adjCfg *AdjunctCfg, data interface{}) {
 	doTemplate(`
-		func ({{ .Type | TypeSymbol }}) Style() ipld.NodeStyle {
-			return _{{ .Type | TypeSymbol }}__Style{}
+		func ({{ if .IsRepr }}_{{end}}{{ .Type | TypeSymbol }}{{ if .IsRepr }}__Repr{{end}}) Style() ipld.NodeStyle {
+			return _{{ .Type | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Style{}
 		}
 	`, w, adjCfg, data)
 }
@@ -112,10 +112,10 @@ func emitNodeMethodStyle_typical(w io.Writer, adjCfg *AdjunctCfg, data interface
 // because it's just builders and standard resets.
 func emitNodeStyleType_typical(w io.Writer, adjCfg *AdjunctCfg, data interface{}) {
 	doTemplate(`
-		type _{{ .Type | TypeSymbol }}__Style struct{}
+		type _{{ .Type | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Style struct{}
 
-		func (_{{ .Type | TypeSymbol }}__Style) NewBuilder() ipld.NodeBuilder {
-			var nb _{{ .Type | TypeSymbol }}__Builder
+		func (_{{ .Type | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Style) NewBuilder() ipld.NodeBuilder {
+			var nb _{{ .Type | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Builder
 			nb.Reset()
 			return &nb
 		}

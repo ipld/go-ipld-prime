@@ -14,6 +14,8 @@ type mapGenerator struct {
 	Type    schema.TypeMap
 }
 
+func (mapGenerator) IsRepr() bool { return false } // hint used in some generalized templates.
+
 // --- native content and specializations --->
 
 func (g mapGenerator) EmitNativeType(w io.Writer) {

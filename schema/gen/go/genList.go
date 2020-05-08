@@ -14,6 +14,8 @@ type listGenerator struct {
 	Type    schema.TypeList
 }
 
+func (listGenerator) IsRepr() bool { return false } // hint used in some generalized templates.
+
 // --- native content and specializations --->
 
 func (g listGenerator) EmitNativeType(w io.Writer) {

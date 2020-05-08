@@ -14,6 +14,8 @@ type linkGenerator struct {
 	Type    schema.TypeLink
 }
 
+func (linkGenerator) IsRepr() bool { return false } // hint used in some generalized templates.
+
 // --- native content and specializations --->
 
 func (g linkGenerator) EmitNativeType(w io.Writer) {

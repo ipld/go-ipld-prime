@@ -14,6 +14,8 @@ type stringGenerator struct {
 	Type    schema.TypeString
 }
 
+func (stringGenerator) IsRepr() bool { return false } // hint used in some generalized templates.
+
 // --- native content and specializations --->
 
 func (g stringGenerator) EmitNativeType(w io.Writer) {

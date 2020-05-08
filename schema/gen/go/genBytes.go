@@ -14,6 +14,8 @@ type bytesGenerator struct {
 	Type    schema.TypeBytes
 }
 
+func (bytesGenerator) IsRepr() bool { return false } // hint used in some generalized templates.
+
 // --- native content and specializations --->
 
 func (g bytesGenerator) EmitNativeType(w io.Writer) {

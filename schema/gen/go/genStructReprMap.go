@@ -49,6 +49,8 @@ type structReprMapReprGenerator struct {
 	Type    schema.TypeStruct
 }
 
+func (structReprMapReprGenerator) IsRepr() bool { return true } // hint used in some generalized templates.
+
 func (g structReprMapReprGenerator) EmitNodeType(w io.Writer) {
 	// The type is structurally the same, but will have a different set of methods.
 	doTemplate(`
@@ -252,25 +254,11 @@ func (g structReprMapReprGenerator) EmitNodeMethodLength(w io.Writer) {
 }
 
 func (g structReprMapReprGenerator) EmitNodeMethodStyle(w io.Writer) {
-	// REVIEW: this appears to be standard even across kinds; can we extract it?
-	doTemplate(`
-		func (_{{ .Type | TypeSymbol }}__Repr) Style() ipld.NodeStyle {
-			return _{{ .Type | TypeSymbol }}__ReprStyle{}
-		}
-	`, w, g.AdjCfg, g)
+	emitNodeMethodStyle_typical(w, g.AdjCfg, g)
 }
 
 func (g structReprMapReprGenerator) EmitNodeStyleType(w io.Writer) {
-	// REVIEW: this appears to be standard even across kinds; can we extract it?
-	doTemplate(`
-		type _{{ .Type | TypeSymbol }}__ReprStyle struct{}
-
-		func (_{{ .Type | TypeSymbol }}__ReprStyle) NewBuilder() ipld.NodeBuilder {
-			var nb _{{ .Type | TypeSymbol }}__ReprBuilder
-			nb.Reset()
-			return &nb
-		}
-	`, w, g.AdjCfg, g)
+	emitNodeStyleType_typical(w, g.AdjCfg, g)
 }
 
 // --- NodeBuilder and NodeAssembler --->

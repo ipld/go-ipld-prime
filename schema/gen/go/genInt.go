@@ -14,6 +14,8 @@ type intGenerator struct {
 	Type    schema.TypeInt
 }
 
+func (intGenerator) IsRepr() bool { return false } // hint used in some generalized templates.
+
 // --- native content and specializations --->
 
 func (g intGenerator) EmitNativeType(w io.Writer) {

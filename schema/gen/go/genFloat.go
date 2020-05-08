@@ -14,6 +14,8 @@ type float64Generator struct {
 	Type    schema.TypeFloat
 }
 
+func (float64Generator) IsRepr() bool { return false } // hint used in some generalized templates.
+
 // --- native content and specializations --->
 
 func (g float64Generator) EmitNativeType(w io.Writer) {

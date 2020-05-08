@@ -14,6 +14,8 @@ type boolGenerator struct {
 	Type    schema.TypeBool
 }
 
+func (boolGenerator) IsRepr() bool { return false } // hint used in some generalized templates.
+
 // --- native content and specializations --->
 
 func (g boolGenerator) EmitNativeType(w io.Writer) {
