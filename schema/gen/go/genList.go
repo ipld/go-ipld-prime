@@ -29,11 +29,11 @@ func (g listGenerator) EmitNativeType(w io.Writer) {
 }
 
 func (g listGenerator) EmitNativeAccessors(w io.Writer) {
-	// TODO: come back to this
+	// FUTURE: come back to this -- surely something nice can be done here.
 }
 
 func (g listGenerator) EmitNativeBuilder(w io.Writer) {
-	// Not yet clear what exactly might be most worth emitting here.
+	// FUTURE: come back to this -- not yet clear what exactly might be most worth emitting here.
 }
 
 func (g listGenerator) EmitNativeMaybe(w io.Writer) {
