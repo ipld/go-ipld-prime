@@ -92,7 +92,7 @@ type boolBuilderGenerator struct {
 	Type    schema.TypeBool
 }
 
-func (boolBuilderGenerator) IsRepr() bool { return false } // hbool used in some generalized templates.
+func (boolBuilderGenerator) IsRepr() bool { return false } // hint used in some generalized templates.
 
 func (g boolBuilderGenerator) EmitNodeBuilderType(w io.Writer) {
 	emitEmitNodeBuilderType_typical(w, g.AdjCfg, g)

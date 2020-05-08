@@ -92,7 +92,7 @@ type linkBuilderGenerator struct {
 	Type    schema.TypeLink
 }
 
-func (linkBuilderGenerator) IsRepr() bool { return false } // hlink used in some generalized templates.
+func (linkBuilderGenerator) IsRepr() bool { return false } // hint used in some generalized templates.
 
 func (g linkBuilderGenerator) EmitNodeBuilderType(w io.Writer) {
 	emitEmitNodeBuilderType_typical(w, g.AdjCfg, g)

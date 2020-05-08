@@ -92,7 +92,7 @@ type bytesBuilderGenerator struct {
 	Type    schema.TypeBytes
 }
 
-func (bytesBuilderGenerator) IsRepr() bool { return false } // hbytes used in some generalized templates.
+func (bytesBuilderGenerator) IsRepr() bool { return false } // hint used in some generalized templates.
 
 func (g bytesBuilderGenerator) EmitNodeBuilderType(w io.Writer) {
 	emitEmitNodeBuilderType_typical(w, g.AdjCfg, g)

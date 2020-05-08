@@ -92,7 +92,7 @@ type float64BuilderGenerator struct {
 	Type    schema.TypeFloat
 }
 
-func (float64BuilderGenerator) IsRepr() bool { return false } // hfloat64 used in some generalized templates.
+func (float64BuilderGenerator) IsRepr() bool { return false } // hint used in some generalized templates.
 
 func (g float64BuilderGenerator) EmitNodeBuilderType(w io.Writer) {
 	emitEmitNodeBuilderType_typical(w, g.AdjCfg, g)
