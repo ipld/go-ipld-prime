@@ -16,8 +16,7 @@ func TestSimple(t *testing.T) {
 		  {"path": "./foo",  "moduleName": "whiz.org/teamBar/foo", "status": "changed"},
 		  {"path": "./baz",  "moduleName": "whiz.org/teamBar/baz", "status": "green"},
 		  {"path": "./quxx", "moduleName": "example.net/quxx",     "status": "lit"}
-		]
-	`)
+		]`)
 	nb := basicnode.Style.Any.NewBuilder()
 	Require(t, dagjson.Decoder(nb, bytes.NewBufferString(fixture)), ShouldEqual, nil)
 	n := nb.Build()
@@ -50,11 +49,10 @@ func TestSubTables(t *testing.T) {
 		  {"path": "./baz",  "moduleName": "whiz.org/teamBar/baz", "status": "green",
 		    "subtable": [
 		      {"frob": "zozzle", "zim": "boink"},
-		      {"frob": "narf",   "zim": "zamf"},
+		      {"frob": "narf",   "zim": "zamf"}
 		    ]},
 		  {"path": "./quxx", "moduleName": "example.net/quxx",     "status": "lit"}
-		]
-	`)
+		]`)
 	nb := basicnode.Style.Any.NewBuilder()
 	Require(t, dagjson.Decoder(nb, bytes.NewBufferString(fixture)), ShouldEqual, nil)
 	n := nb.Build()

@@ -138,9 +138,16 @@ func (tab *table) GetsOwnLine(cn columnName) {
 	tab.entryStyles[cn] = entryStyle_ownLine
 	tab.ownLine = append(tab.ownLine, cn)
 }
-func (tab *table) Finalize(cn columnName) {
-	// TODO drop all entries in tab.cols that ended up with a different entrystyle.
+func (tab *table) Finalize() {
+	// Drop all entries in tab.cols that ended up with a different entrystyle.
 	//  (This happens when something gets observed as a column first, but forced into ownLine mode by a subtable in a subsequent row.)
+	cols := make([]columnName, 0, len(tab.cols))
+	for _, cn := range tab.cols {
+		if tab.entryStyles[cn] == entryStyle_column {
+			cols = append(cols, cn)
+		}
+	}
+	tab.cols = cols
 }
 
 func (tab *table) IsRow(n ipld.Node) bool {
@@ -248,6 +255,7 @@ func strideList(ctx *state, listNode ipld.Node) error {
 			}
 		}
 	}
+	tab.Finalize()
 	return nil
 }
 
@@ -293,10 +301,14 @@ func marshalList(ctx *state, listNode ipld.Node, w io.Writer) error {
 		if err := marshalListValue(ctx, tab, row, w); err != nil {
 			return err
 		}
+		if !listItr.Done() {
+			w.Write([]byte{','})
+		}
+		w.Write([]byte{'\n'})
 	}
 	ctx.indent--
 	w.Write(bytes.Repeat(ctx.cfg.Indent, ctx.indent))
-	w.Write([]byte{']'}) // TODO: linebreak?  not sure.  probably not: if it's a sub-table, a close-brace might be coming.
+	w.Write([]byte{']'})
 	return nil
 }
 func marshalListValue(ctx *state, tab *table, row ipld.Node, w io.Writer) error {
@@ -318,12 +330,28 @@ func marshalListValue(ctx *state, tab *table, row ipld.Node, w io.Writer) error 
 	//  3. Finally we linebreak, indent further, and start dealing with ownLine stuff (which may include sub-tables).
 
 	// Stage 0 -- looking ahead for where we can rest.
-	for _, _ = range tab.cols {
-		// TODO figure out who's the last one with presence.
+	lastColThisRow := -1
+	lastOwnLineThisRow := -1
+	haveTrailingThisRow := false
+	for rowItr := row.MapIterator(); !rowItr.Done(); {
+		k, _, err := rowItr.Next()
+		// TODO this is fine example of where we want to "grow ctx.path"... *very* temporarily
+		if err != nil {
+			return recordErrorPosition(ctx, err)
+		}
+		ks, _ := k.AsString()
+		switch tab.entryStyles[columnName(ks)] {
+		case entryStyle_column:
+			lastColThisRow = max(lastColThisRow, indexOf(tab.cols, columnName(ks)))
+		case entryStyle_trailing, 0:
+			haveTrailingThisRow = true
+		case entryStyle_ownLine:
+			lastOwnLineThisRow = max(lastOwnLineThisRow, indexOf(tab.ownLine, columnName(ks)))
+		}
 	}
 
 	// Stage 1 -- emitting regular columns.
-	for _, col := range tab.cols {
+	for i, col := range tab.cols {
 		v, err := row.LookupString(string(col))
 		if v == nil {
 			w.Write(bytes.Repeat([]byte{' '}, tab.keySize[col]+1 /* plus one for the colon */))
@@ -343,40 +371,50 @@ func marshalListValue(ctx *state, tab *table, row ipld.Node, w io.Writer) error 
 		}
 		computedSize := ctx.spare.Len() // FIXME this is ignoring charsets, renderable glyphs, etc at present.
 		w.Write(ctx.spare.Bytes())
-		w.Write([]byte{','}) // FIXME: you know, the maybe-trailing shenanigans.
-		w.Write(bytes.Repeat([]byte{' '}, tab.colSize[col]-computedSize+1))
+		// Emit separator.
+		//  - comma if there's more columns, or trailing entries, or any ownline entries;
+		//  - spacing if there's more columns, or trailing entries.
+		switch {
+		case i < lastColThisRow || haveTrailingThisRow:
+			w.Write([]byte{','})
+			w.Write(bytes.Repeat([]byte{' '}, tab.colSize[col]-computedSize+1))
+		case lastOwnLineThisRow >= 0:
+			w.Write([]byte{','})
+		}
 	}
 
 	// Stage 2 -- emitting trailing entries.
-	rowItr := row.MapIterator()
-	for !rowItr.Done() {
-		k, v, err := rowItr.Next()
-		// TODO grow ctx.path
-		if err != nil {
-			return recordErrorPosition(ctx, err)
+	if haveTrailingThisRow {
+		rowItr := row.MapIterator()
+		for !rowItr.Done() {
+			k, v, err := rowItr.Next()
+			// TODO grow ctx.path
+			if err != nil {
+				return recordErrorPosition(ctx, err)
+			}
+			ks, _ := k.AsString()
+			switch tab.entryStyles[columnName(ks)] {
+			case entryStyle_column, entryStyle_ownLine:
+				continue
+			}
+			if err := emitKey(ctx, k, w); err != nil {
+				return err
+			}
+			if err := marshal(ctx, v, w); err != nil {
+				return err
+			}
+			w.Write([]byte{','}) // FIXME: you know, the maybe-trailing shenanigans.
 		}
-		ks, _ := k.AsString()
-		switch tab.entryStyles[columnName(ks)] {
-		case entryStyle_column, entryStyle_ownLine:
-			continue
-		}
-		if err := emitKey(ctx, k, w); err != nil {
-			return err
-		}
-		if err := marshal(ctx, v, w); err != nil {
-			return err
-		}
-		w.Write([]byte{','}) // FIXME: you know, the maybe-trailing shenanigans.
 	}
 
 	// Stage 3 -- emitting ownLine entries.
-	if len(tab.ownLine) > 0 { // FIXME: wrong condition; this should be based on if we *have* any (needs stage0 precount).
+	if lastOwnLineThisRow >= 0 {
 		w.Write([]byte{'\n'})
 		ctx.indent++
 		w.Write(bytes.Repeat(ctx.cfg.Indent, ctx.indent))
 		defer func() { ctx.indent-- }()
 	}
-	for _, col := range tab.ownLine {
+	for i, col := range tab.ownLine {
 		v, err := row.LookupString(string(col))
 		if v == nil {
 			continue
@@ -390,13 +428,14 @@ func marshalListValue(ctx *state, tab *table, row ipld.Node, w io.Writer) error 
 		if err := marshal(ctx, v, w); err != nil { // whole recursion.  can even have sub-tables.
 			return err
 		}
-		w.Write([]byte{','}) // FIXME: you know, the maybe-trailing shenanigans.
+		if i < lastOwnLineThisRow {
+			w.Write([]byte{','})
+		}
 	}
 
 	// End of entries.  Close the row.
+	//  Don't do the trailing comma or line break here; the caller will decide that (there's no comma for the last one in the list).
 	w.Write([]byte{'}'})
-	w.Write([]byte{','}) // FIXME: you know, the maybe-trailing shenanigans.
-	w.Write([]byte{'\n'})
 	return nil
 }
 

@@ -27,6 +27,15 @@ func mustFirstKeyAsString(mapNode ipld.Node) string {
 	return ks
 }
 
+func indexOf(list []columnName, cn columnName) int {
+	for i, v := range list {
+		if v == cn {
+			return i
+		}
+	}
+	return -1
+}
+
 type codecAborted struct {
 	p ipld.Path
 	e error
