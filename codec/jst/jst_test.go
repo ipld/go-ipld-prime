@@ -118,3 +118,35 @@ func TestSubTablesCorrelated(t *testing.T) {
 	Wish(t, Marshal(n, &buf), ShouldEqual, nil)
 	Wish(t, buf.String(), ShouldEqual, fixture)
 }
+
+func TestSubSubTables(t *testing.T) {
+	fixture := Dedent(`
+		[
+		  {"path": "./foo",  "moduleName": "whiz.org/teamBar/foo", "status": "changed"},
+		  {"path": "./baz",  "moduleName": "whiz.org/teamBar/baz", "status": "green",
+		    "subtable": [
+		      {"frob": "zozzle",     "zim": "boink",
+		        "subsubtable": [
+		          {"quite": "something",  "very": "neat"},
+		          {"quite": "staggering", "very": "sweet"}
+		        ]},
+		      {"frob": "narf",       "zim": "zamf"},
+		      {"frob": "whoop",      "zim": "zamlloou"}
+		    ]},
+		  {"path": "./quxx", "moduleName": "example.net/quxx",     "status": "lit",
+		    "subtable": [
+		      {"frob": "evenlonger", "zim": "boink",
+		        "subsubtable": [
+		          {"i hope": "you'll agree"}
+		        ]},
+		      {"frob": "narf",       "zim": "zamf"}
+		    ]}
+		]`)
+	nb := basicnode.Style.Any.NewBuilder()
+	Require(t, dagjson.Decoder(nb, bytes.NewBufferString(fixture)), ShouldEqual, nil)
+	n := nb.Build()
+
+	var buf bytes.Buffer
+	Wish(t, Marshal(n, &buf), ShouldEqual, nil)
+	Wish(t, buf.String(), ShouldEqual, fixture)
+}
