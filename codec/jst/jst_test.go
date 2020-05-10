@@ -26,7 +26,7 @@ func TestSimple(t *testing.T) {
 	Wish(t, st.tables, ShouldEqual, map[tableGroupID]*table{
 		"path": &table{
 			entryStyles: map[columnName]entryStyle{"path": entryStyle_column, "moduleName": entryStyle_column, "status": entryStyle_column},
-			keySize:     map[columnName]int{}, // TODO not yet supported but this shouldn't be empty when it is
+			keySize:     map[columnName]int{"path": 6, "moduleName": 12, "status": 8},
 			cols:        []columnName{"path", "moduleName", "status"},
 			colSize:     map[columnName]int{"path": 8, "moduleName": 22, "status": 9},
 			ownLine:     nil,
@@ -36,6 +36,39 @@ func TestSimple(t *testing.T) {
 	var buf bytes.Buffer
 	Wish(t, Marshal(n, &buf), ShouldEqual, nil)
 	Wish(t, buf.String(), ShouldEqual, fixture)
+}
+
+func TestAbsentColumn(t *testing.T) {
+	t.Run("absent column midrow", func(t *testing.T) {
+		fixture := Dedent(`
+		[
+		  {"path": "./foo",  "optionalColumn": "fwoo",   "status": "changed"},
+		  {"path": "./baz",                              "status": "green"},
+		  {"path": "./quxx", "optionalColumn": "wicked", "status": "lit"}
+		]`)
+		nb := basicnode.Style.Any.NewBuilder()
+		Require(t, dagjson.Decoder(nb, bytes.NewBufferString(fixture)), ShouldEqual, nil)
+		n := nb.Build()
+
+		var buf bytes.Buffer
+		Wish(t, Marshal(n, &buf), ShouldEqual, nil)
+		Wish(t, buf.String(), ShouldEqual, fixture)
+	})
+	t.Run("absent column rowend", func(t *testing.T) {
+		fixture := Dedent(`
+		[
+		  {"path": "./foo",  "status": "changed", "optionalColumn": "fwoo"},
+		  {"path": "./baz",  "status": "asdf"},
+		  {"path": "./quxx", "status": "lit",     "optionalColumn": "wicked"}
+		]`)
+		nb := basicnode.Style.Any.NewBuilder()
+		Require(t, dagjson.Decoder(nb, bytes.NewBufferString(fixture)), ShouldEqual, nil)
+		n := nb.Build()
+
+		var buf bytes.Buffer
+		Wish(t, Marshal(n, &buf), ShouldEqual, nil)
+		Wish(t, buf.String(), ShouldEqual, fixture)
+	})
 }
 
 func TestTrailing(t *testing.T) {

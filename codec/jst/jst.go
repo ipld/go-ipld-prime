@@ -107,7 +107,6 @@ func (ctx *state) Table(tgid tableGroupID) *table {
 	}
 	tab := &table{
 		entryStyles: make(map[columnName]entryStyle),
-		keySize:     make(map[columnName]int),
 		colSize:     make(map[columnName]int),
 	}
 	if ctx.tables == nil {
@@ -148,6 +147,15 @@ func (tab *table) Finalize() {
 		}
 	}
 	tab.cols = cols
+
+	// Compute all the column key sizes.
+	tab.keySize = make(map[columnName]int, len(cols))
+	var buf bytes.Buffer
+	for _, cn := range cols {
+		buf.Reset()
+		dagjson.Marshal(basicnode.NewString(string(cn)), json.NewEncoder(&buf, json.EncodeOptions{})) // FIXME this would be a lot less irritating if we had more plumbing access to the json encoding -- we want to encode exactly one string into a buffer, it literally can't error.
+		tab.keySize[cn] = buf.Len()                                                                   // FIXME this is ignoring charsets, renderable glyphs, etc at present.
+	}
 }
 
 func (tab *table) IsRow(n ipld.Node) bool {
@@ -352,9 +360,13 @@ func marshalListValue(ctx *state, tab *table, row ipld.Node, w io.Writer) error 
 
 	// Stage 1 -- emitting regular columns.
 	for i, col := range tab.cols {
+		if i > lastColThisRow {
+			break
+		}
 		v, err := row.LookupString(string(col))
 		if v == nil {
-			w.Write(bytes.Repeat([]byte{' '}, tab.keySize[col]+1 /* plus one for the colon */))
+			w.Write(bytes.Repeat([]byte{' '}, tab.keySize[col]))
+			w.Write(bytes.Repeat([]byte{' '}, 4)) // colonAfterKey, spaceAfterKey, commaAfterValue, spaceAfterValue.
 			w.Write(bytes.Repeat([]byte{' '}, tab.colSize[col]))
 			continue
 		}
