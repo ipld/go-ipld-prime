@@ -59,6 +59,20 @@ func Marshal(n ipld.Node, w io.Writer) error {
 	return marshal(&ctx, n, w)
 }
 
+func MarshalConfigured(cfg Config, n ipld.Node, w io.Writer) error {
+	ctx := state{
+		cfg: cfg,
+	}
+	ctx.cfg.Color.initDefaults()
+	// Stride first -- see how much spacing we need.
+	err := stride(&ctx, n)
+	if err != nil {
+		return err
+	}
+	// Marshal -- using the spacing nodes from our stride.
+	return marshal(&ctx, n, w)
+}
+
 type state struct {
 	cfg    Config
 	path   []ipld.PathSegment // TODO replace with PathBuffer... once you, you know, write it.
@@ -92,6 +106,7 @@ const (
 
 type Config struct {
 	Indent []byte
+	Color  Color
 
 	// FUTURE: selectors and other forms of specification can override where tables appear, what their tableGroupID is, and so on.
 	// FUTURE: whether to emit trailing commas unconditionally, even on the last elements of maps and lists.
@@ -452,9 +467,14 @@ func marshalListValue(ctx *state, tab *table, row ipld.Node, w io.Writer) error 
 }
 
 func emitKey(ctx *state, k ipld.Node, w io.Writer) error {
-	// FUTURE: ansi color goes around here too (hence the need to have ctx in hand).
+	if ctx.cfg.Color.Enabled {
+		w.Write(ctx.cfg.Color.KeyHighlight)
+	}
 	if err := dagjson.Marshal(k, json.NewEncoder(w, json.EncodeOptions{})); err != nil {
 		return recordErrorPosition(ctx, err)
+	}
+	if ctx.cfg.Color.Enabled {
+		w.Write([]byte("\033[0m"))
 	}
 	w.Write([]byte{':'})
 	w.Write([]byte{' '}) // FUTURE: this should be configurable
