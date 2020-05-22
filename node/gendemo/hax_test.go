@@ -1,4 +1,4 @@
-package realgen
+package gendemo
 
 import (
 	"os/exec"
@@ -13,7 +13,7 @@ import (
 // but it does do codegen when you test this package!
 // (it's also legitimately trash tho, because if you get a compile error, you have to manually rm the relevant files, which is not fun.)
 func init() {
-	pkgName := "realgen"
+	pkgName := "gendemo"
 	ts := schema.TypeSystem{}
 	ts.Init()
 	adjCfg := &gengo.AdjunctCfg{}

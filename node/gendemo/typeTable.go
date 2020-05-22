@@ -1,14 +1,14 @@
-package realgen
+package gendemo
 
 // Type is a struct embeding a NodeStyle/Type for every Node implementation in this package.
 // One of its major uses is to start the construction of a value.
 // You can use it like this:
 //
-// 		realgen.Type.YourTypeName.NewBuilder().BeginMap() //...
+// 		gendemo.Type.YourTypeName.NewBuilder().BeginMap() //...
 //
 // and:
 //
-// 		realgen.Type.OtherTypeName.NewBuilder().AssignString("x") // ...
+// 		gendemo.Type.OtherTypeName.NewBuilder().AssignString("x") // ...
 //
 var Type typeSlab
 
