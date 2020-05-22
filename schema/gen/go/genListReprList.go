@@ -131,30 +131,76 @@ func (g listReprListReprGenerator) EmitNodeMethodStyle(w io.Writer) {
 }
 
 func (g listReprListReprGenerator) EmitNodeStyleType(w io.Writer) {
-	// FIXME this alias is a lie, but keep it around for one more sec so we can do an incremental commit until we finish fixing it
-	doTemplate(`
-		type _{{ .Type | TypeSymbol }}__ReprStyle = _{{ .Type | TypeSymbol }}__Style
-	`, w, g.AdjCfg, g)
-	//emitNodeStyleType_typical(w, g.AdjCfg, g)
+	emitNodeStyleType_typical(w, g.AdjCfg, g)
 }
+
+// --- NodeBuilder and NodeAssembler --->
 
 func (g listReprListReprGenerator) GetNodeBuilderGenerator() NodeBuilderGenerator {
-	return nil // TODO
+	return listReprListReprBuilderGenerator{
+		g.AdjCfg,
+		mixins.ListAssemblerTraits{
+			g.PkgName,
+			g.TypeName,
+			"_" + g.AdjCfg.TypeSymbol(g.Type) + "__Repr",
+		},
+		g.PkgName,
+		g.Type,
+	}
 }
 
-/*
+type listReprListReprBuilderGenerator struct {
+	AdjCfg *AdjunctCfg
+	mixins.ListAssemblerTraits
+	PkgName string
+	Type    schema.TypeList
+}
 
-	- assembler has a different child assembler type to embed (poosibly with radically different logical behavior), so that's deffo a new type.
-		- but a LOT of the logic is subsequently the same right up until that hand-off to the child assembler.
-			- most of the major 'state' and 'm' transition logic is the same (Finish especially)
-			- slice growth and maybe-allocs are the same, because the child node type is the same, even though the repr assembler is divergent
-			- all the 'tidy' logic falls in with the above
-			- we might even be able to extract all of these, if we can make them regard just '*state' and '*m' parameters.
-				- i'm not sure if this would have negative effects on binary size or optimizations though.
+func (listReprListReprBuilderGenerator) IsRepr() bool { return true } // hint used in some generalized templates.
 
-	- AssignNode legitimately differs (but only for the bottom third) because... wait, no, *textually*, it's identical.
-		- it calls out to AssembleValue, which will differ in that it calls the Repr assembler for child, but that's it.
+func (g listReprListReprBuilderGenerator) EmitNodeBuilderType(w io.Writer) {
+	emitEmitNodeBuilderType_typical(w, g.AdjCfg, g)
+}
+func (g listReprListReprBuilderGenerator) EmitNodeBuilderMethods(w io.Writer) {
+	emitNodeBuilderMethods_typical(w, g.AdjCfg, g)
+}
+func (g listReprListReprBuilderGenerator) EmitNodeAssemblerType(w io.Writer) {
+	// - 'w' is the "**w**ip" pointer.
+	// - 'm' is the **m**aybe which communicates our completeness to the parent if we're a child assembler.
+	// - 'state' is what it says on the tin.  this is used for the list state (the broad transitions between null, start-list, and finish are handled by 'm' for consistency with other types).
+	//
+	// - 'cm' is **c**hild **m**aybe and is used for the completion message from children.
+	//    It's only present if list values *aren't* allowed to be nullable, since otherwise they have their own per-value maybe slot we can use.
+	// - 'va' is the embedded child value assembler.
+	//
+	// Note that this textually similar to the type-level assembler, but because it embeds the repr assembler for the child types,
+	//  it might be *significantly* different in size and memory layout that the trailing part of the struct.
+	doTemplate(`
+		type _{{ .Type | TypeSymbol }}__ReprAssembler struct {
+			w *_{{ .Type | TypeSymbol }}
+			m *schema.Maybe
+			state laState
 
-	- BeginList is also textually identical except for the type it has to be attached to >:I
+			{{ if not .Type.ValueIsNullable }}cm schema.Maybe{{end}}
+			va _{{ .Type.ValueType | TypeSymbol }}__ReprAssembler
+		}
 
-*/
+		func (na *_{{ .Type | TypeSymbol }}__ReprAssembler) reset() {
+			na.state = laState_initial
+			na.va.reset()
+		}
+	`, w, g.AdjCfg, g)
+}
+func (g listReprListReprBuilderGenerator) EmitNodeAssemblerMethodBeginList(w io.Writer) {
+	emitNodeAssemblerMethodBeginList_listoid(w, g.AdjCfg, g)
+}
+func (g listReprListReprBuilderGenerator) EmitNodeAssemblerMethodAssignNull(w io.Writer) {
+	emitNodeAssemblerMethodAssignNull_recursive(w, g.AdjCfg, g)
+}
+func (g listReprListReprBuilderGenerator) EmitNodeAssemblerMethodAssignNode(w io.Writer) {
+	emitNodeAssemblerMethodAssignNode_listoid(w, g.AdjCfg, g)
+}
+func (g listReprListReprBuilderGenerator) EmitNodeAssemblerOtherBits(w io.Writer) {
+	emitNodeAssemblerHelper_listoid_tidyHelper(w, g.AdjCfg, g)
+	emitNodeAssemblerHelper_listoid_listAssemblerMethods(w, g.AdjCfg, g)
+}
