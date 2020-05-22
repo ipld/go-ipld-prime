@@ -174,7 +174,7 @@ func (g listReprListReprBuilderGenerator) EmitNodeAssemblerType(w io.Writer) {
 	// - 'va' is the embedded child value assembler.
 	//
 	// Note that this textually similar to the type-level assembler, but because it embeds the repr assembler for the child types,
-	//  it might be *significantly* different in size and memory layout that the trailing part of the struct.
+	//  it might be *significantly* different in size and memory layout in that trailing part of the struct.
 	doTemplate(`
 		type _{{ .Type | TypeSymbol }}__ReprAssembler struct {
 			w *_{{ .Type | TypeSymbol }}
