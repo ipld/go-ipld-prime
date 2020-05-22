@@ -117,6 +117,7 @@ func emitNodeAssemblerHelper_listoid_tidyHelper(w io.Writer, adjCfg *AdjunctCfg,
 				{{- if (MaybeUsesPtr .Type.ValueType) }}
 				row.v = la.va.w
 				{{- end}}
+				la.va.w = nil
 				fallthrough
 			case schema.Maybe_Null:
 				la.state = laState_initial

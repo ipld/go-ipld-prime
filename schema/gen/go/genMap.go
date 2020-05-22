@@ -440,6 +440,7 @@ func (g mapBuilderGenerator) emitMapAssemblerValueTidyHelper(w io.Writer) {
 				{{- if (MaybeUsesPtr .Type.ValueType) }}
 				tz.v.v = ma.va.w
 				{{- end}}
+				ma.va.w = nil
 				ma.state = maState_initial
 				ma.va.reset()
 				return true
