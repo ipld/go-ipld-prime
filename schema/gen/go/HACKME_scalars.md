@@ -109,6 +109,7 @@ type Int int
 type Bool bool
 type Float float
 type String string
+type Bytes bytes
 ```
 
 #### note about schema syntax
@@ -125,6 +126,8 @@ as a type identifier.
 At any rate, it seems clear that you can mentally capitalize the 's'
 at any time you see this debatable syntax.
 
+(We should resolve this issue in the specs, which are in the `ipld/specs` repo.)
+
 #### plain scalars appear in specialized method argument types and return types
 
 This is the same story as for named scalars.
@@ -138,8 +141,10 @@ type Foomp map {String:String}
 ... then you'll get codegen output code which includes a method on Foomp:
 
 ```go
-func (x *Foomp) Lookup(k *String) (*String) { /*...*/ }
+func (x *Foomp) Lookup(k String) (String) { /*...*/ }
 ```
+
+(The exact symbols involved and whether or not they're pointers may vary.)
 
 The type might carry less semantic information than it does when a
 named scalar shows up in the same position, but we still use a generated
@@ -147,7 +152,7 @@ type (and a pointer) here for two reasons: first of all, and more simply,
 consistency; but secondly, for the same performance reasons as applied
 to named scalars (if we need to treat this value as an `ipld.Node` again
 in the future, it's much better if we already have a heap pointer rather
-than a bare primitive value (`runtime.convT*` functions are not a thing your
+than a bare primitive value (`runtime.convT*` functions are often not your
 favorite thing to see in a pprof flamegraph)).
 
 (FUTURE: this is still worth review.  We might actually want to use
