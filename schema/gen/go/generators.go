@@ -82,12 +82,12 @@ type NodeBuilderGenerator interface {
 // (Fortunately, there are no variations in this.)
 func EmitFileHeader(packageName string, w io.Writer) {
 	fmt.Fprintf(w, "package %s\n\n", packageName)
+	fmt.Fprintf(w, doNotEditComment+"\n\n")
 	fmt.Fprintf(w, "import (\n")
 	fmt.Fprintf(w, "\tipld \"github.com/ipld/go-ipld-prime\"\n")
 	fmt.Fprintf(w, "\t\"github.com/ipld/go-ipld-prime/node/mixins\"\n")
 	fmt.Fprintf(w, "\t\"github.com/ipld/go-ipld-prime/schema\"\n")
 	fmt.Fprintf(w, ")\n\n")
-	fmt.Fprintf(w, "// Code generated go-ipld-prime DO NOT EDIT.\n\n")
 }
 
 // EmitEntireType calls all methods of TypeGenerator and streams
