@@ -124,11 +124,83 @@ func (g mapReprMapReprGenerator) EmitNodeMethodStyle(w io.Writer) {
 	emitNodeMethodStyle_typical(w, g.AdjCfg, g)
 }
 func (g mapReprMapReprGenerator) EmitNodeStyleType(w io.Writer) {
-	// FIXME this alias is a lie, but keep it around for one more sec so we can do an incremental commit until we finish fixing it
+	emitNodeStyleType_typical(w, g.AdjCfg, g)
+}
+
+// --- NodeBuilder and NodeAssembler --->
+
+func (g mapReprMapReprGenerator) GetNodeBuilderGenerator() NodeBuilderGenerator {
+	return mapReprMapReprBuilderGenerator{
+		g.AdjCfg,
+		mixins.MapAssemblerTraits{
+			g.PkgName,
+			g.TypeName,
+			"_" + g.AdjCfg.TypeSymbol(g.Type) + "__Repr",
+		},
+		g.PkgName,
+		g.Type,
+	}
+}
+
+type mapReprMapReprBuilderGenerator struct {
+	AdjCfg *AdjunctCfg
+	mixins.MapAssemblerTraits
+	PkgName string
+	Type    schema.TypeMap
+}
+
+func (mapReprMapReprBuilderGenerator) IsRepr() bool { return true } // hint used in some generalized templates.
+
+func (g mapReprMapReprBuilderGenerator) EmitNodeBuilderType(w io.Writer) {
+	emitEmitNodeBuilderType_typical(w, g.AdjCfg, g)
+}
+func (g mapReprMapReprBuilderGenerator) EmitNodeBuilderMethods(w io.Writer) {
+	emitNodeBuilderMethods_typical(w, g.AdjCfg, g)
+}
+func (g mapReprMapReprBuilderGenerator) EmitNodeAssemblerType(w io.Writer) {
+	// - 'w' is the "**w**ip" pointer.
+	// - 'm' is the **m**aybe which communicates our completeness to the parent if we're a child assembler.
+	// - 'state' is what it says on the tin.  this is used for the map state (the broad transitions between null, start-map, and finish are handled by 'm' for consistency.)
+	// - there's no equivalent of the 'f' (**f**ocused next) field in struct assemblers -- that's implicitly the last row of the 'w.t'.
+	//
+	// - 'cm' is **c**hild **m**aybe and is used for the completion message from children.
+	//    It's used for values if values aren't allowed to be nullable and thus don't have their own per-value maybe slot we can use.
+	//    It's always used for key assembly, since keys are never allowed to be nullable and thus etc.
+	// - 'ka' and 'va' are the key assembler and value assembler respectively.
+	//    Perhaps surprisingly, we can get away with using the assemblers for each type just straight up, no wrappers necessary;
+	//     All of the required magic is handled through maybe pointers and some tidy methods used during state transitions.
+	//
+	// Note that this textually similar to the type-level assembler, but because it embeds the repr assembler for the child types,
+	//  it might be *significantly* different in size and memory layout in that trailing part of the struct.
 	doTemplate(`
-		type _{{ .Type | TypeSymbol }}__ReprStyle = _{{ .Type | TypeSymbol }}__Style
+		type _{{ .Type | TypeSymbol }}__ReprAssembler struct {
+			w *_{{ .Type | TypeSymbol }}
+			m *schema.Maybe
+			state maState
+
+			cm schema.Maybe
+			ka _{{ .Type.KeyType | TypeSymbol }}__ReprAssembler
+			va _{{ .Type.ValueType | TypeSymbol }}__ReprAssembler
+		}
+
+		func (na *_{{ .Type | TypeSymbol }}__ReprAssembler) reset() {
+			na.state = maState_initial
+			na.ka.reset()
+			na.va.reset()
+		}
 	`, w, g.AdjCfg, g)
 }
-func (g mapReprMapReprGenerator) GetNodeBuilderGenerator() NodeBuilderGenerator {
-	return nil // TODO
+func (g mapReprMapReprBuilderGenerator) EmitNodeAssemblerMethodBeginMap(w io.Writer) {
+	emitNodeAssemblerMethodBeginMap_mapoid(w, g.AdjCfg, g)
+}
+func (g mapReprMapReprBuilderGenerator) EmitNodeAssemblerMethodAssignNull(w io.Writer) {
+	emitNodeAssemblerMethodAssignNull_recursive(w, g.AdjCfg, g)
+}
+func (g mapReprMapReprBuilderGenerator) EmitNodeAssemblerMethodAssignNode(w io.Writer) {
+	emitNodeAssemblerMethodAssignNode_mapoid(w, g.AdjCfg, g)
+}
+func (g mapReprMapReprBuilderGenerator) EmitNodeAssemblerOtherBits(w io.Writer) {
+	emitNodeAssemblerHelper_mapoid_keyTidyHelper(w, g.AdjCfg, g)
+	emitNodeAssemblerHelper_mapoid_valueTidyHelper(w, g.AdjCfg, g)
+	emitNodeAssemblerHelper_mapoid_mapAssemblerMethods(w, g.AdjCfg, g)
 }

@@ -39,3 +39,8 @@ func erp(n ipld.Node, e error) interface{} {
 	}
 	return n
 }
+
+// purely to syntactically flip large inline closures so we can see the argument at the top rather than the bottom of the block.
+func withNode(n ipld.Node, cb func(n ipld.Node)) {
+	cb(n)
+}

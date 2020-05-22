@@ -4,6 +4,13 @@ import (
 	"io"
 )
 
+// FIXME docs: these methods all say "-oid" but I think that was overoptimistic and not actually that applicable, really.
+//  AssignNode?  Okay, that one's fine.
+//  The rest?  They're all *very* emphatic about knowing either:
+//   - that na.w.x is a slice; or,
+//   - that there's only one 'va' (one type; and that it's reused).
+//   The reuse level for those two traits is pretty minimal.
+
 func emitNodeAssemblerMethodBeginList_listoid(w io.Writer, adjCfg *AdjunctCfg, data interface{}) {
 	// This method contains a branch to support MaybeUsesPtr because new memory may need to be allocated.
 	//  This allocation only happens if the 'w' ptr is nil, which means we're being used on a Maybe;
@@ -142,6 +149,7 @@ func emitNodeAssemblerHelper_listoid_tidyHelper(w io.Writer, adjCfg *AdjunctCfg,
 func emitNodeAssemblerHelper_listoid_listAssemblerMethods(w io.Writer, adjCfg *AdjunctCfg, data interface{}) {
 	// DRY: Might want to split this up a bit further so it can be used by more kinds.
 	//  Some parts of this could be reused by struct-repr-tuple, potentially, but would require being able to insert some more checks relating to length.
+	//   This would also require excluding *all* 'va' references; those are radicaly different for structs, in that there's not even one (singular) of them.
 	//
 	// DRY(nope): Can this be extracted to a shared function in the output?
 	//  Same story as the tidy helper -- it touches `la.va` concretely in several places, and that blocks extraction.

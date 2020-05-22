@@ -116,6 +116,10 @@ func TestMapsContainingMaybe(t *testing.T) {
 	})
 }
 
+// TestMapsContainingMaps is probing *two* things:
+//   - that maps can nest, obviously
+//   - that representation semantics are held correctly when we recurse, both in builders and in reading
+// To cover that latter situation, this depends on structs (so we can use rename directives on the representation to make it distinctive).
 func TestMapsContainingMaps(t *testing.T) {
 	ts := schema.TypeSystem{}
 	ts.Init()
@@ -123,59 +127,81 @@ func TestMapsContainingMaps(t *testing.T) {
 		maybeUsesPtr: map[schema.TypeName]bool{},
 	}
 	ts.Accumulate(schema.SpawnString("String"))
-	ts.Accumulate(schema.SpawnMap("Map__String__String", // "{String:String}"
-		ts.TypeByName("String"), ts.TypeByName("String"), false))
-	ts.Accumulate(schema.SpawnMap("Map__String__nullableMap__String__String", // "{String:nullable {String:String}}"
-		ts.TypeByName("String"), ts.TypeByName("Map__String__String"), true))
+	ts.Accumulate(schema.SpawnStruct("Frub", // "type Frub struct { field String (rename "encoded") }"
+		[]schema.StructField{
+			schema.SpawnStructField("field", ts.TypeByName("String"), false, false), // plain field.
+		},
+		schema.SpawnStructRepresentationMap(map[string]string{
+			"field": "encoded",
+		}),
+	))
+	ts.Accumulate(schema.SpawnMap("Map__String__Frub", // "{String:Frub}"
+		ts.TypeByName("String"), ts.TypeByName("Frub"), false))
+	ts.Accumulate(schema.SpawnMap("Map__String__nullableMap__String__Frub", // "{String:nullable {String:Frub}}"
+		ts.TypeByName("String"), ts.TypeByName("Map__String__Frub"), true))
 
 	prefix := "maps-recursive"
 	pkgName := "main"
 	genAndCompileAndTest(t, prefix, pkgName, ts, adjCfg, func(t *testing.T, getStyleByName func(string) ipld.NodeStyle) {
-		ns := getStyleByName("Map__String__nullableMap__String__String")
-		nsr := getStyleByName("Map__String__nullableMap__String__String.Repr")
-		var n schema.TypedNode
-		t.Run("typed-create", func(t *testing.T) {
-			n = fluent.MustBuildMap(ns, 3, func(ma fluent.MapAssembler) {
-				ma.AssembleEntry("one").CreateMap(1, func(ma fluent.MapAssembler) {
-					ma.AssembleEntry("zot").AssignString("1")
+		ns := getStyleByName("Map__String__nullableMap__String__Frub")
+		nsr := getStyleByName("Map__String__nullableMap__String__Frub.Repr")
+		creation := func(t *testing.T, ns ipld.NodeStyle, fieldName string) schema.TypedNode {
+			return fluent.MustBuildMap(ns, 3, func(ma fluent.MapAssembler) {
+				ma.AssembleEntry("one").CreateMap(2, func(ma fluent.MapAssembler) {
+					ma.AssembleEntry("zot").CreateMap(1, func(ma fluent.MapAssembler) { ma.AssembleEntry(fieldName).AssignString("11") })
+					ma.AssembleEntry("zop").CreateMap(1, func(ma fluent.MapAssembler) { ma.AssembleEntry(fieldName).AssignString("12") })
 				})
 				ma.AssembleEntry("two").CreateMap(1, func(ma fluent.MapAssembler) {
-					ma.AssembleEntry("zim").AssignString("2")
+					ma.AssembleEntry("zim").CreateMap(1, func(ma fluent.MapAssembler) { ma.AssembleEntry(fieldName).AssignString("21") })
 				})
 				ma.AssembleEntry("none").AssignNull()
 			}).(schema.TypedNode)
-			t.Run("typed-read", func(t *testing.T) {
+		}
+		reading := func(t *testing.T, n ipld.Node, fieldName string) {
+			withNode(n, func(n ipld.Node) {
 				Require(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
 				Wish(t, n.Length(), ShouldEqual, 3)
-				n2 := must.Node(n.LookupString("two"))
-				Require(t, n2.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
-				Wish(t, must.String(must.Node(n2.LookupString("zim"))), ShouldEqual, "2")
-				Wish(t, must.Node(n.LookupString("none")), ShouldEqual, ipld.Null)
+				withNode(must.Node(n.LookupString("one")), func(n ipld.Node) {
+					Require(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
+					Wish(t, n.Length(), ShouldEqual, 2)
+					withNode(must.Node(n.LookupString("zot")), func(n ipld.Node) {
+						Require(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
+						Wish(t, n.Length(), ShouldEqual, 1)
+						Wish(t, must.String(must.Node(n.LookupString(fieldName))), ShouldEqual, "11")
+					})
+					withNode(must.Node(n.LookupString("zop")), func(n ipld.Node) {
+						Require(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
+						Wish(t, n.Length(), ShouldEqual, 1)
+						Wish(t, must.String(must.Node(n.LookupString(fieldName))), ShouldEqual, "12")
+					})
+				})
+				withNode(must.Node(n.LookupString("two")), func(n ipld.Node) {
+					Wish(t, n.Length(), ShouldEqual, 1)
+					withNode(must.Node(n.LookupString("zim")), func(n ipld.Node) {
+						Require(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
+						Wish(t, n.Length(), ShouldEqual, 1)
+						Wish(t, must.String(must.Node(n.LookupString(fieldName))), ShouldEqual, "21")
+					})
+				})
+				withNode(must.Node(n.LookupString("none")), func(n ipld.Node) {
+					Wish(t, n, ShouldEqual, ipld.Null)
+				})
 				_, err := n.LookupString("miss")
 				Wish(t, err, ShouldBeSameTypeAs, ipld.ErrNotExists{})
 			})
+		}
+		var n schema.TypedNode
+		t.Run("typed-create", func(t *testing.T) {
+			n = creation(t, ns, "field")
+			t.Run("typed-read", func(t *testing.T) {
+				reading(t, n, "field")
+			})
 			t.Run("repr-read", func(t *testing.T) {
-				nr := n.Representation()
-				Require(t, nr.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
-				Wish(t, nr.Length(), ShouldEqual, 3)
-				n2 := must.Node(nr.LookupString("two"))
-				Require(t, n2.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
-				Wish(t, must.String(must.Node(n2.LookupString("zim"))), ShouldEqual, "2")
-				Wish(t, must.Node(nr.LookupString("none")), ShouldEqual, ipld.Null)
-				_, err := nr.LookupString("miss")
-				Wish(t, err, ShouldBeSameTypeAs, ipld.ErrNotExists{})
+				reading(t, n.Representation(), "encoded")
 			})
 		})
 		t.Run("repr-create", func(t *testing.T) {
-			nr := fluent.MustBuildMap(nsr, 3, func(ma fluent.MapAssembler) {
-				ma.AssembleEntry("one").CreateMap(1, func(ma fluent.MapAssembler) {
-					ma.AssembleEntry("zot").AssignString("1")
-				})
-				ma.AssembleEntry("two").CreateMap(1, func(ma fluent.MapAssembler) {
-					ma.AssembleEntry("zim").AssignString("2")
-				})
-				ma.AssembleEntry("none").AssignNull()
-			})
+			nr := creation(t, nsr, "encoded")
 			Wish(t, n, ShouldEqual, nr)
 		})
 	})
