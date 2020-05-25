@@ -4,25 +4,6 @@ misc notes during refresh
 (This document will be deleted as soon as this update work cycle is complete;
 the contents are a bit "top-of-the-head".)
 
-- no major regrets about our stringoid approach
-- use more "macros" for reusable regions
-- don't bother making custom functions per symbol pattern
-	- that is: conjoining "__Foo" as string in the template is fine; don't turn it into a shell game.
-- consistently maintain separatation of **symbol** from **name**
-	- **symbol** is what is used in type and function names in code.
-	- **name** is the string that comes from the schema; it is never modified nor overridable.
-- symbol processing all pipes through an adjunct configuration object.
-	- we make this available in the templates via a funcmap so it's available context-free as a nice tidy pipe syntax.
-- the typegen/nodegen/buildergen distinctions and how they turn into a 5-some still checks out.
-- the embeddable starter kits per kind are still a perfectly reasonable idea.
-	- ... though they also get to just shell out to the 'node/mixins' package a ton now, which is nice.
-- we're gonna need to break down the methods for some types more than others.
-	- namely, structs and unions... are gonna want an invok of template per field / member, i think.
-	- there's no particularly useful way to expose that to the top level nodegen interface, afaict.  just do it concretely.
-- generally do a pass on all templates to use consistent abbreviations for variable names.
-- use a lot more pointers in method types, according to the understandings of the low cost of internal pointers.
-
-
 corners needing mention in docs
 -------------------------------
 

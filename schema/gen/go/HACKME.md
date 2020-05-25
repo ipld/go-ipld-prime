@@ -112,6 +112,9 @@ See [HACKME_memorylayout.md](HACKME_memorylayout.md) for a (large) amount of
 exposition on how this code is designed in order to be allocation-avoidant
 and fast in general.
 
+See [HACKME_templates.md](HACKME_templates.md) for some overview on how we've
+used templates, and what forms of reuse and abstraction there are.
+
 See [HACKME_scalars.md](HACKME_scalars.md) for some discussion of scalars
 and (why we generate more of them than you might expect).
 
