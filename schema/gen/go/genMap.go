@@ -136,7 +136,7 @@ func (g mapGenerator) EmitNodeMethodLookupString(w io.Writer) {
 			{{- end}}
 			v, exists := n.m[k2]
 			if !exists {
-				return ipld.Undef, ipld.ErrNotExists{ipld.PathSegmentOfString(k)}
+				return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(k)}
 			}
 			{{- if .Type.ValueIsNullable }}
 			if v.m == schema.Maybe_Null {
@@ -164,7 +164,7 @@ func (g mapGenerator) EmitNodeMethodLookup(w io.Writer) {
 			}
 			v, exists := n.m[*k2]
 			if !exists {
-				return ipld.Undef, ipld.ErrNotExists{ipld.PathSegmentOfString(k2.String())}
+				return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(k2.String())}
 			}
 			{{- if .Type.ValueIsNullable }}
 			if v.m == schema.Maybe_Null {

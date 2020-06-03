@@ -118,6 +118,11 @@ used templates, and what forms of reuse and abstraction there are.
 See [HACKME_scalars.md](HACKME_scalars.md) for some discussion of scalars
 and (why we generate more of them than you might expect).
 
+See [HACKME_maybe.md](HACKME_maybe.md) for notes how how the 'maybe' feature
+(how we describe `nullable` and `optional` schema features in generated golang code)
+has evolved.
+
+
 Testing
 -------
 
