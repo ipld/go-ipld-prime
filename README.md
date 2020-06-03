@@ -84,6 +84,8 @@ Change Policy
 
 The go-ipld-prime library is already usable.  We are also still in development, and may still change things.
 
+A changelog can be found at [CHANGELOG.md](CHANGELOG.md).
+
 Using a commit hash when depending on this library is advisable (as it is with any other).
 
 We may sometimes tag releases, but it's just as acceptable to track commits on master without the indirection.
