@@ -39,19 +39,22 @@ package ipld
 // be more optimal for some programs than others, and changing the Node
 // (and NodeBuilder) implementations lets the programmer choose.
 //
-// For concrete implementations of Node, check out the "./impl/" folder,
+// For concrete implementations of Node, check out the "./node/" folder,
 // and the packages within it.
-// "impl/free" should probably be your first start; the Node and NodeBuilder
+// "node/basic" should probably be your first start; the Node and NodeBuilder
 // implementations in that package work for any data.
 // Other packages are optimized for specific use-cases.
 // Codegen tools can also be used to produce concrete implementations of Node;
 // these may be specific to certain data, but still conform to the Node
 // interface for interoperability and to support higher-level functions.
 //
-// Nodes may also be *typed* -- see the 'schema' and 'impl/typed' packages.
-// Typed nodes have additional constraints and behaviors (and have a
-// `.Type().Kind()` in addition to their `.ReprKind()`!), but still behave
-// as a regular Node in all the basic ways.
+// Nodes may also be *typed* -- see the 'schema' package and `schema.TypedNode`
+// interface, which extends the Node interface with additional methods.
+// Typed nodes have additional constraints and behaviors:
+// for example, they may be a "struct" and have a specific type/structure
+// to what data you can put inside them, but still behave as a regular Node
+// in all ways this interface specifies (so you can traverse typed nodes, etc,
+// without any additional special effort).
 type Node interface {
 	// ReprKind returns a value from the ReprKind enum describing what the
 	// essential serializable kind of this node is (map, list, int, etc).
