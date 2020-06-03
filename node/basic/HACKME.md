@@ -14,9 +14,10 @@ This is noteworthy because in codegen, this is typically *not* the case:
 in codegen, even scalar types are boxed in a struct, such that it prevents
 casting values into those types.
 
-This casting is not a concern for ipldfree types, because
-A) we don't have any kind of validation rules to make such casting worrying; and
-B) since our types are unexported, casting is still blocked by this anyway.
+This casting is not a concern for the node implementations in this package, because
+
+- A) we don't have any kind of validation rules to make such casting worrying; and
+- B) since our types are unexported, casting is still blocked by this anyway.
 
 ### about builders for scalars
 
