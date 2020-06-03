@@ -72,6 +72,11 @@ Projects wishing to migrate can do so smoothly and at their leisure.
 There is no explicit deprecation timeline for the earlier golang IPLD libraries,
 but you should expect new features *here*, rather than in those libraries.
 
+Be advised that faculties for dealing with unixfsv1 data are still limited.
+You can find some tools in the [go-ipld-prime-proto](https://github.com/ipld/go-ipld-prime-proto/) repo,
+but be sure to read the caveats and limitations in that project's readme.
+We're happy to accept major PRs on this topic, though, if you who is reading this wants to fix this faster than wait for us :)
+
 
 
 Change Policy
