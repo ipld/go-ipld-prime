@@ -13,7 +13,14 @@ corners needing mention in docs
 	- ...which is funny because if you feed that into a type-level builder, it doesn't like that absent.  it wants you to not feed that field.
 	- alternatively, accepting explicit puts of absent: worse: we'd have to keep state track that it's been put, but to none, and reject future puts.
 		- REVIEW: maybe this isn't as bad as first thought.  I think we end up with that state bit anyway.
+			- yes, we did.  so this is a viable option.
 		- REVIEW: maybe we should turn this on its head entirely: would it be clearer and more consistent if building a struct without explicitly assigning undef to any optional fields is actually *rejected* when using the type-level assemblers?
+			- that seems like it will annoy users more often than not.
+		- REVIEW: so then, just accept (but don't mandate) puts of absent?
+			- it's on the table, from the look of it.
+			- do we need to add a SetAbsent method to NodeAssembler?  That seems questionable.
+			- we can just accept them if given to the SetNode method?  does that address the main DX irritants?
+				- it would certainly make the copy iteration in a typed AssignNode method for structs behave well without adding a bunch of branching to it.  so that's an upvote.
 	- alternatively, not yielding them on iterate: worse: generic printer for structs would end up not reporting fields, and that would be both wrong and hard to hack your way out of without writing a metric ton more code that inspects the type info, which would ruin the point of the monomorphic methods in the first place to a much higher degree than this need to handle undefined/absent does.
 
 - There is no promise of nice-to-read errors if you over-hold child assemblers beyond their valid lifespan.
