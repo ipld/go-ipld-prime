@@ -79,7 +79,7 @@ func (n Map__String__Msg3) LookupString(k string) (ipld.Node, error) {
 	}
 	v, exists := n.m[k2]
 	if !exists {
-		return ipld.Undef, ipld.ErrNotExists{ipld.PathSegmentOfString(k)}
+		return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(k)}
 	}
 	return v, nil
 }
@@ -91,7 +91,7 @@ func (n Map__String__Msg3) Lookup(k ipld.Node) (ipld.Node, error) {
 	}
 	v, exists := n.m[*k2]
 	if !exists {
-		return ipld.Undef, ipld.ErrNotExists{ipld.PathSegmentOfString(k2.String())}
+		return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(k2.String())}
 	}
 	return v, nil
 }
