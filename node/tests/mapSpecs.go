@@ -186,3 +186,43 @@ func SpecTestMapStrMapStrInt(t *testing.T, ns ipld.NodeStyle) {
 		})
 	})
 }
+
+func SpecTestMapStrListStr(t *testing.T, ns ipld.NodeStyle) {
+	t.Run("map<str,list<str>>", func(t *testing.T) {
+		nb := ns.NewBuilder()
+		ma, err := nb.BeginMap(3)
+		must.NotError(err)
+		must.NotError(ma.AssembleKey().AssignString("asdf"))
+		func(la ipld.ListAssembler, err error) {
+			must.NotError(la.AssembleValue().AssignString("eleven"))
+			must.NotError(la.AssembleValue().AssignString("twelve"))
+			must.NotError(la.AssembleValue().AssignString("thirteen"))
+			must.NotError(la.Finish())
+		}(ma.AssembleValue().BeginList(3))
+		must.NotError(ma.AssembleKey().AssignString("qwer"))
+		func(la ipld.ListAssembler, err error) {
+			must.NotError(la.AssembleValue().AssignString("twentyone"))
+			must.NotError(la.AssembleValue().AssignString("twentytwo"))
+			must.NotError(la.Finish())
+		}(ma.AssembleValue().BeginList(2))
+		must.NotError(ma.AssembleKey().AssignString("zxcv"))
+		func(la ipld.ListAssembler, err error) {
+			must.NotError(la.AssembleValue().AssignString("thirtyone"))
+			must.NotError(la.Finish())
+		}(ma.AssembleValue().BeginList(1))
+		must.NotError(ma.Finish())
+		n := nb.Build()
+
+		t.Run("reads back out", func(t *testing.T) {
+			Wish(t, n.Length(), ShouldEqual, 3)
+
+			v, err := n.LookupString("qwer")
+			Wish(t, err, ShouldEqual, nil)
+			v2, err := v.LookupIndex(1)
+			Wish(t, err, ShouldEqual, nil)
+			v3, err := v2.AsString()
+			Wish(t, err, ShouldEqual, nil)
+			Wish(t, v3, ShouldEqual, "twentytwo")
+		})
+	})
+}

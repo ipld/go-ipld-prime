@@ -6,30 +6,44 @@ import (
 	ipld "github.com/ipld/go-ipld-prime"
 )
 
-// Focus is a shortcut for kicking off
-// traversal.Progress.Focus with an empty initial state
-// (e.g. the Node given here is the "root" node of your operation).
+// Focus traverses a Node graph according to a path, reaches a single Node,
+// and calls the given VisitFn on that reached node.
+//
+// This function is a helper function which starts a new traversal with default configuration.
+// It cannot cross links automatically (since this requires configuration).
+// Use the equivalent Focus function on the Progress structure
+// for more advanced and configurable walks.
 func Focus(n ipld.Node, p ipld.Path, fn VisitFn) error {
 	return Progress{}.Focus(n, p, fn)
 }
 
-// FocusedTransform is a shortcut for kicking off
-// traversal.Progress.FocusedTransform with an empty initial state
-// (e.g. the Node given here is the "root" node of your operation).
+// FocusedTransform traverses an ipld.Node graph, reaches a single Node,
+// and calls the given TransformFn to decide what new node to replace the visited node with.
+// A new Node tree will be returned (the original is unchanged).
+//
+// This function is a helper function which starts a new traversal with default configuration.
+// It cannot cross links automatically (since this requires configuration).
+// Use the equivalent FocusedTransform function on the Progress structure
+// for more advanced and configurable walks.
 func FocusedTransform(n ipld.Node, p ipld.Path, fn TransformFn) (ipld.Node, error) {
 	return Progress{}.FocusedTransform(n, p, fn)
 }
 
-// Focus traverses an ipld.Node graph, reaches a single Node,
-// and applies a function to the reached node.
+// Focus traverses a Node graph according to a path, reaches a single Node,
+// and calls the given VisitFn on that reached node.
 //
 // Focus is a read-only traversal.
 // See FocusedTransform if looking for a way to do an "update" to a Node.
 //
-// Focus can be used again again inside the applied VisitFn!
-// By using the traversal.Progress handed to the VisitFn, the Path recorded
-// of the traversal so far will continue to be extended, and thus continued
-// nested uses of Focus will see a fully contextualized Path.
+// Provide configuration to this process using the Config field in the Progress object.
+//
+// This walk will automatically cross links, but requires some configuration
+// with link loading functions to do so.
+//
+// Focus (and the other traversal functions) can be used again again inside the VisitFn!
+// By using the traversal.Progress handed to the VisitFn,
+// the Path recorded of the traversal so far will continue to be extended,
+// and thus continued nested uses of Walk and Focus will see the fully contextualized Path.
 func (prog Progress) Focus(n ipld.Node, p ipld.Path, fn VisitFn) error {
 	prog.init()
 	segments := p.Segments()
@@ -93,10 +107,11 @@ func (prog Progress) Focus(n ipld.Node, p ipld.Path, fn VisitFn) error {
 }
 
 // FocusedTransform traverses an ipld.Node graph, reaches a single Node,
-// and applies a function to the reached node which make return a new Node.
+// and calls the given TransformFn to decide what new node to replace the visited node with.
+// A new Node tree will be returned (the original is unchanged).
 //
-// If the TransformFn returns a Node which is the same as the original
-// reached node, the transform is a no-op, and the Node returned from the
+// If the TransformFn returns the same Node which it was called with,
+// then the transform is a no-op, and the Node returned from the
 // FocusedTransform call as a whole will also be the same as its starting Node.
 //
 // Otherwise, the reached node will be "replaced" with the new Node -- meaning
@@ -120,6 +135,8 @@ func (prog Progress) Focus(n ipld.Node, p ipld.Path, fn VisitFn) error {
 // do with regular Node and NodeBuilder usage directly.  Transform just
 // does a large amount of the intermediate bookkeeping that's useful when
 // creating new values which are partial updates to existing values.
+//
+// This feature is not yet implemented.
 func (prog Progress) FocusedTransform(n ipld.Node, p ipld.Path, fn TransformFn) (ipld.Node, error) {
 	panic("TODO") // TODO surprisingly different from Focus -- need to store nodes we traversed, and able do building.
 }

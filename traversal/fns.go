@@ -54,3 +54,16 @@ type Config struct {
 // could decide what kind of native type is expected, and return a
 // `bind.NodeBuilder` for that specific concrete native type.
 type LinkTargetNodeStyleChooser func(ipld.Link, ipld.LinkContext) (ipld.NodeStyle, error)
+
+// SkipMe is a signalling "error" which can be used to tell traverse to skip some data.
+//
+// SkipMe can be returned by the Config.LinkLoader to skip entire blocks without aborting the walk.
+// (This can be useful if you know you don't have data on hand,
+// but want to continue the walk in other areas anyway;
+// or, if you're doing a way where you know that it's valid to memoize seen
+// areas based on Link alone.)
+type SkipMe struct{}
+
+func (SkipMe) Error() string {
+	return "skip"
+}
