@@ -8,6 +8,8 @@ It is at present a partially complete proof-of-concept.  Use at your own risk.
 
 There is not yet a user-facing CLI; you have to write code to use it.
 
+See [README_behaviors](README_behaviors.md) for notes about the behaviors of the code output by the generator.
+
 Check out the [HACKME](HACKME.md) document for more info about the internals,
 how they're organized, and how to hack on this package.
 

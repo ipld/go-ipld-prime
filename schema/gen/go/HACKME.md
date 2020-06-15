@@ -21,6 +21,9 @@ versus almost any other tradeoff which affects the outputs, we prioritize the ou
 of them... while making sure they contain very specific references.  This leads
 to some seemingly redundant code, but good error messages are worth it.)
 
+See [README_behaviors](README_behaviors.md) for notes about the behaviors of the code output by the generator;
+this document is about the generator code itself and the design thereof.
+
 
 Entrypoints
 -----------

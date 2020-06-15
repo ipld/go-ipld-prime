@@ -1,29 +1,33 @@
-misc notes during refresh
-=========================
 
-(This document will be deleted as soon as this update work cycle is complete;
-the contents are a bit "top-of-the-head".)
+### absent values
 
-corners needing mention in docs
--------------------------------
+The handling of absent values is still not consistent.
 
-// todo:reorg: these are both **semantics** so they belong in ... schema package docs?  and godocs at that, not readmes.
+Currently:
 
-- iterating a type-level node with optional fields can yield the field and a maybe containing absent.
-	- ...which is funny because if you feed that into a type-level builder, it doesn't like that absent.  it wants you to not feed that field.
-	- alternatively, accepting explicit puts of absent: worse: we'd have to keep state track that it's been put, but to none, and reject future puts.
-		- REVIEW: maybe this isn't as bad as first thought.  I think we end up with that state bit anyway.
-			- yes, we did.  so this is a viable option.
-		- REVIEW: maybe we should turn this on its head entirely: would it be clearer and more consistent if building a struct without explicitly assigning undef to any optional fields is actually *rejected* when using the type-level assemblers?
-			- that seems like it will annoy users more often than not.
-		- REVIEW: so then, just accept (but don't mandate) puts of absent?
-			- it's on the table, from the look of it.
-			- do we need to add a SetAbsent method to NodeAssembler?  That seems questionable.
-			- we can just accept them if given to the SetNode method?  does that address the main DX irritants?
-				- it would certainly make the copy iteration in a typed AssignNode method for structs behave well without adding a bunch of branching to it.  so that's an upvote.
-	- alternatively, not yielding them on iterate: worse: generic printer for structs would end up not reporting fields, and that would be both wrong and hard to hack your way out of without writing a metric ton more code that inspects the type info, which would ruin the point of the monomorphic methods in the first place to a much higher degree than this need to handle undefined/absent does.
+- reading (via accessors or iterators) yields `ipld.Undef` values for absent fields
+- putting those ipld.Undef values via NodeAssembler.AssignNode will result in `ErrWrongKind`.
+- *the recursive copies embedded in AssignNode methods don't handle undefs either_.
 
-- There is no promise of nice-to-read errors if you over-hold child assemblers beyond their valid lifespan.
-	- We **do** care about making things fail hard and fast rather than potentially leak inappropriate mutability.
-	- We do **not** care about making these errors pretty (it's high cost to do so, and code that hits this path is almost certainly statically (and hopefully fairly obviously) wrong).
+The first two are defensible and consistent (if not necessarily ergonomic).
+The third is downright a bug, and needs to be fixed.
 
+How we fix it is not entirely settled.
+
+- Option 1: keep the hostility to undef assignment
+- Option 2: *require* explicit undef assignment
+- Option 3: become indifferent to undef assignment when it's valid
+- Option 4: don't yield values that are undef during iteration at all
+
+Option 3 seems the most preferrable (and least user-hostile).
+(Options 1 and 2 create work for end users;
+Option 4 has questionable logical consistency.)
+
+Updating the codegen to do Option 3 needs some work, though.
+
+It's likely that the way to go about this would involve adding two more valid
+bit states to the extended schema.Maybe values: one for allowAbsent (similar to
+the existing allowNull), and another for both (for "nullable optional" fields).
+Every NodeAssembler would then have to support that, just as they each support allowNull now.
+
+I think the above design is valid, but it's not implemented nor tested yet.
