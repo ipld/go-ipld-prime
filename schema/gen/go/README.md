@@ -12,6 +12,27 @@ Check out the [HACKME](HACKME.md) document for more info about the internals,
 how they're organized, and how to hack on this package.
 
 
+aims
+----
+
+`gengo` aims to:
+
+- generate native Golang code
+- that faithfully represents the data structuring specified by an IPLD Schema,
+- operating efficiently, both in speed (both creating and inspecting) and memory compactness;
+- producing a better type system for Golang (we've got unions and enums!)
+- that is both powerful and generic (when you need it)
+- and minimalist (when you don't),
+- with immutable data structures,
+- good validation primitives and type-supported safety systems,
+- and is friendly to embellishments of other hand-written Golang code.
+
+Some of these aims should be satisfied.
+
+Some are still a stretch ;)  (we definitely don't have "minimalist" outputs, yet.
+Making this reachable by tuning is a goal, however!)
+
+
 completeness
 ------------
 
