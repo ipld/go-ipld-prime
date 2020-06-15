@@ -72,9 +72,6 @@ There are three noteworthy types of generator internals:
 - `NodeGenerator`
 - `NodebuilderGenerator`
 
-(TODO: `NodebuilderGenerator` isn't currently a type; all its work is done by one mega-method.
-It should probably be extracted into a type and broken down.  This description pretends that's been done.)
-
 The first one is where you start; the latter two do double duty for each type.
 
 Exported types for purpose 1, 2, 3, and 7 are emitted from `TypeGenerator` (3 from the embedded `NodeGenerator`).
@@ -83,10 +80,9 @@ The exported type for purpose 5 is emitted from another `NodeGenerator` instance
 
 The exported types for purposes 4 and 6 are emitted from two distinct `NodebuilderGenerator` instances.
 
-For kinds that have more than one known representation strategy,
-there may be more than two implementations of `NodeGenerator` and `NodebuilderGenerator`!
-(There's always one for the type-semantics node+builder,
-and then one more *for each* representation strategy.)
+For every variation in type kind and representation strategy for that type kind,
+one type implementing `TypeGenerator` is composed, and it has functions which
+yield all the other interfaces for addressing the various purposes.
 
 ### How are files and their contents grouped?
 
