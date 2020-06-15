@@ -21,18 +21,20 @@ versus almost any other tradeoff which affects the outputs, we prioritize the ou
 of them... while making sure they contain very specific references.  This leads
 to some seemingly redundant code, but good error messages are worth it.)
 
+See [README_behaviors](README_behaviors.md) for notes about the behaviors of the code output by the generator;
+this document is about the generator code itself and the design thereof.
+
 
 Entrypoints
 -----------
 
-The `gen_test.go` file is the effective "main" method right now.
-It contains substantial amounts of hardcoded testcases.
+The most important intefaces are all in [`generators.go`](generators.go).
 
-Run the tests in the `./_test` subpackage explicitly to make sure the
-generated code passes its own interface contracts and tests.
-
-If you want to try hacking together your own generated types, the easiest
-way is to use the functions used by gen_test.go -- `EmitFileHeader`, `EmitMinima`, and `EmitEntireType`
+The function you're most likely looking for that "does the thing" is the
+`Generate(outputPath string, pkgName string, schema.TypeSystem, *AdjunctCfg)` method,
+which can be found in the [`generate.go`](generate.go) file.
+You can take any of the functions inside of that and use them as well,
+if you want more granular control over what content ends up in which files.
 
 The eventual plan is be able to drive this whole apparatus around via a CLI
 which consumes IPLD Schema files.
@@ -51,9 +53,9 @@ There are roughly *seven* categories of API to generate per type:
 - 1: the readonly thing a native caller uses
 - 2: the builder thing a native caller uses
 - 3: the readonly typed node
-- 4: the builder for typed node
+- 4: the builder/assembler for typed node
 - 5: the readonly representation node
-- 6: the builder via representation
+- 6: the builder/assembler via representation
 - 7: and a maybe wrapper
 
 (And these are just the ones nominally visible in the exported API surface!
@@ -66,29 +68,68 @@ These numbers will be used to describe some further organization.
 
 There are three noteworthy types of generator internals:
 
-- `typedNodeGenerator`
-- `nodeGenerator`
-- `nodebuilderGenerator`
+- `TypeGenerator`
+- `NodeGenerator`
+- `NodebuilderGenerator`
 
 The first one is where you start; the latter two do double duty for each type.
 
-Exported types for purpose 1, 2, 3, and 7 are emitted from `typedNodeGenerator` (3 from the embedded `nodeGenerator`).
+Exported types for purpose 1, 2, 3, and 7 are emitted from `TypeGenerator` (3 from the embedded `NodeGenerator`).
 
-The exported type for purpose 5 is emitted from another `nodeGenerator` instance.
+The exported type for purpose 5 is emitted from another `NodeGenerator` instance.
 
-The exported types for purposes 4 and 6 are emitted from two distinct `nodebuilderGenerator` instances.
+The exported types for purposes 4 and 6 are emitted from two distinct `NodebuilderGenerator` instances.
 
-For kinds that have more than one known representation strategy,
-there may be more than two implementations of `nodeGenerator` and `nodebuilderGenerator`!
-(There's always one for the type-semantics node+builder,
-and then one more *for each* representation strategy.)
+For every variation in type kind and representation strategy for that type kind,
+one type implementing `TypeGenerator` is composed, and it has functions which
+yield all the other interfaces for addressing the various purposes.
 
 ### How are files and their contents grouped?
 
 Most of the files in this package are following a pattern:
 
 - for each kind:
-	- `genKind{Kind}.go` -- has emitters for the native type parts (1, 2, 7).
-	- `genKind{Kind}Node.go` -- has emitters for the typed node parts (3, 4), and the entrypoint to (5).
+	- `gen{Kind}.go` -- has emitters for the native type parts (1, 2, 7) and type-level node behaviors (3, 4).
 	- for each representation that kind can have:
-		- `genKind{Kind}Repr{ReprStrat}.go` -- has emitters for (5, 6).
+		- `gen{Kind}Repr{ReprStrat}.go` -- has emitters for (5, 6).
+
+A `mixins` sub-package contains some code which is used and embedded in the generators in this package.
+These features are mostly per-kind -- representation kind, not type-level kind.
+For example, you'll see "map" behaviors from the mixins package added to "struct" generators.
+
+### What are all these abbreviations?
+
+See [HACKME_abbrevs.md](HACKME_abbrevs.md).
+
+### Code architecture
+
+See [HACKME_tradeoffs.md](HACKME_tradeoffs.md) for an overview of tradeoffs,
+and which priorities we selected in this package.
+(There are *many* tradeoffs.)
+
+See [HACKME_memorylayout.md](HACKME_memorylayout.md) for a (large) amount of
+exposition on how this code is designed in order to be allocation-avoidant
+and fast in general.
+
+See [HACKME_templates.md](HACKME_templates.md) for some overview on how we've
+used templates, and what forms of reuse and abstraction there are.
+
+See [HACKME_scalars.md](HACKME_scalars.md) for some discussion of scalars
+and (why we generate more of them than you might expect).
+
+See [HACKME_maybe.md](HACKME_maybe.md) for notes how how the 'maybe' feature
+(how we describe `nullable` and `optional` schema features in generated golang code)
+has evolved.
+
+
+Testing
+-------
+
+See [HACKME_testing.md](HACKME_testing.md) for some details about how this works.
+
+In general, try to copy some of the existing tests and get things to suit.
+
+Be advised that we use the golang plugin feature, and that has some additional
+requirements of your development environment than is usual in golang.
+(Namely, you have to be on linux and you have to have a c compiler!)
+

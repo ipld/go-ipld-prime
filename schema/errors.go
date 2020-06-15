@@ -14,5 +14,8 @@ type ErrNoSuchField struct {
 }
 
 func (e ErrNoSuchField) Error() string {
+	if e.Type == nil {
+		return fmt.Sprintf("no such field: {typeinfomissing}.%s", e.FieldName)
+	}
 	return fmt.Sprintf("no such field: %s.%s", e.Type.Name(), e.FieldName)
 }

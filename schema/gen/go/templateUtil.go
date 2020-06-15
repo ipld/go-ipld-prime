@@ -5,43 +5,66 @@ import (
 	"strings"
 	"text/template"
 
-	ipld "github.com/ipld/go-ipld-prime"
-
 	wish "github.com/warpfork/go-wish"
+
+	ipld "github.com/ipld/go-ipld-prime"
 )
 
-func doTemplate(tmplstr string, w io.Writer, data interface{}) {
+func doTemplate(tmplstr string, w io.Writer, adjCfg *AdjunctCfg, data interface{}) {
 	tmpl := template.Must(template.New("").
 		Funcs(template.FuncMap{
-			// 'ReprKindConst' returns the source-string for "ipld.ReprKind_{{Kind}}".
-			"ReprKindConst": func(k ipld.ReprKind) string {
-				return "ipld.ReprKind_" + k.String() // happens to be fairly trivial.
+			"TypeSymbol":       adjCfg.TypeSymbol,
+			"FieldSymbolLower": adjCfg.FieldSymbolLower,
+			"FieldSymbolUpper": adjCfg.FieldSymbolUpper,
+			"MaybeUsesPtr":     adjCfg.MaybeUsesPtr,
+			"KindPrim": func(k ipld.ReprKind) string {
+				switch k {
+				case ipld.ReprKind_Map:
+					panic("this isn't useful for non-scalars")
+				case ipld.ReprKind_List:
+					panic("this isn't useful for non-scalars")
+				case ipld.ReprKind_Null:
+					panic("this isn't useful for null")
+				case ipld.ReprKind_Bool:
+					return "bool"
+				case ipld.ReprKind_Int:
+					return "int"
+				case ipld.ReprKind_Float:
+					return "float64"
+				case ipld.ReprKind_String:
+					return "string"
+				case ipld.ReprKind_Bytes:
+					return "[]byte"
+				case ipld.ReprKind_Link:
+					return "ipld.Link"
+				default:
+					panic("invalid enumeration value!")
+				}
 			},
-
-			// 'Add' does what it says on the tin.
-			"Add": func(a, b int) int {
-				return a + b
-			},
-
-			// Title case.  Used to make a exported symbol.  Could be more efficient.
-			"titlize": strings.Title,
-
-			"mungeTypeNodeIdent":                mungeTypeNodeIdent,
-			"mungeTypeNodeItrIdent":             mungeTypeNodeItrIdent,
-			"mungeTypeNodebuilderIdent":         mungeTypeNodebuilderIdent,
-			"mungeTypeNodeMapBuilderIdent":      mungeTypeNodeMapBuilderIdent,
-			"mungeTypeNodeListBuilderIdent":     mungeTypeNodeListBuilderIdent,
-			"mungeTypeReprNodeIdent":            mungeTypeReprNodeIdent,
-			"mungeTypeReprNodeItrIdent":         mungeTypeReprNodeItrIdent,
-			"mungeTypeReprNodebuilderIdent":     mungeTypeReprNodebuilderIdent,
-			"mungeTypeReprNodeMapBuilderIdent":  mungeTypeReprNodeMapBuilderIdent,
-			"mungeTypeReprNodeListBuilderIdent": mungeTypeReprNodeListBuilderIdent,
-
-			"mungeNodebuilderConstructorIdent":     mungeNodebuilderConstructorIdent,
-			"mungeReprNodebuilderConstructorIdent": mungeReprNodebuilderConstructorIdent,
+			"add":   func(a, b int) int { return a + b },
+			"title": func(s string) string { return strings.Title(s) },
 		}).
+		// Seriously consider prepending `{{ $dot := . }}` (or 'top', or something).
+		// Or a func into the map that causes `dot` to mean `func() interface{} { return data }`.
+		// The number of times that the range feature has a dummy capture line above it is... not reasonable.
+		//  (Grep for "/* ranging modifies dot, unhelpfully */" -- empirically, it's over 20 times already.)
 		Parse(wish.Dedent(tmplstr)))
 	if err := tmpl.Execute(w, data); err != nil {
 		panic(err)
 	}
 }
+
+// We really need to do some more composable stuff around here.
+// Generators should probably be carrying down their own doTemplate methods that curry customizations.
+// E.g., map generators would benefit hugely from being able to make a clause for "entTypeStrung", "mTypeStrung", etc.
+//
+// Open question: how exactly?  Should some of this stuff should be composed by:
+//   - composing template fragments;
+//   - amending the funcmap;
+//   - computing the whole result and injecting it as a string;
+//   - ... combinations of the above?
+// Adding to the complexity of the question is that sometimes we want to be
+//  doing composition inside the output (e.g. DRY by functions in the result,
+//   rather than by DRY'ing the templates).
+// Best practice to make this evolve nicely is not at all obvious to this author.
+//

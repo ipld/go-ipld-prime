@@ -8,6 +8,12 @@ For the most part, we try to hide these details;
 or, failing that, at least make them appear consistent.
 There's some deeper logic required to *pick* which way we do things, though.
 
+This document was written to describe codegen and all of the tradeoffs here,
+but much of it (particularly the details about embedding and internal pointers)
+also strongly informed the design of the core NodeAssembler semantics,
+and thus also may be useful reading to understand some of the forces that
+shaped even the various un-typed node implementations.
+
 
 
 Prerequisite understandings
@@ -222,123 +228,9 @@ Resultant Design Features
 We generate a concrete type for each type in the schema.
 
 Using a concrete type means methods on it are possible to inline.
-This is interesting because most of the methods are "accessors" -- that is,
+This is important to us because most of the methods are "accessors" -- that is,
 a style of function that has a small body and does little work -- and these
 are precisely the sort of function where inlining can add up.
-
-There is one one downside to using an exported concrete type (rather than
-keeping it unexported and hidden behind and exported interface):
-it means any code external to the package can produce Golang's natural "zero"
-for the type.  This is problematic because it's true even if the Golang "zero"
-value for the type doesn't correspond to a valid value.
-This is an unfortunate but overall practical tradeoff.
-
-### embed by default
-
-Embedded structs amortizes the count of memory allocations.
-This addresses what is typically our biggest concern.
-
-The increase in size is generally not consequential.  We expect most fields
-end up filled anyway, so reserving that memory up front is reasonable.
-(Indeed, unfilled fields are only possible for nullable or optional fields
-which are implemented as embedded.)
-
-Assignment into embedded fields may have the cost of a memcopy.
-(By contrast, if fields were pointers, assigning them would be cheap...
-though at the same time, we would've had to pay the allocation cost, elsewhere.)
-However, combined with (other tricks)[#child-nodebuilders-point-into-embedded-fields],
-a shortcut becomes possible: if we at some point used shared memory as the
-scratch space for the child nodebuilder... and it's since been finalized...
-and that very same pointer (into ourselves!) is now being assigned to us...
-we can cheaply detect that and fastpath it.  (This sounds contrived, but it's
-actually the common case.)
-
-### nullable and optional struct fields embed too
-
-TODO intro
-
-There is some chance of over-allocation in the event of nullable or optional
-fields.  We support tuning that via adjunct configuration to the code generator
-which allows you to opt in to using pointers for fields; choosing to do this
-will of course cause you to lose out on alloc amortization features in exchange.
-
-TODO also resolve the loops note, at bottom
-
-### nodebuilders point to the concrete type
-
-We generate NodeBuilder types which contain a pointer to the type they build.
-
-This means a single NodeBuilder and its produced Node will require
-**two** allocations -- one for the NodeBuilder, and a separate one for the Node.
-
-An alternative would be to embed the concrete Node value in the NodeBuilder,
-and return a pointer to when finalizing the creation of the Node;
-however, because due to the garbage collection semantics around
-[internal pointers](#internal-pointers), such a design would cause the entirety
-of the memory needed in the NodeBuilder to remain uncollectable as long as
-completed Node is reachable!  This would be an unfortunate trade --
-we can do better, and will... via [racking builders](#racking-builders).
-
-### child nodebuilders point into embedded fields
-
-TODO this is the critical secret sauce
-
-### racking builders
-
-(This where things start to get decidedly less-than-obvious.)
-
-After generating the NodeBuilder for each type, we **additionally** generate
-a "racker" type.  This "racker" is a struct which embeds the NodeBuilder...
-and the racker (and thus NodeBuilder) for each of the fields within a struct.
-This lets us amortize the allocations for all the *builders* in the same way
-as embedding in the actual value structs let us amortized allocations there.
-
-With racking builders, we can amortize all the allocations of working memory
-needed for a whole family of NodeBuilders... **and** amortize all the
-allocations for the value structures into a second allocation...
-and that's it, it's just those two.  Further more, the separation means that
-once the construction of the Node is done, we can drop all the NodeBuilder
-memory and expect it to be immediately garbage collectable.  Win!
-
-The code for this gets a little complex, and the result also carries several
-additional limitations to the usage, but it does keep the allocations finite,
-and thus makes the overall performance fast.
-
-### visibility rules
-
-It's perfectly fine to let builders accumulate mutations... right up until
-the moment where a Node is returned.
-
-(While it's less than ideal that different nodebuilders might interact with
-each other... it's technically not a violation of terms: the one final
-concern is whether or not Node immutablity is violated.  Experiencing
-spooky-action-at-a-distance between NodeBuilder instances is irrelevant.)
-
-So, we reach the following rules:
-
-- when a NodeBuilder.Build method returns a Node, that memory must be frozen:
-	- that NodeBuilder of course sets its target pointer to nil, jamming itself;
-	- no other set methods on the *parent* NodeBuilder may assign to that field;
-	- and the *parent* NodeBuilder may never return another child NodeBuilder for that field.
-
-This set of rules around visibility lets us do amortized allocations
-of a big hunk of working memory, and still comply with the familiar
-small-pieces-first creation model of the NodeBuilder interface
-by returning piecemeal read-only pointers into that big amortized memory hunk.
-
-In order to satisfy these rules (namely, ensuring we never return a NodeBuilder
-that addresses memory that's already been frozen) -- and do so without
-consuming linearly more memory to track it! -- maps and lists end up with some
-notable limitations:
-
-- Lists can only be appended linearly, not populated in free order.
-  (This means we can condense the 'isFrozen' attribute to an int offset.)
-- Maps can only build one new value at a time.
-  (Even though we usually handle map contents as pointers, being able to build
-  more than one value at a time would require unknown amounts of memory for
-  the any NodeBuilder state after the first, which is undesirable.)
-- Structs need no special handling -- they can still be regarded in any order.
-  (We know how much memory we need at compile time, so we can swallow that.)
 
 ### natively-typed methods in addition to the general interface
 
@@ -367,7 +259,128 @@ situation that often substantially benefits from inlining.
 At the same time, it goes without saying that we need the general Node and
 NodeBuilder interfaces to be satisfied, so that we can write generic library
 code such as reusable traversals, etc.  It is not possible to satisfy both
-needs with a single set of methods with the Golang typesystem.
+needs with a single set of methods with the Golang typesystem; therefore,
+we generate both.
+
+### embed by default
+
+Embedded structs amortizes the count of memory allocations.
+This addresses what is typically our biggest concern.
+
+The increase in size is generally not consequential.  We expect most fields
+end up filled anyway, so reserving that memory up front is reasonable.
+(Indeed, unfilled fields are only possible for nullable or optional fields
+which are implemented as embedded.)
+
+If assigning whole sub-trees at once, assignment into embedded fields
+incurs the cost of a memcopy (whereas by contrast, if fields were pointers,
+assigning them would be cheap... it's just that we would've had to pay
+a (possibly _extra_) allocation cost elsewhere earlier.)
+However, this is usually a worthy trade.
+Linear memcpy in practice can be significantly cheaper than extra allocations
+(especially if it's one long memcpy vs many allocations);
+and if we assume a balance of use cases such as "unmarshal happens more often
+than sub-tree-assignment", then it's pretty clear we should prioritize getting
+allocation minimization for unmarshal rather than fret sub-tree assignment.
+
+### nodebuilders point to the concrete type
+
+We generate NodeBuilder types which contain a pointer to the type they build.
+
+This means we can hold onto the Node pointer when its building is completed,
+and discard the NodeBuilder.  (Or, reset and reuse the NodeBuilder.)
+Garbage collection can apply on the NodeBuilder independently of the lifespan
+of the Node it built.
+
+This means a single NodeBuilder and its produced Node will require
+**two** allocations -- one for the NodeBuilder, and a separate one for the Node.
+
+(An alternative would be to embed the concrete Node value in the NodeBuilder,
+and return a pointer to when finalizing the creation of the Node;
+however, because due to the garbage collection semantics around
+[internal pointers](#internal-pointers), such a design would cause the entirety
+of the memory needed in the NodeBuilder to remain uncollectable as long as
+completed Node is reachable!  This would be an unfortunate trade.)
+
+While we pay two allocations for the Node and its Builder, we earn that back
+in spades via our approach to recursion with
+[NodeAssemblers](#nodeassemblers-accumulate-mutations), and specifically, how
+[NodeAssemblers embed more NodeAssemblers](#nodeassemblers-embed-nodeassemblers).
+Long story short: we pay two allocations, yes.  But it's *fixed* at two,
+no matter how large and complex the structure is.
+
+### nodeassemblers accumulate mutations
+
+The NodeBuilder type is only used at the root of construction of a value.
+After that, recursion works with an interface called NodeAssembler isntead.
+
+A NodeAssembler is essentially the same thing as a NodeBuilder, except
+_it doesn't return a Node_.
+
+This means we can use the NodeAssembler interface to describe constructing
+the data in the middle of some complex value, and we're not burdened by the
+need to be able to return the finished product.  (Sufficient state-keeping
+and defensive checks to ensure we don't leak mutable references would not
+come for free; reducing the number of points we might need to do this makes
+it possible to create a more efficient system overall.)
+
+The documentation on the ipld.NodeAssembler type gives some general
+description of this.
+
+NodeBuilder types end up being just a NodeAssembler embed, plus a few methods
+for exposing the final results and optionally resetting the whole system.
+
+### nodeassemblers embed nodeassemblers
+
+In addition to each NodeAssembler containing a pointer to the value they modify
+(the same as [NodeBuilders](#nodebuilders-point-to-the-concrete-type))...
+for assemblers that work with recursive structures, they also embed another
+NodeAssembler for each of their child values.
+
+This lets us amortize the allocations for all the *assemblers* in the same way
+as embedding in the actual value structs let us amortized allocations there.
+
+The code for this gets a little complex, and the result also carries several
+additional limitations to the usage, but it does keep the allocations finite,
+and thus makes the overall performance fast.
+
+(To be more specific, for recursive types that are infinite (namely, maps and
+lists; whereas structs and unions are finite), the NodeAssembler embeds
+*one* NodeAssembler for all values.  (Obviously, we can't embed an infinite
+number of them, right?)  This leads to a restriction: you can't assemble
+multiple children of an infinite recursive value simultaneously.)
+
+### nullable and optional struct fields embed too
+
+TODO intro
+
+There is some chance of over-allocation in the event of nullable or optional
+fields.  We support tuning that via adjunct configuration to the code generator
+which allows you to opt in to using pointers for fields; choosing to do this
+will of course cause you to lose out on alloc amortization features in exchange.
+
+TODO also resolve the loops note, at bottom
+
+### unexported implementations, exported aliases
+
+Our concrete types are unexported.  For those that need to be exported,
+we export an alias to the pointer type.
+
+This has an interesting set of effects:
+
+- copy-by-value from outside the package becomes impossible;
+- creating zero values from outside the package becomes impossible;
+- and yet refering to the type for type assertions remains possible.
+
+This addresses one downside to using [concrete implementations](#concrete-implementations):
+if the concrete implementation is an exported symbol, it means any code external
+to the package can produce Golang's natural "zero" for the type.
+This is problematic because it's true even if the Golang "zero" value for the
+type doesn't correspond to a valid value.
+While keeping an unexported implementation and an exported interface makes
+external fabrication of zero values impossible, it breaks inlining.
+Exporting an alias of the pointer type, however, strikes both goals at once:
+external fabrication of zero values is blocked, and yet inlining works.
 
 
 
@@ -394,6 +407,8 @@ Prototypes and research examples can be found in the
 In particular, the "multihoisting" and "nodeassembler" packages are relevant,
 containing research that lead to the drafting of this doc,
 as well as some partially-worked alternative interface drafts.
+(You may have to search back through git history to find these directories;
+they're removed after some time, when the lessons have been applied.)
 
 Tests there include some benchmarks (self-explanitory);
 some tests based on runtime memory stats inspection;

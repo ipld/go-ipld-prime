@@ -97,6 +97,17 @@ func (t TypeStruct) Field(name string) *StructField {
 	return nil
 }
 
+// Parent returns the type information that this field describes a part of.
+//
+// While in many cases, you may know the parent already from context,
+// there may still be situations where want to pass around a field and
+// not need to continue passing down the parent type with it; this method
+// helps your code be less redundant in such a situation.
+// (You'll find this useful for looking up any rename directives, for example,
+// when holding onto a field, since that requires looking up information from
+// the representation strategy, which is a property of the type as a whole.)
+func (f StructField) Parent() *TypeStruct { return f.parent }
+
 // Name returns the string name of this field.  The name is the string that
 // will be used as a map key if the structure this field is a member of is
 // serialized as a map representation.
@@ -124,6 +135,12 @@ func (f StructField) IsOptional() bool { return f.optional }
 // or either, or neither.
 func (f StructField) IsNullable() bool { return f.nullable }
 
+// IsMaybe returns true if the field value is allowed to be either null or absent.
+//
+// This is a simple "or" of the two properties,
+// but this method is a shorthand that turns out useful often.
+func (f StructField) IsMaybe() bool { return f.nullable || f.optional }
+
 func (t TypeStruct) RepresentationStrategy() StructRepresentation {
 	return t.representation
 }
@@ -133,6 +150,10 @@ func (r StructRepresentation_Map) GetFieldKey(field StructField) string {
 		return n
 	}
 	return field.name
+}
+
+func (r StructRepresentation_Stringjoin) GetDelim() string {
+	return r.sep
 }
 
 // Members returns a slice the strings which are valid inhabitants of this enum.

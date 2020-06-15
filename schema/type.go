@@ -6,6 +6,8 @@ import (
 
 type TypeName string // = ast.TypeName
 
+func (tn TypeName) String() string { return string(tn) }
+
 // typesystem.Type is an union interface; each of the `Type*` concrete types
 // in this package are one of its members.
 //
@@ -161,6 +163,7 @@ type TypeStruct struct {
 	representation StructRepresentation
 }
 type StructField struct {
+	parent   *TypeStruct
 	name     string
 	typ      Type
 	optional bool
@@ -172,17 +175,28 @@ type StructRepresentation interface{ _StructRepresentation() }
 func (StructRepresentation_Map) _StructRepresentation()         {}
 func (StructRepresentation_Tuple) _StructRepresentation()       {}
 func (StructRepresentation_StringPairs) _StructRepresentation() {}
-func (StructRepresentation_StringJoin) _StructRepresentation()  {}
+func (StructRepresentation_Stringjoin) _StructRepresentation()  {}
 
 type StructRepresentation_Map struct {
 	renames   map[string]string
-	implicits map[string]interface{}
+	implicits map[string]ImplicitValue
 }
 type StructRepresentation_Tuple struct{}
 type StructRepresentation_StringPairs struct{ sep1, sep2 string }
-type StructRepresentation_StringJoin struct{ sep string }
+type StructRepresentation_Stringjoin struct{ sep string }
 
 type TypeEnum struct {
 	anyType
 	members []string
 }
+
+// ImplicitValue is an sum type holding values that are implicits.
+// It's not an 'Any' value because it can't be recursive
+// (or to be slightly more specific, it can be one of the recursive kinds,
+// but if so, only its empty value is valid here).
+type ImplicitValue interface{ _ImplicitValue() }
+
+type ImplicitValue_EmptyList struct{}
+type ImplicitValue_EmptyMap struct{}
+type ImplicitValue_String struct{ x string }
+type ImplicitValue_Int struct{ x int }
