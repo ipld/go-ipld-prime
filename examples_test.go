@@ -42,6 +42,6 @@ func ExampleUnmarshalData() {
 	fmt.Printf("the length of the node is %d\n", n.Length())
 
 	// Output:
-	// the data decoded was a Map kind
+	// the data decoded was a map kind
 	// the length of the node is 2
 }

@@ -113,5 +113,5 @@ func ExampleLoadingLink() {
 	fmt.Printf("we loaded a %s with %d entries\n", n.ReprKind(), n.Length())
 
 	// Output:
-	// we loaded a Map with 1 entries
+	// we loaded a map with 1 entries
 }
