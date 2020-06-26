@@ -49,6 +49,15 @@ Changes here are on the master branch, but not in any tagged release yet.
 When a release tag is made, this block of bullet points will just slide down to the [Released Changes](#released-changes) section.
 
 - Docs: several new example functions should now appear in the godoc for how to use the linking APIs.
+- Feature: codegen is back!  Use it if you dare.
+	- Generated code is now up to date with the present versions of the core interfaces (e.g., its updated for the NodeAssembler world).
+	- We've got a nice big feature table in the codegen package readme now!  Consult that to see which features of IPLD Schemas now have codegen support.
+	- There are now several implemented and working (and robustly tested) examples of codegen for various representation strategies for the same types.  (For example, struct-with-stringjoin-representation.)  Neat!
+	- This edition of codegen uses some neat tricks to not just maintain immutability contracts, but even prevent the creation of zero-value objects which could potentially be used to evade validation phases on objects that have validation rules.  (This is a bit experimental; we'll see how it goes.)
+	- There are oodles and oodles of deep documentation of architecture design choices recorded in "HACKME_*" documents in the codegen package that you may enjoy if you want to contribute or understand why generated things are the way they are.
+	- Testing infrastructure for codegen is now solid.  Running tests for the codegen package will: exercise the generation itself; AND make sure the generated code compiles; AND run behavioral tests against it: the whole gamut, all from regular `go test`.
+	- The "node/gendemo" package contains a real example of codegen output... and it's connected to the same tests and benchmarks as other node implementations.  (Are the gen'd types fast?  yes.  yes they are.)
+	- There's still lots more to go: interacting with the codegen system still requires writing code to interact with as a library, as we aren't shipping a CLI frontend to it yet; and many other features are still in development as well.  But you're welcome to take it for a spin if you're eager!
 - Feature: introduce JSON Tables Codec ("JST"), in the `codec/jst` package.  This is a codec that emits bog-standard JSON, but leaning in on the non-semantic whitespace to produce aligned output, table-like, for pleasant human reading.  (If you've used `column -t` before in the shell: it's like that.)
 	- This package may be a temporary guest in this repo; it will probably migrate to its own repo soon.  (It's a nice exercise of our core interfaces, though, so it incubated here.)
 
