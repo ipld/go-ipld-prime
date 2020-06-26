@@ -48,6 +48,14 @@ Unreleased on master
 Changes here are on the master branch, but not in any tagged release yet.
 When a release tag is made, this block of bullet points will just slide down to the [Released Changes](#released-changes) section.
 
+- __nothing yet :)__
+
+
+Released Changes
+----------------
+
+### v0.4.0
+
 - Docs: several new example functions should now appear in the godoc for how to use the linking APIs.
 - Feature: codegen is back!  Use it if you dare.
 	- Generated code is now up to date with the present versions of the core interfaces (e.g., its updated for the NodeAssembler world).
@@ -60,10 +68,8 @@ When a release tag is made, this block of bullet points will just slide down to 
 	- There's still lots more to go: interacting with the codegen system still requires writing code to interact with as a library, as we aren't shipping a CLI frontend to it yet; and many other features are still in development as well.  But you're welcome to take it for a spin if you're eager!
 - Feature: introduce JSON Tables Codec ("JST"), in the `codec/jst` package.  This is a codec that emits bog-standard JSON, but leaning in on the non-semantic whitespace to produce aligned output, table-like, for pleasant human reading.  (If you've used `column -t` before in the shell: it's like that.)
 	- This package may be a temporary guest in this repo; it will probably migrate to its own repo soon.  (It's a nice exercise of our core interfaces, though, so it incubated here.)
+- I'm quietly shifting the versioning up to the 0.x range.  (Honestly, I thought it was already there, heh.)  That makes this this "v0.4".
 
-
-Released Changes
-----------------
 
 ### v0.0.3
 
