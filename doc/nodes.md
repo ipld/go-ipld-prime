@@ -46,7 +46,7 @@ kind of data this node contains in terms of the IPLD Data Model.
 
 The validity of many other methods can be anticipated by switching on the kind:
 for example, `AsString` is definitely going to error if `ReprKind() == ipld.ReprKind_Map`,
-and `LookupString` is definitely going to error if `ReprKind() == ipld.ReprKind_String`.
+and `LookupByString` is definitely going to error if `ReprKind() == ipld.ReprKind_String`.
 
 See the [godocs for ReprKind](https://godoc.org/github.com/ipld/go-ipld-prime#ReprKind).
 

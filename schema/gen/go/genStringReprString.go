@@ -52,23 +52,23 @@ func (g stringReprStringReprGenerator) EmitNodeTypeAssertions(w io.Writer) {
 		var _ ipld.Node = &_{{ .Type | TypeSymbol }}__Repr{}
 	`, w, g.AdjCfg, g)
 }
-func (stringReprStringReprGenerator) EmitNodeMethodReprKind(io.Writer)      {}
-func (stringReprStringReprGenerator) EmitNodeMethodLookupString(io.Writer)  {}
-func (stringReprStringReprGenerator) EmitNodeMethodLookupNode(io.Writer)    {}
-func (stringReprStringReprGenerator) EmitNodeMethodLookupIndex(io.Writer)   {}
-func (stringReprStringReprGenerator) EmitNodeMethodLookupSegment(io.Writer) {}
-func (stringReprStringReprGenerator) EmitNodeMethodMapIterator(io.Writer)   {}
-func (stringReprStringReprGenerator) EmitNodeMethodListIterator(io.Writer)  {}
-func (stringReprStringReprGenerator) EmitNodeMethodLength(io.Writer)        {}
-func (stringReprStringReprGenerator) EmitNodeMethodIsUndefined(io.Writer)   {}
-func (stringReprStringReprGenerator) EmitNodeMethodIsNull(io.Writer)        {}
-func (stringReprStringReprGenerator) EmitNodeMethodAsBool(io.Writer)        {}
-func (stringReprStringReprGenerator) EmitNodeMethodAsInt(io.Writer)         {}
-func (stringReprStringReprGenerator) EmitNodeMethodAsFloat(io.Writer)       {}
-func (stringReprStringReprGenerator) EmitNodeMethodAsString(io.Writer)      {}
-func (stringReprStringReprGenerator) EmitNodeMethodAsBytes(io.Writer)       {}
-func (stringReprStringReprGenerator) EmitNodeMethodAsLink(io.Writer)        {}
-func (stringReprStringReprGenerator) EmitNodeMethodStyle(io.Writer)         {}
+func (stringReprStringReprGenerator) EmitNodeMethodReprKind(io.Writer)        {}
+func (stringReprStringReprGenerator) EmitNodeMethodLookupByString(io.Writer)  {}
+func (stringReprStringReprGenerator) EmitNodeMethodLookupByNode(io.Writer)    {}
+func (stringReprStringReprGenerator) EmitNodeMethodLookupByIndex(io.Writer)   {}
+func (stringReprStringReprGenerator) EmitNodeMethodLookupBySegment(io.Writer) {}
+func (stringReprStringReprGenerator) EmitNodeMethodMapIterator(io.Writer)     {}
+func (stringReprStringReprGenerator) EmitNodeMethodListIterator(io.Writer)    {}
+func (stringReprStringReprGenerator) EmitNodeMethodLength(io.Writer)          {}
+func (stringReprStringReprGenerator) EmitNodeMethodIsUndefined(io.Writer)     {}
+func (stringReprStringReprGenerator) EmitNodeMethodIsNull(io.Writer)          {}
+func (stringReprStringReprGenerator) EmitNodeMethodAsBool(io.Writer)          {}
+func (stringReprStringReprGenerator) EmitNodeMethodAsInt(io.Writer)           {}
+func (stringReprStringReprGenerator) EmitNodeMethodAsFloat(io.Writer)         {}
+func (stringReprStringReprGenerator) EmitNodeMethodAsString(io.Writer)        {}
+func (stringReprStringReprGenerator) EmitNodeMethodAsBytes(io.Writer)         {}
+func (stringReprStringReprGenerator) EmitNodeMethodAsLink(io.Writer)          {}
+func (stringReprStringReprGenerator) EmitNodeMethodStyle(io.Writer)           {}
 func (g stringReprStringReprGenerator) EmitNodeStyleType(w io.Writer) {
 	// Since this is a "natural" representation... there's just a type alias here.
 	//  No new functions are necessary.

@@ -59,7 +59,7 @@ func TestStructReprStringjoin(t *testing.T) {
 				t.Run("typed-read", func(t *testing.T) {
 					Require(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
 					Wish(t, n.Length(), ShouldEqual, 1)
-					Wish(t, must.String(must.Node(n.LookupString("field"))), ShouldEqual, "valoo")
+					Wish(t, must.String(must.Node(n.LookupByString("field"))), ShouldEqual, "valoo")
 				})
 				t.Run("repr-read", func(t *testing.T) {
 					nr := n.Representation()
@@ -87,8 +87,8 @@ func TestStructReprStringjoin(t *testing.T) {
 				t.Run("typed-read", func(t *testing.T) {
 					Require(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
 					Wish(t, n.Length(), ShouldEqual, 2)
-					Wish(t, must.String(must.Node(n.LookupString("foo"))), ShouldEqual, "v1")
-					Wish(t, must.String(must.Node(n.LookupString("bar"))), ShouldEqual, "v2")
+					Wish(t, must.String(must.Node(n.LookupByString("foo"))), ShouldEqual, "v1")
+					Wish(t, must.String(must.Node(n.LookupByString("bar"))), ShouldEqual, "v2")
 				})
 				t.Run("repr-read", func(t *testing.T) {
 					nr := n.Representation()
@@ -120,12 +120,12 @@ func TestStructReprStringjoin(t *testing.T) {
 				t.Run("typed-read", func(t *testing.T) {
 					Require(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
 					Wish(t, n.Length(), ShouldEqual, 3)
-					Wish(t, must.String(must.Node(n.LookupString("foo"))), ShouldEqual, "v1")
-					Wish(t, must.String(must.Node(n.LookupString("bar"))), ShouldEqual, "v4")
-					n2 := must.Node(n.LookupString("zap"))
+					Wish(t, must.String(must.Node(n.LookupByString("foo"))), ShouldEqual, "v1")
+					Wish(t, must.String(must.Node(n.LookupByString("bar"))), ShouldEqual, "v4")
+					n2 := must.Node(n.LookupByString("zap"))
 					Wish(t, n2.Length(), ShouldEqual, 2)
-					Wish(t, must.String(must.Node(n2.LookupString("foo"))), ShouldEqual, "v2")
-					Wish(t, must.String(must.Node(n2.LookupString("bar"))), ShouldEqual, "v3")
+					Wish(t, must.String(must.Node(n2.LookupByString("foo"))), ShouldEqual, "v2")
+					Wish(t, must.String(must.Node(n2.LookupByString("bar"))), ShouldEqual, "v3")
 				})
 				t.Run("repr-read", func(t *testing.T) {
 					nr := n.Representation()

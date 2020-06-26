@@ -22,13 +22,13 @@ func (g MapTraits) EmitNodeMethodReprKind(w io.Writer) {
 		}
 	`, w, g)
 }
-func (g MapTraits) EmitNodeMethodLookupIndex(w io.Writer) {
-	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Map}.emitNodeMethodLookupIndex(w)
+func (g MapTraits) EmitNodeMethodLookupByIndex(w io.Writer) {
+	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Map}.emitNodeMethodLookupByIndex(w)
 }
-func (g MapTraits) EmitNodeMethodLookupSegment(w io.Writer) {
+func (g MapTraits) EmitNodeMethodLookupBySegment(w io.Writer) {
 	doTemplate(`
-		func (n {{ .TypeSymbol }}) LookupSegment(seg ipld.PathSegment) (ipld.Node, error) {
-			return n.LookupString(seg.String())
+		func (n {{ .TypeSymbol }}) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
+			return n.LookupByString(seg.String())
 		}
 	`, w, g)
 }

@@ -26,17 +26,17 @@ type plainLink struct {
 func (plainLink) ReprKind() ipld.ReprKind {
 	return ipld.ReprKind_Link
 }
-func (plainLink) LookupString(string) (ipld.Node, error) {
-	return mixins.Link{"link"}.LookupString("")
+func (plainLink) LookupByString(string) (ipld.Node, error) {
+	return mixins.Link{"link"}.LookupByString("")
 }
-func (plainLink) LookupNode(key ipld.Node) (ipld.Node, error) {
-	return mixins.Link{"link"}.LookupNode(nil)
+func (plainLink) LookupByNode(key ipld.Node) (ipld.Node, error) {
+	return mixins.Link{"link"}.LookupByNode(nil)
 }
-func (plainLink) LookupIndex(idx int) (ipld.Node, error) {
-	return mixins.Link{"link"}.LookupIndex(0)
+func (plainLink) LookupByIndex(idx int) (ipld.Node, error) {
+	return mixins.Link{"link"}.LookupByIndex(0)
 }
-func (plainLink) LookupSegment(seg ipld.PathSegment) (ipld.Node, error) {
-	return mixins.Link{"link"}.LookupSegment(seg)
+func (plainLink) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
+	return mixins.Link{"link"}.LookupBySegment(seg)
 }
 func (plainLink) MapIterator() ipld.MapIterator {
 	return nil

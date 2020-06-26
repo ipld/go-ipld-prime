@@ -50,17 +50,17 @@ func TestStructNesting(t *testing.T) {
 			t.Run("typed-read", func(t *testing.T) {
 				Require(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
 				Wish(t, n.Length(), ShouldEqual, 1)
-				n2 := must.Node(n.LookupString("x"))
+				n2 := must.Node(n.LookupByString("x"))
 				Require(t, n2.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
-				Wish(t, must.String(must.Node(n2.LookupString("s"))), ShouldEqual, "woo")
+				Wish(t, must.String(must.Node(n2.LookupByString("s"))), ShouldEqual, "woo")
 			})
 			t.Run("repr-read", func(t *testing.T) {
 				nr := n.Representation()
 				Require(t, nr.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
 				Wish(t, nr.Length(), ShouldEqual, 1)
-				n2 := must.Node(nr.LookupString("r"))
+				n2 := must.Node(nr.LookupByString("r"))
 				Require(t, n2.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
-				Wish(t, must.String(must.Node(n2.LookupString("q"))), ShouldEqual, "woo")
+				Wish(t, must.String(must.Node(n2.LookupByString("q"))), ShouldEqual, "woo")
 			})
 		})
 		t.Run("repr-create", func(t *testing.T) {

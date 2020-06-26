@@ -63,17 +63,17 @@ var _ schema.TypedNode = (String)(&_String{})
 func (String) ReprKind() ipld.ReprKind {
 	return ipld.ReprKind_String
 }
-func (String) LookupString(string) (ipld.Node, error) {
-	return mixins.String{"gendemo.String"}.LookupString("")
+func (String) LookupByString(string) (ipld.Node, error) {
+	return mixins.String{"gendemo.String"}.LookupByString("")
 }
-func (String) LookupNode(ipld.Node) (ipld.Node, error) {
-	return mixins.String{"gendemo.String"}.LookupNode(nil)
+func (String) LookupByNode(ipld.Node) (ipld.Node, error) {
+	return mixins.String{"gendemo.String"}.LookupByNode(nil)
 }
-func (String) LookupIndex(idx int) (ipld.Node, error) {
-	return mixins.String{"gendemo.String"}.LookupIndex(0)
+func (String) LookupByIndex(idx int) (ipld.Node, error) {
+	return mixins.String{"gendemo.String"}.LookupByIndex(0)
 }
-func (String) LookupSegment(seg ipld.PathSegment) (ipld.Node, error) {
-	return mixins.String{"gendemo.String"}.LookupSegment(seg)
+func (String) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
+	return mixins.String{"gendemo.String"}.LookupBySegment(seg)
 }
 func (String) MapIterator() ipld.MapIterator {
 	return nil

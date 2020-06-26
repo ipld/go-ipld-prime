@@ -25,17 +25,17 @@ type plainBytes []byte
 func (plainBytes) ReprKind() ipld.ReprKind {
 	return ipld.ReprKind_Bytes
 }
-func (plainBytes) LookupString(string) (ipld.Node, error) {
-	return mixins.Bytes{"bytes"}.LookupString("")
+func (plainBytes) LookupByString(string) (ipld.Node, error) {
+	return mixins.Bytes{"bytes"}.LookupByString("")
 }
-func (plainBytes) LookupNode(key ipld.Node) (ipld.Node, error) {
-	return mixins.Bytes{"bytes"}.LookupNode(nil)
+func (plainBytes) LookupByNode(key ipld.Node) (ipld.Node, error) {
+	return mixins.Bytes{"bytes"}.LookupByNode(nil)
 }
-func (plainBytes) LookupIndex(idx int) (ipld.Node, error) {
-	return mixins.Bytes{"bytes"}.LookupIndex(0)
+func (plainBytes) LookupByIndex(idx int) (ipld.Node, error) {
+	return mixins.Bytes{"bytes"}.LookupByIndex(0)
 }
-func (plainBytes) LookupSegment(seg ipld.PathSegment) (ipld.Node, error) {
-	return mixins.Bytes{"bytes"}.LookupSegment(seg)
+func (plainBytes) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
+	return mixins.Bytes{"bytes"}.LookupBySegment(seg)
 }
 func (plainBytes) MapIterator() ipld.MapIterator {
 	return nil

@@ -66,10 +66,10 @@ func (g mapReprMapReprGenerator) EmitNodeTypeAssertions(w io.Writer) {
 	`, w, g.AdjCfg, g)
 }
 
-func (g mapReprMapReprGenerator) EmitNodeMethodLookupString(w io.Writer) {
+func (g mapReprMapReprGenerator) EmitNodeMethodLookupByString(w io.Writer) {
 	doTemplate(`
-		func (nr *_{{ .Type | TypeSymbol }}__Repr) LookupString(k string) (ipld.Node, error) {
-			v, err := ({{ .Type | TypeSymbol }})(nr).LookupString(k)
+		func (nr *_{{ .Type | TypeSymbol }}__Repr) LookupByString(k string) (ipld.Node, error) {
+			v, err := ({{ .Type | TypeSymbol }})(nr).LookupByString(k)
 			if err != nil || v == ipld.Null {
 				return v, err
 			}
@@ -77,13 +77,13 @@ func (g mapReprMapReprGenerator) EmitNodeMethodLookupString(w io.Writer) {
 		}
 	`, w, g.AdjCfg, g)
 }
-func (g mapReprMapReprGenerator) EmitNodeMethodLookupNode(w io.Writer) {
+func (g mapReprMapReprGenerator) EmitNodeMethodLookupByNode(w io.Writer) {
 	// Null is also already a branch in the method we're calling; hopefully the compiler inlines and sees this and DTRT.
 	// REVIEW: these unchecked casts are definitely safe at compile time, but I'm not sure if the compiler considers that provable,
 	//  so we should investigate if there's any runtime checks injected here that waste time.  If so: write this with more gsloc to avoid :(
 	doTemplate(`
-		func (nr *_{{ .Type | TypeSymbol }}__Repr) LookupNode(k ipld.Node) (ipld.Node, error) {
-			v, err := ({{ .Type | TypeSymbol }})(nr).LookupNode(k)
+		func (nr *_{{ .Type | TypeSymbol }}__Repr) LookupByNode(k ipld.Node) (ipld.Node, error) {
+			v, err := ({{ .Type | TypeSymbol }})(nr).LookupByNode(k)
 			if err != nil || v == ipld.Null {
 				return v, err
 			}

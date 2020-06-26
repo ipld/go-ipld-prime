@@ -210,7 +210,7 @@ func peekMightBeTable(ctx *state, n ipld.Node) (bool, tableGroupID) {
 		if n.Length() < 1 {
 			return false, ""
 		}
-		n0, _ := n.LookupIndex(0)
+		n0, _ := n.LookupByIndex(0)
 		if n0.ReprKind() != ipld.ReprKind_Map {
 			return false, ""
 		}
@@ -378,7 +378,7 @@ func marshalListValue(ctx *state, tab *table, row ipld.Node, w io.Writer) error 
 		if i > lastColThisRow {
 			break
 		}
-		v, err := row.LookupString(string(col))
+		v, err := row.LookupByString(string(col))
 		if v == nil {
 			w.Write(bytes.Repeat([]byte{' '}, tab.keySize[col]))
 			w.Write(bytes.Repeat([]byte{' '}, 4)) // colonAfterKey, spaceAfterKey, commaAfterValue, spaceAfterValue.
@@ -442,7 +442,7 @@ func marshalListValue(ctx *state, tab *table, row ipld.Node, w io.Writer) error 
 		defer func() { ctx.indent-- }()
 	}
 	for i, col := range tab.ownLine {
-		v, err := row.LookupString(string(col))
+		v, err := row.LookupByString(string(col))
 		if v == nil {
 			continue
 		}

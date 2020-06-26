@@ -25,17 +25,17 @@ type plainBool bool
 func (plainBool) ReprKind() ipld.ReprKind {
 	return ipld.ReprKind_Bool
 }
-func (plainBool) LookupString(string) (ipld.Node, error) {
-	return mixins.Bool{"bool"}.LookupString("")
+func (plainBool) LookupByString(string) (ipld.Node, error) {
+	return mixins.Bool{"bool"}.LookupByString("")
 }
-func (plainBool) LookupNode(key ipld.Node) (ipld.Node, error) {
-	return mixins.Bool{"bool"}.LookupNode(nil)
+func (plainBool) LookupByNode(key ipld.Node) (ipld.Node, error) {
+	return mixins.Bool{"bool"}.LookupByNode(nil)
 }
-func (plainBool) LookupIndex(idx int) (ipld.Node, error) {
-	return mixins.Bool{"bool"}.LookupIndex(0)
+func (plainBool) LookupByIndex(idx int) (ipld.Node, error) {
+	return mixins.Bool{"bool"}.LookupByIndex(0)
 }
-func (plainBool) LookupSegment(seg ipld.PathSegment) (ipld.Node, error) {
-	return mixins.Bool{"bool"}.LookupSegment(seg)
+func (plainBool) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
+	return mixins.Bool{"bool"}.LookupBySegment(seg)
 }
 func (plainBool) MapIterator() ipld.MapIterator {
 	return nil

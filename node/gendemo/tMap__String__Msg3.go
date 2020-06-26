@@ -72,7 +72,7 @@ var _ schema.TypedNode = (Map__String__Msg3)(&_Map__String__Msg3{})
 func (Map__String__Msg3) ReprKind() ipld.ReprKind {
 	return ipld.ReprKind_Map
 }
-func (n Map__String__Msg3) LookupString(k string) (ipld.Node, error) {
+func (n Map__String__Msg3) LookupByString(k string) (ipld.Node, error) {
 	var k2 _String
 	if err := (_String__Style{}).fromString(&k2, k); err != nil {
 		return nil, err // TODO wrap in some kind of ErrInvalidKey
@@ -83,7 +83,7 @@ func (n Map__String__Msg3) LookupString(k string) (ipld.Node, error) {
 	}
 	return v, nil
 }
-func (n Map__String__Msg3) LookupNode(k ipld.Node) (ipld.Node, error) {
+func (n Map__String__Msg3) LookupByNode(k ipld.Node) (ipld.Node, error) {
 	k2, ok := k.(String)
 	if !ok {
 		panic("todo invalid key type error")
@@ -95,11 +95,11 @@ func (n Map__String__Msg3) LookupNode(k ipld.Node) (ipld.Node, error) {
 	}
 	return v, nil
 }
-func (Map__String__Msg3) LookupIndex(idx int) (ipld.Node, error) {
-	return mixins.Map{"gendemo.Map__String__Msg3"}.LookupIndex(0)
+func (Map__String__Msg3) LookupByIndex(idx int) (ipld.Node, error) {
+	return mixins.Map{"gendemo.Map__String__Msg3"}.LookupByIndex(0)
 }
-func (n Map__String__Msg3) LookupSegment(seg ipld.PathSegment) (ipld.Node, error) {
-	return n.LookupString(seg.String())
+func (n Map__String__Msg3) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
+	return n.LookupByString(seg.String())
 }
 func (n Map__String__Msg3) MapIterator() ipld.MapIterator {
 	return &_Map__String__Msg3__MapItr{n, 0}
@@ -429,25 +429,25 @@ var _ ipld.Node = &_Map__String__Msg3__Repr{}
 func (_Map__String__Msg3__Repr) ReprKind() ipld.ReprKind {
 	return ipld.ReprKind_Map
 }
-func (nr *_Map__String__Msg3__Repr) LookupString(k string) (ipld.Node, error) {
-	v, err := (Map__String__Msg3)(nr).LookupString(k)
+func (nr *_Map__String__Msg3__Repr) LookupByString(k string) (ipld.Node, error) {
+	v, err := (Map__String__Msg3)(nr).LookupByString(k)
 	if err != nil || v == ipld.Null {
 		return v, err
 	}
 	return v.(Msg3).Representation(), nil
 }
-func (nr *_Map__String__Msg3__Repr) LookupNode(k ipld.Node) (ipld.Node, error) {
-	v, err := (Map__String__Msg3)(nr).LookupNode(k)
+func (nr *_Map__String__Msg3__Repr) LookupByNode(k ipld.Node) (ipld.Node, error) {
+	v, err := (Map__String__Msg3)(nr).LookupByNode(k)
 	if err != nil || v == ipld.Null {
 		return v, err
 	}
 	return v.(Msg3).Representation(), nil
 }
-func (_Map__String__Msg3__Repr) LookupIndex(idx int) (ipld.Node, error) {
-	return mixins.Map{"gendemo.Map__String__Msg3.Repr"}.LookupIndex(0)
+func (_Map__String__Msg3__Repr) LookupByIndex(idx int) (ipld.Node, error) {
+	return mixins.Map{"gendemo.Map__String__Msg3.Repr"}.LookupByIndex(0)
 }
-func (n _Map__String__Msg3__Repr) LookupSegment(seg ipld.PathSegment) (ipld.Node, error) {
-	return n.LookupString(seg.String())
+func (n _Map__String__Msg3__Repr) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
+	return n.LookupByString(seg.String())
 }
 func (nr *_Map__String__Msg3__Repr) MapIterator() ipld.MapIterator {
 	return &_Map__String__Msg3__ReprMapItr{(Map__String__Msg3)(nr), 0}

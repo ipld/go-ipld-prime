@@ -30,17 +30,17 @@ type plainString string
 func (plainString) ReprKind() ipld.ReprKind {
 	return ipld.ReprKind_String
 }
-func (plainString) LookupString(string) (ipld.Node, error) {
-	return mixins.String{"string"}.LookupString("")
+func (plainString) LookupByString(string) (ipld.Node, error) {
+	return mixins.String{"string"}.LookupByString("")
 }
-func (plainString) LookupNode(key ipld.Node) (ipld.Node, error) {
-	return mixins.String{"string"}.LookupNode(nil)
+func (plainString) LookupByNode(key ipld.Node) (ipld.Node, error) {
+	return mixins.String{"string"}.LookupByNode(nil)
 }
-func (plainString) LookupIndex(idx int) (ipld.Node, error) {
-	return mixins.String{"string"}.LookupIndex(0)
+func (plainString) LookupByIndex(idx int) (ipld.Node, error) {
+	return mixins.String{"string"}.LookupByIndex(0)
 }
-func (plainString) LookupSegment(seg ipld.PathSegment) (ipld.Node, error) {
-	return mixins.String{"string"}.LookupSegment(seg)
+func (plainString) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
+	return mixins.String{"string"}.LookupBySegment(seg)
 }
 func (plainString) MapIterator() ipld.MapIterator {
 	return nil

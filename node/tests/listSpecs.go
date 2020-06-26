@@ -20,15 +20,15 @@ func SpecTestListString(t *testing.T, ns ipld.NodeStyle) {
 		t.Run("reads back out", func(t *testing.T) {
 			Wish(t, n.Length(), ShouldEqual, 3)
 
-			v, err := n.LookupIndex(0)
+			v, err := n.LookupByIndex(0)
 			Wish(t, err, ShouldEqual, nil)
 			Wish(t, must.String(v), ShouldEqual, "one")
 
-			v, err = n.LookupIndex(1)
+			v, err = n.LookupByIndex(1)
 			Wish(t, err, ShouldEqual, nil)
 			Wish(t, must.String(v), ShouldEqual, "two")
 
-			v, err = n.LookupIndex(2)
+			v, err = n.LookupByIndex(2)
 			Wish(t, err, ShouldEqual, nil)
 			Wish(t, must.String(v), ShouldEqual, "three")
 		})

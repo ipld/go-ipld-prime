@@ -22,17 +22,17 @@ func (g IntTraits) EmitNodeMethodReprKind(w io.Writer) {
 		}
 	`, w, g)
 }
-func (g IntTraits) EmitNodeMethodLookupString(w io.Writer) {
-	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Int}.emitNodeMethodLookupString(w)
+func (g IntTraits) EmitNodeMethodLookupByString(w io.Writer) {
+	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Int}.emitNodeMethodLookupByString(w)
 }
-func (g IntTraits) EmitNodeMethodLookupNode(w io.Writer) {
-	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Int}.emitNodeMethodLookupNode(w)
+func (g IntTraits) EmitNodeMethodLookupByNode(w io.Writer) {
+	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Int}.emitNodeMethodLookupByNode(w)
 }
-func (g IntTraits) EmitNodeMethodLookupIndex(w io.Writer) {
-	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Int}.emitNodeMethodLookupIndex(w)
+func (g IntTraits) EmitNodeMethodLookupByIndex(w io.Writer) {
+	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Int}.emitNodeMethodLookupByIndex(w)
 }
-func (g IntTraits) EmitNodeMethodLookupSegment(w io.Writer) {
-	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Int}.emitNodeMethodLookupSegment(w)
+func (g IntTraits) EmitNodeMethodLookupBySegment(w io.Writer) {
+	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Int}.emitNodeMethodLookupBySegment(w)
 }
 func (g IntTraits) EmitNodeMethodMapIterator(w io.Writer) {
 	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Int}.emitNodeMethodMapIterator(w)

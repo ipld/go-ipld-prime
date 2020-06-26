@@ -39,10 +39,10 @@ type NodeGenerator interface {
 	EmitNodeType(io.Writer)           // usually already covered by EmitNativeType for the primary node, but has a nonzero body for the repr node
 	EmitNodeTypeAssertions(io.Writer) // optional to include this content
 	EmitNodeMethodReprKind(io.Writer)
-	EmitNodeMethodLookupString(io.Writer)
-	EmitNodeMethodLookupNode(io.Writer)
-	EmitNodeMethodLookupIndex(io.Writer)
-	EmitNodeMethodLookupSegment(io.Writer)
+	EmitNodeMethodLookupByString(io.Writer)
+	EmitNodeMethodLookupByNode(io.Writer)
+	EmitNodeMethodLookupByIndex(io.Writer)
+	EmitNodeMethodLookupBySegment(io.Writer)
 	EmitNodeMethodMapIterator(io.Writer)  // also iterator itself
 	EmitNodeMethodListIterator(io.Writer) // also iterator itself
 	EmitNodeMethodLength(io.Writer)
@@ -112,10 +112,10 @@ func EmitNode(ng NodeGenerator, w io.Writer) {
 	ng.EmitNodeType(w)
 	ng.EmitNodeTypeAssertions(w)
 	ng.EmitNodeMethodReprKind(w)
-	ng.EmitNodeMethodLookupString(w)
-	ng.EmitNodeMethodLookupNode(w)
-	ng.EmitNodeMethodLookupIndex(w)
-	ng.EmitNodeMethodLookupSegment(w)
+	ng.EmitNodeMethodLookupByString(w)
+	ng.EmitNodeMethodLookupByNode(w)
+	ng.EmitNodeMethodLookupByIndex(w)
+	ng.EmitNodeMethodLookupBySegment(w)
 	ng.EmitNodeMethodMapIterator(w)
 	ng.EmitNodeMethodListIterator(w)
 	ng.EmitNodeMethodLength(w)

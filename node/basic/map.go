@@ -33,25 +33,25 @@ type plainMap__Entry struct {
 func (plainMap) ReprKind() ipld.ReprKind {
 	return ipld.ReprKind_Map
 }
-func (n *plainMap) LookupString(key string) (ipld.Node, error) {
+func (n *plainMap) LookupByString(key string) (ipld.Node, error) {
 	v, exists := n.m[key]
 	if !exists {
 		return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
 	}
 	return v, nil
 }
-func (n *plainMap) LookupNode(key ipld.Node) (ipld.Node, error) {
+func (n *plainMap) LookupByNode(key ipld.Node) (ipld.Node, error) {
 	ks, err := key.AsString()
 	if err != nil {
 		return nil, err
 	}
-	return n.LookupString(ks)
+	return n.LookupByString(ks)
 }
-func (plainMap) LookupIndex(idx int) (ipld.Node, error) {
-	return mixins.Map{"map"}.LookupIndex(0)
+func (plainMap) LookupByIndex(idx int) (ipld.Node, error) {
+	return mixins.Map{"map"}.LookupByIndex(0)
 }
-func (n *plainMap) LookupSegment(seg ipld.PathSegment) (ipld.Node, error) {
-	return n.LookupString(seg.String())
+func (n *plainMap) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
+	return n.LookupByString(seg.String())
 }
 func (n *plainMap) MapIterator() ipld.MapIterator {
 	return &plainMap_MapIterator{n, 0}

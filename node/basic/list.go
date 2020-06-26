@@ -24,24 +24,24 @@ type plainList struct {
 func (plainList) ReprKind() ipld.ReprKind {
 	return ipld.ReprKind_List
 }
-func (plainList) LookupString(string) (ipld.Node, error) {
-	return mixins.List{"list"}.LookupString("")
+func (plainList) LookupByString(string) (ipld.Node, error) {
+	return mixins.List{"list"}.LookupByString("")
 }
-func (plainList) LookupNode(ipld.Node) (ipld.Node, error) {
-	return mixins.List{"list"}.LookupNode(nil)
+func (plainList) LookupByNode(ipld.Node) (ipld.Node, error) {
+	return mixins.List{"list"}.LookupByNode(nil)
 }
-func (n *plainList) LookupIndex(idx int) (ipld.Node, error) {
+func (n *plainList) LookupByIndex(idx int) (ipld.Node, error) {
 	if n.Length() <= idx {
 		return nil, ipld.ErrNotExists{ipld.PathSegmentOfInt(idx)}
 	}
 	return n.x[idx], nil
 }
-func (n *plainList) LookupSegment(seg ipld.PathSegment) (ipld.Node, error) {
+func (n *plainList) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	idx, err := seg.Index()
 	if err != nil {
 		return nil, ipld.ErrInvalidSegmentForList{TroubleSegment: seg, Reason: err}
 	}
-	return n.LookupIndex(idx)
+	return n.LookupByIndex(idx)
 }
 func (plainList) MapIterator() ipld.MapIterator {
 	return nil

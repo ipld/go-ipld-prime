@@ -25,17 +25,17 @@ type plainFloat float64
 func (plainFloat) ReprKind() ipld.ReprKind {
 	return ipld.ReprKind_Float
 }
-func (plainFloat) LookupString(string) (ipld.Node, error) {
-	return mixins.Float{"float"}.LookupString("")
+func (plainFloat) LookupByString(string) (ipld.Node, error) {
+	return mixins.Float{"float"}.LookupByString("")
 }
-func (plainFloat) LookupNode(key ipld.Node) (ipld.Node, error) {
-	return mixins.Float{"float"}.LookupNode(nil)
+func (plainFloat) LookupByNode(key ipld.Node) (ipld.Node, error) {
+	return mixins.Float{"float"}.LookupByNode(nil)
 }
-func (plainFloat) LookupIndex(idx int) (ipld.Node, error) {
-	return mixins.Float{"float"}.LookupIndex(0)
+func (plainFloat) LookupByIndex(idx int) (ipld.Node, error) {
+	return mixins.Float{"float"}.LookupByIndex(0)
 }
-func (plainFloat) LookupSegment(seg ipld.PathSegment) (ipld.Node, error) {
-	return mixins.Float{"float"}.LookupSegment(seg)
+func (plainFloat) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
+	return mixins.Float{"float"}.LookupBySegment(seg)
 }
 func (plainFloat) MapIterator() ipld.MapIterator {
 	return nil

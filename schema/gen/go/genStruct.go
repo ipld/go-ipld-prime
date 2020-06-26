@@ -90,9 +90,9 @@ func (g structGenerator) EmitNodeTypeAssertions(w io.Writer) {
 	emitNodeTypeAssertions_typical(w, g.AdjCfg, g)
 }
 
-func (g structGenerator) EmitNodeMethodLookupString(w io.Writer) {
+func (g structGenerator) EmitNodeMethodLookupByString(w io.Writer) {
 	doTemplate(`
-		func (n {{ .Type | TypeSymbol }}) LookupString(key string) (ipld.Node, error) {
+		func (n {{ .Type | TypeSymbol }}) LookupByString(key string) (ipld.Node, error) {
 			switch key {
 			{{- range $field := .Type.Fields }}
 			case "{{ $field.Name }}":
@@ -119,14 +119,14 @@ func (g structGenerator) EmitNodeMethodLookupString(w io.Writer) {
 	`, w, g.AdjCfg, g)
 }
 
-func (g structGenerator) EmitNodeMethodLookupNode(w io.Writer) {
+func (g structGenerator) EmitNodeMethodLookupByNode(w io.Writer) {
 	doTemplate(`
-		func (n {{ .Type | TypeSymbol }}) LookupNode(key ipld.Node) (ipld.Node, error) {
+		func (n {{ .Type | TypeSymbol }}) LookupByNode(key ipld.Node) (ipld.Node, error) {
 			ks, err := key.AsString()
 			if err != nil {
 				return nil, err
 			}
-			return n.LookupString(ks)
+			return n.LookupByString(ks)
 		}
 	`, w, g.AdjCfg, g)
 }

@@ -23,8 +23,8 @@ import (
 // the error returned for a lookup with a key that's not a field name will
 // be ErrNoSuchField (instead of ErrNotExists).
 // These behaviors apply to the schema.TypedNode only and not their representations;
-// continuing the example, the .Representation().LookupString() method on
-// that same node for the same key as plain `.LookupString()` will still
+// continuing the example, the .Representation().LookupByString() method on
+// that same node for the same key as plain `.LookupByString()` will still
 // return ErrNotExists, because the representation isn't a schema.TypedNode!
 type TypedNode interface {
 	// schema.TypedNode acts just like a regular Node for almost all purposes;

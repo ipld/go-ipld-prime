@@ -1,7 +1,7 @@
 package solution
 
 type Node interface {
-	LookupString(key string) Node
+	LookupByString(key string) Node
 }
 
 type NodeBuilder interface {
@@ -9,7 +9,7 @@ type NodeBuilder interface {
 	Build() Node
 }
 
-func (n *Stroct) LookupString(key string) Node {
+func (n *Stroct) LookupByString(key string) Node {
 	switch key {
 	case "foo":
 		return &n.foo
@@ -20,11 +20,11 @@ func (n *Stroct) LookupString(key string) Node {
 	}
 }
 
-func (n *Strooct) LookupString(key string) Node {
+func (n *Strooct) LookupByString(key string) Node {
 	panic("nyi")
 }
 
-func (n *String) LookupString(key string) Node {
+func (n *String) LookupByString(key string) Node {
 	panic("nyi")
 }
 

@@ -78,10 +78,10 @@ func (g structReprMapReprGenerator) EmitNodeTypeAssertions(w io.Writer) {
 	`, w, g.AdjCfg, g)
 }
 
-func (g structReprMapReprGenerator) EmitNodeMethodLookupString(w io.Writer) {
+func (g structReprMapReprGenerator) EmitNodeMethodLookupByString(w io.Writer) {
 	// Similar to the type-level method, except any undef fields also return ErrNotExists.
 	doTemplate(`
-		func (n *_{{ .Type | TypeSymbol }}__Repr) LookupString(key string) (ipld.Node, error) {
+		func (n *_{{ .Type | TypeSymbol }}__Repr) LookupByString(key string) (ipld.Node, error) {
 			switch key {
 			{{- range $field := .Type.Fields }}
 			case "{{ $field | $field.Parent.RepresentationStrategy.GetFieldKey }}":
@@ -108,14 +108,14 @@ func (g structReprMapReprGenerator) EmitNodeMethodLookupString(w io.Writer) {
 	`, w, g.AdjCfg, g)
 }
 
-func (g structReprMapReprGenerator) EmitNodeMethodLookupNode(w io.Writer) {
+func (g structReprMapReprGenerator) EmitNodeMethodLookupByNode(w io.Writer) {
 	doTemplate(`
-		func (n *_{{ .Type | TypeSymbol }}__Repr) LookupNode(key ipld.Node) (ipld.Node, error) {
+		func (n *_{{ .Type | TypeSymbol }}__Repr) LookupByNode(key ipld.Node) (ipld.Node, error) {
 			ks, err := key.AsString()
 			if err != nil {
 				return nil, err
 			}
-			return n.LookupString(ks)
+			return n.LookupByString(ks)
 		}
 	`, w, g.AdjCfg, g)
 }

@@ -25,17 +25,17 @@ type plainInt int
 func (plainInt) ReprKind() ipld.ReprKind {
 	return ipld.ReprKind_Int
 }
-func (plainInt) LookupString(string) (ipld.Node, error) {
-	return mixins.Int{"int"}.LookupString("")
+func (plainInt) LookupByString(string) (ipld.Node, error) {
+	return mixins.Int{"int"}.LookupByString("")
 }
-func (plainInt) LookupNode(key ipld.Node) (ipld.Node, error) {
-	return mixins.Int{"int"}.LookupNode(nil)
+func (plainInt) LookupByNode(key ipld.Node) (ipld.Node, error) {
+	return mixins.Int{"int"}.LookupByNode(nil)
 }
-func (plainInt) LookupIndex(idx int) (ipld.Node, error) {
-	return mixins.Int{"int"}.LookupIndex(0)
+func (plainInt) LookupByIndex(idx int) (ipld.Node, error) {
+	return mixins.Int{"int"}.LookupByIndex(0)
 }
-func (plainInt) LookupSegment(seg ipld.PathSegment) (ipld.Node, error) {
-	return mixins.Int{"int"}.LookupSegment(seg)
+func (plainInt) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
+	return mixins.Int{"int"}.LookupBySegment(seg)
 }
 func (plainInt) MapIterator() ipld.MapIterator {
 	return nil

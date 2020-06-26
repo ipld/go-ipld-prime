@@ -54,7 +54,7 @@ func (prog Progress) Focus(n ipld.Node, p ipld.Path, fn VisitFn) error {
 		case ipld.ReprKind_Invalid:
 			return fmt.Errorf("cannot traverse node at %q: it is undefined", p.Truncate(i))
 		case ipld.ReprKind_Map:
-			next, err := n.LookupString(seg.String())
+			next, err := n.LookupByString(seg.String())
 			if err != nil {
 				return fmt.Errorf("error traversing segment %q on node at %q: %s", seg, p.Truncate(i), err)
 			}
@@ -64,7 +64,7 @@ func (prog Progress) Focus(n ipld.Node, p ipld.Path, fn VisitFn) error {
 			if err != nil {
 				return fmt.Errorf("error traversing segment %q on node at %q: the segment cannot be parsed as a number and the node is a list", seg, p.Truncate(i))
 			}
-			next, err := n.LookupIndex(intSeg)
+			next, err := n.LookupByIndex(intSeg)
 			if err != nil {
 				return fmt.Errorf("error traversing segment %q on node at %q: %s", seg, p.Truncate(i), err)
 			}

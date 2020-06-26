@@ -58,20 +58,20 @@ func TestStructsContainingMaybe(t *testing.T) {
 	testLookups_vvvvv := func(t *testing.T, n ipld.Node) {
 		Wish(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
 		Wish(t, n.Length(), ShouldEqual, 5)
-		Wish(t, plzStr(n.LookupString("f1")), ShouldEqual, "a")
-		Wish(t, plzStr(n.LookupString("f2")), ShouldEqual, "b")
-		Wish(t, plzStr(n.LookupString("f3")), ShouldEqual, "c")
-		Wish(t, plzStr(n.LookupString("f4")), ShouldEqual, "d")
-		Wish(t, plzStr(n.LookupString("f5")), ShouldEqual, "e")
+		Wish(t, plzStr(n.LookupByString("f1")), ShouldEqual, "a")
+		Wish(t, plzStr(n.LookupByString("f2")), ShouldEqual, "b")
+		Wish(t, plzStr(n.LookupByString("f3")), ShouldEqual, "c")
+		Wish(t, plzStr(n.LookupByString("f4")), ShouldEqual, "d")
+		Wish(t, plzStr(n.LookupByString("f5")), ShouldEqual, "e")
 	}
 	testLookups_vvvvv_repr := func(t *testing.T, n ipld.Node) {
 		Wish(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
 		Wish(t, n.Length(), ShouldEqual, 5)
-		Wish(t, plzStr(n.LookupString("r1")), ShouldEqual, "a")
-		Wish(t, plzStr(n.LookupString("r2")), ShouldEqual, "b")
-		Wish(t, plzStr(n.LookupString("r3")), ShouldEqual, "c")
-		Wish(t, plzStr(n.LookupString("r4")), ShouldEqual, "d")
-		Wish(t, plzStr(n.LookupString("f5")), ShouldEqual, "e")
+		Wish(t, plzStr(n.LookupByString("r1")), ShouldEqual, "a")
+		Wish(t, plzStr(n.LookupByString("r2")), ShouldEqual, "b")
+		Wish(t, plzStr(n.LookupByString("r3")), ShouldEqual, "c")
+		Wish(t, plzStr(n.LookupByString("r4")), ShouldEqual, "d")
+		Wish(t, plzStr(n.LookupByString("f5")), ShouldEqual, "e")
 	}
 	testIteration_vvvvv := func(t *testing.T, n ipld.Node) {
 		itr := n.MapIterator()
@@ -166,11 +166,11 @@ func TestStructsContainingMaybe(t *testing.T) {
 	testLookups_vvzzv := func(t *testing.T, n ipld.Node) {
 		Wish(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
 		Wish(t, n.Length(), ShouldEqual, 5)
-		Wish(t, plzStr(n.LookupString("f1")), ShouldEqual, "a")
-		Wish(t, plzStr(n.LookupString("f2")), ShouldEqual, "b")
-		Wish(t, erp(n.LookupString("f3")), ShouldEqual, ipld.Null)
-		Wish(t, erp(n.LookupString("f4")), ShouldEqual, ipld.Null)
-		Wish(t, plzStr(n.LookupString("f5")), ShouldEqual, "e")
+		Wish(t, plzStr(n.LookupByString("f1")), ShouldEqual, "a")
+		Wish(t, plzStr(n.LookupByString("f2")), ShouldEqual, "b")
+		Wish(t, erp(n.LookupByString("f3")), ShouldEqual, ipld.Null)
+		Wish(t, erp(n.LookupByString("f4")), ShouldEqual, ipld.Null)
+		Wish(t, plzStr(n.LookupByString("f5")), ShouldEqual, "e")
 	}
 	build_vuvuv := func(t *testing.T, ns ipld.NodeStyle) schema.TypedNode {
 		nb := ns.NewBuilder()
@@ -188,11 +188,11 @@ func TestStructsContainingMaybe(t *testing.T) {
 	testLookups_vuvuv := func(t *testing.T, n ipld.Node) {
 		Wish(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
 		Wish(t, n.Length(), ShouldEqual, 5)
-		Wish(t, plzStr(n.LookupString("f1")), ShouldEqual, "a")
-		Wish(t, erp(n.LookupString("f2")), ShouldEqual, ipld.Undef)
-		Wish(t, plzStr(n.LookupString("f3")), ShouldEqual, "c")
-		Wish(t, erp(n.LookupString("f4")), ShouldEqual, ipld.Undef)
-		Wish(t, plzStr(n.LookupString("f5")), ShouldEqual, "e")
+		Wish(t, plzStr(n.LookupByString("f1")), ShouldEqual, "a")
+		Wish(t, erp(n.LookupByString("f2")), ShouldEqual, ipld.Undef)
+		Wish(t, plzStr(n.LookupByString("f3")), ShouldEqual, "c")
+		Wish(t, erp(n.LookupByString("f4")), ShouldEqual, ipld.Undef)
+		Wish(t, plzStr(n.LookupByString("f5")), ShouldEqual, "e")
 	}
 	testIteration_vuvuv_repr := func(t *testing.T, n ipld.Node) {
 		itr := n.MapIterator()

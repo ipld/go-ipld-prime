@@ -116,14 +116,14 @@ func (g mapGenerator) EmitNodeTypeAssertions(w io.Writer) {
 	emitNodeTypeAssertions_typical(w, g.AdjCfg, g)
 }
 
-func (g mapGenerator) EmitNodeMethodLookupString(w io.Writer) {
+func (g mapGenerator) EmitNodeMethodLookupByString(w io.Writer) {
 	// What should be coercible in which directions (and how surprising that is) is an interesting question.
 	//  Most of the answer comes from considering what needs to be possible when working with PathSegment:
 	//   we *must* be able to accept a string in a PathSegment and be able to use it to navigate a map -- even if the map has complex keys.
 	//   For that to work out, it means if the key type doesn't have a string type kind, we must be willing to reach into its representation and use the fromString there.
 	//  If the key type *does* have a string kind at the type level, we'll use that; no need to consider going through the representation.
 	doTemplate(`
-		func (n {{ .Type | TypeSymbol }}) LookupString(k string) (ipld.Node, error) {
+		func (n {{ .Type | TypeSymbol }}) LookupByString(k string) (ipld.Node, error) {
 			var k2 _{{ .Type.KeyType | TypeSymbol }}
 			{{- if eq .Type.KeyType.Kind.String "String" }}
 			if err := (_{{ .Type.KeyType | TypeSymbol }}__Style{}).fromString(&k2, k); err != nil {
@@ -150,13 +150,13 @@ func (g mapGenerator) EmitNodeMethodLookupString(w io.Writer) {
 	`, w, g.AdjCfg, g)
 }
 
-func (g mapGenerator) EmitNodeMethodLookupNode(w io.Writer) {
-	// LookupNode will procede by cast if it can; or simply error if that doesn't work.
+func (g mapGenerator) EmitNodeMethodLookupByNode(w io.Writer) {
+	// LookupByNode will procede by cast if it can; or simply error if that doesn't work.
 	//  There's no attempt to turn the node (or its repr) into a string and then reify that into a key;
 	//   if you used a Node here, you should've meant it.
 	// REVIEW: by comparison structs will coerce anything stringish silently...!  so we should figure out if that inconsistency is acceptable, and at least document it if so.
 	doTemplate(`
-		func (n {{ .Type | TypeSymbol }}) LookupNode(k ipld.Node) (ipld.Node, error) {
+		func (n {{ .Type | TypeSymbol }}) LookupByNode(k ipld.Node) (ipld.Node, error) {
 			k2, ok := k.({{ .Type.KeyType | TypeSymbol }})
 			if !ok {
 				panic("todo invalid key type error")

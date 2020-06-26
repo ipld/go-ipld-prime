@@ -22,17 +22,17 @@ func (g ListTraits) EmitNodeMethodReprKind(w io.Writer) {
 		}
 	`, w, g)
 }
-func (g ListTraits) EmitNodeMethodLookupString(w io.Writer) {
-	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_List}.emitNodeMethodLookupString(w)
+func (g ListTraits) EmitNodeMethodLookupByString(w io.Writer) {
+	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_List}.emitNodeMethodLookupByString(w)
 }
-func (g ListTraits) EmitNodeMethodLookupSegment(w io.Writer) {
+func (g ListTraits) EmitNodeMethodLookupBySegment(w io.Writer) {
 	doTemplate(`
-		func (n {{ .TypeSymbol }}) LookupSegment(seg ipld.PathSegment) (ipld.Node, error) {
+		func (n {{ .TypeSymbol }}) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 			i, err := seg.Index()
 			if err != nil {
 				return nil, ipld.ErrInvalidSegmentForList{TypeName: "{{ .PkgName }}.{{ .TypeName }}", TroubleSegment: seg, Reason: err}
 			}
-			return n.LookupIndex(i)
+			return n.LookupByIndex(i)
 		}
 	`, w, g)
 }

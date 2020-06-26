@@ -22,17 +22,17 @@ func (g LinkTraits) EmitNodeMethodReprKind(w io.Writer) {
 		}
 	`, w, g)
 }
-func (g LinkTraits) EmitNodeMethodLookupString(w io.Writer) {
-	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Link}.emitNodeMethodLookupString(w)
+func (g LinkTraits) EmitNodeMethodLookupByString(w io.Writer) {
+	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Link}.emitNodeMethodLookupByString(w)
 }
-func (g LinkTraits) EmitNodeMethodLookupNode(w io.Writer) {
-	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Link}.emitNodeMethodLookupNode(w)
+func (g LinkTraits) EmitNodeMethodLookupByNode(w io.Writer) {
+	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Link}.emitNodeMethodLookupByNode(w)
 }
-func (g LinkTraits) EmitNodeMethodLookupIndex(w io.Writer) {
-	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Link}.emitNodeMethodLookupIndex(w)
+func (g LinkTraits) EmitNodeMethodLookupByIndex(w io.Writer) {
+	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Link}.emitNodeMethodLookupByIndex(w)
 }
-func (g LinkTraits) EmitNodeMethodLookupSegment(w io.Writer) {
-	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Link}.emitNodeMethodLookupSegment(w)
+func (g LinkTraits) EmitNodeMethodLookupBySegment(w io.Writer) {
+	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Link}.emitNodeMethodLookupBySegment(w)
 }
 func (g LinkTraits) EmitNodeMethodMapIterator(w io.Writer) {
 	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Link}.emitNodeMethodMapIterator(w)

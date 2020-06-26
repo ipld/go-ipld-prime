@@ -60,7 +60,7 @@ type Foomp map {Foo:Bar}
 ... then you'll get codegen output code which includes a method on Foomp:
 
 ```go
-func (x *Foomp) LookupNode(k *Foo) (*Bar) { /*...*/ }
+func (x *Foomp) LookupByNode(k *Foo) (*Bar) { /*...*/ }
 ```
 
 Such specialized methods are often much shorter, much more efficient to execute,
@@ -141,7 +141,7 @@ type Foomp map {String:String}
 ... then you'll get codegen output code which includes a method on Foomp:
 
 ```go
-func (x *Foomp) LookupNode(k String) (String) { /*...*/ }
+func (x *Foomp) LookupByNode(k String) (String) { /*...*/ }
 ```
 
 (The exact symbols involved and whether or not they're pointers may vary.)

@@ -72,9 +72,9 @@ func (g listGenerator) EmitNodeTypeAssertions(w io.Writer) {
 	emitNodeTypeAssertions_typical(w, g.AdjCfg, g)
 }
 
-func (g listGenerator) EmitNodeMethodLookupIndex(w io.Writer) {
+func (g listGenerator) EmitNodeMethodLookupByIndex(w io.Writer) {
 	doTemplate(`
-		func (n {{ .Type | TypeSymbol }}) LookupIndex(idx int) (ipld.Node, error) {
+		func (n {{ .Type | TypeSymbol }}) LookupByIndex(idx int) (ipld.Node, error) {
 			if n.Length() <= idx {
 				return nil, ipld.ErrNotExists{ipld.PathSegmentOfInt(idx)}
 			}
@@ -91,16 +91,16 @@ func (g listGenerator) EmitNodeMethodLookupIndex(w io.Writer) {
 	`, w, g.AdjCfg, g)
 }
 
-func (g listGenerator) EmitNodeMethodLookupNode(w io.Writer) {
-	// LookupNode will procede by coercing to int if it can; or fail; those are really the only options.
+func (g listGenerator) EmitNodeMethodLookupByNode(w io.Writer) {
+	// LookupByNode will procede by coercing to int if it can; or fail; those are really the only options.
 	// REVIEW: how much coercion is done by other types varies quite wildly.  so we should figure out if that inconsistency is acceptable, and at least document it if so.
 	doTemplate(`
-		func (n {{ .Type | TypeSymbol }}) LookupNode(k ipld.Node) (ipld.Node, error) {
+		func (n {{ .Type | TypeSymbol }}) LookupByNode(k ipld.Node) (ipld.Node, error) {
 			idx, err := k.AsInt()
 			if err != nil {
 				return nil, err
 			}
-			return n.LookupIndex(idx)
+			return n.LookupByIndex(idx)
 		}
 	`, w, g.AdjCfg, g)
 }

@@ -7,17 +7,17 @@ type nullNode struct{}
 func (nullNode) ReprKind() ReprKind {
 	return ReprKind_Null
 }
-func (nullNode) LookupString(key string) (Node, error) {
-	return nil, ErrWrongKind{TypeName: "null", MethodName: "LookupString", AppropriateKind: ReprKindSet_JustMap, ActualKind: ReprKind_Null}
+func (nullNode) LookupByString(key string) (Node, error) {
+	return nil, ErrWrongKind{TypeName: "null", MethodName: "LookupByString", AppropriateKind: ReprKindSet_JustMap, ActualKind: ReprKind_Null}
 }
-func (nullNode) LookupNode(key Node) (Node, error) {
-	return nil, ErrWrongKind{TypeName: "null", MethodName: "LookupNode", AppropriateKind: ReprKindSet_JustMap, ActualKind: ReprKind_Null}
+func (nullNode) LookupByNode(key Node) (Node, error) {
+	return nil, ErrWrongKind{TypeName: "null", MethodName: "LookupByNode", AppropriateKind: ReprKindSet_JustMap, ActualKind: ReprKind_Null}
 }
-func (nullNode) LookupIndex(idx int) (Node, error) {
-	return nil, ErrWrongKind{TypeName: "null", MethodName: "LookupIndex", AppropriateKind: ReprKindSet_JustList, ActualKind: ReprKind_Null}
+func (nullNode) LookupByIndex(idx int) (Node, error) {
+	return nil, ErrWrongKind{TypeName: "null", MethodName: "LookupByIndex", AppropriateKind: ReprKindSet_JustList, ActualKind: ReprKind_Null}
 }
-func (nullNode) LookupSegment(seg PathSegment) (Node, error) {
-	return nil, ErrWrongKind{TypeName: "null", MethodName: "LookupSegment", AppropriateKind: ReprKindSet_Recursive, ActualKind: ReprKind_Null}
+func (nullNode) LookupBySegment(seg PathSegment) (Node, error) {
+	return nil, ErrWrongKind{TypeName: "null", MethodName: "LookupBySegment", AppropriateKind: ReprKindSet_Recursive, ActualKind: ReprKind_Null}
 }
 func (nullNode) MapIterator() MapIterator {
 	return nil
@@ -69,17 +69,17 @@ type undefNode struct{}
 func (undefNode) ReprKind() ReprKind {
 	return ReprKind_Null
 }
-func (undefNode) LookupString(key string) (Node, error) {
-	return nil, ErrWrongKind{TypeName: "undef", MethodName: "LookupString", AppropriateKind: ReprKindSet_JustMap, ActualKind: ReprKind_Null}
+func (undefNode) LookupByString(key string) (Node, error) {
+	return nil, ErrWrongKind{TypeName: "undef", MethodName: "LookupByString", AppropriateKind: ReprKindSet_JustMap, ActualKind: ReprKind_Null}
 }
-func (undefNode) LookupNode(key Node) (Node, error) {
-	return nil, ErrWrongKind{TypeName: "undef", MethodName: "LookupNode", AppropriateKind: ReprKindSet_JustMap, ActualKind: ReprKind_Null}
+func (undefNode) LookupByNode(key Node) (Node, error) {
+	return nil, ErrWrongKind{TypeName: "undef", MethodName: "LookupByNode", AppropriateKind: ReprKindSet_JustMap, ActualKind: ReprKind_Null}
 }
-func (undefNode) LookupIndex(idx int) (Node, error) {
-	return nil, ErrWrongKind{TypeName: "undef", MethodName: "LookupIndex", AppropriateKind: ReprKindSet_JustList, ActualKind: ReprKind_Null}
+func (undefNode) LookupByIndex(idx int) (Node, error) {
+	return nil, ErrWrongKind{TypeName: "undef", MethodName: "LookupByIndex", AppropriateKind: ReprKindSet_JustList, ActualKind: ReprKind_Null}
 }
-func (undefNode) LookupSegment(seg PathSegment) (Node, error) {
-	return nil, ErrWrongKind{TypeName: "undef", MethodName: "LookupSegment", AppropriateKind: ReprKindSet_Recursive, ActualKind: ReprKind_Null}
+func (undefNode) LookupBySegment(seg PathSegment) (Node, error) {
+	return nil, ErrWrongKind{TypeName: "undef", MethodName: "LookupBySegment", AppropriateKind: ReprKindSet_Recursive, ActualKind: ReprKind_Null}
 }
 func (undefNode) MapIterator() MapIterator {
 	return nil

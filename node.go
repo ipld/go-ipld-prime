@@ -61,7 +61,7 @@ type Node interface {
 	// Most other handling of a node requires first switching upon the kind.
 	ReprKind() ReprKind
 
-	// LookupString looks up a child object in this node and returns it.
+	// LookupByString looks up a child object in this node and returns it.
 	// The returned Node may be any of the ReprKind:
 	// a primitive (string, int, etc), a map, a list, or a link.
 	//
@@ -69,9 +69,9 @@ type Node interface {
 	// will be returned.
 	//
 	// If the key does not exist, a nil node and an error will be returned.
-	LookupString(key string) (Node, error)
+	LookupByString(key string) (Node, error)
 
-	// Lookup is the equivalent of LookupString, but takes a reified Node
+	// LookupByNode is the equivalent of LookupByString, but takes a reified Node
 	// as a parameter instead of a plain string.
 	// This mechanism is useful if working with typed maps (if the key types
 	// have constraints, and you already have a reified `schema.TypedNode` value,
@@ -80,27 +80,27 @@ type Node interface {
 	//
 	// (When writing generic functions over Node, a good rule of thumb is:
 	// when handling a map, check for `schema.TypedNode`, and in this case prefer
-	// the LookupNode(Node) method; otherwise, favor LookupString; typically
+	// the LookupByNode(Node) method; otherwise, favor LookupByString; typically
 	// implementations will have their fastest paths thusly.)
-	LookupNode(key Node) (Node, error)
+	LookupByNode(key Node) (Node, error)
 
-	// LookupIndex is the equivalent of LookupString but for indexing into a list.
-	// As with LookupString, the returned Node may be any of the ReprKind:
+	// LookupByIndex is the equivalent of LookupByString but for indexing into a list.
+	// As with LookupByString, the returned Node may be any of the ReprKind:
 	// a primitive (string, int, etc), a map, a list, or a link.
 	//
 	// If the Kind of this Node is not ReprKind_List, a nil node and an error
 	// will be returned.
 	//
 	// If idx is out of range, a nil node and an error will be returned.
-	LookupIndex(idx int) (Node, error)
+	LookupByIndex(idx int) (Node, error)
 
-	// LookupSegment is will act as either LookupString or LookupIndex,
+	// LookupBySegment is will act as either LookupByString or LookupByIndex,
 	// whichever is contextually appropriate.
 	//
-	// Using LookupSegment may imply an "atoi" conversion if used on a list node,
+	// Using LookupBySegment may imply an "atoi" conversion if used on a list node,
 	// or an "itoa" conversion if used on a map node.  If an "itoa" conversion
 	// takes place, it may error, and this method may return that error.
-	LookupSegment(seg PathSegment) (Node, error)
+	LookupBySegment(seg PathSegment) (Node, error)
 
 	// Note that when using codegenerated types, there may be a fifth variant
 	// of lookup method on maps: `Get($GeneratedTypeKey) $GeneratedTypeValue`!
