@@ -54,7 +54,7 @@ func (g boolReprBoolReprGenerator) EmitNodeTypeAssertions(w io.Writer) {
 }
 func (boolReprBoolReprGenerator) EmitNodeMethodReprKind(io.Writer)      {}
 func (boolReprBoolReprGenerator) EmitNodeMethodLookupString(io.Writer)  {}
-func (boolReprBoolReprGenerator) EmitNodeMethodLookup(io.Writer)        {}
+func (boolReprBoolReprGenerator) EmitNodeMethodLookupNode(io.Writer)    {}
 func (boolReprBoolReprGenerator) EmitNodeMethodLookupIndex(io.Writer)   {}
 func (boolReprBoolReprGenerator) EmitNodeMethodLookupSegment(io.Writer) {}
 func (boolReprBoolReprGenerator) EmitNodeMethodMapIterator(io.Writer)   {}

@@ -10,7 +10,7 @@ type ReprKind uint8
 type Node interface {
 	ReprKind() ReprKind
 	LookupString(key string) (Node, error)
-	Lookup(key Node) (Node, error)
+	LookupNode(key Node) (Node, error)
 	LookupIndex(idx int) (Node, error)
 	Length() int
 	IsUndefined() bool

@@ -42,13 +42,13 @@ func (g kindTraitsGenerator) emitNodeMethodLookupString(w io.Writer) {
 	`, w, g)
 }
 
-func (g kindTraitsGenerator) emitNodeMethodLookup(w io.Writer) {
+func (g kindTraitsGenerator) emitNodeMethodLookupNode(w io.Writer) {
 	if ipld.ReprKindSet_JustMap.Contains(g.Kind) {
 		panic("gen internals error: you should've overriden this")
 	}
 	doTemplate(`
-		func ({{ .TypeSymbol }}) Lookup(ipld.Node) (ipld.Node, error) {
-			return mixins.{{ .Kind.String | title }}{"{{ .PkgName }}.{{ .TypeName }}"}.Lookup(nil)
+		func ({{ .TypeSymbol }}) LookupNode(ipld.Node) (ipld.Node, error) {
+			return mixins.{{ .Kind.String | title }}{"{{ .PkgName }}.{{ .TypeName }}"}.LookupNode(nil)
 		}
 	`, w, g)
 }

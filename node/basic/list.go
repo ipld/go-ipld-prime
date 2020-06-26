@@ -27,8 +27,8 @@ func (plainList) ReprKind() ipld.ReprKind {
 func (plainList) LookupString(string) (ipld.Node, error) {
 	return mixins.List{"list"}.LookupString("")
 }
-func (plainList) Lookup(ipld.Node) (ipld.Node, error) {
-	return mixins.List{"list"}.Lookup(nil)
+func (plainList) LookupNode(ipld.Node) (ipld.Node, error) {
+	return mixins.List{"list"}.LookupNode(nil)
 }
 func (n *plainList) LookupIndex(idx int) (ipld.Node, error) {
 	if n.Length() <= idx {

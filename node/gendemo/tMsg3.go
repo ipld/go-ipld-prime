@@ -82,7 +82,7 @@ func (n Msg3) LookupString(key string) (ipld.Node, error) {
 		return nil, schema.ErrNoSuchField{Type: nil /*TODO*/, FieldName: key}
 	}
 }
-func (n Msg3) Lookup(key ipld.Node) (ipld.Node, error) {
+func (n Msg3) LookupNode(key ipld.Node) (ipld.Node, error) {
 	ks, err := key.AsString()
 	if err != nil {
 		return nil, err
@@ -560,7 +560,7 @@ func (n *_Msg3__Repr) LookupString(key string) (ipld.Node, error) {
 		return nil, schema.ErrNoSuchField{Type: nil /*TODO*/, FieldName: key}
 	}
 }
-func (n *_Msg3__Repr) Lookup(key ipld.Node) (ipld.Node, error) {
+func (n *_Msg3__Repr) LookupNode(key ipld.Node) (ipld.Node, error) {
 	ks, err := key.AsString()
 	if err != nil {
 		return nil, err

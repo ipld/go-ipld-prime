@@ -40,7 +40,7 @@ type NodeGenerator interface {
 	EmitNodeTypeAssertions(io.Writer) // optional to include this content
 	EmitNodeMethodReprKind(io.Writer)
 	EmitNodeMethodLookupString(io.Writer)
-	EmitNodeMethodLookup(io.Writer)
+	EmitNodeMethodLookupNode(io.Writer)
 	EmitNodeMethodLookupIndex(io.Writer)
 	EmitNodeMethodLookupSegment(io.Writer)
 	EmitNodeMethodMapIterator(io.Writer)  // also iterator itself
@@ -113,7 +113,7 @@ func EmitNode(ng NodeGenerator, w io.Writer) {
 	ng.EmitNodeTypeAssertions(w)
 	ng.EmitNodeMethodReprKind(w)
 	ng.EmitNodeMethodLookupString(w)
-	ng.EmitNodeMethodLookup(w)
+	ng.EmitNodeMethodLookupNode(w)
 	ng.EmitNodeMethodLookupIndex(w)
 	ng.EmitNodeMethodLookupSegment(w)
 	ng.EmitNodeMethodMapIterator(w)

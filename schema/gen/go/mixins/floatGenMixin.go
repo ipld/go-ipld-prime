@@ -25,8 +25,8 @@ func (g FloatTraits) EmitNodeMethodReprKind(w io.Writer) {
 func (g FloatTraits) EmitNodeMethodLookupString(w io.Writer) {
 	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Float}.emitNodeMethodLookupString(w)
 }
-func (g FloatTraits) EmitNodeMethodLookup(w io.Writer) {
-	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Float}.emitNodeMethodLookup(w)
+func (g FloatTraits) EmitNodeMethodLookupNode(w io.Writer) {
+	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Float}.emitNodeMethodLookupNode(w)
 }
 func (g FloatTraits) EmitNodeMethodLookupIndex(w io.Writer) {
 	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Float}.emitNodeMethodLookupIndex(w)

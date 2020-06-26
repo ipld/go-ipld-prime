@@ -83,7 +83,7 @@ func (n Map__String__Msg3) LookupString(k string) (ipld.Node, error) {
 	}
 	return v, nil
 }
-func (n Map__String__Msg3) Lookup(k ipld.Node) (ipld.Node, error) {
+func (n Map__String__Msg3) LookupNode(k ipld.Node) (ipld.Node, error) {
 	k2, ok := k.(String)
 	if !ok {
 		panic("todo invalid key type error")
@@ -436,8 +436,8 @@ func (nr *_Map__String__Msg3__Repr) LookupString(k string) (ipld.Node, error) {
 	}
 	return v.(Msg3).Representation(), nil
 }
-func (nr *_Map__String__Msg3__Repr) Lookup(k ipld.Node) (ipld.Node, error) {
-	v, err := (Map__String__Msg3)(nr).Lookup(k)
+func (nr *_Map__String__Msg3__Repr) LookupNode(k ipld.Node) (ipld.Node, error) {
+	v, err := (Map__String__Msg3)(nr).LookupNode(k)
 	if err != nil || v == ipld.Null {
 		return v, err
 	}

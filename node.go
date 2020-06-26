@@ -80,9 +80,9 @@ type Node interface {
 	//
 	// (When writing generic functions over Node, a good rule of thumb is:
 	// when handling a map, check for `schema.TypedNode`, and in this case prefer
-	// the Lookup(Node) method; otherwise, favor LookupString; typically
+	// the LookupNode(Node) method; otherwise, favor LookupString; typically
 	// implementations will have their fastest paths thusly.)
-	Lookup(key Node) (Node, error)
+	LookupNode(key Node) (Node, error)
 
 	// LookupIndex is the equivalent of LookupString but for indexing into a list.
 	// As with LookupString, the returned Node may be any of the ReprKind:

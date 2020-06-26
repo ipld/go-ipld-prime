@@ -28,8 +28,8 @@ func (plainBool) ReprKind() ipld.ReprKind {
 func (plainBool) LookupString(string) (ipld.Node, error) {
 	return mixins.Bool{"bool"}.LookupString("")
 }
-func (plainBool) Lookup(key ipld.Node) (ipld.Node, error) {
-	return mixins.Bool{"bool"}.Lookup(nil)
+func (plainBool) LookupNode(key ipld.Node) (ipld.Node, error) {
+	return mixins.Bool{"bool"}.LookupNode(nil)
 }
 func (plainBool) LookupIndex(idx int) (ipld.Node, error) {
 	return mixins.Bool{"bool"}.LookupIndex(0)

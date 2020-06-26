@@ -108,9 +108,9 @@ func (g structReprMapReprGenerator) EmitNodeMethodLookupString(w io.Writer) {
 	`, w, g.AdjCfg, g)
 }
 
-func (g structReprMapReprGenerator) EmitNodeMethodLookup(w io.Writer) {
+func (g structReprMapReprGenerator) EmitNodeMethodLookupNode(w io.Writer) {
 	doTemplate(`
-		func (n *_{{ .Type | TypeSymbol }}__Repr) Lookup(key ipld.Node) (ipld.Node, error) {
+		func (n *_{{ .Type | TypeSymbol }}__Repr) LookupNode(key ipld.Node) (ipld.Node, error) {
 			ks, err := key.AsString()
 			if err != nil {
 				return nil, err

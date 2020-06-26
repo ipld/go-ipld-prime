@@ -28,8 +28,8 @@ func (plainFloat) ReprKind() ipld.ReprKind {
 func (plainFloat) LookupString(string) (ipld.Node, error) {
 	return mixins.Float{"float"}.LookupString("")
 }
-func (plainFloat) Lookup(key ipld.Node) (ipld.Node, error) {
-	return mixins.Float{"float"}.Lookup(nil)
+func (plainFloat) LookupNode(key ipld.Node) (ipld.Node, error) {
+	return mixins.Float{"float"}.LookupNode(nil)
 }
 func (plainFloat) LookupIndex(idx int) (ipld.Node, error) {
 	return mixins.Float{"float"}.LookupIndex(0)

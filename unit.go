@@ -10,8 +10,8 @@ func (nullNode) ReprKind() ReprKind {
 func (nullNode) LookupString(key string) (Node, error) {
 	return nil, ErrWrongKind{TypeName: "null", MethodName: "LookupString", AppropriateKind: ReprKindSet_JustMap, ActualKind: ReprKind_Null}
 }
-func (nullNode) Lookup(key Node) (Node, error) {
-	return nil, ErrWrongKind{TypeName: "null", MethodName: "Lookup", AppropriateKind: ReprKindSet_JustMap, ActualKind: ReprKind_Null}
+func (nullNode) LookupNode(key Node) (Node, error) {
+	return nil, ErrWrongKind{TypeName: "null", MethodName: "LookupNode", AppropriateKind: ReprKindSet_JustMap, ActualKind: ReprKind_Null}
 }
 func (nullNode) LookupIndex(idx int) (Node, error) {
 	return nil, ErrWrongKind{TypeName: "null", MethodName: "LookupIndex", AppropriateKind: ReprKindSet_JustList, ActualKind: ReprKind_Null}
@@ -72,8 +72,8 @@ func (undefNode) ReprKind() ReprKind {
 func (undefNode) LookupString(key string) (Node, error) {
 	return nil, ErrWrongKind{TypeName: "undef", MethodName: "LookupString", AppropriateKind: ReprKindSet_JustMap, ActualKind: ReprKind_Null}
 }
-func (undefNode) Lookup(key Node) (Node, error) {
-	return nil, ErrWrongKind{TypeName: "undef", MethodName: "Lookup", AppropriateKind: ReprKindSet_JustMap, ActualKind: ReprKind_Null}
+func (undefNode) LookupNode(key Node) (Node, error) {
+	return nil, ErrWrongKind{TypeName: "undef", MethodName: "LookupNode", AppropriateKind: ReprKindSet_JustMap, ActualKind: ReprKind_Null}
 }
 func (undefNode) LookupIndex(idx int) (Node, error) {
 	return nil, ErrWrongKind{TypeName: "undef", MethodName: "LookupIndex", AppropriateKind: ReprKindSet_JustList, ActualKind: ReprKind_Null}

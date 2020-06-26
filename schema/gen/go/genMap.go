@@ -150,13 +150,13 @@ func (g mapGenerator) EmitNodeMethodLookupString(w io.Writer) {
 	`, w, g.AdjCfg, g)
 }
 
-func (g mapGenerator) EmitNodeMethodLookup(w io.Writer) {
+func (g mapGenerator) EmitNodeMethodLookupNode(w io.Writer) {
 	// LookupNode will procede by cast if it can; or simply error if that doesn't work.
 	//  There's no attempt to turn the node (or its repr) into a string and then reify that into a key;
 	//   if you used a Node here, you should've meant it.
 	// REVIEW: by comparison structs will coerce anything stringish silently...!  so we should figure out if that inconsistency is acceptable, and at least document it if so.
 	doTemplate(`
-		func (n {{ .Type | TypeSymbol }}) Lookup(k ipld.Node) (ipld.Node, error) {
+		func (n {{ .Type | TypeSymbol }}) LookupNode(k ipld.Node) (ipld.Node, error) {
 			k2, ok := k.({{ .Type.KeyType | TypeSymbol }})
 			if !ok {
 				panic("todo invalid key type error")

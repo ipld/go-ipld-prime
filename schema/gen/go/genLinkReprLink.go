@@ -54,7 +54,7 @@ func (g linkReprLinkReprGenerator) EmitNodeTypeAssertions(w io.Writer) {
 }
 func (linkReprLinkReprGenerator) EmitNodeMethodReprKind(io.Writer)      {}
 func (linkReprLinkReprGenerator) EmitNodeMethodLookupString(io.Writer)  {}
-func (linkReprLinkReprGenerator) EmitNodeMethodLookup(io.Writer)        {}
+func (linkReprLinkReprGenerator) EmitNodeMethodLookupNode(io.Writer)    {}
 func (linkReprLinkReprGenerator) EmitNodeMethodLookupIndex(io.Writer)   {}
 func (linkReprLinkReprGenerator) EmitNodeMethodLookupSegment(io.Writer) {}
 func (linkReprLinkReprGenerator) EmitNodeMethodMapIterator(io.Writer)   {}

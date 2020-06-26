@@ -119,9 +119,9 @@ func (g structGenerator) EmitNodeMethodLookupString(w io.Writer) {
 	`, w, g.AdjCfg, g)
 }
 
-func (g structGenerator) EmitNodeMethodLookup(w io.Writer) {
+func (g structGenerator) EmitNodeMethodLookupNode(w io.Writer) {
 	doTemplate(`
-		func (n {{ .Type | TypeSymbol }}) Lookup(key ipld.Node) (ipld.Node, error) {
+		func (n {{ .Type | TypeSymbol }}) LookupNode(key ipld.Node) (ipld.Node, error) {
 			ks, err := key.AsString()
 			if err != nil {
 				return nil, err

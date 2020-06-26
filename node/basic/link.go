@@ -29,8 +29,8 @@ func (plainLink) ReprKind() ipld.ReprKind {
 func (plainLink) LookupString(string) (ipld.Node, error) {
 	return mixins.Link{"link"}.LookupString("")
 }
-func (plainLink) Lookup(key ipld.Node) (ipld.Node, error) {
-	return mixins.Link{"link"}.Lookup(nil)
+func (plainLink) LookupNode(key ipld.Node) (ipld.Node, error) {
+	return mixins.Link{"link"}.LookupNode(nil)
 }
 func (plainLink) LookupIndex(idx int) (ipld.Node, error) {
 	return mixins.Link{"link"}.LookupIndex(0)

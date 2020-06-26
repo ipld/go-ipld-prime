@@ -25,8 +25,8 @@ func (g BoolTraits) EmitNodeMethodReprKind(w io.Writer) {
 func (g BoolTraits) EmitNodeMethodLookupString(w io.Writer) {
 	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Bool}.emitNodeMethodLookupString(w)
 }
-func (g BoolTraits) EmitNodeMethodLookup(w io.Writer) {
-	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Bool}.emitNodeMethodLookup(w)
+func (g BoolTraits) EmitNodeMethodLookupNode(w io.Writer) {
+	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Bool}.emitNodeMethodLookupNode(w)
 }
 func (g BoolTraits) EmitNodeMethodLookupIndex(w io.Writer) {
 	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Bool}.emitNodeMethodLookupIndex(w)

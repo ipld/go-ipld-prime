@@ -25,8 +25,8 @@ func (g BytesTraits) EmitNodeMethodReprKind(w io.Writer) {
 func (g BytesTraits) EmitNodeMethodLookupString(w io.Writer) {
 	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Bytes}.emitNodeMethodLookupString(w)
 }
-func (g BytesTraits) EmitNodeMethodLookup(w io.Writer) {
-	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Bytes}.emitNodeMethodLookup(w)
+func (g BytesTraits) EmitNodeMethodLookupNode(w io.Writer) {
+	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Bytes}.emitNodeMethodLookupNode(w)
 }
 func (g BytesTraits) EmitNodeMethodLookupIndex(w io.Writer) {
 	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Bytes}.emitNodeMethodLookupIndex(w)

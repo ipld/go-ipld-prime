@@ -23,9 +23,6 @@ Here are some outlines of changes we intend to make that affect the public API:
 - `NodeStyle` -> rename -> `NodePrototype`.
 	- See https://github.com/ipld/go-ipld-prime/issues/54 for reasoning.
 	- This should be a "sed refactor" -- the change is purely naming, not semantics, so it should be easy to update your code for.
-- `Node.Lookup` -> rename -> `Node.LookupNode`.
-	- The shortest and least-qualified name, 'Lookup', should be reserved for the best-typed variant of the method, which is only present on codegenerated types (and not present on the Node interface at all, due to golang's limited polymorphism).
-	- This should be a "sed refactor" -- the change is purely naming, not semantics, so it should be easy to update your code for.
 - `Node.Lookup{Foo}` -> rename -> `Node.LookupBy{Foo}`.
 	- The current phrasing makes it sound like the "{Foo}" component of the name describes what it returns, rather than the param; this is confusing and should be rectified (even though it does make the method name moderately longer).
 	- This should be a "sed refactor" -- the change is purely naming, not semantics, so it should be easy to update your code for.
@@ -48,7 +45,9 @@ Unreleased on master
 Changes here are on the master branch, but not in any tagged release yet.
 When a release tag is made, this block of bullet points will just slide down to the [Released Changes](#released-changes) section.
 
-- __nothing yet :)__
+- Renamed: `(Node).Lookup` -> `(Node).LookupNode`.
+	- Reason: The shortest and least-qualified name, 'Lookup', should be reserved for the best-typed variant of the method, which is only present on codegenerated types (and not present on the Node interface at all, due to golang's limited polymorphism).
+	- This should be a "sed refactor" -- the change is purely naming, not semantics, so it should be easy to update your code for.  (The change itself in the library was fairly literally `s/Lookup(/LookupNode(/g`, and then `s/"Lookup"/"LookupNode"/g` to catch a few error message strings, so consumers shouldn't have it much harder.)
 
 
 Released Changes

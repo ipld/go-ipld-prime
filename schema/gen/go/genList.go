@@ -91,11 +91,11 @@ func (g listGenerator) EmitNodeMethodLookupIndex(w io.Writer) {
 	`, w, g.AdjCfg, g)
 }
 
-func (g listGenerator) EmitNodeMethodLookup(w io.Writer) {
+func (g listGenerator) EmitNodeMethodLookupNode(w io.Writer) {
 	// LookupNode will procede by coercing to int if it can; or fail; those are really the only options.
 	// REVIEW: how much coercion is done by other types varies quite wildly.  so we should figure out if that inconsistency is acceptable, and at least document it if so.
 	doTemplate(`
-		func (n {{ .Type | TypeSymbol }}) Lookup(k ipld.Node) (ipld.Node, error) {
+		func (n {{ .Type | TypeSymbol }}) LookupNode(k ipld.Node) (ipld.Node, error) {
 			idx, err := k.AsInt()
 			if err != nil {
 				return nil, err

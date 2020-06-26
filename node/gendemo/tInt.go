@@ -62,8 +62,8 @@ func (Int) ReprKind() ipld.ReprKind {
 func (Int) LookupString(string) (ipld.Node, error) {
 	return mixins.Int{"gendemo.Int"}.LookupString("")
 }
-func (Int) Lookup(ipld.Node) (ipld.Node, error) {
-	return mixins.Int{"gendemo.Int"}.Lookup(nil)
+func (Int) LookupNode(ipld.Node) (ipld.Node, error) {
+	return mixins.Int{"gendemo.Int"}.LookupNode(nil)
 }
 func (Int) LookupIndex(idx int) (ipld.Node, error) {
 	return mixins.Int{"gendemo.Int"}.LookupIndex(0)

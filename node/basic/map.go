@@ -40,7 +40,7 @@ func (n *plainMap) LookupString(key string) (ipld.Node, error) {
 	}
 	return v, nil
 }
-func (n *plainMap) Lookup(key ipld.Node) (ipld.Node, error) {
+func (n *plainMap) LookupNode(key ipld.Node) (ipld.Node, error) {
 	ks, err := key.AsString()
 	if err != nil {
 		return nil, err

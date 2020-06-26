@@ -54,7 +54,7 @@ func (g float64ReprFloatReprGenerator) EmitNodeTypeAssertions(w io.Writer) {
 }
 func (float64ReprFloatReprGenerator) EmitNodeMethodReprKind(io.Writer)      {}
 func (float64ReprFloatReprGenerator) EmitNodeMethodLookupString(io.Writer)  {}
-func (float64ReprFloatReprGenerator) EmitNodeMethodLookup(io.Writer)        {}
+func (float64ReprFloatReprGenerator) EmitNodeMethodLookupNode(io.Writer)    {}
 func (float64ReprFloatReprGenerator) EmitNodeMethodLookupIndex(io.Writer)   {}
 func (float64ReprFloatReprGenerator) EmitNodeMethodLookupSegment(io.Writer) {}
 func (float64ReprFloatReprGenerator) EmitNodeMethodMapIterator(io.Writer)   {}

@@ -25,8 +25,8 @@ func (List) ReprKind() ipld.ReprKind {
 func (x List) LookupString(string) (ipld.Node, error) {
 	return nil, ipld.ErrWrongKind{TypeName: x.TypeName, MethodName: "LookupString", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: ipld.ReprKind_List}
 }
-func (x List) Lookup(key ipld.Node) (ipld.Node, error) {
-	return nil, ipld.ErrWrongKind{TypeName: x.TypeName, MethodName: "Lookup", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: ipld.ReprKind_List}
+func (x List) LookupNode(key ipld.Node) (ipld.Node, error) {
+	return nil, ipld.ErrWrongKind{TypeName: x.TypeName, MethodName: "LookupNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: ipld.ReprKind_List}
 }
 func (List) MapIterator() ipld.MapIterator {
 	return nil
