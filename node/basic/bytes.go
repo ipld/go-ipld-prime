@@ -46,7 +46,7 @@ func (plainBytes) ListIterator() ipld.ListIterator {
 func (plainBytes) Length() int {
 	return -1
 }
-func (plainBytes) IsUndefined() bool {
+func (plainBytes) IsAbsent() bool {
 	return false
 }
 func (plainBytes) IsNull() bool {

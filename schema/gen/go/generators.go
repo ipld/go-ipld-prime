@@ -46,7 +46,7 @@ type NodeGenerator interface {
 	EmitNodeMethodMapIterator(io.Writer)  // also iterator itself
 	EmitNodeMethodListIterator(io.Writer) // also iterator itself
 	EmitNodeMethodLength(io.Writer)
-	EmitNodeMethodIsUndefined(io.Writer)
+	EmitNodeMethodIsAbsent(io.Writer)
 	EmitNodeMethodIsNull(io.Writer)
 	EmitNodeMethodAsBool(io.Writer)
 	EmitNodeMethodAsInt(io.Writer)
@@ -119,7 +119,7 @@ func EmitNode(ng NodeGenerator, w io.Writer) {
 	ng.EmitNodeMethodMapIterator(w)
 	ng.EmitNodeMethodListIterator(w)
 	ng.EmitNodeMethodLength(w)
-	ng.EmitNodeMethodIsUndefined(w)
+	ng.EmitNodeMethodIsAbsent(w)
 	ng.EmitNodeMethodIsNull(w)
 	ng.EmitNodeMethodAsBool(w)
 	ng.EmitNodeMethodAsInt(w)

@@ -92,7 +92,7 @@ func (p Stroct__Content) Build() Stroct {
 	case Maybe_Null:
 		panic("cannot assign null to nonnullable field")
 	case Maybe_Absent:
-		panic("cannot have undefined nonoptional field")
+		panic("cannot have absent nonoptional field")
 	default:
 		goto no
 	}
@@ -131,7 +131,7 @@ func (p Stroct__Content) Build() Stroct {
 	case Maybe_Null:
 		v.f4 = nil
 	case Maybe_Absent:
-		panic("cannot have undefined nonoptional field")
+		panic("cannot have absent nonoptional field")
 	default:
 		goto no
 	}
@@ -149,7 +149,7 @@ func (p Stroct__Content) Apply(old Stroct) Stroct {
 	case Maybe_Null:
 		panic("cannot assign null to nonnullable field")
 	case Maybe_Absent:
-		panic("cannot have undefined nonoptional field")
+		panic("cannot have absent nonoptional field")
 	default:
 		goto no
 	}
@@ -185,7 +185,7 @@ func (p Stroct__Content) Apply(old Stroct) Stroct {
 	case Maybe_Null:
 		v.f4 = nil
 	case Maybe_Absent:
-		panic("cannot have undefined nonoptional field")
+		panic("cannot have absent nonoptional field")
 	default:
 		goto no
 	}

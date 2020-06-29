@@ -31,7 +31,7 @@ func (x List) LookupByNode(key ipld.Node) (ipld.Node, error) {
 func (List) MapIterator() ipld.MapIterator {
 	return nil
 }
-func (List) IsUndefined() bool {
+func (List) IsAbsent() bool {
 	return false
 }
 func (List) IsNull() bool {

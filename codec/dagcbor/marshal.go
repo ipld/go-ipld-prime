@@ -21,7 +21,7 @@ func Marshal(n ipld.Node, sink shared.TokenSink) error {
 func marshal(n ipld.Node, tk *tok.Token, sink shared.TokenSink) error {
 	switch n.ReprKind() {
 	case ipld.ReprKind_Invalid:
-		return fmt.Errorf("cannot traverse a node that is undefined")
+		return fmt.Errorf("cannot traverse a node that is absent")
 	case ipld.ReprKind_Null:
 		tk.Type = tok.TNull
 		_, err := sink.Step(tk)

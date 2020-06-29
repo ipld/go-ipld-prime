@@ -62,7 +62,7 @@ func (plainMap) ListIterator() ipld.ListIterator {
 func (n *plainMap) Length() int {
 	return len(n.t)
 }
-func (plainMap) IsUndefined() bool {
+func (plainMap) IsAbsent() bool {
 	return false
 }
 func (plainMap) IsNull() bool {

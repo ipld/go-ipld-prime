@@ -98,7 +98,7 @@ func (g structGenerator) EmitNodeMethodLookupByString(w io.Writer) {
 			case "{{ $field.Name }}":
 				{{- if $field.IsOptional }}
 				if n.{{ $field | FieldSymbolLower }}.m == schema.Maybe_Absent {
-					return ipld.Undef, nil
+					return ipld.Absent, nil
 				}
 				{{- end}}
 				{{- if $field.IsNullable }}
@@ -155,7 +155,7 @@ func (g structGenerator) EmitNodeMethodMapIterator(w io.Writer) {
 				k = &fieldName__{{ $type | TypeSymbol }}_{{ $field | FieldSymbolUpper }}
 				{{- if $field.IsOptional }}
 				if itr.n.{{ $field | FieldSymbolLower }}.m == schema.Maybe_Absent {
-					v = ipld.Undef
+					v = ipld.Absent
 					break
 				}
 				{{- end}}

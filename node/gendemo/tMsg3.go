@@ -34,7 +34,7 @@ type MaybeMsg3 = *_Msg3__Maybe
 func (m MaybeMsg3) IsNull() bool {
 	return m.m == schema.Maybe_Null
 }
-func (m MaybeMsg3) IsUndefined() bool {
+func (m MaybeMsg3) IsAbsent() bool {
 	return m.m == schema.Maybe_Absent
 }
 func (m MaybeMsg3) Exists() bool {
@@ -43,7 +43,7 @@ func (m MaybeMsg3) Exists() bool {
 func (m MaybeMsg3) AsNode() ipld.Node {
 	switch m.m {
 	case schema.Maybe_Absent:
-		return ipld.Undef
+		return ipld.Absent
 	case schema.Maybe_Null:
 		return ipld.Null
 	case schema.Maybe_Value:
@@ -134,7 +134,7 @@ func (Msg3) ListIterator() ipld.ListIterator {
 func (Msg3) Length() int {
 	return 3
 }
-func (Msg3) IsUndefined() bool {
+func (Msg3) IsAbsent() bool {
 	return false
 }
 func (Msg3) IsNull() bool {
@@ -612,7 +612,7 @@ func (rn *_Msg3__Repr) Length() int {
 	l := 3
 	return l
 }
-func (_Msg3__Repr) IsUndefined() bool {
+func (_Msg3__Repr) IsAbsent() bool {
 	return false
 }
 func (_Msg3__Repr) IsNull() bool {

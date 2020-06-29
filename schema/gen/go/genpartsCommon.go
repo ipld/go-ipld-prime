@@ -28,7 +28,7 @@ func emitNativeMaybe(w io.Writer, adjCfg *AdjunctCfg, data interface{}) {
 		func (m Maybe{{ .Type | TypeSymbol }}) IsNull() bool {
 			return m.m == schema.Maybe_Null
 		}
-		func (m Maybe{{ .Type | TypeSymbol }}) IsUndefined() bool {
+		func (m Maybe{{ .Type | TypeSymbol }}) IsAbsent() bool {
 			return m.m == schema.Maybe_Absent
 		}
 		func (m Maybe{{ .Type | TypeSymbol }}) Exists() bool {
@@ -37,7 +37,7 @@ func emitNativeMaybe(w io.Writer, adjCfg *AdjunctCfg, data interface{}) {
 		func (m Maybe{{ .Type | TypeSymbol }}) AsNode() ipld.Node {
 			switch m.m {
 				case schema.Maybe_Absent:
-					return ipld.Undef
+					return ipld.Absent
 				case schema.Maybe_Null:
 					return ipld.Null
 				case schema.Maybe_Value:

@@ -52,7 +52,7 @@ func (n *plainList) ListIterator() ipld.ListIterator {
 func (n *plainList) Length() int {
 	return len(n.x)
 }
-func (plainList) IsUndefined() bool {
+func (plainList) IsAbsent() bool {
 	return false
 }
 func (plainList) IsNull() bool {

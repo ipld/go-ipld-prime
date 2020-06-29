@@ -13,7 +13,7 @@ type Node interface {
 	LookupByNode(key Node) (Node, error)
 	LookupByIndex(idx int) (Node, error)
 	Length() int
-	IsUndefined() bool
+	IsAbsent() bool
 	IsNull() bool
 	AsBool() (bool, error)
 	AsInt() (int, error)

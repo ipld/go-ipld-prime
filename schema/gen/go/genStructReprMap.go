@@ -79,7 +79,7 @@ func (g structReprMapReprGenerator) EmitNodeTypeAssertions(w io.Writer) {
 }
 
 func (g structReprMapReprGenerator) EmitNodeMethodLookupByString(w io.Writer) {
-	// Similar to the type-level method, except any undef fields also return ErrNotExists.
+	// Similar to the type-level method, except any absent fields also return ErrNotExists.
 	doTemplate(`
 		func (n *_{{ .Type | TypeSymbol }}__Repr) LookupByString(key string) (ipld.Node, error) {
 			switch key {
@@ -87,7 +87,7 @@ func (g structReprMapReprGenerator) EmitNodeMethodLookupByString(w io.Writer) {
 			case "{{ $field | $field.Parent.RepresentationStrategy.GetFieldKey }}":
 				{{- if $field.IsOptional }}
 				if n.{{ $field | FieldSymbolLower }}.m == schema.Maybe_Absent {
-					return ipld.Undef, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+					return ipld.Absent, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
 				}
 				{{- end}}
 				{{- if $field.IsNullable }}

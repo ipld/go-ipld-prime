@@ -43,8 +43,8 @@ func (g BytesTraits) EmitNodeMethodListIterator(w io.Writer) {
 func (g BytesTraits) EmitNodeMethodLength(w io.Writer) {
 	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Bytes}.emitNodeMethodLength(w)
 }
-func (g BytesTraits) EmitNodeMethodIsUndefined(w io.Writer) {
-	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Bytes}.emitNodeMethodIsUndefined(w)
+func (g BytesTraits) EmitNodeMethodIsAbsent(w io.Writer) {
+	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Bytes}.emitNodeMethodIsAbsent(w)
 }
 func (g BytesTraits) EmitNodeMethodIsNull(w io.Writer) {
 	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Bytes}.emitNodeMethodIsNull(w)

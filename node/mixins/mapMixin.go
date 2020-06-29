@@ -28,7 +28,7 @@ func (x Map) LookupByIndex(idx int) (ipld.Node, error) {
 func (Map) ListIterator() ipld.ListIterator {
 	return nil
 }
-func (Map) IsUndefined() bool {
+func (Map) IsAbsent() bool {
 	return false
 }
 func (Map) IsNull() bool {

@@ -47,7 +47,7 @@ func (plainLink) ListIterator() ipld.ListIterator {
 func (plainLink) Length() int {
 	return -1
 }
-func (plainLink) IsUndefined() bool {
+func (plainLink) IsAbsent() bool {
 	return false
 }
 func (plainLink) IsNull() bool {

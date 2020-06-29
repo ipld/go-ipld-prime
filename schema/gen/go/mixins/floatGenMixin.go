@@ -43,8 +43,8 @@ func (g FloatTraits) EmitNodeMethodListIterator(w io.Writer) {
 func (g FloatTraits) EmitNodeMethodLength(w io.Writer) {
 	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Float}.emitNodeMethodLength(w)
 }
-func (g FloatTraits) EmitNodeMethodIsUndefined(w io.Writer) {
-	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Float}.emitNodeMethodIsUndefined(w)
+func (g FloatTraits) EmitNodeMethodIsAbsent(w io.Writer) {
+	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Float}.emitNodeMethodIsAbsent(w)
 }
 func (g FloatTraits) EmitNodeMethodIsNull(w io.Writer) {
 	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Float}.emitNodeMethodIsNull(w)

@@ -60,7 +60,7 @@ func (bytesReprBytesReprGenerator) EmitNodeMethodLookupBySegment(io.Writer) {}
 func (bytesReprBytesReprGenerator) EmitNodeMethodMapIterator(io.Writer)     {}
 func (bytesReprBytesReprGenerator) EmitNodeMethodListIterator(io.Writer)    {}
 func (bytesReprBytesReprGenerator) EmitNodeMethodLength(io.Writer)          {}
-func (bytesReprBytesReprGenerator) EmitNodeMethodIsUndefined(io.Writer)     {}
+func (bytesReprBytesReprGenerator) EmitNodeMethodIsAbsent(io.Writer)        {}
 func (bytesReprBytesReprGenerator) EmitNodeMethodIsNull(io.Writer)          {}
 func (bytesReprBytesReprGenerator) EmitNodeMethodAsBool(io.Writer)          {}
 func (bytesReprBytesReprGenerator) EmitNodeMethodAsInt(io.Writer)           {}

@@ -43,7 +43,7 @@ func (Int) ListIterator() ipld.ListIterator {
 func (Int) Length() int {
 	return -1
 }
-func (Int) IsUndefined() bool {
+func (Int) IsAbsent() bool {
 	return false
 }
 func (Int) IsNull() bool {

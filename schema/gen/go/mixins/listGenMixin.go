@@ -39,8 +39,8 @@ func (g ListTraits) EmitNodeMethodLookupBySegment(w io.Writer) {
 func (g ListTraits) EmitNodeMethodMapIterator(w io.Writer) {
 	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_List}.emitNodeMethodMapIterator(w)
 }
-func (g ListTraits) EmitNodeMethodIsUndefined(w io.Writer) {
-	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_List}.emitNodeMethodIsUndefined(w)
+func (g ListTraits) EmitNodeMethodIsAbsent(w io.Writer) {
+	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_List}.emitNodeMethodIsAbsent(w)
 }
 func (g ListTraits) EmitNodeMethodIsNull(w io.Writer) {
 	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_List}.emitNodeMethodIsNull(w)

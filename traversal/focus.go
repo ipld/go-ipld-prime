@@ -52,7 +52,7 @@ func (prog Progress) Focus(n ipld.Node, p ipld.Path, fn VisitFn) error {
 		// Traverse the segment.
 		switch n.ReprKind() {
 		case ipld.ReprKind_Invalid:
-			return fmt.Errorf("cannot traverse node at %q: it is undefined", p.Truncate(i))
+			panic(fmt.Errorf("invalid node encountered at %q", p.Truncate(i)))
 		case ipld.ReprKind_Map:
 			next, err := n.LookupByString(seg.String())
 			if err != nil {

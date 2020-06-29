@@ -108,9 +108,9 @@ func (g kindTraitsGenerator) emitNodeMethodLength(w io.Writer) {
 	`, w, g)
 }
 
-func (g kindTraitsGenerator) emitNodeMethodIsUndefined(w io.Writer) {
+func (g kindTraitsGenerator) emitNodeMethodIsAbsent(w io.Writer) {
 	doTemplate(`
-		func ({{ .TypeSymbol }}) IsUndefined() bool {
+		func ({{ .TypeSymbol }}) IsAbsent() bool {
 			return false
 		}
 	`, w, g)

@@ -127,13 +127,18 @@ type Node interface {
 	// or -1 if the node is not of list nor map kind.
 	Length() int
 
-	// Undefined nodes are returned when traversing a struct field that is
-	// defined by a schema but unset in the data.  (Undefined nodes are not
+	// Absent nodes are returned when traversing a struct field that is
+	// defined by a schema but unset in the data.  (Absent nodes are not
 	// possible otherwise; you'll only see them from `schema.TypedNode`.)
-	// The undefined flag is necessary so iterating over structs can
+	// The absent flag is necessary so iterating over structs can
 	// unambiguously make the distinction between values that are
 	// present-and-null versus values that are absent.
-	IsUndefined() bool
+	//
+	// Absent nodes respond to `ReprKind()` as `ipld.ReprKind_Null`,
+	// for lack of any better descriptive value; you should therefore
+	// always check IsAbsent rather than just a switch on kind
+	// when it may be important to handle absent values distinctly.
+	IsAbsent() bool
 
 	IsNull() bool
 	AsBool() (bool, error)

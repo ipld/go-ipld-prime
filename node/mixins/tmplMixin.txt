@@ -47,7 +47,7 @@ func (@Kind@) ListIterator() ipld.ListIterator {
 func (@Kind@) Length() int {
 	return -1
 }
-func (@Kind@) IsUndefined() bool {
+func (@Kind@) IsAbsent() bool {
 	return false
 }
 func (@Kind@) IsNull() bool {

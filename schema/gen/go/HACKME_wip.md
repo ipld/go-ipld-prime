@@ -5,19 +5,19 @@ The handling of absent values is still not consistent.
 
 Currently:
 
-- reading (via accessors or iterators) yields `ipld.Undef` values for absent fields
-- putting those ipld.Undef values via NodeAssembler.AssignNode will result in `ErrWrongKind`.
-- *the recursive copies embedded in AssignNode methods don't handle undefs either_.
+- reading (via accessors or iterators) yields `ipld.Absent` values for absent fields
+- putting those ipld.Absent values via NodeAssembler.AssignNode will result in `ErrWrongKind`.
+- *the recursive copies embedded in AssignNode methods don't handle absents either*.
 
 The first two are defensible and consistent (if not necessarily ergonomic).
 The third is downright a bug, and needs to be fixed.
 
 How we fix it is not entirely settled.
 
-- Option 1: keep the hostility to undef assignment
-- Option 2: *require* explicit undef assignment
-- Option 3: become indifferent to undef assignment when it's valid
-- Option 4: don't yield values that are undef during iteration at all
+- Option 1: keep the hostility to absent assignment
+- Option 2: *require* explicit absent assignment
+- Option 3: become indifferent to absent assignment when it's valid
+- Option 4: don't yield values that are absent during iteration at all
 
 Option 3 seems the most preferrable (and least user-hostile).
 (Options 1 and 2 create work for end users;

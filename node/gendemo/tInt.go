@@ -28,7 +28,7 @@ type MaybeInt = *_Int__Maybe
 func (m MaybeInt) IsNull() bool {
 	return m.m == schema.Maybe_Null
 }
-func (m MaybeInt) IsUndefined() bool {
+func (m MaybeInt) IsAbsent() bool {
 	return m.m == schema.Maybe_Absent
 }
 func (m MaybeInt) Exists() bool {
@@ -37,7 +37,7 @@ func (m MaybeInt) Exists() bool {
 func (m MaybeInt) AsNode() ipld.Node {
 	switch m.m {
 	case schema.Maybe_Absent:
-		return ipld.Undef
+		return ipld.Absent
 	case schema.Maybe_Null:
 		return ipld.Null
 	case schema.Maybe_Value:
@@ -80,7 +80,7 @@ func (Int) ListIterator() ipld.ListIterator {
 func (Int) Length() int {
 	return -1
 }
-func (Int) IsUndefined() bool {
+func (Int) IsAbsent() bool {
 	return false
 }
 func (Int) IsNull() bool {

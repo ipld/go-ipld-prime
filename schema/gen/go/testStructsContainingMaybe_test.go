@@ -20,7 +20,7 @@ func TestStructsContainingMaybe(t *testing.T) {
 	// There's a lot of cases to cover so a shorthand labels helper funcs:
 	//  - 'v' -- value in that entry
 	//  - 'z' -- null in that entry
-	//  - 'u' -- undefined/absent entry
+	//  - 'u' -- absent entry
 	build_vvvvv := func(t *testing.T, np ipld.NodePrototype) schema.TypedNode {
 		nb := np.NewBuilder()
 		ma, err := nb.BeginMap(5)
@@ -189,9 +189,9 @@ func TestStructsContainingMaybe(t *testing.T) {
 		Wish(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
 		Wish(t, n.Length(), ShouldEqual, 5)
 		Wish(t, plzStr(n.LookupByString("f1")), ShouldEqual, "a")
-		Wish(t, erp(n.LookupByString("f2")), ShouldEqual, ipld.Undef)
+		Wish(t, erp(n.LookupByString("f2")), ShouldEqual, ipld.Absent)
 		Wish(t, plzStr(n.LookupByString("f3")), ShouldEqual, "c")
-		Wish(t, erp(n.LookupByString("f4")), ShouldEqual, ipld.Undef)
+		Wish(t, erp(n.LookupByString("f4")), ShouldEqual, ipld.Absent)
 		Wish(t, plzStr(n.LookupByString("f5")), ShouldEqual, "e")
 	}
 	testIteration_vuvuv_repr := func(t *testing.T, n ipld.Node) {

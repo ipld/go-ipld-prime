@@ -32,7 +32,7 @@ type MaybeString = *_String__Maybe
 func (m MaybeString) IsNull() bool {
 	return m.m == schema.Maybe_Null
 }
-func (m MaybeString) IsUndefined() bool {
+func (m MaybeString) IsAbsent() bool {
 	return m.m == schema.Maybe_Absent
 }
 func (m MaybeString) Exists() bool {
@@ -41,7 +41,7 @@ func (m MaybeString) Exists() bool {
 func (m MaybeString) AsNode() ipld.Node {
 	switch m.m {
 	case schema.Maybe_Absent:
-		return ipld.Undef
+		return ipld.Absent
 	case schema.Maybe_Null:
 		return ipld.Null
 	case schema.Maybe_Value:
@@ -84,7 +84,7 @@ func (String) ListIterator() ipld.ListIterator {
 func (String) Length() int {
 	return -1
 }
-func (String) IsUndefined() bool {
+func (String) IsAbsent() bool {
 	return false
 }
 func (String) IsNull() bool {

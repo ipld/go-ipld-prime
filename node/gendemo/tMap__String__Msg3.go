@@ -41,7 +41,7 @@ type MaybeMap__String__Msg3 = *_Map__String__Msg3__Maybe
 func (m MaybeMap__String__Msg3) IsNull() bool {
 	return m.m == schema.Maybe_Null
 }
-func (m MaybeMap__String__Msg3) IsUndefined() bool {
+func (m MaybeMap__String__Msg3) IsAbsent() bool {
 	return m.m == schema.Maybe_Absent
 }
 func (m MaybeMap__String__Msg3) Exists() bool {
@@ -50,7 +50,7 @@ func (m MaybeMap__String__Msg3) Exists() bool {
 func (m MaybeMap__String__Msg3) AsNode() ipld.Node {
 	switch m.m {
 	case schema.Maybe_Absent:
-		return ipld.Undef
+		return ipld.Absent
 	case schema.Maybe_Null:
 		return ipld.Null
 	case schema.Maybe_Value:
@@ -130,7 +130,7 @@ func (Map__String__Msg3) ListIterator() ipld.ListIterator {
 func (n Map__String__Msg3) Length() int {
 	return len(n.t)
 }
-func (Map__String__Msg3) IsUndefined() bool {
+func (Map__String__Msg3) IsAbsent() bool {
 	return false
 }
 func (Map__String__Msg3) IsNull() bool {
@@ -472,7 +472,7 @@ func (_Map__String__Msg3__Repr) ListIterator() ipld.ListIterator {
 func (rn *_Map__String__Msg3__Repr) Length() int {
 	return len(rn.t)
 }
-func (_Map__String__Msg3__Repr) IsUndefined() bool {
+func (_Map__String__Msg3__Repr) IsAbsent() bool {
 	return false
 }
 func (_Map__String__Msg3__Repr) IsNull() bool {

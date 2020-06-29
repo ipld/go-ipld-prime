@@ -60,7 +60,7 @@ func (linkReprLinkReprGenerator) EmitNodeMethodLookupBySegment(io.Writer) {}
 func (linkReprLinkReprGenerator) EmitNodeMethodMapIterator(io.Writer)     {}
 func (linkReprLinkReprGenerator) EmitNodeMethodListIterator(io.Writer)    {}
 func (linkReprLinkReprGenerator) EmitNodeMethodLength(io.Writer)          {}
-func (linkReprLinkReprGenerator) EmitNodeMethodIsUndefined(io.Writer)     {}
+func (linkReprLinkReprGenerator) EmitNodeMethodIsAbsent(io.Writer)        {}
 func (linkReprLinkReprGenerator) EmitNodeMethodIsNull(io.Writer)          {}
 func (linkReprLinkReprGenerator) EmitNodeMethodAsBool(io.Writer)          {}
 func (linkReprLinkReprGenerator) EmitNodeMethodAsInt(io.Writer)           {}
