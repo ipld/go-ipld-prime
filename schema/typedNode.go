@@ -61,13 +61,13 @@ type TypedNode interface {
 // with a code-gen'd node builder while utilizing the automatic loading facilities
 // of the traversal package, you could write a LinkNodeBuilderChooser as follows:
 //
-//		func LinkNodeBuilderChooser(lnk ipld.Link, lnkCtx ipld.LinkContext) ipld.NodeStyle {
+//		func LinkNodeBuilderChooser(lnk ipld.Link, lnkCtx ipld.LinkContext) ipld.NodePrototype {
 //			if tlnkNd, ok := lnkCtx.LinkNode.(schema.TypedLinkNode); ok {
-//				return tlnkNd.LinkTargetNodeStyle()
+//				return tlnkNd.LinkTargetNodePrototype()
 //			}
-//			return basicnode.Style__Any{}
+//			return basicnode.Prototype__Any{}
 //		}
 //
 type TypedLinkNode interface {
-	LinkTargetNodeStyle() ipld.NodeStyle
+	LinkTargetNodePrototype() ipld.NodePrototype
 }

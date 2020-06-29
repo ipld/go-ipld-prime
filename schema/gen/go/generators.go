@@ -54,8 +54,8 @@ type NodeGenerator interface {
 	EmitNodeMethodAsString(io.Writer)
 	EmitNodeMethodAsBytes(io.Writer)
 	EmitNodeMethodAsLink(io.Writer)
-	EmitNodeMethodStyle(io.Writer)
-	EmitNodeStyleType(io.Writer)
+	EmitNodeMethodPrototype(io.Writer)
+	EmitNodePrototypeType(io.Writer)
 	GetNodeBuilderGenerator() NodeBuilderGenerator // assembler features also included inside
 }
 
@@ -73,7 +73,7 @@ type NodeBuilderGenerator interface {
 	EmitNodeAssemblerMethodAssignBytes(io.Writer)
 	EmitNodeAssemblerMethodAssignLink(io.Writer)
 	EmitNodeAssemblerMethodAssignNode(io.Writer)
-	EmitNodeAssemblerMethodStyle(io.Writer)
+	EmitNodeAssemblerMethodPrototype(io.Writer)
 	EmitNodeAssemblerOtherBits(io.Writer) // key and value child assemblers are done here.
 }
 
@@ -127,9 +127,9 @@ func EmitNode(ng NodeGenerator, w io.Writer) {
 	ng.EmitNodeMethodAsString(w)
 	ng.EmitNodeMethodAsBytes(w)
 	ng.EmitNodeMethodAsLink(w)
-	ng.EmitNodeMethodStyle(w)
+	ng.EmitNodeMethodPrototype(w)
 
-	ng.EmitNodeStyleType(w)
+	ng.EmitNodePrototypeType(w)
 
 	nbg := ng.GetNodeBuilderGenerator()
 	if nbg == nil { // FIXME: hack to save me from stubbing tons right now, remove when done
@@ -148,17 +148,17 @@ func EmitNode(ng NodeGenerator, w io.Writer) {
 	nbg.EmitNodeAssemblerMethodAssignBytes(w)
 	nbg.EmitNodeAssemblerMethodAssignLink(w)
 	nbg.EmitNodeAssemblerMethodAssignNode(w)
-	nbg.EmitNodeAssemblerMethodStyle(w)
+	nbg.EmitNodeAssemblerMethodPrototype(w)
 	nbg.EmitNodeAssemblerOtherBits(w)
 }
 
 func EmitTypeTable(pkgName string, ts schema.TypeSystem, adjCfg *AdjunctCfg, w io.Writer) {
-	// REVIEW: if "T__Repr" is how we want to expose this.  We could also put 'Repr' accessors on the type/style objects.
-	// FUTURE: types and styles are supposed to be the same.  Some of this text pretends they already are, but work is needed on this.
+	// REVIEW: if "T__Repr" is how we want to expose this.  We could also put 'Repr' accessors on the type/prototype objects.
+	// FUTURE: types and prototypes are proposed to be the same.  Some of this text pretends they already are, but work is needed on this.
 	doTemplate(`
 		package `+pkgName+`
 
-		// Type is a struct embeding a NodeStyle/Type for every Node implementation in this package.
+		// Type is a struct embeding a NodePrototype/Type for every Node implementation in this package.
 		// One of its major uses is to start the construction of a value.
 		// You can use it like this:
 		//
@@ -172,8 +172,8 @@ func EmitTypeTable(pkgName string, ts schema.TypeSystem, adjCfg *AdjunctCfg, w i
 
 		type typeSlab struct {
 			{{- range . }}
-			{{ .Name }}       _{{ . | TypeSymbol }}__Style
-			{{ .Name }}__Repr _{{ . | TypeSymbol }}__ReprStyle
+			{{ .Name }}       _{{ . | TypeSymbol }}__Prototype
+			{{ .Name }}__Repr _{{ . | TypeSymbol }}__ReprPrototype
 			{{- end}}
 		}
 	`, w, adjCfg, ts.GetTypes())

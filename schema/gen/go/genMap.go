@@ -126,11 +126,11 @@ func (g mapGenerator) EmitNodeMethodLookupByString(w io.Writer) {
 		func (n {{ .Type | TypeSymbol }}) LookupByString(k string) (ipld.Node, error) {
 			var k2 _{{ .Type.KeyType | TypeSymbol }}
 			{{- if eq .Type.KeyType.Kind.String "String" }}
-			if err := (_{{ .Type.KeyType | TypeSymbol }}__Style{}).fromString(&k2, k); err != nil {
+			if err := (_{{ .Type.KeyType | TypeSymbol }}__Prototype{}).fromString(&k2, k); err != nil {
 				return nil, err // TODO wrap in some kind of ErrInvalidKey
 			}
 			{{- else}}
-			if err := (_{{ .Type.KeyType | TypeSymbol }}__ReprStyle{}).fromString(&k2, k); err != nil {
+			if err := (_{{ .Type.KeyType | TypeSymbol }}__ReprPrototype{}).fromString(&k2, k); err != nil {
 				return nil, err // TODO wrap in some kind of ErrInvalidKey
 			}
 			{{- end}}
@@ -223,12 +223,12 @@ func (g mapGenerator) EmitNodeMethodLength(w io.Writer) {
 	`, w, g.AdjCfg, g)
 }
 
-func (g mapGenerator) EmitNodeMethodStyle(w io.Writer) {
-	emitNodeMethodStyle_typical(w, g.AdjCfg, g)
+func (g mapGenerator) EmitNodeMethodPrototype(w io.Writer) {
+	emitNodeMethodPrototype_typical(w, g.AdjCfg, g)
 }
 
-func (g mapGenerator) EmitNodeStyleType(w io.Writer) {
-	emitNodeStyleType_typical(w, g.AdjCfg, g)
+func (g mapGenerator) EmitNodePrototypeType(w io.Writer) {
+	emitNodePrototypeType_typical(w, g.AdjCfg, g)
 }
 
 // --- NodeBuilder and NodeAssembler --->

@@ -7,7 +7,7 @@ import (
 
 var (
 	_ ipld.Node          = &plainLink{}
-	_ ipld.NodeStyle     = Style__Link{}
+	_ ipld.NodePrototype = Prototype__Link{}
 	_ ipld.NodeBuilder   = &plainLink__Builder{}
 	_ ipld.NodeAssembler = &plainLink__Assembler{}
 )
@@ -71,15 +71,15 @@ func (plainLink) AsBytes() ([]byte, error) {
 func (n *plainLink) AsLink() (ipld.Link, error) {
 	return n.x, nil
 }
-func (plainLink) Style() ipld.NodeStyle {
-	return Style__Link{}
+func (plainLink) Prototype() ipld.NodePrototype {
+	return Prototype__Link{}
 }
 
-// -- NodeStyle -->
+// -- NodePrototype -->
 
-type Style__Link struct{}
+type Prototype__Link struct{}
 
-func (Style__Link) NewBuilder() ipld.NodeBuilder {
+func (Prototype__Link) NewBuilder() ipld.NodeBuilder {
 	var w plainLink
 	return &plainLink__Builder{plainLink__Assembler{w: &w}}
 }
@@ -140,6 +140,6 @@ func (na *plainLink__Assembler) AssignNode(v ipld.Node) error {
 		return nil
 	}
 }
-func (plainLink__Assembler) Style() ipld.NodeStyle {
-	return Style__Link{}
+func (plainLink__Assembler) Prototype() ipld.NodePrototype {
+	return Prototype__Link{}
 }

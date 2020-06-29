@@ -192,12 +192,12 @@ func (g structGenerator) EmitNodeMethodLength(w io.Writer) {
 	`, w, g.AdjCfg, g)
 }
 
-func (g structGenerator) EmitNodeMethodStyle(w io.Writer) {
-	emitNodeMethodStyle_typical(w, g.AdjCfg, g)
+func (g structGenerator) EmitNodeMethodPrototype(w io.Writer) {
+	emitNodeMethodPrototype_typical(w, g.AdjCfg, g)
 }
 
-func (g structGenerator) EmitNodeStyleType(w io.Writer) {
-	emitNodeStyleType_typical(w, g.AdjCfg, g)
+func (g structGenerator) EmitNodePrototypeType(w io.Writer) {
+	emitNodePrototypeType_typical(w, g.AdjCfg, g)
 }
 
 // --- NodeBuilder and NodeAssembler --->
@@ -528,11 +528,11 @@ func (g structBuilderGenerator) emitMapAssemblerMethods(w io.Writer) {
 			*ma.m = schema.Maybe_Value
 			return nil
 		}
-		func (ma *_{{ .Type | TypeSymbol }}__Assembler) KeyStyle() ipld.NodeStyle {
-			return _String__Style{}
+		func (ma *_{{ .Type | TypeSymbol }}__Assembler) KeyPrototype() ipld.NodePrototype {
+			return _String__Prototype{}
 		}
-		func (ma *_{{ .Type | TypeSymbol }}__Assembler) ValueStyle(k string) ipld.NodeStyle {
-			panic("todo structbuilder mapassembler valuestyle")
+		func (ma *_{{ .Type | TypeSymbol }}__Assembler) ValuePrototype(k string) ipld.NodePrototype {
+			panic("todo structbuilder mapassembler valueprototype")
 		}
 	`, w, g.AdjCfg, g)
 }
@@ -585,8 +585,8 @@ func (g structBuilderGenerator) emitKeyAssembler(w io.Writer) {
 				return ka.AssignString(v2)
 			}
 		}
-		func (_{{ .Type | TypeSymbol }}__KeyAssembler) Style() ipld.NodeStyle {
-			return _String__Style{}
+		func (_{{ .Type | TypeSymbol }}__KeyAssembler) Prototype() ipld.NodePrototype {
+			return _String__Prototype{}
 		}
 	`, w, g.AdjCfg, g)
 }

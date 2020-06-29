@@ -28,7 +28,7 @@ var storage = make(map[ipld.Link][]byte)
 var (
 	leafAlpha, leafAlphaLnk         = encode(basicnode.NewString("alpha"))
 	leafBeta, leafBetaLnk           = encode(basicnode.NewString("beta"))
-	middleMapNode, middleMapNodeLnk = encode(fluent.MustBuildMap(basicnode.Style__Map{}, 3, func(na fluent.MapAssembler) {
+	middleMapNode, middleMapNodeLnk = encode(fluent.MustBuildMap(basicnode.Prototype__Map{}, 3, func(na fluent.MapAssembler) {
 		na.AssembleEntry("foo").AssignBool(true)
 		na.AssembleEntry("bar").AssignBool(false)
 		na.AssembleEntry("nested").CreateMap(2, func(na fluent.MapAssembler) {
@@ -36,13 +36,13 @@ var (
 			na.AssembleEntry("nonlink").AssignString("zoo")
 		})
 	}))
-	middleListNode, middleListNodeLnk = encode(fluent.MustBuildList(basicnode.Style__List{}, 4, func(na fluent.ListAssembler) {
+	middleListNode, middleListNodeLnk = encode(fluent.MustBuildList(basicnode.Prototype__List{}, 4, func(na fluent.ListAssembler) {
 		na.AssembleValue().AssignLink(leafAlphaLnk)
 		na.AssembleValue().AssignLink(leafAlphaLnk)
 		na.AssembleValue().AssignLink(leafBetaLnk)
 		na.AssembleValue().AssignLink(leafAlphaLnk)
 	}))
-	rootNode, rootNodeLnk = encode(fluent.MustBuildMap(basicnode.Style__Map{}, 4, func(na fluent.MapAssembler) {
+	rootNode, rootNodeLnk = encode(fluent.MustBuildMap(basicnode.Prototype__Map{}, 4, func(na fluent.MapAssembler) {
 		na.AssembleEntry("plain").AssignString("olde string")
 		na.AssembleEntry("linkedString").AssignLink(leafAlphaLnk)
 		na.AssembleEntry("linkedMap").AssignLink(middleMapNodeLnk)
@@ -130,14 +130,14 @@ func TestFocusWithLinkLoading(t *testing.T) {
 				t.Errorf("should not be reached; no way to load this path")
 				return nil
 			})
-			Wish(t, err.Error(), ShouldEqual, `error traversing node at "nested/alink": could not load link "`+leafAlphaLnk.String()+`": no LinkTargetNodeStyleChooser configured`)
+			Wish(t, err.Error(), ShouldEqual, `error traversing node at "nested/alink": could not load link "`+leafAlphaLnk.String()+`": no LinkTargetNodePrototypeChooser configured`)
 		})
 		t.Run("mid-path link should fail", func(t *testing.T) {
 			err := traversal.Focus(rootNode, ipld.ParsePath("linkedMap/nested/nonlink"), func(prog traversal.Progress, n ipld.Node) error {
 				t.Errorf("should not be reached; no way to load this path")
 				return nil
 			})
-			Wish(t, err.Error(), ShouldEqual, `error traversing node at "linkedMap": could not load link "`+middleMapNodeLnk.String()+`": no LinkTargetNodeStyleChooser configured`)
+			Wish(t, err.Error(), ShouldEqual, `error traversing node at "linkedMap": could not load link "`+middleMapNodeLnk.String()+`": no LinkTargetNodePrototypeChooser configured`)
 		})
 	})
 	t.Run("link traversal with loader should work", func(t *testing.T) {
@@ -146,8 +146,8 @@ func TestFocusWithLinkLoading(t *testing.T) {
 				LinkLoader: func(lnk ipld.Link, _ ipld.LinkContext) (io.Reader, error) {
 					return bytes.NewBuffer(storage[lnk]), nil
 				},
-				LinkTargetNodeStyleChooser: func(_ ipld.Link, _ ipld.LinkContext) (ipld.NodeStyle, error) {
-					return basicnode.Style__Any{}, nil
+				LinkTargetNodePrototypeChooser: func(_ ipld.Link, _ ipld.LinkContext) (ipld.NodePrototype, error) {
+					return basicnode.Prototype__Any{}, nil
 				},
 			},
 		}.Focus(rootNode, ipld.ParsePath("linkedMap/nested/nonlink"), func(prog traversal.Progress, n ipld.Node) error {

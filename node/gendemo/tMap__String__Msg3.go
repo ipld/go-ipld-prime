@@ -74,7 +74,7 @@ func (Map__String__Msg3) ReprKind() ipld.ReprKind {
 }
 func (n Map__String__Msg3) LookupByString(k string) (ipld.Node, error) {
 	var k2 _String
-	if err := (_String__Style{}).fromString(&k2, k); err != nil {
+	if err := (_String__Prototype{}).fromString(&k2, k); err != nil {
 		return nil, err // TODO wrap in some kind of ErrInvalidKey
 	}
 	v, exists := n.m[k2]
@@ -154,13 +154,13 @@ func (Map__String__Msg3) AsBytes() ([]byte, error) {
 func (Map__String__Msg3) AsLink() (ipld.Link, error) {
 	return mixins.Map{"gendemo.Map__String__Msg3"}.AsLink()
 }
-func (Map__String__Msg3) Style() ipld.NodeStyle {
-	return _Map__String__Msg3__Style{}
+func (Map__String__Msg3) Prototype() ipld.NodePrototype {
+	return _Map__String__Msg3__Prototype{}
 }
 
-type _Map__String__Msg3__Style struct{}
+type _Map__String__Msg3__Prototype struct{}
 
-func (_Map__String__Msg3__Style) NewBuilder() ipld.NodeBuilder {
+func (_Map__String__Msg3__Prototype) NewBuilder() ipld.NodeBuilder {
 	var nb _Map__String__Msg3__Builder
 	nb.Reset()
 	return &nb
@@ -288,8 +288,8 @@ func (na *_Map__String__Msg3__Assembler) AssignNode(v ipld.Node) error {
 	}
 	return na.Finish()
 }
-func (_Map__String__Msg3__Assembler) Style() ipld.NodeStyle {
-	return _Map__String__Msg3__Style{}
+func (_Map__String__Msg3__Assembler) Prototype() ipld.NodePrototype {
+	return _Map__String__Msg3__Prototype{}
 }
 func (ma *_Map__String__Msg3__Assembler) keyFinishTidy() bool {
 	switch ma.cm {
@@ -336,7 +336,7 @@ func (ma *_Map__String__Msg3__Assembler) AssembleEntry(k string) (ipld.NodeAssem
 	}
 
 	var k2 _String
-	if err := (_String__Style{}).fromString(&k2, k); err != nil {
+	if err := (_String__Prototype{}).fromString(&k2, k); err != nil {
 		return nil, err // TODO wrap in some kind of ErrInvalidKey
 	}
 	if _, exists := ma.w.m[k2]; exists {
@@ -409,11 +409,11 @@ func (ma *_Map__String__Msg3__Assembler) Finish() error {
 	*ma.m = schema.Maybe_Value
 	return nil
 }
-func (ma *_Map__String__Msg3__Assembler) KeyStyle() ipld.NodeStyle {
-	return _String__Style{}
+func (ma *_Map__String__Msg3__Assembler) KeyPrototype() ipld.NodePrototype {
+	return _String__Prototype{}
 }
-func (ma *_Map__String__Msg3__Assembler) ValueStyle(_ string) ipld.NodeStyle {
-	return _Msg3__Style{}
+func (ma *_Map__String__Msg3__Assembler) ValuePrototype(_ string) ipld.NodePrototype {
+	return _Msg3__Prototype{}
 }
 func (Map__String__Msg3) Type() schema.Type {
 	return nil /*TODO:typelit*/
@@ -496,13 +496,13 @@ func (_Map__String__Msg3__Repr) AsBytes() ([]byte, error) {
 func (_Map__String__Msg3__Repr) AsLink() (ipld.Link, error) {
 	return mixins.Map{"gendemo.Map__String__Msg3.Repr"}.AsLink()
 }
-func (_Map__String__Msg3__Repr) Style() ipld.NodeStyle {
-	return _Map__String__Msg3__ReprStyle{}
+func (_Map__String__Msg3__Repr) Prototype() ipld.NodePrototype {
+	return _Map__String__Msg3__ReprPrototype{}
 }
 
-type _Map__String__Msg3__ReprStyle struct{}
+type _Map__String__Msg3__ReprPrototype struct{}
 
-func (_Map__String__Msg3__ReprStyle) NewBuilder() ipld.NodeBuilder {
+func (_Map__String__Msg3__ReprPrototype) NewBuilder() ipld.NodeBuilder {
 	var nb _Map__String__Msg3__ReprBuilder
 	nb.Reset()
 	return &nb
@@ -630,8 +630,8 @@ func (na *_Map__String__Msg3__ReprAssembler) AssignNode(v ipld.Node) error {
 	}
 	return na.Finish()
 }
-func (_Map__String__Msg3__ReprAssembler) Style() ipld.NodeStyle {
-	return _Map__String__Msg3__ReprStyle{}
+func (_Map__String__Msg3__ReprAssembler) Prototype() ipld.NodePrototype {
+	return _Map__String__Msg3__ReprPrototype{}
 }
 func (ma *_Map__String__Msg3__ReprAssembler) keyFinishTidy() bool {
 	switch ma.cm {
@@ -678,7 +678,7 @@ func (ma *_Map__String__Msg3__ReprAssembler) AssembleEntry(k string) (ipld.NodeA
 	}
 
 	var k2 _String
-	if err := (_String__ReprStyle{}).fromString(&k2, k); err != nil {
+	if err := (_String__ReprPrototype{}).fromString(&k2, k); err != nil {
 		return nil, err // TODO wrap in some kind of ErrInvalidKey
 	}
 	if _, exists := ma.w.m[k2]; exists {
@@ -751,9 +751,9 @@ func (ma *_Map__String__Msg3__ReprAssembler) Finish() error {
 	*ma.m = schema.Maybe_Value
 	return nil
 }
-func (ma *_Map__String__Msg3__ReprAssembler) KeyStyle() ipld.NodeStyle {
-	return _String__ReprStyle{}
+func (ma *_Map__String__Msg3__ReprAssembler) KeyPrototype() ipld.NodePrototype {
+	return _String__ReprPrototype{}
 }
-func (ma *_Map__String__Msg3__ReprAssembler) ValueStyle(_ string) ipld.NodeStyle {
-	return _Msg3__ReprStyle{}
+func (ma *_Map__String__Msg3__ReprAssembler) ValuePrototype(_ string) ipld.NodePrototype {
+	return _Msg3__ReprPrototype{}
 }

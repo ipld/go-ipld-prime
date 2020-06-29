@@ -16,7 +16,7 @@ import (
 	basicnode "github.com/ipld/go-ipld-prime/node/basic"
 )
 
-var n = fluent.MustBuildMap(basicnode.Style__Map{}, 4, func(na fluent.MapAssembler) {
+var n = fluent.MustBuildMap(basicnode.Prototype__Map{}, 4, func(na fluent.MapAssembler) {
 	na.AssembleEntry("plain").AssignString("olde string")
 	na.AssembleEntry("map").CreateMap(2, func(na fluent.MapAssembler) {
 		na.AssembleEntry("one").AssignInt(1)
@@ -43,7 +43,7 @@ func TestRoundtrip(t *testing.T) {
 	})
 	t.Run("decoding", func(t *testing.T) {
 		buf := bytes.NewBufferString(serial)
-		nb := basicnode.Style__Map{}.NewBuilder()
+		nb := basicnode.Prototype__Map{}.NewBuilder()
 		err := Decoder(nb, buf)
 		Require(t, err, ShouldEqual, nil)
 		Wish(t, nb.Build(), ShouldEqual, n)
@@ -51,7 +51,7 @@ func TestRoundtrip(t *testing.T) {
 }
 
 func TestRoundtripScalar(t *testing.T) {
-	nb := basicnode.Style__String{}.NewBuilder()
+	nb := basicnode.Prototype__String{}.NewBuilder()
 	nb.AssignString("applesauce")
 	simple := nb.Build()
 	t.Run("encoding", func(t *testing.T) {
@@ -62,7 +62,7 @@ func TestRoundtripScalar(t *testing.T) {
 	})
 	t.Run("decoding", func(t *testing.T) {
 		buf := bytes.NewBufferString(`japplesauce`)
-		nb := basicnode.Style__String{}.NewBuilder()
+		nb := basicnode.Prototype__String{}.NewBuilder()
 		err := Decoder(nb, buf)
 		Require(t, err, ShouldEqual, nil)
 		Wish(t, nb.Build(), ShouldEqual, simple)
@@ -84,7 +84,7 @@ func TestRoundtripLinksAndBytes(t *testing.T) {
 	)
 	Require(t, err, ShouldEqual, nil)
 
-	var linkByteNode = fluent.MustBuildMap(basicnode.Style__Map{}, 4, func(na fluent.MapAssembler) {
+	var linkByteNode = fluent.MustBuildMap(basicnode.Prototype__Map{}, 4, func(na fluent.MapAssembler) {
 		nva := na.AssembleEntry("Link")
 		nva.AssignLink(lnk)
 		nva = na.AssembleEntry("Bytes")
@@ -96,7 +96,7 @@ func TestRoundtripLinksAndBytes(t *testing.T) {
 	buf.Reset()
 	err = Encoder(linkByteNode, &buf)
 	Require(t, err, ShouldEqual, nil)
-	nb := basicnode.Style__Map{}.NewBuilder()
+	nb := basicnode.Prototype__Map{}.NewBuilder()
 	err = Decoder(nb, &buf)
 	Require(t, err, ShouldEqual, nil)
 	reconstructed := nb.Build()

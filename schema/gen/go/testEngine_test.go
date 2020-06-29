@@ -12,14 +12,14 @@ import (
 // behavioralTests describes the interface of a function that can be supplied
 // in order to run tests on generated code.
 //
-// The getStyleByName function can get its job done using only interface types
+// The getPrototypeByName function can get its job done using only interface types
 // that we already know from outside any generated code, so you can write tests
 // that have no _compile time_ dependency on the generated code.  This makes it
 // easier for IDEs and suchlike to help you write and check the test functions.
 //
-// Ask for styles using the type name alone (no package prefix);
-// their representation styles can be obtained by appending ".Repr".
-type behavioralTests func(t *testing.T, getStyleByName func(string) ipld.NodeStyle)
+// Ask for prototypes using the type name alone (no package prefix);
+// their representation prototypes can be obtained by appending ".Repr".
+type behavioralTests func(t *testing.T, getPrototypeByName func(string) ipld.NodePrototype)
 
 func genAndCompileAndTest(
 	t *testing.T,
@@ -42,24 +42,24 @@ func genAndCompileAndTest(
 		// Generate... everything, really.
 		Generate("./_test/"+prefix, pkgName, ts, adjCfg)
 
-		// Emit an exported top level function for getting nodestyles.
+		// Emit an exported top level function for getting NodePrototype.
 		//  This part isn't necessary except for a special need we have with this plugin trick;
-		//   normally, user code uses the `{pkgname}.Style.{TypeName}` constant (so-to-speak, anyway) to get a hold of nodestyles...
-		//   but for plugins, we need a top-level exported symbol to grab ahold of, and we can't easily look through the `Style` value
+		//   normally, user code uses the `{pkgname}.Prototype.{TypeName}` constant (so-to-speak, anyway) to get a hold of NodePrototypes...
+		//   but for plugins, we need a top-level exported symbol to grab ahold of, and we can't easily look through the `Prototype` value
 		//    without an interface... so we generate this function to fit the bill instead.
-		withFile("./_test/"+prefix+"/styleGetter.go", func(w io.Writer) {
+		withFile("./_test/"+prefix+"/prototypeGetter.go", func(w io.Writer) {
 			doTemplate(`
 				package `+pkgName+`
 
 				import "github.com/ipld/go-ipld-prime"
 
-				func GetStyleByName(name string) ipld.NodeStyle {
+				func GetPrototypeByName(name string) ipld.NodePrototype {
 					switch name {
 					{{- range . }}
 					case "{{ .Name }}":
-						return _{{ . | TypeSymbol }}__Style{}
+						return _{{ . | TypeSymbol }}__Prototype{}
 					case "{{ .Name }}.Repr":
-						return _{{ . | TypeSymbol }}__ReprStyle{}
+						return _{{ . | TypeSymbol }}__ReprPrototype{}
 					{{- end}}
 					default:
 						return nil

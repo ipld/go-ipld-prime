@@ -22,7 +22,7 @@ func main() {
 		    {"widget": "irridescent",   "property": "yes"},
 		  ]}
 	]`
-	nb := basicnode.Style.Any.NewBuilder()
+	nb := basicnode.Prototype.Any.NewBuilder()
 	if err := dagjson.Decoder(nb, bytes.NewBufferString(fixture)); err != nil {
 		panic(err)
 	}

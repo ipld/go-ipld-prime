@@ -37,12 +37,12 @@ func TestStructNesting(t *testing.T) {
 
 	prefix := "struct-nesting"
 	pkgName := "main"
-	genAndCompileAndTest(t, prefix, pkgName, ts, adjCfg, func(t *testing.T, getStyleByName func(string) ipld.NodeStyle) {
-		ns := getStyleByName("GulpoStruct")
-		nsr := getStyleByName("GulpoStruct.Repr")
+	genAndCompileAndTest(t, prefix, pkgName, ts, adjCfg, func(t *testing.T, getPrototypeByName func(string) ipld.NodePrototype) {
+		np := getPrototypeByName("GulpoStruct")
+		nrp := getPrototypeByName("GulpoStruct.Repr")
 		var n schema.TypedNode
 		t.Run("typed-create", func(t *testing.T) {
-			n = fluent.MustBuildMap(ns, 1, func(ma fluent.MapAssembler) {
+			n = fluent.MustBuildMap(np, 1, func(ma fluent.MapAssembler) {
 				ma.AssembleEntry("x").CreateMap(1, func(ma fluent.MapAssembler) {
 					ma.AssembleEntry("s").AssignString("woo")
 				})
@@ -64,7 +64,7 @@ func TestStructNesting(t *testing.T) {
 			})
 		})
 		t.Run("repr-create", func(t *testing.T) {
-			nr := fluent.MustBuildMap(nsr, 1, func(ma fluent.MapAssembler) {
+			nr := fluent.MustBuildMap(nrp, 1, func(ma fluent.MapAssembler) {
 				ma.AssembleEntry("r").CreateMap(1, func(ma fluent.MapAssembler) {
 					ma.AssembleEntry("q").AssignString("woo")
 				})

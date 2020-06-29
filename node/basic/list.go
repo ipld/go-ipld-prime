@@ -7,7 +7,7 @@ import (
 
 var (
 	_ ipld.Node          = &plainList{}
-	_ ipld.NodeStyle     = Style__List{}
+	_ ipld.NodePrototype = Prototype__List{}
 	_ ipld.NodeBuilder   = &plainList__Builder{}
 	_ ipld.NodeAssembler = &plainList__Assembler{}
 )
@@ -76,8 +76,8 @@ func (plainList) AsBytes() ([]byte, error) {
 func (plainList) AsLink() (ipld.Link, error) {
 	return mixins.List{"list"}.AsLink()
 }
-func (plainList) Style() ipld.NodeStyle {
-	return Style__List{}
+func (plainList) Prototype() ipld.NodePrototype {
+	return Prototype__List{}
 }
 
 type plainList_ListIterator struct {
@@ -98,11 +98,11 @@ func (itr *plainList_ListIterator) Done() bool {
 	return itr.idx >= len(itr.n.x)
 }
 
-// -- NodeStyle -->
+// -- NodePrototype -->
 
-type Style__List struct{}
+type Prototype__List struct{}
 
-func (Style__List) NewBuilder() ipld.NodeBuilder {
+func (Prototype__List) NewBuilder() ipld.NodeBuilder {
 	return &plainList__Builder{plainList__Assembler{w: &plainList{}}}
 }
 
@@ -213,8 +213,8 @@ func (na *plainList__Assembler) AssignNode(v ipld.Node) error {
 	}
 	return na.Finish()
 }
-func (plainList__Assembler) Style() ipld.NodeStyle {
-	return Style__List{}
+func (plainList__Assembler) Prototype() ipld.NodePrototype {
+	return Prototype__List{}
 }
 
 // -- ListAssembler -->
@@ -243,8 +243,8 @@ func (la *plainList__Assembler) Finish() error {
 	// validators could run and report errors promptly, if this type had any.
 	return nil
 }
-func (plainList__Assembler) ValueStyle(_ int) ipld.NodeStyle {
-	return Style__Any{}
+func (plainList__Assembler) ValuePrototype(_ int) ipld.NodePrototype {
+	return Prototype__Any{}
 }
 
 // -- ListAssembler.ValueAssembler -->
@@ -296,8 +296,8 @@ func (lva *plainList__ValueAssembler) AssignNode(v ipld.Node) error {
 	lva.la = nil // invalidate self to prevent further incorrect use.
 	return nil
 }
-func (plainList__ValueAssembler) Style() ipld.NodeStyle {
-	return Style__Any{}
+func (plainList__ValueAssembler) Prototype() ipld.NodePrototype {
+	return Prototype__Any{}
 }
 
 type plainList__ValueAssemblerMap struct {
@@ -318,11 +318,11 @@ func (ma *plainList__ValueAssemblerMap) AssembleKey() ipld.NodeAssembler {
 func (ma *plainList__ValueAssemblerMap) AssembleValue() ipld.NodeAssembler {
 	return ma.ca.AssembleValue()
 }
-func (plainList__ValueAssemblerMap) KeyStyle() ipld.NodeStyle {
-	return Style__String{}
+func (plainList__ValueAssemblerMap) KeyPrototype() ipld.NodePrototype {
+	return Prototype__String{}
 }
-func (plainList__ValueAssemblerMap) ValueStyle(_ string) ipld.NodeStyle {
-	return Style__Any{}
+func (plainList__ValueAssemblerMap) ValuePrototype(_ string) ipld.NodePrototype {
+	return Prototype__Any{}
 }
 
 func (ma *plainList__ValueAssemblerMap) Finish() error {
@@ -346,8 +346,8 @@ type plainList__ValueAssemblerList struct {
 func (la *plainList__ValueAssemblerList) AssembleValue() ipld.NodeAssembler {
 	return la.ca.AssembleValue()
 }
-func (plainList__ValueAssemblerList) ValueStyle(_ int) ipld.NodeStyle {
-	return Style__Any{}
+func (plainList__ValueAssemblerList) ValuePrototype(_ int) ipld.NodePrototype {
+	return Prototype__Any{}
 }
 
 func (la *plainList__ValueAssemblerList) Finish() error {

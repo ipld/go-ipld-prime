@@ -22,8 +22,8 @@ func init() {
 }
 
 // extracted for reuse between correctness tests and benchmarks
-func buildMapStrIntN3(ns ipld.NodeStyle) ipld.Node {
-	nb := ns.NewBuilder()
+func buildMapStrIntN3(np ipld.NodePrototype) ipld.Node {
+	nb := np.NewBuilder()
 	ma, err := nb.BeginMap(3)
 	must.NotError(err)
 	must.NotError(ma.AssembleKey().AssignString("whee"))
@@ -37,8 +37,8 @@ func buildMapStrIntN3(ns ipld.NodeStyle) ipld.Node {
 }
 
 // extracted for reuse across benchmarks
-func buildMapStrIntN25(ns ipld.NodeStyle) ipld.Node {
-	nb := ns.NewBuilder()
+func buildMapStrIntN25(np ipld.NodePrototype) ipld.Node {
+	nb := np.NewBuilder()
 	ma, err := nb.BeginMap(25)
 	must.NotError(err)
 	for i := 1; i <= 25; i++ {

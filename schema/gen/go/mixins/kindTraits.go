@@ -308,10 +308,10 @@ func (g kindAssemblerTraitsGenerator) emitNodeAssemblerMethodAssignLink(w io.Wri
 
 // bailed on extracting a common emitNodeAssemblerMethodAssignNode: way too many variations.
 
-func (g kindAssemblerTraitsGenerator) emitNodeAssemblerMethodStyle(w io.Writer) {
+func (g kindAssemblerTraitsGenerator) emitNodeAssemblerMethodPrototype(w io.Writer) {
 	doTemplate(`
-		func ({{ .AppliedPrefix }}Assembler) Style() ipld.NodeStyle {
-			return {{ .AppliedPrefix }}Style{}
+		func ({{ .AppliedPrefix }}Assembler) Prototype() ipld.NodePrototype {
+			return {{ .AppliedPrefix }}Prototype{}
 		}
 	`, w, g)
 }

@@ -21,8 +21,8 @@ func TestStructsContainingMaybe(t *testing.T) {
 	//  - 'v' -- value in that entry
 	//  - 'z' -- null in that entry
 	//  - 'u' -- undefined/absent entry
-	build_vvvvv := func(t *testing.T, ns ipld.NodeStyle) schema.TypedNode {
-		nb := ns.NewBuilder()
+	build_vvvvv := func(t *testing.T, np ipld.NodePrototype) schema.TypedNode {
+		nb := np.NewBuilder()
 		ma, err := nb.BeginMap(5)
 		Require(t, err, ShouldEqual, nil)
 		Wish(t, ma.AssembleKey().AssignString("f1"), ShouldEqual, nil)
@@ -38,8 +38,8 @@ func TestStructsContainingMaybe(t *testing.T) {
 		Wish(t, ma.Finish(), ShouldEqual, nil)
 		return nb.Build().(schema.TypedNode)
 	}
-	build_vvvvv_repr := func(t *testing.T, ns ipld.NodeStyle) schema.TypedNode {
-		nb := ns.NewBuilder()
+	build_vvvvv_repr := func(t *testing.T, np ipld.NodePrototype) schema.TypedNode {
+		nb := np.NewBuilder()
 		ma, err := nb.BeginMap(5)
 		Require(t, err, ShouldEqual, nil)
 		Wish(t, ma.AssembleKey().AssignString("r1"), ShouldEqual, nil)
@@ -129,8 +129,8 @@ func TestStructsContainingMaybe(t *testing.T) {
 		Wish(t, v, ShouldEqual, nil)
 		Wish(t, err, ShouldEqual, ipld.ErrIteratorOverread{})
 	}
-	build_vvzzv := func(t *testing.T, ns ipld.NodeStyle) schema.TypedNode {
-		nb := ns.NewBuilder()
+	build_vvzzv := func(t *testing.T, np ipld.NodePrototype) schema.TypedNode {
+		nb := np.NewBuilder()
 		ma, err := nb.BeginMap(5)
 		Require(t, err, ShouldEqual, nil)
 		Wish(t, ma.AssembleKey().AssignString("f1"), ShouldEqual, nil)
@@ -146,8 +146,8 @@ func TestStructsContainingMaybe(t *testing.T) {
 		Wish(t, ma.Finish(), ShouldEqual, nil)
 		return nb.Build().(schema.TypedNode)
 	}
-	build_vvzzv_repr := func(t *testing.T, ns ipld.NodeStyle) schema.TypedNode {
-		nb := ns.NewBuilder()
+	build_vvzzv_repr := func(t *testing.T, np ipld.NodePrototype) schema.TypedNode {
+		nb := np.NewBuilder()
 		ma, err := nb.BeginMap(5)
 		Require(t, err, ShouldEqual, nil)
 		Wish(t, ma.AssembleKey().AssignString("r1"), ShouldEqual, nil)
@@ -172,8 +172,8 @@ func TestStructsContainingMaybe(t *testing.T) {
 		Wish(t, erp(n.LookupByString("f4")), ShouldEqual, ipld.Null)
 		Wish(t, plzStr(n.LookupByString("f5")), ShouldEqual, "e")
 	}
-	build_vuvuv := func(t *testing.T, ns ipld.NodeStyle) schema.TypedNode {
-		nb := ns.NewBuilder()
+	build_vuvuv := func(t *testing.T, np ipld.NodePrototype) schema.TypedNode {
+		nb := np.NewBuilder()
 		ma, err := nb.BeginMap(3)
 		Require(t, err, ShouldEqual, nil)
 		Wish(t, ma.AssembleKey().AssignString("f1"), ShouldEqual, nil)
@@ -214,8 +214,8 @@ func TestStructsContainingMaybe(t *testing.T) {
 		Wish(t, v, ShouldEqual, nil)
 		Wish(t, err, ShouldEqual, ipld.ErrIteratorOverread{})
 	}
-	build_vvzuu := func(t *testing.T, ns ipld.NodeStyle) schema.TypedNode {
-		nb := ns.NewBuilder()
+	build_vvzuu := func(t *testing.T, np ipld.NodePrototype) schema.TypedNode {
+		nb := np.NewBuilder()
 		ma, err := nb.BeginMap(3)
 		Require(t, err, ShouldEqual, nil)
 		Wish(t, ma.AssembleKey().AssignString("f1"), ShouldEqual, nil)
@@ -249,10 +249,10 @@ func TestStructsContainingMaybe(t *testing.T) {
 	}
 
 	// Okay, now the test actions:
-	test := func(t *testing.T, ns ipld.NodeStyle, nsr ipld.NodeStyle) {
+	test := func(t *testing.T, np ipld.NodePrototype, nrp ipld.NodePrototype) {
 		t.Run("all fields set", func(t *testing.T) {
 			t.Run("typed-create", func(t *testing.T) {
-				n := build_vvvvv(t, ns)
+				n := build_vvvvv(t, np)
 				t.Run("typed-read", func(t *testing.T) {
 					testLookups_vvvvv(t, n)
 					testIteration_vvvvv(t, n)
@@ -263,12 +263,12 @@ func TestStructsContainingMaybe(t *testing.T) {
 				})
 			})
 			t.Run("repr-create", func(t *testing.T) {
-				Wish(t, build_vvvvv_repr(t, nsr), ShouldEqual, build_vvvvv(t, ns))
+				Wish(t, build_vvvvv_repr(t, nrp), ShouldEqual, build_vvvvv(t, np))
 			})
 		})
 		t.Run("setting nulls", func(t *testing.T) {
 			t.Run("typed-create", func(t *testing.T) {
-				n := build_vvzzv(t, ns)
+				n := build_vvzzv(t, np)
 				t.Run("typed-read", func(t *testing.T) {
 					testLookups_vvzzv(t, n)
 				})
@@ -277,12 +277,12 @@ func TestStructsContainingMaybe(t *testing.T) {
 				})
 			})
 			t.Run("repr-create", func(t *testing.T) {
-				Wish(t, build_vvzzv_repr(t, nsr), ShouldEqual, build_vvzzv(t, ns))
+				Wish(t, build_vvzzv_repr(t, nrp), ShouldEqual, build_vvzzv(t, np))
 			})
 		})
 		t.Run("absent optionals", func(t *testing.T) {
 			t.Run("typed-create", func(t *testing.T) {
-				n := build_vuvuv(t, ns)
+				n := build_vuvuv(t, np)
 				t.Run("typed-read", func(t *testing.T) {
 					testLookups_vuvuv(t, n)
 				})
@@ -297,7 +297,7 @@ func TestStructsContainingMaybe(t *testing.T) {
 		t.Run("absent trailing optionals", func(t *testing.T) {
 			// Trailing optionals are especially touchy in a few details of iterators, so this gets an extra focused test.
 			t.Run("typed-create", func(t *testing.T) {
-				n := build_vvzuu(t, ns)
+				n := build_vvzuu(t, np)
 				t.Run("typed-read", func(t *testing.T) {
 					// Not very interesting; still returns absent explicitly, same as 'vuvuv' scenario.
 				})
@@ -341,8 +341,8 @@ func TestStructsContainingMaybe(t *testing.T) {
 
 		prefix := "stroct"
 		pkgName := "main"
-		genAndCompileAndTest(t, prefix, pkgName, ts, adjCfg, func(t *testing.T, getStyleByName func(string) ipld.NodeStyle) {
-			test(t, getStyleByName("Stroct"), getStyleByName("Stroct.Repr"))
+		genAndCompileAndTest(t, prefix, pkgName, ts, adjCfg, func(t *testing.T, getPrototypeByName func(string) ipld.NodePrototype) {
+			test(t, getPrototypeByName("Stroct"), getPrototypeByName("Stroct.Repr"))
 		})
 	})
 	t.Run("maybe-using-ptr", func(t *testing.T) {
@@ -350,8 +350,8 @@ func TestStructsContainingMaybe(t *testing.T) {
 
 		prefix := "stroct2"
 		pkgName := "main"
-		genAndCompileAndTest(t, prefix, pkgName, ts, adjCfg, func(t *testing.T, getStyleByName func(string) ipld.NodeStyle) {
-			test(t, getStyleByName("Stroct"), getStyleByName("Stroct.Repr"))
+		genAndCompileAndTest(t, prefix, pkgName, ts, adjCfg, func(t *testing.T, getPrototypeByName func(string) ipld.NodePrototype) {
+			test(t, getPrototypeByName("Stroct"), getPrototypeByName("Stroct.Repr"))
 		})
 	})
 }

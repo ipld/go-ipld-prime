@@ -9,9 +9,9 @@ import (
 	"github.com/ipld/go-ipld-prime/must"
 )
 
-func SpecTestMapStrInt(t *testing.T, ns ipld.NodeStyle) {
+func SpecTestMapStrInt(t *testing.T, np ipld.NodePrototype) {
 	t.Run("map<str,int>, 3 entries", func(t *testing.T) {
-		n := buildMapStrIntN3(ns)
+		n := buildMapStrIntN3(np)
 		t.Run("reads back out", func(t *testing.T) {
 			Wish(t, n.Length(), ShouldEqual, 3)
 
@@ -80,7 +80,7 @@ func SpecTestMapStrInt(t *testing.T, ns ipld.NodeStyle) {
 		})
 	})
 	t.Run("repeated key should error", func(t *testing.T) {
-		nb := ns.NewBuilder()
+		nb := np.NewBuilder()
 		ma, err := nb.BeginMap(3)
 		if err != nil {
 			panic(err)
@@ -98,7 +98,7 @@ func SpecTestMapStrInt(t *testing.T, ns ipld.NodeStyle) {
 		}
 	})
 	t.Run("using expired child assemblers should panic", func(t *testing.T) {
-		nb := ns.NewBuilder()
+		nb := np.NewBuilder()
 		ma, err := nb.BeginMap(3)
 		must.NotError(err)
 
@@ -136,9 +136,9 @@ func SpecTestMapStrInt(t *testing.T, ns ipld.NodeStyle) {
 	})
 }
 
-func SpecTestMapStrMapStrInt(t *testing.T, ns ipld.NodeStyle) {
+func SpecTestMapStrMapStrInt(t *testing.T, np ipld.NodePrototype) {
 	t.Run("map<str,map<str,int>>", func(t *testing.T) {
-		nb := ns.NewBuilder()
+		nb := np.NewBuilder()
 		ma, err := nb.BeginMap(3)
 		must.NotError(err)
 		must.NotError(ma.AssembleKey().AssignString("whee"))
@@ -187,9 +187,9 @@ func SpecTestMapStrMapStrInt(t *testing.T, ns ipld.NodeStyle) {
 	})
 }
 
-func SpecTestMapStrListStr(t *testing.T, ns ipld.NodeStyle) {
+func SpecTestMapStrListStr(t *testing.T, np ipld.NodePrototype) {
 	t.Run("map<str,list<str>>", func(t *testing.T) {
-		nb := ns.NewBuilder()
+		nb := np.NewBuilder()
 		ma, err := nb.BeginMap(3)
 		must.NotError(err)
 		must.NotError(ma.AssembleKey().AssignString("asdf"))

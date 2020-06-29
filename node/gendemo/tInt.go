@@ -14,7 +14,7 @@ type Int = *_Int
 func (n Int) Int() int {
 	return n.x
 }
-func (_Int__Style) FromInt(v int) (Int, error) {
+func (_Int__Prototype) FromInt(v int) (Int, error) {
 	n := _Int{v}
 	return &n, nil
 }
@@ -104,13 +104,13 @@ func (Int) AsBytes() ([]byte, error) {
 func (Int) AsLink() (ipld.Link, error) {
 	return mixins.Int{"gendemo.Int"}.AsLink()
 }
-func (Int) Style() ipld.NodeStyle {
-	return _Int__Style{}
+func (Int) Prototype() ipld.NodePrototype {
+	return _Int__Prototype{}
 }
 
-type _Int__Style struct{}
+type _Int__Prototype struct{}
 
-func (_Int__Style) NewBuilder() ipld.NodeBuilder {
+func (_Int__Prototype) NewBuilder() ipld.NodeBuilder {
 	var nb _Int__Builder
 	nb.Reset()
 	return &nb
@@ -207,8 +207,8 @@ func (na *_Int__Assembler) AssignNode(v ipld.Node) error {
 		return na.AssignInt(v2)
 	}
 }
-func (_Int__Assembler) Style() ipld.NodeStyle {
-	return _Int__Style{}
+func (_Int__Assembler) Prototype() ipld.NodePrototype {
+	return _Int__Prototype{}
 }
 func (Int) Type() schema.Type {
 	return nil /*TODO:typelit*/
@@ -221,5 +221,5 @@ type _Int__Repr = _Int
 
 var _ ipld.Node = &_Int__Repr{}
 
-type _Int__ReprStyle = _Int__Style
+type _Int__ReprPrototype = _Int__Prototype
 type _Int__ReprAssembler = _Int__Assembler

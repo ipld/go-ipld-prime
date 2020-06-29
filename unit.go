@@ -52,13 +52,13 @@ func (nullNode) AsBytes() ([]byte, error) {
 func (nullNode) AsLink() (Link, error) {
 	return nil, ErrWrongKind{TypeName: "null", MethodName: "AsLink", AppropriateKind: ReprKindSet_JustLink, ActualKind: ReprKind_Null}
 }
-func (nullNode) Style() NodeStyle {
-	return nullStyle{}
+func (nullNode) Prototype() NodePrototype {
+	return nullPrototype{}
 }
 
-type nullStyle struct{}
+type nullPrototype struct{}
 
-func (nullStyle) NewBuilder() NodeBuilder {
+func (nullPrototype) NewBuilder() NodeBuilder {
 	panic("cannot build null nodes") // TODO: okay, fine, we could grind out a simple closing of the loop here.
 }
 
@@ -114,12 +114,12 @@ func (undefNode) AsBytes() ([]byte, error) {
 func (undefNode) AsLink() (Link, error) {
 	return nil, ErrWrongKind{TypeName: "undef", MethodName: "AsLink", AppropriateKind: ReprKindSet_JustLink, ActualKind: ReprKind_Null}
 }
-func (undefNode) Style() NodeStyle {
-	return undefStyle{}
+func (undefNode) Prototype() NodePrototype {
+	return undefPrototype{}
 }
 
-type undefStyle struct{}
+type undefPrototype struct{}
 
-func (undefStyle) NewBuilder() NodeBuilder {
+func (undefPrototype) NewBuilder() NodeBuilder {
 	panic("cannot build undef nodes") // this definitely stays true.
 }

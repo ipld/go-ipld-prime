@@ -9,9 +9,9 @@ import (
 	"github.com/ipld/go-ipld-prime/traversal"
 )
 
-func BenchmarkSpec_Walk_Map3StrInt(b *testing.B, ns ipld.NodeStyle) {
-	node := mustNodeFromJsonString(ns, corpus.Map3StrInt())
-	sel := mustSelectorFromJsonString(ns, `{"a":{">":{".":{}}}}`)
+func BenchmarkSpec_Walk_Map3StrInt(b *testing.B, np ipld.NodePrototype) {
+	node := mustNodeFromJsonString(np, corpus.Map3StrInt())
+	sel := mustSelectorFromJsonString(np, `{"a":{">":{".":{}}}}`)
 	b.ResetTimer()
 
 	var visitCountSanityCheck int
@@ -27,12 +27,12 @@ func BenchmarkSpec_Walk_Map3StrInt(b *testing.B, ns ipld.NodeStyle) {
 	}
 }
 
-func BenchmarkSpec_Walk_MapNStrMap3StrInt(b *testing.B, ns ipld.NodeStyle) {
-	sel := mustSelectorFromJsonString(ns, `{"a":{">":{"a":{">":{".":{}}}}}}`)
+func BenchmarkSpec_Walk_MapNStrMap3StrInt(b *testing.B, np ipld.NodePrototype) {
+	sel := mustSelectorFromJsonString(np, `{"a":{">":{"a":{">":{".":{}}}}}}`)
 
 	for _, n := range []int{0, 1, 2, 4, 8, 16, 32} {
 		b.Run(fmt.Sprintf("n=%d", n), func(b *testing.B) {
-			node := mustNodeFromJsonString(ns, corpus.MapNStrMap3StrInt(n))
+			node := mustNodeFromJsonString(np, corpus.MapNStrMap3StrInt(n))
 			b.ResetTimer()
 
 			var visitCountSanityCheck int

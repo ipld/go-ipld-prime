@@ -38,7 +38,7 @@ func ExampleCreatingLink() {
 	}}
 
 	// And we need some data to link to!  Here's a quick piece of example data:
-	n := fluent.MustBuildMap(basicnode.Style.Map, 1, func(na fluent.MapAssembler) {
+	n := fluent.MustBuildMap(basicnode.Prototype.Map, 1, func(na fluent.MapAssembler) {
 		na.AssembleEntry("hello").AssignString("world")
 	})
 
@@ -89,8 +89,8 @@ func ExampleLoadingLink() {
 	//  Here, we'll use the "basicnode" implementation.
 	//   But you could also use other implementations, or even a code-generated type with special features!
 	// To encapsulate this decision, we create a NodeBuilder for the implementation we want.
-	//  (If you are building a library and want to expose this choice, though, you'd probably want to accept a NodeStyle as the configuration for this.)
-	nb := basicnode.Style.Any.NewBuilder()
+	//  (If you are building a library and want to expose this choice, though, you'd probably want to accept a NodePrototype as the configuration for this.)
+	nb := basicnode.Prototype.Any.NewBuilder()
 
 	// Tell the link to load itself!
 	//  This only returns an error...

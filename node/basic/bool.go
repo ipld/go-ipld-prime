@@ -7,7 +7,7 @@ import (
 
 var (
 	_ ipld.Node          = plainBool(false)
-	_ ipld.NodeStyle     = Style__Bool{}
+	_ ipld.NodePrototype = Prototype__Bool{}
 	_ ipld.NodeBuilder   = &plainBool__Builder{}
 	_ ipld.NodeAssembler = &plainBool__Assembler{}
 )
@@ -70,15 +70,15 @@ func (plainBool) AsBytes() ([]byte, error) {
 func (plainBool) AsLink() (ipld.Link, error) {
 	return mixins.Bool{"bool"}.AsLink()
 }
-func (plainBool) Style() ipld.NodeStyle {
-	return Style__Bool{}
+func (plainBool) Prototype() ipld.NodePrototype {
+	return Prototype__Bool{}
 }
 
-// -- NodeStyle -->
+// -- NodePrototype -->
 
-type Style__Bool struct{}
+type Prototype__Bool struct{}
 
-func (Style__Bool) NewBuilder() ipld.NodeBuilder {
+func (Prototype__Bool) NewBuilder() ipld.NodeBuilder {
 	var w plainBool
 	return &plainBool__Builder{plainBool__Assembler{w: &w}}
 }
@@ -139,6 +139,6 @@ func (na *plainBool__Assembler) AssignNode(v ipld.Node) error {
 		return nil
 	}
 }
-func (plainBool__Assembler) Style() ipld.NodeStyle {
-	return Style__Bool{}
+func (plainBool__Assembler) Prototype() ipld.NodePrototype {
+	return Prototype__Bool{}
 }

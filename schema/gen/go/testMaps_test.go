@@ -23,13 +23,13 @@ func TestMapsContainingMaybe(t *testing.T) {
 	ts.Accumulate(schema.SpawnMap("Map__String__nullableString",
 		ts.TypeByName("String"), ts.TypeByName("String"), true))
 
-	test := func(t *testing.T, getStyleByName func(string) ipld.NodeStyle) {
+	test := func(t *testing.T, getPrototypeByName func(string) ipld.NodePrototype) {
 		t.Run("non-nullable", func(t *testing.T) {
-			ns := getStyleByName("Map__String__String")
-			nsr := getStyleByName("Map__String__String.Repr")
+			np := getPrototypeByName("Map__String__String")
+			nrp := getPrototypeByName("Map__String__String.Repr")
 			var n schema.TypedNode
 			t.Run("typed-create", func(t *testing.T) {
-				n = fluent.MustBuildMap(ns, 2, func(ma fluent.MapAssembler) {
+				n = fluent.MustBuildMap(np, 2, func(ma fluent.MapAssembler) {
 					ma.AssembleEntry("one").AssignString("1")
 					ma.AssembleEntry("two").AssignString("2")
 				}).(schema.TypedNode)
@@ -52,7 +52,7 @@ func TestMapsContainingMaybe(t *testing.T) {
 				})
 			})
 			t.Run("repr-create", func(t *testing.T) {
-				nr := fluent.MustBuildMap(nsr, 2, func(ma fluent.MapAssembler) {
+				nr := fluent.MustBuildMap(nrp, 2, func(ma fluent.MapAssembler) {
 					ma.AssembleEntry("one").AssignString("1")
 					ma.AssembleEntry("two").AssignString("2")
 				})
@@ -60,11 +60,11 @@ func TestMapsContainingMaybe(t *testing.T) {
 			})
 		})
 		t.Run("nullable", func(t *testing.T) {
-			ns := getStyleByName("Map__String__nullableString")
-			nsr := getStyleByName("Map__String__nullableString.Repr")
+			np := getPrototypeByName("Map__String__nullableString")
+			nrp := getPrototypeByName("Map__String__nullableString.Repr")
 			var n schema.TypedNode
 			t.Run("typed-create", func(t *testing.T) {
-				n = fluent.MustBuildMap(ns, 2, func(ma fluent.MapAssembler) {
+				n = fluent.MustBuildMap(np, 2, func(ma fluent.MapAssembler) {
 					ma.AssembleEntry("one").AssignString("1")
 					ma.AssembleEntry("none").AssignNull()
 				}).(schema.TypedNode)
@@ -87,7 +87,7 @@ func TestMapsContainingMaybe(t *testing.T) {
 				})
 			})
 			t.Run("repr-create", func(t *testing.T) {
-				nr := fluent.MustBuildMap(nsr, 2, func(ma fluent.MapAssembler) {
+				nr := fluent.MustBuildMap(nrp, 2, func(ma fluent.MapAssembler) {
 					ma.AssembleEntry("one").AssignString("1")
 					ma.AssembleEntry("none").AssignNull()
 				})
@@ -101,8 +101,8 @@ func TestMapsContainingMaybe(t *testing.T) {
 
 		prefix := "maps-embed"
 		pkgName := "main"
-		genAndCompileAndTest(t, prefix, pkgName, ts, adjCfg, func(t *testing.T, getStyleByName func(string) ipld.NodeStyle) {
-			test(t, getStyleByName)
+		genAndCompileAndTest(t, prefix, pkgName, ts, adjCfg, func(t *testing.T, getPrototypeByName func(string) ipld.NodePrototype) {
+			test(t, getPrototypeByName)
 		})
 	})
 	t.Run("maybe-using-ptr", func(t *testing.T) {
@@ -110,8 +110,8 @@ func TestMapsContainingMaybe(t *testing.T) {
 
 		prefix := "maps-mptr"
 		pkgName := "main"
-		genAndCompileAndTest(t, prefix, pkgName, ts, adjCfg, func(t *testing.T, getStyleByName func(string) ipld.NodeStyle) {
-			test(t, getStyleByName)
+		genAndCompileAndTest(t, prefix, pkgName, ts, adjCfg, func(t *testing.T, getPrototypeByName func(string) ipld.NodePrototype) {
+			test(t, getPrototypeByName)
 		})
 	})
 }
@@ -142,11 +142,11 @@ func TestMapsContainingMaps(t *testing.T) {
 
 	prefix := "maps-recursive"
 	pkgName := "main"
-	genAndCompileAndTest(t, prefix, pkgName, ts, adjCfg, func(t *testing.T, getStyleByName func(string) ipld.NodeStyle) {
-		ns := getStyleByName("Map__String__nullableMap__String__Frub")
-		nsr := getStyleByName("Map__String__nullableMap__String__Frub.Repr")
-		creation := func(t *testing.T, ns ipld.NodeStyle, fieldName string) schema.TypedNode {
-			return fluent.MustBuildMap(ns, 3, func(ma fluent.MapAssembler) {
+	genAndCompileAndTest(t, prefix, pkgName, ts, adjCfg, func(t *testing.T, getPrototypeByName func(string) ipld.NodePrototype) {
+		np := getPrototypeByName("Map__String__nullableMap__String__Frub")
+		nrp := getPrototypeByName("Map__String__nullableMap__String__Frub.Repr")
+		creation := func(t *testing.T, np ipld.NodePrototype, fieldName string) schema.TypedNode {
+			return fluent.MustBuildMap(np, 3, func(ma fluent.MapAssembler) {
 				ma.AssembleEntry("one").CreateMap(2, func(ma fluent.MapAssembler) {
 					ma.AssembleEntry("zot").CreateMap(1, func(ma fluent.MapAssembler) { ma.AssembleEntry(fieldName).AssignString("11") })
 					ma.AssembleEntry("zop").CreateMap(1, func(ma fluent.MapAssembler) { ma.AssembleEntry(fieldName).AssignString("12") })
@@ -192,7 +192,7 @@ func TestMapsContainingMaps(t *testing.T) {
 		}
 		var n schema.TypedNode
 		t.Run("typed-create", func(t *testing.T) {
-			n = creation(t, ns, "field")
+			n = creation(t, np, "field")
 			t.Run("typed-read", func(t *testing.T) {
 				reading(t, n, "field")
 			})
@@ -201,7 +201,7 @@ func TestMapsContainingMaps(t *testing.T) {
 			})
 		})
 		t.Run("repr-create", func(t *testing.T) {
-			nr := creation(t, nsr, "encoded")
+			nr := creation(t, nrp, "encoded")
 			Wish(t, n, ShouldEqual, nr)
 		})
 	})
@@ -226,12 +226,12 @@ func TestMapsWithComplexKeys(t *testing.T) {
 
 	prefix := "maps-cmplx-keys"
 	pkgName := "main"
-	genAndCompileAndTest(t, prefix, pkgName, ts, adjCfg, func(t *testing.T, getStyleByName func(string) ipld.NodeStyle) {
-		ns := getStyleByName("Map__StringyStruct__String")
-		nsr := getStyleByName("Map__StringyStruct__String.Repr")
+	genAndCompileAndTest(t, prefix, pkgName, ts, adjCfg, func(t *testing.T, getPrototypeByName func(string) ipld.NodePrototype) {
+		np := getPrototypeByName("Map__StringyStruct__String")
+		nrp := getPrototypeByName("Map__StringyStruct__String.Repr")
 		var n schema.TypedNode
 		t.Run("typed-create", func(t *testing.T) {
-			n = fluent.MustBuildMap(ns, 3, func(ma fluent.MapAssembler) {
+			n = fluent.MustBuildMap(np, 3, func(ma fluent.MapAssembler) {
 				ma.AssembleKey().CreateMap(2, func(ma fluent.MapAssembler) {
 					ma.AssembleEntry("foo").AssignString("a")
 					ma.AssembleEntry("bar").AssignString("b")
@@ -265,7 +265,7 @@ func TestMapsWithComplexKeys(t *testing.T) {
 			})
 		})
 		t.Run("repr-create", func(t *testing.T) {
-			nr := fluent.MustBuildMap(nsr, 3, func(ma fluent.MapAssembler) {
+			nr := fluent.MustBuildMap(nrp, 3, func(ma fluent.MapAssembler) {
 				ma.AssembleEntry("a:b").AssignString("1")
 				ma.AssembleEntry("c:d").AssignString("2")
 				ma.AssembleEntry("e:f").AssignString("3")

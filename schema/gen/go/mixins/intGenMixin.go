@@ -98,6 +98,6 @@ func (g IntAssemblerTraits) EmitNodeAssemblerMethodAssignBytes(w io.Writer) {
 func (g IntAssemblerTraits) EmitNodeAssemblerMethodAssignLink(w io.Writer) {
 	kindAssemblerTraitsGenerator{g.PkgName, g.TypeName, g.AppliedPrefix, ipld.ReprKind_Int}.emitNodeAssemblerMethodAssignLink(w)
 }
-func (g IntAssemblerTraits) EmitNodeAssemblerMethodStyle(w io.Writer) {
-	kindAssemblerTraitsGenerator{g.PkgName, g.TypeName, g.AppliedPrefix, ipld.ReprKind_Int}.emitNodeAssemblerMethodStyle(w)
+func (g IntAssemblerTraits) EmitNodeAssemblerMethodPrototype(w io.Writer) {
+	kindAssemblerTraitsGenerator{g.PkgName, g.TypeName, g.AppliedPrefix, ipld.ReprKind_Int}.emitNodeAssemblerMethodPrototype(w)
 }

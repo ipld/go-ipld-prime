@@ -158,13 +158,13 @@ func (Msg3) AsBytes() ([]byte, error) {
 func (Msg3) AsLink() (ipld.Link, error) {
 	return mixins.Map{"gendemo.Msg3"}.AsLink()
 }
-func (Msg3) Style() ipld.NodeStyle {
-	return _Msg3__Style{}
+func (Msg3) Prototype() ipld.NodePrototype {
+	return _Msg3__Prototype{}
 }
 
-type _Msg3__Style struct{}
+type _Msg3__Prototype struct{}
 
-func (_Msg3__Style) NewBuilder() ipld.NodeBuilder {
+func (_Msg3__Prototype) NewBuilder() ipld.NodeBuilder {
 	var nb _Msg3__Builder
 	nb.Reset()
 	return &nb
@@ -300,8 +300,8 @@ func (na *_Msg3__Assembler) AssignNode(v ipld.Node) error {
 	}
 	return na.Finish()
 }
-func (_Msg3__Assembler) Style() ipld.NodeStyle {
-	return _Msg3__Style{}
+func (_Msg3__Assembler) Prototype() ipld.NodePrototype {
+	return _Msg3__Prototype{}
 }
 func (ma *_Msg3__Assembler) valueFinishTidy() bool {
 	switch ma.f {
@@ -455,11 +455,11 @@ func (ma *_Msg3__Assembler) Finish() error {
 	*ma.m = schema.Maybe_Value
 	return nil
 }
-func (ma *_Msg3__Assembler) KeyStyle() ipld.NodeStyle {
-	return _String__Style{}
+func (ma *_Msg3__Assembler) KeyPrototype() ipld.NodePrototype {
+	return _String__Prototype{}
 }
-func (ma *_Msg3__Assembler) ValueStyle(k string) ipld.NodeStyle {
-	panic("todo structbuilder mapassembler valuestyle")
+func (ma *_Msg3__Assembler) ValuePrototype(k string) ipld.NodePrototype {
+	panic("todo structbuilder mapassembler valueprototype")
 }
 
 type _Msg3__KeyAssembler _Msg3__Assembler
@@ -526,8 +526,8 @@ func (ka *_Msg3__KeyAssembler) AssignNode(v ipld.Node) error {
 		return ka.AssignString(v2)
 	}
 }
-func (_Msg3__KeyAssembler) Style() ipld.NodeStyle {
-	return _String__Style{}
+func (_Msg3__KeyAssembler) Prototype() ipld.NodePrototype {
+	return _String__Prototype{}
 }
 func (Msg3) Type() schema.Type {
 	return nil /*TODO:typelit*/
@@ -636,13 +636,13 @@ func (_Msg3__Repr) AsBytes() ([]byte, error) {
 func (_Msg3__Repr) AsLink() (ipld.Link, error) {
 	return mixins.Map{"gendemo.Msg3.Repr"}.AsLink()
 }
-func (_Msg3__Repr) Style() ipld.NodeStyle {
-	return _Msg3__ReprStyle{}
+func (_Msg3__Repr) Prototype() ipld.NodePrototype {
+	return _Msg3__ReprPrototype{}
 }
 
-type _Msg3__ReprStyle struct{}
+type _Msg3__ReprPrototype struct{}
 
-func (_Msg3__ReprStyle) NewBuilder() ipld.NodeBuilder {
+func (_Msg3__ReprPrototype) NewBuilder() ipld.NodeBuilder {
 	var nb _Msg3__ReprBuilder
 	nb.Reset()
 	return &nb
@@ -770,8 +770,8 @@ func (na *_Msg3__ReprAssembler) AssignNode(v ipld.Node) error {
 	}
 	return na.Finish()
 }
-func (_Msg3__ReprAssembler) Style() ipld.NodeStyle {
-	return _Msg3__ReprStyle{}
+func (_Msg3__ReprAssembler) Prototype() ipld.NodePrototype {
+	return _Msg3__ReprPrototype{}
 }
 func (ma *_Msg3__ReprAssembler) valueFinishTidy() bool {
 	switch ma.f {
@@ -922,11 +922,11 @@ func (ma *_Msg3__ReprAssembler) Finish() error {
 	*ma.m = schema.Maybe_Value
 	return nil
 }
-func (ma *_Msg3__ReprAssembler) KeyStyle() ipld.NodeStyle {
-	return _String__Style{}
+func (ma *_Msg3__ReprAssembler) KeyPrototype() ipld.NodePrototype {
+	return _String__Prototype{}
 }
-func (ma *_Msg3__ReprAssembler) ValueStyle(k string) ipld.NodeStyle {
-	panic("todo structbuilder mapassembler repr valuestyle")
+func (ma *_Msg3__ReprAssembler) ValuePrototype(k string) ipld.NodePrototype {
+	panic("todo structbuilder mapassembler repr valueprototype")
 }
 
 type _Msg3__ReprKeyAssembler _Msg3__ReprAssembler
@@ -993,6 +993,6 @@ func (ka *_Msg3__ReprKeyAssembler) AssignNode(v ipld.Node) error {
 		return ka.AssignString(v2)
 	}
 }
-func (_Msg3__ReprKeyAssembler) Style() ipld.NodeStyle {
-	return _String__Style{}
+func (_Msg3__ReprKeyAssembler) Prototype() ipld.NodePrototype {
+	return _String__Prototype{}
 }

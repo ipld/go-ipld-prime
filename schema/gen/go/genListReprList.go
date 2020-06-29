@@ -126,12 +126,12 @@ func (g listReprListReprGenerator) EmitNodeMethodLength(w io.Writer) {
 	`, w, g.AdjCfg, g)
 }
 
-func (g listReprListReprGenerator) EmitNodeMethodStyle(w io.Writer) {
-	emitNodeMethodStyle_typical(w, g.AdjCfg, g)
+func (g listReprListReprGenerator) EmitNodeMethodPrototype(w io.Writer) {
+	emitNodeMethodPrototype_typical(w, g.AdjCfg, g)
 }
 
-func (g listReprListReprGenerator) EmitNodeStyleType(w io.Writer) {
-	emitNodeStyleType_typical(w, g.AdjCfg, g)
+func (g listReprListReprGenerator) EmitNodePrototypeType(w io.Writer) {
+	emitNodePrototypeType_typical(w, g.AdjCfg, g)
 }
 
 // --- NodeBuilder and NodeAssembler --->

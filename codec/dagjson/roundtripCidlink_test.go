@@ -31,7 +31,7 @@ func TestRoundtripCidlink(t *testing.T) {
 	)
 	Require(t, err, ShouldEqual, nil)
 
-	nb := basicnode.Style__Any{}.NewBuilder()
+	nb := basicnode.Prototype__Any{}.NewBuilder()
 	err = lnk.Load(context.Background(), ipld.LinkContext{}, nb,
 		func(lnk ipld.Link, _ ipld.LinkContext) (io.Reader, error) {
 			return bytes.NewBuffer(buf.Bytes()), nil
@@ -63,7 +63,7 @@ func TestUnmarshalTrickyMapContainingLink(t *testing.T) {
 	tricky := `{"/":{"/":"` + lnk.String() + `"}}`
 
 	// Unmarshal.  Hopefully we get a map with a link in it.
-	nb := basicnode.Style__Any{}.NewBuilder()
+	nb := basicnode.Prototype__Any{}.NewBuilder()
 	err = Decoder(nb, bytes.NewBufferString(tricky))
 	Require(t, err, ShouldEqual, nil)
 	n := nb.Build()

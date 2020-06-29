@@ -23,13 +23,13 @@ func TestListsContainingMaybe(t *testing.T) {
 	ts.Accumulate(schema.SpawnList("List__nullableString",
 		ts.TypeByName("String"), true))
 
-	test := func(t *testing.T, getStyleByName func(string) ipld.NodeStyle) {
+	test := func(t *testing.T, getPrototypeByName func(string) ipld.NodePrototype) {
 		t.Run("non-nullable", func(t *testing.T) {
-			ns := getStyleByName("List__String")
-			nsr := getStyleByName("List__String.Repr")
+			np := getPrototypeByName("List__String")
+			nrp := getPrototypeByName("List__String.Repr")
 			var n schema.TypedNode
 			t.Run("typed-create", func(t *testing.T) {
-				n = fluent.MustBuildList(ns, 2, func(la fluent.ListAssembler) {
+				n = fluent.MustBuildList(np, 2, func(la fluent.ListAssembler) {
 					la.AssembleValue().AssignString("1")
 					la.AssembleValue().AssignString("2")
 				}).(schema.TypedNode)
@@ -52,7 +52,7 @@ func TestListsContainingMaybe(t *testing.T) {
 				})
 			})
 			t.Run("repr-create", func(t *testing.T) {
-				nr := fluent.MustBuildList(nsr, 2, func(la fluent.ListAssembler) {
+				nr := fluent.MustBuildList(nrp, 2, func(la fluent.ListAssembler) {
 					la.AssembleValue().AssignString("1")
 					la.AssembleValue().AssignString("2")
 				})
@@ -60,11 +60,11 @@ func TestListsContainingMaybe(t *testing.T) {
 			})
 		})
 		t.Run("nullable", func(t *testing.T) {
-			ns := getStyleByName("List__nullableString")
-			nsr := getStyleByName("List__nullableString.Repr")
+			np := getPrototypeByName("List__nullableString")
+			nrp := getPrototypeByName("List__nullableString.Repr")
 			var n schema.TypedNode
 			t.Run("typed-create", func(t *testing.T) {
-				n = fluent.MustBuildList(ns, 2, func(la fluent.ListAssembler) {
+				n = fluent.MustBuildList(np, 2, func(la fluent.ListAssembler) {
 					la.AssembleValue().AssignString("1")
 					la.AssembleValue().AssignNull()
 				}).(schema.TypedNode)
@@ -87,7 +87,7 @@ func TestListsContainingMaybe(t *testing.T) {
 				})
 			})
 			t.Run("repr-create", func(t *testing.T) {
-				nr := fluent.MustBuildList(nsr, 2, func(la fluent.ListAssembler) {
+				nr := fluent.MustBuildList(nrp, 2, func(la fluent.ListAssembler) {
 					la.AssembleValue().AssignString("1")
 					la.AssembleValue().AssignNull()
 				})
@@ -101,8 +101,8 @@ func TestListsContainingMaybe(t *testing.T) {
 
 		prefix := "lists-embed"
 		pkgName := "main"
-		genAndCompileAndTest(t, prefix, pkgName, ts, adjCfg, func(t *testing.T, getStyleByName func(string) ipld.NodeStyle) {
-			test(t, getStyleByName)
+		genAndCompileAndTest(t, prefix, pkgName, ts, adjCfg, func(t *testing.T, getPrototypeByName func(string) ipld.NodePrototype) {
+			test(t, getPrototypeByName)
 		})
 	})
 	t.Run("maybe-using-ptr", func(t *testing.T) {
@@ -110,8 +110,8 @@ func TestListsContainingMaybe(t *testing.T) {
 
 		prefix := "lists-mptr"
 		pkgName := "main"
-		genAndCompileAndTest(t, prefix, pkgName, ts, adjCfg, func(t *testing.T, getStyleByName func(string) ipld.NodeStyle) {
-			test(t, getStyleByName)
+		genAndCompileAndTest(t, prefix, pkgName, ts, adjCfg, func(t *testing.T, getPrototypeByName func(string) ipld.NodePrototype) {
+			test(t, getPrototypeByName)
 		})
 	})
 }
@@ -142,12 +142,12 @@ func TestListsContainingLists(t *testing.T) {
 
 	prefix := "lists-of-lists"
 	pkgName := "main"
-	genAndCompileAndTest(t, prefix, pkgName, ts, adjCfg, func(t *testing.T, getStyleByName func(string) ipld.NodeStyle) {
-		ns := getStyleByName("List__List__Frub")
-		nsr := getStyleByName("List__List__Frub.Repr")
+	genAndCompileAndTest(t, prefix, pkgName, ts, adjCfg, func(t *testing.T, getPrototypeByName func(string) ipld.NodePrototype) {
+		np := getPrototypeByName("List__List__Frub")
+		nrp := getPrototypeByName("List__List__Frub.Repr")
 		var n schema.TypedNode
 		t.Run("typed-create", func(t *testing.T) {
-			n = fluent.MustBuildList(ns, 3, func(la fluent.ListAssembler) {
+			n = fluent.MustBuildList(np, 3, func(la fluent.ListAssembler) {
 				la.AssembleValue().CreateList(3, func(la fluent.ListAssembler) {
 					la.AssembleValue().CreateMap(1, func(ma fluent.MapAssembler) { ma.AssembleEntry("field").AssignString("11") })
 					la.AssembleValue().CreateMap(1, func(ma fluent.MapAssembler) { ma.AssembleEntry("field").AssignString("12") })
@@ -188,7 +188,7 @@ func TestListsContainingLists(t *testing.T) {
 			})
 		})
 		t.Run("repr-create", func(t *testing.T) {
-			nr := fluent.MustBuildList(nsr, 2, func(la fluent.ListAssembler) {
+			nr := fluent.MustBuildList(nrp, 2, func(la fluent.ListAssembler) {
 				// This is the same as the type-level create earlier, except note the field names are now all different.
 				la.AssembleValue().CreateList(3, func(la fluent.ListAssembler) {
 					la.AssembleValue().CreateMap(1, func(ma fluent.MapAssembler) { ma.AssembleEntry("encoded").AssignString("11") })

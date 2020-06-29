@@ -68,12 +68,12 @@ func (intReprIntReprGenerator) EmitNodeMethodAsFloat(io.Writer)         {}
 func (intReprIntReprGenerator) EmitNodeMethodAsString(io.Writer)        {}
 func (intReprIntReprGenerator) EmitNodeMethodAsBytes(io.Writer)         {}
 func (intReprIntReprGenerator) EmitNodeMethodAsLink(io.Writer)          {}
-func (intReprIntReprGenerator) EmitNodeMethodStyle(io.Writer)           {}
-func (g intReprIntReprGenerator) EmitNodeStyleType(w io.Writer) {
+func (intReprIntReprGenerator) EmitNodeMethodPrototype(io.Writer)       {}
+func (g intReprIntReprGenerator) EmitNodePrototypeType(w io.Writer) {
 	// Since this is a "natural" representation... there's just a type alias here.
 	//  No new functions are necessary.
 	doTemplate(`
-		type _{{ .Type | TypeSymbol }}__ReprStyle = _{{ .Type | TypeSymbol }}__Style
+		type _{{ .Type | TypeSymbol }}__ReprPrototype = _{{ .Type | TypeSymbol }}__Prototype
 	`, w, g.AdjCfg, g)
 }
 func (g intReprIntReprGenerator) GetNodeBuilderGenerator() NodeBuilderGenerator {
@@ -104,5 +104,5 @@ func (intReprIntReprBuilderGenerator) EmitNodeAssemblerMethodAssignString(io.Wri
 func (intReprIntReprBuilderGenerator) EmitNodeAssemblerMethodAssignBytes(io.Writer)  {}
 func (intReprIntReprBuilderGenerator) EmitNodeAssemblerMethodAssignLink(io.Writer)   {}
 func (intReprIntReprBuilderGenerator) EmitNodeAssemblerMethodAssignNode(io.Writer)   {}
-func (intReprIntReprBuilderGenerator) EmitNodeAssemblerMethodStyle(io.Writer)        {}
+func (intReprIntReprBuilderGenerator) EmitNodeAssemblerMethodPrototype(io.Writer)    {}
 func (intReprIntReprBuilderGenerator) EmitNodeAssemblerOtherBits(io.Writer)          {}

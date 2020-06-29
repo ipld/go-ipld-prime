@@ -20,7 +20,7 @@ import (
 var (
 	leafAlpha, leafAlphaLnk         = encode(basicnode.NewString("alpha"))
 	leafBeta, leafBetaLnk           = encode(basicnode.NewString("beta"))
-	middleMapNode, middleMapNodeLnk = encode(fluent.MustBuildMap(basicnode.Style__Map{}, 3, func(na fluent.MapAssembler) {
+	middleMapNode, middleMapNodeLnk = encode(fluent.MustBuildMap(basicnode.Prototype__Map{}, 3, func(na fluent.MapAssembler) {
 		na.AssembleEntry("foo").AssignBool(true)
 		na.AssembleEntry("bar").AssignBool(false)
 		na.AssembleEntry("nested").CreateMap(2, func(na fluent.MapAssembler) {
@@ -28,13 +28,13 @@ var (
 			na.AssembleEntry("nonlink").AssignString("zoo")
 		})
 	}))
-	middleListNode, middleListNodeLnk = encode(fluent.MustBuildList(basicnode.Style__List{}, 4, func(na fluent.ListAssembler) {
+	middleListNode, middleListNodeLnk = encode(fluent.MustBuildList(basicnode.Prototype__List{}, 4, func(na fluent.ListAssembler) {
 		na.AssembleValue().AssignLink(leafAlphaLnk)
 		na.AssembleValue().AssignLink(leafAlphaLnk)
 		na.AssembleValue().AssignLink(leafBetaLnk)
 		na.AssembleValue().AssignLink(leafAlphaLnk)
 	}))
-	rootNode, rootNodeLnk = encode(fluent.MustBuildMap(basicnode.Style__Map{}, 4, func(na fluent.MapAssembler) {
+	rootNode, rootNodeLnk = encode(fluent.MustBuildMap(basicnode.Prototype__Map{}, 4, func(na fluent.MapAssembler) {
 		na.AssembleEntry("plain").AssignString("olde string")
 		na.AssembleEntry("linkedString").AssignLink(leafAlphaLnk)
 		na.AssembleEntry("linkedMap").AssignLink(middleMapNodeLnk)
@@ -47,7 +47,7 @@ var (
 // all cases here use one already-loaded Node; no link-loading exercised.
 
 func TestWalkMatching(t *testing.T) {
-	ssb := builder.NewSelectorSpecBuilder(basicnode.Style__Any{})
+	ssb := builder.NewSelectorSpecBuilder(basicnode.Prototype__Any{})
 	t.Run("traverse selecting true should visit the root", func(t *testing.T) {
 		err := traversal.WalkMatching(basicnode.NewString("x"), selector.Matcher{}, func(prog traversal.Progress, n ipld.Node) error {
 			Wish(t, n, ShouldEqual, basicnode.NewString("x"))
@@ -124,8 +124,8 @@ func TestWalkMatching(t *testing.T) {
 				LinkLoader: func(lnk ipld.Link, _ ipld.LinkContext) (io.Reader, error) {
 					return bytes.NewBuffer(storage[lnk]), nil
 				},
-				LinkTargetNodeStyleChooser: func(_ ipld.Link, _ ipld.LinkContext) (ipld.NodeStyle, error) {
-					return basicnode.Style__Any{}, nil
+				LinkTargetNodePrototypeChooser: func(_ ipld.Link, _ ipld.LinkContext) (ipld.NodePrototype, error) {
+					return basicnode.Prototype__Any{}, nil
 				},
 			},
 		}.WalkMatching(middleMapNode, s, func(prog traversal.Progress, n ipld.Node) error {
@@ -140,7 +140,7 @@ func TestWalkMatching(t *testing.T) {
 				Wish(t, n, ShouldEqual, basicnode.NewBool(false))
 				Wish(t, prog.Path.String(), ShouldEqual, "bar")
 			case 3:
-				Wish(t, n, ShouldEqual, fluent.MustBuildMap(basicnode.Style__Map{}, 2, func(na fluent.MapAssembler) {
+				Wish(t, n, ShouldEqual, fluent.MustBuildMap(basicnode.Prototype__Map{}, 2, func(na fluent.MapAssembler) {
 					na.AssembleEntry("alink").AssignLink(leafAlphaLnk)
 					na.AssembleEntry("nonlink").AssignString("zoo")
 				}))
@@ -170,8 +170,8 @@ func TestWalkMatching(t *testing.T) {
 				LinkLoader: func(lnk ipld.Link, _ ipld.LinkContext) (io.Reader, error) {
 					return bytes.NewBuffer(storage[lnk]), nil
 				},
-				LinkTargetNodeStyleChooser: func(_ ipld.Link, _ ipld.LinkContext) (ipld.NodeStyle, error) {
-					return basicnode.Style__Any{}, nil
+				LinkTargetNodePrototypeChooser: func(_ ipld.Link, _ ipld.LinkContext) (ipld.NodePrototype, error) {
+					return basicnode.Prototype__Any{}, nil
 				},
 			},
 		}.WalkMatching(middleListNode, s, func(prog traversal.Progress, n ipld.Node) error {
@@ -215,8 +215,8 @@ func TestWalkMatching(t *testing.T) {
 				LinkLoader: func(lnk ipld.Link, _ ipld.LinkContext) (io.Reader, error) {
 					return bytes.NewBuffer(storage[lnk]), nil
 				},
-				LinkTargetNodeStyleChooser: func(_ ipld.Link, _ ipld.LinkContext) (ipld.NodeStyle, error) {
-					return basicnode.Style__Any{}, nil
+				LinkTargetNodePrototypeChooser: func(_ ipld.Link, _ ipld.LinkContext) (ipld.NodePrototype, error) {
+					return basicnode.Prototype__Any{}, nil
 				},
 			},
 		}.WalkMatching(rootNode, s, func(prog traversal.Progress, n ipld.Node) error {

@@ -150,7 +150,7 @@ func (e ErrIteratorOverread) Error() string {
 	return "iterator overread"
 }
 
-type ErrCannotBeNull struct{} // Review: arguably either ErrInvalidKindForNodeStyle.
+type ErrCannotBeNull struct{} // Review: arguably either ErrInvalidKindForNodePrototype.
 
 type ErrMissingRequiredField struct{}     // only possible for typed nodes -- specifically, struct types.
 type ErrListOverrun struct{}              // only possible for typed nodes -- specifically, struct types with list (aka tuple) representations.

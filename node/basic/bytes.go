@@ -7,7 +7,7 @@ import (
 
 var (
 	_ ipld.Node          = plainBytes(nil)
-	_ ipld.NodeStyle     = Style__Bytes{}
+	_ ipld.NodePrototype = Prototype__Bytes{}
 	_ ipld.NodeBuilder   = &plainBytes__Builder{}
 	_ ipld.NodeAssembler = &plainBytes__Assembler{}
 )
@@ -70,15 +70,15 @@ func (n plainBytes) AsBytes() ([]byte, error) {
 func (plainBytes) AsLink() (ipld.Link, error) {
 	return mixins.Bytes{"bytes"}.AsLink()
 }
-func (plainBytes) Style() ipld.NodeStyle {
-	return Style__Bytes{}
+func (plainBytes) Prototype() ipld.NodePrototype {
+	return Prototype__Bytes{}
 }
 
-// -- NodeStyle -->
+// -- NodePrototype -->
 
-type Style__Bytes struct{}
+type Prototype__Bytes struct{}
 
-func (Style__Bytes) NewBuilder() ipld.NodeBuilder {
+func (Prototype__Bytes) NewBuilder() ipld.NodeBuilder {
 	var w plainBytes
 	return &plainBytes__Builder{plainBytes__Assembler{w: &w}}
 }
@@ -139,6 +139,6 @@ func (na *plainBytes__Assembler) AssignNode(v ipld.Node) error {
 		return nil
 	}
 }
-func (plainBytes__Assembler) Style() ipld.NodeStyle {
-	return Style__Bytes{}
+func (plainBytes__Assembler) Prototype() ipld.NodePrototype {
+	return Prototype__Bytes{}
 }

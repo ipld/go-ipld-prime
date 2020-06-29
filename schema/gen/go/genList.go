@@ -150,12 +150,12 @@ func (g listGenerator) EmitNodeMethodLength(w io.Writer) {
 	`, w, g.AdjCfg, g)
 }
 
-func (g listGenerator) EmitNodeMethodStyle(w io.Writer) {
-	emitNodeMethodStyle_typical(w, g.AdjCfg, g)
+func (g listGenerator) EmitNodeMethodPrototype(w io.Writer) {
+	emitNodeMethodPrototype_typical(w, g.AdjCfg, g)
 }
 
-func (g listGenerator) EmitNodeStyleType(w io.Writer) {
-	emitNodeStyleType_typical(w, g.AdjCfg, g)
+func (g listGenerator) EmitNodePrototypeType(w io.Writer) {
+	emitNodePrototypeType_typical(w, g.AdjCfg, g)
 }
 
 // --- NodeBuilder and NodeAssembler --->

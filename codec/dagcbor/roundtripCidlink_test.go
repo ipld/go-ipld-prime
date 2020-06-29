@@ -30,7 +30,7 @@ func TestRoundtripCidlink(t *testing.T) {
 	)
 	Require(t, err, ShouldEqual, nil)
 
-	nb := basicnode.Style__Any{}.NewBuilder()
+	nb := basicnode.Prototype__Any{}.NewBuilder()
 	err = lnk.Load(context.Background(), ipld.LinkContext{}, nb,
 		func(lnk ipld.Link, _ ipld.LinkContext) (io.Reader, error) {
 			return bytes.NewBuffer(buf.Bytes()), nil

@@ -189,7 +189,7 @@ func emitNodeAssemblerHelper_mapoid_mapAssemblerMethods(w io.Writer, adjCfg *Adj
 	//
 	// REVIEW: there's a copy-by-value of k2 that's avoidable.  But it simplifies the error path.  Worth working on?
 	//
-	// REVIEW: processing the key via the reprStyle of the key even when we're at the type level if it's type kind isn't string is currently supported, but should it be?  or is that more confusing than valuable?
+	// REVIEW: processing the key via the reprPrototype of the key even when we're at the type level if it's type kind isn't string is currently supported, but should it be?  or is that more confusing than valuable?
 	//  Very possible that it shouldn't be supported: the full-on keyAssembler route won't accept this, so consistency with that might be best.
 	//  On the other hand, lookups by string *do* support this kind of processing (and it must, or PathSegment utility becomes unacceptably damaged), so either way, something feels surprising.
 	//
@@ -218,11 +218,11 @@ func emitNodeAssemblerHelper_mapoid_mapAssemblerMethods(w io.Writer, adjCfg *Adj
 
 			var k2 _{{ .Type.KeyType | TypeSymbol }}
 			{{- if or (not (eq .Type.KeyType.Kind.String "String")) .IsRepr }}
-			if err := (_{{ .Type.KeyType | TypeSymbol }}__ReprStyle{}).fromString(&k2, k); err != nil {
+			if err := (_{{ .Type.KeyType | TypeSymbol }}__ReprPrototype{}).fromString(&k2, k); err != nil {
 				return nil, err // TODO wrap in some kind of ErrInvalidKey
 			}
 			{{- else}}
-			if err := (_{{ .Type.KeyType | TypeSymbol }}__Style{}).fromString(&k2, k); err != nil {
+			if err := (_{{ .Type.KeyType | TypeSymbol }}__Prototype{}).fromString(&k2, k); err != nil {
 				return nil, err // TODO wrap in some kind of ErrInvalidKey
 			}
 			{{- end}}
@@ -312,11 +312,11 @@ func emitNodeAssemblerHelper_mapoid_mapAssemblerMethods(w io.Writer, adjCfg *Adj
 		}
 	`, w, adjCfg, data)
 	doTemplate(`
-		func (ma *_{{ .Type | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Assembler) KeyStyle() ipld.NodeStyle {
-			return _{{ .Type.KeyType | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Style{}
+		func (ma *_{{ .Type | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Assembler) KeyPrototype() ipld.NodePrototype {
+			return _{{ .Type.KeyType | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Prototype{}
 		}
-		func (ma *_{{ .Type | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Assembler) ValueStyle(_ string) ipld.NodeStyle {
-			return _{{ .Type.ValueType | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Style{}
+		func (ma *_{{ .Type | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Assembler) ValuePrototype(_ string) ipld.NodePrototype {
+			return _{{ .Type.ValueType | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Prototype{}
 		}
 	`, w, adjCfg, data)
 }

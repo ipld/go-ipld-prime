@@ -120,11 +120,11 @@ func (g mapReprMapReprGenerator) EmitNodeMethodLength(w io.Writer) {
 		}
 	`, w, g.AdjCfg, g)
 }
-func (g mapReprMapReprGenerator) EmitNodeMethodStyle(w io.Writer) {
-	emitNodeMethodStyle_typical(w, g.AdjCfg, g)
+func (g mapReprMapReprGenerator) EmitNodeMethodPrototype(w io.Writer) {
+	emitNodeMethodPrototype_typical(w, g.AdjCfg, g)
 }
-func (g mapReprMapReprGenerator) EmitNodeStyleType(w io.Writer) {
-	emitNodeStyleType_typical(w, g.AdjCfg, g)
+func (g mapReprMapReprGenerator) EmitNodePrototypeType(w io.Writer) {
+	emitNodePrototypeType_typical(w, g.AdjCfg, g)
 }
 
 // --- NodeBuilder and NodeAssembler --->

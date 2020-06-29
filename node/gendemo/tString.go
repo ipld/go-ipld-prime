@@ -14,11 +14,11 @@ type String = *_String
 func (n String) String() string {
 	return n.x
 }
-func (_String__Style) fromString(w *_String, v string) error {
+func (_String__Prototype) fromString(w *_String, v string) error {
 	*w = _String{v}
 	return nil
 }
-func (_String__Style) FromString(v string) (String, error) {
+func (_String__Prototype) FromString(v string) (String, error) {
 	n := _String{v}
 	return &n, nil
 }
@@ -108,13 +108,13 @@ func (String) AsBytes() ([]byte, error) {
 func (String) AsLink() (ipld.Link, error) {
 	return mixins.String{"gendemo.String"}.AsLink()
 }
-func (String) Style() ipld.NodeStyle {
-	return _String__Style{}
+func (String) Prototype() ipld.NodePrototype {
+	return _String__Prototype{}
 }
 
-type _String__Style struct{}
+type _String__Prototype struct{}
 
-func (_String__Style) NewBuilder() ipld.NodeBuilder {
+func (_String__Prototype) NewBuilder() ipld.NodeBuilder {
 	var nb _String__Builder
 	nb.Reset()
 	return &nb
@@ -211,8 +211,8 @@ func (na *_String__Assembler) AssignNode(v ipld.Node) error {
 		return na.AssignString(v2)
 	}
 }
-func (_String__Assembler) Style() ipld.NodeStyle {
-	return _String__Style{}
+func (_String__Assembler) Prototype() ipld.NodePrototype {
+	return _String__Prototype{}
 }
 func (String) Type() schema.Type {
 	return nil /*TODO:typelit*/
@@ -225,5 +225,5 @@ type _String__Repr = _String
 
 var _ ipld.Node = &_String__Repr{}
 
-type _String__ReprStyle = _String__Style
+type _String__ReprPrototype = _String__Prototype
 type _String__ReprAssembler = _String__Assembler

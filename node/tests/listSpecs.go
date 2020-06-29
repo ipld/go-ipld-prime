@@ -10,9 +10,9 @@ import (
 	"github.com/ipld/go-ipld-prime/must"
 )
 
-func SpecTestListString(t *testing.T, ns ipld.NodeStyle) {
+func SpecTestListString(t *testing.T, np ipld.NodePrototype) {
 	t.Run("list<string>, 3 entries", func(t *testing.T) {
-		n := fluent.MustBuildList(ns, 3, func(la fluent.ListAssembler) {
+		n := fluent.MustBuildList(np, 3, func(la fluent.ListAssembler) {
 			la.AssembleValue().AssignString("one")
 			la.AssembleValue().AssignString("two")
 			la.AssembleValue().AssignString("three")

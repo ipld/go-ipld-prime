@@ -13,7 +13,7 @@ import (
 
 func TestBuild(t *testing.T) {
 	t.Run("scalar build should work", func(t *testing.T) {
-		n := fluent.MustBuild(basicnode.Style__String{}, func(fna fluent.NodeAssembler) {
+		n := fluent.MustBuild(basicnode.Prototype__String{}, func(fna fluent.NodeAssembler) {
 			fna.AssignString("fine")
 		})
 		Wish(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_String)
@@ -22,7 +22,7 @@ func TestBuild(t *testing.T) {
 		Wish(t, v2, ShouldEqual, "fine")
 	})
 	t.Run("map build should work", func(t *testing.T) {
-		n := fluent.MustBuild(basicnode.Style__Map{}, func(fna fluent.NodeAssembler) {
+		n := fluent.MustBuild(basicnode.Prototype__Map{}, func(fna fluent.NodeAssembler) {
 			fna.CreateMap(3, func(fma fluent.MapAssembler) {
 				fma.AssembleEntry("k1").AssignString("fine")
 				fma.AssembleEntry("k2").AssignString("super")
@@ -44,7 +44,7 @@ func TestBuild(t *testing.T) {
 		Wish(t, must.String(must.Node(n.LookupByString("k33"))), ShouldEqual, "asking")
 	})
 	t.Run("list build should work", func(t *testing.T) {
-		n := fluent.MustBuild(basicnode.Style__List{}, func(fna fluent.NodeAssembler) {
+		n := fluent.MustBuild(basicnode.Prototype__List{}, func(fna fluent.NodeAssembler) {
 			fna.CreateList(1, func(fla fluent.ListAssembler) {
 				fla.AssembleValue().CreateList(1, func(fla fluent.ListAssembler) {
 					fla.AssembleValue().CreateList(1, func(fla fluent.ListAssembler) {

@@ -28,13 +28,13 @@ func runBehavioralTests(t *testing.T, prefix string, testsFn behavioralTests) {
 	if err != nil {
 		panic(err) // Panic because if this was going to flunk, we expected it to flunk earlier when we ran 'go build'.
 	}
-	sym, err := plg.Lookup("GetStyleByName")
+	sym, err := plg.Lookup("GetPrototypeByName")
 	if err != nil {
 		panic(err)
 	}
-	getStyleByName := sym.(func(string) ipld.NodeStyle)
+	getPrototypeByName := sym.(func(string) ipld.NodePrototype)
 
 	t.Run("bhvtest", func(t *testing.T) {
-		testsFn(t, getStyleByName)
+		testsFn(t, getPrototypeByName)
 	})
 }
