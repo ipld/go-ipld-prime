@@ -14,11 +14,11 @@ type String = *_String
 func (n String) String() string {
 	return n.x
 }
-func (_String__Style) fromString(w *_String, v string) error {
+func (_String__Prototype) fromString(w *_String, v string) error {
 	*w = _String{v}
 	return nil
 }
-func (_String__Style) FromString(v string) (String, error) {
+func (_String__Prototype) FromString(v string) (String, error) {
 	n := _String{v}
 	return &n, nil
 }
@@ -32,7 +32,7 @@ type MaybeString = *_String__Maybe
 func (m MaybeString) IsNull() bool {
 	return m.m == schema.Maybe_Null
 }
-func (m MaybeString) IsUndefined() bool {
+func (m MaybeString) IsAbsent() bool {
 	return m.m == schema.Maybe_Absent
 }
 func (m MaybeString) Exists() bool {
@@ -41,7 +41,7 @@ func (m MaybeString) Exists() bool {
 func (m MaybeString) AsNode() ipld.Node {
 	switch m.m {
 	case schema.Maybe_Absent:
-		return ipld.Undef
+		return ipld.Absent
 	case schema.Maybe_Null:
 		return ipld.Null
 	case schema.Maybe_Value:
@@ -63,17 +63,17 @@ var _ schema.TypedNode = (String)(&_String{})
 func (String) ReprKind() ipld.ReprKind {
 	return ipld.ReprKind_String
 }
-func (String) LookupString(string) (ipld.Node, error) {
-	return mixins.String{"gendemo.String"}.LookupString("")
+func (String) LookupByString(string) (ipld.Node, error) {
+	return mixins.String{"gendemo.String"}.LookupByString("")
 }
-func (String) Lookup(ipld.Node) (ipld.Node, error) {
-	return mixins.String{"gendemo.String"}.Lookup(nil)
+func (String) LookupByNode(ipld.Node) (ipld.Node, error) {
+	return mixins.String{"gendemo.String"}.LookupByNode(nil)
 }
-func (String) LookupIndex(idx int) (ipld.Node, error) {
-	return mixins.String{"gendemo.String"}.LookupIndex(0)
+func (String) LookupByIndex(idx int) (ipld.Node, error) {
+	return mixins.String{"gendemo.String"}.LookupByIndex(0)
 }
-func (String) LookupSegment(seg ipld.PathSegment) (ipld.Node, error) {
-	return mixins.String{"gendemo.String"}.LookupSegment(seg)
+func (String) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
+	return mixins.String{"gendemo.String"}.LookupBySegment(seg)
 }
 func (String) MapIterator() ipld.MapIterator {
 	return nil
@@ -84,7 +84,7 @@ func (String) ListIterator() ipld.ListIterator {
 func (String) Length() int {
 	return -1
 }
-func (String) IsUndefined() bool {
+func (String) IsAbsent() bool {
 	return false
 }
 func (String) IsNull() bool {
@@ -108,13 +108,13 @@ func (String) AsBytes() ([]byte, error) {
 func (String) AsLink() (ipld.Link, error) {
 	return mixins.String{"gendemo.String"}.AsLink()
 }
-func (String) Style() ipld.NodeStyle {
-	return _String__Style{}
+func (String) Prototype() ipld.NodePrototype {
+	return _String__Prototype{}
 }
 
-type _String__Style struct{}
+type _String__Prototype struct{}
 
-func (_String__Style) NewBuilder() ipld.NodeBuilder {
+func (_String__Prototype) NewBuilder() ipld.NodeBuilder {
 	var nb _String__Builder
 	nb.Reset()
 	return &nb
@@ -211,8 +211,8 @@ func (na *_String__Assembler) AssignNode(v ipld.Node) error {
 		return na.AssignString(v2)
 	}
 }
-func (_String__Assembler) Style() ipld.NodeStyle {
-	return _String__Style{}
+func (_String__Assembler) Prototype() ipld.NodePrototype {
+	return _String__Prototype{}
 }
 func (String) Type() schema.Type {
 	return nil /*TODO:typelit*/
@@ -225,5 +225,5 @@ type _String__Repr = _String
 
 var _ ipld.Node = &_String__Repr{}
 
-type _String__ReprStyle = _String__Style
+type _String__ReprPrototype = _String__Prototype
 type _String__ReprAssembler = _String__Assembler

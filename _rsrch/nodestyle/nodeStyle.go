@@ -9,11 +9,11 @@ type ReprKind uint8
 
 type Node interface {
 	ReprKind() ReprKind
-	LookupString(key string) (Node, error)
-	Lookup(key Node) (Node, error)
-	LookupIndex(idx int) (Node, error)
+	LookupByString(key string) (Node, error)
+	LookupByNode(key Node) (Node, error)
+	LookupByIndex(idx int) (Node, error)
 	Length() int
-	IsUndefined() bool
+	IsAbsent() bool
 	IsNull() bool
 	AsBool() (bool, error)
 	AsInt() (int, error)

@@ -22,17 +22,17 @@ func (g FloatTraits) EmitNodeMethodReprKind(w io.Writer) {
 		}
 	`, w, g)
 }
-func (g FloatTraits) EmitNodeMethodLookupString(w io.Writer) {
-	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Float}.emitNodeMethodLookupString(w)
+func (g FloatTraits) EmitNodeMethodLookupByString(w io.Writer) {
+	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Float}.emitNodeMethodLookupByString(w)
 }
-func (g FloatTraits) EmitNodeMethodLookup(w io.Writer) {
-	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Float}.emitNodeMethodLookup(w)
+func (g FloatTraits) EmitNodeMethodLookupByNode(w io.Writer) {
+	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Float}.emitNodeMethodLookupByNode(w)
 }
-func (g FloatTraits) EmitNodeMethodLookupIndex(w io.Writer) {
-	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Float}.emitNodeMethodLookupIndex(w)
+func (g FloatTraits) EmitNodeMethodLookupByIndex(w io.Writer) {
+	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Float}.emitNodeMethodLookupByIndex(w)
 }
-func (g FloatTraits) EmitNodeMethodLookupSegment(w io.Writer) {
-	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Float}.emitNodeMethodLookupSegment(w)
+func (g FloatTraits) EmitNodeMethodLookupBySegment(w io.Writer) {
+	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Float}.emitNodeMethodLookupBySegment(w)
 }
 func (g FloatTraits) EmitNodeMethodMapIterator(w io.Writer) {
 	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Float}.emitNodeMethodMapIterator(w)
@@ -43,8 +43,8 @@ func (g FloatTraits) EmitNodeMethodListIterator(w io.Writer) {
 func (g FloatTraits) EmitNodeMethodLength(w io.Writer) {
 	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Float}.emitNodeMethodLength(w)
 }
-func (g FloatTraits) EmitNodeMethodIsUndefined(w io.Writer) {
-	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Float}.emitNodeMethodIsUndefined(w)
+func (g FloatTraits) EmitNodeMethodIsAbsent(w io.Writer) {
+	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Float}.emitNodeMethodIsAbsent(w)
 }
 func (g FloatTraits) EmitNodeMethodIsNull(w io.Writer) {
 	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Float}.emitNodeMethodIsNull(w)
@@ -98,6 +98,6 @@ func (g FloatAssemblerTraits) EmitNodeAssemblerMethodAssignBytes(w io.Writer) {
 func (g FloatAssemblerTraits) EmitNodeAssemblerMethodAssignLink(w io.Writer) {
 	kindAssemblerTraitsGenerator{g.PkgName, g.TypeName, g.AppliedPrefix, ipld.ReprKind_Float}.emitNodeAssemblerMethodAssignLink(w)
 }
-func (g FloatAssemblerTraits) EmitNodeAssemblerMethodStyle(w io.Writer) {
-	kindAssemblerTraitsGenerator{g.PkgName, g.TypeName, g.AppliedPrefix, ipld.ReprKind_Float}.emitNodeAssemblerMethodStyle(w)
+func (g FloatAssemblerTraits) EmitNodeAssemblerMethodPrototype(w io.Writer) {
+	kindAssemblerTraitsGenerator{g.PkgName, g.TypeName, g.AppliedPrefix, ipld.ReprKind_Float}.emitNodeAssemblerMethodPrototype(w)
 }

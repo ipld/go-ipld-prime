@@ -28,7 +28,7 @@ func emitNativeMaybe(w io.Writer, adjCfg *AdjunctCfg, data interface{}) {
 		func (m Maybe{{ .Type | TypeSymbol }}) IsNull() bool {
 			return m.m == schema.Maybe_Null
 		}
-		func (m Maybe{{ .Type | TypeSymbol }}) IsUndefined() bool {
+		func (m Maybe{{ .Type | TypeSymbol }}) IsAbsent() bool {
 			return m.m == schema.Maybe_Absent
 		}
 		func (m Maybe{{ .Type | TypeSymbol }}) Exists() bool {
@@ -37,7 +37,7 @@ func emitNativeMaybe(w io.Writer, adjCfg *AdjunctCfg, data interface{}) {
 		func (m Maybe{{ .Type | TypeSymbol }}) AsNode() ipld.Node {
 			switch m.m {
 				case schema.Maybe_Absent:
-					return ipld.Undef
+					return ipld.Absent
 				case schema.Maybe_Null:
 					return ipld.Null
 				case schema.Maybe_Value:
@@ -79,11 +79,11 @@ func emitNativeAccessors_scalar(w io.Writer, adjCfg *AdjunctCfg, data interface{
 func emitNativeBuilder_scalar(w io.Writer, adjCfg *AdjunctCfg, data interface{}) {
 	// Generate a single-step construction function -- this is easy to do for a scalar,
 	//  and all representations of scalar kind can be expected to have a method like this.
-	// The function is attached to the nodestyle for convenient namespacing;
+	// The function is attached to the NodePrototype for convenient namespacing;
 	//  it needs no new memory, so it would be inappropriate to attach to the builder or assembler.
 	// FUTURE: should engage validation flow.
 	doTemplate(`
-		func (_{{ .Type | TypeSymbol }}__Style) From{{ .ReprKind.String | title }}(v {{ .ReprKind | KindPrim }}) ({{ .Type | TypeSymbol }}, error) {
+		func (_{{ .Type | TypeSymbol }}__Prototype) From{{ .ReprKind.String | title }}(v {{ .ReprKind | KindPrim }}) ({{ .Type | TypeSymbol }}, error) {
 			n := _{{ .Type | TypeSymbol }}{v}
 			return &n, nil
 		}
@@ -105,21 +105,21 @@ func emitNodeMethodAsKind_scalar(w io.Writer, adjCfg *AdjunctCfg, data interface
 	`, w, adjCfg, data)
 }
 
-func emitNodeMethodStyle_typical(w io.Writer, adjCfg *AdjunctCfg, data interface{}) {
+func emitNodeMethodPrototype_typical(w io.Writer, adjCfg *AdjunctCfg, data interface{}) {
 	doTemplate(`
-		func ({{ if .IsRepr }}_{{end}}{{ .Type | TypeSymbol }}{{ if .IsRepr }}__Repr{{end}}) Style() ipld.NodeStyle {
-			return _{{ .Type | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Style{}
+		func ({{ if .IsRepr }}_{{end}}{{ .Type | TypeSymbol }}{{ if .IsRepr }}__Repr{{end}}) Prototype() ipld.NodePrototype {
+			return _{{ .Type | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Prototype{}
 		}
 	`, w, adjCfg, data)
 }
 
-// nodeStyle doesn't really vary textually at all between types and kinds
+// nodePrototype doesn't really vary textually at all between types and kinds
 // because it's just builders and standard resets.
-func emitNodeStyleType_typical(w io.Writer, adjCfg *AdjunctCfg, data interface{}) {
+func emitNodePrototypeType_typical(w io.Writer, adjCfg *AdjunctCfg, data interface{}) {
 	doTemplate(`
-		type _{{ .Type | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Style struct{}
+		type _{{ .Type | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Prototype struct{}
 
-		func (_{{ .Type | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Style) NewBuilder() ipld.NodeBuilder {
+		func (_{{ .Type | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Prototype) NewBuilder() ipld.NodeBuilder {
 			var nb _{{ .Type | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Builder
 			nb.Reset()
 			return &nb

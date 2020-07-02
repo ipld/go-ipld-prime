@@ -20,10 +20,10 @@ func TestString(t *testing.T) {
 
 	prefix := "justString"
 	pkgName := "main" // has to be 'main' for plugins to work.  this stricture makes little sense to me, but i didn't write the rules.
-	genAndCompileAndTest(t, prefix, pkgName, ts, adjCfg, func(t *testing.T, getStyleByName func(string) ipld.NodeStyle) {
-		ns := getStyleByName("String")
+	genAndCompileAndTest(t, prefix, pkgName, ts, adjCfg, func(t *testing.T, getPrototypeByName func(string) ipld.NodePrototype) {
+		np := getPrototypeByName("String")
 		t.Run("create string", func(t *testing.T) {
-			nb := ns.NewBuilder()
+			nb := np.NewBuilder()
 			Wish(t, nb.AssignString("woiu"), ShouldEqual, nil)
 			n := nb.Build().(schema.TypedNode)
 			t.Run("read string", func(t *testing.T) {
@@ -36,7 +36,7 @@ func TestString(t *testing.T) {
 			})
 		})
 		t.Run("create null is rejected", func(t *testing.T) {
-			nb := ns.NewBuilder()
+			nb := np.NewBuilder()
 			Wish(t, nb.AssignNull(), ShouldBeSameTypeAs, ipld.ErrWrongKind{})
 		})
 	})

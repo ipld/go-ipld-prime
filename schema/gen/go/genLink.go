@@ -65,11 +65,11 @@ func (g linkGenerator) EmitNodeTypeAssertions(w io.Writer) {
 func (g linkGenerator) EmitNodeMethodAsLink(w io.Writer) {
 	emitNodeMethodAsKind_scalar(w, g.AdjCfg, g)
 }
-func (g linkGenerator) EmitNodeMethodStyle(w io.Writer) {
-	emitNodeMethodStyle_typical(w, g.AdjCfg, g)
+func (g linkGenerator) EmitNodeMethodPrototype(w io.Writer) {
+	emitNodeMethodPrototype_typical(w, g.AdjCfg, g)
 }
-func (g linkGenerator) EmitNodeStyleType(w io.Writer) {
-	emitNodeStyleType_typical(w, g.AdjCfg, g)
+func (g linkGenerator) EmitNodePrototypeType(w io.Writer) {
+	emitNodePrototypeType_typical(w, g.AdjCfg, g)
 }
 
 // --- NodeBuilder and NodeAssembler --->

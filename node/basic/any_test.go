@@ -7,13 +7,13 @@ import (
 )
 
 func TestAnyBeingString(t *testing.T) {
-	tests.SpecTestString(t, Style__Any{})
+	tests.SpecTestString(t, Prototype__Any{})
 }
 
 func TestAnyBeingMapStrInt(t *testing.T) {
-	tests.SpecTestMapStrInt(t, Style__Any{})
+	tests.SpecTestMapStrInt(t, Prototype__Any{})
 }
 
 func TestAnyBeingMapStrMapStrInt(t *testing.T) {
-	tests.SpecTestMapStrMapStrInt(t, Style__Any{})
+	tests.SpecTestMapStrMapStrInt(t, Prototype__Any{})
 }

@@ -99,21 +99,21 @@ func (g structReprStringjoinReprGenerator) EmitNodeMethodAsString(w io.Writer) {
 	`, w, g.AdjCfg, g)
 }
 
-func (g structReprStringjoinReprGenerator) EmitNodeMethodStyle(w io.Writer) {
+func (g structReprStringjoinReprGenerator) EmitNodeMethodPrototype(w io.Writer) {
 	// REVIEW: this appears to be standard even across kinds; can we extract it?
 	doTemplate(`
-		func (_{{ .Type | TypeSymbol }}__Repr) Style() ipld.NodeStyle {
-			return _{{ .Type | TypeSymbol }}__ReprStyle{}
+		func (_{{ .Type | TypeSymbol }}__Repr) Prototype() ipld.NodePrototype {
+			return _{{ .Type | TypeSymbol }}__ReprPrototype{}
 		}
 	`, w, g.AdjCfg, g)
 }
 
-func (g structReprStringjoinReprGenerator) EmitNodeStyleType(w io.Writer) {
+func (g structReprStringjoinReprGenerator) EmitNodePrototypeType(w io.Writer) {
 	// REVIEW: this appears to be standard even across kinds; can we extract it?
 	doTemplate(`
-		type _{{ .Type | TypeSymbol }}__ReprStyle struct{}
+		type _{{ .Type | TypeSymbol }}__ReprPrototype struct{}
 
-		func (_{{ .Type | TypeSymbol }}__ReprStyle) NewBuilder() ipld.NodeBuilder {
+		func (_{{ .Type | TypeSymbol }}__ReprPrototype) NewBuilder() ipld.NodeBuilder {
 			var nb _{{ .Type | TypeSymbol }}__ReprBuilder
 			nb.Reset()
 			return &nb
@@ -153,23 +153,23 @@ func (g structReprStringjoinReprBuilderGenerator) EmitNodeBuilderMethods(w io.Wr
 
 	// Generate a single-step construction function -- this is easy to do for a scalar,
 	//  and all representations of scalar kind can be expected to have a method like this.
-	// The function is attached to the nodestyle for convenient namespacing;
+	// The function is attached to the NodePrototype for convenient namespacing;
 	//  it needs no new memory, so it would be inappropriate to attach to the builder or assembler.
 	// The function is directly used internally by anything else that might involve recursive destructuring on the same scalar kind
 	//  (for example, structs using stringjoin strategies that have one of this type as a field, etc).
 	// Since we're a representation of scalar kind, and can recurse,
 	//  we ourselves presume this plain construction method must also exist for all our members.
-	// REVIEW: We could make an immut-safe verion of this and export it on the NodeStyle too, as `FromString(string)`.
+	// REVIEW: We could make an immut-safe verion of this and export it on the NodePrototype too, as `FromString(string)`.
 	// FUTURE: should engage validation flow.
 	doTemplate(`
-		func (_{{ .Type | TypeSymbol }}__ReprStyle) fromString(w *_{{ .Type | TypeSymbol }}, v string) error {
+		func (_{{ .Type | TypeSymbol }}__ReprPrototype) fromString(w *_{{ .Type | TypeSymbol }}, v string) error {
 			ss, err := mixins.SplitExact(v, "{{ .Type.RepresentationStrategy.GetDelim }}", {{ len .Type.Fields }})
 			if err != nil {
 				return ipld.ErrUnmatchable{TypeName:"{{ .PkgName }}.{{ .Type.Name }}.Repr", Reason: err}
 			}
 			{{- $dot := . -}} {{- /* ranging modifies dot, unhelpfully */ -}}
 			{{- range $i, $field := .Type.Fields }}
-			if err := (_{{ $field.Type | TypeSymbol }}__ReprStyle{}).fromString(&w.{{ $field | FieldSymbolLower }}, ss[{{ $i }}]); err != nil {
+			if err := (_{{ $field.Type | TypeSymbol }}__ReprPrototype{}).fromString(&w.{{ $field | FieldSymbolLower }}, ss[{{ $i }}]); err != nil {
 				return ipld.ErrUnmatchable{TypeName:"{{ $dot.PkgName }}.{{ $dot.Type.Name }}.Repr", Reason: err}
 			}
 			{{- end}}
@@ -205,7 +205,7 @@ func (g structReprStringjoinReprBuilderGenerator) EmitNodeAssemblerMethodAssignS
 				na.w = &_{{ .Type | TypeSymbol }}{}
 			}
 			{{- end}}
-			if err := (_{{ .Type | TypeSymbol }}__ReprStyle{}).fromString(na.w, v); err != nil {
+			if err := (_{{ .Type | TypeSymbol }}__ReprPrototype{}).fromString(na.w, v); err != nil {
 				return err
 			}
 			*na.m = schema.Maybe_Value

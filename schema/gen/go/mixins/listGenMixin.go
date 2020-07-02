@@ -22,25 +22,25 @@ func (g ListTraits) EmitNodeMethodReprKind(w io.Writer) {
 		}
 	`, w, g)
 }
-func (g ListTraits) EmitNodeMethodLookupString(w io.Writer) {
-	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_List}.emitNodeMethodLookupString(w)
+func (g ListTraits) EmitNodeMethodLookupByString(w io.Writer) {
+	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_List}.emitNodeMethodLookupByString(w)
 }
-func (g ListTraits) EmitNodeMethodLookupSegment(w io.Writer) {
+func (g ListTraits) EmitNodeMethodLookupBySegment(w io.Writer) {
 	doTemplate(`
-		func (n {{ .TypeSymbol }}) LookupSegment(seg ipld.PathSegment) (ipld.Node, error) {
+		func (n {{ .TypeSymbol }}) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 			i, err := seg.Index()
 			if err != nil {
 				return nil, ipld.ErrInvalidSegmentForList{TypeName: "{{ .PkgName }}.{{ .TypeName }}", TroubleSegment: seg, Reason: err}
 			}
-			return n.LookupIndex(i)
+			return n.LookupByIndex(i)
 		}
 	`, w, g)
 }
 func (g ListTraits) EmitNodeMethodMapIterator(w io.Writer) {
 	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_List}.emitNodeMethodMapIterator(w)
 }
-func (g ListTraits) EmitNodeMethodIsUndefined(w io.Writer) {
-	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_List}.emitNodeMethodIsUndefined(w)
+func (g ListTraits) EmitNodeMethodIsAbsent(w io.Writer) {
+	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_List}.emitNodeMethodIsAbsent(w)
 }
 func (g ListTraits) EmitNodeMethodIsNull(w io.Writer) {
 	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_List}.emitNodeMethodIsNull(w)
@@ -97,6 +97,6 @@ func (g ListAssemblerTraits) EmitNodeAssemblerMethodAssignBytes(w io.Writer) {
 func (g ListAssemblerTraits) EmitNodeAssemblerMethodAssignLink(w io.Writer) {
 	kindAssemblerTraitsGenerator{g.PkgName, g.TypeName, g.AppliedPrefix, ipld.ReprKind_List}.emitNodeAssemblerMethodAssignLink(w)
 }
-func (g ListAssemblerTraits) EmitNodeAssemblerMethodStyle(w io.Writer) {
-	kindAssemblerTraitsGenerator{g.PkgName, g.TypeName, g.AppliedPrefix, ipld.ReprKind_List}.emitNodeAssemblerMethodStyle(w)
+func (g ListAssemblerTraits) EmitNodeAssemblerMethodPrototype(w io.Writer) {
+	kindAssemblerTraitsGenerator{g.PkgName, g.TypeName, g.AppliedPrefix, ipld.ReprKind_List}.emitNodeAssemblerMethodPrototype(w)
 }

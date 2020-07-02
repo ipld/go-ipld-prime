@@ -78,16 +78,16 @@ func (g structReprMapReprGenerator) EmitNodeTypeAssertions(w io.Writer) {
 	`, w, g.AdjCfg, g)
 }
 
-func (g structReprMapReprGenerator) EmitNodeMethodLookupString(w io.Writer) {
-	// Similar to the type-level method, except any undef fields also return ErrNotExists.
+func (g structReprMapReprGenerator) EmitNodeMethodLookupByString(w io.Writer) {
+	// Similar to the type-level method, except any absent fields also return ErrNotExists.
 	doTemplate(`
-		func (n *_{{ .Type | TypeSymbol }}__Repr) LookupString(key string) (ipld.Node, error) {
+		func (n *_{{ .Type | TypeSymbol }}__Repr) LookupByString(key string) (ipld.Node, error) {
 			switch key {
 			{{- range $field := .Type.Fields }}
 			case "{{ $field | $field.Parent.RepresentationStrategy.GetFieldKey }}":
 				{{- if $field.IsOptional }}
 				if n.{{ $field | FieldSymbolLower }}.m == schema.Maybe_Absent {
-					return ipld.Undef, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+					return ipld.Absent, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
 				}
 				{{- end}}
 				{{- if $field.IsNullable }}
@@ -108,14 +108,14 @@ func (g structReprMapReprGenerator) EmitNodeMethodLookupString(w io.Writer) {
 	`, w, g.AdjCfg, g)
 }
 
-func (g structReprMapReprGenerator) EmitNodeMethodLookup(w io.Writer) {
+func (g structReprMapReprGenerator) EmitNodeMethodLookupByNode(w io.Writer) {
 	doTemplate(`
-		func (n *_{{ .Type | TypeSymbol }}__Repr) Lookup(key ipld.Node) (ipld.Node, error) {
+		func (n *_{{ .Type | TypeSymbol }}__Repr) LookupByNode(key ipld.Node) (ipld.Node, error) {
 			ks, err := key.AsString()
 			if err != nil {
 				return nil, err
 			}
-			return n.LookupString(ks)
+			return n.LookupByString(ks)
 		}
 	`, w, g.AdjCfg, g)
 }
@@ -253,12 +253,12 @@ func (g structReprMapReprGenerator) EmitNodeMethodLength(w io.Writer) {
 	`, w, g.AdjCfg, g)
 }
 
-func (g structReprMapReprGenerator) EmitNodeMethodStyle(w io.Writer) {
-	emitNodeMethodStyle_typical(w, g.AdjCfg, g)
+func (g structReprMapReprGenerator) EmitNodeMethodPrototype(w io.Writer) {
+	emitNodeMethodPrototype_typical(w, g.AdjCfg, g)
 }
 
-func (g structReprMapReprGenerator) EmitNodeStyleType(w io.Writer) {
-	emitNodeStyleType_typical(w, g.AdjCfg, g)
+func (g structReprMapReprGenerator) EmitNodePrototypeType(w io.Writer) {
+	emitNodePrototypeType_typical(w, g.AdjCfg, g)
 }
 
 // --- NodeBuilder and NodeAssembler --->
@@ -568,11 +568,11 @@ func (g structReprMapReprBuilderGenerator) emitMapAssemblerMethods(w io.Writer) 
 			*ma.m = schema.Maybe_Value
 			return nil
 		}
-		func (ma *_{{ .Type | TypeSymbol }}__ReprAssembler) KeyStyle() ipld.NodeStyle {
-			return _String__Style{}
+		func (ma *_{{ .Type | TypeSymbol }}__ReprAssembler) KeyPrototype() ipld.NodePrototype {
+			return _String__Prototype{}
 		}
-		func (ma *_{{ .Type | TypeSymbol }}__ReprAssembler) ValueStyle(k string) ipld.NodeStyle {
-			panic("todo structbuilder mapassembler repr valuestyle")
+		func (ma *_{{ .Type | TypeSymbol }}__ReprAssembler) ValuePrototype(k string) ipld.NodePrototype {
+			panic("todo structbuilder mapassembler repr valueprototype")
 		}
 	`, w, g.AdjCfg, g)
 }
@@ -625,8 +625,8 @@ func (g structReprMapReprBuilderGenerator) emitKeyAssembler(w io.Writer) {
 				return ka.AssignString(v2)
 			}
 		}
-		func (_{{ .Type | TypeSymbol }}__ReprKeyAssembler) Style() ipld.NodeStyle {
-			return _String__Style{}
+		func (_{{ .Type | TypeSymbol }}__ReprKeyAssembler) Prototype() ipld.NodePrototype {
+			return _String__Prototype{}
 		}
 	`, w, g.AdjCfg, g)
 }

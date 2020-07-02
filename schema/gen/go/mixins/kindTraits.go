@@ -31,46 +31,46 @@ type kindTraitsGenerator struct {
 	Kind       ipld.ReprKind
 }
 
-func (g kindTraitsGenerator) emitNodeMethodLookupString(w io.Writer) {
+func (g kindTraitsGenerator) emitNodeMethodLookupByString(w io.Writer) {
 	if ipld.ReprKindSet_JustMap.Contains(g.Kind) {
 		panic("gen internals error: you should've overriden this")
 	}
 	doTemplate(`
-		func ({{ .TypeSymbol }}) LookupString(string) (ipld.Node, error) {
-			return mixins.{{ .Kind.String | title }}{"{{ .PkgName }}.{{ .TypeName }}"}.LookupString("")
+		func ({{ .TypeSymbol }}) LookupByString(string) (ipld.Node, error) {
+			return mixins.{{ .Kind.String | title }}{"{{ .PkgName }}.{{ .TypeName }}"}.LookupByString("")
 		}
 	`, w, g)
 }
 
-func (g kindTraitsGenerator) emitNodeMethodLookup(w io.Writer) {
+func (g kindTraitsGenerator) emitNodeMethodLookupByNode(w io.Writer) {
 	if ipld.ReprKindSet_JustMap.Contains(g.Kind) {
 		panic("gen internals error: you should've overriden this")
 	}
 	doTemplate(`
-		func ({{ .TypeSymbol }}) Lookup(ipld.Node) (ipld.Node, error) {
-			return mixins.{{ .Kind.String | title }}{"{{ .PkgName }}.{{ .TypeName }}"}.Lookup(nil)
+		func ({{ .TypeSymbol }}) LookupByNode(ipld.Node) (ipld.Node, error) {
+			return mixins.{{ .Kind.String | title }}{"{{ .PkgName }}.{{ .TypeName }}"}.LookupByNode(nil)
 		}
 	`, w, g)
 }
 
-func (g kindTraitsGenerator) emitNodeMethodLookupIndex(w io.Writer) {
+func (g kindTraitsGenerator) emitNodeMethodLookupByIndex(w io.Writer) {
 	if ipld.ReprKindSet_JustList.Contains(g.Kind) {
 		panic("gen internals error: you should've overriden this")
 	}
 	doTemplate(`
-		func ({{ .TypeSymbol }}) LookupIndex(idx int) (ipld.Node, error) {
-			return mixins.{{ .Kind.String | title }}{"{{ .PkgName }}.{{ .TypeName }}"}.LookupIndex(0)
+		func ({{ .TypeSymbol }}) LookupByIndex(idx int) (ipld.Node, error) {
+			return mixins.{{ .Kind.String | title }}{"{{ .PkgName }}.{{ .TypeName }}"}.LookupByIndex(0)
 		}
 	`, w, g)
 }
 
-func (g kindTraitsGenerator) emitNodeMethodLookupSegment(w io.Writer) {
+func (g kindTraitsGenerator) emitNodeMethodLookupBySegment(w io.Writer) {
 	if ipld.ReprKindSet_Recursive.Contains(g.Kind) {
 		panic("gen internals error: you should've overriden this")
 	}
 	doTemplate(`
-		func ({{ .TypeSymbol }}) LookupSegment(seg ipld.PathSegment) (ipld.Node, error) {
-			return mixins.{{ .Kind.String | title }}{"{{ .PkgName }}.{{ .TypeName }}"}.LookupSegment(seg)
+		func ({{ .TypeSymbol }}) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
+			return mixins.{{ .Kind.String | title }}{"{{ .PkgName }}.{{ .TypeName }}"}.LookupBySegment(seg)
 		}
 	`, w, g)
 }
@@ -108,9 +108,9 @@ func (g kindTraitsGenerator) emitNodeMethodLength(w io.Writer) {
 	`, w, g)
 }
 
-func (g kindTraitsGenerator) emitNodeMethodIsUndefined(w io.Writer) {
+func (g kindTraitsGenerator) emitNodeMethodIsAbsent(w io.Writer) {
 	doTemplate(`
-		func ({{ .TypeSymbol }}) IsUndefined() bool {
+		func ({{ .TypeSymbol }}) IsAbsent() bool {
 			return false
 		}
 	`, w, g)
@@ -308,10 +308,10 @@ func (g kindAssemblerTraitsGenerator) emitNodeAssemblerMethodAssignLink(w io.Wri
 
 // bailed on extracting a common emitNodeAssemblerMethodAssignNode: way too many variations.
 
-func (g kindAssemblerTraitsGenerator) emitNodeAssemblerMethodStyle(w io.Writer) {
+func (g kindAssemblerTraitsGenerator) emitNodeAssemblerMethodPrototype(w io.Writer) {
 	doTemplate(`
-		func ({{ .AppliedPrefix }}Assembler) Style() ipld.NodeStyle {
-			return {{ .AppliedPrefix }}Style{}
+		func ({{ .AppliedPrefix }}Assembler) Prototype() ipld.NodePrototype {
+			return {{ .AppliedPrefix }}Prototype{}
 		}
 	`, w, g)
 }

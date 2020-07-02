@@ -23,8 +23,8 @@ import (
 // - we can make direct comparisons to the standard library json marshalling
 //    and unmarshalling, thus having a back-of-the-envelope baseline to compare.
 
-func BenchmarkSpec_Marshal_Map3StrInt(b *testing.B, ns ipld.NodeStyle) {
-	nb := ns.NewBuilder()
+func BenchmarkSpec_Marshal_Map3StrInt(b *testing.B, np ipld.NodePrototype) {
+	nb := np.NewBuilder()
 	must.NotError(codec.Unmarshal(nb, refmtjson.NewDecoder(bytes.NewBufferString(`{"whee":1,"woot":2,"waga":3}`))))
 	n := nb.Build()
 	b.ResetTimer()
@@ -39,8 +39,8 @@ func BenchmarkSpec_Marshal_Map3StrInt(b *testing.B, ns ipld.NodeStyle) {
 	}
 }
 
-func BenchmarkSpec_Marshal_Map3StrInt_CodecNull(b *testing.B, ns ipld.NodeStyle) {
-	nb := ns.NewBuilder()
+func BenchmarkSpec_Marshal_Map3StrInt_CodecNull(b *testing.B, np ipld.NodePrototype) {
+	nb := np.NewBuilder()
 	must.NotError(codec.Unmarshal(nb, refmtjson.NewDecoder(bytes.NewBufferString(`{"whee":1,"woot":2,"waga":3}`))))
 	n := nb.Build()
 	b.ResetTimer()
@@ -62,11 +62,11 @@ func (nullTokenSink) Step(_ *tok.Token) (bool, error) {
 	return false, nil
 }
 
-func BenchmarkSpec_Marshal_MapNStrMap3StrInt(b *testing.B, ns ipld.NodeStyle) {
+func BenchmarkSpec_Marshal_MapNStrMap3StrInt(b *testing.B, np ipld.NodePrototype) {
 	for _, n := range []int{0, 1, 2, 4, 8, 16, 32} {
 		b.Run(fmt.Sprintf("n=%d", n), func(b *testing.B) {
 			msg := corpus.MapNStrMap3StrInt(n)
-			node := mustNodeFromJsonString(ns, msg)
+			node := mustNodeFromJsonString(np, msg)
 			b.ResetTimer()
 
 			var buf bytes.Buffer

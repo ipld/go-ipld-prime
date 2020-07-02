@@ -52,28 +52,28 @@ func (g boolReprBoolReprGenerator) EmitNodeTypeAssertions(w io.Writer) {
 		var _ ipld.Node = &_{{ .Type | TypeSymbol }}__Repr{}
 	`, w, g.AdjCfg, g)
 }
-func (boolReprBoolReprGenerator) EmitNodeMethodReprKind(io.Writer)      {}
-func (boolReprBoolReprGenerator) EmitNodeMethodLookupString(io.Writer)  {}
-func (boolReprBoolReprGenerator) EmitNodeMethodLookup(io.Writer)        {}
-func (boolReprBoolReprGenerator) EmitNodeMethodLookupIndex(io.Writer)   {}
-func (boolReprBoolReprGenerator) EmitNodeMethodLookupSegment(io.Writer) {}
-func (boolReprBoolReprGenerator) EmitNodeMethodMapIterator(io.Writer)   {}
-func (boolReprBoolReprGenerator) EmitNodeMethodListIterator(io.Writer)  {}
-func (boolReprBoolReprGenerator) EmitNodeMethodLength(io.Writer)        {}
-func (boolReprBoolReprGenerator) EmitNodeMethodIsUndefined(io.Writer)   {}
-func (boolReprBoolReprGenerator) EmitNodeMethodIsNull(io.Writer)        {}
-func (boolReprBoolReprGenerator) EmitNodeMethodAsBool(io.Writer)        {}
-func (boolReprBoolReprGenerator) EmitNodeMethodAsInt(io.Writer)         {}
-func (boolReprBoolReprGenerator) EmitNodeMethodAsFloat(io.Writer)       {}
-func (boolReprBoolReprGenerator) EmitNodeMethodAsString(io.Writer)      {}
-func (boolReprBoolReprGenerator) EmitNodeMethodAsBytes(io.Writer)       {}
-func (boolReprBoolReprGenerator) EmitNodeMethodAsLink(io.Writer)        {}
-func (boolReprBoolReprGenerator) EmitNodeMethodStyle(io.Writer)         {}
-func (g boolReprBoolReprGenerator) EmitNodeStyleType(w io.Writer) {
+func (boolReprBoolReprGenerator) EmitNodeMethodReprKind(io.Writer)        {}
+func (boolReprBoolReprGenerator) EmitNodeMethodLookupByString(io.Writer)  {}
+func (boolReprBoolReprGenerator) EmitNodeMethodLookupByNode(io.Writer)    {}
+func (boolReprBoolReprGenerator) EmitNodeMethodLookupByIndex(io.Writer)   {}
+func (boolReprBoolReprGenerator) EmitNodeMethodLookupBySegment(io.Writer) {}
+func (boolReprBoolReprGenerator) EmitNodeMethodMapIterator(io.Writer)     {}
+func (boolReprBoolReprGenerator) EmitNodeMethodListIterator(io.Writer)    {}
+func (boolReprBoolReprGenerator) EmitNodeMethodLength(io.Writer)          {}
+func (boolReprBoolReprGenerator) EmitNodeMethodIsAbsent(io.Writer)        {}
+func (boolReprBoolReprGenerator) EmitNodeMethodIsNull(io.Writer)          {}
+func (boolReprBoolReprGenerator) EmitNodeMethodAsBool(io.Writer)          {}
+func (boolReprBoolReprGenerator) EmitNodeMethodAsInt(io.Writer)           {}
+func (boolReprBoolReprGenerator) EmitNodeMethodAsFloat(io.Writer)         {}
+func (boolReprBoolReprGenerator) EmitNodeMethodAsString(io.Writer)        {}
+func (boolReprBoolReprGenerator) EmitNodeMethodAsBytes(io.Writer)         {}
+func (boolReprBoolReprGenerator) EmitNodeMethodAsLink(io.Writer)          {}
+func (boolReprBoolReprGenerator) EmitNodeMethodPrototype(io.Writer)       {}
+func (g boolReprBoolReprGenerator) EmitNodePrototypeType(w io.Writer) {
 	// Since this is a "natural" representation... there's just a type alias here.
 	//  No new functions are necessary.
 	doTemplate(`
-		type _{{ .Type | TypeSymbol }}__ReprStyle = _{{ .Type | TypeSymbol }}__Style
+		type _{{ .Type | TypeSymbol }}__ReprPrototype = _{{ .Type | TypeSymbol }}__Prototype
 	`, w, g.AdjCfg, g)
 }
 func (g boolReprBoolReprGenerator) GetNodeBuilderGenerator() NodeBuilderGenerator {
@@ -104,5 +104,5 @@ func (boolReprBoolReprBuilderGenerator) EmitNodeAssemblerMethodAssignString(io.W
 func (boolReprBoolReprBuilderGenerator) EmitNodeAssemblerMethodAssignBytes(io.Writer)  {}
 func (boolReprBoolReprBuilderGenerator) EmitNodeAssemblerMethodAssignLink(io.Writer)   {}
 func (boolReprBoolReprBuilderGenerator) EmitNodeAssemblerMethodAssignNode(io.Writer)   {}
-func (boolReprBoolReprBuilderGenerator) EmitNodeAssemblerMethodStyle(io.Writer)        {}
+func (boolReprBoolReprBuilderGenerator) EmitNodeAssemblerMethodPrototype(io.Writer)    {}
 func (boolReprBoolReprBuilderGenerator) EmitNodeAssemblerOtherBits(io.Writer)          {}

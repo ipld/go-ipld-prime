@@ -57,7 +57,7 @@ func TestFoo(t *testing.T, newNb func(typ schema.Type) ipld.NodeBuilder) {
 	})
 	t.Run("reading", func(t *testing.T) {
 		t.Run("regular fields", func(t *testing.T) {
-			v, err := n1.LookupString("f1")
+			v, err := n1.LookupByString("f1")
 			Wish(t, err, ShouldEqual, nil)
 			nb := newNb(tString)
 			Require(t, nb.AssignString("asdf"), ShouldEqual, nil)

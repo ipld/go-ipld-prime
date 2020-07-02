@@ -14,7 +14,7 @@ type Int = *_Int
 func (n Int) Int() int {
 	return n.x
 }
-func (_Int__Style) FromInt(v int) (Int, error) {
+func (_Int__Prototype) FromInt(v int) (Int, error) {
 	n := _Int{v}
 	return &n, nil
 }
@@ -28,7 +28,7 @@ type MaybeInt = *_Int__Maybe
 func (m MaybeInt) IsNull() bool {
 	return m.m == schema.Maybe_Null
 }
-func (m MaybeInt) IsUndefined() bool {
+func (m MaybeInt) IsAbsent() bool {
 	return m.m == schema.Maybe_Absent
 }
 func (m MaybeInt) Exists() bool {
@@ -37,7 +37,7 @@ func (m MaybeInt) Exists() bool {
 func (m MaybeInt) AsNode() ipld.Node {
 	switch m.m {
 	case schema.Maybe_Absent:
-		return ipld.Undef
+		return ipld.Absent
 	case schema.Maybe_Null:
 		return ipld.Null
 	case schema.Maybe_Value:
@@ -59,17 +59,17 @@ var _ schema.TypedNode = (Int)(&_Int{})
 func (Int) ReprKind() ipld.ReprKind {
 	return ipld.ReprKind_Int
 }
-func (Int) LookupString(string) (ipld.Node, error) {
-	return mixins.Int{"gendemo.Int"}.LookupString("")
+func (Int) LookupByString(string) (ipld.Node, error) {
+	return mixins.Int{"gendemo.Int"}.LookupByString("")
 }
-func (Int) Lookup(ipld.Node) (ipld.Node, error) {
-	return mixins.Int{"gendemo.Int"}.Lookup(nil)
+func (Int) LookupByNode(ipld.Node) (ipld.Node, error) {
+	return mixins.Int{"gendemo.Int"}.LookupByNode(nil)
 }
-func (Int) LookupIndex(idx int) (ipld.Node, error) {
-	return mixins.Int{"gendemo.Int"}.LookupIndex(0)
+func (Int) LookupByIndex(idx int) (ipld.Node, error) {
+	return mixins.Int{"gendemo.Int"}.LookupByIndex(0)
 }
-func (Int) LookupSegment(seg ipld.PathSegment) (ipld.Node, error) {
-	return mixins.Int{"gendemo.Int"}.LookupSegment(seg)
+func (Int) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
+	return mixins.Int{"gendemo.Int"}.LookupBySegment(seg)
 }
 func (Int) MapIterator() ipld.MapIterator {
 	return nil
@@ -80,7 +80,7 @@ func (Int) ListIterator() ipld.ListIterator {
 func (Int) Length() int {
 	return -1
 }
-func (Int) IsUndefined() bool {
+func (Int) IsAbsent() bool {
 	return false
 }
 func (Int) IsNull() bool {
@@ -104,13 +104,13 @@ func (Int) AsBytes() ([]byte, error) {
 func (Int) AsLink() (ipld.Link, error) {
 	return mixins.Int{"gendemo.Int"}.AsLink()
 }
-func (Int) Style() ipld.NodeStyle {
-	return _Int__Style{}
+func (Int) Prototype() ipld.NodePrototype {
+	return _Int__Prototype{}
 }
 
-type _Int__Style struct{}
+type _Int__Prototype struct{}
 
-func (_Int__Style) NewBuilder() ipld.NodeBuilder {
+func (_Int__Prototype) NewBuilder() ipld.NodeBuilder {
 	var nb _Int__Builder
 	nb.Reset()
 	return &nb
@@ -207,8 +207,8 @@ func (na *_Int__Assembler) AssignNode(v ipld.Node) error {
 		return na.AssignInt(v2)
 	}
 }
-func (_Int__Assembler) Style() ipld.NodeStyle {
-	return _Int__Style{}
+func (_Int__Assembler) Prototype() ipld.NodePrototype {
+	return _Int__Prototype{}
 }
 func (Int) Type() schema.Type {
 	return nil /*TODO:typelit*/
@@ -221,5 +221,5 @@ type _Int__Repr = _Int
 
 var _ ipld.Node = &_Int__Repr{}
 
-type _Int__ReprStyle = _Int__Style
+type _Int__ReprPrototype = _Int__Prototype
 type _Int__ReprAssembler = _Int__Assembler

@@ -1,6 +1,6 @@
 package gendemo
 
-// Type is a struct embeding a NodeStyle/Type for every Node implementation in this package.
+// Type is a struct embeding a NodePrototype/Type for every Node implementation in this package.
 // One of its major uses is to start the construction of a value.
 // You can use it like this:
 //
@@ -13,12 +13,12 @@ package gendemo
 var Type typeSlab
 
 type typeSlab struct {
-	Int                     _Int__Style
-	Int__Repr               _Int__ReprStyle
-	Map__String__Msg3       _Map__String__Msg3__Style
-	Map__String__Msg3__Repr _Map__String__Msg3__ReprStyle
-	Msg3                    _Msg3__Style
-	Msg3__Repr              _Msg3__ReprStyle
-	String                  _String__Style
-	String__Repr            _String__ReprStyle
+	Int                     _Int__Prototype
+	Int__Repr               _Int__ReprPrototype
+	Map__String__Msg3       _Map__String__Msg3__Prototype
+	Map__String__Msg3__Repr _Map__String__Msg3__ReprPrototype
+	Msg3                    _Msg3__Prototype
+	Msg3__Repr              _Msg3__ReprPrototype
+	String                  _String__Prototype
+	String__Repr            _String__ReprPrototype
 }

@@ -17,7 +17,7 @@ func TestSimple(t *testing.T) {
 		  {"path": "./baz",  "moduleName": "whiz.org/teamBar/baz", "status": "green"},
 		  {"path": "./quxx", "moduleName": "example.net/quxx",     "status": "lit"}
 		]`)
-	nb := basicnode.Style.Any.NewBuilder()
+	nb := basicnode.Prototype.Any.NewBuilder()
 	Require(t, dagjson.Decoder(nb, bytes.NewBufferString(fixture)), ShouldEqual, nil)
 	n := nb.Build()
 
@@ -46,7 +46,7 @@ func TestAbsentColumn(t *testing.T) {
 		  {"path": "./baz",                              "status": "green"},
 		  {"path": "./quxx", "optionalColumn": "wicked", "status": "lit"}
 		]`)
-		nb := basicnode.Style.Any.NewBuilder()
+		nb := basicnode.Prototype.Any.NewBuilder()
 		Require(t, dagjson.Decoder(nb, bytes.NewBufferString(fixture)), ShouldEqual, nil)
 		n := nb.Build()
 
@@ -61,7 +61,7 @@ func TestAbsentColumn(t *testing.T) {
 		  {"path": "./baz",  "status": "asdf"},
 		  {"path": "./quxx", "status": "lit",     "optionalColumn": "wicked"}
 		]`)
-		nb := basicnode.Style.Any.NewBuilder()
+		nb := basicnode.Prototype.Any.NewBuilder()
 		Require(t, dagjson.Decoder(nb, bytes.NewBufferString(fixture)), ShouldEqual, nil)
 		n := nb.Build()
 
@@ -86,7 +86,7 @@ func TestSubTables(t *testing.T) {
 		    ]},
 		  {"path": "./quxx", "moduleName": "example.net/quxx",     "status": "lit"}
 		]`)
-	nb := basicnode.Style.Any.NewBuilder()
+	nb := basicnode.Prototype.Any.NewBuilder()
 	Require(t, dagjson.Decoder(nb, bytes.NewBufferString(fixture)), ShouldEqual, nil)
 	n := nb.Build()
 
@@ -110,7 +110,7 @@ func TestSubTablesCorrelated(t *testing.T) {
 		      {"frob": "narf",       "zim": "zamf"}
 		    ]}
 		]`)
-	nb := basicnode.Style.Any.NewBuilder()
+	nb := basicnode.Prototype.Any.NewBuilder()
 	Require(t, dagjson.Decoder(nb, bytes.NewBufferString(fixture)), ShouldEqual, nil)
 	n := nb.Build()
 
@@ -142,7 +142,7 @@ func TestSubSubTables(t *testing.T) {
 		      {"frob": "narf",       "zim": "zamf"}
 		    ]}
 		]`)
-	nb := basicnode.Style.Any.NewBuilder()
+	nb := basicnode.Prototype.Any.NewBuilder()
 	Require(t, dagjson.Decoder(nb, bytes.NewBufferString(fixture)), ShouldEqual, nil)
 	n := nb.Build()
 

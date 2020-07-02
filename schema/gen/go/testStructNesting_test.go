@@ -37,12 +37,12 @@ func TestStructNesting(t *testing.T) {
 
 	prefix := "struct-nesting"
 	pkgName := "main"
-	genAndCompileAndTest(t, prefix, pkgName, ts, adjCfg, func(t *testing.T, getStyleByName func(string) ipld.NodeStyle) {
-		ns := getStyleByName("GulpoStruct")
-		nsr := getStyleByName("GulpoStruct.Repr")
+	genAndCompileAndTest(t, prefix, pkgName, ts, adjCfg, func(t *testing.T, getPrototypeByName func(string) ipld.NodePrototype) {
+		np := getPrototypeByName("GulpoStruct")
+		nrp := getPrototypeByName("GulpoStruct.Repr")
 		var n schema.TypedNode
 		t.Run("typed-create", func(t *testing.T) {
-			n = fluent.MustBuildMap(ns, 1, func(ma fluent.MapAssembler) {
+			n = fluent.MustBuildMap(np, 1, func(ma fluent.MapAssembler) {
 				ma.AssembleEntry("x").CreateMap(1, func(ma fluent.MapAssembler) {
 					ma.AssembleEntry("s").AssignString("woo")
 				})
@@ -50,21 +50,21 @@ func TestStructNesting(t *testing.T) {
 			t.Run("typed-read", func(t *testing.T) {
 				Require(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
 				Wish(t, n.Length(), ShouldEqual, 1)
-				n2 := must.Node(n.LookupString("x"))
+				n2 := must.Node(n.LookupByString("x"))
 				Require(t, n2.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
-				Wish(t, must.String(must.Node(n2.LookupString("s"))), ShouldEqual, "woo")
+				Wish(t, must.String(must.Node(n2.LookupByString("s"))), ShouldEqual, "woo")
 			})
 			t.Run("repr-read", func(t *testing.T) {
 				nr := n.Representation()
 				Require(t, nr.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
 				Wish(t, nr.Length(), ShouldEqual, 1)
-				n2 := must.Node(nr.LookupString("r"))
+				n2 := must.Node(nr.LookupByString("r"))
 				Require(t, n2.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
-				Wish(t, must.String(must.Node(n2.LookupString("q"))), ShouldEqual, "woo")
+				Wish(t, must.String(must.Node(n2.LookupByString("q"))), ShouldEqual, "woo")
 			})
 		})
 		t.Run("repr-create", func(t *testing.T) {
-			nr := fluent.MustBuildMap(nsr, 1, func(ma fluent.MapAssembler) {
+			nr := fluent.MustBuildMap(nrp, 1, func(ma fluent.MapAssembler) {
 				ma.AssembleEntry("r").CreateMap(1, func(ma fluent.MapAssembler) {
 					ma.AssembleEntry("q").AssignString("woo")
 				})

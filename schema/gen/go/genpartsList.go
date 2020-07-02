@@ -199,8 +199,8 @@ func emitNodeAssemblerHelper_listoid_listAssemblerMethods(w io.Writer, adjCfg *A
 		}
 	`, w, adjCfg, data)
 	doTemplate(`
-		func (la *_{{ .Type | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Assembler) ValueStyle(_ int) ipld.NodeStyle {
-			return _{{ .Type.ValueType | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Style{}
+		func (la *_{{ .Type | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Assembler) ValuePrototype(_ int) ipld.NodePrototype {
+			return _{{ .Type.ValueType | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Prototype{}
 		}
 	`, w, adjCfg, data)
 }

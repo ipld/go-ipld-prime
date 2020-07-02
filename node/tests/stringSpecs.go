@@ -8,9 +8,9 @@ import (
 	ipld "github.com/ipld/go-ipld-prime"
 )
 
-func SpecTestString(t *testing.T, ns ipld.NodeStyle) {
+func SpecTestString(t *testing.T, np ipld.NodePrototype) {
 	t.Run("string node", func(t *testing.T) {
-		nb := ns.NewBuilder()
+		nb := np.NewBuilder()
 		err := nb.AssignString("asdf")
 		Wish(t, err, ShouldEqual, nil)
 		n := nb.Build()

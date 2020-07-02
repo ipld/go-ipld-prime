@@ -27,13 +27,13 @@ func (g stringGenerator) EmitNativeAccessors(w io.Writer) {
 func (g stringGenerator) EmitNativeBuilder(w io.Writer) {
 	// Generate a single-step construction function -- this is easy to do for a scalar,
 	//  and all representations of scalar kind can be expected to have a method like this.
-	// The function is attached to the nodestyle for convenient namespacing;
+	// The function is attached to the NodePrototype for convenient namespacing;
 	//  it needs no new memory, so it would be inappropriate to attach to the builder or assembler.
 	// The function is directly used internally by anything else that might involve recursive destructuring on the same scalar kind
 	//  (for example, structs using stringjoin strategies that have one of this type as a field, etc).
 	// FUTURE: should engage validation flow.
 	doTemplate(`
-		func (_{{ .Type | TypeSymbol }}__Style) fromString(w *_{{ .Type | TypeSymbol }}, v string) error {
+		func (_{{ .Type | TypeSymbol }}__Prototype) fromString(w *_{{ .Type | TypeSymbol }}, v string) error {
 			*w = _{{ .Type | TypeSymbol }}{v}
 			return nil
 		}
@@ -81,11 +81,11 @@ func (g stringGenerator) EmitNodeTypeAssertions(w io.Writer) {
 func (g stringGenerator) EmitNodeMethodAsString(w io.Writer) {
 	emitNodeMethodAsKind_scalar(w, g.AdjCfg, g)
 }
-func (g stringGenerator) EmitNodeMethodStyle(w io.Writer) {
-	emitNodeMethodStyle_typical(w, g.AdjCfg, g)
+func (g stringGenerator) EmitNodeMethodPrototype(w io.Writer) {
+	emitNodeMethodPrototype_typical(w, g.AdjCfg, g)
 }
-func (g stringGenerator) EmitNodeStyleType(w io.Writer) {
-	emitNodeStyleType_typical(w, g.AdjCfg, g)
+func (g stringGenerator) EmitNodePrototypeType(w io.Writer) {
+	emitNodePrototypeType_typical(w, g.AdjCfg, g)
 }
 
 // --- NodeBuilder and NodeAssembler --->

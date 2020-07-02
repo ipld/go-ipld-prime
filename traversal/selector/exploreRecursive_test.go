@@ -20,7 +20,7 @@ func TestParseExploreRecursive(t *testing.T) {
 		Wish(t, err, ShouldEqual, fmt.Errorf("selector spec parse rejected: selector body must be a map"))
 	})
 	t.Run("parsing map node without sequence field should error", func(t *testing.T) {
-		sn := fluent.MustBuildMap(basicnode.Style__Map{}, 1, func(na fluent.MapAssembler) {
+		sn := fluent.MustBuildMap(basicnode.Prototype__Map{}, 1, func(na fluent.MapAssembler) {
 			na.AssembleEntry(SelectorKey_Limit).CreateMap(1, func(na fluent.MapAssembler) {
 				na.AssembleEntry(SelectorKey_LimitDepth).AssignInt(2)
 			})
@@ -29,7 +29,7 @@ func TestParseExploreRecursive(t *testing.T) {
 		Wish(t, err, ShouldEqual, fmt.Errorf("selector spec parse rejected: sequence field must be present in ExploreRecursive selector"))
 	})
 	t.Run("parsing map node without limit field should error", func(t *testing.T) {
-		sn := fluent.MustBuildMap(basicnode.Style__Map{}, 1, func(na fluent.MapAssembler) {
+		sn := fluent.MustBuildMap(basicnode.Prototype__Map{}, 1, func(na fluent.MapAssembler) {
 			na.AssembleEntry(SelectorKey_Sequence).CreateMap(1, func(na fluent.MapAssembler) {
 				na.AssembleEntry(SelectorKey_Matcher).CreateMap(0, func(na fluent.MapAssembler) {})
 			})
@@ -38,7 +38,7 @@ func TestParseExploreRecursive(t *testing.T) {
 		Wish(t, err, ShouldEqual, fmt.Errorf("selector spec parse rejected: limit field must be present in ExploreRecursive selector"))
 	})
 	t.Run("parsing map node with limit field that is not a map should fail", func(t *testing.T) {
-		sn := fluent.MustBuildMap(basicnode.Style__Map{}, 2, func(na fluent.MapAssembler) {
+		sn := fluent.MustBuildMap(basicnode.Prototype__Map{}, 2, func(na fluent.MapAssembler) {
 			na.AssembleEntry(SelectorKey_Limit).AssignString("cheese")
 			na.AssembleEntry(SelectorKey_Sequence).CreateMap(1, func(na fluent.MapAssembler) {
 				na.AssembleEntry(SelectorKey_Matcher).CreateMap(0, func(na fluent.MapAssembler) {})
@@ -48,7 +48,7 @@ func TestParseExploreRecursive(t *testing.T) {
 		Wish(t, err, ShouldEqual, fmt.Errorf("selector spec parse rejected: limit in ExploreRecursive is a keyed union and thus must be a map"))
 	})
 	t.Run("parsing map node with limit field that is not a single entry map should fail", func(t *testing.T) {
-		sn := fluent.MustBuildMap(basicnode.Style__Map{}, 2, func(na fluent.MapAssembler) {
+		sn := fluent.MustBuildMap(basicnode.Prototype__Map{}, 2, func(na fluent.MapAssembler) {
 			na.AssembleEntry(SelectorKey_Limit).CreateMap(2, func(na fluent.MapAssembler) {
 				na.AssembleEntry(SelectorKey_LimitDepth).AssignInt(2)
 				na.AssembleEntry(SelectorKey_LimitNone).CreateMap(0, func(na fluent.MapAssembler) {})
@@ -61,7 +61,7 @@ func TestParseExploreRecursive(t *testing.T) {
 		Wish(t, err, ShouldEqual, fmt.Errorf("selector spec parse rejected: limit in ExploreRecursive is a keyed union and thus must be a single-entry map"))
 	})
 	t.Run("parsing map node with limit field that does not have a known key should fail", func(t *testing.T) {
-		sn := fluent.MustBuildMap(basicnode.Style__Map{}, 2, func(na fluent.MapAssembler) {
+		sn := fluent.MustBuildMap(basicnode.Prototype__Map{}, 2, func(na fluent.MapAssembler) {
 			na.AssembleEntry(SelectorKey_Limit).CreateMap(1, func(na fluent.MapAssembler) {
 				na.AssembleEntry("applesauce").AssignInt(2)
 			})
@@ -73,7 +73,7 @@ func TestParseExploreRecursive(t *testing.T) {
 		Wish(t, err, ShouldEqual, fmt.Errorf("selector spec parse rejected: \"applesauce\" is not a known member of the limit union in ExploreRecursive"))
 	})
 	t.Run("parsing map node with limit field of type depth that is not an int should error", func(t *testing.T) {
-		sn := fluent.MustBuildMap(basicnode.Style__Map{}, 2, func(na fluent.MapAssembler) {
+		sn := fluent.MustBuildMap(basicnode.Prototype__Map{}, 2, func(na fluent.MapAssembler) {
 			na.AssembleEntry(SelectorKey_Limit).CreateMap(1, func(na fluent.MapAssembler) {
 				na.AssembleEntry(SelectorKey_LimitDepth).AssignString("cheese")
 			})
@@ -85,7 +85,7 @@ func TestParseExploreRecursive(t *testing.T) {
 		Wish(t, err, ShouldEqual, fmt.Errorf("selector spec parse rejected: limit field of type depth must be a number in ExploreRecursive selector"))
 	})
 	t.Run("parsing map node with sequence field with invalid selector node should return child's error", func(t *testing.T) {
-		sn := fluent.MustBuildMap(basicnode.Style__Map{}, 2, func(na fluent.MapAssembler) {
+		sn := fluent.MustBuildMap(basicnode.Prototype__Map{}, 2, func(na fluent.MapAssembler) {
 			na.AssembleEntry(SelectorKey_Limit).CreateMap(1, func(na fluent.MapAssembler) {
 				na.AssembleEntry(SelectorKey_LimitDepth).AssignInt(2)
 			})
@@ -95,7 +95,7 @@ func TestParseExploreRecursive(t *testing.T) {
 		Wish(t, err, ShouldEqual, fmt.Errorf("selector spec parse rejected: selector is a keyed union and thus must be a map"))
 	})
 	t.Run("parsing map node with sequence field with valid selector w/o ExploreRecursiveEdge should not parse", func(t *testing.T) {
-		sn := fluent.MustBuildMap(basicnode.Style__Map{}, 2, func(na fluent.MapAssembler) {
+		sn := fluent.MustBuildMap(basicnode.Prototype__Map{}, 2, func(na fluent.MapAssembler) {
 			na.AssembleEntry(SelectorKey_Limit).CreateMap(1, func(na fluent.MapAssembler) {
 				na.AssembleEntry(SelectorKey_LimitDepth).AssignInt(2)
 			})
@@ -111,12 +111,12 @@ func TestParseExploreRecursive(t *testing.T) {
 		Wish(t, err, ShouldEqual, fmt.Errorf("selector spec parse rejected: ExploreRecursive must have at least one ExploreRecursiveEdge"))
 	})
 	t.Run("parsing map node that is ExploreRecursiveEdge without ExploreRecursive parent should not parse", func(t *testing.T) {
-		sn := fluent.MustBuildMap(basicnode.Style__Map{}, 0, func(na fluent.MapAssembler) {})
+		sn := fluent.MustBuildMap(basicnode.Prototype__Map{}, 0, func(na fluent.MapAssembler) {})
 		_, err := ParseContext{}.ParseExploreRecursiveEdge(sn)
 		Wish(t, err, ShouldEqual, fmt.Errorf("selector spec parse rejected: ExploreRecursiveEdge must be beneath ExploreRecursive"))
 	})
 	t.Run("parsing map node with sequence field with valid selector node should parse", func(t *testing.T) {
-		sn := fluent.MustBuildMap(basicnode.Style__Map{}, 2, func(na fluent.MapAssembler) {
+		sn := fluent.MustBuildMap(basicnode.Prototype__Map{}, 2, func(na fluent.MapAssembler) {
 			na.AssembleEntry(SelectorKey_Limit).CreateMap(1, func(na fluent.MapAssembler) {
 				na.AssembleEntry(SelectorKey_LimitDepth).AssignInt(2)
 			})
@@ -134,7 +134,7 @@ func TestParseExploreRecursive(t *testing.T) {
 	})
 
 	t.Run("parsing map node with sequence field with valid selector node and limit type none should parse", func(t *testing.T) {
-		sn := fluent.MustBuildMap(basicnode.Style__Map{}, 2, func(na fluent.MapAssembler) {
+		sn := fluent.MustBuildMap(basicnode.Prototype__Map{}, 2, func(na fluent.MapAssembler) {
 			na.AssembleEntry(SelectorKey_Limit).CreateMap(1, func(na fluent.MapAssembler) {
 				na.AssembleEntry(SelectorKey_LimitNone).CreateMap(0, func(na fluent.MapAssembler) {})
 			})
@@ -198,33 +198,33 @@ func TestExploreRecursiveExplore(t *testing.T) {
 			]
 		}
 		`
-		nb := basicnode.Style__Any{}.NewBuilder()
+		nb := basicnode.Prototype__Any{}.NewBuilder()
 		err := dagjson.Decoder(nb, bytes.NewBufferString(nodeString))
 		Wish(t, err, ShouldEqual, nil)
 		rn := nb.Build()
 		rs = rs.Explore(rn, ipld.PathSegmentOfString("Parents"))
-		rn, err = rn.LookupString("Parents")
+		rn, err = rn.LookupByString("Parents")
 		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, parentsSelector, RecursionLimit{RecursionLimit_Depth, maxDepth}})
 		Wish(t, err, ShouldEqual, nil)
 		rs = rs.Explore(rn, ipld.PathSegmentOfInt(0))
-		rn, err = rn.LookupIndex(0)
+		rn, err = rn.LookupByIndex(0)
 		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, subTree, RecursionLimit{RecursionLimit_Depth, maxDepth - 1}})
 		Wish(t, err, ShouldEqual, nil)
 		rs = rs.Explore(rn, ipld.PathSegmentOfString("Parents"))
 
-		rn, err = rn.LookupString("Parents")
+		rn, err = rn.LookupByString("Parents")
 		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, parentsSelector, RecursionLimit{RecursionLimit_Depth, maxDepth - 1}})
 		Wish(t, err, ShouldEqual, nil)
 		rs = rs.Explore(rn, ipld.PathSegmentOfInt(0))
-		rn, err = rn.LookupIndex(0)
+		rn, err = rn.LookupByIndex(0)
 		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, subTree, RecursionLimit{RecursionLimit_Depth, maxDepth - 2}})
 		Wish(t, err, ShouldEqual, nil)
 		rs = rs.Explore(rn, ipld.PathSegmentOfString("Parents"))
-		rn, err = rn.LookupString("Parents")
+		rn, err = rn.LookupByString("Parents")
 		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, parentsSelector, RecursionLimit{RecursionLimit_Depth, maxDepth - 2}})
 		Wish(t, err, ShouldEqual, nil)
 		rs = rs.Explore(rn, ipld.PathSegmentOfInt(0))
-		rn, err = rn.LookupIndex(0)
+		rn, err = rn.LookupByIndex(0)
 		Wish(t, rs, ShouldEqual, nil)
 		Wish(t, err, ShouldEqual, nil)
 	})
@@ -249,36 +249,36 @@ func TestExploreRecursiveExplore(t *testing.T) {
 			]
 		}
 		`
-		nb := basicnode.Style__Any{}.NewBuilder()
+		nb := basicnode.Prototype__Any{}.NewBuilder()
 		err := dagjson.Decoder(nb, bytes.NewBufferString(nodeString))
 		Wish(t, err, ShouldEqual, nil)
 		rn := nb.Build()
 		rs = rs.Explore(rn, ipld.PathSegmentOfString("Parents"))
-		rn, err = rn.LookupString("Parents")
+		rn, err = rn.LookupByString("Parents")
 		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, parentsSelector, RecursionLimit{RecursionLimit_None, 0}})
 		Wish(t, err, ShouldEqual, nil)
 		rs = rs.Explore(rn, ipld.PathSegmentOfInt(0))
-		rn, err = rn.LookupIndex(0)
+		rn, err = rn.LookupByIndex(0)
 		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, subTree, RecursionLimit{RecursionLimit_None, 0}})
 		Wish(t, err, ShouldEqual, nil)
 		rs = rs.Explore(rn, ipld.PathSegmentOfString("Parents"))
-		rn, err = rn.LookupString("Parents")
+		rn, err = rn.LookupByString("Parents")
 		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, parentsSelector, RecursionLimit{RecursionLimit_None, 0}})
 		Wish(t, err, ShouldEqual, nil)
 		rs = rs.Explore(rn, ipld.PathSegmentOfInt(0))
-		rn, err = rn.LookupIndex(0)
+		rn, err = rn.LookupByIndex(0)
 		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, subTree, RecursionLimit{RecursionLimit_None, 0}})
 		Wish(t, err, ShouldEqual, nil)
 		rs = rs.Explore(rn, ipld.PathSegmentOfString("Parents"))
-		rn, err = rn.LookupString("Parents")
+		rn, err = rn.LookupByString("Parents")
 		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, parentsSelector, RecursionLimit{RecursionLimit_None, 0}})
 		Wish(t, err, ShouldEqual, nil)
 		rs = rs.Explore(rn, ipld.PathSegmentOfInt(0))
-		rn, err = rn.LookupIndex(0)
+		rn, err = rn.LookupByIndex(0)
 		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, subTree, RecursionLimit{RecursionLimit_None, 0}})
 		Wish(t, err, ShouldEqual, nil)
 		rs = rs.Explore(rn, ipld.PathSegmentOfString("Parents"))
-		rn, err = rn.LookupString("Parents")
+		rn, err = rn.LookupByString("Parents")
 		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, parentsSelector, RecursionLimit{RecursionLimit_None, 0}})
 		Wish(t, err, ShouldEqual, nil)
 	})
@@ -292,12 +292,12 @@ func TestExploreRecursiveExplore(t *testing.T) {
 			}
 		}
 		`
-		nb := basicnode.Style__Any{}.NewBuilder()
+		nb := basicnode.Prototype__Any{}.NewBuilder()
 		err := dagjson.Decoder(nb, bytes.NewBufferString(nodeString))
 		Wish(t, err, ShouldEqual, nil)
 		rn := nb.Build()
 		rs = rs.Explore(rn, ipld.PathSegmentOfString("Parents"))
-		rn, err = rn.LookupString("Parents")
+		rn, err = rn.LookupByString("Parents")
 		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, parentsSelector, RecursionLimit{RecursionLimit_Depth, maxDepth}})
 		Wish(t, err, ShouldEqual, nil)
 		rs = rs.Explore(rn, ipld.PathSegmentOfInt(0))
@@ -337,7 +337,7 @@ func TestExploreRecursiveExplore(t *testing.T) {
 			}
 		}
 		`
-		nb := basicnode.Style__Any{}.NewBuilder()
+		nb := basicnode.Prototype__Any{}.NewBuilder()
 		err := dagjson.Decoder(nb, bytes.NewBufferString(nodeString))
 		Wish(t, err, ShouldEqual, nil)
 		n := nb.Build()
@@ -346,15 +346,15 @@ func TestExploreRecursiveExplore(t *testing.T) {
 		rn := n
 		rs = s
 		rs = rs.Explore(rn, ipld.PathSegmentOfString("Parents"))
-		rn, err = rn.LookupString("Parents")
+		rn, err = rn.LookupByString("Parents")
 		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, parentsSelector, RecursionLimit{RecursionLimit_Depth, maxDepth}})
 		Wish(t, err, ShouldEqual, nil)
 		rs = rs.Explore(rn, ipld.PathSegmentOfInt(0))
-		rn, err = rn.LookupIndex(0)
+		rn, err = rn.LookupByIndex(0)
 		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, subTree, RecursionLimit{RecursionLimit_Depth, maxDepth - 1}})
 		Wish(t, err, ShouldEqual, nil)
 		rs = rs.Explore(rn, ipld.PathSegmentOfString("Parents"))
-		rn, err = rn.LookupString("Parents")
+		rn, err = rn.LookupByString("Parents")
 		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, parentsSelector, RecursionLimit{RecursionLimit_Depth, maxDepth - 1}})
 		Wish(t, err, ShouldEqual, nil)
 
@@ -362,19 +362,19 @@ func TestExploreRecursiveExplore(t *testing.T) {
 		rn = n
 		rs = s
 		rs = rs.Explore(rn, ipld.PathSegmentOfString("Side"))
-		rn, err = rn.LookupString("Side")
+		rn, err = rn.LookupByString("Side")
 		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, ExploreRecursive{sideSelector, sideSelector, RecursionLimit{RecursionLimit_Depth, maxDepth}}, RecursionLimit{RecursionLimit_Depth, maxDepth}})
 		Wish(t, err, ShouldEqual, nil)
 		rs = rs.Explore(rn, ipld.PathSegmentOfString("real"))
-		rn, err = rn.LookupString("real")
+		rn, err = rn.LookupByString("real")
 		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, ExploreRecursive{sideSelector, sideSelector, RecursionLimit{RecursionLimit_Depth, maxDepth - 1}}, RecursionLimit{RecursionLimit_Depth, maxDepth}})
 		Wish(t, err, ShouldEqual, nil)
 		rs = rs.Explore(rn, ipld.PathSegmentOfString("apple"))
-		rn, err = rn.LookupString("apple")
+		rn, err = rn.LookupByString("apple")
 		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, ExploreRecursive{sideSelector, sideSelector, RecursionLimit{RecursionLimit_Depth, maxDepth - 2}}, RecursionLimit{RecursionLimit_Depth, maxDepth}})
 		Wish(t, err, ShouldEqual, nil)
 		rs = rs.Explore(rn, ipld.PathSegmentOfString("sauce"))
-		rn, err = rn.LookupString("sauce")
+		rn, err = rn.LookupByString("sauce")
 		Wish(t, rs, ShouldEqual, nil)
 		Wish(t, err, ShouldEqual, nil)
 
@@ -382,23 +382,23 @@ func TestExploreRecursiveExplore(t *testing.T) {
 		rn = n
 		rs = s
 		rs = rs.Explore(rn, ipld.PathSegmentOfString("Parents"))
-		rn, err = rn.LookupString("Parents")
+		rn, err = rn.LookupByString("Parents")
 		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, parentsSelector, RecursionLimit{RecursionLimit_Depth, maxDepth}})
 		Wish(t, err, ShouldEqual, nil)
 		rs = rs.Explore(rn, ipld.PathSegmentOfInt(0))
-		rn, err = rn.LookupIndex(0)
+		rn, err = rn.LookupByIndex(0)
 		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, subTree, RecursionLimit{RecursionLimit_Depth, maxDepth - 1}})
 		Wish(t, err, ShouldEqual, nil)
 		rs = rs.Explore(rn, ipld.PathSegmentOfString("Side"))
-		rn, err = rn.LookupString("Side")
+		rn, err = rn.LookupByString("Side")
 		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, ExploreRecursive{sideSelector, sideSelector, RecursionLimit{RecursionLimit_Depth, maxDepth}}, RecursionLimit{RecursionLimit_Depth, maxDepth - 1}})
 		Wish(t, err, ShouldEqual, nil)
 		rs = rs.Explore(rn, ipld.PathSegmentOfString("cheese"))
-		rn, err = rn.LookupString("cheese")
+		rn, err = rn.LookupByString("cheese")
 		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, ExploreRecursive{sideSelector, sideSelector, RecursionLimit{RecursionLimit_Depth, maxDepth - 1}}, RecursionLimit{RecursionLimit_Depth, maxDepth - 1}})
 		Wish(t, err, ShouldEqual, nil)
 		rs = rs.Explore(rn, ipld.PathSegmentOfString("whiz"))
-		rn, err = rn.LookupString("whiz")
+		rn, err = rn.LookupByString("whiz")
 		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, ExploreRecursive{sideSelector, sideSelector, RecursionLimit{RecursionLimit_Depth, maxDepth - 2}}, RecursionLimit{RecursionLimit_Depth, maxDepth - 1}})
 		Wish(t, err, ShouldEqual, nil)
 	})
@@ -422,25 +422,25 @@ func TestExploreRecursiveExplore(t *testing.T) {
 			]
 		}
 		`
-		nb := basicnode.Style__Any{}.NewBuilder()
+		nb := basicnode.Prototype__Any{}.NewBuilder()
 		err := dagjson.Decoder(nb, bytes.NewBufferString(nodeString))
 		Wish(t, err, ShouldEqual, nil)
 		rn := nb.Build()
 		rs = rs.Explore(rn, ipld.PathSegmentOfString("Parents"))
-		rn, err = rn.LookupString("Parents")
+		rn, err = rn.LookupByString("Parents")
 		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, parentsSelector, RecursionLimit{RecursionLimit_Depth, maxDepth}})
 		Wish(t, err, ShouldEqual, nil)
 		rs = rs.Explore(rn, ipld.PathSegmentOfInt(0))
-		rn, err = rn.LookupIndex(0)
+		rn, err = rn.LookupByIndex(0)
 		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, ExploreUnion{[]Selector{Matcher{}, subTree}}, RecursionLimit{RecursionLimit_Depth, maxDepth - 1}})
 		Wish(t, err, ShouldEqual, nil)
 		rs = rs.Explore(rn, ipld.PathSegmentOfString("Parents"))
 
-		rn, err = rn.LookupString("Parents")
+		rn, err = rn.LookupByString("Parents")
 		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, parentsSelector, RecursionLimit{RecursionLimit_Depth, maxDepth - 1}})
 		Wish(t, err, ShouldEqual, nil)
 		rs = rs.Explore(rn, ipld.PathSegmentOfInt(0))
-		rn, err = rn.LookupIndex(0)
+		rn, err = rn.LookupByIndex(0)
 		Wish(t, rs, ShouldEqual, ExploreRecursive{subTree, ExploreUnion{[]Selector{Matcher{}, subTree}}, RecursionLimit{RecursionLimit_Depth, maxDepth - 2}})
 		Wish(t, err, ShouldEqual, nil)
 	})

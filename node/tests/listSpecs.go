@@ -10,9 +10,9 @@ import (
 	"github.com/ipld/go-ipld-prime/must"
 )
 
-func SpecTestListString(t *testing.T, ns ipld.NodeStyle) {
+func SpecTestListString(t *testing.T, np ipld.NodePrototype) {
 	t.Run("list<string>, 3 entries", func(t *testing.T) {
-		n := fluent.MustBuildList(ns, 3, func(la fluent.ListAssembler) {
+		n := fluent.MustBuildList(np, 3, func(la fluent.ListAssembler) {
 			la.AssembleValue().AssignString("one")
 			la.AssembleValue().AssignString("two")
 			la.AssembleValue().AssignString("three")
@@ -20,15 +20,15 @@ func SpecTestListString(t *testing.T, ns ipld.NodeStyle) {
 		t.Run("reads back out", func(t *testing.T) {
 			Wish(t, n.Length(), ShouldEqual, 3)
 
-			v, err := n.LookupIndex(0)
+			v, err := n.LookupByIndex(0)
 			Wish(t, err, ShouldEqual, nil)
 			Wish(t, must.String(v), ShouldEqual, "one")
 
-			v, err = n.LookupIndex(1)
+			v, err = n.LookupByIndex(1)
 			Wish(t, err, ShouldEqual, nil)
 			Wish(t, must.String(v), ShouldEqual, "two")
 
-			v, err = n.LookupIndex(2)
+			v, err = n.LookupByIndex(2)
 			Wish(t, err, ShouldEqual, nil)
 			Wish(t, must.String(v), ShouldEqual, "three")
 		})

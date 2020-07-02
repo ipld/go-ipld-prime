@@ -41,7 +41,7 @@ type MaybeMap__String__Msg3 = *_Map__String__Msg3__Maybe
 func (m MaybeMap__String__Msg3) IsNull() bool {
 	return m.m == schema.Maybe_Null
 }
-func (m MaybeMap__String__Msg3) IsUndefined() bool {
+func (m MaybeMap__String__Msg3) IsAbsent() bool {
 	return m.m == schema.Maybe_Absent
 }
 func (m MaybeMap__String__Msg3) Exists() bool {
@@ -50,7 +50,7 @@ func (m MaybeMap__String__Msg3) Exists() bool {
 func (m MaybeMap__String__Msg3) AsNode() ipld.Node {
 	switch m.m {
 	case schema.Maybe_Absent:
-		return ipld.Undef
+		return ipld.Absent
 	case schema.Maybe_Null:
 		return ipld.Null
 	case schema.Maybe_Value:
@@ -72,9 +72,9 @@ var _ schema.TypedNode = (Map__String__Msg3)(&_Map__String__Msg3{})
 func (Map__String__Msg3) ReprKind() ipld.ReprKind {
 	return ipld.ReprKind_Map
 }
-func (n Map__String__Msg3) LookupString(k string) (ipld.Node, error) {
+func (n Map__String__Msg3) LookupByString(k string) (ipld.Node, error) {
 	var k2 _String
-	if err := (_String__Style{}).fromString(&k2, k); err != nil {
+	if err := (_String__Prototype{}).fromString(&k2, k); err != nil {
 		return nil, err // TODO wrap in some kind of ErrInvalidKey
 	}
 	v, exists := n.m[k2]
@@ -83,7 +83,7 @@ func (n Map__String__Msg3) LookupString(k string) (ipld.Node, error) {
 	}
 	return v, nil
 }
-func (n Map__String__Msg3) Lookup(k ipld.Node) (ipld.Node, error) {
+func (n Map__String__Msg3) LookupByNode(k ipld.Node) (ipld.Node, error) {
 	k2, ok := k.(String)
 	if !ok {
 		panic("todo invalid key type error")
@@ -95,11 +95,11 @@ func (n Map__String__Msg3) Lookup(k ipld.Node) (ipld.Node, error) {
 	}
 	return v, nil
 }
-func (Map__String__Msg3) LookupIndex(idx int) (ipld.Node, error) {
-	return mixins.Map{"gendemo.Map__String__Msg3"}.LookupIndex(0)
+func (Map__String__Msg3) LookupByIndex(idx int) (ipld.Node, error) {
+	return mixins.Map{"gendemo.Map__String__Msg3"}.LookupByIndex(0)
 }
-func (n Map__String__Msg3) LookupSegment(seg ipld.PathSegment) (ipld.Node, error) {
-	return n.LookupString(seg.String())
+func (n Map__String__Msg3) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
+	return n.LookupByString(seg.String())
 }
 func (n Map__String__Msg3) MapIterator() ipld.MapIterator {
 	return &_Map__String__Msg3__MapItr{n, 0}
@@ -130,7 +130,7 @@ func (Map__String__Msg3) ListIterator() ipld.ListIterator {
 func (n Map__String__Msg3) Length() int {
 	return len(n.t)
 }
-func (Map__String__Msg3) IsUndefined() bool {
+func (Map__String__Msg3) IsAbsent() bool {
 	return false
 }
 func (Map__String__Msg3) IsNull() bool {
@@ -154,13 +154,13 @@ func (Map__String__Msg3) AsBytes() ([]byte, error) {
 func (Map__String__Msg3) AsLink() (ipld.Link, error) {
 	return mixins.Map{"gendemo.Map__String__Msg3"}.AsLink()
 }
-func (Map__String__Msg3) Style() ipld.NodeStyle {
-	return _Map__String__Msg3__Style{}
+func (Map__String__Msg3) Prototype() ipld.NodePrototype {
+	return _Map__String__Msg3__Prototype{}
 }
 
-type _Map__String__Msg3__Style struct{}
+type _Map__String__Msg3__Prototype struct{}
 
-func (_Map__String__Msg3__Style) NewBuilder() ipld.NodeBuilder {
+func (_Map__String__Msg3__Prototype) NewBuilder() ipld.NodeBuilder {
 	var nb _Map__String__Msg3__Builder
 	nb.Reset()
 	return &nb
@@ -288,8 +288,8 @@ func (na *_Map__String__Msg3__Assembler) AssignNode(v ipld.Node) error {
 	}
 	return na.Finish()
 }
-func (_Map__String__Msg3__Assembler) Style() ipld.NodeStyle {
-	return _Map__String__Msg3__Style{}
+func (_Map__String__Msg3__Assembler) Prototype() ipld.NodePrototype {
+	return _Map__String__Msg3__Prototype{}
 }
 func (ma *_Map__String__Msg3__Assembler) keyFinishTidy() bool {
 	switch ma.cm {
@@ -336,7 +336,7 @@ func (ma *_Map__String__Msg3__Assembler) AssembleEntry(k string) (ipld.NodeAssem
 	}
 
 	var k2 _String
-	if err := (_String__Style{}).fromString(&k2, k); err != nil {
+	if err := (_String__Prototype{}).fromString(&k2, k); err != nil {
 		return nil, err // TODO wrap in some kind of ErrInvalidKey
 	}
 	if _, exists := ma.w.m[k2]; exists {
@@ -409,11 +409,11 @@ func (ma *_Map__String__Msg3__Assembler) Finish() error {
 	*ma.m = schema.Maybe_Value
 	return nil
 }
-func (ma *_Map__String__Msg3__Assembler) KeyStyle() ipld.NodeStyle {
-	return _String__Style{}
+func (ma *_Map__String__Msg3__Assembler) KeyPrototype() ipld.NodePrototype {
+	return _String__Prototype{}
 }
-func (ma *_Map__String__Msg3__Assembler) ValueStyle(_ string) ipld.NodeStyle {
-	return _Msg3__Style{}
+func (ma *_Map__String__Msg3__Assembler) ValuePrototype(_ string) ipld.NodePrototype {
+	return _Msg3__Prototype{}
 }
 func (Map__String__Msg3) Type() schema.Type {
 	return nil /*TODO:typelit*/
@@ -429,25 +429,25 @@ var _ ipld.Node = &_Map__String__Msg3__Repr{}
 func (_Map__String__Msg3__Repr) ReprKind() ipld.ReprKind {
 	return ipld.ReprKind_Map
 }
-func (nr *_Map__String__Msg3__Repr) LookupString(k string) (ipld.Node, error) {
-	v, err := (Map__String__Msg3)(nr).LookupString(k)
+func (nr *_Map__String__Msg3__Repr) LookupByString(k string) (ipld.Node, error) {
+	v, err := (Map__String__Msg3)(nr).LookupByString(k)
 	if err != nil || v == ipld.Null {
 		return v, err
 	}
 	return v.(Msg3).Representation(), nil
 }
-func (nr *_Map__String__Msg3__Repr) Lookup(k ipld.Node) (ipld.Node, error) {
-	v, err := (Map__String__Msg3)(nr).Lookup(k)
+func (nr *_Map__String__Msg3__Repr) LookupByNode(k ipld.Node) (ipld.Node, error) {
+	v, err := (Map__String__Msg3)(nr).LookupByNode(k)
 	if err != nil || v == ipld.Null {
 		return v, err
 	}
 	return v.(Msg3).Representation(), nil
 }
-func (_Map__String__Msg3__Repr) LookupIndex(idx int) (ipld.Node, error) {
-	return mixins.Map{"gendemo.Map__String__Msg3.Repr"}.LookupIndex(0)
+func (_Map__String__Msg3__Repr) LookupByIndex(idx int) (ipld.Node, error) {
+	return mixins.Map{"gendemo.Map__String__Msg3.Repr"}.LookupByIndex(0)
 }
-func (n _Map__String__Msg3__Repr) LookupSegment(seg ipld.PathSegment) (ipld.Node, error) {
-	return n.LookupString(seg.String())
+func (n _Map__String__Msg3__Repr) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
+	return n.LookupByString(seg.String())
 }
 func (nr *_Map__String__Msg3__Repr) MapIterator() ipld.MapIterator {
 	return &_Map__String__Msg3__ReprMapItr{(Map__String__Msg3)(nr), 0}
@@ -472,7 +472,7 @@ func (_Map__String__Msg3__Repr) ListIterator() ipld.ListIterator {
 func (rn *_Map__String__Msg3__Repr) Length() int {
 	return len(rn.t)
 }
-func (_Map__String__Msg3__Repr) IsUndefined() bool {
+func (_Map__String__Msg3__Repr) IsAbsent() bool {
 	return false
 }
 func (_Map__String__Msg3__Repr) IsNull() bool {
@@ -496,13 +496,13 @@ func (_Map__String__Msg3__Repr) AsBytes() ([]byte, error) {
 func (_Map__String__Msg3__Repr) AsLink() (ipld.Link, error) {
 	return mixins.Map{"gendemo.Map__String__Msg3.Repr"}.AsLink()
 }
-func (_Map__String__Msg3__Repr) Style() ipld.NodeStyle {
-	return _Map__String__Msg3__ReprStyle{}
+func (_Map__String__Msg3__Repr) Prototype() ipld.NodePrototype {
+	return _Map__String__Msg3__ReprPrototype{}
 }
 
-type _Map__String__Msg3__ReprStyle struct{}
+type _Map__String__Msg3__ReprPrototype struct{}
 
-func (_Map__String__Msg3__ReprStyle) NewBuilder() ipld.NodeBuilder {
+func (_Map__String__Msg3__ReprPrototype) NewBuilder() ipld.NodeBuilder {
 	var nb _Map__String__Msg3__ReprBuilder
 	nb.Reset()
 	return &nb
@@ -630,8 +630,8 @@ func (na *_Map__String__Msg3__ReprAssembler) AssignNode(v ipld.Node) error {
 	}
 	return na.Finish()
 }
-func (_Map__String__Msg3__ReprAssembler) Style() ipld.NodeStyle {
-	return _Map__String__Msg3__ReprStyle{}
+func (_Map__String__Msg3__ReprAssembler) Prototype() ipld.NodePrototype {
+	return _Map__String__Msg3__ReprPrototype{}
 }
 func (ma *_Map__String__Msg3__ReprAssembler) keyFinishTidy() bool {
 	switch ma.cm {
@@ -678,7 +678,7 @@ func (ma *_Map__String__Msg3__ReprAssembler) AssembleEntry(k string) (ipld.NodeA
 	}
 
 	var k2 _String
-	if err := (_String__ReprStyle{}).fromString(&k2, k); err != nil {
+	if err := (_String__ReprPrototype{}).fromString(&k2, k); err != nil {
 		return nil, err // TODO wrap in some kind of ErrInvalidKey
 	}
 	if _, exists := ma.w.m[k2]; exists {
@@ -751,9 +751,9 @@ func (ma *_Map__String__Msg3__ReprAssembler) Finish() error {
 	*ma.m = schema.Maybe_Value
 	return nil
 }
-func (ma *_Map__String__Msg3__ReprAssembler) KeyStyle() ipld.NodeStyle {
-	return _String__ReprStyle{}
+func (ma *_Map__String__Msg3__ReprAssembler) KeyPrototype() ipld.NodePrototype {
+	return _String__ReprPrototype{}
 }
-func (ma *_Map__String__Msg3__ReprAssembler) ValueStyle(_ string) ipld.NodeStyle {
-	return _Msg3__ReprStyle{}
+func (ma *_Map__String__Msg3__ReprAssembler) ValuePrototype(_ string) ipld.NodePrototype {
+	return _Msg3__ReprPrototype{}
 }

@@ -22,17 +22,17 @@ func (g BytesTraits) EmitNodeMethodReprKind(w io.Writer) {
 		}
 	`, w, g)
 }
-func (g BytesTraits) EmitNodeMethodLookupString(w io.Writer) {
-	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Bytes}.emitNodeMethodLookupString(w)
+func (g BytesTraits) EmitNodeMethodLookupByString(w io.Writer) {
+	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Bytes}.emitNodeMethodLookupByString(w)
 }
-func (g BytesTraits) EmitNodeMethodLookup(w io.Writer) {
-	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Bytes}.emitNodeMethodLookup(w)
+func (g BytesTraits) EmitNodeMethodLookupByNode(w io.Writer) {
+	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Bytes}.emitNodeMethodLookupByNode(w)
 }
-func (g BytesTraits) EmitNodeMethodLookupIndex(w io.Writer) {
-	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Bytes}.emitNodeMethodLookupIndex(w)
+func (g BytesTraits) EmitNodeMethodLookupByIndex(w io.Writer) {
+	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Bytes}.emitNodeMethodLookupByIndex(w)
 }
-func (g BytesTraits) EmitNodeMethodLookupSegment(w io.Writer) {
-	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Bytes}.emitNodeMethodLookupSegment(w)
+func (g BytesTraits) EmitNodeMethodLookupBySegment(w io.Writer) {
+	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Bytes}.emitNodeMethodLookupBySegment(w)
 }
 func (g BytesTraits) EmitNodeMethodMapIterator(w io.Writer) {
 	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Bytes}.emitNodeMethodMapIterator(w)
@@ -43,8 +43,8 @@ func (g BytesTraits) EmitNodeMethodListIterator(w io.Writer) {
 func (g BytesTraits) EmitNodeMethodLength(w io.Writer) {
 	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Bytes}.emitNodeMethodLength(w)
 }
-func (g BytesTraits) EmitNodeMethodIsUndefined(w io.Writer) {
-	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Bytes}.emitNodeMethodIsUndefined(w)
+func (g BytesTraits) EmitNodeMethodIsAbsent(w io.Writer) {
+	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Bytes}.emitNodeMethodIsAbsent(w)
 }
 func (g BytesTraits) EmitNodeMethodIsNull(w io.Writer) {
 	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Bytes}.emitNodeMethodIsNull(w)
@@ -98,6 +98,6 @@ func (g BytesAssemblerTraits) EmitNodeAssemblerMethodAssignString(w io.Writer) {
 func (g BytesAssemblerTraits) EmitNodeAssemblerMethodAssignLink(w io.Writer) {
 	kindAssemblerTraitsGenerator{g.PkgName, g.TypeName, g.AppliedPrefix, ipld.ReprKind_Bytes}.emitNodeAssemblerMethodAssignLink(w)
 }
-func (g BytesAssemblerTraits) EmitNodeAssemblerMethodStyle(w io.Writer) {
-	kindAssemblerTraitsGenerator{g.PkgName, g.TypeName, g.AppliedPrefix, ipld.ReprKind_Bytes}.emitNodeAssemblerMethodStyle(w)
+func (g BytesAssemblerTraits) EmitNodeAssemblerMethodPrototype(w io.Writer) {
+	kindAssemblerTraitsGenerator{g.PkgName, g.TypeName, g.AppliedPrefix, ipld.ReprKind_Bytes}.emitNodeAssemblerMethodPrototype(w)
 }

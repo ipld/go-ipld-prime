@@ -52,28 +52,28 @@ func (g linkReprLinkReprGenerator) EmitNodeTypeAssertions(w io.Writer) {
 		var _ ipld.Node = &_{{ .Type | TypeSymbol }}__Repr{}
 	`, w, g.AdjCfg, g)
 }
-func (linkReprLinkReprGenerator) EmitNodeMethodReprKind(io.Writer)      {}
-func (linkReprLinkReprGenerator) EmitNodeMethodLookupString(io.Writer)  {}
-func (linkReprLinkReprGenerator) EmitNodeMethodLookup(io.Writer)        {}
-func (linkReprLinkReprGenerator) EmitNodeMethodLookupIndex(io.Writer)   {}
-func (linkReprLinkReprGenerator) EmitNodeMethodLookupSegment(io.Writer) {}
-func (linkReprLinkReprGenerator) EmitNodeMethodMapIterator(io.Writer)   {}
-func (linkReprLinkReprGenerator) EmitNodeMethodListIterator(io.Writer)  {}
-func (linkReprLinkReprGenerator) EmitNodeMethodLength(io.Writer)        {}
-func (linkReprLinkReprGenerator) EmitNodeMethodIsUndefined(io.Writer)   {}
-func (linkReprLinkReprGenerator) EmitNodeMethodIsNull(io.Writer)        {}
-func (linkReprLinkReprGenerator) EmitNodeMethodAsBool(io.Writer)        {}
-func (linkReprLinkReprGenerator) EmitNodeMethodAsInt(io.Writer)         {}
-func (linkReprLinkReprGenerator) EmitNodeMethodAsFloat(io.Writer)       {}
-func (linkReprLinkReprGenerator) EmitNodeMethodAsString(io.Writer)      {}
-func (linkReprLinkReprGenerator) EmitNodeMethodAsBytes(io.Writer)       {}
-func (linkReprLinkReprGenerator) EmitNodeMethodAsLink(io.Writer)        {}
-func (linkReprLinkReprGenerator) EmitNodeMethodStyle(io.Writer)         {}
-func (g linkReprLinkReprGenerator) EmitNodeStyleType(w io.Writer) {
+func (linkReprLinkReprGenerator) EmitNodeMethodReprKind(io.Writer)        {}
+func (linkReprLinkReprGenerator) EmitNodeMethodLookupByString(io.Writer)  {}
+func (linkReprLinkReprGenerator) EmitNodeMethodLookupByNode(io.Writer)    {}
+func (linkReprLinkReprGenerator) EmitNodeMethodLookupByIndex(io.Writer)   {}
+func (linkReprLinkReprGenerator) EmitNodeMethodLookupBySegment(io.Writer) {}
+func (linkReprLinkReprGenerator) EmitNodeMethodMapIterator(io.Writer)     {}
+func (linkReprLinkReprGenerator) EmitNodeMethodListIterator(io.Writer)    {}
+func (linkReprLinkReprGenerator) EmitNodeMethodLength(io.Writer)          {}
+func (linkReprLinkReprGenerator) EmitNodeMethodIsAbsent(io.Writer)        {}
+func (linkReprLinkReprGenerator) EmitNodeMethodIsNull(io.Writer)          {}
+func (linkReprLinkReprGenerator) EmitNodeMethodAsBool(io.Writer)          {}
+func (linkReprLinkReprGenerator) EmitNodeMethodAsInt(io.Writer)           {}
+func (linkReprLinkReprGenerator) EmitNodeMethodAsFloat(io.Writer)         {}
+func (linkReprLinkReprGenerator) EmitNodeMethodAsString(io.Writer)        {}
+func (linkReprLinkReprGenerator) EmitNodeMethodAsBytes(io.Writer)         {}
+func (linkReprLinkReprGenerator) EmitNodeMethodAsLink(io.Writer)          {}
+func (linkReprLinkReprGenerator) EmitNodeMethodPrototype(io.Writer)       {}
+func (g linkReprLinkReprGenerator) EmitNodePrototypeType(w io.Writer) {
 	// Since this is a "natural" representation... there's just a type alias here.
 	//  No new functions are necessary.
 	doTemplate(`
-		type _{{ .Type | TypeSymbol }}__ReprStyle = _{{ .Type | TypeSymbol }}__Style
+		type _{{ .Type | TypeSymbol }}__ReprPrototype = _{{ .Type | TypeSymbol }}__Prototype
 	`, w, g.AdjCfg, g)
 }
 func (g linkReprLinkReprGenerator) GetNodeBuilderGenerator() NodeBuilderGenerator {
@@ -104,5 +104,5 @@ func (linkReprLinkReprBuilderGenerator) EmitNodeAssemblerMethodAssignString(io.W
 func (linkReprLinkReprBuilderGenerator) EmitNodeAssemblerMethodAssignBytes(io.Writer)  {}
 func (linkReprLinkReprBuilderGenerator) EmitNodeAssemblerMethodAssignLink(io.Writer)   {}
 func (linkReprLinkReprBuilderGenerator) EmitNodeAssemblerMethodAssignNode(io.Writer)   {}
-func (linkReprLinkReprBuilderGenerator) EmitNodeAssemblerMethodStyle(io.Writer)        {}
+func (linkReprLinkReprBuilderGenerator) EmitNodeAssemblerMethodPrototype(io.Writer)    {}
 func (linkReprLinkReprBuilderGenerator) EmitNodeAssemblerOtherBits(io.Writer)          {}

@@ -67,13 +67,13 @@ func (g listReprListReprGenerator) EmitNodeTypeAssertions(w io.Writer) {
 	`, w, g.AdjCfg, g)
 }
 
-func (g listReprListReprGenerator) EmitNodeMethodLookup(w io.Writer) {
+func (g listReprListReprGenerator) EmitNodeMethodLookupByNode(w io.Writer) {
 	// Null is also already a branch in the method we're calling; hopefully the compiler inlines and sees this and DTRT.
 	// REVIEW: these unchecked casts are definitely safe at compile time, but I'm not sure if the compiler considers that provable,
 	//  so we should investigate if there's any runtime checks injected here that waste time.  If so: write this with more gsloc to avoid :(
 	doTemplate(`
-		func (nr *_{{ .Type | TypeSymbol }}__Repr) Lookup(k ipld.Node) (ipld.Node, error) {
-			v, err := ({{ .Type | TypeSymbol }})(nr).Lookup(k)
+		func (nr *_{{ .Type | TypeSymbol }}__Repr) LookupByNode(k ipld.Node) (ipld.Node, error) {
+			v, err := ({{ .Type | TypeSymbol }})(nr).LookupByNode(k)
 			if err != nil || v == ipld.Null {
 				return v, err
 			}
@@ -83,10 +83,10 @@ func (g listReprListReprGenerator) EmitNodeMethodLookup(w io.Writer) {
 
 }
 
-func (g listReprListReprGenerator) EmitNodeMethodLookupIndex(w io.Writer) {
+func (g listReprListReprGenerator) EmitNodeMethodLookupByIndex(w io.Writer) {
 	doTemplate(`
-		func (nr *_{{ .Type | TypeSymbol }}__Repr) LookupIndex(idx int) (ipld.Node, error) {
-			v, err := ({{ .Type | TypeSymbol }})(nr).LookupIndex(idx)
+		func (nr *_{{ .Type | TypeSymbol }}__Repr) LookupByIndex(idx int) (ipld.Node, error) {
+			v, err := ({{ .Type | TypeSymbol }})(nr).LookupByIndex(idx)
 			if err != nil || v == ipld.Null {
 				return v, err
 			}
@@ -126,12 +126,12 @@ func (g listReprListReprGenerator) EmitNodeMethodLength(w io.Writer) {
 	`, w, g.AdjCfg, g)
 }
 
-func (g listReprListReprGenerator) EmitNodeMethodStyle(w io.Writer) {
-	emitNodeMethodStyle_typical(w, g.AdjCfg, g)
+func (g listReprListReprGenerator) EmitNodeMethodPrototype(w io.Writer) {
+	emitNodeMethodPrototype_typical(w, g.AdjCfg, g)
 }
 
-func (g listReprListReprGenerator) EmitNodeStyleType(w io.Writer) {
-	emitNodeStyleType_typical(w, g.AdjCfg, g)
+func (g listReprListReprGenerator) EmitNodePrototypeType(w io.Writer) {
+	emitNodePrototypeType_typical(w, g.AdjCfg, g)
 }
 
 // --- NodeBuilder and NodeAssembler --->

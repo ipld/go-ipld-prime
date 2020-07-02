@@ -11,9 +11,9 @@ import (
 
 func ExampleCreateDataAndMarshal() {
 
-	ns := basicnode.Style.Any // Pick a style for the in-memory data.
-	nb := ns.NewBuilder()     // Create a builder.
-	ma, _ := nb.BeginMap(2)   // Begin assembling a map.
+	np := basicnode.Prototype.Any // Pick a prototype: this is how we decide what implementation will store the in-memory data.
+	nb := np.NewBuilder()         // Create a builder.
+	ma, _ := nb.BeginMap(2)       // Begin assembling a map.
 	ma.AssembleKey().AssignString("hey")
 	ma.AssembleValue().AssignString("it works!")
 	ma.AssembleKey().AssignString("yes")
@@ -33,10 +33,10 @@ func ExampleCreateDataAndMarshal() {
 func ExampleUnmarshalData() {
 	serial := bytes.NewBufferString(`{"hey":"it works!","yes": true}`)
 
-	ns := basicnode.Style.Any   // Pick a stle for the in-memory data.
-	nb := ns.NewBuilder()       // Create a builder.
-	dagjson.Decoder(nb, serial) // Hand the builder to decoding -- decoding will fill it in!
-	n := nb.Build()             // Call 'Build' to get the resulting Node.  (It's immutable!)
+	np := basicnode.Prototype.Any // Pick a stle for the in-memory data.
+	nb := np.NewBuilder()         // Create a builder.
+	dagjson.Decoder(nb, serial)   // Hand the builder to decoding -- decoding will fill it in!
+	n := nb.Build()               // Call 'Build' to get the resulting Node.  (It's immutable!)
 
 	fmt.Printf("the data decoded was a %s kind\n", n.ReprKind())
 	fmt.Printf("the length of the node is %d\n", n.Length())

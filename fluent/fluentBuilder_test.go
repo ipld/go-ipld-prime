@@ -13,7 +13,7 @@ import (
 
 func TestBuild(t *testing.T) {
 	t.Run("scalar build should work", func(t *testing.T) {
-		n := fluent.MustBuild(basicnode.Style__String{}, func(fna fluent.NodeAssembler) {
+		n := fluent.MustBuild(basicnode.Prototype__String{}, func(fna fluent.NodeAssembler) {
 			fna.AssignString("fine")
 		})
 		Wish(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_String)
@@ -22,7 +22,7 @@ func TestBuild(t *testing.T) {
 		Wish(t, v2, ShouldEqual, "fine")
 	})
 	t.Run("map build should work", func(t *testing.T) {
-		n := fluent.MustBuild(basicnode.Style__Map{}, func(fna fluent.NodeAssembler) {
+		n := fluent.MustBuild(basicnode.Prototype__Map{}, func(fna fluent.NodeAssembler) {
 			fna.CreateMap(3, func(fma fluent.MapAssembler) {
 				fma.AssembleEntry("k1").AssignString("fine")
 				fma.AssembleEntry("k2").AssignString("super")
@@ -35,16 +35,16 @@ func TestBuild(t *testing.T) {
 		})
 		Wish(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
 		Wish(t, n.Length(), ShouldEqual, 3)
-		Wish(t, must.String(must.Node(n.LookupString("k1"))), ShouldEqual, "fine")
-		Wish(t, must.String(must.Node(n.LookupString("k2"))), ShouldEqual, "super")
-		n = must.Node(n.LookupString("k3"))
+		Wish(t, must.String(must.Node(n.LookupByString("k1"))), ShouldEqual, "fine")
+		Wish(t, must.String(must.Node(n.LookupByString("k2"))), ShouldEqual, "super")
+		n = must.Node(n.LookupByString("k3"))
 		Wish(t, n.Length(), ShouldEqual, 3)
-		Wish(t, must.String(must.Node(n.LookupString("k31"))), ShouldEqual, "thanks")
-		Wish(t, must.String(must.Node(n.LookupString("k32"))), ShouldEqual, "for")
-		Wish(t, must.String(must.Node(n.LookupString("k33"))), ShouldEqual, "asking")
+		Wish(t, must.String(must.Node(n.LookupByString("k31"))), ShouldEqual, "thanks")
+		Wish(t, must.String(must.Node(n.LookupByString("k32"))), ShouldEqual, "for")
+		Wish(t, must.String(must.Node(n.LookupByString("k33"))), ShouldEqual, "asking")
 	})
 	t.Run("list build should work", func(t *testing.T) {
-		n := fluent.MustBuild(basicnode.Style__List{}, func(fna fluent.NodeAssembler) {
+		n := fluent.MustBuild(basicnode.Prototype__List{}, func(fna fluent.NodeAssembler) {
 			fna.CreateList(1, func(fla fluent.ListAssembler) {
 				fla.AssembleValue().CreateList(1, func(fla fluent.ListAssembler) {
 					fla.AssembleValue().CreateList(1, func(fla fluent.ListAssembler) {
@@ -57,16 +57,16 @@ func TestBuild(t *testing.T) {
 		})
 		Wish(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_List)
 		Wish(t, n.Length(), ShouldEqual, 1)
-		n = must.Node(n.LookupIndex(0))
+		n = must.Node(n.LookupByIndex(0))
 		Wish(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_List)
 		Wish(t, n.Length(), ShouldEqual, 1)
-		n = must.Node(n.LookupIndex(0))
+		n = must.Node(n.LookupByIndex(0))
 		Wish(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_List)
 		Wish(t, n.Length(), ShouldEqual, 1)
-		n = must.Node(n.LookupIndex(0))
+		n = must.Node(n.LookupByIndex(0))
 		Wish(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_List)
 		Wish(t, n.Length(), ShouldEqual, 1)
-		n = must.Node(n.LookupIndex(0))
+		n = must.Node(n.LookupByIndex(0))
 		Wish(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Int)
 		Wish(t, must.Int(n), ShouldEqual, 2)
 	})

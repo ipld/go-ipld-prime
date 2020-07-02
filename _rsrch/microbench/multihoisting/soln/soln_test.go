@@ -32,7 +32,7 @@ func TestAllocCount(t *testing.T) {
 	runtime.GC()
 	runtime.ReadMemStats(&m[1])
 
-	x = x.LookupString("foo")
+	x = x.LookupByString("foo")
 	runtime.GC()
 	runtime.ReadMemStats(&m[2])
 

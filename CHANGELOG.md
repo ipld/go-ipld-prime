@@ -20,15 +20,6 @@ Planned/Upcoming Changes
 
 Here are some outlines of changes we intend to make that affect the public API:
 
-- `NodeStyle` -> rename -> `NodePrototype`.
-	- See https://github.com/ipld/go-ipld-prime/issues/54 for reasoning.
-	- This should be a "sed refactor" -- the change is purely naming, not semantics, so it should be easy to update your code for.
-- `Node.Lookup` -> rename -> `Node.LookupNode`.
-	- The shortest and least-qualified name, 'Lookup', should be reserved for the best-typed variant of the method, which is only present on codegenerated types (and not present on the Node interface at all, due to golang's limited polymorphism).
-	- This should be a "sed refactor" -- the change is purely naming, not semantics, so it should be easy to update your code for.
-- `Node.Lookup{Foo}` -> rename -> `Node.LookupBy{Foo}`.
-	- The current phrasing makes it sound like the "{Foo}" component of the name describes what it returns, rather than the param; this is confusing and should be rectified (even though it does make the method name moderately longer).
-	- This should be a "sed refactor" -- the change is purely naming, not semantics, so it should be easy to update your code for.
 - Something about linking...
 	- But it's not clear what.  See https://github.com/ipld/go-ipld-prime/issues/55 for discussion.
 	- If nothing else, `ipld.Loader` and `ipld.Storer` will probably change to get "Link" somewhere in their name, because that's turned out to be how we're always colloquially referring to them.
@@ -48,7 +39,21 @@ Unreleased on master
 Changes here are on the master branch, but not in any tagged release yet.
 When a release tag is made, this block of bullet points will just slide down to the [Released Changes](#released-changes) section.
 
-- __nothing yet :)__
+- Renamed: `NodeStyle` -> `NodePrototype`.
+	- Reason: it seems to fit better!  See https://github.com/ipld/go-ipld-prime/issues/54 for a full discussion.
+	- This should be a "sed refactor" -- the change is purely naming, not semantics, so it should be easy to update your code for.
+	- This also affects some package-scoped vars named `Style`; they're accordingly also renamed to `Prototype`.
+	- This also affects several methods such as `KeyStyle` and `ValueStyle`; they're accordingly also renamed to `KeyPrototype` and `ValuePrototype`.
+- Renamed: `(Node).Lookup{Foo}` -> `(Node).LookupBy{Foo}`.
+	- Reason: The former phrasing makes it sound like the "{Foo}" component of the name describes what it returns, but in fact what it describes is the type of the param (which is necessary, since Golang lacks function overloading parametric polymorphism).  Adding the preposition should make this less likely to mislead (even though it does make the method name moderately longer).
+	- This should be a "sed refactor" -- the change is purely naming, not semantics, so it should be easy to update your code for.
+- Renamed: `(Node).Lookup` -> `(Node).LookupNode`.
+	- Reason: The shortest and least-qualified name, 'Lookup', should be reserved for the best-typed variant of the method, which is only present on codegenerated types (and not present on the Node interface at all, due to Golang's limited polymorphism).
+	- This should be a "sed refactor" -- the change is purely naming, not semantics, so it should be easy to update your code for.  (The change itself in the library was fairly literally `s/Lookup(/LookupNode(/g`, and then `s/"Lookup"/"LookupNode"/g` to catch a few error message strings, so consumers shouldn't have it much harder.)
+	- Note: combined with the above rename, this method overall becomes `(Node).LookupByNode`.
+- Renamed: `ipld.Undef` -> `ipld.Absent`, and `(Node).IsUndefined` -> `(Node).IsAbsent`.
+	- Reason: "absent" has emerged as a much, much better description of what this value means.  "Undefined" sounds nebulous and carries less meaning.  In long-form prose docs written recently, "absent" consistently fits the sentence flow much better.  Let's just adopt "absent" consistently and do away with "undefined".
+	- This should be a "sed refactor" -- the change is purely naming, not semantics, so it should be easy to update your code for.
 
 
 Released Changes

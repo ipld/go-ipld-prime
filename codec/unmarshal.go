@@ -27,7 +27,7 @@ import (
 // and the user can pick up the finished Node from wherever their assembler has it.
 // Typical usage might look like the following:
 //
-//		nb := basicnode.Style__Any{}.NewBuilder()
+//		nb := basicnode.Prototype__Any{}.NewBuilder()
 //		err := codec.Unmarshal(nb, json.Decoder(reader))
 //		n := nb.Build()
 //

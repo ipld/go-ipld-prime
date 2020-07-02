@@ -14,11 +14,11 @@ The https://specs.ipld.io/ site has more content about that.
 ### how this works outside of schemas
 
 There are concepts of null and of absent present in the core `Node` and `NodeAssembler` interfaces.
-`Node` specifies `IsNull() bool` and `IsUndefined() bool` predicates;
+`Node` specifies `IsNull() bool` and `IsAbsent() bool` predicates;
 and `NodeAssembler` specifies an `AssignNull` function.
 
-There are also singleton values available called `ipld.Null` and `ipld.Undef`
-which report true for `IsNull` and `IsUndefined`, respectively.
+There are also singleton values available called `ipld.Null` and `ipld.Absent`
+which report true for `IsNull` and `IsAbsent`, respectively.
 These singletons can be used by an function that need to return a null or absence indicator.
 
 There's really no reason for any package full of `Node` implementations need to make their own types for these values,
@@ -56,46 +56,46 @@ There's also a concept of "absent".
 "Absent" is separate and distinct from the concept of "null" -- null is still a _value_; absent just means _nothing there_.
 
 (Those familiar with javascript might note that javascript also has concepts of "null" versus "undefined".
-It's the same idea.)
+It's the same idea -- we just call it "absent" instead of "undefined".)
 
-Absent is implemented by the `ipld.undefNode` type (which has no fields -- it's a "unit" type),
-and is exposed as the `ipld.Undef` singleton value.
+Absent is implemented by the `ipld.absentNode` type (which has no fields -- it's a "unit" type),
+and is exposed as the `ipld.Absent` singleton value.
 
-(More generally, an `ipld.Node` can describe itself as containing "absent" by having the `IsUndefined()` method return `true`.
+(More generally, an `ipld.Node` can describe itself as containing "absent" by having the `IsAbsent()` method return `true`.
 (The `Kind()` method still returns `ipld.ReprKind_Null`, for lack of better option.)
-However, most code prefers to return the `ipld.Undef` singleton value whenever it can.)
+However, most code prefers to return the `ipld.Absent` singleton value whenever it can.)
 
 Absent values aren't really used at the Data Model level.
 If you ask for a map key that isn't present in the map, the lookup method will return `nil` and `ErrNotExists`.
 
 Absent values *do* show up at the Schema level, however.
 Specifically, in structs: a struct can have a field which is `optional`,
-one of the values such an optional field may report itself as having is `ipld.Undef`.
+one of the values such an optional field may report itself as having is `ipld.Absent`.
 This represents when a value *wasn't present* in the serialized form of the struct,
 even though the schema lets us know that it could be, and that it's part of the struct's type.
 (Accordingly, no `ErrNotExists` is returned for a lookup of that field --
 the field is always considered to _exist_... the value is just _absent_.)
-Iterators will also return the field name key, together with `ipld.Undef` as the value.
+Iterators will also return the field name key, together with `ipld.Absent` as the value.
 
 However, absent values can't really be *created*.
-There's no such thing as an `AssignAbsent` or `AssignUndef` method on the `ipld.NodeAssembler` interface.
+There's no such thing as an `AssignAbsent` or `AssignAbsent` method on the `ipld.NodeAssembler` interface.
 Codecs similarly can't produce absent as a value (obviously -- codecs work over `ipld.NodeAssembler`, so how could they?).
 Absent values are just produced by implication, when a field is defined, but its value isn't set.
 
-Despite absent values not being used or produced at the Data Model, we still have methods like `IsUndefined` specified
+Despite absent values not being used or produced at the Data Model, we still have methods like `IsAbsent` specified
 as part of the `ipld.Node` interface so that it's possible to write code which is generic over
 either plain Data Model or Schema data while using just that interface.
 
 ### the above is all regarding generic interfaces
 
 As long as we're talking about the `ipld.Node` _interface_,
-we talk about the `ipld.Null` and `ipld.Undef` singletons, and their contracts in terms of the interface.
+we talk about the `ipld.Null` and `ipld.Absent` singletons, and their contracts in terms of the interface.
 
 (Part of the reason this works is because an interface, in golang,
 comes in two parts: a pointer to the typeinfo of the inhabitant value,
 and a pointer to the value itself.
 This means anywhere we have an `ipld.Node` return type, we can toss `ipld.Null`
-or `ipld.Undef` into it with no additional overhead!)
+or `ipld.Absent` into it with no additional overhead!)
 
 When we talk about concrete types, rather than the `ipld.Node` _interface_ --
 as we're going to, in codegen -- it's a different scenario.
@@ -202,7 +202,7 @@ It's important that the "maybe" types be embeddable, for all the same reasons th
 
 It's interesting to consider the alternatives, though:
 
-We could've bitpacked the isUndef or isNull flags for a field into one word at the top of a struct, for example.
+We could've bitpacked the isAbsent or isNull flags for a field into one word at the top of a struct, for example.
 But, there are numerous drawbacks to this:
 
 - the complexity of this is high.

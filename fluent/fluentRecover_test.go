@@ -14,7 +14,7 @@ func TestRecover(t *testing.T) {
 	t.Run("simple build error should capture", func(t *testing.T) {
 		Wish(t,
 			fluent.Recover(func() {
-				fluent.MustBuild(basicnode.Style__String{}, func(fna fluent.NodeAssembler) {
+				fluent.MustBuild(basicnode.Prototype__String{}, func(fna fluent.NodeAssembler) {
 					fna.AssignInt(9)
 				})
 				t.Fatal("should not be reached")
@@ -26,7 +26,7 @@ func TestRecover(t *testing.T) {
 	t.Run("correct build should return nil", func(t *testing.T) {
 		Wish(t,
 			fluent.Recover(func() {
-				fluent.MustBuild(basicnode.Style__String{}, func(fna fluent.NodeAssembler) {
+				fluent.MustBuild(basicnode.Prototype__String{}, func(fna fluent.NodeAssembler) {
 					fna.AssignString("fine")
 				})
 			}),

@@ -22,17 +22,17 @@ func (g BoolTraits) EmitNodeMethodReprKind(w io.Writer) {
 		}
 	`, w, g)
 }
-func (g BoolTraits) EmitNodeMethodLookupString(w io.Writer) {
-	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Bool}.emitNodeMethodLookupString(w)
+func (g BoolTraits) EmitNodeMethodLookupByString(w io.Writer) {
+	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Bool}.emitNodeMethodLookupByString(w)
 }
-func (g BoolTraits) EmitNodeMethodLookup(w io.Writer) {
-	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Bool}.emitNodeMethodLookup(w)
+func (g BoolTraits) EmitNodeMethodLookupByNode(w io.Writer) {
+	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Bool}.emitNodeMethodLookupByNode(w)
 }
-func (g BoolTraits) EmitNodeMethodLookupIndex(w io.Writer) {
-	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Bool}.emitNodeMethodLookupIndex(w)
+func (g BoolTraits) EmitNodeMethodLookupByIndex(w io.Writer) {
+	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Bool}.emitNodeMethodLookupByIndex(w)
 }
-func (g BoolTraits) EmitNodeMethodLookupSegment(w io.Writer) {
-	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Bool}.emitNodeMethodLookupSegment(w)
+func (g BoolTraits) EmitNodeMethodLookupBySegment(w io.Writer) {
+	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Bool}.emitNodeMethodLookupBySegment(w)
 }
 func (g BoolTraits) EmitNodeMethodMapIterator(w io.Writer) {
 	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Bool}.emitNodeMethodMapIterator(w)
@@ -43,8 +43,8 @@ func (g BoolTraits) EmitNodeMethodListIterator(w io.Writer) {
 func (g BoolTraits) EmitNodeMethodLength(w io.Writer) {
 	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Bool}.emitNodeMethodLength(w)
 }
-func (g BoolTraits) EmitNodeMethodIsUndefined(w io.Writer) {
-	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Bool}.emitNodeMethodIsUndefined(w)
+func (g BoolTraits) EmitNodeMethodIsAbsent(w io.Writer) {
+	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Bool}.emitNodeMethodIsAbsent(w)
 }
 func (g BoolTraits) EmitNodeMethodIsNull(w io.Writer) {
 	kindTraitsGenerator{g.PkgName, g.TypeName, g.TypeSymbol, ipld.ReprKind_Bool}.emitNodeMethodIsNull(w)
@@ -98,6 +98,6 @@ func (g BoolAssemblerTraits) EmitNodeAssemblerMethodAssignBytes(w io.Writer) {
 func (g BoolAssemblerTraits) EmitNodeAssemblerMethodAssignLink(w io.Writer) {
 	kindAssemblerTraitsGenerator{g.PkgName, g.TypeName, g.AppliedPrefix, ipld.ReprKind_Bool}.emitNodeAssemblerMethodAssignLink(w)
 }
-func (g BoolAssemblerTraits) EmitNodeAssemblerMethodStyle(w io.Writer) {
-	kindAssemblerTraitsGenerator{g.PkgName, g.TypeName, g.AppliedPrefix, ipld.ReprKind_Bool}.emitNodeAssemblerMethodStyle(w)
+func (g BoolAssemblerTraits) EmitNodeAssemblerMethodPrototype(w io.Writer) {
+	kindAssemblerTraitsGenerator{g.PkgName, g.TypeName, g.AppliedPrefix, ipld.ReprKind_Bool}.emitNodeAssemblerMethodPrototype(w)
 }

@@ -9,25 +9,25 @@ import (
 	"github.com/ipld/go-ipld-prime/must"
 )
 
-func SpecTestMapStrInt(t *testing.T, ns ipld.NodeStyle) {
+func SpecTestMapStrInt(t *testing.T, np ipld.NodePrototype) {
 	t.Run("map<str,int>, 3 entries", func(t *testing.T) {
-		n := buildMapStrIntN3(ns)
+		n := buildMapStrIntN3(np)
 		t.Run("reads back out", func(t *testing.T) {
 			Wish(t, n.Length(), ShouldEqual, 3)
 
-			v, err := n.LookupString("whee")
+			v, err := n.LookupByString("whee")
 			Wish(t, err, ShouldEqual, nil)
 			v2, err := v.AsInt()
 			Wish(t, err, ShouldEqual, nil)
 			Wish(t, v2, ShouldEqual, 1)
 
-			v, err = n.LookupString("waga")
+			v, err = n.LookupByString("waga")
 			Wish(t, err, ShouldEqual, nil)
 			v2, err = v.AsInt()
 			Wish(t, err, ShouldEqual, nil)
 			Wish(t, v2, ShouldEqual, 3)
 
-			v, err = n.LookupString("woot")
+			v, err = n.LookupByString("woot")
 			Wish(t, err, ShouldEqual, nil)
 			v2, err = v.AsInt()
 			Wish(t, err, ShouldEqual, nil)
@@ -73,14 +73,14 @@ func SpecTestMapStrInt(t *testing.T, ns ipld.NodeStyle) {
 			Wish(t, v, ShouldEqual, nil)
 		})
 		t.Run("reads for absent keys error sensibly", func(t *testing.T) {
-			v, err := n.LookupString("nope")
+			v, err := n.LookupByString("nope")
 			Wish(t, err, ShouldBeSameTypeAs, ipld.ErrNotExists{})
 			Wish(t, err.Error(), ShouldEqual, `key not found: "nope"`)
 			Wish(t, v, ShouldEqual, nil)
 		})
 	})
 	t.Run("repeated key should error", func(t *testing.T) {
-		nb := ns.NewBuilder()
+		nb := np.NewBuilder()
 		ma, err := nb.BeginMap(3)
 		if err != nil {
 			panic(err)
@@ -98,7 +98,7 @@ func SpecTestMapStrInt(t *testing.T, ns ipld.NodeStyle) {
 		}
 	})
 	t.Run("using expired child assemblers should panic", func(t *testing.T) {
-		nb := ns.NewBuilder()
+		nb := np.NewBuilder()
 		ma, err := nb.BeginMap(3)
 		must.NotError(err)
 
@@ -125,7 +125,7 @@ func SpecTestMapStrInt(t *testing.T, ns ipld.NodeStyle) {
 		Wish(t, ma.Finish(), ShouldEqual, nil)
 		n := nb.Build()
 		Wish(t, n.Length(), ShouldEqual, 1)
-		v, err := n.LookupString("whee")
+		v, err := n.LookupByString("whee")
 		Wish(t, err, ShouldEqual, nil)
 		v2, err := v.AsInt()
 		Wish(t, err, ShouldEqual, nil)
@@ -136,9 +136,9 @@ func SpecTestMapStrInt(t *testing.T, ns ipld.NodeStyle) {
 	})
 }
 
-func SpecTestMapStrMapStrInt(t *testing.T, ns ipld.NodeStyle) {
+func SpecTestMapStrMapStrInt(t *testing.T, np ipld.NodePrototype) {
 	t.Run("map<str,map<str,int>>", func(t *testing.T) {
-		nb := ns.NewBuilder()
+		nb := np.NewBuilder()
 		ma, err := nb.BeginMap(3)
 		must.NotError(err)
 		must.NotError(ma.AssembleKey().AssignString("whee"))
@@ -171,14 +171,14 @@ func SpecTestMapStrMapStrInt(t *testing.T, ns ipld.NodeStyle) {
 		t.Run("reads back out", func(t *testing.T) {
 			Wish(t, n.Length(), ShouldEqual, 3)
 
-			v, err := n.LookupString("woot")
+			v, err := n.LookupByString("woot")
 			Wish(t, err, ShouldEqual, nil)
-			v2, err := v.LookupString("m2k1")
+			v2, err := v.LookupByString("m2k1")
 			Wish(t, err, ShouldEqual, nil)
 			v3, err := v2.AsInt()
 			Wish(t, err, ShouldEqual, nil)
 			Wish(t, v3, ShouldEqual, 3)
-			v2, err = v.LookupString("m2k2")
+			v2, err = v.LookupByString("m2k2")
 			Wish(t, err, ShouldEqual, nil)
 			v3, err = v2.AsInt()
 			Wish(t, err, ShouldEqual, nil)
@@ -187,9 +187,9 @@ func SpecTestMapStrMapStrInt(t *testing.T, ns ipld.NodeStyle) {
 	})
 }
 
-func SpecTestMapStrListStr(t *testing.T, ns ipld.NodeStyle) {
+func SpecTestMapStrListStr(t *testing.T, np ipld.NodePrototype) {
 	t.Run("map<str,list<str>>", func(t *testing.T) {
-		nb := ns.NewBuilder()
+		nb := np.NewBuilder()
 		ma, err := nb.BeginMap(3)
 		must.NotError(err)
 		must.NotError(ma.AssembleKey().AssignString("asdf"))
@@ -216,9 +216,9 @@ func SpecTestMapStrListStr(t *testing.T, ns ipld.NodeStyle) {
 		t.Run("reads back out", func(t *testing.T) {
 			Wish(t, n.Length(), ShouldEqual, 3)
 
-			v, err := n.LookupString("qwer")
+			v, err := n.LookupByString("qwer")
 			Wish(t, err, ShouldEqual, nil)
-			v2, err := v.LookupIndex(1)
+			v2, err := v.LookupByIndex(1)
 			Wish(t, err, ShouldEqual, nil)
 			v3, err := v2.AsString()
 			Wish(t, err, ShouldEqual, nil)

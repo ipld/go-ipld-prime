@@ -18,7 +18,7 @@ func Marshal(n ipld.Node, sink shared.TokenSink) error {
 	var tk tok.Token
 	switch n.ReprKind() {
 	case ipld.ReprKind_Invalid:
-		return fmt.Errorf("cannot traverse a node that is undefined")
+		return fmt.Errorf("cannot traverse a node that is absent")
 	case ipld.ReprKind_Null:
 		tk.Type = tok.TNull
 		_, err := sink.Step(&tk)
@@ -62,7 +62,7 @@ func Marshal(n ipld.Node, sink shared.TokenSink) error {
 		}
 		// Emit list contents (and recurse).
 		for i := 0; i < l; i++ {
-			v, err := n.LookupIndex(i)
+			v, err := n.LookupByIndex(i)
 			if err != nil {
 				return err
 			}

@@ -21,10 +21,10 @@ import (
 // - we can make direct comparisons to the standard library json marshalling
 //    and unmarshalling, thus having a back-of-the-envelope baseline to compare.
 
-func BenchmarkSpec_Unmarshal_Map3StrInt(b *testing.B, ns ipld.NodeStyle) {
+func BenchmarkSpec_Unmarshal_Map3StrInt(b *testing.B, np ipld.NodePrototype) {
 	var err error
 	for i := 0; i < b.N; i++ {
-		nb := ns.NewBuilder()
+		nb := np.NewBuilder()
 		err = codec.Unmarshal(nb, refmtjson.NewDecoder(bytes.NewBufferString(`{"whee":1,"woot":2,"waga":3}`)))
 		sink = nb.Build()
 	}
@@ -33,7 +33,7 @@ func BenchmarkSpec_Unmarshal_Map3StrInt(b *testing.B, ns ipld.NodeStyle) {
 	}
 }
 
-func BenchmarkSpec_Unmarshal_MapNStrMap3StrInt(b *testing.B, ns ipld.NodeStyle) {
+func BenchmarkSpec_Unmarshal_MapNStrMap3StrInt(b *testing.B, np ipld.NodePrototype) {
 	for _, n := range []int{0, 1, 2, 4, 8, 16, 32} {
 		b.Run(fmt.Sprintf("n=%d", n), func(b *testing.B) {
 			msg := corpus.MapNStrMap3StrInt(n)
@@ -41,7 +41,7 @@ func BenchmarkSpec_Unmarshal_MapNStrMap3StrInt(b *testing.B, ns ipld.NodeStyle) 
 
 			var node ipld.Node
 			var err error
-			nb := ns.NewBuilder()
+			nb := np.NewBuilder()
 			for i := 0; i < b.N; i++ {
 				err = codec.Unmarshal(nb, refmtjson.NewDecoder(bytes.NewBufferString(msg)))
 				node = nb.Build()

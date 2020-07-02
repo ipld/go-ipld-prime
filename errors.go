@@ -99,7 +99,7 @@ func (e ErrInvalidKey) Error() string {
 	}
 }
 
-// ErrInvalidSegmentForList is returned when using Node.LookupSegment and the
+// ErrInvalidSegmentForList is returned when using Node.LookupBySegment and the
 // given PathSegment can't be applied to a list because it's unparsable as a number.
 type ErrInvalidSegmentForList struct {
 	// TypeName may indicate the named type of a node the function was called on,
@@ -150,7 +150,7 @@ func (e ErrIteratorOverread) Error() string {
 	return "iterator overread"
 }
 
-type ErrCannotBeNull struct{} // Review: arguably either ErrInvalidKindForNodeStyle.
+type ErrCannotBeNull struct{} // Review: arguably either ErrInvalidKindForNodePrototype.
 
 type ErrMissingRequiredField struct{}     // only possible for typed nodes -- specifically, struct types.
 type ErrListOverrun struct{}              // only possible for typed nodes -- specifically, struct types with list (aka tuple) representations.

@@ -7,5 +7,5 @@ import (
 )
 
 func TestString(t *testing.T) {
-	tests.SpecTestString(t, Style__String{})
+	tests.SpecTestString(t, Prototype__String{})
 }

@@ -7,15 +7,15 @@ import (
 	"github.com/ipld/go-ipld-prime/must"
 )
 
-func SpecBenchmarkMapStrInt_3n_AssembleStandard(b *testing.B, ns ipld.NodeStyle) {
+func SpecBenchmarkMapStrInt_3n_AssembleStandard(b *testing.B, np ipld.NodePrototype) {
 	for i := 0; i < b.N; i++ {
-		sink = buildMapStrIntN3(ns)
+		sink = buildMapStrIntN3(np)
 	}
 }
 
-func SpecBenchmarkMapStrInt_3n_AssembleEntry(b *testing.B, ns ipld.NodeStyle) {
+func SpecBenchmarkMapStrInt_3n_AssembleEntry(b *testing.B, np ipld.NodePrototype) {
 	for i := 0; i < b.N; i++ {
-		nb := ns.NewBuilder()
+		nb := np.NewBuilder()
 		ma, err := nb.BeginMap(3)
 		if err != nil {
 			panic(err)
@@ -40,8 +40,8 @@ func SpecBenchmarkMapStrInt_3n_AssembleEntry(b *testing.B, ns ipld.NodeStyle) {
 	}
 }
 
-func SpecBenchmarkMapStrInt_3n_Iteration(b *testing.B, ns ipld.NodeStyle) {
-	n := buildMapStrIntN3(ns)
+func SpecBenchmarkMapStrInt_3n_Iteration(b *testing.B, np ipld.NodePrototype) {
+	n := buildMapStrIntN3(np)
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		itr := n.MapIterator()
@@ -54,15 +54,15 @@ func SpecBenchmarkMapStrInt_3n_Iteration(b *testing.B, ns ipld.NodeStyle) {
 
 // n25 -->
 
-func SpecBenchmarkMapStrInt_25n_AssembleStandard(b *testing.B, ns ipld.NodeStyle) {
+func SpecBenchmarkMapStrInt_25n_AssembleStandard(b *testing.B, np ipld.NodePrototype) {
 	for i := 0; i < b.N; i++ {
-		sink = buildMapStrIntN25(ns)
+		sink = buildMapStrIntN25(np)
 	}
 }
 
-func SpecBenchmarkMapStrInt_25n_AssembleEntry(b *testing.B, ns ipld.NodeStyle) {
+func SpecBenchmarkMapStrInt_25n_AssembleEntry(b *testing.B, np ipld.NodePrototype) {
 	for i := 0; i < b.N; i++ {
-		nb := ns.NewBuilder()
+		nb := np.NewBuilder()
 		ma, err := nb.BeginMap(25)
 		if err != nil {
 			panic(err)
@@ -79,8 +79,8 @@ func SpecBenchmarkMapStrInt_25n_AssembleEntry(b *testing.B, ns ipld.NodeStyle) {
 	}
 }
 
-func SpecBenchmarkMapStrInt_25n_Iteration(b *testing.B, ns ipld.NodeStyle) {
-	n := buildMapStrIntN25(ns)
+func SpecBenchmarkMapStrInt_25n_Iteration(b *testing.B, np ipld.NodePrototype) {
+	n := buildMapStrIntN25(np)
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		itr := n.MapIterator()
