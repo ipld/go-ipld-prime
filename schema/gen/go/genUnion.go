@@ -35,29 +35,29 @@ func (unionGenerator) IsRepr() bool { return false } // hint used in some genera
 // --- native content and specializations --->
 
 func (g unionGenerator) EmitNativeType(w io.Writer) {
+	// We generate *two* types: a struct which acts as the union node,
+	// and also an interface which covers the members (and has an unexported marker function to make sure the set can't be extended).
+	//
+	// The interface *mostly* isn't used... except for in the return type of a speciated function which can be used to do golang-native type switches.
 	doTemplate(`
 		type _{{ .Type | TypeSymbol }} struct {
-			{{ with (eq .AdjCfg.UnionMemlayout "embedAll") -}}
-
+			{{- with (eq (.AdjCfg.UnionMemlayout .Type) "embedAll") }}
+			{{- range $member := .Type.Members }}
+			x_{{ $member.Name }} _{{ $member | TypeSymbol }}
 			{{- end}}
-			{{ with (eq .AdjCfg.UnionMemlayout "interface") -}}
-
+			{{- end}}
+			{{- with (eq (.AdjCfg.UnionMemlayout .Type) "interface") }}
+			x _{{ .Type | TypeSymbol }}__iface
 			{{- end}}
 		}
 		type {{ .Type | TypeSymbol }} = *_{{ .Type | TypeSymbol }}
 
+		type _{{ .Type | TypeSymbol }}__iface interface {
+			_{{ .Type | TypeSymbol }}__member()
+		}
 
-		{{ with (eq .AdjCfg.UnionMemlayout "interface") -}}
-			// ... is there any utility to making an interface type?
-			// internally: no.
-			// for export and use: unclear.
-			//   i don't think we need to kowtow to burntsushi's sumtype checker.  we could (and it would be pleasing to do so); but we can make our own just as well.
-			//   how would you use it?  would there be a method for unboxing the structptr into the interface type?  and vice versa (which would incur an alloc)?
-			//     if assignNode was going to work, ... actually it could just take the member type "concretely", they already implement Node, and we could just figure it out.  That'd be fine.
-			//   is there... any reason a programmer would prefer to use the interface, though?
-			//     if they wanted to make their own typeswitch, maybe?
-			//       is that going to be more efficient that doing a switch using an enum we generate, and then calling a function that does a cast explicitly?  probably.  heck.
-			//         do we need to have an *exported* interface for this to work, though?  I think not.  so that might be a solid choice.
+		{{- range $member := .Type.Members }}
+		func (_{{ $member | TypeSymbol }}) _{{ .dot.Type | TypeSymbol }}__member() {}
 		{{- end}}
 	`, w, g.AdjCfg, g)
 }

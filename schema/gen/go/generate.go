@@ -44,6 +44,8 @@ func Generate(pth string, pkgName string, ts schema.TypeSystem, adjCfg *AdjunctC
 				EmitEntireType(NewMapReprMapGenerator(pkgName, t2, adjCfg), f)
 			case schema.TypeList:
 				EmitEntireType(NewListReprListGenerator(pkgName, t2, adjCfg), f)
+			case schema.TypeUnion:
+				panic("this ain't done yet :) you can't do the synthesis until the end, sadly")
 			default:
 				panic("add more type switches here :)")
 			}
