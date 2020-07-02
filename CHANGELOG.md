@@ -39,6 +39,17 @@ Unreleased on master
 Changes here are on the master branch, but not in any tagged release yet.
 When a release tag is made, this block of bullet points will just slide down to the [Released Changes](#released-changes) section.
 
+- _nothing yet :)_
+
+
+Released Changes
+----------------
+
+### v0.5.0
+
+v0.5.0 is a small release -- it just contains a bunch of renames.
+There are _no_ semantic changes bundled with this (it's _just_ renames) so this should be easy to absorb.
+
 - Renamed: `NodeStyle` -> `NodePrototype`.
 	- Reason: it seems to fit better!  See https://github.com/ipld/go-ipld-prime/issues/54 for a full discussion.
 	- This should be a "sed refactor" -- the change is purely naming, not semantics, so it should be easy to update your code for.
@@ -56,10 +67,10 @@ When a release tag is made, this block of bullet points will just slide down to 
 	- This should be a "sed refactor" -- the change is purely naming, not semantics, so it should be easy to update your code for.
 
 
-Released Changes
-----------------
-
 ### v0.4.0
+
+v0.4.0 contains some misceleanous features and documentation improvements -- perhaps most notably, codegen is re-introduced and more featureful than previous rounds -- but otherwise isn't too shocking.
+This tag mostly exists as a nice stopping point before the next version coming up (which is planned to include several API changes).
 
 - Docs: several new example functions should now appear in the godoc for how to use the linking APIs.
 - Feature: codegen is back!  Use it if you dare.
@@ -77,6 +88,9 @@ Released Changes
 
 
 ### v0.0.3
+
+v0.0.3 contained a massive rewrite which pivoted us to using NodeAssembler patterns.
+Code predating this version will need significant updates to match; but, the performance improvements that result should be more than worth it.
 
 - Constructing new nodes has a major pivot towards using "NodeAssembler" pattern: https://github.com/ipld/go-ipld-prime/pull/49
 	- This was a massively breaking change: it pivoted from bottom-up composition to top-down assembly: allocating large chunks of structured memory up front and filling them in, rather than stitching together trees over fragmented heap memory with lots of pointers
