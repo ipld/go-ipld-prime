@@ -10,36 +10,36 @@ package schema
 // (Meanwhile, we're using these methods in the codegen prototypes.)
 
 func SpawnString(name TypeName) TypeString {
-	return TypeString{anyType{name, nil}}
+	return TypeString{typeBase{name, nil}}
 }
 
 func SpawnInt(name TypeName) TypeInt {
-	return TypeInt{anyType{name, nil}}
+	return TypeInt{typeBase{name, nil}}
 }
 
 func SpawnBytes(name TypeName) TypeBytes {
-	return TypeBytes{anyType{name, nil}}
+	return TypeBytes{typeBase{name, nil}}
 }
 
 func SpawnLink(name TypeName) TypeLink {
-	return TypeLink{anyType{name, nil}, nil, false}
+	return TypeLink{typeBase{name, nil}, nil, false}
 }
 
 func SpawnLinkReference(name TypeName, referenceType Type) TypeLink {
-	return TypeLink{anyType{name, nil}, referenceType, true}
+	return TypeLink{typeBase{name, nil}, referenceType, true}
 }
 
 func SpawnList(name TypeName, typ Type, nullable bool) TypeList {
-	return TypeList{anyType{name, nil}, false, typ, nullable}
+	return TypeList{typeBase{name, nil}, false, typ, nullable}
 }
 
 func SpawnMap(name TypeName, keyType Type, valueType Type, nullable bool) TypeMap {
-	return TypeMap{anyType{name, nil}, false, keyType, valueType, nullable}
+	return TypeMap{typeBase{name, nil}, false, keyType, valueType, nullable}
 }
 
 func SpawnStruct(name TypeName, fields []StructField, repr StructRepresentation) TypeStruct {
 	v := TypeStruct{
-		anyType{name, nil},
+		typeBase{name, nil},
 		fields,
 		make(map[string]StructField, len(fields)),
 		repr,

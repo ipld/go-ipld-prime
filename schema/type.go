@@ -88,33 +88,33 @@ var (
 	_ Type = TypeEnum{}
 )
 
-type anyType struct {
+type typeBase struct {
 	name     TypeName
 	universe *TypeSystem
 }
 
 type TypeBool struct {
-	anyType
+	typeBase
 }
 
 type TypeString struct {
-	anyType
+	typeBase
 }
 
 type TypeBytes struct {
-	anyType
+	typeBase
 }
 
 type TypeInt struct {
-	anyType
+	typeBase
 }
 
 type TypeFloat struct {
-	anyType
+	typeBase
 }
 
 type TypeMap struct {
-	anyType
+	typeBase
 	anonymous     bool
 	keyType       Type // must be ReprKind==string (e.g. Type==String|Enum).
 	valueType     Type
@@ -122,21 +122,21 @@ type TypeMap struct {
 }
 
 type TypeList struct {
-	anyType
+	typeBase
 	anonymous     bool
 	valueType     Type
 	valueNullable bool
 }
 
 type TypeLink struct {
-	anyType
+	typeBase
 	referencedType    Type
 	hasReferencedType bool
 	// ...?
 }
 
 type TypeUnion struct {
-	anyType
+	typeBase
 	style        UnionStyle
 	valuesKinded map[ipld.ReprKind]Type // for Style==Kinded
 	values       map[string]Type        // for Style!=Kinded (note, key is freetext, not necessarily TypeName of the value)
@@ -154,7 +154,7 @@ var (
 )
 
 type TypeStruct struct {
-	anyType
+	typeBase
 	// n.b. `Fields` is an (order-preserving!) map in the schema-schema;
 	//  but it's a list here, with the keys denormalized into the value,
 	//   because that's typically how we use it.
@@ -186,7 +186,7 @@ type StructRepresentation_StringPairs struct{ sep1, sep2 string }
 type StructRepresentation_Stringjoin struct{ sep string }
 
 type TypeEnum struct {
-	anyType
+	typeBase
 	members []string
 }
 

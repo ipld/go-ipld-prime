@@ -2,9 +2,9 @@ package schema
 
 /* cookie-cutter standard interface stuff */
 
-func (anyType) _Type()                    {}
-func (t anyType) TypeSystem() *TypeSystem { return t.universe }
-func (t anyType) Name() TypeName          { return t.name }
+func (typeBase) _Type()                    {}
+func (t typeBase) TypeSystem() *TypeSystem { return t.universe }
+func (t typeBase) Name() TypeName          { return t.name }
 
 func (TypeBool) Kind() Kind   { return Kind_Bool }
 func (TypeString) Kind() Kind { return Kind_String }
