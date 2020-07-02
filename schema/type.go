@@ -137,21 +137,37 @@ type TypeLink struct {
 
 type TypeUnion struct {
 	typeBase
-	style        UnionStyle
-	valuesKinded map[ipld.ReprKind]Type // for Style==Kinded
-	values       map[string]Type        // for Style!=Kinded (note, key is freetext, not necessarily TypeName of the value)
-	typeHintKey  string                 // for Style==Envelope|Inline
-	contentKey   string                 // for Style==Envelope
+	// Members are listed in the order they appear in the schema.
+	// To find the discriminant info, you must look inside the representation; they all contain a 'table' of some kind in which the member types are the values.
+	// Note that multiple appearances of the same type as distinct members of the union is not possible.
+	//  While we could do this... A: that's... odd, and nearly never called for; B: not possible with kinded mode; C: imagine the golang-native type switch!  it's impossible.
+	//  We rely on this clarity in many ways: most visibly, the type-level Node implementation for a union always uses the type names as if they were map keys!  This behavior is consistent for all union representations.
+	members        []Type
+	representation UnionRepresentation
 }
 
-type UnionStyle struct{ x string }
+type UnionRepresentation interface{ _UnionRepresentation() }
 
-var (
-	UnionStyle_Kinded   = UnionStyle{"kinded"}
-	UnionStyle_Keyed    = UnionStyle{"keyed"}
-	UnionStyle_Envelope = UnionStyle{"envelope"}
-	UnionStyle_Inline   = UnionStyle{"inline"}
-)
+func (UnionRepresentation_Keyed) _UnionRepresentation()    {}
+func (UnionRepresentation_Kinded) _UnionRepresentation()   {}
+func (UnionRepresentation_Envelope) _UnionRepresentation() {}
+func (UnionRepresentation_Inline) _UnionRepresentation()   {}
+
+type UnionRepresentation_Keyed struct {
+	table map[string]Type // key is user-defined freetext
+}
+type UnionRepresentation_Kinded struct {
+	table map[ipld.ReprKind]Type
+}
+type UnionRepresentation_Envelope struct {
+	discriminantKey string
+	contentKey      string
+	table           map[string]Type // key is user-defined freetext
+}
+type UnionRepresentation_Inline struct {
+	discriminantKey string
+	table           map[string]Type // key is user-defined freetext
+}
 
 type TypeStruct struct {
 	typeBase

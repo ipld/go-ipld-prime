@@ -68,6 +68,13 @@ func SpawnStructRepresentationStringjoin(delim string) StructRepresentation_Stri
 	return StructRepresentation_Stringjoin{delim}
 }
 
+func SpawnUnion(name TypeName, members []Type, repr UnionRepresentation) TypeUnion {
+	return TypeUnion{typeBase{name, nil}, members, repr}
+}
+func SpawnUnionRepresentationKeyed(table map[string]Type) UnionRepresentation_Keyed {
+	return UnionRepresentation_Keyed{table}
+}
+
 // The methods relating to TypeSystem are also mutation-heavy and placeholdery.
 
 func (ts *TypeSystem) Init() {
