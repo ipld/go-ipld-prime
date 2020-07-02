@@ -11,14 +11,10 @@ import (
 	"github.com/ipld/go-ipld-prime/schema"
 )
 
-func TestUnionPoke(t *testing.T) {
-	t.Skip("not implemented yet")
-
+func TestUnionKeyed(t *testing.T) {
 	ts := schema.TypeSystem{}
 	ts.Init()
-	adjCfg := &AdjunctCfg{
-		maybeUsesPtr: map[schema.TypeName]bool{},
-	}
+	adjCfg := &AdjunctCfg{}
 	ts.Accumulate(schema.SpawnString("String"))
 	ts.Accumulate(schema.SpawnString("Strung"))
 	ts.Accumulate(schema.SpawnUnion("StrStr",
@@ -32,9 +28,7 @@ func TestUnionPoke(t *testing.T) {
 		},
 		)))
 
-	prefix := "union-keyed"
-	pkgName := "main"
-	genAndCompileAndTest(t, prefix, pkgName, ts, adjCfg, func(t *testing.T, getPrototypeByName func(string) ipld.NodePrototype) {
+	test := func(t *testing.T, getPrototypeByName func(string) ipld.NodePrototype) {
 		np := getPrototypeByName("StrStr")
 		nrp := getPrototypeByName("StrStr.Repr")
 		var n schema.TypedNode
@@ -59,6 +53,27 @@ func TestUnionPoke(t *testing.T) {
 				na.AssembleEntry("b").AssignString("whee")
 			})
 			Wish(t, n, ShouldEqual, nr)
+		})
+	}
+
+	t.Skip("not yet finished") // mostly there -- all the templates work.  can't compile until we finish all the builders.
+
+	t.Run("union-using-embed", func(t *testing.T) {
+		adjCfg.unionMemlayout = map[schema.TypeName]string{"StrStr": "embedAll"}
+
+		prefix := "union-keyed-using-embed"
+		pkgName := "main"
+		genAndCompileAndTest(t, prefix, pkgName, ts, adjCfg, func(t *testing.T, getPrototypeByName func(string) ipld.NodePrototype) {
+			test(t, getPrototypeByName)
+		})
+	})
+	t.Run("union-using-interface", func(t *testing.T) {
+		adjCfg.unionMemlayout = map[schema.TypeName]string{"StrStr": "interface"}
+
+		prefix := "union-keyed-using-interface"
+		pkgName := "main"
+		genAndCompileAndTest(t, prefix, pkgName, ts, adjCfg, func(t *testing.T, getPrototypeByName func(string) ipld.NodePrototype) {
+			test(t, getPrototypeByName)
 		})
 	})
 }

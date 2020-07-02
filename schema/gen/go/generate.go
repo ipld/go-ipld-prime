@@ -45,7 +45,12 @@ func Generate(pth string, pkgName string, ts schema.TypeSystem, adjCfg *AdjunctC
 			case schema.TypeList:
 				EmitEntireType(NewListReprListGenerator(pkgName, t2, adjCfg), f)
 			case schema.TypeUnion:
-				panic("this ain't done yet :) you can't do the synthesis until the end, sadly")
+				switch t2.RepresentationStrategy().(type) {
+				case schema.UnionRepresentation_Keyed:
+					EmitEntireType(NewUnionReprKeyedGenerator(pkgName, t2, adjCfg), f)
+				default:
+					panic("unrecognized union representation strategy")
+				}
 			default:
 				panic("add more type switches here :)")
 			}
