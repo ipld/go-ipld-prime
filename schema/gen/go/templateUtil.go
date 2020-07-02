@@ -13,10 +13,18 @@ import (
 func doTemplate(tmplstr string, w io.Writer, adjCfg *AdjunctCfg, data interface{}) {
 	tmpl := template.Must(template.New("").
 		Funcs(template.FuncMap{
+
+			// These methods are used for symbol munging and appear constantly, so they need to be short.
+			//  (You could also get at them through `.AdjCfg`, but going direct saves some screen real estate.)
 			"TypeSymbol":       adjCfg.TypeSymbol,
 			"FieldSymbolLower": adjCfg.FieldSymbolLower,
 			"FieldSymbolUpper": adjCfg.FieldSymbolUpper,
 			"MaybeUsesPtr":     adjCfg.MaybeUsesPtr,
+
+			// The whole AdjunctConfig can be accessed.
+			//  Access methods like UnionMemlayout through this, as e.g. `.AdjCfg.UnionMemlayout`.
+			"AdjCfg": func() *AdjunctCfg { return adjCfg },
+
 			"KindPrim": func(k ipld.ReprKind) string {
 				switch k {
 				case ipld.ReprKind_Map:
