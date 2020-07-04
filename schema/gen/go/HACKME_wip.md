@@ -109,3 +109,38 @@ We tend to generate such an enum in codegen anyway, for various purposes.
 Might as well let people name it outright too, if they have the slightest desire to do so.
 
 (Doesn't apply to kinded unions.)
+
+
+### can reset methods be replaced with duff's device?
+
+Yes.  I'm not even sure why we haven't done that; they were written that way on purpose.
+
+Although on second thought, see the following section about new-alloc child assemblers;
+it raises some challenges.
+
+
+### what's up with new-alloc child assemblers?
+
+Mostly, child assemblers are embedded in the assembler for the type that contains them;
+this is part of our allocation amortization strategy and important to performance.
+However, it doesn't always apply:
+Sometimes we *need* independently allocated assemblers, even when they're child assemblers:
+recursive structures need this (otherwise, how big would the slab be?  infinite?  no; halt).
+Sometimes we also just *want* them, somewhat more mildly: if a union is one of several things,
+and some of them are uncommonly used but huuuuge, then maybe we'd rather allocate the child assemblers
+individually on demand rather than pay a large resident memory cost to embed all the possibilities.
+
+There's a couple things to think about with these:
+
+- resetting assemblers with a duff's device strategy wouldn't recursively reset these;
+  it would just orphan them.  While possibly leaving them pointed into some parts of memory in the parent slab ('cm' in particular comes to mind).
+  This could be a significant correctness issue.
+   - But who's responsibility is it to "safe" this?  Nilling 'w' proactively should also make this pretty innocuous, as one option (but we don't currently do this).
+
+- if the parent assembler is being used in some highly reusable situation (e.g. it's a list value or map value),
+  is the parent able to hold onto and re-use the child assembler?  We probably usually still want to do this, even if it's in a separate piece of heap.
+  - For unions, there's a question of if we should hold onto each child assembler, or just the most recent; that's a choice we could make and tune.
+    If the answer is "most recent only", we could even crank down the resident size by use of more interfaces instead of concrete types (at the cost of some other runtime performance debufs, most likely).
+
+// this last bit seems to imply that maybe union assemblers should always have ca fields, it's just a question of if they should be pointers or not.
+// we could also do them as a single shared interface: it *is* a nodeassembler iface already, after all, so it can be done without even introducing more types.  would involve casts (at least two, I think) and/or non-inlinable calls, though.

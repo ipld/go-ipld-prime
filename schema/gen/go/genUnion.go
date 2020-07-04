@@ -39,12 +39,17 @@ func (g unionGenerator) EmitNativeType(w io.Writer) {
 	// and also an interface which covers the members (and has an unexported marker function to make sure the set can't be extended).
 	//
 	// The interface *mostly* isn't used... except for in the return type of a speciated function which can be used to do golang-native type switches.
+	//
+	// A note about index: in all cases the index of a member type is used, we increment it by one, to avoid using zero.
+	// We do this because it's desirable to reserve the zero in the 'tag' field (if we generate one) as a sentinel value
+	// (see further comments in the EmitNodeAssemblerType function);
+	// and since we do it in that one case, it's just as well to do it uniformly.
 	doTemplate(`
 		type _{{ .Type | TypeSymbol }} struct {
 			{{- if (eq (.AdjCfg.UnionMemlayout .Type) "embedAll") }}
 			tag uint
 			{{- range $i, $member := .Type.Members }}
-			x{{ $i }} _{{ $member | TypeSymbol }}
+			x{{ add $i 1 }} _{{ $member | TypeSymbol }}
 			{{- end}}
 			{{- else if (eq (.AdjCfg.UnionMemlayout .Type) "interface") }}
 			x _{{ .Type | TypeSymbol }}__iface
@@ -68,8 +73,8 @@ func (g unionGenerator) EmitNativeAccessors(w io.Writer) {
 			{{- if (eq (.AdjCfg.UnionMemlayout .Type) "embedAll") }}
 			switch n.tag {
 			{{- range $i, $member := .Type.Members }}
-			case {{ $i }}:
-				return &n.x{{ $i }}
+			case {{ add $i 1 }}:
+				return &n.x{{ add $i 1 }}
 			{{- end}}
 			default:
 				panic("invalid union state; how did you create this object?")
@@ -142,10 +147,10 @@ func (g unionGenerator) EmitNodeMethodLookupByString(w io.Writer) {
 			{{- range $i, $member := .Type.Members }}
 			case "{{ $member.Name }}":
 				{{- if (eq (dot.AdjCfg.UnionMemlayout dot.Type) "embedAll") }}
-				if n.tag != {{ $i }} {
+				if n.tag != {{ add $i 1 }} {
 					return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
 				}
-				return &n.x{{ $i }}, nil
+				return &n.x{{ add $i 1 }}, nil
 				{{- else if (eq (dot.AdjCfg.UnionMemlayout dot.Type) "interface") }}
 				if _, ok := n.x.({{ $member | TypeSymbol }}); !ok {
 					return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
@@ -191,8 +196,8 @@ func (g unionGenerator) EmitNodeMethodMapIterator(w io.Writer) {
 			{{- if (eq (.AdjCfg.UnionMemlayout .Type) "embedAll") }}
 			switch itr.n.tag {
 			{{- range $i, $member := .Type.Members }}
-			case {{ $i }}:
-				return memberName__{{ dot.Type | TypeSymbol }}_{{ $member.Name }}, &n.x{{ $i }}, nil
+			case {{ add $i 1 }}:
+				return memberName__{{ dot.Type | TypeSymbol }}_{{ $member.Name }}, &n.x{{ add $i 1 }}, nil
 			{{- end}}
 			{{- else if (eq (.AdjCfg.UnionMemlayout .Type) "interface") }}
 			switch itr.n.x.(type) {
@@ -231,5 +236,159 @@ func (g unionGenerator) EmitNodePrototypeType(w io.Writer) {
 }
 
 func (g unionGenerator) GetNodeBuilderGenerator() NodeBuilderGenerator {
-	return nil /* TODO */
+	return unionBuilderGenerator{
+		g.AdjCfg,
+		mixins.MapAssemblerTraits{
+			g.PkgName,
+			g.TypeName,
+			"_" + g.AdjCfg.TypeSymbol(g.Type) + "__",
+		},
+		g.PkgName,
+		g.Type,
+	}
+}
+
+type unionBuilderGenerator struct {
+	AdjCfg *AdjunctCfg
+	mixins.MapAssemblerTraits
+	PkgName string
+	Type    schema.TypeUnion
+}
+
+func (unionBuilderGenerator) IsRepr() bool { return false } // hint used in some generalized templates.
+
+func (g unionBuilderGenerator) EmitNodeBuilderType(w io.Writer) {
+	emitEmitNodeBuilderType_typical(w, g.AdjCfg, g)
+}
+func (g unionBuilderGenerator) EmitNodeBuilderMethods(w io.Writer) {
+	emitNodeBuilderMethods_typical(w, g.AdjCfg, g)
+}
+func (g unionBuilderGenerator) EmitNodeAssemblerType(w io.Writer) {
+	// Assemblers for unions are not unlikely those for structs or maps:
+	//
+	// - 'w' is the "**w**ip" pointer.
+	// - 'm' is the pointer to a **m**aybe which communicates our completeness to the parent if we're a child assembler.
+	//     Like any other structure, a union can be nullable in the context of some enclosing object, and we'll have the usual branches for handling that in our various Assign methods.
+	// - 'state' is what it says on the tin.  Unions use maState to sequence the transitions between a new assembler, the map having been started, key insertions, value insertions, and finish.
+	//     Most of this is just like the way struct and map use maState.
+	//     However, we also need to guard to make sure a second entry never begins; after the first, finish is the *only* valid transition.
+	//     In structs, this is done using the "set" bitfield; in maps, the state resides in the wip map itself.
+	//     Unions are more like the latter: depending on which memory layout we're using, either the `na.w.tag` value, or, a non-nil `na.w.x`, is indicative that one key has been entered.
+	//     (The zero value for `na.w.tag` is reserved, and all  for this reason.
+	// - There is no additional state need to store "focus" (in contrast to structs);
+	//     information during the AssembleValue phase about which member is selected is also just handled in `na.w.tag`, or, in the type info of `na.w.x`, again depending on memory layout strategy.
+	//
+	// - 'cm' is **c**hild **m**aybe and is used for the completion message from children.
+	// - 'ca*' fields embed **c**hild **a**ssemblers -- these are embedded so we can yield pointers to them during recusion into child value assembly without causing new allocations.
+	//     In unions, only one of these will every be used!  However, we don't know *which one* in advance, so, we have to embed them all.
+	//     (It's ironic to note that if the golang compiler had an understanding of unions itself (either tagged or untagged would suffice), we could compile this down into *much* more minimal amounts of resident memory reservation.  Alas!)
+	//     We elide all of the 'ca*' embeds, and instead allocate on demand, for unions with memlayout=interface mode.  (Arguably, this is overloading that config; PRs for more granular configurability welcome.)
+	doTemplate(`
+		type _{{ .Type | TypeSymbol }}__Assembler struct {
+			w *_{{ .Type | TypeSymbol }}
+			m *schema.Maybe
+			state maState
+
+			cm schema.Maybe
+			{{- if (eq (.AdjCfg.UnionMemlayout .Type) "embedAll") }}
+			{{- range $i, $member := .Type.Members }}
+			ca{{ add $i 1 }} _{{ $member | TypeSymbol }}__Assembler
+			{{end -}}
+			{{end -}}
+		}
+
+		func (na *_{{ .Type | TypeSymbol }}__Assembler) reset() {
+			na.state = maState_initial
+			{{- if (eq (.AdjCfg.UnionMemlayout .Type) "embedAll") }}
+			{{- range $i, $member := .Type.Members }}
+			na.ca{{ add $i 1 }}.reset()
+			{{end -}}
+			{{end -}}
+		}
+	`, w, g.AdjCfg, g)
+}
+func (g unionBuilderGenerator) EmitNodeAssemblerMethodBeginMap(w io.Writer) {
+	// We currently disregard sizeHint.  It's not relevant to us.
+	//  We could check it strictly and emit errors; presently, we don't.
+	// This method contains a branch to support MaybeUsesPtr because new memory may need to be allocated.
+	//  This allocation only happens if the 'w' ptr is nil, which means we're being used on a Maybe;
+	//  otherwise, the 'w' ptr should already be set, and we fill that memory location without allocating, as usual.
+	// DRY: this turns out to be textually identical to the method for structs!
+	doTemplate(`
+		func (na *_{{ .Type | TypeSymbol }}__Assembler) BeginMap(int) (ipld.MapAssembler, error) {
+			switch *na.m {
+			case schema.Maybe_Value, schema.Maybe_Null:
+				panic("invalid state: cannot assign into assembler that's already finished")
+			case midvalue:
+				panic("invalid state: it makes no sense to 'begin' twice on the same assembler!")
+			}
+			*na.m = midvalue
+			{{- if .Type | MaybeUsesPtr }}
+			if na.w == nil {
+				na.w = &_{{ .Type | TypeSymbol }}{}
+			}
+			{{- end}}
+			return na, nil
+		}
+	`, w, g.AdjCfg, g)
+}
+func (g unionBuilderGenerator) EmitNodeAssemblerMethodAssignNull(w io.Writer) {
+	// It might sound a bit odd to call a union "recursive", since it's so very trivially so (no fan-out),
+	//  but it's functionally accurate: the generated method should include a branch for the 'midvalue' state.
+	emitNodeAssemblerMethodAssignNull_recursive(w, g.AdjCfg, g)
+}
+func (g unionBuilderGenerator) EmitNodeAssemblerMethodAssignNode(w io.Writer) {
+	// AssignNode goes through three phases:
+	// 1. is it null?  Jump over to AssignNull (which may or may not reject it).
+	// 2. is it our own type?  Handle specially -- we might be able to do efficient things.
+	// 3. is it the right kind to morph into us?  Do so.
+	//
+	// We do not set m=midvalue in phase 3 -- it shouldn't matter unless you're trying to pull off concurrent access, which is wrong and unsafe regardless.
+	//
+	// DRY: this turns out to be textually identical to the method for structs!  (At least, for now.  It could/should probably be optimized to get to the point faster in phase 3.)
+	doTemplate(`
+		func (na *_{{ .Type | TypeSymbol }}__Assembler) AssignNode(v ipld.Node) error {
+			if v.IsNull() {
+				return na.AssignNull()
+			}
+			if v2, ok := v.(*_{{ .Type | TypeSymbol }}); ok {
+				switch *na.m {
+				case schema.Maybe_Value, schema.Maybe_Null:
+					panic("invalid state: cannot assign into assembler that's already finished")
+				case midvalue:
+					panic("invalid state: cannot assign null into an assembler that's already begun working on recursive structures!")
+				}
+				{{- if .Type | MaybeUsesPtr }}
+				if na.w == nil {
+					na.w = v2
+					*na.m = schema.Maybe_Value
+					return nil
+				}
+				{{- end}}
+				*na.w = *v2
+				*na.m = schema.Maybe_Value
+				return nil
+			}
+			if v.ReprKind() != ipld.ReprKind_Map {
+				return ipld.ErrWrongKind{TypeName: "{{ .PkgName }}.{{ .Type.Name }}", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+			}
+			itr := v.MapIterator()
+			for !itr.Done() {
+				k, v, err := itr.Next()
+				if err != nil {
+					return err
+				}
+				if err := na.AssembleKey().AssignNode(k); err != nil {
+					return err
+				}
+				if err := na.AssembleValue().AssignNode(v); err != nil {
+					return err
+				}
+			}
+			return na.Finish()
+		}
+	`, w, g.AdjCfg, g)
+}
+func (g unionBuilderGenerator) EmitNodeAssemblerOtherBits(w io.Writer) {
+	// TODO SOON
 }
