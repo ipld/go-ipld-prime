@@ -9,6 +9,19 @@ package schema
 //
 // (Meanwhile, we're using these methods in the codegen prototypes.)
 
+// These methods use Type objects as parameters when pointing to other things,
+//  but this is... turning out consistently problematic.
+//   Even when we're doing this hacky direct-call doesn't-need-to-be-serializable temp stuff,
+//    as written, this doesn't actually let us express cyclic things viably!
+//   The same initialization questions are also going to come up again when we try to make
+//    concrete values in the output of codegen.
+// Maybe it's actually just a bad idea to have our reified Type types use Type pointers at all.
+//  (I will never get tired of the tongue twisters, evidently.)
+//  I'm not actually using that much, and it's always avoidable (it's trivial to replace with a map lookup bouncing through a 'ts' variable somewhere).
+//  And having the AST gen'd types be... just... the thing... sounds nice.  It could save a lot of work.
+//   (It would mean the golang types don't tell you whether the values have been checked for global properties or not, but, eh.)
+//   (It's not really compatible with "Prototype and Type are the same thing for codegen'd stuff", either (or, we need more interfaces, and to *really* lean into them), but maybe that's okay.)
+
 func SpawnString(name TypeName) TypeString {
 	return TypeString{typeBase{name, nil}}
 }

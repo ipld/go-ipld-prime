@@ -77,6 +77,15 @@ func (t TypeUnion) RepresentationStrategy() UnionRepresentation {
 	return t.representation
 }
 
+func (r UnionRepresentation_Keyed) GetDiscriminant(t Type) string {
+	for d, t2 := range r.table {
+		if t2 == t {
+			return d
+		}
+	}
+	panic("that type isn't a member of this union")
+}
+
 // Fields returns a slice of descriptions of the object's fields.
 func (t TypeStruct) Fields() []StructField {
 	a := make([]StructField, len(t.fields))

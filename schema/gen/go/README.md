@@ -92,8 +92,8 @@ Legend:
 | feature                        | accessors | builders |
 |:-------------------------------|:---------:|:--------:|
 | unions                         |    ...    |    ...   |
-| ... type level                 |     ✘     |     ✘    |
-| ... keyed representation       |     ✘     |     ✘    |
+| ... type level                 |     ✔     |     ✔    |
+| ... keyed representation       |     ✔     |     ✔    |
 | ... envelope representation    |     ✘     |     ✘    |
 | ... kinded representation      |     ✘     |     ✘    |
 | ... inline representation      |     ✘     |     ✘    |

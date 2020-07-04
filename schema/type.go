@@ -153,6 +153,11 @@ func (UnionRepresentation_Kinded) _UnionRepresentation()   {}
 func (UnionRepresentation_Envelope) _UnionRepresentation() {}
 func (UnionRepresentation_Inline) _UnionRepresentation()   {}
 
+// A bunch of these tables in union representation might be easier to use if flipped;
+//  we almost always index into them by type (since that's what we have an ordered list of);
+//  and they're unique in both directions, so it's equally valid either way.
+//  The order they're currently written in matches the serial form in the schema AST.
+
 type UnionRepresentation_Keyed struct {
 	table map[string]Type // key is user-defined freetext
 }

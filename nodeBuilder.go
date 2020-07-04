@@ -88,6 +88,11 @@ type MapAssembler interface {
 	// (Design note: a string is sufficient for the parameter here rather than
 	// a full Node, because the only cases where the value types vary are also
 	// cases where the keys may not be complex.)
+	//
+	// FIXME: define a "nopePrototype" -- structs and unions need some way to say that the given 'k' isn't acceptable at all.
+	//  I'm not sure when that thing gets to brass tacks about erroring either though!  The NewBuilder method can't either.
+	//  Maybe we should choose between this panicking (right away, no "nopePrototype"), or adding an error return to it.
+	//   (We don't call this all that much since the NodeAssembler restructuring; maybe an annoying error return is fine.)
 	ValuePrototype(k string) NodePrototype
 }
 

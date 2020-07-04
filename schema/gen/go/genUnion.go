@@ -152,10 +152,11 @@ func (g unionGenerator) EmitNodeMethodLookupByString(w io.Writer) {
 				}
 				return &n.x{{ add $i 1 }}, nil
 				{{- else if (eq (dot.AdjCfg.UnionMemlayout dot.Type) "interface") }}
-				if _, ok := n.x.({{ $member | TypeSymbol }}); !ok {
+				if n2, ok := n.x.({{ $member | TypeSymbol }}); ok {
+					return n2, nil
+				} else {
 					return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
 				}
-				return n.x, nil
 				{{- end}}
 			{{- end}}
 			default:
@@ -197,13 +198,13 @@ func (g unionGenerator) EmitNodeMethodMapIterator(w io.Writer) {
 			switch itr.n.tag {
 			{{- range $i, $member := .Type.Members }}
 			case {{ add $i 1 }}:
-				return memberName__{{ dot.Type | TypeSymbol }}_{{ $member.Name }}, &n.x{{ add $i 1 }}, nil
+				return &memberName__{{ dot.Type | TypeSymbol }}_{{ $member.Name }}, &itr.n.x{{ add $i 1 }}, nil
 			{{- end}}
 			{{- else if (eq (.AdjCfg.UnionMemlayout .Type) "interface") }}
-			switch itr.n.x.(type) {
+			switch n2 := itr.n.x.(type) {
 			{{- range $member := .Type.Members }}
 			case {{ $member | TypeSymbol }}:
-				return memberName__{{ dot.Type | TypeSymbol }}_{{ $member.Name }}, n.x, nil
+				return &memberName__{{ dot.Type | TypeSymbol }}_{{ $member.Name }}, n2, nil
 			{{- end}}
 			{{- end}}
 			default:
@@ -328,29 +329,7 @@ func (g unionBuilderGenerator) EmitNodeAssemblerType(w io.Writer) {
 	`, w, g.AdjCfg, g)
 }
 func (g unionBuilderGenerator) EmitNodeAssemblerMethodBeginMap(w io.Writer) {
-	// We currently disregard sizeHint.  It's not relevant to us.
-	//  We could check it strictly and emit errors; presently, we don't.
-	// This method contains a branch to support MaybeUsesPtr because new memory may need to be allocated.
-	//  This allocation only happens if the 'w' ptr is nil, which means we're being used on a Maybe;
-	//  otherwise, the 'w' ptr should already be set, and we fill that memory location without allocating, as usual.
-	// DRY: this turns out to be textually identical to the method for structs!
-	doTemplate(`
-		func (na *_{{ .Type | TypeSymbol }}__Assembler) BeginMap(int) (ipld.MapAssembler, error) {
-			switch *na.m {
-			case schema.Maybe_Value, schema.Maybe_Null:
-				panic("invalid state: cannot assign into assembler that's already finished")
-			case midvalue:
-				panic("invalid state: it makes no sense to 'begin' twice on the same assembler!")
-			}
-			*na.m = midvalue
-			{{- if .Type | MaybeUsesPtr }}
-			if na.w == nil {
-				na.w = &_{{ .Type | TypeSymbol }}{}
-			}
-			{{- end}}
-			return na, nil
-		}
-	`, w, g.AdjCfg, g)
+	emitNodeAssemblerMethodBeginMap_strictoid(w, g.AdjCfg, g)
 }
 func (g unionBuilderGenerator) EmitNodeAssemblerMethodAssignNull(w io.Writer) {
 	// It might sound a bit odd to call a union "recursive", since it's so very trivially so (no fan-out),
@@ -435,7 +414,7 @@ func (g unionBuilderGenerator) emitMapAssemblerChildTidyHelper(w io.Writer) {
 	//   but the salient reason there isn't "because the don't have maybes"; it's "because they have a potentially-reused 'cm'".  We don't have the former; but we *also* don't have the latter, for other reasons.)
 	doTemplate(`
 		func (ma *_{{ .Type | TypeSymbol }}__Assembler) valueFinishTidy() bool {
-			switch ma.cm.m {
+			switch ma.cm {
 			case schema.Maybe_Value:
 				{{- /* nothing to do for memlayout=embedAll; the tag is already set and memory already in place. */ -}}
 				{{- /* nothing to do for memlayout=interface either; same story, the values are already in place. */ -}}
@@ -473,7 +452,7 @@ func (g unionBuilderGenerator) emitMapAssemblerMethods(w io.Writer) {
 				panic("invalid state: AssembleEntry cannot be called on an assembler that's already finished")
 			}
 			if ma.ca != 0 {
-				return nil, fmt.Errorf("cannot add another entry to a union!  a union can only contain one thing!")
+				return nil, schema.ErrNotUnionStructure{TypeName:"{{ .PkgName }}.{{ .Type.Name }}", Detail: "cannot add another entry -- a union can only contain one thing!"}
 			}
 			switch k {
 			{{- range $i, $member := .Type.Members }}
@@ -486,11 +465,12 @@ func (g unionBuilderGenerator) emitMapAssemblerMethods(w io.Writer) {
 				ma.ca{{ add $i 1 }}.m = &ma.cm
 				return &ma.ca{{ add $i 1 }}, nil
 				{{- else if (eq (dot.AdjCfg.UnionMemlayout dot.Type) "interface") }}
-				ma.w.x = &_{{ $member | TypeSymbol }}{}
+				x := &_{{ $member | TypeSymbol}}{}
+				ma.w.x = x
 				if ma.ca{{ add $i 1 }} == nil {
 					ma.ca{{ add $i 1 }} = &_{{ $member | TypeSymbol }}__Assembler{}
 				}
-				ma.ca{{ add $i 1 }}.w = ma.w.x
+				ma.ca{{ add $i 1 }}.w = x
 				ma.ca{{ add $i 1 }}.m = &ma.cm
 				return ma.ca{{ add $i 1 }}, nil
 				{{- end}}
@@ -502,6 +482,12 @@ func (g unionBuilderGenerator) emitMapAssemblerMethods(w io.Writer) {
 	`, w, g.AdjCfg, g)
 
 	// AssembleKey has a similar DRY note as the AssembleEntry above had.
+	// One misfortune in this method: we may know that we're doomed to errors because the caller is trying to start a second entry,
+	//  but we can't report it from this method: we have to sit on our tongue, slide to midKey state (even though we're doomed!),
+	//   and let the keyAssembler return the error later.
+	//    This sucks, but panicking wouldn't be correct (see remarks about error vs panic on the AssembleEntry method),
+	//     and we don't want to make this call unchainable for everyone everywhere, either, so it can't be rewritten to have an immmediate error return.
+	//    The transition to midKey state is particularly irritating because it means this assembler will be perma-wedged; but I see no alternative.
 	doTemplate(`
 		func (ma *_{{ .Type | TypeSymbol }}__Assembler) AssembleKey() ipld.NodeAssembler {
 			switch ma.state {
@@ -514,12 +500,9 @@ func (g unionBuilderGenerator) emitMapAssemblerMethods(w io.Writer) {
 			case maState_midValue:
 				if !ma.valueFinishTidy() {
 					panic("invalid state: AssembleKey cannot be called when in the middle of assembling a value")
-				} // if tidy success: carry on for the moment, but we'll still be erroring shortly.
+				} // if tidy success: carry on for the moment, but we'll still be erroring shortly... or rather, the keyassembler will be.
 			case maState_finished:
 				panic("invalid state: AssembleKey cannot be called on an assembler that's already finished")
-			}
-			if ma.ca != 0 {
-				return nil, fmt.Errorf("cannot add another entry to a union!  a union can only contain one thing!")
 			}
 			ma.state = maState_midKey
 			return (*_{{ .Type | TypeSymbol }}__KeyAssembler)(ma)
@@ -552,10 +535,12 @@ func (g unionBuilderGenerator) emitMapAssemblerMethods(w io.Writer) {
 				ma.ca{{ add $i 1 }}.m = &ma.cm
 				return &ma.ca{{ add $i 1 }}
 				{{- else if (eq (dot.AdjCfg.UnionMemlayout dot.Type) "interface") }}
+				x := &_{{ $member | TypeSymbol}}{}
+				ma.w.x = x
 				if ma.ca{{ add $i 1 }} == nil {
 					ma.ca{{ add $i 1 }} = &_{{ $member | TypeSymbol }}__Assembler{}
 				}
-				ma.ca{{ add $i 1 }}.w = ma.w.x
+				ma.ca{{ add $i 1 }}.w = x
 				ma.ca{{ add $i 1 }}.m = &ma.cm
 				return ma.ca{{ add $i 1 }}
 				{{- end}}
@@ -585,7 +570,7 @@ func (g unionBuilderGenerator) emitMapAssemblerMethods(w io.Writer) {
 				panic("invalid state: Finish cannot be called on an assembler that's already finished")
 			}
 			if ma.ca == 0 {
-				return nil, fmt.Errorf("a union must have exactly one entry (not none)!")
+				return schema.ErrNotUnionStructure{TypeName:"{{ .PkgName }}.{{ .Type.Name }}", Detail: "a union must have exactly one entry (not none)!"}
 			}
 			ma.state = maState_finished
 			*ma.m = schema.Maybe_Value
@@ -604,7 +589,7 @@ func (g unionBuilderGenerator) emitMapAssemblerMethods(w io.Writer) {
 				return _{{ $member | TypeSymbol }}__Prototype{}
 			{{- end}}
 			default:
-				return nil, schema.ErrNoSuchField{Type: nil /*TODO*/, FieldName: key}
+				panic("FIXME oh dear the possibility of this method erroring was not accounted for yet")
 			}
 		}
 	`, w, g.AdjCfg, g)
@@ -631,14 +616,15 @@ func (g unionBuilderGenerator) emitKeyAssembler(w io.Writer) {
 			if ka.state != maState_midKey {
 				panic("misuse: KeyAssembler held beyond its valid lifetime")
 			}
+			if ka.ca != 0 {
+				return schema.ErrNotUnionStructure{TypeName:"{{ .PkgName }}.{{ .Type.Name }}", Detail: "cannot add another entry -- a union can only contain one thing!"}
+			}
 			switch k {
 			{{- range $i, $member := .Type.Members }}
 			case "{{ $member.Name }}":
 				ka.ca = {{ add $i 1 }}
 				{{- if (eq (dot.AdjCfg.UnionMemlayout dot.Type) "embedAll") }}
 				ka.w.tag = {{ add $i 1 }}
-				{{- else if (eq (dot.AdjCfg.UnionMemlayout dot.Type) "interface") }}
-				ka.w.x = &_{{ $member | TypeSymbol}}{}
 				{{- end}}
 				ka.state = maState_expectValue
 				return nil
