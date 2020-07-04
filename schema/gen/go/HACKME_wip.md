@@ -113,10 +113,14 @@ Might as well let people name it outright too, if they have the slightest desire
 
 ### can reset methods be replaced with duff's device?
 
-Yes.  I'm not even sure why we haven't done that; they were written that way on purpose.
+Yes.  Well, sort of.  Okay, no.
 
-Although on second thought, see the following section about new-alloc child assemblers;
-it raises some challenges.
+It's close!  Assemblers were all written such that their zero values are ready to go.
+
+However, there's a couple of situations where you *wouldn't* want to blithely zero everything:
+for example, if an assembler has to do some allocations, but they're reusable,
+you wouldn't want to turn those other objects into garbage by zeroing the pointer to them.
+See the following section about new-alloc child assemblers for an example of this.
 
 
 ### what's up with new-alloc child assemblers?
@@ -142,5 +146,6 @@ There's a couple things to think about with these:
   - For unions, there's a question of if we should hold onto each child assembler, or just the most recent; that's a choice we could make and tune.
     If the answer is "most recent only", we could even crank down the resident size by use of more interfaces instead of concrete types (at the cost of some other runtime performance debufs, most likely).
 
-// this last bit seems to imply that maybe union assemblers should always have ca fields, it's just a question of if they should be pointers or not.
-// we could also do them as a single shared interface: it *is* a nodeassembler iface already, after all, so it can be done without even introducing more types.  would involve casts (at least two, I think) and/or non-inlinable calls, though.
+We've chosen to discard the possibility of duff's device as an assembler resetting implementation.
+As a result, we don't have to do proactive 'w'-nil'ing in places we might otherwise have to.
+And union assemblers hold on to all child assembler types they've ever needed.

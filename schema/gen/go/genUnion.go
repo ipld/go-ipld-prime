@@ -235,6 +235,8 @@ func (g unionGenerator) EmitNodePrototypeType(w io.Writer) {
 	emitNodePrototypeType_typical(w, g.AdjCfg, g)
 }
 
+// --- NodeBuilder and NodeAssembler --->
+
 func (g unionGenerator) GetNodeBuilderGenerator() NodeBuilderGenerator {
 	return unionBuilderGenerator{
 		g.AdjCfg,
@@ -277,12 +279,15 @@ func (g unionBuilderGenerator) EmitNodeAssemblerType(w io.Writer) {
 	//     (The zero value for `na.w.tag` is reserved, and all  for this reason.
 	// - There is no additional state need to store "focus" (in contrast to structs);
 	//     information during the AssembleValue phase about which member is selected is also just handled in `na.w.tag`, or, in the type info of `na.w.x`, again depending on memory layout strategy.
+	//     (This is subverted a bit by the 'ca' field, however... which effectively mirrors `na.w.tag`, and is only active in the resetting process, but is necessary because it outlives its twin inside 'w'.)
 	//
 	// - 'cm' is **c**hild **m**aybe and is used for the completion message from children.
 	// - 'ca*' fields embed **c**hild **a**ssemblers -- these are embedded so we can yield pointers to them during recusion into child value assembly without causing new allocations.
 	//     In unions, only one of these will every be used!  However, we don't know *which one* in advance, so, we have to embed them all.
 	//     (It's ironic to note that if the golang compiler had an understanding of unions itself (either tagged or untagged would suffice), we could compile this down into *much* more minimal amounts of resident memory reservation.  Alas!)
-	//     We elide all of the 'ca*' embeds, and instead allocate on demand, for unions with memlayout=interface mode.  (Arguably, this is overloading that config; PRs for more granular configurability welcome.)
+	//     The 'ca*' fields are pointers (and allocated on demand) instead of embeds for unions with memlayout=interface mode.  (Arguably, this is overloading that config; PRs for more granular configurability welcome.)
+	// - 'ca' (with no further suffix) identifies which child assembler was previously used.
+	//     This is for minimizing the amount of work that resetting has to do: it will only recurse into resetting that child assembler.
 	doTemplate(`
 		type _{{ .Type | TypeSymbol }}__Assembler struct {
 			w *_{{ .Type | TypeSymbol }}
@@ -290,20 +295,35 @@ func (g unionBuilderGenerator) EmitNodeAssemblerType(w io.Writer) {
 			state maState
 
 			cm schema.Maybe
-			{{- if (eq (.AdjCfg.UnionMemlayout .Type) "embedAll") }}
 			{{- range $i, $member := .Type.Members }}
-			ca{{ add $i 1 }} _{{ $member | TypeSymbol }}__Assembler
+			ca{{ add $i 1 }} {{ if (eq (dot.AdjCfg.UnionMemlayout dot.Type) "interface") }}*{{end}}_{{ $member | TypeSymbol }}__Assembler
 			{{end -}}
-			{{end -}}
+			ca uint
 		}
+	`, w, g.AdjCfg, g)
 
+	// Reset methods for unions are a tad more involved than for most other assemblers:
+	//  we only want to bother to reset whichever child assembler (if any) we actually used last.
+	//  We *could* blithely reset *all* child assemblers every time; but, trading an extra bit of state in our assembler
+	//   for the privledge of trimming off a potentially sizable amount of unnecessary zeroing efforts seems preferrable.
+	//  Also, although go syntax makes it not textually obvious here, note that it's possible for the child assemblers to be either pointers or embeds:
+	//   on consequence of this is that just zeroing this struct would be both unreliable and undesirable in the pointer case
+	//    (it would leave orphan child assemblers that might still have pointers into us, which could be guarded against but is nonetheless is considerably scary in complexity;
+	//    and it would also mean that we can't keep ahold of the child assemblers across resets and thus amortize allocations, which... is the whole reason the reset system exists in the first place).
+	doTemplate(`
 		func (na *_{{ .Type | TypeSymbol }}__Assembler) reset() {
 			na.state = maState_initial
-			{{- if (eq (.AdjCfg.UnionMemlayout .Type) "embedAll") }}
+			switch na.ca {
+			case 0:
+				return
 			{{- range $i, $member := .Type.Members }}
-			na.ca{{ add $i 1 }}.reset()
+			case {{ add $i 1 }}:
+				na.ca{{ add $i 1 }}.reset()
 			{{end -}}
-			{{end -}}
+			default:
+				panic("unreachable")
+			}
+			na.cm = schema.Maybe_Absent
 		}
 	`, w, g.AdjCfg, g)
 }
@@ -390,5 +410,257 @@ func (g unionBuilderGenerator) EmitNodeAssemblerMethodAssignNode(w io.Writer) {
 	`, w, g.AdjCfg, g)
 }
 func (g unionBuilderGenerator) EmitNodeAssemblerOtherBits(w io.Writer) {
-	// TODO SOON
+	g.emitMapAssemblerChildTidyHelper(w)
+	g.emitMapAssemblerMethods(w)
+	g.emitKeyAssembler(w)
+}
+func (g unionBuilderGenerator) emitMapAssemblerChildTidyHelper(w io.Writer) {
+	// This function attempts to clean up the state machine to acknolwedge child assembly finish.
+	//  If the child was finished and we just collected it, return true and update state to maState_initial.
+	//  Otherwise, if it wasn't done, return false;
+	//   and the caller is almost certain to emit an error momentarily.
+	// The function will only be called when the current state is maState_midValue.
+	//  (In general, the idea is that if the user is doing things correctly,
+	//   this function will only be called when the child is in fact finished.)
+	// This is a *lot* simpler than the tidy behaviors needed for any of the other recursive kinds:
+	//  unions don't allow either nullable nor optional members, so there's no need to process anything except Maybe_Value state,
+	//  and the lack of need to consider nullable nor optionals also means we never need to worry about moving memory in the case of MaybeUsePtr modes.
+	//  (FUTURE: this may get a bit more conditional if we support members that are of unit ype and have null as a representation.  Unsure how that would work out exactly, but should be possible.)
+	// We don't bother to nil the child assembler's 'w' pointer: it's not necessary,
+	//  because we'll never "share" 'cm' (as some systems, like maps and lists, do) or change its value (short of the whole assembler resetting),
+	//   and therefore we should be able to rely on the child assembler to be reasonable and never start acting again after finish.
+	//  (This *does* mean some care is required in the reset logic: we have to be absolutely sure that resetting propagates to all child assemblers,
+	//   even if they're in other regions of the heap; otherwise, they might end up still holding actionable 'w' and 'm' pointers into bad times!)
+	//  (If you want to compare this to the logic in struct assemblers: it's similar to how only children that don't have maybes need an active 'w' nil'ing;
+	//   but the salient reason there isn't "because the don't have maybes"; it's "because they have a potentially-reused 'cm'".  We don't have the former; but we *also* don't have the latter, for other reasons.)
+	doTemplate(`
+		func (ma *_{{ .Type | TypeSymbol }}__Assembler) valueFinishTidy() bool {
+			switch ma.cm.m {
+			case schema.Maybe_Value:
+				{{- /* nothing to do for memlayout=embedAll; the tag is already set and memory already in place. */ -}}
+				{{- /* nothing to do for memlayout=interface either; same story, the values are already in place. */ -}}
+				ma.state = maState_initial
+				return true
+			default:
+				return false
+			}
+		}
+	`, w, g.AdjCfg, g)
+}
+func (g unionBuilderGenerator) emitMapAssemblerMethods(w io.Writer) {
+	// DRY: I did an interesting thing here: the `switch ma.state` block remains textually identical to the one for structs,
+	//  even though the branch by valueFinishTidy could jump directly to an error state.
+	//   That same semantic error state gets checked separately a few lines later in a different mechanism.
+	//    The later check is needed either way (the assembler needs to *keep* erroring if some derp calls AssembleEntry *again* after a previous call already did the tidy and got rejected),
+	//     but we could arguably save a step there.  It would probably trade more assembly size for the cycles saved, too, though.
+	//  Ah, tradeoffs.  I think the textually simple approach here is probably in fact the best.  But it could be done differently, yes.
+	// Note that calling AssembleEntry again when it's not for the first entry *returns* an error; it doesn't panic.
+	//  This is subtle but important: trying to add more data than is acceptable is a data mismatch, not a system misuse, and must error accordingly politely.
+	doTemplate(`
+		func (ma *_{{ .Type | TypeSymbol }}__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, error) {
+			switch ma.state {
+			case maState_initial:
+				// carry on
+			case maState_midKey:
+				panic("invalid state: AssembleEntry cannot be called when in the middle of assembling another key")
+			case maState_expectValue:
+				panic("invalid state: AssembleEntry cannot be called when expecting start of value assembly")
+			case maState_midValue:
+				if !ma.valueFinishTidy() {
+					panic("invalid state: AssembleEntry cannot be called when in the middle of assembling a value")
+				} // if tidy success: carry on for the moment, but we'll still be erroring shortly.
+			case maState_finished:
+				panic("invalid state: AssembleEntry cannot be called on an assembler that's already finished")
+			}
+			if ma.ca != 0 {
+				return nil, fmt.Errorf("cannot add another entry to a union!  a union can only contain one thing!")
+			}
+			switch k {
+			{{- range $i, $member := .Type.Members }}
+			case "{{ $member.Name }}":
+				ma.state = maState_midValue
+				ma.ca = {{ add $i 1 }}
+				{{- if (eq (dot.AdjCfg.UnionMemlayout dot.Type) "embedAll") }}
+				ma.w.tag = {{ add $i 1 }}
+				ma.ca{{ add $i 1 }}.w = &ma.w.x{{ add $i 1 }}
+				ma.ca{{ add $i 1 }}.m = &ma.cm
+				return &ma.ca{{ add $i 1 }}, nil
+				{{- else if (eq (dot.AdjCfg.UnionMemlayout dot.Type) "interface") }}
+				ma.w.x = &_{{ $member | TypeSymbol }}{}
+				if ma.ca{{ add $i 1 }} == nil {
+					ma.ca{{ add $i 1 }} = &_{{ $member | TypeSymbol }}__Assembler{}
+				}
+				ma.ca{{ add $i 1 }}.w = ma.w.x
+				ma.ca{{ add $i 1 }}.m = &ma.cm
+				return ma.ca{{ add $i 1 }}, nil
+				{{- end}}
+			{{- end}}
+			default:
+				return nil, ipld.ErrInvalidKey{TypeName:"{{ .PkgName }}.{{ .Type.Name }}", Key:&_String{k}}
+			}
+		}
+	`, w, g.AdjCfg, g)
+
+	// AssembleKey has a similar DRY note as the AssembleEntry above had.
+	doTemplate(`
+		func (ma *_{{ .Type | TypeSymbol }}__Assembler) AssembleKey() ipld.NodeAssembler {
+			switch ma.state {
+			case maState_initial:
+				// carry on
+			case maState_midKey:
+				panic("invalid state: AssembleKey cannot be called when in the middle of assembling another key")
+			case maState_expectValue:
+				panic("invalid state: AssembleKey cannot be called when expecting start of value assembly")
+			case maState_midValue:
+				if !ma.valueFinishTidy() {
+					panic("invalid state: AssembleKey cannot be called when in the middle of assembling a value")
+				} // if tidy success: carry on for the moment, but we'll still be erroring shortly.
+			case maState_finished:
+				panic("invalid state: AssembleKey cannot be called on an assembler that's already finished")
+			}
+			if ma.ca != 0 {
+				return nil, fmt.Errorf("cannot add another entry to a union!  a union can only contain one thing!")
+			}
+			ma.state = maState_midKey
+			return (*_{{ .Type | TypeSymbol }}__KeyAssembler)(ma)
+		}
+	`, w, g.AdjCfg, g)
+
+	// As with structs, the responsibilties of this are similar to AssembleEntry, but with some of the burden split into the key assembler (which should have acted earlier),
+	//  and some of the logical continuity bounces through state in the form of 'ma.ca'.
+	//  The potential to DRY up some of this should be plentiful, but it's a bit heady.
+	doTemplate(`
+		func (ma *_{{ .Type | TypeSymbol }}__Assembler) AssembleValue() ipld.NodeAssembler {
+			switch ma.state {
+			case maState_initial:
+				panic("invalid state: AssembleValue cannot be called when no key is primed")
+			case maState_midKey:
+				panic("invalid state: AssembleValue cannot be called when in the middle of assembling a key")
+			case maState_expectValue:
+				// carry on
+			case maState_midValue:
+				panic("invalid state: AssembleValue cannot be called when in the middle of assembling another value")
+			case maState_finished:
+				panic("invalid state: AssembleValue cannot be called on an assembler that's already finished")
+			}
+			ma.state = maState_midValue
+			switch ma.ca {
+			{{- range $i, $member := .Type.Members }}
+			case {{ $i }}:
+				{{- if (eq (dot.AdjCfg.UnionMemlayout dot.Type) "embedAll") }}
+				ma.ca{{ add $i 1 }}.w = &ma.w.x{{ add $i 1 }}
+				ma.ca{{ add $i 1 }}.m = &ma.cm
+				return &ma.ca{{ add $i 1 }}
+				{{- else if (eq (dot.AdjCfg.UnionMemlayout dot.Type) "interface") }}
+				if ma.ca{{ add $i 1 }} == nil {
+					ma.ca{{ add $i 1 }} = &_{{ $member | TypeSymbol }}__Assembler{}
+				}
+				ma.ca{{ add $i 1 }}.w = ma.w.x
+				ma.ca{{ add $i 1 }}.m = &ma.cm
+				return ma.ca{{ add $i 1 }}
+				{{- end}}
+			{{- end}}
+			default:
+				panic("unreachable")
+			}
+		}
+	`, w, g.AdjCfg, g)
+
+	// Finish checks are nice and easy.  Is the maState in the right place now and was a 'ca' ever marked?
+	//  If yes and yes, then together with the rules elsewhere, we must've processed and accepted exactly one entry; perfect.
+	doTemplate(`
+		func (ma *_{{ .Type | TypeSymbol }}__Assembler) Finish() error {
+			switch ma.state {
+			case maState_initial:
+				// carry on
+			case maState_midKey:
+				panic("invalid state: Finish cannot be called when in the middle of assembling a key")
+			case maState_expectValue:
+				panic("invalid state: Finish cannot be called when expecting start of value assembly")
+			case maState_midValue:
+				if !ma.valueFinishTidy() {
+					panic("invalid state: Finish cannot be called when in the middle of assembling a value")
+				} // if tidy success: carry on
+			case maState_finished:
+				panic("invalid state: Finish cannot be called on an assembler that's already finished")
+			}
+			if ma.ca == 0 {
+				return nil, fmt.Errorf("a union must have exactly one entry (not none)!")
+			}
+			ma.state = maState_finished
+			*ma.m = schema.Maybe_Value
+			return nil
+		}
+	`, w, g.AdjCfg, g)
+
+	doTemplate(`
+		func (ma *_{{ .Type | TypeSymbol }}__Assembler) KeyPrototype() ipld.NodePrototype {
+			return _String__Prototype{}
+		}
+		func (ma *_{{ .Type | TypeSymbol }}__Assembler) ValuePrototype(k string) ipld.NodePrototype {
+			switch k {
+			{{- range $i, $member := .Type.Members }}
+			case "{{ $member.Name }}":
+				return _{{ $member | TypeSymbol }}__Prototype{}
+			{{- end}}
+			default:
+				return nil, schema.ErrNoSuchField{Type: nil /*TODO*/, FieldName: key}
+			}
+		}
+	`, w, g.AdjCfg, g)
+}
+func (g unionBuilderGenerator) emitKeyAssembler(w io.Writer) {
+	doTemplate(`
+		type _{{ .Type | TypeSymbol }}__KeyAssembler _{{ .Type | TypeSymbol }}__Assembler
+	`, w, g.AdjCfg, g)
+	stubs := mixins.StringAssemblerTraits{
+		g.PkgName,
+		g.TypeName + ".KeyAssembler",
+		"_" + g.AdjCfg.TypeSymbol(g.Type) + "__Key",
+	}
+	// This key assembler can disregard any idea of complex keys because we're fronting for a union!
+	//  Union member names must be strings (and quite simple ones at that).
+	stubs.EmitNodeAssemblerMethodBeginMap(w)
+	stubs.EmitNodeAssemblerMethodBeginList(w)
+	stubs.EmitNodeAssemblerMethodAssignNull(w)
+	stubs.EmitNodeAssemblerMethodAssignBool(w)
+	stubs.EmitNodeAssemblerMethodAssignInt(w)
+	stubs.EmitNodeAssemblerMethodAssignFloat(w)
+	doTemplate(`
+		func (ka *_{{ .Type | TypeSymbol }}__KeyAssembler) AssignString(k string) error {
+			if ka.state != maState_midKey {
+				panic("misuse: KeyAssembler held beyond its valid lifetime")
+			}
+			switch k {
+			{{- range $i, $member := .Type.Members }}
+			case "{{ $member.Name }}":
+				ka.ca = {{ add $i 1 }}
+				{{- if (eq (dot.AdjCfg.UnionMemlayout dot.Type) "embedAll") }}
+				ka.w.tag = {{ add $i 1 }}
+				{{- else if (eq (dot.AdjCfg.UnionMemlayout dot.Type) "interface") }}
+				ka.w.x = &_{{ $member | TypeSymbol}}{}
+				{{- end}}
+				ka.state = maState_expectValue
+				return nil
+			{{- end}}
+			default:
+				return ipld.ErrInvalidKey{TypeName:"{{ .PkgName }}.{{ .Type.Name }}", Key:&_String{k}} // TODO: error quality: ErrInvalidUnionDiscriminant ?
+			}
+			return nil
+		}
+	`, w, g.AdjCfg, g)
+	stubs.EmitNodeAssemblerMethodAssignBytes(w)
+	stubs.EmitNodeAssemblerMethodAssignLink(w)
+	doTemplate(`
+		func (ka *_{{ .Type | TypeSymbol }}__KeyAssembler) AssignNode(v ipld.Node) error {
+			if v2, err := v.AsString(); err != nil {
+				return err
+			} else {
+				return ka.AssignString(v2)
+			}
+		}
+		func (_{{ .Type | TypeSymbol }}__KeyAssembler) Prototype() ipld.NodePrototype {
+			return _String__Prototype{}
+		}
+	`, w, g.AdjCfg, g)
 }
