@@ -460,7 +460,7 @@ func (g unionReprKeyedReprBuilderGenerator) emitMapAssemblerMethods(w io.Writer)
 				return _{{ $member | TypeSymbol }}__ReprPrototype{}
 			{{- end}}
 			default:
-				panic("FIXME oh dear the possibility of this method erroring was not accounted for yet")
+				return nil
 			}
 		}
 	`, w, g.AdjCfg, g)

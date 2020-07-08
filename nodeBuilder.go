@@ -84,15 +84,12 @@ type MapAssembler interface {
 	// For plain maps (that is, not structs or unions masquerading as maps),
 	// the empty string can be used as a parameter, and the returned NodePrototype
 	// can be assumed applicable for all values.
-	// Using an empty string for a struct or union will return a nil NodePrototype.
+	// Using an empty string for a struct or union will return nil,
+	// as will using any string which isn't a field or member of those types.
+	//
 	// (Design note: a string is sufficient for the parameter here rather than
 	// a full Node, because the only cases where the value types vary are also
 	// cases where the keys may not be complex.)
-	//
-	// FIXME: define a "nopePrototype" -- structs and unions need some way to say that the given 'k' isn't acceptable at all.
-	//  I'm not sure when that thing gets to brass tacks about erroring either though!  The NewBuilder method can't either.
-	//  Maybe we should choose between this panicking (right away, no "nopePrototype"), or adding an error return to it.
-	//   (We don't call this all that much since the NodeAssembler restructuring; maybe an annoying error return is fine.)
 	ValuePrototype(k string) NodePrototype
 }
 
