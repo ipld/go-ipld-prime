@@ -1,10 +1,17 @@
 package gengo
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/ipld/go-ipld-prime/schema"
 )
+
+// This entire file is placeholder-quality implementations.
+//
+// The AdjunctCfg struct should be replaced with an IPLD Schema-specified thing!
+// The values in the unionMemlayout field should be an enum;
+// etcetera!
 
 type FieldTuple struct {
 	TypeName  schema.TypeName
@@ -15,10 +22,13 @@ type AdjunctCfg struct {
 	typeSymbolOverrides       map[schema.TypeName]string
 	fieldSymbolLowerOverrides map[FieldTuple]string
 	fieldSymbolUpperOverrides map[FieldTuple]string
-	maybeUsesPtr              map[schema.TypeName]bool // treat absent as true
+	maybeUsesPtr              map[schema.TypeName]bool   // treat absent as true
+	unionMemlayout            map[schema.TypeName]string // "embedAll"|"interface"; maybe more options later, unclear for now.
 
 	// note: PkgName doesn't appear in here, because it's...
 	//  not adjunct data.  it's a generation invocation parameter.
+	//   ... this might not hold up in the future though.
+	//    There are unanswered questions about how (also, tbf, *if*) we'll handle generation of multiple packages which use each other's types.
 }
 
 // TypeSymbol returns the symbol for a type;
@@ -63,4 +73,25 @@ func (cfg *AdjunctCfg) MaybeUsesPtr(t schema.Type) bool {
 	//   (I have a feeling something might get touchy there.  Review when implementing those.)
 	//  Perhaps structs and unions are the only things likely to benefit from pointers.
 	return true
+}
+
+// UnionMemlayout returns a plain string at present;
+// there's a case-switch in the templates that processes it.
+// We validate that it's a known string when this method is called.
+// This should probably be improved in type-safety,
+// and validated more aggressively up front when adjcfg is loaded.
+func (cfg *AdjunctCfg) UnionMemlayout(t schema.Type) string {
+	if t.Kind() != schema.Kind_Union {
+		panic(fmt.Errorf("%s is not a union!", t.Name()))
+	}
+	v, ok := cfg.unionMemlayout[t.Name()]
+	if !ok {
+		return "embedAll"
+	}
+	switch v {
+	case "embedAll", "interface":
+		return v
+	default:
+		panic(fmt.Errorf("invalid config: unionMemlayout values must be either \"embedAll\" or \"interface\", not %q", v))
+	}
 }

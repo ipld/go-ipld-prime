@@ -84,7 +84,9 @@ type MapAssembler interface {
 	// For plain maps (that is, not structs or unions masquerading as maps),
 	// the empty string can be used as a parameter, and the returned NodePrototype
 	// can be assumed applicable for all values.
-	// Using an empty string for a struct or union will return a nil NodePrototype.
+	// Using an empty string for a struct or union will return nil,
+	// as will using any string which isn't a field or member of those types.
+	//
 	// (Design note: a string is sufficient for the parameter here rather than
 	// a full Node, because the only cases where the value types vary are also
 	// cases where the keys may not be complex.)

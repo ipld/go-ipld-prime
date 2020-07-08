@@ -88,33 +88,33 @@ var (
 	_ Type = TypeEnum{}
 )
 
-type anyType struct {
+type typeBase struct {
 	name     TypeName
 	universe *TypeSystem
 }
 
 type TypeBool struct {
-	anyType
+	typeBase
 }
 
 type TypeString struct {
-	anyType
+	typeBase
 }
 
 type TypeBytes struct {
-	anyType
+	typeBase
 }
 
 type TypeInt struct {
-	anyType
+	typeBase
 }
 
 type TypeFloat struct {
-	anyType
+	typeBase
 }
 
 type TypeMap struct {
-	anyType
+	typeBase
 	anonymous     bool
 	keyType       Type // must be ReprKind==string (e.g. Type==String|Enum).
 	valueType     Type
@@ -122,39 +122,60 @@ type TypeMap struct {
 }
 
 type TypeList struct {
-	anyType
+	typeBase
 	anonymous     bool
 	valueType     Type
 	valueNullable bool
 }
 
 type TypeLink struct {
-	anyType
+	typeBase
 	referencedType    Type
 	hasReferencedType bool
 	// ...?
 }
 
 type TypeUnion struct {
-	anyType
-	style        UnionStyle
-	valuesKinded map[ipld.ReprKind]Type // for Style==Kinded
-	values       map[string]Type        // for Style!=Kinded (note, key is freetext, not necessarily TypeName of the value)
-	typeHintKey  string                 // for Style==Envelope|Inline
-	contentKey   string                 // for Style==Envelope
+	typeBase
+	// Members are listed in the order they appear in the schema.
+	// To find the discriminant info, you must look inside the representation; they all contain a 'table' of some kind in which the member types are the values.
+	// Note that multiple appearances of the same type as distinct members of the union is not possible.
+	//  While we could do this... A: that's... odd, and nearly never called for; B: not possible with kinded mode; C: imagine the golang-native type switch!  it's impossible.
+	//  We rely on this clarity in many ways: most visibly, the type-level Node implementation for a union always uses the type names as if they were map keys!  This behavior is consistent for all union representations.
+	members        []Type
+	representation UnionRepresentation
 }
 
-type UnionStyle struct{ x string }
+type UnionRepresentation interface{ _UnionRepresentation() }
 
-var (
-	UnionStyle_Kinded   = UnionStyle{"kinded"}
-	UnionStyle_Keyed    = UnionStyle{"keyed"}
-	UnionStyle_Envelope = UnionStyle{"envelope"}
-	UnionStyle_Inline   = UnionStyle{"inline"}
-)
+func (UnionRepresentation_Keyed) _UnionRepresentation()    {}
+func (UnionRepresentation_Kinded) _UnionRepresentation()   {}
+func (UnionRepresentation_Envelope) _UnionRepresentation() {}
+func (UnionRepresentation_Inline) _UnionRepresentation()   {}
+
+// A bunch of these tables in union representation might be easier to use if flipped;
+//  we almost always index into them by type (since that's what we have an ordered list of);
+//  and they're unique in both directions, so it's equally valid either way.
+//  The order they're currently written in matches the serial form in the schema AST.
+
+type UnionRepresentation_Keyed struct {
+	table map[string]Type // key is user-defined freetext
+}
+type UnionRepresentation_Kinded struct {
+	table map[ipld.ReprKind]Type
+}
+type UnionRepresentation_Envelope struct {
+	discriminantKey string
+	contentKey      string
+	table           map[string]Type // key is user-defined freetext
+}
+type UnionRepresentation_Inline struct {
+	discriminantKey string
+	table           map[string]Type // key is user-defined freetext
+}
 
 type TypeStruct struct {
-	anyType
+	typeBase
 	// n.b. `Fields` is an (order-preserving!) map in the schema-schema;
 	//  but it's a list here, with the keys denormalized into the value,
 	//   because that's typically how we use it.
@@ -186,7 +207,7 @@ type StructRepresentation_StringPairs struct{ sep1, sep2 string }
 type StructRepresentation_Stringjoin struct{ sep string }
 
 type TypeEnum struct {
-	anyType
+	typeBase
 	members []string
 }
 

@@ -2,9 +2,9 @@ package schema
 
 /* cookie-cutter standard interface stuff */
 
-func (anyType) _Type()                    {}
-func (t anyType) TypeSystem() *TypeSystem { return t.universe }
-func (t anyType) Name() TypeName          { return t.name }
+func (typeBase) _Type()                    {}
+func (t typeBase) TypeSystem() *TypeSystem { return t.universe }
+func (t typeBase) Name() TypeName          { return t.name }
 
 func (TypeBool) Kind() Kind   { return Kind_Bool }
 func (TypeString) Kind() Kind { return Kind_String }
@@ -64,20 +64,26 @@ func (t TypeList) ValueIsNullable() bool {
 	return t.valueNullable
 }
 
-// UnionMembers returns a set of all the types that can inhabit this Union.
-func (t TypeUnion) UnionMembers() map[Type]struct{} {
-	m := make(map[Type]struct{}, len(t.values)+len(t.valuesKinded))
-	switch t.style {
-	case UnionStyle_Kinded:
-		for _, v := range t.valuesKinded {
-			m[v] = struct{}{}
-		}
-	default:
-		for _, v := range t.values {
-			m[v] = struct{}{}
+// Members returns the list of all types that are possible inhabitants of this union.
+func (t TypeUnion) Members() []Type {
+	a := make([]Type, len(t.members))
+	for i := range t.members {
+		a[i] = t.members[i]
+	}
+	return a
+}
+
+func (t TypeUnion) RepresentationStrategy() UnionRepresentation {
+	return t.representation
+}
+
+func (r UnionRepresentation_Keyed) GetDiscriminant(t Type) string {
+	for d, t2 := range r.table {
+		if t2 == t {
+			return d
 		}
 	}
-	return m
+	panic("that type isn't a member of this union")
 }
 
 // Fields returns a slice of descriptions of the object's fields.
