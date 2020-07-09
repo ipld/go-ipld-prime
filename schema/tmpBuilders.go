@@ -22,43 +22,43 @@ package schema
 //   (It would mean the golang types don't tell you whether the values have been checked for global properties or not, but, eh.)
 //   (It's not really compatible with "Prototype and Type are the same thing for codegen'd stuff", either (or, we need more interfaces, and to *really* lean into them), but maybe that's okay.)
 
-func SpawnString(name TypeName) TypeString {
-	return TypeString{typeBase{name, nil}}
+func SpawnString(name TypeName) *TypeString {
+	return &TypeString{typeBase{name, nil}}
 }
 
-func SpawnInt(name TypeName) TypeInt {
-	return TypeInt{typeBase{name, nil}}
+func SpawnInt(name TypeName) *TypeInt {
+	return &TypeInt{typeBase{name, nil}}
 }
 
-func SpawnBytes(name TypeName) TypeBytes {
-	return TypeBytes{typeBase{name, nil}}
+func SpawnBytes(name TypeName) *TypeBytes {
+	return &TypeBytes{typeBase{name, nil}}
 }
 
-func SpawnLink(name TypeName) TypeLink {
-	return TypeLink{typeBase{name, nil}, nil, false}
+func SpawnLink(name TypeName) *TypeLink {
+	return &TypeLink{typeBase{name, nil}, "", false}
 }
 
-func SpawnLinkReference(name TypeName, referenceType Type) TypeLink {
-	return TypeLink{typeBase{name, nil}, referenceType, true}
+func SpawnLinkReference(name TypeName, pointsTo TypeName) *TypeLink {
+	return &TypeLink{typeBase{name, nil}, pointsTo, true}
 }
 
-func SpawnList(name TypeName, typ Type, nullable bool) TypeList {
-	return TypeList{typeBase{name, nil}, false, typ, nullable}
+func SpawnList(name TypeName, valueType TypeName, nullable bool) *TypeList {
+	return &TypeList{typeBase{name, nil}, false, valueType, nullable}
 }
 
-func SpawnMap(name TypeName, keyType Type, valueType Type, nullable bool) TypeMap {
-	return TypeMap{typeBase{name, nil}, false, keyType, valueType, nullable}
+func SpawnMap(name TypeName, keyType TypeName, valueType TypeName, nullable bool) *TypeMap {
+	return &TypeMap{typeBase{name, nil}, false, keyType, valueType, nullable}
 }
 
-func SpawnStruct(name TypeName, fields []StructField, repr StructRepresentation) TypeStruct {
-	v := TypeStruct{
+func SpawnStruct(name TypeName, fields []StructField, repr StructRepresentation) *TypeStruct {
+	v := &TypeStruct{
 		typeBase{name, nil},
 		fields,
 		make(map[string]StructField, len(fields)),
 		repr,
 	}
 	for i := range fields {
-		fields[i].parent = &v
+		fields[i].parent = v
 		v.fieldsMap[fields[i].name] = fields[i]
 	}
 	switch repr.(type) {
@@ -71,7 +71,7 @@ func SpawnStruct(name TypeName, fields []StructField, repr StructRepresentation)
 	}
 	return v
 }
-func SpawnStructField(name string, typ Type, optional bool, nullable bool) StructField {
+func SpawnStructField(name string, typ TypeName, optional bool, nullable bool) StructField {
 	return StructField{nil /*populated later*/, name, typ, optional, nullable}
 }
 func SpawnStructRepresentationMap(renames map[string]string) StructRepresentation_Map {
@@ -81,10 +81,10 @@ func SpawnStructRepresentationStringjoin(delim string) StructRepresentation_Stri
 	return StructRepresentation_Stringjoin{delim}
 }
 
-func SpawnUnion(name TypeName, members []Type, repr UnionRepresentation) TypeUnion {
-	return TypeUnion{typeBase{name, nil}, members, repr}
+func SpawnUnion(name TypeName, members []TypeName, repr UnionRepresentation) *TypeUnion {
+	return &TypeUnion{typeBase{name, nil}, members, repr}
 }
-func SpawnUnionRepresentationKeyed(table map[string]Type) UnionRepresentation_Keyed {
+func SpawnUnionRepresentationKeyed(table map[string]TypeName) UnionRepresentation_Keyed {
 	return UnionRepresentation_Keyed{table}
 }
 
@@ -94,6 +94,7 @@ func (ts *TypeSystem) Init() {
 	ts.namedTypes = make(map[TypeName]Type)
 }
 func (ts *TypeSystem) Accumulate(typ Type) {
+	typ._Type(ts)
 	ts.namedTypes[typ.Name()] = typ
 }
 func (ts TypeSystem) GetTypes() map[TypeName]Type {

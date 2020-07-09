@@ -13,7 +13,7 @@ var _ TypeGenerator = &unionReprKeyedGenerator{}
 //  because the type level code effective does espouse keyed-style behavior (just with type names as the keys).
 //  Be advised that this similarity does not hold at *all* true of any of the other representation modes of unions!
 
-func NewUnionReprKeyedGenerator(pkgName string, typ schema.TypeUnion, adjCfg *AdjunctCfg) TypeGenerator {
+func NewUnionReprKeyedGenerator(pkgName string, typ *schema.TypeUnion, adjCfg *AdjunctCfg) TypeGenerator {
 	return unionReprKeyedGenerator{
 		unionGenerator{
 			adjCfg,
@@ -49,7 +49,7 @@ type unionReprKeyedReprGenerator struct {
 	AdjCfg *AdjunctCfg
 	mixins.MapTraits
 	PkgName string
-	Type    schema.TypeUnion
+	Type    *schema.TypeUnion
 }
 
 func (unionReprKeyedReprGenerator) IsRepr() bool { return true } // hint used in some generalized templates.
@@ -193,7 +193,7 @@ type unionReprKeyedReprBuilderGenerator struct {
 	AdjCfg *AdjunctCfg
 	mixins.MapAssemblerTraits
 	PkgName string
-	Type    schema.TypeUnion
+	Type    *schema.TypeUnion
 }
 
 func (unionReprKeyedReprBuilderGenerator) IsRepr() bool { return true } // hint used in some generalized templates.

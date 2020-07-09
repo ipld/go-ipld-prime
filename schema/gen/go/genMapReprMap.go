@@ -9,7 +9,7 @@ import (
 
 var _ TypeGenerator = &mapReprMapGenerator{}
 
-func NewMapReprMapGenerator(pkgName string, typ schema.TypeMap, adjCfg *AdjunctCfg) TypeGenerator {
+func NewMapReprMapGenerator(pkgName string, typ *schema.TypeMap, adjCfg *AdjunctCfg) TypeGenerator {
 	return mapReprMapGenerator{
 		mapGenerator{
 			adjCfg,
@@ -45,7 +45,7 @@ type mapReprMapReprGenerator struct {
 	AdjCfg *AdjunctCfg
 	mixins.MapTraits
 	PkgName string
-	Type    schema.TypeMap
+	Type    *schema.TypeMap
 }
 
 func (mapReprMapReprGenerator) IsRepr() bool { return true } // hint used in some generalized templates.
@@ -146,7 +146,7 @@ type mapReprMapReprBuilderGenerator struct {
 	AdjCfg *AdjunctCfg
 	mixins.MapAssemblerTraits
 	PkgName string
-	Type    schema.TypeMap
+	Type    *schema.TypeMap
 }
 
 func (mapReprMapReprBuilderGenerator) IsRepr() bool { return true } // hint used in some generalized templates.

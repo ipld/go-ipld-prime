@@ -2,7 +2,9 @@ package schema
 
 /* cookie-cutter standard interface stuff */
 
-func (typeBase) _Type()                    {}
+func (t *typeBase) _Type(ts *TypeSystem) {
+	t.universe = ts
+}
 func (t typeBase) TypeSystem() *TypeSystem { return t.universe }
 func (t typeBase) Name() TypeName          { return t.name }
 
@@ -20,6 +22,21 @@ func (TypeEnum) Kind() Kind   { return Kind_Enum }
 
 /* interesting methods per Type type */
 
+// beware: many of these methods will change when we successfully bootstrap self-hosting.
+//
+// The current methods return reified Type objects; in the future, there might be less of that.
+// Returning reified Type objects requires bouncing lookups through the typesystem map;
+// this is unavoidable because we need to handle cycles in definitions.
+// However, the extra (and cyclic) pointers that requires won't necessarily jive well if
+// we remake the Type types to have close resemblances to the Data Model tree data.)
+//
+// It's also unfortunate that some of the current methods collide in name with
+// the names of the Data Model fields.  We might reshuffling things to reduce this.
+//
+// At any rate, all of these changes will come as a sweep once we
+// get a self-hosting gen of the schema-schema, not before
+// (the effort of updating template references is substantial).
+
 // IsAnonymous is returns true if the type was unnamed.  Unnamed types will
 // claim to have a Name property like `{Foo:Bar}`, and this is not guaranteed
 // to be a unique string for all types in the universe.
@@ -32,12 +49,12 @@ func (t TypeMap) IsAnonymous() bool {
 // Note that map keys will must always be some type which is representable as a
 // string in the IPLD Data Model (e.g. either TypeString or TypeEnum).
 func (t TypeMap) KeyType() Type {
-	return t.keyType
+	return t.universe.namedTypes[t.keyType]
 }
 
-// ValueType returns to the Type of the map values.
+// ValueType returns the Type of the map values.
 func (t TypeMap) ValueType() Type {
-	return t.valueType
+	return t.universe.namedTypes[t.valueType]
 }
 
 // ValueIsNullable returns a bool describing if the map values are permitted
@@ -55,7 +72,7 @@ func (t TypeList) IsAnonymous() bool {
 
 // ValueType returns to the Type of the list values.
 func (t TypeList) ValueType() Type {
-	return t.valueType
+	return t.universe.namedTypes[t.valueType]
 }
 
 // ValueIsNullable returns a bool describing if the list values are permitted
@@ -68,7 +85,7 @@ func (t TypeList) ValueIsNullable() bool {
 func (t TypeUnion) Members() []Type {
 	a := make([]Type, len(t.members))
 	for i := range t.members {
-		a[i] = t.members[i]
+		a[i] = t.universe.namedTypes[t.members[i]]
 	}
 	return a
 }
@@ -79,7 +96,7 @@ func (t TypeUnion) RepresentationStrategy() UnionRepresentation {
 
 func (r UnionRepresentation_Keyed) GetDiscriminant(t Type) string {
 	for d, t2 := range r.table {
-		if t2 == t {
+		if t2 == t.Name() {
 			return d
 		}
 	}
@@ -121,7 +138,7 @@ func (f StructField) Name() string { return f.name }
 
 // Type returns the Type of this field's value.  Note the field may
 // also be unset if it is either Optional or Nullable.
-func (f StructField) Type() Type { return f.typ }
+func (f StructField) Type() Type { return f.parent.universe.namedTypes[f.typ] }
 
 // IsOptional returns true if the field is allowed to be absent from the object.
 // If IsOptional is false, the field may be absent from the serial representation
@@ -183,5 +200,5 @@ func (t TypeLink) HasReferencedType() bool {
 
 // ReferencedType returns the type hint for the node on the other side of the link
 func (t TypeLink) ReferencedType() Type {
-	return t.referencedType
+	return t.universe.namedTypes[t.referencedType]
 }

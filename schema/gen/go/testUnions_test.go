@@ -18,13 +18,13 @@ func TestUnionKeyed(t *testing.T) {
 	ts.Accumulate(schema.SpawnString("String"))
 	ts.Accumulate(schema.SpawnString("Strung"))
 	ts.Accumulate(schema.SpawnUnion("StrStr",
-		[]schema.Type{
-			ts.TypeByName("String"),
-			ts.TypeByName("Strung"),
+		[]schema.TypeName{
+			"String",
+			"Strung",
 		},
-		schema.SpawnUnionRepresentationKeyed(map[string]schema.Type{
-			"a": ts.TypeByName("String"),
-			"b": ts.TypeByName("Strung"),
+		schema.SpawnUnionRepresentationKeyed(map[string]schema.TypeName{
+			"a": "String",
+			"b": "Strung",
 		}),
 	))
 

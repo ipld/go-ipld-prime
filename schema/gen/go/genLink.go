@@ -11,7 +11,7 @@ type linkGenerator struct {
 	AdjCfg *AdjunctCfg
 	mixins.LinkTraits
 	PkgName string
-	Type    schema.TypeLink
+	Type    *schema.TypeLink
 }
 
 func (linkGenerator) IsRepr() bool { return false } // hint used in some generalized templates.
@@ -91,7 +91,7 @@ type linkBuilderGenerator struct {
 	AdjCfg *AdjunctCfg
 	mixins.LinkAssemblerTraits
 	PkgName string
-	Type    schema.TypeLink
+	Type    *schema.TypeLink
 }
 
 func (linkBuilderGenerator) IsRepr() bool { return false } // hint used in some generalized templates.

@@ -9,7 +9,7 @@ import (
 
 var _ TypeGenerator = &listReprListGenerator{}
 
-func NewListReprListGenerator(pkgName string, typ schema.TypeList, adjCfg *AdjunctCfg) TypeGenerator {
+func NewListReprListGenerator(pkgName string, typ *schema.TypeList, adjCfg *AdjunctCfg) TypeGenerator {
 	return listReprListGenerator{
 		listGenerator{
 			adjCfg,
@@ -45,7 +45,7 @@ type listReprListReprGenerator struct {
 	AdjCfg *AdjunctCfg
 	mixins.ListTraits
 	PkgName string
-	Type    schema.TypeList
+	Type    *schema.TypeList
 }
 
 func (listReprListReprGenerator) IsRepr() bool { return true } // hint used in some generalized templates.
@@ -153,7 +153,7 @@ type listReprListReprBuilderGenerator struct {
 	AdjCfg *AdjunctCfg
 	mixins.ListAssemblerTraits
 	PkgName string
-	Type    schema.TypeList
+	Type    *schema.TypeList
 }
 
 func (listReprListReprBuilderGenerator) IsRepr() bool { return true } // hint used in some generalized templates.

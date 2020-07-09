@@ -9,7 +9,7 @@ import (
 
 var _ TypeGenerator = &linkReprLinkGenerator{}
 
-func NewLinkReprLinkGenerator(pkgName string, typ schema.TypeLink, adjCfg *AdjunctCfg) TypeGenerator {
+func NewLinkReprLinkGenerator(pkgName string, typ *schema.TypeLink, adjCfg *AdjunctCfg) TypeGenerator {
 	return linkReprLinkGenerator{
 		linkGenerator{
 			adjCfg,
@@ -37,7 +37,7 @@ func (g linkReprLinkGenerator) GetRepresentationNodeGen() NodeGenerator {
 
 type linkReprLinkReprGenerator struct {
 	AdjCfg *AdjunctCfg
-	Type   schema.TypeLink
+	Type   *schema.TypeLink
 }
 
 func (g linkReprLinkReprGenerator) EmitNodeType(w io.Writer) {
@@ -82,7 +82,7 @@ func (g linkReprLinkReprGenerator) GetNodeBuilderGenerator() NodeBuilderGenerato
 
 type linkReprLinkReprBuilderGenerator struct {
 	AdjCfg *AdjunctCfg
-	Type   schema.TypeLink
+	Type   *schema.TypeLink
 }
 
 func (linkReprLinkReprBuilderGenerator) EmitNodeBuilderType(io.Writer)    {}

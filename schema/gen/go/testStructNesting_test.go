@@ -20,7 +20,7 @@ func TestStructNesting(t *testing.T) {
 	ts.Accumulate(schema.SpawnString("String"))
 	ts.Accumulate(schema.SpawnStruct("SmolStruct",
 		[]schema.StructField{
-			schema.SpawnStructField("s", ts.TypeByName("String"), false, false),
+			schema.SpawnStructField("s", "String", false, false),
 		},
 		schema.SpawnStructRepresentationMap(map[string]string{
 			"s": "q",
@@ -28,7 +28,7 @@ func TestStructNesting(t *testing.T) {
 	))
 	ts.Accumulate(schema.SpawnStruct("GulpoStruct",
 		[]schema.StructField{
-			schema.SpawnStructField("x", ts.TypeByName("SmolStruct"), false, false),
+			schema.SpawnStructField("x", "SmolStruct", false, false),
 		},
 		schema.SpawnStructRepresentationMap(map[string]string{
 			"x": "r",

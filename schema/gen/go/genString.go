@@ -11,7 +11,7 @@ type stringGenerator struct {
 	AdjCfg *AdjunctCfg
 	mixins.StringTraits
 	PkgName string
-	Type    schema.TypeString
+	Type    *schema.TypeString
 }
 
 func (stringGenerator) IsRepr() bool { return false } // hint used in some generalized templates.
@@ -107,7 +107,7 @@ type stringBuilderGenerator struct {
 	AdjCfg *AdjunctCfg
 	mixins.StringAssemblerTraits
 	PkgName string
-	Type    schema.TypeString
+	Type    *schema.TypeString
 }
 
 func (stringBuilderGenerator) IsRepr() bool { return false } // hint used in some generalized templates.

@@ -321,11 +321,11 @@ func TestStructsContainingMaybe(t *testing.T) {
 	ts.Accumulate(schema.SpawnStruct("Stroct",
 		[]schema.StructField{
 			// Every field in this struct (including their order) is exercising an interesting case...
-			schema.SpawnStructField("f1", ts.TypeByName("String"), false, false), // plain field.
-			schema.SpawnStructField("f2", ts.TypeByName("String"), true, false),  // optional; later we have more than one optional field, nonsequentially.
-			schema.SpawnStructField("f3", ts.TypeByName("String"), false, true),  // nullable; but required.
-			schema.SpawnStructField("f4", ts.TypeByName("String"), true, true),   // optional and nullable; trailing optional.
-			schema.SpawnStructField("f5", ts.TypeByName("String"), true, false),  // optional; and the second one in a row, trailing.
+			schema.SpawnStructField("f1", "String", false, false), // plain field.
+			schema.SpawnStructField("f2", "String", true, false),  // optional; later we have more than one optional field, nonsequentially.
+			schema.SpawnStructField("f3", "String", false, true),  // nullable; but required.
+			schema.SpawnStructField("f4", "String", true, true),   // optional and nullable; trailing optional.
+			schema.SpawnStructField("f5", "String", true, false),  // optional; and the second one in a row, trailing.
 		},
 		schema.SpawnStructRepresentationMap(map[string]string{
 			"f1": "r1",

@@ -10,7 +10,7 @@ import (
 
 var _ TypeGenerator = &structReprMapGenerator{}
 
-func NewStructReprMapGenerator(pkgName string, typ schema.TypeStruct, adjCfg *AdjunctCfg) TypeGenerator {
+func NewStructReprMapGenerator(pkgName string, typ *schema.TypeStruct, adjCfg *AdjunctCfg) TypeGenerator {
 	return structReprMapGenerator{
 		structGenerator{
 			adjCfg,
@@ -46,7 +46,7 @@ type structReprMapReprGenerator struct {
 	AdjCfg *AdjunctCfg
 	mixins.MapTraits
 	PkgName string
-	Type    schema.TypeStruct
+	Type    *schema.TypeStruct
 }
 
 func (structReprMapReprGenerator) IsRepr() bool { return true } // hint used in some generalized templates.
@@ -223,7 +223,7 @@ func (g structReprMapReprGenerator) EmitNodeMethodMapIterator(w io.Writer) {
 		}
 		{{- end}}
 	`, w, g.AdjCfg, struct {
-		Type                       schema.TypeStruct
+		Type                       *schema.TypeStruct
 		HaveOptionals              bool
 		HaveTrailingOptionals      bool
 		BeginTrailingOptionalField int
@@ -280,7 +280,7 @@ type structReprMapReprBuilderGenerator struct {
 	AdjCfg *AdjunctCfg
 	mixins.MapAssemblerTraits
 	PkgName string
-	Type    schema.TypeStruct
+	Type    *schema.TypeStruct
 }
 
 func (structReprMapReprBuilderGenerator) IsRepr() bool { return true } // hint used in some generalized templates.

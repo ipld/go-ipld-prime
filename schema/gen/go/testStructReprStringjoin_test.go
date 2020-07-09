@@ -27,22 +27,22 @@ func TestStructReprStringjoin(t *testing.T) {
 	ts.Accumulate(schema.SpawnString("String"))
 	ts.Accumulate(schema.SpawnStruct("StringyStruct",
 		[]schema.StructField{
-			schema.SpawnStructField("field", ts.TypeByName("String"), false, false),
+			schema.SpawnStructField("field", "String", false, false),
 		},
 		schema.SpawnStructRepresentationStringjoin(":"),
 	))
 	ts.Accumulate(schema.SpawnStruct("ManystringStruct",
 		[]schema.StructField{
-			schema.SpawnStructField("foo", ts.TypeByName("String"), false, false),
-			schema.SpawnStructField("bar", ts.TypeByName("String"), false, false),
+			schema.SpawnStructField("foo", "String", false, false),
+			schema.SpawnStructField("bar", "String", false, false),
 		},
 		schema.SpawnStructRepresentationStringjoin(":"),
 	))
 	ts.Accumulate(schema.SpawnStruct("Recurzorator",
 		[]schema.StructField{
-			schema.SpawnStructField("foo", ts.TypeByName("String"), false, false),
-			schema.SpawnStructField("zap", ts.TypeByName("ManystringStruct"), false, false),
-			schema.SpawnStructField("bar", ts.TypeByName("String"), false, false),
+			schema.SpawnStructField("foo", "String", false, false),
+			schema.SpawnStructField("zap", "ManystringStruct", false, false),
+			schema.SpawnStructField("bar", "String", false, false),
 		},
 		schema.SpawnStructRepresentationStringjoin("-"),
 	))

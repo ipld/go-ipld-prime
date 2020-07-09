@@ -9,7 +9,7 @@ import (
 
 var _ TypeGenerator = &structReprStringjoinGenerator{}
 
-func NewStructReprStringjoinGenerator(pkgName string, typ schema.TypeStruct, adjCfg *AdjunctCfg) TypeGenerator {
+func NewStructReprStringjoinGenerator(pkgName string, typ *schema.TypeStruct, adjCfg *AdjunctCfg) TypeGenerator {
 	return structReprStringjoinGenerator{
 		structGenerator{
 			adjCfg,
@@ -45,7 +45,7 @@ type structReprStringjoinReprGenerator struct {
 	AdjCfg *AdjunctCfg
 	mixins.StringTraits
 	PkgName string
-	Type    schema.TypeStruct
+	Type    *schema.TypeStruct
 }
 
 func (g structReprStringjoinReprGenerator) EmitNodeType(w io.Writer) {
@@ -140,7 +140,7 @@ type structReprStringjoinReprBuilderGenerator struct {
 	AdjCfg *AdjunctCfg
 	mixins.StringAssemblerTraits
 	PkgName string
-	Type    schema.TypeStruct
+	Type    *schema.TypeStruct
 }
 
 func (structReprStringjoinReprBuilderGenerator) IsRepr() bool { return true } // hint used in some generalized templates.

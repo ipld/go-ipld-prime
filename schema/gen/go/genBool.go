@@ -11,7 +11,7 @@ type boolGenerator struct {
 	AdjCfg *AdjunctCfg
 	mixins.BoolTraits
 	PkgName string
-	Type    schema.TypeBool
+	Type    *schema.TypeBool
 }
 
 func (boolGenerator) IsRepr() bool { return false } // hint used in some generalized templates.
@@ -91,7 +91,7 @@ type boolBuilderGenerator struct {
 	AdjCfg *AdjunctCfg
 	mixins.BoolAssemblerTraits
 	PkgName string
-	Type    schema.TypeBool
+	Type    *schema.TypeBool
 }
 
 func (boolBuilderGenerator) IsRepr() bool { return false } // hint used in some generalized templates.

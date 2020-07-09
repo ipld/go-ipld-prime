@@ -21,14 +21,14 @@ func init() {
 	ts.Accumulate(schema.SpawnString("String"))
 	ts.Accumulate(schema.SpawnStruct("Msg3",
 		[]schema.StructField{
-			schema.SpawnStructField("whee", ts.TypeByName("Int"), false, false),
-			schema.SpawnStructField("woot", ts.TypeByName("Int"), false, false),
-			schema.SpawnStructField("waga", ts.TypeByName("Int"), false, false),
+			schema.SpawnStructField("whee", "Int", false, false),
+			schema.SpawnStructField("woot", "Int", false, false),
+			schema.SpawnStructField("waga", "Int", false, false),
 		},
 		schema.SpawnStructRepresentationMap(nil),
 	))
 	ts.Accumulate(schema.SpawnMap("Map__String__Msg3",
-		ts.TypeByName("String"), ts.TypeByName("Msg3"), false))
+		"String", "Msg3", false))
 	gengo.Generate(".", pkgName, ts, adjCfg)
 	exec.Command("go", "fmt").Run()
 }

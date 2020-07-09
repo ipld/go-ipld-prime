@@ -11,7 +11,7 @@ type listGenerator struct {
 	AdjCfg *AdjunctCfg
 	mixins.ListTraits
 	PkgName string
-	Type    schema.TypeList
+	Type    *schema.TypeList
 }
 
 func (listGenerator) IsRepr() bool { return false } // hint used in some generalized templates.
@@ -177,7 +177,7 @@ type listBuilderGenerator struct {
 	AdjCfg *AdjunctCfg
 	mixins.ListAssemblerTraits
 	PkgName string
-	Type    schema.TypeList
+	Type    *schema.TypeList
 }
 
 func (listBuilderGenerator) IsRepr() bool { return false } // hint used in some generalized templates.

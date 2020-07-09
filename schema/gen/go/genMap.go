@@ -11,7 +11,7 @@ type mapGenerator struct {
 	AdjCfg *AdjunctCfg
 	mixins.MapTraits
 	PkgName string
-	Type    schema.TypeMap
+	Type    *schema.TypeMap
 }
 
 func (mapGenerator) IsRepr() bool { return false } // hint used in some generalized templates.
@@ -250,7 +250,7 @@ type mapBuilderGenerator struct {
 	AdjCfg *AdjunctCfg
 	mixins.MapAssemblerTraits
 	PkgName string
-	Type    schema.TypeMap
+	Type    *schema.TypeMap
 }
 
 func (mapBuilderGenerator) IsRepr() bool { return false } // hint used in some generalized templates.

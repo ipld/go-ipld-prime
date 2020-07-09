@@ -11,7 +11,7 @@ type intGenerator struct {
 	AdjCfg *AdjunctCfg
 	mixins.IntTraits
 	PkgName string
-	Type    schema.TypeInt
+	Type    *schema.TypeInt
 }
 
 func (intGenerator) IsRepr() bool { return false } // hint used in some generalized templates.
@@ -91,7 +91,7 @@ type intBuilderGenerator struct {
 	AdjCfg *AdjunctCfg
 	mixins.IntAssemblerTraits
 	PkgName string
-	Type    schema.TypeInt
+	Type    *schema.TypeInt
 }
 
 func (intBuilderGenerator) IsRepr() bool { return false } // hint used in some generalized templates.
