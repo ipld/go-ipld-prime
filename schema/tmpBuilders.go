@@ -1,5 +1,9 @@
 package schema
 
+import (
+	"fmt"
+)
+
 // Everything in this file is __a temporary hack__ and will be __removed__.
 //
 // These methods will only hang around until more of the "ast" packages are finished;
@@ -102,4 +106,56 @@ func (ts TypeSystem) GetTypes() map[TypeName]Type {
 }
 func (ts TypeSystem) TypeByName(n string) Type {
 	return ts.namedTypes[TypeName(n)]
+}
+
+// ValidateGraph checks that all type names referenced are defined.
+//
+// It does not do any other validations of individual type's sensibleness
+// (that should've happened when they were created
+// (although also note many of those validates are NYI,
+// and are roadmapped for after we research self-hosting)).
+func (ts TypeSystem) ValidateGraph() []error {
+	var ee []error
+	for tn, t := range ts.namedTypes {
+		switch t2 := t.(type) {
+		case *TypeBool,
+			*TypeInt,
+			*TypeFloat,
+			*TypeString,
+			*TypeBytes,
+			*TypeEnum:
+			continue // nothing to check: these are leaf nodes and refer to no other types.
+		case *TypeLink:
+			if !t2.hasReferencedType {
+				continue
+			}
+			if _, ok := ts.namedTypes[t2.referencedType]; !ok {
+				ee = append(ee, fmt.Errorf("type %s refers to missing type %s (as link reference type)", tn, t2.referencedType))
+			}
+		case *TypeStruct:
+			for _, f := range t2.fields {
+				if _, ok := ts.namedTypes[f.typ]; !ok {
+					ee = append(ee, fmt.Errorf("type %s refers to missing type %s (in field %s)", tn, f.typ, f.name))
+				}
+			}
+		case *TypeMap:
+			if _, ok := ts.namedTypes[t2.keyType]; !ok {
+				ee = append(ee, fmt.Errorf("type %s refers to missing type %s (as key type)", tn, t2.keyType))
+			}
+			if _, ok := ts.namedTypes[t2.valueType]; !ok {
+				ee = append(ee, fmt.Errorf("type %s refers to missing type %s (as key type)", tn, t2.valueType))
+			}
+		case *TypeList:
+			if _, ok := ts.namedTypes[t2.valueType]; !ok {
+				ee = append(ee, fmt.Errorf("type %s refers to missing type %s (as key type)", tn, t2.valueType))
+			}
+		case *TypeUnion:
+			for _, mn := range t2.members {
+				if _, ok := ts.namedTypes[mn]; !ok {
+					ee = append(ee, fmt.Errorf("type %s refers to missing type %s (as a member)", tn, mn))
+				}
+			}
+		}
+	}
+	return ee
 }
