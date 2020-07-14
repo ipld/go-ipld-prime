@@ -57,7 +57,7 @@ func TestUnionKeyed(t *testing.T) {
 	}
 
 	t.Run("union-using-embed", func(t *testing.T) {
-		adjCfg.unionMemlayout = map[schema.TypeName]string{"StrStr": "embedAll"}
+		adjCfg.CfgUnionMemlayout = map[schema.TypeName]string{"StrStr": "embedAll"}
 
 		prefix := "union-keyed-using-embed"
 		pkgName := "main"
@@ -66,7 +66,7 @@ func TestUnionKeyed(t *testing.T) {
 		})
 	})
 	t.Run("union-using-interface", func(t *testing.T) {
-		adjCfg.unionMemlayout = map[schema.TypeName]string{"StrStr": "interface"}
+		adjCfg.CfgUnionMemlayout = map[schema.TypeName]string{"StrStr": "interface"}
 
 		prefix := "union-keyed-using-interface"
 		pkgName := "main"

@@ -20,10 +20,13 @@ type FieldTuple struct {
 
 type AdjunctCfg struct {
 	typeSymbolOverrides       map[schema.TypeName]string
-	fieldSymbolLowerOverrides map[FieldTuple]string
+	FieldSymbolLowerOverrides map[FieldTuple]string
 	fieldSymbolUpperOverrides map[FieldTuple]string
 	maybeUsesPtr              map[schema.TypeName]bool   // treat absent as true
-	unionMemlayout            map[schema.TypeName]string // "embedAll"|"interface"; maybe more options later, unclear for now.
+	CfgUnionMemlayout         map[schema.TypeName]string // "embedAll"|"interface"; maybe more options later, unclear for now.
+
+	// ... some of these fields have sprouted messy name prefixes so they don't collide with their matching method names.
+	//  this structure has reached the critical threshhold where it due to be cleaned up and taken seriously.
 
 	// note: PkgName doesn't appear in here, because it's...
 	//  not adjunct data.  it's a generation invocation parameter.
@@ -49,7 +52,7 @@ func (cfg *AdjunctCfg) TypeSymbol(t schema.Type) string {
 }
 
 func (cfg *AdjunctCfg) FieldSymbolLower(f schema.StructField) string {
-	if x, ok := cfg.fieldSymbolLowerOverrides[FieldTuple{f.Type().Name(), f.Name()}]; ok {
+	if x, ok := cfg.FieldSymbolLowerOverrides[FieldTuple{f.Type().Name(), f.Name()}]; ok {
 		return x
 	}
 	return f.Name() // presumed already lower
@@ -84,7 +87,7 @@ func (cfg *AdjunctCfg) UnionMemlayout(t schema.Type) string {
 	if t.Kind() != schema.Kind_Union {
 		panic(fmt.Errorf("%s is not a union!", t.Name()))
 	}
-	v, ok := cfg.unionMemlayout[t.Name()]
+	v, ok := cfg.CfgUnionMemlayout[t.Name()]
 	if !ok {
 		return "embedAll"
 	}
