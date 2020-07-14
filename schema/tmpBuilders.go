@@ -30,8 +30,16 @@ func SpawnString(name TypeName) *TypeString {
 	return &TypeString{typeBase{name, nil}}
 }
 
+func SpawnBool(name TypeName) *TypeBool {
+	return &TypeBool{typeBase{name, nil}}
+}
+
 func SpawnInt(name TypeName) *TypeInt {
 	return &TypeInt{typeBase{name, nil}}
+}
+
+func SpawnFloat(name TypeName) *TypeFloat {
+	return &TypeFloat{typeBase{name, nil}}
 }
 
 func SpawnBytes(name TypeName) *TypeBytes {
