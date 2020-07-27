@@ -52,7 +52,7 @@ func (cfg *AdjunctCfg) TypeSymbol(t schema.Type) string {
 }
 
 func (cfg *AdjunctCfg) FieldSymbolLower(f schema.StructField) string {
-	if x, ok := cfg.FieldSymbolLowerOverrides[FieldTuple{f.Type().Name(), f.Name()}]; ok {
+	if x, ok := cfg.FieldSymbolLowerOverrides[FieldTuple{f.Parent().Name(), f.Name()}]; ok {
 		return x
 	}
 	return f.Name() // presumed already lower
