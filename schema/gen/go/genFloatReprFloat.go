@@ -9,7 +9,7 @@ import (
 
 var _ TypeGenerator = &float64ReprFloatGenerator{}
 
-func NewFloatReprFloatGenerator(pkgName string, typ schema.TypeFloat, adjCfg *AdjunctCfg) TypeGenerator {
+func NewFloatReprFloatGenerator(pkgName string, typ *schema.TypeFloat, adjCfg *AdjunctCfg) TypeGenerator {
 	return float64ReprFloatGenerator{
 		float64Generator{
 			adjCfg,
@@ -37,7 +37,7 @@ func (g float64ReprFloatGenerator) GetRepresentationNodeGen() NodeGenerator {
 
 type float64ReprFloatReprGenerator struct {
 	AdjCfg *AdjunctCfg
-	Type   schema.TypeFloat
+	Type   *schema.TypeFloat
 }
 
 func (g float64ReprFloatReprGenerator) EmitNodeType(w io.Writer) {
@@ -82,7 +82,7 @@ func (g float64ReprFloatReprGenerator) GetNodeBuilderGenerator() NodeBuilderGene
 
 type float64ReprFloatReprBuilderGenerator struct {
 	AdjCfg *AdjunctCfg
-	Type   schema.TypeFloat
+	Type   *schema.TypeFloat
 }
 
 func (float64ReprFloatReprBuilderGenerator) EmitNodeBuilderType(io.Writer)    {}

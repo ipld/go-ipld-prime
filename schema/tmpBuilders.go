@@ -1,5 +1,9 @@
 package schema
 
+import (
+	"fmt"
+)
+
 // Everything in this file is __a temporary hack__ and will be __removed__.
 //
 // These methods will only hang around until more of the "ast" packages are finished;
@@ -22,43 +26,51 @@ package schema
 //   (It would mean the golang types don't tell you whether the values have been checked for global properties or not, but, eh.)
 //   (It's not really compatible with "Prototype and Type are the same thing for codegen'd stuff", either (or, we need more interfaces, and to *really* lean into them), but maybe that's okay.)
 
-func SpawnString(name TypeName) TypeString {
-	return TypeString{typeBase{name, nil}}
+func SpawnString(name TypeName) *TypeString {
+	return &TypeString{typeBase{name, nil}}
 }
 
-func SpawnInt(name TypeName) TypeInt {
-	return TypeInt{typeBase{name, nil}}
+func SpawnBool(name TypeName) *TypeBool {
+	return &TypeBool{typeBase{name, nil}}
 }
 
-func SpawnBytes(name TypeName) TypeBytes {
-	return TypeBytes{typeBase{name, nil}}
+func SpawnInt(name TypeName) *TypeInt {
+	return &TypeInt{typeBase{name, nil}}
 }
 
-func SpawnLink(name TypeName) TypeLink {
-	return TypeLink{typeBase{name, nil}, nil, false}
+func SpawnFloat(name TypeName) *TypeFloat {
+	return &TypeFloat{typeBase{name, nil}}
 }
 
-func SpawnLinkReference(name TypeName, referenceType Type) TypeLink {
-	return TypeLink{typeBase{name, nil}, referenceType, true}
+func SpawnBytes(name TypeName) *TypeBytes {
+	return &TypeBytes{typeBase{name, nil}}
 }
 
-func SpawnList(name TypeName, typ Type, nullable bool) TypeList {
-	return TypeList{typeBase{name, nil}, false, typ, nullable}
+func SpawnLink(name TypeName) *TypeLink {
+	return &TypeLink{typeBase{name, nil}, "", false}
 }
 
-func SpawnMap(name TypeName, keyType Type, valueType Type, nullable bool) TypeMap {
-	return TypeMap{typeBase{name, nil}, false, keyType, valueType, nullable}
+func SpawnLinkReference(name TypeName, pointsTo TypeName) *TypeLink {
+	return &TypeLink{typeBase{name, nil}, pointsTo, true}
 }
 
-func SpawnStruct(name TypeName, fields []StructField, repr StructRepresentation) TypeStruct {
-	v := TypeStruct{
+func SpawnList(name TypeName, valueType TypeName, nullable bool) *TypeList {
+	return &TypeList{typeBase{name, nil}, false, valueType, nullable}
+}
+
+func SpawnMap(name TypeName, keyType TypeName, valueType TypeName, nullable bool) *TypeMap {
+	return &TypeMap{typeBase{name, nil}, false, keyType, valueType, nullable}
+}
+
+func SpawnStruct(name TypeName, fields []StructField, repr StructRepresentation) *TypeStruct {
+	v := &TypeStruct{
 		typeBase{name, nil},
 		fields,
 		make(map[string]StructField, len(fields)),
 		repr,
 	}
 	for i := range fields {
-		fields[i].parent = &v
+		fields[i].parent = v
 		v.fieldsMap[fields[i].name] = fields[i]
 	}
 	switch repr.(type) {
@@ -71,7 +83,7 @@ func SpawnStruct(name TypeName, fields []StructField, repr StructRepresentation)
 	}
 	return v
 }
-func SpawnStructField(name string, typ Type, optional bool, nullable bool) StructField {
+func SpawnStructField(name string, typ TypeName, optional bool, nullable bool) StructField {
 	return StructField{nil /*populated later*/, name, typ, optional, nullable}
 }
 func SpawnStructRepresentationMap(renames map[string]string) StructRepresentation_Map {
@@ -81,10 +93,10 @@ func SpawnStructRepresentationStringjoin(delim string) StructRepresentation_Stri
 	return StructRepresentation_Stringjoin{delim}
 }
 
-func SpawnUnion(name TypeName, members []Type, repr UnionRepresentation) TypeUnion {
-	return TypeUnion{typeBase{name, nil}, members, repr}
+func SpawnUnion(name TypeName, members []TypeName, repr UnionRepresentation) *TypeUnion {
+	return &TypeUnion{typeBase{name, nil}, members, repr}
 }
-func SpawnUnionRepresentationKeyed(table map[string]Type) UnionRepresentation_Keyed {
+func SpawnUnionRepresentationKeyed(table map[string]TypeName) UnionRepresentation_Keyed {
 	return UnionRepresentation_Keyed{table}
 }
 
@@ -94,6 +106,7 @@ func (ts *TypeSystem) Init() {
 	ts.namedTypes = make(map[TypeName]Type)
 }
 func (ts *TypeSystem) Accumulate(typ Type) {
+	typ._Type(ts)
 	ts.namedTypes[typ.Name()] = typ
 }
 func (ts TypeSystem) GetTypes() map[TypeName]Type {
@@ -101,4 +114,56 @@ func (ts TypeSystem) GetTypes() map[TypeName]Type {
 }
 func (ts TypeSystem) TypeByName(n string) Type {
 	return ts.namedTypes[TypeName(n)]
+}
+
+// ValidateGraph checks that all type names referenced are defined.
+//
+// It does not do any other validations of individual type's sensibleness
+// (that should've happened when they were created
+// (although also note many of those validates are NYI,
+// and are roadmapped for after we research self-hosting)).
+func (ts TypeSystem) ValidateGraph() []error {
+	var ee []error
+	for tn, t := range ts.namedTypes {
+		switch t2 := t.(type) {
+		case *TypeBool,
+			*TypeInt,
+			*TypeFloat,
+			*TypeString,
+			*TypeBytes,
+			*TypeEnum:
+			continue // nothing to check: these are leaf nodes and refer to no other types.
+		case *TypeLink:
+			if !t2.hasReferencedType {
+				continue
+			}
+			if _, ok := ts.namedTypes[t2.referencedType]; !ok {
+				ee = append(ee, fmt.Errorf("type %s refers to missing type %s (as link reference type)", tn, t2.referencedType))
+			}
+		case *TypeStruct:
+			for _, f := range t2.fields {
+				if _, ok := ts.namedTypes[f.typ]; !ok {
+					ee = append(ee, fmt.Errorf("type %s refers to missing type %s (in field %s)", tn, f.typ, f.name))
+				}
+			}
+		case *TypeMap:
+			if _, ok := ts.namedTypes[t2.keyType]; !ok {
+				ee = append(ee, fmt.Errorf("type %s refers to missing type %s (as key type)", tn, t2.keyType))
+			}
+			if _, ok := ts.namedTypes[t2.valueType]; !ok {
+				ee = append(ee, fmt.Errorf("type %s refers to missing type %s (as key type)", tn, t2.valueType))
+			}
+		case *TypeList:
+			if _, ok := ts.namedTypes[t2.valueType]; !ok {
+				ee = append(ee, fmt.Errorf("type %s refers to missing type %s (as key type)", tn, t2.valueType))
+			}
+		case *TypeUnion:
+			for _, mn := range t2.members {
+				if _, ok := ts.namedTypes[mn]; !ok {
+					ee = append(ee, fmt.Errorf("type %s refers to missing type %s (as a member)", tn, mn))
+				}
+			}
+		}
+	}
+	return ee
 }

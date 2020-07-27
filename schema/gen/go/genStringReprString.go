@@ -9,7 +9,7 @@ import (
 
 var _ TypeGenerator = &stringReprStringGenerator{}
 
-func NewStringReprStringGenerator(pkgName string, typ schema.TypeString, adjCfg *AdjunctCfg) TypeGenerator {
+func NewStringReprStringGenerator(pkgName string, typ *schema.TypeString, adjCfg *AdjunctCfg) TypeGenerator {
 	return stringReprStringGenerator{
 		stringGenerator{
 			adjCfg,
@@ -37,7 +37,7 @@ func (g stringReprStringGenerator) GetRepresentationNodeGen() NodeGenerator {
 
 type stringReprStringReprGenerator struct {
 	AdjCfg *AdjunctCfg
-	Type   schema.TypeString
+	Type   *schema.TypeString
 }
 
 func (g stringReprStringReprGenerator) EmitNodeType(w io.Writer) {
@@ -82,7 +82,7 @@ func (g stringReprStringReprGenerator) GetNodeBuilderGenerator() NodeBuilderGene
 
 type stringReprStringReprBuilderGenerator struct {
 	AdjCfg *AdjunctCfg
-	Type   schema.TypeString
+	Type   *schema.TypeString
 }
 
 func (stringReprStringReprBuilderGenerator) EmitNodeBuilderType(io.Writer)        {}

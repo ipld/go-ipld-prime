@@ -19,9 +19,9 @@ func TestListsContainingMaybe(t *testing.T) {
 	}
 	ts.Accumulate(schema.SpawnString("String"))
 	ts.Accumulate(schema.SpawnList("List__String",
-		ts.TypeByName("String"), false))
+		"String", false))
 	ts.Accumulate(schema.SpawnList("List__nullableString",
-		ts.TypeByName("String"), true))
+		"String", true))
 
 	test := func(t *testing.T, getPrototypeByName func(string) ipld.NodePrototype) {
 		t.Run("non-nullable", func(t *testing.T) {
@@ -129,16 +129,16 @@ func TestListsContainingLists(t *testing.T) {
 	ts.Accumulate(schema.SpawnString("String"))
 	ts.Accumulate(schema.SpawnStruct("Frub",
 		[]schema.StructField{
-			schema.SpawnStructField("field", ts.TypeByName("String"), false, false), // plain field.
+			schema.SpawnStructField("field", "String", false, false), // plain field.
 		},
 		schema.SpawnStructRepresentationMap(map[string]string{
 			"field": "encoded",
 		}),
 	))
 	ts.Accumulate(schema.SpawnList("List__Frub",
-		ts.TypeByName("Frub"), false))
+		"Frub", false))
 	ts.Accumulate(schema.SpawnList("List__List__Frub",
-		ts.TypeByName("List__Frub"), true))
+		"List__Frub", true))
 
 	prefix := "lists-of-lists"
 	pkgName := "main"

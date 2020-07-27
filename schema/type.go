@@ -43,7 +43,8 @@ func (tn TypeName) String() string { return string(tn) }
 // other kind of Type.)
 type Type interface {
 	// Unexported marker method to force the union closed.
-	_Type()
+	// Also used to set the internal pointer back to the universe its part of.
+	_Type(*TypeSystem)
 
 	// Returns a pointer to the TypeSystem this Type is a member of.
 	TypeSystem() *TypeSystem
@@ -75,17 +76,17 @@ type Type interface {
 }
 
 var (
-	_ Type = TypeBool{}
-	_ Type = TypeString{}
-	_ Type = TypeBytes{}
-	_ Type = TypeInt{}
-	_ Type = TypeFloat{}
-	_ Type = TypeMap{}
-	_ Type = TypeList{}
-	_ Type = TypeLink{}
-	_ Type = TypeUnion{}
-	_ Type = TypeStruct{}
-	_ Type = TypeEnum{}
+	_ Type = &TypeBool{}
+	_ Type = &TypeString{}
+	_ Type = &TypeBytes{}
+	_ Type = &TypeInt{}
+	_ Type = &TypeFloat{}
+	_ Type = &TypeMap{}
+	_ Type = &TypeList{}
+	_ Type = &TypeLink{}
+	_ Type = &TypeUnion{}
+	_ Type = &TypeStruct{}
+	_ Type = &TypeEnum{}
 )
 
 type typeBase struct {
@@ -116,21 +117,21 @@ type TypeFloat struct {
 type TypeMap struct {
 	typeBase
 	anonymous     bool
-	keyType       Type // must be ReprKind==string (e.g. Type==String|Enum).
-	valueType     Type
+	keyType       TypeName // must be ReprKind==string (e.g. Type==String|Enum).
+	valueType     TypeName
 	valueNullable bool
 }
 
 type TypeList struct {
 	typeBase
 	anonymous     bool
-	valueType     Type
+	valueType     TypeName
 	valueNullable bool
 }
 
 type TypeLink struct {
 	typeBase
-	referencedType    Type
+	referencedType    TypeName
 	hasReferencedType bool
 	// ...?
 }
@@ -142,7 +143,7 @@ type TypeUnion struct {
 	// Note that multiple appearances of the same type as distinct members of the union is not possible.
 	//  While we could do this... A: that's... odd, and nearly never called for; B: not possible with kinded mode; C: imagine the golang-native type switch!  it's impossible.
 	//  We rely on this clarity in many ways: most visibly, the type-level Node implementation for a union always uses the type names as if they were map keys!  This behavior is consistent for all union representations.
-	members        []Type
+	members        []TypeName
 	representation UnionRepresentation
 }
 
@@ -159,19 +160,19 @@ func (UnionRepresentation_Inline) _UnionRepresentation()   {}
 //  The order they're currently written in matches the serial form in the schema AST.
 
 type UnionRepresentation_Keyed struct {
-	table map[string]Type // key is user-defined freetext
+	table map[string]TypeName // key is user-defined freetext
 }
 type UnionRepresentation_Kinded struct {
-	table map[ipld.ReprKind]Type
+	table map[ipld.ReprKind]TypeName
 }
 type UnionRepresentation_Envelope struct {
 	discriminantKey string
 	contentKey      string
-	table           map[string]Type // key is user-defined freetext
+	table           map[string]TypeName // key is user-defined freetext
 }
 type UnionRepresentation_Inline struct {
 	discriminantKey string
-	table           map[string]Type // key is user-defined freetext
+	table           map[string]TypeName // key is user-defined freetext
 }
 
 type TypeStruct struct {
@@ -186,7 +187,7 @@ type TypeStruct struct {
 type StructField struct {
 	parent   *TypeStruct
 	name     string
-	typ      Type
+	typ      TypeName
 	optional bool
 	nullable bool
 }

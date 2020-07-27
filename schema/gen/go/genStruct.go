@@ -11,7 +11,7 @@ type structGenerator struct {
 	AdjCfg *AdjunctCfg
 	mixins.MapTraits
 	PkgName string
-	Type    schema.TypeStruct
+	Type    *schema.TypeStruct
 }
 
 func (structGenerator) IsRepr() bool { return false } // hint used in some generalized templates.
@@ -219,7 +219,7 @@ type structBuilderGenerator struct {
 	AdjCfg *AdjunctCfg
 	mixins.MapAssemblerTraits
 	PkgName string
-	Type    schema.TypeStruct
+	Type    *schema.TypeStruct
 }
 
 func (structBuilderGenerator) IsRepr() bool { return false } // hint used in some generalized templates.

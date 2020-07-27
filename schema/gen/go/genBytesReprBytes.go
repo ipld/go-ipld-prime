@@ -9,7 +9,7 @@ import (
 
 var _ TypeGenerator = &bytesReprBytesGenerator{}
 
-func NewBytesReprBytesGenerator(pkgName string, typ schema.TypeBytes, adjCfg *AdjunctCfg) TypeGenerator {
+func NewBytesReprBytesGenerator(pkgName string, typ *schema.TypeBytes, adjCfg *AdjunctCfg) TypeGenerator {
 	return bytesReprBytesGenerator{
 		bytesGenerator{
 			adjCfg,
@@ -37,7 +37,7 @@ func (g bytesReprBytesGenerator) GetRepresentationNodeGen() NodeGenerator {
 
 type bytesReprBytesReprGenerator struct {
 	AdjCfg *AdjunctCfg
-	Type   schema.TypeBytes
+	Type   *schema.TypeBytes
 }
 
 func (g bytesReprBytesReprGenerator) EmitNodeType(w io.Writer) {
@@ -82,7 +82,7 @@ func (g bytesReprBytesReprGenerator) GetNodeBuilderGenerator() NodeBuilderGenera
 
 type bytesReprBytesReprBuilderGenerator struct {
 	AdjCfg *AdjunctCfg
-	Type   schema.TypeBytes
+	Type   *schema.TypeBytes
 }
 
 func (bytesReprBytesReprBuilderGenerator) EmitNodeBuilderType(io.Writer)    {}

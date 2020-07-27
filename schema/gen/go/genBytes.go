@@ -11,7 +11,7 @@ type bytesGenerator struct {
 	AdjCfg *AdjunctCfg
 	mixins.BytesTraits
 	PkgName string
-	Type    schema.TypeBytes
+	Type    *schema.TypeBytes
 }
 
 func (bytesGenerator) IsRepr() bool { return false } // hint used in some generalized templates.
@@ -91,7 +91,7 @@ type bytesBuilderGenerator struct {
 	AdjCfg *AdjunctCfg
 	mixins.BytesAssemblerTraits
 	PkgName string
-	Type    schema.TypeBytes
+	Type    *schema.TypeBytes
 }
 
 func (bytesBuilderGenerator) IsRepr() bool { return false } // hint used in some generalized templates.

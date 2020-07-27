@@ -19,19 +19,19 @@ func Generate(pth string, pkgName string, ts schema.TypeSystem, adjCfg *AdjunctC
 		withFile(filepath.Join(pth, "t"+typ.Name().String()+".go"), func(f io.Writer) {
 			EmitFileHeader(pkgName, f)
 			switch t2 := typ.(type) {
-			case schema.TypeBool:
+			case *schema.TypeBool:
 				EmitEntireType(NewBoolReprBoolGenerator(pkgName, t2, adjCfg), f)
-			case schema.TypeInt:
+			case *schema.TypeInt:
 				EmitEntireType(NewIntReprIntGenerator(pkgName, t2, adjCfg), f)
-			case schema.TypeFloat:
+			case *schema.TypeFloat:
 				EmitEntireType(NewFloatReprFloatGenerator(pkgName, t2, adjCfg), f)
-			case schema.TypeString:
+			case *schema.TypeString:
 				EmitEntireType(NewStringReprStringGenerator(pkgName, t2, adjCfg), f)
-			case schema.TypeBytes:
+			case *schema.TypeBytes:
 				EmitEntireType(NewBytesReprBytesGenerator(pkgName, t2, adjCfg), f)
-			case schema.TypeLink:
+			case *schema.TypeLink:
 				EmitEntireType(NewLinkReprLinkGenerator(pkgName, t2, adjCfg), f)
-			case schema.TypeStruct:
+			case *schema.TypeStruct:
 				switch t2.RepresentationStrategy().(type) {
 				case schema.StructRepresentation_Map:
 					EmitEntireType(NewStructReprMapGenerator(pkgName, t2, adjCfg), f)
@@ -40,11 +40,11 @@ func Generate(pth string, pkgName string, ts schema.TypeSystem, adjCfg *AdjunctC
 				default:
 					panic("unrecognized struct representation strategy")
 				}
-			case schema.TypeMap:
+			case *schema.TypeMap:
 				EmitEntireType(NewMapReprMapGenerator(pkgName, t2, adjCfg), f)
-			case schema.TypeList:
+			case *schema.TypeList:
 				EmitEntireType(NewListReprListGenerator(pkgName, t2, adjCfg), f)
-			case schema.TypeUnion:
+			case *schema.TypeUnion:
 				switch t2.RepresentationStrategy().(type) {
 				case schema.UnionRepresentation_Keyed:
 					EmitEntireType(NewUnionReprKeyedGenerator(pkgName, t2, adjCfg), f)

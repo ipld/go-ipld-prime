@@ -9,7 +9,7 @@ import (
 
 var _ TypeGenerator = &intReprIntGenerator{}
 
-func NewIntReprIntGenerator(pkgName string, typ schema.TypeInt, adjCfg *AdjunctCfg) TypeGenerator {
+func NewIntReprIntGenerator(pkgName string, typ *schema.TypeInt, adjCfg *AdjunctCfg) TypeGenerator {
 	return intReprIntGenerator{
 		intGenerator{
 			adjCfg,
@@ -37,7 +37,7 @@ func (g intReprIntGenerator) GetRepresentationNodeGen() NodeGenerator {
 
 type intReprIntReprGenerator struct {
 	AdjCfg *AdjunctCfg
-	Type   schema.TypeInt
+	Type   *schema.TypeInt
 }
 
 func (g intReprIntReprGenerator) EmitNodeType(w io.Writer) {
@@ -82,7 +82,7 @@ func (g intReprIntReprGenerator) GetNodeBuilderGenerator() NodeBuilderGenerator 
 
 type intReprIntReprBuilderGenerator struct {
 	AdjCfg *AdjunctCfg
-	Type   schema.TypeInt
+	Type   *schema.TypeInt
 }
 
 func (intReprIntReprBuilderGenerator) EmitNodeBuilderType(io.Writer)    {}

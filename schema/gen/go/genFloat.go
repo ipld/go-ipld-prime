@@ -11,7 +11,7 @@ type float64Generator struct {
 	AdjCfg *AdjunctCfg
 	mixins.FloatTraits
 	PkgName string
-	Type    schema.TypeFloat
+	Type    *schema.TypeFloat
 }
 
 func (float64Generator) IsRepr() bool { return false } // hint used in some generalized templates.
@@ -91,7 +91,7 @@ type float64BuilderGenerator struct {
 	AdjCfg *AdjunctCfg
 	mixins.FloatAssemblerTraits
 	PkgName string
-	Type    schema.TypeFloat
+	Type    *schema.TypeFloat
 }
 
 func (float64BuilderGenerator) IsRepr() bool { return false } // hint used in some generalized templates.

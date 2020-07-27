@@ -9,7 +9,7 @@ import (
 
 var _ TypeGenerator = &boolReprBoolGenerator{}
 
-func NewBoolReprBoolGenerator(pkgName string, typ schema.TypeBool, adjCfg *AdjunctCfg) TypeGenerator {
+func NewBoolReprBoolGenerator(pkgName string, typ *schema.TypeBool, adjCfg *AdjunctCfg) TypeGenerator {
 	return boolReprBoolGenerator{
 		boolGenerator{
 			adjCfg,
@@ -37,7 +37,7 @@ func (g boolReprBoolGenerator) GetRepresentationNodeGen() NodeGenerator {
 
 type boolReprBoolReprGenerator struct {
 	AdjCfg *AdjunctCfg
-	Type   schema.TypeBool
+	Type   *schema.TypeBool
 }
 
 func (g boolReprBoolReprGenerator) EmitNodeType(w io.Writer) {
@@ -82,7 +82,7 @@ func (g boolReprBoolReprGenerator) GetNodeBuilderGenerator() NodeBuilderGenerato
 
 type boolReprBoolReprBuilderGenerator struct {
 	AdjCfg *AdjunctCfg
-	Type   schema.TypeBool
+	Type   *schema.TypeBool
 }
 
 func (boolReprBoolReprBuilderGenerator) EmitNodeBuilderType(io.Writer)    {}

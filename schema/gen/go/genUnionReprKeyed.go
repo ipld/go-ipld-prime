@@ -13,7 +13,7 @@ var _ TypeGenerator = &unionReprKeyedGenerator{}
 //  because the type level code effective does espouse keyed-style behavior (just with type names as the keys).
 //  Be advised that this similarity does not hold at *all* true of any of the other representation modes of unions!
 
-func NewUnionReprKeyedGenerator(pkgName string, typ schema.TypeUnion, adjCfg *AdjunctCfg) TypeGenerator {
+func NewUnionReprKeyedGenerator(pkgName string, typ *schema.TypeUnion, adjCfg *AdjunctCfg) TypeGenerator {
 	return unionReprKeyedGenerator{
 		unionGenerator{
 			adjCfg,
@@ -49,7 +49,7 @@ type unionReprKeyedReprGenerator struct {
 	AdjCfg *AdjunctCfg
 	mixins.MapTraits
 	PkgName string
-	Type    schema.TypeUnion
+	Type    *schema.TypeUnion
 }
 
 func (unionReprKeyedReprGenerator) IsRepr() bool { return true } // hint used in some generalized templates.
@@ -88,10 +88,10 @@ func (g unionReprKeyedReprGenerator) EmitNodeMethodLookupByString(w io.Writer) {
 				if n.tag != {{ add $i 1 }} {
 					return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
 				}
-				return &n.x{{ add $i 1 }}, nil
+				return n.x{{ add $i 1 }}.Representation(), nil
 				{{- else if (eq (dot.AdjCfg.UnionMemlayout dot.Type) "interface") }}
 				if n2, ok := n.x.({{ $member | TypeSymbol }}); ok {
-					return n2, nil
+					return n2.Representation(), nil
 				} else {
 					return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
 				}
@@ -193,7 +193,7 @@ type unionReprKeyedReprBuilderGenerator struct {
 	AdjCfg *AdjunctCfg
 	mixins.MapAssemblerTraits
 	PkgName string
-	Type    schema.TypeUnion
+	Type    *schema.TypeUnion
 }
 
 func (unionReprKeyedReprBuilderGenerator) IsRepr() bool { return true } // hint used in some generalized templates.
@@ -351,7 +351,7 @@ func (g unionReprKeyedReprBuilderGenerator) emitMapAssemblerMethods(w io.Writer)
 				x := &_{{ $member | TypeSymbol }}{}
 				ma.w.x = x
 				if ma.ca{{ add $i 1 }} == nil {
-					ma.ca{{ add $i 1 }} = &_{{ $member | TypeSymbol }}__Assembler{}
+					ma.ca{{ add $i 1 }} = &_{{ $member | TypeSymbol }}__ReprAssembler{}
 				}
 				ma.ca{{ add $i 1 }}.w = x
 				ma.ca{{ add $i 1 }}.m = &ma.cm

@@ -19,9 +19,9 @@ func TestMapsContainingMaybe(t *testing.T) {
 	}
 	ts.Accumulate(schema.SpawnString("String"))
 	ts.Accumulate(schema.SpawnMap("Map__String__String",
-		ts.TypeByName("String"), ts.TypeByName("String"), false))
+		"String", "String", false))
 	ts.Accumulate(schema.SpawnMap("Map__String__nullableString",
-		ts.TypeByName("String"), ts.TypeByName("String"), true))
+		"String", "String", true))
 
 	test := func(t *testing.T, getPrototypeByName func(string) ipld.NodePrototype) {
 		t.Run("non-nullable", func(t *testing.T) {
@@ -129,16 +129,16 @@ func TestMapsContainingMaps(t *testing.T) {
 	ts.Accumulate(schema.SpawnString("String"))
 	ts.Accumulate(schema.SpawnStruct("Frub", // "type Frub struct { field String (rename "encoded") }"
 		[]schema.StructField{
-			schema.SpawnStructField("field", ts.TypeByName("String"), false, false), // plain field.
+			schema.SpawnStructField("field", "String", false, false), // plain field.
 		},
 		schema.SpawnStructRepresentationMap(map[string]string{
 			"field": "encoded",
 		}),
 	))
 	ts.Accumulate(schema.SpawnMap("Map__String__Frub", // "{String:Frub}"
-		ts.TypeByName("String"), ts.TypeByName("Frub"), false))
+		"String", "Frub", false))
 	ts.Accumulate(schema.SpawnMap("Map__String__nullableMap__String__Frub", // "{String:nullable {String:Frub}}"
-		ts.TypeByName("String"), ts.TypeByName("Map__String__Frub"), true))
+		"String", "Map__String__Frub", true))
 
 	prefix := "maps-recursive"
 	pkgName := "main"
@@ -216,13 +216,13 @@ func TestMapsWithComplexKeys(t *testing.T) {
 	ts.Accumulate(schema.SpawnString("String"))
 	ts.Accumulate(schema.SpawnStruct("StringyStruct",
 		[]schema.StructField{
-			schema.SpawnStructField("foo", ts.TypeByName("String"), false, false),
-			schema.SpawnStructField("bar", ts.TypeByName("String"), false, false),
+			schema.SpawnStructField("foo", "String", false, false),
+			schema.SpawnStructField("bar", "String", false, false),
 		},
 		schema.SpawnStructRepresentationStringjoin(":"),
 	))
 	ts.Accumulate(schema.SpawnMap("Map__StringyStruct__String",
-		ts.TypeByName("StringyStruct"), ts.TypeByName("String"), false))
+		"StringyStruct", "String", false))
 
 	prefix := "maps-cmplx-keys"
 	pkgName := "main"

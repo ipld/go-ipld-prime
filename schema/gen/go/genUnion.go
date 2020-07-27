@@ -27,7 +27,7 @@ type unionGenerator struct {
 	AdjCfg *AdjunctCfg
 	mixins.MapTraits
 	PkgName string
-	Type    schema.TypeUnion
+	Type    *schema.TypeUnion
 }
 
 func (unionGenerator) IsRepr() bool { return false } // hint used in some generalized templates.
@@ -255,7 +255,7 @@ type unionBuilderGenerator struct {
 	AdjCfg *AdjunctCfg
 	mixins.MapAssemblerTraits
 	PkgName string
-	Type    schema.TypeUnion
+	Type    *schema.TypeUnion
 }
 
 func (unionBuilderGenerator) IsRepr() bool { return false } // hint used in some generalized templates.
