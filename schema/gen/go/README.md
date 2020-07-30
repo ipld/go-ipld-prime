@@ -56,10 +56,10 @@ Legend:
 | ... ... including optional     |     ✔     |     ✔    |
 | ... ... including renames      |     ✔     |     ✔    |
 | ... ... including implicits    |     ⚠     |     ⚠    |
-| ... tuple representation       |     ✘     |     ✘    |
-| ... ... including optional     |           |          |
-| ... ... including renames      |           |          |
-| ... ... including implicits    |           |          |
+| ... tuple representation       |     ✔     |     ✔    |
+| ... ... including optional     |     ✔     |     ✔    |
+| ... ... including renames      |     -     |     -    |
+| ... ... including implicits    |     ⚠     |     ⚠    |
 | ... stringjoin representation  |     ✔     |     ✔    |
 | ... ... including optional     |     -     |     -    |
 | ... ... including renames      |     -     |     -    |
