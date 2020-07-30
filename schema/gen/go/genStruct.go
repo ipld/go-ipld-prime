@@ -424,10 +424,13 @@ func (g structBuilderGenerator) emitMapAssemblerMethods(w io.Writer) {
 				}
 				ma.s += fieldBit__{{ $type | TypeSymbol }}_{{ $field | FieldSymbolUpper }}
 				ma.state = maState_midValue
+				ma.f = {{ $i }}
 				{{- if $field.IsMaybe }}
 				ma.ca_{{ $field | FieldSymbolLower }}.w = {{if not (MaybeUsesPtr $field.Type) }}&{{end}}ma.w.{{ $field | FieldSymbolLower }}.v
 				ma.ca_{{ $field | FieldSymbolLower }}.m = &ma.w.{{ $field | FieldSymbolLower }}.m
-				{{if $field.IsNullable }}ma.w.{{ $field | FieldSymbolLower }}.m = allowNull{{end}}
+				{{- if $field.IsNullable }}
+				ma.w.{{ $field | FieldSymbolLower }}.m = allowNull
+				{{- end}}
 				{{- else}}
 				ma.ca_{{ $field | FieldSymbolLower }}.w = &ma.w.{{ $field | FieldSymbolLower }}
 				ma.ca_{{ $field | FieldSymbolLower }}.m = &ma.cm
@@ -476,7 +479,9 @@ func (g structBuilderGenerator) emitMapAssemblerMethods(w io.Writer) {
 				{{- if $field.IsMaybe }}
 				ma.ca_{{ $field | FieldSymbolLower }}.w = {{if not (MaybeUsesPtr $field.Type) }}&{{end}}ma.w.{{ $field | FieldSymbolLower }}.v
 				ma.ca_{{ $field | FieldSymbolLower }}.m = &ma.w.{{ $field | FieldSymbolLower }}.m
-				{{if $field.IsNullable }}ma.w.{{ $field | FieldSymbolLower }}.m = allowNull{{end}}
+				{{- if $field.IsNullable }}
+				ma.w.{{ $field | FieldSymbolLower }}.m = allowNull
+				{{- end}}
 				{{- else}}
 				ma.ca_{{ $field | FieldSymbolLower }}.w = &ma.w.{{ $field | FieldSymbolLower }}
 				ma.ca_{{ $field | FieldSymbolLower }}.m = &ma.cm
