@@ -2,6 +2,8 @@ package schema
 
 import (
 	"fmt"
+
+	"github.com/ipld/go-ipld-prime"
 )
 
 // TODO: errors in this package remain somewhat slapdash.
@@ -20,19 +22,22 @@ import (
 //  - it's possible that we should wrap *all* schema-level errors in a single "ipld.ErrSchemaNoMatch" error of some kind, to fix the above.  as yet undecided.
 
 // ErrNoSuchField may be returned from lookup functions on the Node
-// interface when a field is requested which doesn't exist, or from Insert
-// on a MapBuilder when a key doesn't match a field name in the structure.
+// interface when a field is requested which doesn't exist,
+// or from assigning data into on a MapAssembler for a struct
+// when the key doesn't match a field name in the structure
+// (or, when assigning data into a ListAssembler and the list size has
+// reached out of bounds, in case of a struct with list-like representations!).
 type ErrNoSuchField struct {
 	Type Type
 
-	FieldName string
+	Field ipld.PathSegment
 }
 
 func (e ErrNoSuchField) Error() string {
 	if e.Type == nil {
-		return fmt.Sprintf("no such field: {typeinfomissing}.%s", e.FieldName)
+		return fmt.Sprintf("no such field: {typeinfomissing}.%s", e.Field)
 	}
-	return fmt.Sprintf("no such field: %s.%s", e.Type.Name(), e.FieldName)
+	return fmt.Sprintf("no such field: %s.%s", e.Type.Name(), e.Field)
 }
 
 // ErrNotUnionStructure means data was fed into a union assembler that can't match the union.
