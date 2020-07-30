@@ -89,6 +89,9 @@ func SpawnStructField(name string, typ TypeName, optional bool, nullable bool) S
 func SpawnStructRepresentationMap(renames map[string]string) StructRepresentation_Map {
 	return StructRepresentation_Map{renames, nil}
 }
+func SpawnStructRepresentationTuple() StructRepresentation_Tuple {
+	return StructRepresentation_Tuple{}
+}
 func SpawnStructRepresentationStringjoin(delim string) StructRepresentation_Stringjoin {
 	return StructRepresentation_Stringjoin{delim}
 }

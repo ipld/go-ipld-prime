@@ -79,7 +79,7 @@ func (n Msg3) LookupByString(key string) (ipld.Node, error) {
 	case "waga":
 		return &n.waga, nil
 	default:
-		return nil, schema.ErrNoSuchField{Type: nil /*TODO*/, FieldName: key}
+		return nil, schema.ErrNoSuchField{Type: nil /*TODO*/, Field: ipld.PathSegmentOfString(key)}
 	}
 }
 func (n Msg3) LookupByNode(key ipld.Node) (ipld.Node, error) {
@@ -560,7 +560,7 @@ func (n *_Msg3__Repr) LookupByString(key string) (ipld.Node, error) {
 	case "waga":
 		return n.waga.Representation(), nil
 	default:
-		return nil, schema.ErrNoSuchField{Type: nil /*TODO*/, FieldName: key}
+		return nil, schema.ErrNoSuchField{Type: nil /*TODO*/, Field: ipld.PathSegmentOfString(key)}
 	}
 }
 func (n *_Msg3__Repr) LookupByNode(key ipld.Node) (ipld.Node, error) {

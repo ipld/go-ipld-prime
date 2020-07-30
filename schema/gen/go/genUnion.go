@@ -160,7 +160,7 @@ func (g unionGenerator) EmitNodeMethodLookupByString(w io.Writer) {
 				{{- end}}
 			{{- end}}
 			default:
-				return nil, schema.ErrNoSuchField{Type: nil /*TODO*/, FieldName: key}
+				return nil, schema.ErrNoSuchField{Type: nil /*TODO*/, Field: ipld.PathSegmentOfString(key)}
 			}
 		}
 	`, w, g.AdjCfg, g)
