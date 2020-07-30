@@ -106,6 +106,38 @@ func TestStructReprTuple(t *testing.T) {
 			})
 		})
 
-		// todo: fourtuple with absents
+		t.Run("fourtuple with absents", func(t *testing.T) {
+			np := getPrototypeByName("FourTuple")
+			nrp := getPrototypeByName("FourTuple.Repr")
+			var n schema.TypedNode
+			t.Run("typed-create", func(t *testing.T) {
+				n = fluent.MustBuildMap(np, 2, func(ma fluent.MapAssembler) {
+					ma.AssembleEntry("foo").AssignString("0")
+					ma.AssembleEntry("bar").AssignNull()
+				}).(schema.TypedNode)
+				t.Run("typed-read", func(t *testing.T) {
+					Require(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
+					Wish(t, n.Length(), ShouldEqual, 4)
+					Wish(t, must.String(must.Node(n.LookupByString("foo"))), ShouldEqual, "0")
+					Wish(t, must.Node(n.LookupByString("bar")), ShouldEqual, ipld.Null)
+					Wish(t, must.Node(n.LookupByString("baz")), ShouldEqual, ipld.Absent)
+					Wish(t, must.Node(n.LookupByString("qux")), ShouldEqual, ipld.Absent)
+				})
+				t.Run("repr-read", func(t *testing.T) {
+					nr := n.Representation()
+					Require(t, nr.ReprKind(), ShouldEqual, ipld.ReprKind_List)
+					Wish(t, nr.Length(), ShouldEqual, 2)
+					Wish(t, must.String(must.Node(nr.LookupByIndex(0))), ShouldEqual, "0")
+					Wish(t, must.Node(nr.LookupByIndex(1)), ShouldEqual, ipld.Null)
+				})
+			})
+			t.Run("repr-create", func(t *testing.T) {
+				nr := fluent.MustBuildList(nrp, 4, func(la fluent.ListAssembler) {
+					la.AssembleValue().AssignString("0")
+					la.AssembleValue().AssignNull()
+				})
+				Wish(t, n, ShouldEqual, nr)
+			})
+		})
 	})
 }
