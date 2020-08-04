@@ -366,20 +366,19 @@ func (g unionReprKindedReprBuilderGenerator) EmitNodeAssemblerType(w io.Writer) 
 
 			{{- range $i, $member := .Type.Members }}
 			ca{{ add $i 1 }} {{ if (eq (dot.AdjCfg.UnionMemlayout dot.Type) "interface") }}*{{end}}_{{ $member | TypeSymbol }}__ReprAssembler
-			{{end -}}
+			{{- end}}
 			ca uint
 		}
 	`, w, g.AdjCfg, g)
 	doTemplate(`
 		func (na *_{{ .Type | TypeSymbol }}__ReprAssembler) reset() {
-			na.state = maState_initial
 			switch na.ca {
 			case 0:
 				return
 			{{- range $i, $member := .Type.Members }}
 			case {{ add $i 1 }}:
 				na.ca{{ add $i 1 }}.reset()
-			{{end -}}
+			{{- end}}
 			default:
 				panic("unreachable")
 			}
@@ -388,7 +387,11 @@ func (g unionReprKindedReprBuilderGenerator) EmitNodeAssemblerType(w io.Writer) 
 }
 
 func kindedUnionNodeAssemblerMethodTemplateMunge(
-	methodSig string, condClause string, retClause string,
+	methodName string, // for error messages
+	methodSig string, // output literally
+	condClause string, // template condition for the member this should match on
+	retClause string, // clause returning the thing (how to delegate methodsig, generally)
+	twoReturns bool, // true if a nil should be returned as well as the error
 ) string {
 	// The value pointed to by `na.m` isn't modified here, because we're sharing it with the child, who should do so.
 	//  This also means that value gets checked twice -- once by us, because we need to halt if we've already been used --
@@ -396,6 +399,14 @@ func kindedUnionNodeAssemblerMethodTemplateMunge(
 	//   I don't see a good way to remedy this shy of making more granular (unexported!) methods.  (Might be worth it.)
 	//   This probably also isn't the same for all of the assembler methods: the methods we delegate to aren't doing as many check branches when they're for scalars,
 	//    because they expected to be used in contexts where many values of the 'm' enum aren't reachable -- an expectation we've suddenly subverted with this path!
+	//
+	// FUTURE: The error returns here are deeply questionable, and not as helpful as they could be.
+	//  ErrNotUnionStructure is about the most applicable thing so far, but it's very freetext.
+	//  ErrWrongKind wouldn't fit at all: assumes that we can say what kind of node we have, but this is the one case in the whole system where *we can't*; also, assumes there's one actual correct kind, and that too is false here!
+	maybeNilComma := ""
+	if twoReturns {
+		maybeNilComma += "nil,"
+	}
 	return `
 		func (na *_{{ .Type | TypeSymbol }}__ReprAssembler) ` + methodSig + ` {
 			switch *na.m {
@@ -416,7 +427,7 @@ func kindedUnionNodeAssemblerMethodTemplateMunge(
 			na.w.tag = {{ add $i 1 }}
 			na.ca{{ add $i 1 }}.w = &na.w.x{{ add $i 1 }}
 			na.ca{{ add $i 1 }}.m = na.m
-			return na.ca{{ add $i 1 }}.BeginMap(sizeHint)
+			return na.ca{{ add $i 1 }}` + retClause + `
 			{{- else if (eq (dot.AdjCfg.UnionMemlayout dot.Type) "interface") }}
 			x := &_{{ $member | TypeSymbol }}{}
 			na.w.x = x
@@ -429,74 +440,91 @@ func kindedUnionNodeAssemblerMethodTemplateMunge(
 			{{- end}}
 			{{- end}}
 			{{- end}}
-			// TODO i think you finally Need a method for if-no-members-match-this-kind for the default rejection to compile this time.
-			return nil, ipld.ErrWrongKind{doozy}
+			return ` + maybeNilComma + ` schema.ErrNotUnionStructure{TypeName: "{{ .PkgName }}.{{ .Type.Name }}.Repr", Detail: "` + methodName + ` called but is not valid for any of the kinds that are valid members of this union"}
 		}
 	`
 }
 
 func (g unionReprKindedReprBuilderGenerator) EmitNodeAssemblerMethodBeginMap(w io.Writer) {
 	doTemplate(kindedUnionNodeAssemblerMethodTemplateMunge(
+		`BeginMap`,
 		`BeginMap(sizeHint int) (ipld.MapAssembler, error)`,
 		`{{- if eq $member.RepresentationBehavior.String "map" }}`,
 		`.BeginMap(sizeHint)`,
+		true,
 	), w, g.AdjCfg, g)
 }
 func (g unionReprKindedReprBuilderGenerator) EmitNodeAssemblerMethodBeginList(w io.Writer) {
 	doTemplate(kindedUnionNodeAssemblerMethodTemplateMunge(
+		`BeginList`,
 		`BeginList(sizeHint int) (ipld.ListAssembler, error)`,
 		`{{- if eq $member.RepresentationBehavior.String "list" }}`,
 		`.BeginList(sizeHint)`,
+		true,
 	), w, g.AdjCfg, g)
 }
 func (g unionReprKindedReprBuilderGenerator) EmitNodeAssemblerMethodAssignNull(w io.Writer) {
 	// TODO: I think this may need some special handling to account for if our union is itself used in a nullable circumstance; that should overrule this behavior.
 	doTemplate(kindedUnionNodeAssemblerMethodTemplateMunge(
+		`AssignNull`,
 		`AssignNull() error `,
 		`{{- if eq $member.RepresentationBehavior.String "null" }}`,
 		`.AssignNull()`,
+		false,
 	), w, g.AdjCfg, g)
 }
 func (g unionReprKindedReprBuilderGenerator) EmitNodeAssemblerMethodAssignBool(w io.Writer) {
 	doTemplate(kindedUnionNodeAssemblerMethodTemplateMunge(
+		`AssignBool`,
 		`AssignBool(v bool) error `,
 		`{{- if eq $member.RepresentationBehavior.String "bool" }}`,
 		`.AssignBool(v)`,
+		false,
 	), w, g.AdjCfg, g)
 }
 func (g unionReprKindedReprBuilderGenerator) EmitNodeAssemblerMethodAssignInt(w io.Writer) {
 	doTemplate(kindedUnionNodeAssemblerMethodTemplateMunge(
+		`AssignInt`,
 		`AssignInt(v int) error `,
 		`{{- if eq $member.RepresentationBehavior.String "int" }}`,
 		`.AssignInt(v)`,
+		false,
 	), w, g.AdjCfg, g)
 }
 func (g unionReprKindedReprBuilderGenerator) EmitNodeAssemblerMethodAssignFloat(w io.Writer) {
 	doTemplate(kindedUnionNodeAssemblerMethodTemplateMunge(
+		`AssignFloat`,
 		`AssignFloat(v float64) error `,
 		`{{- if eq $member.RepresentationBehavior.String "float" }}`,
 		`.AssignFloat(v)`,
+		false,
 	), w, g.AdjCfg, g)
 }
 func (g unionReprKindedReprBuilderGenerator) EmitNodeAssemblerMethodAssignString(w io.Writer) {
 	doTemplate(kindedUnionNodeAssemblerMethodTemplateMunge(
+		`AssignString`,
 		`AssignString(v string) error `,
 		`{{- if eq $member.RepresentationBehavior.String "string" }}`,
 		`.AssignString(v)`,
+		false,
 	), w, g.AdjCfg, g)
 }
 func (g unionReprKindedReprBuilderGenerator) EmitNodeAssemblerMethodAssignBytes(w io.Writer) {
 	doTemplate(kindedUnionNodeAssemblerMethodTemplateMunge(
+		`AssignBytes`,
 		`AssignBytes(v []byte) error `,
 		`{{- if eq $member.RepresentationBehavior.String "bytes" }}`,
 		`.AssignBytes(v)`,
+		false,
 	), w, g.AdjCfg, g)
 }
 func (g unionReprKindedReprBuilderGenerator) EmitNodeAssemblerMethodAssignLink(w io.Writer) {
 	doTemplate(kindedUnionNodeAssemblerMethodTemplateMunge(
+		`AssignLink`,
 		`AssignLink(v ipld.Link) error `,
 		`{{- if eq $member.RepresentationBehavior.String "link" }}`,
 		`.AssignLink(v)`,
+		false,
 	), w, g.AdjCfg, g)
 }
 func (g unionReprKindedReprBuilderGenerator) EmitNodeAssemblerMethodAssignNode(w io.Writer) {
