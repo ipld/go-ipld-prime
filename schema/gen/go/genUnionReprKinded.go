@@ -70,7 +70,26 @@ func (g unionReprKindedReprGenerator) EmitNodeTypeAssertions(w io.Writer) {
 }
 
 func (g unionReprKindedReprGenerator) EmitNodeMethodReprKind(w io.Writer) {
-	// FIXME wow
+	doTemplate(`
+		func (n *_{{ .Type | TypeSymbol }}__Repr) ReprKind() ipld.ReprKind {
+			{{- if (eq (.AdjCfg.UnionMemlayout .Type) "embedAll") }}
+			switch n.tag {
+			{{- range $i, $member := .Type.Members }}
+			case {{ add $i 1 }}:
+				return {{ $member.RepresentationBehavior | KindSymbol }}
+			{{- end}}
+			{{- else if (eq (.AdjCfg.UnionMemlayout .Type) "interface") }}
+			switch n2 := n.x.(type) {
+			{{- range $i, $member := .Type.Members }}
+			case {{ $member | TypeSymbol }}:
+				return {{ $member.RepresentationBehavior | KindSymbol }}
+			{{- end}}
+			{{- end}}
+			default:
+				panic("unreachable")
+			}
+		}
+	`, w, g.AdjCfg, g)
 }
 
 // A bunch of these methods could be improved by doing a gen-time switch for whether any of the possible members are the relevant kind at all;
