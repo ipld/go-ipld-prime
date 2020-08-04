@@ -73,6 +73,22 @@ type Type interface {
 	// can vary in representation kind based on their value (specifically,
 	// kinded-representation unions have this property).
 	Kind() Kind
+
+	// RepresentationBehavior returns a description of how the representation
+	// of this type will behave in terms of the IPLD Data Model.
+	// This property varies based on the representation strategy of a type.
+	//
+	// In one case, the representation behavior cannot be known statically,
+	// and varies based on the data: kinded unions have this trait.
+	//
+	// This property is used by kinded unions, which require that their members
+	// all have distinct representation behavior.
+	// (It follows that a kinded union cannot have another kinded union as a member.)
+	//
+	// You may also be interested in a related property that might have been called "TypeBehavior".
+	// However, this method doesn't exist, because it's a deterministic property of `Kind()`!
+	// You can use `Kind.ActsLike()` to get type-level behavioral information.
+	RepresentationBehavior() ipld.ReprKind
 }
 
 var (

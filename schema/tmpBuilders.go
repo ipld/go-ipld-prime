@@ -2,6 +2,8 @@ package schema
 
 import (
 	"fmt"
+
+	"github.com/ipld/go-ipld-prime"
 )
 
 // Everything in this file is __a temporary hack__ and will be __removed__.
@@ -101,6 +103,9 @@ func SpawnUnion(name TypeName, members []TypeName, repr UnionRepresentation) *Ty
 }
 func SpawnUnionRepresentationKeyed(table map[string]TypeName) UnionRepresentation_Keyed {
 	return UnionRepresentation_Keyed{table}
+}
+func SpawnUnionRepresentationKinded(table map[ipld.ReprKind]TypeName) UnionRepresentation_Kinded {
+	return UnionRepresentation_Kinded{table}
 }
 
 // The methods relating to TypeSystem are also mutation-heavy and placeholdery.
