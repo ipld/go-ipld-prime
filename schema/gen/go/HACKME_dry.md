@@ -56,7 +56,7 @@ What mechanism of extraction should be used?
 - (for gen-side dry) sub-templates
 	- we currently don't really use this at all
 - (for gen-side dry) template concatenation
-	- we currently don't really use this at all either
+	- some of this: kinded union representations do this
 - (for output-side dry) output side functions
 	- some of this: see "minima" file.
 - (for output-side dry) output side embeds

@@ -102,11 +102,24 @@ func (g unionReprKindedReprGenerator) EmitNodeMethodReprKind(w io.Writer) {
 //     Regardless, the gsloc is reducable.  (Slightly.  There are also bigger gains to be made elsewhere, I'm sure.)
 
 func kindedUnionNodeMethodTemplateMunge(
-	methodSig string, condClause string, retClause string,
+	methodName string, // for error messages
+	methodSig string, // output literally
+	condClause string, // template condition for the member this should match on
+	retClause string, // clause returning the thing (how to delegate methodsig, generally)
+	appropriateKind string, // for error messages
+	nopeSentinel string, // for error return paths; generally the zero value for the first return type.
+	nopeSentinelOnly bool, // true if this method has no error return, just the sentinel.
 ) string {
 	// We really could just... call the methods directly (and elide the switch entirely all the time), in the case of the "interface" implementation strategy.
 	//  We don't, though, because that would deprive us of getting the union type's name in the wrong-kind errors...
 	//   and in addition to that being sadface in general, it would be downright unacceptable if that behavior varied based on implementation strategy.
+	//
+	// This error text doesn't tell us what the member kind is.  This might read weirdly.
+	//  It's possible we could try to cram a description of the inhabitant into the "TypeName" since it's stringy; but unclear if that's a good idea either.
+	errorClause := `return ` + nopeSentinel
+	if !nopeSentinelOnly {
+		errorClause += `, ipld.ErrWrongKind{TypeName: "{{ .PkgName }}.{{ .Type.Name }}.Repr", MethodName: "` + methodName + `", AppropriateKind: ` + appropriateKind + `, ActualKind: n.ReprKind()}`
+	}
 	return `
 		func (n *_{{ .Type | TypeSymbol }}__Repr) ` + methodSig + ` {
 			{{- if (eq (.AdjCfg.UnionMemlayout .Type) "embedAll") }}
@@ -127,66 +140,93 @@ func kindedUnionNodeMethodTemplateMunge(
 			{{- end}}
 			{{- end}}
 			default:
-				return nil, ipld.ErrWrongKind{doozy} // ... is this a good example of where ErrFoo.TypeName should indeed be freetext, so it can say "ThisUnion.Repr(inhabitant not FooMap)" ...?
+				` + errorClause + `
 			}
 		}
 	`
-	// TODO damnit I need the method name again for error messages.  ... maybe make the error be a clause, hm.
 }
 
 func (g unionReprKindedReprGenerator) EmitNodeMethodLookupByString(w io.Writer) {
 	doTemplate(kindedUnionNodeMethodTemplateMunge(
+		`LookupByString`,
 		`LookupByString(key string) (ipld.Node, error)`,
 		`{{- if eq $member.RepresentationBehavior.String "map" }}`,
 		`.LookupByString(key)`,
+		`ipld.ReprKindSet_JustMap`,
+		`nil`,
+		false,
 	), w, g.AdjCfg, g)
 }
 
 func (g unionReprKindedReprGenerator) EmitNodeMethodLookupByIndex(w io.Writer) {
 	doTemplate(kindedUnionNodeMethodTemplateMunge(
+		`LookupByIndex`,
 		`LookupByIndex(idx int) (ipld.Node, error)`,
 		`{{- if eq $member.RepresentationBehavior.String "list" }}`,
 		`.LookupByIndex(idx)`,
+		`ipld.ReprKindSet_JustList`,
+		`nil`,
+		false,
 	), w, g.AdjCfg, g)
 }
 
 func (g unionReprKindedReprGenerator) EmitNodeMethodLookupByNode(w io.Writer) {
 	doTemplate(kindedUnionNodeMethodTemplateMunge(
+		`LookupByNode`,
 		`LookupByNode(key ipld.Node) (ipld.Node, error)`,
 		`{{- if or (eq $member.RepresentationBehavior.String "map") (eq $member.RepresentationBehavior.String "list") }}`,
 		`.LookupByNode(key)`,
+		`ipld.ReprKindSet_Recursive`,
+		`nil`,
+		false,
 	), w, g.AdjCfg, g)
 }
 
 func (g unionReprKindedReprGenerator) EmitNodeMethodLookupBySegment(w io.Writer) {
 	doTemplate(kindedUnionNodeMethodTemplateMunge(
+		`LookupBySegment`,
 		`LookupBySegment(seg ipld.PathSegment) (ipld.Node, error)`,
 		`{{- if or (eq $member.RepresentationBehavior.String "map") (eq $member.RepresentationBehavior.String "list") }}`,
 		`.LookupBySegment(seg)`,
+		`ipld.ReprKindSet_Recursive`,
+		`nil`,
+		false,
 	), w, g.AdjCfg, g)
 }
 
 func (g unionReprKindedReprGenerator) EmitNodeMethodMapIterator(w io.Writer) {
 	doTemplate(kindedUnionNodeMethodTemplateMunge(
+		`MapIterator`,
 		`MapIterator() ipld.MapIterator`,
 		`{{- if eq $member.RepresentationBehavior.String "map" }}`,
 		`.MapIterator()`,
+		`ipld.ReprKindSet_JustMap`,
+		`nil`,
+		true,
 	), w, g.AdjCfg, g)
 }
 
 func (g unionReprKindedReprGenerator) EmitNodeMethodListIterator(w io.Writer) {
 	doTemplate(kindedUnionNodeMethodTemplateMunge(
+		`ListIterator`,
 		`ListIterator() ipld.ListIterator`,
 		`{{- if eq $member.RepresentationBehavior.String "list" }}`,
 		`.ListIterator()`,
+		`ipld.ReprKindSet_JustList`,
+		`nil`,
+		true,
 	), w, g.AdjCfg, g)
 }
 
 func (g unionReprKindedReprGenerator) EmitNodeMethodLength(w io.Writer) {
 	doTemplate(kindedUnionNodeMethodTemplateMunge(
+		`Length`,
 		`Length() int`,
 		`{{- if or (eq $member.RepresentationBehavior.String "map") (eq $member.RepresentationBehavior.String "list") }}`,
 		`.Length()`,
+		`ipld.ReprKindSet_Recursive`,
+		`-1`,
+		true,
 	), w, g.AdjCfg, g)
 }
 
@@ -208,49 +248,73 @@ func (g unionReprKindedReprGenerator) EmitNodeMethodIsNull(w io.Writer) {
 
 func (g unionReprKindedReprGenerator) EmitNodeMethodAsBool(w io.Writer) {
 	doTemplate(kindedUnionNodeMethodTemplateMunge(
+		`AsBool`,
 		`AsBool() (bool, error)`,
 		`{{- if eq $member.RepresentationBehavior.String "bool" }}`,
 		`.AsBool()`,
+		`ipld.ReprKindSet_JustBool`,
+		`false`,
+		false,
 	), w, g.AdjCfg, g)
 }
 
 func (g unionReprKindedReprGenerator) EmitNodeMethodAsInt(w io.Writer) {
 	doTemplate(kindedUnionNodeMethodTemplateMunge(
+		`AsInt`,
 		`AsInt() (int, error)`,
 		`{{- if eq $member.RepresentationBehavior.String "int" }}`,
 		`.AsInt()`,
+		`ipld.ReprKindSet_JustInt`,
+		`0`,
+		false,
 	), w, g.AdjCfg, g)
 }
 
 func (g unionReprKindedReprGenerator) EmitNodeMethodAsFloat(w io.Writer) {
 	doTemplate(kindedUnionNodeMethodTemplateMunge(
+		`AsFloat`,
 		`AsFloat() (float64, error)`,
 		`{{- if eq $member.RepresentationBehavior.String "float" }}`,
 		`.AsFloat()`,
+		`ipld.ReprKindSet_JustFloat`,
+		`0`,
+		false,
 	), w, g.AdjCfg, g)
 }
 
 func (g unionReprKindedReprGenerator) EmitNodeMethodAsString(w io.Writer) {
 	doTemplate(kindedUnionNodeMethodTemplateMunge(
+		`AsString`,
 		`AsString() (string, error)`,
 		`{{- if eq $member.RepresentationBehavior.String "string" }}`,
 		`.AsString()`,
+		`ipld.ReprKindSet_JustString`,
+		`""`,
+		false,
 	), w, g.AdjCfg, g)
 }
 
 func (g unionReprKindedReprGenerator) EmitNodeMethodAsBytes(w io.Writer) {
 	doTemplate(kindedUnionNodeMethodTemplateMunge(
+		`AsBytes`,
 		`AsBytes() ([]byte, error)`,
 		`{{- if eq $member.RepresentationBehavior.String "bytes" }}`,
 		`.AsBytes()`,
+		`ipld.ReprKindSet_JustBytes`,
+		`nil`,
+		false,
 	), w, g.AdjCfg, g)
 }
 
 func (g unionReprKindedReprGenerator) EmitNodeMethodAsLink(w io.Writer) {
 	doTemplate(kindedUnionNodeMethodTemplateMunge(
+		`AsLink`,
 		`AsLink() (ipld.Link, error)`,
 		`{{- if eq $member.RepresentationBehavior.String "link" }}`,
 		`.AsLink()`,
+		`ipld.ReprKindSet_JustLink`,
+		`nil`,
+		false,
 	), w, g.AdjCfg, g)
 }
 
