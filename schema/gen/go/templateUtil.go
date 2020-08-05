@@ -54,6 +54,30 @@ func doTemplate(tmplstr string, w io.Writer, adjCfg *AdjunctCfg, data interface{
 					panic("invalid enumeration value!")
 				}
 			},
+			"Kind": func(s string) ipld.ReprKind {
+				switch s {
+				case "map":
+					return ipld.ReprKind_Map
+				case "list":
+					return ipld.ReprKind_List
+				case "null":
+					return ipld.ReprKind_Null
+				case "bool":
+					return ipld.ReprKind_Bool
+				case "int":
+					return ipld.ReprKind_Int
+				case "float":
+					return ipld.ReprKind_Float
+				case "string":
+					return ipld.ReprKind_String
+				case "bytes":
+					return ipld.ReprKind_Bytes
+				case "link":
+					return ipld.ReprKind_Link
+				default:
+					panic("invalid enumeration value!")
+				}
+			},
 			"KindSymbol": func(k ipld.ReprKind) string {
 				switch k {
 				case ipld.ReprKind_Map:

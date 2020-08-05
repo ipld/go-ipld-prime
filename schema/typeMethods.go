@@ -148,6 +148,12 @@ func (r UnionRepresentation_Keyed) GetDiscriminant(t Type) string {
 	panic("that type isn't a member of this union")
 }
 
+// GetMember returns type info for the member matching the kind argument,
+// or may return nil if that kind is not mapped to a member of this union.
+func (r UnionRepresentation_Kinded) GetMember(k ipld.ReprKind) TypeName {
+	return r.table[k]
+}
+
 // Fields returns a slice of descriptions of the object's fields.
 func (t TypeStruct) Fields() []StructField {
 	a := make([]StructField, len(t.fields))
