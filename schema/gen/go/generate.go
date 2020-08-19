@@ -50,6 +50,8 @@ func Generate(pth string, pkgName string, ts schema.TypeSystem, adjCfg *AdjunctC
 				switch t2.RepresentationStrategy().(type) {
 				case schema.UnionRepresentation_Keyed:
 					EmitEntireType(NewUnionReprKeyedGenerator(pkgName, t2, adjCfg), f)
+				case schema.UnionRepresentation_Kinded:
+					EmitEntireType(NewUnionReprKindedGenerator(pkgName, t2, adjCfg), f)
 				default:
 					panic("unrecognized union representation strategy")
 				}

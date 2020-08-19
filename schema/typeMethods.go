@@ -1,5 +1,9 @@
 package schema
 
+import (
+	ipld "github.com/ipld/go-ipld-prime"
+)
+
 /* cookie-cutter standard interface stuff */
 
 func (t *typeBase) _Type(ts *TypeSystem) {
@@ -19,6 +23,47 @@ func (TypeLink) Kind() Kind   { return Kind_Link }
 func (TypeUnion) Kind() Kind  { return Kind_Union }
 func (TypeStruct) Kind() Kind { return Kind_Struct }
 func (TypeEnum) Kind() Kind   { return Kind_Enum }
+
+func (TypeBool) RepresentationBehavior() ipld.ReprKind   { return ipld.ReprKind_Bool }
+func (TypeString) RepresentationBehavior() ipld.ReprKind { return ipld.ReprKind_String }
+func (TypeBytes) RepresentationBehavior() ipld.ReprKind  { return ipld.ReprKind_Bytes }
+func (TypeInt) RepresentationBehavior() ipld.ReprKind    { return ipld.ReprKind_Int }
+func (TypeFloat) RepresentationBehavior() ipld.ReprKind  { return ipld.ReprKind_Float }
+func (TypeMap) RepresentationBehavior() ipld.ReprKind    { return ipld.ReprKind_Map }
+func (TypeList) RepresentationBehavior() ipld.ReprKind   { return ipld.ReprKind_List }
+func (TypeLink) RepresentationBehavior() ipld.ReprKind   { return ipld.ReprKind_Link }
+func (t TypeUnion) RepresentationBehavior() ipld.ReprKind {
+	switch t.representation.(type) {
+	case UnionRepresentation_Keyed:
+		return ipld.ReprKind_Map
+	case UnionRepresentation_Kinded:
+		return ipld.ReprKind_Invalid // you can't know with this one, until you see the value (and thus can its inhabitant's behavior)!
+	case UnionRepresentation_Envelope:
+		return ipld.ReprKind_Map
+	case UnionRepresentation_Inline:
+		return ipld.ReprKind_Map
+	default:
+		panic("unreachable")
+	}
+}
+func (t TypeStruct) RepresentationBehavior() ipld.ReprKind {
+	switch t.representation.(type) {
+	case StructRepresentation_Map:
+		return ipld.ReprKind_Map
+	case StructRepresentation_Tuple:
+		return ipld.ReprKind_List
+	case StructRepresentation_StringPairs:
+		return ipld.ReprKind_String
+	case StructRepresentation_Stringjoin:
+		return ipld.ReprKind_String
+	default:
+		panic("unreachable")
+	}
+}
+func (t TypeEnum) RepresentationBehavior() ipld.ReprKind {
+	// TODO: this should have a representation strategy switch too; sometimes that will indicate int representation behavior.
+	return ipld.ReprKind_String
+}
 
 /* interesting methods per Type type */
 
@@ -101,6 +146,12 @@ func (r UnionRepresentation_Keyed) GetDiscriminant(t Type) string {
 		}
 	}
 	panic("that type isn't a member of this union")
+}
+
+// GetMember returns type info for the member matching the kind argument,
+// or may return nil if that kind is not mapped to a member of this union.
+func (r UnionRepresentation_Kinded) GetMember(k ipld.ReprKind) TypeName {
+	return r.table[k]
 }
 
 // Fields returns a slice of descriptions of the object's fields.

@@ -95,7 +95,7 @@ Legend:
 | ... type level                 |     ✔     |     ✔    |
 | ... keyed representation       |     ✔     |     ✔    |
 | ... envelope representation    |     ✘     |     ✘    |
-| ... kinded representation      |     ✘     |     ✘    |
+| ... kinded representation      |     ✔     |     ✔    |
 | ... inline representation      |     ✘     |     ✘    |
 | ... byteprefix representation  |     ✘     |     ✘    |
 
