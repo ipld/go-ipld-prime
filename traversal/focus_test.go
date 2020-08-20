@@ -123,6 +123,26 @@ func TestFocusSingleTree(t *testing.T) {
 	})
 }
 
+// covers Get used on one already-loaded Node; no link-loading exercised.
+// same fixtures as the test for Focus; just has fewer assertions, since Get does no progress tracking.
+func TestGetSingleTree(t *testing.T) {
+	t.Run("empty path on scalar node returns start node", func(t *testing.T) {
+		n, err := traversal.Get(basicnode.NewString("x"), ipld.Path{})
+		Wish(t, err, ShouldEqual, nil)
+		Wish(t, n, ShouldEqual, basicnode.NewString("x"))
+	})
+	t.Run("one step path on map node works", func(t *testing.T) {
+		n, err := traversal.Get(middleMapNode, ipld.ParsePath("foo"))
+		Wish(t, err, ShouldEqual, nil)
+		Wish(t, n, ShouldEqual, basicnode.NewBool(true))
+	})
+	t.Run("two step path on map node works", func(t *testing.T) {
+		n, err := traversal.Get(middleMapNode, ipld.ParsePath("nested/nonlink"))
+		Wish(t, err, ShouldEqual, nil)
+		Wish(t, n, ShouldEqual, basicnode.NewString("zoo"))
+	})
+}
+
 func TestFocusWithLinkLoading(t *testing.T) {
 	t.Run("link traversal with no configured loader should fail", func(t *testing.T) {
 		t.Run("terminal link should fail", func(t *testing.T) {
