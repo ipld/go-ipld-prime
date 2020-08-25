@@ -147,7 +147,7 @@ func Marshal(n ipld.Node, sink shared.TokenSink) error {
 			}
 			return nil
 		default:
-			return fmt.Errorf("schemafree link emission only supported by this codec for CID type links!")
+			return fmt.Errorf("schemafree link emission only supported by this codec for CID type links")
 		}
 	default:
 		panic("unreachable")

@@ -84,6 +84,9 @@ func (lb LinkBuilder) Build(ctx context.Context, lnkCtx ipld.LinkContext, node i
 		return nil, err
 	}
 	cid, err := lb.Prefix.Sum(hasher.Bytes())
+	if err != nil {
+		return nil, err
+	}
 	lnk := Link{cid}
 	if err := commit(lnk); err != nil {
 		return lnk, err
