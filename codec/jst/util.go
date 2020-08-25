@@ -42,7 +42,7 @@ type codecAborted struct {
 }
 
 func (e codecAborted) Error() string {
-	return fmt.Sprintf("codec aborted: %s", e)
+	return fmt.Sprintf("codec aborted: %s", e.e)
 }
 
 // attempt to record where the codec efforts encountered an error.

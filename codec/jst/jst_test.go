@@ -24,7 +24,7 @@ func TestSimple(t *testing.T) {
 	st := state{}
 	Wish(t, stride(&st, n), ShouldEqual, nil)
 	Wish(t, st.tables, ShouldEqual, map[tableGroupID]*table{
-		"path": &table{
+		"path": {
 			entryStyles: map[columnName]entryStyle{"path": entryStyle_column, "moduleName": entryStyle_column, "status": entryStyle_column},
 			keySize:     map[columnName]int{"path": 6, "moduleName": 12, "status": 8},
 			cols:        []columnName{"path", "moduleName", "status"},
