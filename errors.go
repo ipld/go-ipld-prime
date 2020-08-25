@@ -119,7 +119,7 @@ func (e ErrInvalidSegmentForList) Error() string {
 	if e.TypeName != "" {
 		v += " of type " + e.TypeName
 	}
-	return v + fmt.Sprintf(": %q: %s", e.TroubleSegment.s, e)
+	return v + fmt.Sprintf(": %q: %s", e.TroubleSegment.s, e.Reason)
 }
 
 // ErrUnmatchable is the catch-all type for parse errors in schema representation work.
