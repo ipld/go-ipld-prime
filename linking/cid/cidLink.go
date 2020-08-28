@@ -19,6 +19,11 @@ type Link struct {
 	cid.Cid
 }
 
+// byteAccessor is a reader interface that can access underlying bytes
+type byteAccesor interface {
+	Bytes() []byte
+}
+
 func (lnk Link) Load(ctx context.Context, lnkCtx ipld.LinkContext, na ipld.NodeAssembler, loader ipld.Loader) error {
 	// Open the byte reader.
 	r, err := loader(lnk, lnkCtx)
@@ -32,7 +37,7 @@ func (lnk Link) Load(ctx context.Context, lnkCtx ipld.LinkContext, na ipld.NodeA
 	}
 	var hasherBytes []byte
 	var decodeErr error
-	byteBuf, ok := r.(*bytes.Buffer)
+	byteBuf, ok := r.(byteAccesor)
 	if ok {
 		hasherBytes = byteBuf.Bytes()
 		decodeErr = mcDecoder(na, r)
