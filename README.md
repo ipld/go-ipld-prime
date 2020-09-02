@@ -15,10 +15,10 @@ The most central interfaces are the base package,
 but you'll certainly need to import additional packages to get concrete implementations into action.
 
 Roughly speaking, the core package interfaces are all about the IPLD Data Model;
-the 'codec/*' packages contain functions for parsing serial data into the IPLD Data Model,
+the `codec/*` packages contain functions for parsing serial data into the IPLD Data Model,
 and converting Data Model content back into serial formats;
-the 'traversal' package is an example of higher-order functions on the Data Model;
-concrete 'Node' implementations ready to use can be found in packages in the 'node/*' directory;
+the `traversal` package is an example of higher-order functions on the Data Model;
+concrete `ipld.Node` implementations ready to use can be found in packages in the `node/*` directory;
 and several additional packages contain advanced features such as IPLD Schemas.
 
 (Because the codecs, as well as higher-order features like traversals, are
