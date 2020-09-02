@@ -140,6 +140,8 @@ func TestStructsContainingMaybe(t *testing.T) {
 				{"f1", "a"},
 				{"f2", "b"},
 				{"f3", ipld.Null},
+				{"f4", ipld.Absent},
+				{"f5", ipld.Absent},
 			},
 		},
 	}

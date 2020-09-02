@@ -154,7 +154,21 @@ func (tcase testcase) Test(t *testing.T, np, npr ipld.NodePrototype) {
 		//  This exercises iterators on the type-level node.
 		//  OR, if typeItr is present, do that instead (this is necessary when handling maps with complex keys or handling structs with absent values, since both of those are unserializable).
 		if tcase.typeItr != nil {
-			// TODO
+			// This can unconditionally assume we're going to handle maps,
+			//  because the only kind of thing that needs this style of testing are some instances of maps and some instances of structs.
+			itr := n.MapIterator()
+			for _, entry := range tcase.typeItr {
+				Wish(t, itr.Done(), ShouldEqual, false)
+				k, v, err := itr.Next()
+				Wish(t, k, closeEnough, entry.key)
+				Wish(t, v, closeEnough, entry.value)
+				Wish(t, err, ShouldEqual, nil)
+			}
+			Wish(t, itr.Done(), ShouldEqual, true)
+			k, v, err := itr.Next()
+			Wish(t, k, ShouldEqual, nil)
+			Wish(t, v, ShouldEqual, nil)
+			Wish(t, err, ShouldEqual, ipld.ErrIteratorOverread{})
 		} else if tcase.typeJson != "" {
 			t.Run("type-marshal", func(t *testing.T) {
 				testMarshal(t, n, tcase.typeJson)
@@ -213,20 +227,45 @@ func wishPoint(t *testing.T, n ipld.Node, point testcasePoint) {
 		if reached == nil {
 			return
 		}
-		switch point.expect.(type) {
-		case ipld.ReprKind:
-			Wish(t, reached.ReprKind(), ShouldEqual, point.expect)
-		case string:
-			x, _ := reached.AsString()
-			Wish(t, x, ShouldEqual, point.expect)
-		case int:
-			x, _ := reached.AsInt()
-			Wish(t, x, ShouldEqual, point.expect)
-		case ipld.Node:
-			Wish(t, reached, ShouldEqual, point.expect)
-		default:
-			panic(fmt.Errorf("do not understand a point.expect of %T", point.expect))
+		Wish(t, reached, closeEnough, point.expect)
+	}
+}
+
+// closeEnough conforms to wish.Checker (so we can use it in Wish invocations),
+// and lets Nodes be compared to primitives in convenient ways.
+//
+// If the expected value is a primitive string, it'll AsStrong on the Node; etc.
+//
+// Using an ipld.ReprKind value is also possible, which will just check the kind and not the value contents.
+//
+// If an ipld.Node is the expected value, a full deep ShouldEqual is used as normal.
+func closeEnough(actual, expected interface{}) (string, bool) {
+	if expected == nil {
+		return ShouldEqual(actual, nil)
+	}
+	a, ok := actual.(ipld.Node)
+	if !ok {
+		return "this checker only supports checking ipld.Node values", false
+	}
+	switch expected.(type) {
+	case ipld.ReprKind:
+		return ShouldEqual(a.ReprKind(), expected)
+	case string:
+		if a.ReprKind() != ipld.ReprKind_String {
+			return fmt.Sprintf("expected something with kind string, got kind %s", a.ReprKind()), false
 		}
+		x, _ := a.AsString()
+		return ShouldEqual(x, expected)
+	case int:
+		if a.ReprKind() != ipld.ReprKind_Int {
+			return fmt.Sprintf("expected something with kind int, got kind %s", a.ReprKind()), false
+		}
+		x, _ := a.AsInt()
+		return ShouldEqual(x, expected)
+	case ipld.Node:
+		return ShouldEqual(actual, expected)
+	default:
+		return fmt.Sprintf("this checker doesn't support an expected value of type %T", expected), false
 	}
 }
 
