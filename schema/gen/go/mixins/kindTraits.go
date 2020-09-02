@@ -6,7 +6,7 @@ import (
 	ipld "github.com/ipld/go-ipld-prime"
 )
 
-// kindTraitsGenerator is a embedded in all the other mixins,
+// kindTraitsGenerator is the center of all the other mixins,
 // and handles all the method generation which is a pure function of the kind.
 //
 // OVERRIDE THE METHODS THAT DO APPLY TO YOUR KIND;
@@ -17,7 +17,7 @@ import (
 // If you're implementing something that can hold "any" kind,
 // probably none of these methods apply to you at all.
 //
-// The other types in this package embed kindTraitsGenerator with a name,
+// The other types in this package use kindTraitsGenerator with a fixed Kind,
 // and only forward the methods to it that don't apply for their kind;
 // this means when they're used as an anonymous embed, they grant
 // all the appropriate dummy methods to their container,
