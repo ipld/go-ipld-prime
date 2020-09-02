@@ -40,13 +40,14 @@ func TestStructsContainingMaybe(t *testing.T) {
 		}),
 	))
 
-	// There's a lot of cases to cover so a shorthand labels each case:
+	// There's a lot of cases to cover so a shorthand code labels each case for clarity:
 	//  - 'v' -- value in that entry
 	//  - 'n' -- null in that entry
 	//  - 'z' -- absent entry
+	// There's also a semantic description of the main detail being probed suffixed to the shortcode.
 	specs := []testcase{
 		{
-			name:     "all fields set -- vvvvv",
+			name:     "vvvvv-AllFieldsSet",
 			typeJson: `{"f1":"a","f2":"b","f3":"c","f4":"d","f5":"e"}`,
 			reprJson: `{"r1":"a","r2":"b","r3":"c","r4":"d","f5":"e"}`,
 			typePoints: []testcasePoint{
@@ -67,7 +68,7 @@ func TestStructsContainingMaybe(t *testing.T) {
 			},
 		},
 		{
-			name:     "setting nulls -- vvnnv",
+			name:     "vvnnv-Nulls",
 			typeJson: `{"f1":"a","f2":"b","f3":null,"f4":null,"f5":"e"}`,
 			reprJson: `{"r1":"a","r2":"b","r3":null,"r4":null,"f5":"e"}`,
 			typePoints: []testcasePoint{
@@ -88,7 +89,7 @@ func TestStructsContainingMaybe(t *testing.T) {
 			},
 		},
 		{
-			name:     "absent optionals -- vzvzv",
+			name:     "vzvzv-AbsentOptionals",
 			typeJson: `{"f1":"a","f3":"c","f5":"e"}`,
 			reprJson: `{"r1":"a","r3":"c","f5":"e"}`,
 			typePoints: []testcasePoint{
@@ -116,7 +117,7 @@ func TestStructsContainingMaybe(t *testing.T) {
 			},
 		},
 		{
-			name:     "absent trailing optionals -- vvnzz",
+			name:     "vvnzz-AbsentTrailingOptionals",
 			typeJson: `{"f1":"a","f2":"b","f3":null}`,
 			reprJson: `{"r1":"a","r2":"b","r3":null}`,
 			typePoints: []testcasePoint{
