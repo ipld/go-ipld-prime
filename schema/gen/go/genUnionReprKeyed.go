@@ -136,13 +136,13 @@ func (g unionReprKeyedReprGenerator) EmitNodeMethodMapIterator(w io.Writer) {
 			switch itr.n.tag {
 			{{- range $i, $member := .Type.Members }}
 			case {{ add $i 1 }}:
-				return &memberName__{{ dot.Type | TypeSymbol }}_{{ $member.Name }}_serial, itr.n.x{{ add $i 1 }}.Representation(), nil
+				k, v = &memberName__{{ dot.Type | TypeSymbol }}_{{ $member.Name }}_serial, itr.n.x{{ add $i 1 }}.Representation()
 			{{- end}}
 			{{- else if (eq (.AdjCfg.UnionMemlayout .Type) "interface") }}
 			switch n2 := itr.n.x.(type) {
 			{{- range $member := .Type.Members }}
 			case {{ $member | TypeSymbol }}:
-				return &memberName__{{ dot.Type | TypeSymbol }}_{{ $member.Name }}_serial, n2.Representation(), nil
+				k, v = &memberName__{{ dot.Type | TypeSymbol }}_{{ $member.Name }}_serial, n2.Representation()
 			{{- end}}
 			{{- end}}
 			default:

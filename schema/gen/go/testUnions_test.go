@@ -28,32 +28,45 @@ func TestUnionKeyed(t *testing.T) {
 		}),
 	))
 
+	specs := []testcase{
+		{
+			name:     "InhabitantA",
+			typeJson: `{"String":"whee"}`,
+			reprJson: `{"a":"whee"}`,
+			typePoints: []testcasePoint{
+				{"", ipld.ReprKind_Map},
+				{"String", "whee"},
+				//{"Strung", ipld.ErrNotExists{}}, // TODO: need better error typing from traversal package.
+			},
+			reprPoints: []testcasePoint{
+				{"", ipld.ReprKind_Map},
+				{"a", "whee"},
+				//{"b", ipld.ErrNotExists{}}, // TODO: need better error typing from traversal package.
+			},
+		},
+		{
+			name:     "InhabitantB",
+			typeJson: `{"Strung":"whee"}`,
+			reprJson: `{"b":"whee"}`,
+			typePoints: []testcasePoint{
+				{"", ipld.ReprKind_Map},
+				//{"String", ipld.ErrNotExists{}}, // TODO: need better error typing from traversal package.
+				{"Strung", "whee"},
+			},
+			reprPoints: []testcasePoint{
+				{"", ipld.ReprKind_Map},
+				//{"a", ipld.ErrNotExists{}}, // TODO: need better error typing from traversal package.
+				{"b", "whee"},
+			},
+		},
+	}
+
 	test := func(t *testing.T, getPrototypeByName func(string) ipld.NodePrototype) {
 		np := getPrototypeByName("StrStr")
 		nrp := getPrototypeByName("StrStr.Repr")
-		var n schema.TypedNode
-		t.Run("typed-create", func(t *testing.T) {
-			n = fluent.MustBuildMap(np, 1, func(na fluent.MapAssembler) {
-				na.AssembleEntry("Strung").AssignString("whee")
-			}).(schema.TypedNode)
-			t.Run("typed-read", func(t *testing.T) {
-				Require(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
-				Wish(t, n.Length(), ShouldEqual, 1)
-				Wish(t, must.String(must.Node(n.LookupByString("Strung"))), ShouldEqual, "whee")
-			})
-			t.Run("repr-read", func(t *testing.T) {
-				nr := n.Representation()
-				Require(t, nr.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
-				Wish(t, nr.Length(), ShouldEqual, 1)
-				Wish(t, must.String(must.Node(nr.LookupByString("b"))), ShouldEqual, "whee")
-			})
-		})
-		t.Run("repr-create", func(t *testing.T) {
-			nr := fluent.MustBuildMap(nrp, 2, func(na fluent.MapAssembler) {
-				na.AssembleEntry("b").AssignString("whee")
-			})
-			Wish(t, n, ShouldEqual, nr)
-		})
+		for _, tcase := range specs {
+			tcase.Test(t, np, nrp)
+		}
 	}
 
 	t.Run("union-using-embed", func(t *testing.T) {
