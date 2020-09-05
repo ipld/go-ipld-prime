@@ -3,11 +3,7 @@ package gengo
 import (
 	"testing"
 
-	. "github.com/warpfork/go-wish"
-
 	"github.com/ipld/go-ipld-prime"
-	"github.com/ipld/go-ipld-prime/fluent"
-	"github.com/ipld/go-ipld-prime/must"
 	"github.com/ipld/go-ipld-prime/schema"
 )
 
@@ -120,40 +116,47 @@ func TestUnionKeyedComplexChildren(t *testing.T) {
 		}),
 	))
 
+	specs := []testcase{
+		{
+			name:     "InhabitantA",
+			typeJson: `{"String":"whee"}`,
+			reprJson: `{"a":"whee"}`,
+			typePoints: []testcasePoint{
+				{"", ipld.ReprKind_Map},
+				{"String", "whee"},
+				//{"SmolStruct", ipld.ErrNotExists{}}, // TODO: need better error typing from traversal package.
+			},
+			reprPoints: []testcasePoint{
+				{"", ipld.ReprKind_Map},
+				{"a", "whee"},
+				//{"b", ipld.ErrNotExists{}}, // TODO: need better error typing from traversal package.
+			},
+		},
+		{
+			name:     "InhabitantB",
+			typeJson: `{"SmolStruct":{"s":"whee"}}`,
+			reprJson: `{"b":{"q":"whee"}}`,
+			typePoints: []testcasePoint{
+				{"", ipld.ReprKind_Map},
+				//{"String", ipld.ErrNotExists{}}, // TODO: need better error typing from traversal package.
+				{"SmolStruct", ipld.ReprKind_Map},
+				{"SmolStruct/s", "whee"},
+			},
+			reprPoints: []testcasePoint{
+				{"", ipld.ReprKind_Map},
+				//{"a", ipld.ErrNotExists{}}, // TODO: need better error typing from traversal package.
+				{"b", ipld.ReprKind_Map},
+				{"b/q", "whee"},
+			},
+		},
+	}
+
 	test := func(t *testing.T, getPrototypeByName func(string) ipld.NodePrototype) {
 		np := getPrototypeByName("WheeUnion")
 		nrp := getPrototypeByName("WheeUnion.Repr")
-		var n schema.TypedNode
-		t.Run("typed-create", func(t *testing.T) {
-			n = fluent.MustBuildMap(np, 1, func(na fluent.MapAssembler) {
-				na.AssembleEntry("SmolStruct").CreateMap(1, func(na fluent.MapAssembler) {
-					na.AssembleEntry("s").AssignString("whee")
-				})
-			}).(schema.TypedNode)
-			t.Run("typed-read", func(t *testing.T) {
-				Require(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
-				Wish(t, n.Length(), ShouldEqual, 1)
-				n2 := must.Node(n.LookupByString("SmolStruct"))
-				Require(t, n2.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
-				Wish(t, must.String(must.Node(n2.LookupByString("s"))), ShouldEqual, "whee")
-			})
-			t.Run("repr-read", func(t *testing.T) {
-				nr := n.Representation()
-				Require(t, nr.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
-				Wish(t, nr.Length(), ShouldEqual, 1)
-				n2 := must.Node(nr.LookupByString("b"))
-				Require(t, n2.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
-				Wish(t, must.String(must.Node(n2.LookupByString("q"))), ShouldEqual, "whee")
-			})
-		})
-		t.Run("repr-create", func(t *testing.T) {
-			nr := fluent.MustBuildMap(nrp, 2, func(na fluent.MapAssembler) {
-				na.AssembleEntry("b").CreateMap(1, func(na fluent.MapAssembler) {
-					na.AssembleEntry("q").AssignString("whee")
-				})
-			})
-			Wish(t, n, ShouldEqual, nr)
-		})
+		for _, tcase := range specs {
+			tcase.Test(t, np, nrp)
+		}
 	}
 
 	t.Run("union-using-embed", func(t *testing.T) {
