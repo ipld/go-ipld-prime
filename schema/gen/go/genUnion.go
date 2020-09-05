@@ -324,6 +324,7 @@ func (g unionBuilderGenerator) EmitNodeAssemblerType(w io.Writer) {
 			default:
 				panic("unreachable")
 			}
+			na.ca = 0
 			na.cm = schema.Maybe_Absent
 		}
 	`, w, g.AdjCfg, g)

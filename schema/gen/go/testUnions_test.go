@@ -178,3 +178,77 @@ func TestUnionKeyedComplexChildren(t *testing.T) {
 		})
 	})
 }
+
+// TestUnionKeyedReset puts a union inside a list, so that we can use the list's reuse of assembler as a test of the assembler's reset feature.
+// The value inside the union is also more complex than a scalar value so that we test resetting gets passed down, too.
+func TestUnionKeyedReset(t *testing.T) {
+	ts := schema.TypeSystem{}
+	ts.Init()
+	adjCfg := &AdjunctCfg{}
+	ts.Accumulate(schema.SpawnString("String"))
+	ts.Accumulate(schema.SpawnStruct("SmolStruct",
+		[]schema.StructField{
+			schema.SpawnStructField("s", "String", false, false),
+		},
+		schema.SpawnStructRepresentationMap(map[string]string{
+			"s": "q",
+		}),
+	))
+	ts.Accumulate(schema.SpawnUnion("WheeUnion",
+		[]schema.TypeName{
+			"String",
+			"SmolStruct",
+		},
+		schema.SpawnUnionRepresentationKeyed(map[string]schema.TypeName{
+			"a": "String",
+			"b": "SmolStruct",
+		}),
+	))
+	ts.Accumulate(schema.SpawnList("OuterList",
+		"WheeUnion", false,
+	))
+
+	specs := []testcase{
+		{
+			typeJson: `[{"SmolStruct":{"s":"one"}}, {"SmolStruct":{"s":"two"}}, {"String":"three"}]`,
+			reprJson: `[{"b":{"q":"one"}}, {"b":{"q":"two"}}, {"a":"three"}]`,
+			typePoints: []testcasePoint{
+				{"0/SmolStruct/s", "one"},
+				{"1/SmolStruct/s", "two"},
+				{"2/String", "three"},
+			},
+			reprPoints: []testcasePoint{
+				{"0/b/q", "one"},
+				{"1/b/q", "two"},
+				{"2/a", "three"},
+			},
+		},
+	}
+
+	test := func(t *testing.T, getPrototypeByName func(string) ipld.NodePrototype) {
+		np := getPrototypeByName("OuterList")
+		nrp := getPrototypeByName("OuterList.Repr")
+		for _, tcase := range specs {
+			tcase.Test(t, np, nrp)
+		}
+	}
+
+	t.Run("union-using-embed", func(t *testing.T) {
+		adjCfg.CfgUnionMemlayout = map[schema.TypeName]string{"WheeUnion": "embedAll"}
+
+		prefix := "union-keyed-reset-using-embed"
+		pkgName := "main"
+		genAndCompileAndTest(t, prefix, pkgName, ts, adjCfg, func(t *testing.T, getPrototypeByName func(string) ipld.NodePrototype) {
+			test(t, getPrototypeByName)
+		})
+	})
+	t.Run("union-using-interface", func(t *testing.T) {
+		adjCfg.CfgUnionMemlayout = map[schema.TypeName]string{"WheeUnion": "interface"}
+
+		prefix := "union-keyed-reset-using-interface"
+		pkgName := "main"
+		genAndCompileAndTest(t, prefix, pkgName, ts, adjCfg, func(t *testing.T, getPrototypeByName func(string) ipld.NodePrototype) {
+			test(t, getPrototypeByName)
+		})
+	})
+}
