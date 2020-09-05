@@ -831,6 +831,7 @@ func (ma *_Msg3__ReprAssembler) AssembleEntry(k string) (ipld.NodeAssembler, err
 		}
 		ma.s += fieldBit__Msg3_Whee
 		ma.state = maState_midValue
+		ma.f = 0
 		ma.ca_whee.w = &ma.w.whee
 		ma.ca_whee.m = &ma.cm
 		return &ma.ca_whee, nil
@@ -840,6 +841,7 @@ func (ma *_Msg3__ReprAssembler) AssembleEntry(k string) (ipld.NodeAssembler, err
 		}
 		ma.s += fieldBit__Msg3_Woot
 		ma.state = maState_midValue
+		ma.f = 1
 		ma.ca_woot.w = &ma.w.woot
 		ma.ca_woot.m = &ma.cm
 		return &ma.ca_woot, nil
@@ -849,6 +851,7 @@ func (ma *_Msg3__ReprAssembler) AssembleEntry(k string) (ipld.NodeAssembler, err
 		}
 		ma.s += fieldBit__Msg3_Waga
 		ma.state = maState_midValue
+		ma.f = 2
 		ma.ca_waga.w = &ma.w.waga
 		ma.ca_waga.m = &ma.cm
 		return &ma.ca_waga, nil
