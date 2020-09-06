@@ -40,7 +40,7 @@ func TestSchemaSchemaParse(t *testing.T) {
 		"SchemaMap": {
 			"map": {
 				"keyType": "TypeName",
-				"valueType": "Type"
+				"valueType": "TypeDefn"
 			}
 		},
 		"AdvancedDataLayoutName": {
@@ -67,25 +67,22 @@ func TestSchemaSchemaParse(t *testing.T) {
 				}
 			}
 		},
-		"Type": {
+		"TypeDefn": {
 			"union": {
 				"representation": {
-					"inline": {
-						"discriminantKey": "kind",
-						"discriminantTable": {
-							"bool": "TypeBool",
-							"string": "TypeString",
-							"bytes": "TypeBytes",
-							"int": "TypeInt",
-							"float": "TypeFloat",
-							"map": "TypeMap",
-							"list": "TypeList",
-							"link": "TypeLink",
-							"union": "TypeUnion",
-							"struct": "TypeStruct",
-							"enum": "TypeEnum",
-							"copy": "TypeCopy"
-						}
+					"keyed": {
+						"bool": "TypeBool",
+						"string": "TypeString",
+						"bytes": "TypeBytes",
+						"int": "TypeInt",
+						"float": "TypeFloat",
+						"map": "TypeMap",
+						"list": "TypeList",
+						"link": "TypeLink",
+						"union": "TypeUnion",
+						"struct": "TypeStruct",
+						"enum": "TypeEnum",
+						"copy": "TypeCopy"
 					}
 				}
 			}
@@ -217,7 +214,7 @@ func TestSchemaSchemaParse(t *testing.T) {
 						"type": "TypeName"
 					},
 					"valueType": {
-						"type": "TypeTerm"
+						"type": "TypeNameOrInlineDefn"
 					},
 					"valueNullable": {
 						"type": "Bool"
@@ -284,7 +281,7 @@ func TestSchemaSchemaParse(t *testing.T) {
 			"struct": {
 				"fields": {
 					"valueType": {
-						"type": "TypeTerm"
+						"type": "TypeNameOrInlineDefn"
 					},
 					"valueNullable": {
 						"type": "Bool"
@@ -464,7 +461,7 @@ func TestSchemaSchemaParse(t *testing.T) {
 			"struct": {
 				"fields": {
 					"type": {
-						"type": "TypeTerm"
+						"type": "TypeNameOrInlineDefn"
 					},
 					"optional": {
 						"type": "Bool"
@@ -487,25 +484,22 @@ func TestSchemaSchemaParse(t *testing.T) {
 				}
 			}
 		},
-		"TypeTerm": {
+		"TypeNameOrInlineDefn": {
 			"union": {
 				"representation": {
 					"kinded": {
 						"string": "TypeName",
-						"map": "InlineDefn"
+						"map": "TypeDefnInline"
 					}
 				}
 			}
 		},
-		"InlineDefn": {
+		"TypeDefnInline": {
 			"union": {
 				"representation": {
-					"inline": {
-						"discriminantKey": "kind",
-						"discriminantTable": {
-							"map": "TypeMap",
-							"list": "TypeList"
-						}
+					"keyed": {
+						"map": "TypeMap",
+						"list": "TypeList"
 					}
 				}
 			}
@@ -625,7 +619,7 @@ func TestSchemaSchemaParse(t *testing.T) {
 						"type": {
 							"map": {
 								"keyType": "EnumValue",
-								"valueType": "Null"
+								"valueType": "Unit"
 							}
 						}
 					},
