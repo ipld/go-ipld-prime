@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/ipld/go-ipld-prime"
 	"github.com/ipld/go-ipld-prime/schema"
 	gengo "github.com/ipld/go-ipld-prime/schema/gen/go"
 )
@@ -32,6 +33,13 @@ func init() {
 	ts.Accumulate(schema.SpawnBytes("Bytes"))
 
 	// Schema-schema!
+	ts.Accumulate(schema.SpawnStruct("Schema",
+		[]schema.StructField{
+			schema.SpawnStructField("types", "SchemaMap", false, false),
+			// also: `advanced AdvancedDataLayoutMap`, but as commented above, we'll pursue this later.
+		},
+		schema.StructRepresentation_Map{},
+	))
 	ts.Accumulate(schema.SpawnString("TypeName"))
 	ts.Accumulate(schema.SpawnMap("SchemaMap",
 		"TypeName", "TypeDefn", false,
@@ -71,9 +79,9 @@ func init() {
 			"TypeName",
 			"TypeDefnInline",
 		},
-		schema.SpawnUnionRepresentationKeyed(map[string]schema.TypeName{ // FIXME: this should actually be kinded.
-			"string": "TypeName",
-			"map":    "TypeDefnInline",
+		schema.SpawnUnionRepresentationKinded(map[ipld.ReprKind]schema.TypeName{
+			ipld.ReprKind_String: "TypeName",
+			ipld.ReprKind_Map:    "TypeDefnInline",
 		}),
 	))
 	ts.Accumulate(schema.SpawnUnion("TypeDefnInline", // n.b. previously called "TypeTerm".
@@ -170,6 +178,7 @@ func init() {
 	))
 	ts.Accumulate(schema.SpawnStruct("TypeUnion",
 		[]schema.StructField{
+			// n.b. we could conceivably allow TypeNameOrInlineDefn here rather than just TypeName.  but... we'd rather not: imagine what that means about the type-level behavior of the union: the name munge for the anonymous type would suddenly become load-bearing.  would rather not.
 			schema.SpawnStructField("members", "List__TypeName", false, false), // todo: this is a slight hack: should be using an inline defn, but we banged it with name munge coincidents to simplify bootstrap.
 			schema.SpawnStructField("representation", "UnionRepresentation", false, false),
 		},
@@ -241,7 +250,7 @@ func init() {
 	ts.Accumulate(schema.SpawnString("FieldName"))
 	ts.Accumulate(schema.SpawnStruct("StructField",
 		[]schema.StructField{
-			schema.SpawnStructField("type", "TypeDefnInline", false, false),
+			schema.SpawnStructField("type", "TypeNameOrInlineDefn", false, false),
 			schema.SpawnStructField("optional", "Bool", false, false), // todo: wants to use the "implicit" feature, but not supported yet
 			schema.SpawnStructField("nullable", "Bool", false, false), // todo: wants to use the "implicit" feature, but not supported yet
 		},
@@ -308,7 +317,7 @@ func init() {
 	))
 	ts.Accumulate(schema.SpawnStruct("TypeEnum",
 		[]schema.StructField{
-			schema.SpawnStructField("type", "Map__EnumValue__Unit", false, false), // todo: dodging inline defn's again.  also: this says unit; schema-schema does not.  schema-schema needs revisiting on this subject.
+			schema.SpawnStructField("members", "Map__EnumValue__Unit", false, false), // todo: dodging inline defn's again.  also: this says unit; schema-schema does not.  schema-schema needs revisiting on this subject.
 			schema.SpawnStructField("representation", "EnumRepresentation", false, false),
 		},
 		schema.StructRepresentation_Map{},
@@ -351,12 +360,12 @@ func init() {
 			"Int",
 			"Float",
 		},
-		schema.SpawnUnionRepresentationKeyed(map[string]schema.TypeName{ // FIXME: this should actually be kinded.
-			"bool":   "Bool",
-			"string": "String",
-			"bytes":  "Bytes",
-			"int":    "Int",
-			"float":  "Float",
+		schema.SpawnUnionRepresentationKinded(map[ipld.ReprKind]schema.TypeName{
+			ipld.ReprKind_Bool:   "Bool",
+			ipld.ReprKind_String: "String",
+			ipld.ReprKind_Bytes:  "Bytes",
+			ipld.ReprKind_Int:    "Int",
+			ipld.ReprKind_Float:  "Float",
 		}),
 	))
 
