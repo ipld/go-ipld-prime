@@ -1,9 +1,9 @@
 package ipld_test
 
 import (
-	"bytes"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/ipld/go-ipld-prime/codec/dagjson"
 	basicnode "github.com/ipld/go-ipld-prime/node/basic"
@@ -31,7 +31,7 @@ func ExampleCreateDataAndMarshal() {
 }
 
 func ExampleUnmarshalData() {
-	serial := bytes.NewBufferString(`{"hey":"it works!","yes": true}`)
+	serial := strings.NewReader(`{"hey":"it works!","yes": true}`)
 
 	np := basicnode.Prototype.Any // Pick a stle for the in-memory data.
 	nb := np.NewBuilder()         // Create a builder.

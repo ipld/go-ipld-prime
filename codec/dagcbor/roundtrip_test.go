@@ -5,6 +5,7 @@ import (
 	"context"
 	"crypto/rand"
 	"io"
+	"strings"
 	"testing"
 
 	cid "github.com/ipfs/go-cid"
@@ -42,7 +43,7 @@ func TestRoundtrip(t *testing.T) {
 		Wish(t, buf.String(), ShouldEqual, serial)
 	})
 	t.Run("decoding", func(t *testing.T) {
-		buf := bytes.NewBufferString(serial)
+		buf := strings.NewReader(serial)
 		nb := basicnode.Prototype__Map{}.NewBuilder()
 		err := Decoder(nb, buf)
 		Require(t, err, ShouldEqual, nil)
@@ -61,7 +62,7 @@ func TestRoundtripScalar(t *testing.T) {
 		Wish(t, buf.String(), ShouldEqual, `japplesauce`)
 	})
 	t.Run("decoding", func(t *testing.T) {
-		buf := bytes.NewBufferString(`japplesauce`)
+		buf := strings.NewReader(`japplesauce`)
 		nb := basicnode.Prototype__String{}.NewBuilder()
 		err := Decoder(nb, buf)
 		Require(t, err, ShouldEqual, nil)

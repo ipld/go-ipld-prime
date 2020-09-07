@@ -122,7 +122,7 @@ func TestWalkMatching(t *testing.T) {
 		err = traversal.Progress{
 			Cfg: &traversal.Config{
 				LinkLoader: func(lnk ipld.Link, _ ipld.LinkContext) (io.Reader, error) {
-					return bytes.NewBuffer(storage[lnk]), nil
+					return bytes.NewReader(storage[lnk]), nil
 				},
 				LinkTargetNodePrototypeChooser: func(_ ipld.Link, _ ipld.LinkContext) (ipld.NodePrototype, error) {
 					return basicnode.Prototype__Any{}, nil
@@ -168,7 +168,7 @@ func TestWalkMatching(t *testing.T) {
 		err = traversal.Progress{
 			Cfg: &traversal.Config{
 				LinkLoader: func(lnk ipld.Link, _ ipld.LinkContext) (io.Reader, error) {
-					return bytes.NewBuffer(storage[lnk]), nil
+					return bytes.NewReader(storage[lnk]), nil
 				},
 				LinkTargetNodePrototypeChooser: func(_ ipld.Link, _ ipld.LinkContext) (ipld.NodePrototype, error) {
 					return basicnode.Prototype__Any{}, nil
@@ -213,7 +213,7 @@ func TestWalkMatching(t *testing.T) {
 		err = traversal.Progress{
 			Cfg: &traversal.Config{
 				LinkLoader: func(lnk ipld.Link, _ ipld.LinkContext) (io.Reader, error) {
-					return bytes.NewBuffer(storage[lnk]), nil
+					return bytes.NewReader(storage[lnk]), nil
 				},
 				LinkTargetNodePrototypeChooser: func(_ ipld.Link, _ ipld.LinkContext) (ipld.NodePrototype, error) {
 					return basicnode.Prototype__Any{}, nil

@@ -6,7 +6,7 @@ import (
 
 	"github.com/ipld/go-ipld-prime/node/tests"
 	"github.com/ipld/go-ipld-prime/schema"
-	"github.com/ipld/go-ipld-prime/schema/gen/go"
+	gengo "github.com/ipld/go-ipld-prime/schema/gen/go"
 )
 
 // i am the worst person and this is the worst code

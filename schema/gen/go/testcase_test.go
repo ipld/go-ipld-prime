@@ -3,6 +3,7 @@ package gengo
 import (
 	"bytes"
 	"fmt"
+	"strings"
 	"testing"
 
 	"github.com/polydawn/refmt/json"
@@ -189,7 +190,7 @@ func (tcase testcase) Test(t *testing.T, np, npr ipld.NodePrototype) {
 func testUnmarshal(t *testing.T, np ipld.NodePrototype, data string, expectFail error) ipld.Node {
 	t.Helper()
 	nb := np.NewBuilder()
-	err := dagjson.Unmarshal(nb, json.NewDecoder(bytes.NewBufferString(data)))
+	err := dagjson.Unmarshal(nb, json.NewDecoder(strings.NewReader(data)))
 	switch {
 	case expectFail == nil && err != nil:
 		t.Fatalf("fixture parse failed: %s", err)
@@ -272,7 +273,7 @@ func closeEnough(actual, expected interface{}) (string, bool) {
 func reformat(x string, opts json.EncodeOptions) string {
 	var buf bytes.Buffer
 	if err := (shared.TokenPump{
-		json.NewDecoder(bytes.NewBufferString(x)),
+		json.NewDecoder(strings.NewReader(x)),
 		json.NewEncoder(&buf, opts),
 	}).Run(); err != nil {
 		panic(err)

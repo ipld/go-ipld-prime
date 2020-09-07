@@ -2,6 +2,7 @@ package dagjson
 
 import (
 	"bytes"
+	"strings"
 	"testing"
 
 	. "github.com/warpfork/go-wish"
@@ -52,7 +53,7 @@ func TestRoundtrip(t *testing.T) {
 		Wish(t, buf.String(), ShouldEqual, serial)
 	})
 	t.Run("decoding", func(t *testing.T) {
-		buf := bytes.NewBufferString(serial)
+		buf := strings.NewReader(serial)
 		nb := basicnode.Prototype__Map{}.NewBuilder()
 		err := Decoder(nb, buf)
 		Require(t, err, ShouldEqual, nil)
@@ -71,7 +72,7 @@ func TestRoundtripScalar(t *testing.T) {
 		Wish(t, buf.String(), ShouldEqual, `"applesauce"`)
 	})
 	t.Run("decoding", func(t *testing.T) {
-		buf := bytes.NewBufferString(`"applesauce"`)
+		buf := strings.NewReader(`"applesauce"`)
 		nb := basicnode.Prototype__String{}.NewBuilder()
 		err := Decoder(nb, buf)
 		Require(t, err, ShouldEqual, nil)
