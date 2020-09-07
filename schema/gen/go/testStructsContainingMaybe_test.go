@@ -15,6 +15,8 @@ import (
 // Both type-level generic build and access as well as representation build and access are exercised;
 // the representation used is map (the native representation for structs).
 func TestStructsContainingMaybe(t *testing.T) {
+	t.Parallel()
+
 	// Type declarations.
 	//  The tests here will all be targetted against this "Stroct" type.
 	ts := schema.TypeSystem{}

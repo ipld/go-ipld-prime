@@ -8,6 +8,8 @@ import (
 )
 
 func TestUnionKeyed(t *testing.T) {
+	t.Parallel()
+
 	ts := schema.TypeSystem{}
 	ts.Init()
 	adjCfg := &AdjunctCfg{}
@@ -93,6 +95,8 @@ func TestUnionKeyed(t *testing.T) {
 // the ReprAssemblers are actually aliases of the type-level Assemblers!
 // Aaaand that makes a few things "work" by coincidence that wouldn't otherwise fly.
 func TestUnionKeyedComplexChildren(t *testing.T) {
+	t.Parallel()
+
 	ts := schema.TypeSystem{}
 	ts.Init()
 	adjCfg := &AdjunctCfg{}
