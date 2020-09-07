@@ -82,7 +82,7 @@ func ExampleLoadingLink() {
 	//  then decides where to get the referenced raw data from,
 	//   and returns that as a standard `io.Reader`.
 	var loader ipld.Loader = func(lnk ipld.Link, _ ipld.LinkContext) (io.Reader, error) {
-		return bytes.NewBuffer(storage[lnk]), nil
+		return bytes.NewReader(storage[lnk]), nil
 	}
 
 	// Second, we'll need to decide what in-memory implementation of ipld.Node we want to use.

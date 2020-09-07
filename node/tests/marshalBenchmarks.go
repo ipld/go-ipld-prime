@@ -3,6 +3,7 @@ package tests
 import (
 	"bytes"
 	"fmt"
+	"strings"
 	"testing"
 
 	refmtjson "github.com/polydawn/refmt/json"
@@ -25,7 +26,7 @@ import (
 
 func BenchmarkSpec_Marshal_Map3StrInt(b *testing.B, np ipld.NodePrototype) {
 	nb := np.NewBuilder()
-	must.NotError(codec.Unmarshal(nb, refmtjson.NewDecoder(bytes.NewBufferString(`{"whee":1,"woot":2,"waga":3}`))))
+	must.NotError(codec.Unmarshal(nb, refmtjson.NewDecoder(strings.NewReader(`{"whee":1,"woot":2,"waga":3}`))))
 	n := nb.Build()
 	b.ResetTimer()
 	var err error
@@ -41,7 +42,7 @@ func BenchmarkSpec_Marshal_Map3StrInt(b *testing.B, np ipld.NodePrototype) {
 
 func BenchmarkSpec_Marshal_Map3StrInt_CodecNull(b *testing.B, np ipld.NodePrototype) {
 	nb := np.NewBuilder()
-	must.NotError(codec.Unmarshal(nb, refmtjson.NewDecoder(bytes.NewBufferString(`{"whee":1,"woot":2,"waga":3}`))))
+	must.NotError(codec.Unmarshal(nb, refmtjson.NewDecoder(strings.NewReader(`{"whee":1,"woot":2,"waga":3}`))))
 	n := nb.Build()
 	b.ResetTimer()
 	var err error

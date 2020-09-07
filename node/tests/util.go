@@ -1,7 +1,7 @@
 package tests
 
 import (
-	"bytes"
+	"strings"
 
 	refmtjson "github.com/polydawn/refmt/json"
 
@@ -17,7 +17,7 @@ var sink interface{}
 
 func mustNodeFromJsonString(np ipld.NodePrototype, str string) ipld.Node {
 	nb := np.NewBuilder()
-	must.NotError(codec.Unmarshal(nb, refmtjson.NewDecoder(bytes.NewBufferString(str))))
+	must.NotError(codec.Unmarshal(nb, refmtjson.NewDecoder(strings.NewReader(str))))
 	return nb.Build()
 }
 
