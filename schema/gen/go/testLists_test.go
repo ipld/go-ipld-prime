@@ -12,6 +12,8 @@ import (
 )
 
 func TestListsContainingMaybe(t *testing.T) {
+	t.Parallel()
+
 	ts := schema.TypeSystem{}
 	ts.Init()
 	adjCfg := &AdjunctCfg{
@@ -121,6 +123,8 @@ func TestListsContainingMaybe(t *testing.T) {
 //   - that representation semantics are held correctly when we recurse, both in builders and in reading
 // To cover that latter situation, this depends on structs (so we can use rename directives on the representation to make it distinctive).
 func TestListsContainingLists(t *testing.T) {
+	t.Parallel()
+
 	ts := schema.TypeSystem{}
 	ts.Init()
 	adjCfg := &AdjunctCfg{

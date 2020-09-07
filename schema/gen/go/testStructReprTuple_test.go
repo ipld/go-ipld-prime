@@ -12,6 +12,8 @@ import (
 )
 
 func TestStructReprTuple(t *testing.T) {
+	t.Parallel()
+
 	prefix := "structtuple"
 	pkgName := "main"
 

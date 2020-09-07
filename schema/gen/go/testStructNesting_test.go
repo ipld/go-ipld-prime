@@ -12,6 +12,8 @@ import (
 )
 
 func TestStructNesting(t *testing.T) {
+	t.Parallel()
+
 	ts := schema.TypeSystem{}
 	ts.Init()
 	adjCfg := &AdjunctCfg{

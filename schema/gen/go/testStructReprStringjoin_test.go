@@ -16,6 +16,8 @@ import (
 // These should pass even if the natural map representation doesn't.
 // No maybes are exercised.
 func TestStructReprStringjoin(t *testing.T) {
+	t.Parallel()
+
 	prefix := "structstrjoin"
 	pkgName := "main"
 

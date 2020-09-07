@@ -12,6 +12,8 @@ import (
 )
 
 func TestMapsContainingMaybe(t *testing.T) {
+	t.Parallel()
+
 	ts := schema.TypeSystem{}
 	ts.Init()
 	adjCfg := &AdjunctCfg{
@@ -121,6 +123,8 @@ func TestMapsContainingMaybe(t *testing.T) {
 //   - that representation semantics are held correctly when we recurse, both in builders and in reading
 // To cover that latter situation, this depends on structs (so we can use rename directives on the representation to make it distinctive).
 func TestMapsContainingMaps(t *testing.T) {
+	t.Parallel()
+
 	ts := schema.TypeSystem{}
 	ts.Init()
 	adjCfg := &AdjunctCfg{
@@ -208,6 +212,8 @@ func TestMapsContainingMaps(t *testing.T) {
 }
 
 func TestMapsWithComplexKeys(t *testing.T) {
+	t.Parallel()
+
 	ts := schema.TypeSystem{}
 	ts.Init()
 	adjCfg := &AdjunctCfg{
