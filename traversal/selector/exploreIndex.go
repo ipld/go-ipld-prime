@@ -19,7 +19,7 @@ func (s ExploreIndex) Interests() []ipld.PathSegment {
 }
 
 // Explore returns the node's selector if
-// the path matches the index the index for this selector or nil if not
+// the path matches the index for this selector or nil if not
 func (s ExploreIndex) Explore(n ipld.Node, p ipld.PathSegment) Selector {
 	if n.ReprKind() != ipld.ReprKind_List {
 		return nil
