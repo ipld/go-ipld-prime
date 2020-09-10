@@ -1,7 +1,7 @@
 package schema
 
 import (
-	"bytes"
+	"strings"
 	"testing"
 
 	"github.com/ipld/go-ipld-prime/codec/dagjson"
@@ -31,7 +31,7 @@ import (
 //
 func TestSchemaSchemaParse(t *testing.T) {
 	nb := Type.Schema__Repr.NewBuilder()
-	if err := dagjson.Decoder(nb, bytes.NewBufferString(`
+	if err := dagjson.Decoder(nb, strings.NewReader(`
 {
 	"types": {
 		"TypeName": {
