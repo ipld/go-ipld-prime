@@ -198,13 +198,13 @@ func (g unionGenerator) EmitNodeMethodMapIterator(w io.Writer) {
 			switch itr.n.tag {
 			{{- range $i, $member := .Type.Members }}
 			case {{ add $i 1 }}:
-				return &memberName__{{ dot.Type | TypeSymbol }}_{{ $member.Name }}, &itr.n.x{{ add $i 1 }}, nil
+				k, v = &memberName__{{ dot.Type | TypeSymbol }}_{{ $member.Name }}, &itr.n.x{{ add $i 1 }}
 			{{- end}}
 			{{- else if (eq (.AdjCfg.UnionMemlayout .Type) "interface") }}
 			switch n2 := itr.n.x.(type) {
 			{{- range $member := .Type.Members }}
 			case {{ $member | TypeSymbol }}:
-				return &memberName__{{ dot.Type | TypeSymbol }}_{{ $member.Name }}, n2, nil
+				k, v = &memberName__{{ dot.Type | TypeSymbol }}_{{ $member.Name }}, n2
 			{{- end}}
 			{{- end}}
 			default:
@@ -324,6 +324,7 @@ func (g unionBuilderGenerator) EmitNodeAssemblerType(w io.Writer) {
 			default:
 				panic("unreachable")
 			}
+			na.ca = 0
 			na.cm = schema.Maybe_Absent
 		}
 	`, w, g.AdjCfg, g)

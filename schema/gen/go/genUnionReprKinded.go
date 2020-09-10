@@ -396,6 +396,7 @@ func (g unionReprKindedReprBuilderGenerator) EmitNodeAssemblerType(w io.Writer) 
 			default:
 				panic("unreachable")
 			}
+			na.ca = 0
 		}
 	`, w, g.AdjCfg, g)
 }
