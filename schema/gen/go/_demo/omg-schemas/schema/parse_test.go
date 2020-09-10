@@ -672,6 +672,6 @@ func TestSchemaSchemaParse(t *testing.T) {
 	}
 }
 	`)); err != nil {
-		panic(err)
+		t.Error(err)
 	}
 }
