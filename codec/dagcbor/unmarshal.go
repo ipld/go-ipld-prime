@@ -41,7 +41,7 @@ func unmarshal(na ipld.NodeAssembler, tokSrc shared.TokenSource, tk *tok.Token) 
 	case tok.TMapOpen:
 		expectLen := tk.Length
 		allocLen := tk.Length
-		if tk.Length == -1 {
+		if tk.Length == -1 || tk.Length > math.MaxInt32 {
 			expectLen = math.MaxInt32
 			allocLen = 0
 		}
@@ -84,7 +84,7 @@ func unmarshal(na ipld.NodeAssembler, tokSrc shared.TokenSource, tk *tok.Token) 
 	case tok.TArrOpen:
 		expectLen := tk.Length
 		allocLen := tk.Length
-		if tk.Length == -1 {
+		if tk.Length == -1 || tk.Length > math.MaxInt32 {
 			expectLen = math.MaxInt32
 			allocLen = 0
 		}
