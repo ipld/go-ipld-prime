@@ -4,10 +4,9 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/polydawn/refmt/json"
-
 	ipld "github.com/ipld/go-ipld-prime"
 	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
+	"github.com/polydawn/refmt/json"
 )
 
 var (

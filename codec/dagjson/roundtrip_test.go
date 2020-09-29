@@ -5,10 +5,9 @@ import (
 	"strings"
 	"testing"
 
-	. "github.com/warpfork/go-wish"
-
 	"github.com/ipld/go-ipld-prime/fluent"
 	basicnode "github.com/ipld/go-ipld-prime/node/basic"
+	. "github.com/warpfork/go-wish"
 )
 
 var n = fluent.MustBuildMap(basicnode.Prototype__Map{}, 4, func(na fluent.MapAssembler) {
