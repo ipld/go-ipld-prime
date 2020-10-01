@@ -114,4 +114,41 @@ func TestReflect(t *testing.T) {
 		Wish(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
 		Wish(t, must.String(must.Node(n.LookupByString("wow"))), ShouldEqual, "wee")
 	})
+	t.Run("Bytes", func(t *testing.T) {
+		n, err := fluent.Reflect(basicnode.Prototype.Any, []byte{0x1, 0x2, 0x3})
+		Wish(t, err, ShouldEqual, nil)
+		Wish(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Bytes)
+		b, err := n.AsBytes()
+		Wish(t, err, ShouldEqual, nil)
+		Wish(t, b, ShouldEqual, []byte{0x1, 0x2, 0x3})
+	})
+	t.Run("NamedBytes", func(t *testing.T) {
+		type Foo []byte
+		type Bar struct {
+			Z Foo
+		}
+		n, err := fluent.Reflect(basicnode.Prototype.Any, Bar{[]byte{0x1, 0x2, 0x3}})
+		Wish(t, err, ShouldEqual, nil)
+		Wish(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
+		n, err = n.LookupByString("Z")
+		Wish(t, err, ShouldEqual, nil)
+		Wish(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Bytes)
+		b, err := n.AsBytes()
+		Wish(t, err, ShouldEqual, nil)
+		Wish(t, b, ShouldEqual, []byte{0x1, 0x2, 0x3})
+	})
+	t.Run("InterfaceContainingBytes", func(t *testing.T) {
+		type Zaz struct {
+			Z interface{}
+		}
+		n, err := fluent.Reflect(basicnode.Prototype.Any, Zaz{[]byte{0x1, 0x2, 0x3}})
+		Wish(t, err, ShouldEqual, nil)
+		Wish(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
+		n, err = n.LookupByString("Z")
+		Wish(t, err, ShouldEqual, nil)
+		Wish(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Bytes)
+		b, err := n.AsBytes()
+		Wish(t, err, ShouldEqual, nil)
+		Wish(t, b, ShouldEqual, []byte{0x1, 0x2, 0x3})
+	})
 }

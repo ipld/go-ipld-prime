@@ -160,6 +160,8 @@ func (rcfg Reflector) ReflectIntoAssembler(na ipld.NodeAssembler, i interface{})
 		return la.Finish()
 	case string:
 		return na.AssignString(x)
+	case []byte:
+		return na.AssignBytes(x)
 	case int:
 		return na.AssignInt(x)
 	case nil:
@@ -170,14 +172,18 @@ func (rcfg Reflector) ReflectIntoAssembler(na ipld.NodeAssembler, i interface{})
 	switch rv.Kind() {
 	case reflect.Bool:
 		return na.AssignBool(rv.Bool())
-	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64,
-		reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 		return na.AssignInt(int(rv.Int()))
+	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+		return na.AssignInt(int(rv.Uint()))
 	case reflect.Float32, reflect.Float64:
 		return na.AssignFloat(rv.Float())
 	case reflect.String:
 		return na.AssignString(rv.String())
 	case reflect.Slice, reflect.Array:
+		if rv.Type().Elem().Kind() == reflect.Uint8 { // byte slices are a special case
+			return na.AssignBytes(rv.Bytes())
+		}
 		l := rv.Len()
 		la, err := na.BeginList(l)
 		if err != nil {
