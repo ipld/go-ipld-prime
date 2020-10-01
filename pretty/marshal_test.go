@@ -14,8 +14,7 @@ func Test(t *testing.T) {
 		t.Helper()
 
 		n, _ := fluent.Reflect(basicnode.Prototype.Any, data)
-		pretty, err := MarshalToString(n)
-		Wish(t, err, ShouldEqual, nil)
+		pretty := Stringify(n)
 		Wish(t, pretty+"\n", ShouldEqual, Dedent(expect))
 	}
 	t.Run("SimpleMap", func(t *testing.T) {

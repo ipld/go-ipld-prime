@@ -12,29 +12,33 @@ import (
 	"github.com/ipld/go-ipld-prime/schema"
 )
 
-// Marshal in the "pretty" package is meant to provide a pleasing human-readable textual representation of data.
+// Stringify in the "pretty" package is meant to provide a pleasing human-readable textual representation of data.
 // It includes indentation, prose descriptions of the data kinds for clarity,
 // and even some additional information about schema types if present.
 //
 // This is meant for use in debugging, pretty-printing, and examples.
-// There is no unmarshaller for this format.
+// It is *not* a codec; there is no unmarshaller for this format.
 //
-// Note that this is *not* a multicodec -- it inserts several piece of information
-// in the output stream which are not pure IPLD Data Model information,
-// and the presense of that information means that this function does not satisfy
-// the constraints required for something to be considered a multicodec.
+// (In particular, note that that this is *not* a multicodec --
+// not only are there no parsers for it, and not only is is it nonstandardized,
+// the format itself also inserts several pieces of information
+// in the output stream which are not pure IPLD Data Model information:
+// the presense of such information means that this format is not even close to
+// a good fit for the contracts required for something to be considered a multicodec.)
+func Stringify(n ipld.Node) string {
+	var buf bytes.Buffer
+	Marshal(n, &buf)
+	return buf.String()
+}
+
+// Marshal is as per Stringify, but streams to an io.Writer.
+// An error may be returned if the Writer errors.
 func Marshal(n ipld.Node, w io.Writer) error {
 	return EncodeConfig{
 		Line:   []byte{'\n'},
 		Indent: []byte{'\t'},
 		Sep:    []byte{},
 	}.Marshal(n, w)
-}
-
-func MarshalToString(n ipld.Node) (string, error) {
-	var buf bytes.Buffer
-	err := Marshal(n, &buf)
-	return buf.String(), err
 }
 
 type EncodeConfig struct {

@@ -3,9 +3,9 @@ package fluent_test
 import (
 	"os"
 
-	"github.com/ipld/go-ipld-prime/codec/pretty"
 	"github.com/ipld/go-ipld-prime/fluent"
 	basicnode "github.com/ipld/go-ipld-prime/node/basic"
+	"github.com/ipld/go-ipld-prime/pretty"
 )
 
 // ExampleReflect_Map demonstrates how fluent.Reflect works on maps.
