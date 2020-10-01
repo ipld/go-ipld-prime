@@ -1,6 +1,7 @@
 package dagjson
 
 import (
+	"encoding/base64"
 	"fmt"
 
 	"github.com/polydawn/refmt/shared"
@@ -115,10 +116,42 @@ func Marshal(n ipld.Node, sink shared.TokenSink) error {
 		if err != nil {
 			return err
 		}
-		tk.Type = tok.TBytes
-		tk.Bytes = v
-		_, err = sink.Step(&tk)
-		return err
+		// A json encoder can't handle bytes tokens, so, we're not going to use `tok.TBytes`, etc, here:
+		//  instead, we're going to convert this to a b64 string, and swaddle it a bit:
+		//   see https://github.com/ipld/specs/blob/master/block-layer/codecs/dag-json.md#bytes-kind .
+		tk.Type = tok.TMapOpen
+		tk.Length = 1
+		if _, err = sink.Step(&tk); err != nil {
+			return err
+		}
+		tk.Type = tok.TString
+		tk.String = "/"
+		if _, err = sink.Step(&tk); err != nil {
+			return err
+		}
+		tk.Type = tok.TMapOpen
+		tk.Length = 1
+		if _, err = sink.Step(&tk); err != nil {
+			return err
+		}
+		tk.Type = tok.TString
+		tk.String = "bytes"
+		if _, err = sink.Step(&tk); err != nil {
+			return err
+		}
+		tk.Type = tok.TString
+		tk.String = base64.RawStdEncoding.EncodeToString(v)
+		if _, err = sink.Step(&tk); err != nil {
+			return err
+		}
+		tk.Type = tok.TMapClose
+		if _, err = sink.Step(&tk); err != nil {
+			return err
+		}
+		if _, err = sink.Step(&tk); err != nil {
+			return err
+		}
+		return nil
 	case ipld.ReprKind_Link:
 		v, err := n.AsLink()
 		if err != nil {
