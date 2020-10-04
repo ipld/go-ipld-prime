@@ -40,7 +40,7 @@ func (g bytesGenerator) EmitTypeConst(w io.Writer) {
 	`, w, g.AdjCfg, g)
 }
 
-// --- TypedNode byteserface satisfaction --->
+// --- TypedNode interface satisfaction --->
 
 func (g bytesGenerator) EmitTypedNodeMethodType(w io.Writer) {
 	doTemplate(`
@@ -54,7 +54,7 @@ func (g bytesGenerator) EmitTypedNodeMethodRepresentation(w io.Writer) {
 	emitTypicalTypedNodeMethodRepresentation(w, g.AdjCfg, g)
 }
 
-// --- Node byteserface satisfaction --->
+// --- Node interface satisfaction --->
 
 func (g bytesGenerator) EmitNodeType(w io.Writer) {
 	// No additional types needed.  Methods all attach to the native type.

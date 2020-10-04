@@ -40,7 +40,7 @@ func (g linkGenerator) EmitTypeConst(w io.Writer) {
 	`, w, g.AdjCfg, g)
 }
 
-// --- TypedNode linkerface satisfaction --->
+// --- TypedNode interface satisfaction --->
 
 func (g linkGenerator) EmitTypedNodeMethodType(w io.Writer) {
 	doTemplate(`
@@ -63,7 +63,7 @@ func (g linkGenerator) EmitTypedNodeMethodRepresentation(w io.Writer) {
 	emitTypicalTypedNodeMethodRepresentation(w, g.AdjCfg, g)
 }
 
-// --- Node linkerface satisfaction --->
+// --- Node interface satisfaction --->
 
 func (g linkGenerator) EmitNodeType(w io.Writer) {
 	// No additional types needed.  Methods all attach to the native type.
