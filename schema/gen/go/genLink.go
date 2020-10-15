@@ -48,6 +48,15 @@ func (g linkGenerator) EmitTypedNodeMethodType(w io.Writer) {
 			return nil /*TODO:typelit*/
 		}
 	`, w, g.AdjCfg, g)
+
+	// Bonus feature for some links (conforms to the schema.TypedLinkNode interface):
+	if g.Type.HasReferencedType() {
+		doTemplate(`
+			func ({{ .Type | TypeSymbol }}) LinkTargetNodePrototype() ipld.NodePrototype {
+				return Type.{{ .Type | TypeSymbol }}__Repr
+			}
+		`, w, g.AdjCfg, g)
+	}
 }
 
 func (g linkGenerator) EmitTypedNodeMethodRepresentation(w io.Writer) {
