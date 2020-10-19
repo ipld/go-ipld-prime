@@ -128,7 +128,7 @@ func marshal(n ipld.Node, tk *tok.Token, sink shared.TokenSink) error {
 			return err
 		}
 		switch lnk := v.(type) {
-		case cidlink.Link:
+		case *cidlink.Link:
 			tk.Type = tok.TBytes
 			tk.Bytes = append([]byte{0}, lnk.Bytes()...)
 			tk.Tagged = true

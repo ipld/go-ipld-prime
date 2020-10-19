@@ -125,7 +125,7 @@ func Marshal(n ipld.Node, sink shared.TokenSink) error {
 			return err
 		}
 		switch lnk := v.(type) {
-		case cidlink.Link:
+		case *cidlink.Link:
 			// Precisely four tokens to emit:
 			tk.Type = tok.TMapOpen
 			tk.Length = 1
