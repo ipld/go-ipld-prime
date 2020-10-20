@@ -67,7 +67,7 @@ func (*_Substrate) AsFloat() (float64, error) {
 	return mixins.String{"rot13adl.internal.Substrate"}.AsFloat()
 }
 func (n *_Substrate) AsString() (string, error) {
-	return n.synthesized, nil
+	return n.raw, nil
 }
 func (*_Substrate) AsBytes() ([]byte, error) {
 	return mixins.String{"rot13adl.internal.Substrate"}.AsBytes()
@@ -81,9 +81,7 @@ func (*_Substrate) Prototype() ipld.NodePrototype {
 
 // -- NodePrototype -->
 
-var _ ipld.NodePrototype = Prototype{}
-
-type SubstrateRootPrototype = _Substrate__Prototype
+var _ ipld.NodePrototype = _Substrate__Prototype{}
 
 type _Substrate__Prototype struct {
 	// There's no configuration to this ADL.

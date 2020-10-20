@@ -7,10 +7,16 @@
 
 	There are several ways to move data in and out of the ADL:
 
-		- using the exported NodePrototype can be used to get a NodeBuilder which can accept the synthesized data;
-		- Nodes resulting from that construction process can be read to see synthesized data;
-		- the raw substrate data, if already parsed into Nodes, can be processed into a synthesized Node using the Reify function;
-		- TODO nodes
+		- treat it like a regular IPLD map:
+			- using the exported NodePrototype can be used to get a NodeBuilder which can accept keys and values;
+			- using the resulting Node and doing lookup operations on it like a regular map;
+		- load up raw substrate data and `Reify()` it into the synthesized form, and *then* treat it like a regular map:
+			- this is handy if the raw data already parsed into Nodes.
+			- optionally, use `SubstrateRootPrototype` as the prototype for loading the raw substrate data;
+			  any kind of Node is a valid input to Reify, but this one will generally have optimal performance.
+		- take the synthesized form and inspect its substrate data:
+			- the `Substrate()` method will return another ipld.Node which is the root of the raw substrate data,
+			  and can be walked normally like any other ipld.Node.
 */
 package rot13adl
 
@@ -83,9 +89,7 @@ func (*_R13String) Prototype() ipld.NodePrototype {
 
 // -- NodePrototype -->
 
-var _ ipld.NodePrototype = Prototype{}
-
-type Prototype = _R13String__Prototype
+var _ ipld.NodePrototype = _R13String__Prototype{}
 
 type _R13String__Prototype struct {
 	// There's no configuration to this ADL.
