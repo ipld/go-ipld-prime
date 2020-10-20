@@ -40,7 +40,7 @@ func (g float64Generator) EmitTypeConst(w io.Writer) {
 	`, w, g.AdjCfg, g)
 }
 
-// --- TypedNode float64erface satisfaction --->
+// --- TypedNode interface satisfaction --->
 
 func (g float64Generator) EmitTypedNodeMethodType(w io.Writer) {
 	doTemplate(`
@@ -54,7 +54,7 @@ func (g float64Generator) EmitTypedNodeMethodRepresentation(w io.Writer) {
 	emitTypicalTypedNodeMethodRepresentation(w, g.AdjCfg, g)
 }
 
-// --- Node float64erface satisfaction --->
+// --- Node interface satisfaction --->
 
 func (g float64Generator) EmitNodeType(w io.Writer) {
 	// No additional types needed.  Methods all attach to the native type.

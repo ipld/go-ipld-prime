@@ -40,7 +40,7 @@ func (g boolGenerator) EmitTypeConst(w io.Writer) {
 	`, w, g.AdjCfg, g)
 }
 
-// --- TypedNode boolerface satisfaction --->
+// --- TypedNode interface satisfaction --->
 
 func (g boolGenerator) EmitTypedNodeMethodType(w io.Writer) {
 	doTemplate(`
@@ -54,7 +54,7 @@ func (g boolGenerator) EmitTypedNodeMethodRepresentation(w io.Writer) {
 	emitTypicalTypedNodeMethodRepresentation(w, g.AdjCfg, g)
 }
 
-// --- Node boolerface satisfaction --->
+// --- Node interface satisfaction --->
 
 func (g boolGenerator) EmitNodeType(w io.Writer) {
 	// No additional types needed.  Methods all attach to the native type.
