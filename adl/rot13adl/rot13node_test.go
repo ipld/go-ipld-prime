@@ -69,6 +69,9 @@ func TestInspectingSubstrate(t *testing.T) {
 	n := nb.Build()
 	// Ask it about its substrate, and inspect that.
 	sn := n.(*_R13String).Substrate()
+	// TODO: the cast above isn't available outside this package: we should probably make an interface with `Substrate()` and make it available.
+	//  Is it reasonable to make this part of a standard feature detection pattern,
+	//   and make that interface reside in the main IPLD package?  Or in an `adl` package that contains such standard interfaces?
 	ss, err := sn.AsString()
 	Wish(t, err, ShouldEqual, nil)
 	Wish(t, ss, ShouldEqual, "nopq")

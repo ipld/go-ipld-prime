@@ -20,6 +20,9 @@ var _ ipld.Node = (*_Substrate)(nil)
 
 // Somewhat unusually for an ADL, there's only one substrate node type,
 // and we actually made it have the same in-memory structure as the synthesized view node.
+//
+// When implementing other more complex ADLs, it will probably be more common to have
+// the synthesized high-level node type either embed or have a pointer to the substrate root node.
 type _Substrate _R13String
 
 // REVIEW: what on earth we think the "TypeName" strings in error messages and other references to this node should be.
