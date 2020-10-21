@@ -166,7 +166,7 @@ func unmarshal2(na ipld.NodeAssembler, tokSrc shared.TokenSource, tk *tok.Token,
 		}
 		switch tk.Tag {
 		case linkTag:
-			if tk.Bytes[0] != 0 {
+			if len(tk.Bytes) < 1 || tk.Bytes[0] != 0 {
 				return ErrInvalidMultibase
 			}
 			elCid, err := cid.Cast(tk.Bytes[1:])
