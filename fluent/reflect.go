@@ -51,6 +51,16 @@ func Reflect(np ipld.NodePrototype, i interface{}) (ipld.Node, error) {
 	return defaultReflector.Reflect(np, i)
 }
 
+// MustReflect is a shortcut for Reflect but panics on any error.
+// It is useful if you need a single return value for function composition purposes.
+func MustReflect(np ipld.NodePrototype, i interface{}) ipld.Node {
+	n, err := Reflect(np, i)
+	if err != nil {
+		panic(err)
+	}
+	return n
+}
+
 // ReflectIntoAssembler is similar to Reflect, but takes a NodeAssembler parameter
 // instead of a Node Prototype.
 // This may be useful if you need more direct control over allocations,
