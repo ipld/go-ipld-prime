@@ -17,6 +17,9 @@ func EmitInternalEnums(packageName string, w io.Writer) {
 		`+doNotEditComment+`
 
 		import (
+			"fmt"
+
+			"github.com/ipld/go-ipld-prime"
 			"github.com/ipld/go-ipld-prime/schema"
 		)
 
@@ -55,5 +58,27 @@ func EmitInternalEnums(packageName string, w io.Writer) {
 			laState_midValue
 			laState_finished
 		)
+	`))
+
+	// We occasionally need this erroring thunk to be able to snake an error out from some assembly processes.
+	// It implements all of ipld.NodeAssembler, but all of its methods return errors when used.
+	fmt.Fprint(w, wish.Dedent(`
+		type _ErrorThunkAssembler struct {
+			e error
+		}
+
+		func (ea _ErrorThunkAssembler) BeginMap(_ int) (ipld.MapAssembler, error) { return nil, ea.e }
+		func (ea _ErrorThunkAssembler) BeginList(_ int) (ipld.ListAssembler, error) { return nil, ea.e }
+		func (ea _ErrorThunkAssembler) AssignNull() error { return ea.e }
+		func (ea _ErrorThunkAssembler) AssignBool(bool) error { return ea.e }
+		func (ea _ErrorThunkAssembler) AssignInt(int) error { return ea.e }
+		func (ea _ErrorThunkAssembler) AssignFloat(float64) error { return ea.e }
+		func (ea _ErrorThunkAssembler) AssignString(string) error { return ea.e }
+		func (ea _ErrorThunkAssembler) AssignBytes([]byte) error { return ea.e }
+		func (ea _ErrorThunkAssembler) AssignLink(ipld.Link) error { return ea.e }
+		func (ea _ErrorThunkAssembler) AssignNode(ipld.Node) error { return ea.e }
+		func (ea _ErrorThunkAssembler) Prototype() ipld.NodePrototype {
+			panic(fmt.Errorf("cannot get prototype from error-carrying assembler: already derailed with error: %w", ea.e))
+		}
 	`))
 }
