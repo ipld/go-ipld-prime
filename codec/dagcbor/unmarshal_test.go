@@ -17,4 +17,25 @@ func TestFunBlocks(t *testing.T) {
 		err := Decoder(nb, buf)
 		Require(t, err, ShouldEqual, ErrInvalidMultibase)
 	})
+	t.Run("fuzz001", func(t *testing.T) {
+		// This fixture might cause an overly large allocation if you aren't careful to have resource budgets.
+		buf := strings.NewReader("\x9a\xff000")
+		nb := basicnode.Prototype.Any.NewBuilder()
+		err := Decoder(nb, buf)
+		Require(t, err, ShouldEqual, ErrAllocationBudgetExceeded)
+	})
+	t.Run("fuzz002", func(t *testing.T) {
+		// This fixture might cause an overly large allocation if you aren't careful to have resource budgets.
+		buf := strings.NewReader("\x9f\x9f\x9f\x9f\x9f\x9f\x9f\x9f\x9f\x9f\x9f\x9f\x9f\x9f\x9f\x9f\x9f\x9f\x9f\x9f\x9a\xff000")
+		nb := basicnode.Prototype.Any.NewBuilder()
+		err := Decoder(nb, buf)
+		Require(t, err, ShouldEqual, ErrAllocationBudgetExceeded)
+	})
+	t.Run("fuzz003", func(t *testing.T) {
+		// This fixture might cause an overly large allocation if you aren't careful to have resource budgets.
+		buf := strings.NewReader("\x9f\x9f\x9f\x9f\x9f\x9f\x9f\xbb00000000")
+		nb := basicnode.Prototype.Any.NewBuilder()
+		err := Decoder(nb, buf)
+		Require(t, err, ShouldEqual, ErrAllocationBudgetExceeded)
+	})
 }
