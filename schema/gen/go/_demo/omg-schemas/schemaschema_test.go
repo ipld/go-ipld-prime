@@ -132,27 +132,27 @@ func init() {
 	ts.Accumulate(schema.SpawnUnion("MapRepresentation",
 		[]schema.TypeName{
 			"MapRepresentation_Map",
-			"MapRepresentation_StringPairs",
-			"MapRepresentation_ListPairs",
+			"MapRepresentation_Stringpairs",
+			"MapRepresentation_Listpairs",
 		},
 		schema.SpawnUnionRepresentationKeyed(map[string]schema.TypeName{
 			"map":         "MapRepresentation_Map",
-			"stringpairs": "MapRepresentation_StringPairs",
-			"listpairs":   "MapRepresentation_ListPairs",
+			"stringpairs": "MapRepresentation_Stringpairs",
+			"listpairs":   "MapRepresentation_Listpairs",
 		}),
 	))
 	ts.Accumulate(schema.SpawnStruct("MapRepresentation_Map",
 		[]schema.StructField{},
 		schema.StructRepresentation_Map{},
 	))
-	ts.Accumulate(schema.SpawnStruct("MapRepresentation_StringPairs",
+	ts.Accumulate(schema.SpawnStruct("MapRepresentation_Stringpairs",
 		[]schema.StructField{
 			schema.SpawnStructField("innerDelim", "String", false, false),
 			schema.SpawnStructField("entryDelim", "String", false, false),
 		},
 		schema.StructRepresentation_Map{},
 	))
-	ts.Accumulate(schema.SpawnStruct("MapRepresentation_ListPairs",
+	ts.Accumulate(schema.SpawnStruct("MapRepresentation_Listpairs",
 		[]schema.StructField{},
 		schema.StructRepresentation_Map{},
 	))
@@ -260,16 +260,16 @@ func init() {
 		[]schema.TypeName{
 			"StructRepresentation_Map",
 			"StructRepresentation_Tuple",
-			"StructRepresentation_StringPairs",
-			"StructRepresentation_StringJoin",
-			"StructRepresentation_ListPairs",
+			"StructRepresentation_Stringpairs",
+			"StructRepresentation_Stringjoin",
+			"StructRepresentation_Listpairs",
 		},
 		schema.SpawnUnionRepresentationKeyed(map[string]schema.TypeName{
 			"map":         "StructRepresentation_Map",
 			"tuple":       "StructRepresentation_Tuple",
-			"stringpairs": "StructRepresentation_StringPairs",
-			"stringjoin":  "StructRepresentation_StringJoin",
-			"listpairs":   "StructRepresentation_ListPairs",
+			"stringpairs": "StructRepresentation_Stringpairs",
+			"stringjoin":  "StructRepresentation_Stringjoin",
+			"listpairs":   "StructRepresentation_Listpairs",
 		}),
 	))
 	ts.Accumulate(schema.SpawnStruct("StructRepresentation_Map",
@@ -297,21 +297,21 @@ func init() {
 	ts.Accumulate(schema.SpawnList("List__FieldName",
 		"FieldName", false,
 	))
-	ts.Accumulate(schema.SpawnStruct("StructRepresentation_StringPairs",
+	ts.Accumulate(schema.SpawnStruct("StructRepresentation_Stringpairs",
 		[]schema.StructField{
 			schema.SpawnStructField("innerDelim", "String", false, false),
 			schema.SpawnStructField("entryDelim", "String", false, false),
 		},
 		schema.StructRepresentation_Map{},
 	))
-	ts.Accumulate(schema.SpawnStruct("StructRepresentation_StringJoin",
+	ts.Accumulate(schema.SpawnStruct("StructRepresentation_Stringjoin",
 		[]schema.StructField{
 			schema.SpawnStructField("join", "String", false, false),               // review: "delim" would seem more consistent with others -- but this is currently what the schema-schema says.
 			schema.SpawnStructField("fieldOrder", "List__FieldName", true, false), // todo: dodging inline defn's again.
 		},
 		schema.StructRepresentation_Map{},
 	))
-	ts.Accumulate(schema.SpawnStruct("StructRepresentation_ListPairs",
+	ts.Accumulate(schema.SpawnStruct("StructRepresentation_Listpairs",
 		[]schema.StructField{},
 		schema.StructRepresentation_Map{},
 	))
