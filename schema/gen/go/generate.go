@@ -5,6 +5,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"sort"
 
 	"github.com/ipld/go-ipld-prime/schema"
 )
@@ -22,9 +23,16 @@ func Generate(pth string, pkgName string, ts schema.TypeSystem, adjCfg *AdjunctC
 	// Local helper function for applying generation logic to each type.
 	//  We will end up doing this more than once because in this layout, more than one file contains part of the story for each type.
 	applyToEachType := func(fn func(tg TypeGenerator, w io.Writer), f io.Writer) {
-		// FIXME: the order of this iteration is not stable, and it should be, because it affects determinism of the output.
-		for _, typ := range ts.GetTypes() {
-			switch t2 := typ.(type) {
+		// Sort the type names so we have a determinisic order; this affects output consistency.
+		//  Any stable order would do, but we don't presently have one, so a sort is necessary.
+		types := ts.GetTypes()
+		keys := make(sortableTypeNames, 0, len(types))
+		for tn := range types {
+			keys = append(keys, tn)
+		}
+		sort.Sort(keys)
+		for _, tn := range keys {
+			switch t2 := types[tn].(type) {
 			case *schema.TypeBool:
 				fn(NewBoolReprBoolGenerator(pkgName, t2, adjCfg), f)
 			case *schema.TypeInt:
@@ -188,3 +196,9 @@ func withFile(filename string, fn func(io.Writer)) {
 	defer f.Close()
 	fn(f)
 }
+
+type sortableTypeNames []schema.TypeName
+
+func (a sortableTypeNames) Len() int           { return len(a) }
+func (a sortableTypeNames) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a sortableTypeNames) Less(i, j int) bool { return a[i] < a[j] }
