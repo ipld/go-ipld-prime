@@ -104,11 +104,7 @@ func (g mapGenerator) EmitNativeAccessors(w io.Writer) {
 			}
 			x := &itr.n.t[itr.idx]
 			k = &x.k
-			{{- if .Type.ValueIsNullable }}
 			v = &x.v
-			{{- else}}
-			v = &x.v
-			{{- end}}
 			itr.idx++
 			return
 		}
