@@ -84,7 +84,39 @@ func (g mapGenerator) EmitNativeAccessors(w io.Writer) {
 
 		var _{{ .Type | TypeSymbol }}__valueAbsent = _{{ .Type.ValueType | TypeSymbol }}__Maybe{m:schema.Maybe_Absent}
 	`, w, g.AdjCfg, g)
-	// FUTURE: also a speciated iterator?
+
+	// Generate a speciated iterator.
+	//  The main advantage of this over the general ipld.MapIterator is of course keeping types visible (and concrete, to the compiler's eyes in optimizations, too).
+	//  It also elides the error return from the iterator's Next method.  (Overreads will result in nil keys; this is both easily avoidable, and unambiguous if you do goof and hit it.)
+	doTemplate(`
+		func (n {{ .Type | TypeSymbol }}) Iterator() *{{ .Type | TypeSymbol }}__Itr {
+			return &{{ .Type | TypeSymbol }}__Itr{n, 0}
+		}
+
+		type {{ .Type | TypeSymbol }}__Itr struct {
+			n {{ .Type | TypeSymbol }}
+			idx  int
+		}
+
+		func (itr *{{ .Type | TypeSymbol }}__Itr) Next() (k {{ .Type.KeyType | TypeSymbol }}, v {{if .Type.ValueIsNullable }}Maybe{{end}}{{ .Type.ValueType | TypeSymbol }}) {
+			if itr.idx >= len(itr.n.t) {
+				return nil, nil
+			}
+			x := &itr.n.t[itr.idx]
+			k = &x.k
+			{{- if .Type.ValueIsNullable }}
+			v = &x.v
+			{{- else}}
+			v = &x.v
+			{{- end}}
+			itr.idx++
+			return
+		}
+		func (itr *{{ .Type | TypeSymbol }}__Itr) Done() bool {
+			return itr.idx >= len(itr.n.t)
+		}
+
+	`, w, g.AdjCfg, g)
 }
 
 func (g mapGenerator) EmitNativeBuilder(w io.Writer) {
