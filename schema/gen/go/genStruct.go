@@ -20,12 +20,15 @@ func (structGenerator) IsRepr() bool { return false } // hint used in some gener
 
 func (g structGenerator) EmitNativeType(w io.Writer) {
 	doTemplate(`
+		{{- if Comments -}}
+		// {{ .Type | TypeSymbol }} matches the IPLD Schema type "{{ .Type.Name }}".  It has {{ .Type.Kind }} type-kind, and may be interrogated like {{ .ReprKind }} kind.
+		{{- end}}
+		type {{ .Type | TypeSymbol }} = *_{{ .Type | TypeSymbol }}
 		type _{{ .Type | TypeSymbol }} struct {
 			{{- range $field := .Type.Fields}}
 			{{ $field | FieldSymbolLower }} _{{ $field.Type | TypeSymbol }}{{if $field.IsMaybe }}__Maybe{{end}}
 			{{- end}}
 		}
-		type {{ .Type | TypeSymbol }} = *_{{ .Type | TypeSymbol }}
 	`, w, g.AdjCfg, g)
 }
 
