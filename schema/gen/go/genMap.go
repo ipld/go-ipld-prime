@@ -45,18 +45,31 @@ func (g mapGenerator) EmitNativeType(w io.Writer) {
 
 func (g mapGenerator) EmitNativeAccessors(w io.Writer) {
 	// Generate a speciated Lookup as well as LookupMaybe method.
-	// The LookupMaybe method is needed if the map value is nullable and you're going to distinguish nulls
-	//  (and may also be convenient if you would rather handle Maybe_Absent than an error for not-found).
-	// The Lookup method works fine if the map value isn't nullable
-	//  (and should be preferred in that case, because boxing something into a maybe when it wasn't already stored that way costs an alloc(!),
-	//   and may additionally incur a memcpy if the maybe for the value type doesn't use pointers internally).
-	// REVIEW: is there a way we can make this less twisty?  it is VERY unfortunate if the user has to know what sort of map it is to know which method to prefer.
-	//  Maybe the Lookup method on maps that have nullable values should just always have a MaybeT return type?
-	//   But then this means the Lookup method doesn't "need" an error as part of its return signiture, which just shuffles differences around.
+	// The Lookup method returns nil in case of *either* an absent value or a null value,
+	//  and so should only be used if the map type doesn't allow nullable keys or if the caller doesn't care about the difference.
+	// The LookupMaybe method returns a MaybeT type for the map value,
+	//  and is needed if the map allows nullable values and the caller wishes to distinguish between null and absent.
+	// (The Lookup method should be preferred for maps that have non-nullable keys, because LookupMaybe may incur additional costs;
+	//   boxing something into a maybe when it wasn't already stored that way costs an alloc(!),
+	//    and may additionally incur a memcpy if the maybe for the value type doesn't use pointers internally).
 	doTemplate(`
+		func (n *_{{ .Type | TypeSymbol }}) Lookup(k {{ .Type.KeyType | TypeSymbol }}) {{ .Type.ValueType | TypeSymbol }} {
+			v, exists := n.m[*k]
+			if !exists {
+				return nil
+			}
+			{{- if .Type.ValueIsNullable }}
+			if v.m == schema.Maybe_Null {
+				return nil
+			}
+			return {{ if not (MaybeUsesPtr .Type.ValueType) }}&{{end}}v.v
+			{{- else}}
+			return v
+			{{- end}}
+		}
 		func (n *_{{ .Type | TypeSymbol }}) LookupMaybe(k {{ .Type.KeyType | TypeSymbol }}) Maybe{{ .Type.ValueType | TypeSymbol }} {
-			v, ok := n.m[*k]
-			if !ok {
+			v, exists := n.m[*k]
+			if !exists {
 				return &_{{ .Type | TypeSymbol }}__valueAbsent
 			}
 			{{- if .Type.ValueIsNullable }}
@@ -70,8 +83,6 @@ func (g mapGenerator) EmitNativeAccessors(w io.Writer) {
 		}
 
 		var _{{ .Type | TypeSymbol }}__valueAbsent = _{{ .Type.ValueType | TypeSymbol }}__Maybe{m:schema.Maybe_Absent}
-
-		// TODO generate also a plain Lookup method that doesn't box and alloc if this type contains non-nullable values!
 	`, w, g.AdjCfg, g)
 	// FUTURE: also a speciated iterator?
 }
