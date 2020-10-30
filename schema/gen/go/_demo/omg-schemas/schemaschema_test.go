@@ -193,14 +193,16 @@ func init() {
 			"UnionRepresentation_Keyed",
 			"UnionRepresentation_Envelope",
 			"UnionRepresentation_Inline",
+			"UnionRepresentation_StringPrefix",
 			"UnionRepresentation_BytePrefix",
 		},
 		schema.SpawnUnionRepresentationKeyed(map[string]schema.TypeName{
-			"kinded":     "UnionRepresentation_Kinded",
-			"keyed":      "UnionRepresentation_Keyed",
-			"envelope":   "UnionRepresentation_Envelope",
-			"inline":     "UnionRepresentation_Inline",
-			"byteprefix": "UnionRepresentation_BytePrefix",
+			"kinded":       "UnionRepresentation_Kinded",
+			"keyed":        "UnionRepresentation_Keyed",
+			"envelope":     "UnionRepresentation_Envelope",
+			"inline":       "UnionRepresentation_Inline",
+			"stringprefix": "UnionRepresentation_StringPrefix",
+			"byteprefix":   "UnionRepresentation_BytePrefix",
 		}),
 	))
 	ts.Accumulate(schema.SpawnMap("UnionRepresentation_Kinded",
@@ -224,8 +226,15 @@ func init() {
 		},
 		schema.StructRepresentation_Map{},
 	))
+	ts.Accumulate(schema.SpawnStruct("UnionRepresentation_StringPrefix",
+		[]schema.StructField{
+			schema.SpawnStructField("discriminantTable", "Map__String__TypeName", false, false), // todo: dodging inline defn's again.
+		},
+		schema.StructRepresentation_Map{},
+	))
 	ts.Accumulate(schema.SpawnStruct("UnionRepresentation_BytePrefix",
 		[]schema.StructField{
+			// REVIEW: for schema-schema overall: this is a very funny type.  Should we use strings here?  And perhaps make it use hex for maximum clarity?  This would also allow multi-byte prefixes, which would match what's already done by stringprefix representation.
 			schema.SpawnStructField("discriminantTable", "Map__TypeName__Int", false, false), // todo: dodging inline defn's again.
 		},
 		schema.StructRepresentation_Map{},
