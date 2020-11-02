@@ -33,7 +33,7 @@ func (g structGenerator) EmitNativeAccessors(w io.Writer) {
 	doTemplate(`
 		{{- $type := .Type -}} {{- /* ranging modifies dot, unhelpfully */ -}}
 		{{- range $field := .Type.Fields }}
-		func (n _{{ $type | TypeSymbol }}) Field{{ $field | FieldSymbolUpper }}()	{{ if $field.IsMaybe }}Maybe{{end}}{{ $field.Type | TypeSymbol }} {
+		func (n _{{ $type | TypeSymbol }}) Field{{ $field | FieldSymbolUpper }}() {{ if $field.IsMaybe }}Maybe{{end}}{{ $field.Type | TypeSymbol }} {
 			return &n.{{ $field | FieldSymbolLower }}
 		}
 		{{- end}}
