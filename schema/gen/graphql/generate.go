@@ -51,7 +51,7 @@ func withFile(filename string, fn func(io.Writer)) {
 	fn(f)
 }
 
-var graphQLScalars = []string{"Int", "Float", "Boolean", "ID"}
+var graphQLScalars = []string{"Int", "Float", "Boolean", "String", "ID"}
 
 // EmitScalar defines a scalar type for custom scalars in the type system.
 func EmitScalar(t schema.Type, w io.Writer) {
