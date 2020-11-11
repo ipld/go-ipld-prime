@@ -17,7 +17,7 @@ func TestTokenWalk(t *testing.T) {
 		if err != nil {
 			t.Error(err)
 		}
-		Wish(t, stringifyTokens(result), ShouldEqual, stringifyTokens(tcase.sequence))
+		Wish(t, StringifyTokenSequence(result), ShouldEqual, StringifyTokenSequence(tcase.sequence))
 	}
 }
 
@@ -37,6 +37,6 @@ func TestNodeTokenizer(t *testing.T) {
 				break
 			}
 		}
-		Wish(t, stringifyTokens(result), ShouldEqual, stringifyTokens(tcase.sequence))
+		Wish(t, StringifyTokenSequence(result), ShouldEqual, StringifyTokenSequence(tcase.sequence))
 	}
 }

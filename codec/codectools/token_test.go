@@ -1,8 +1,6 @@
 package codectools
 
 import (
-	"strings"
-
 	"github.com/ipld/go-ipld-prime"
 	"github.com/ipld/go-ipld-prime/fluent"
 	"github.com/ipld/go-ipld-prime/must"
@@ -69,14 +67,4 @@ var tokenFixtures = []struct {
 			{Kind: TokenKind_ListClose},
 		},
 	},
-}
-
-// utility function for testing.  Doing a diff on strings of tokens gives very good reports for minimal effort.
-func stringifyTokens(seq []Token) string {
-	var sb strings.Builder
-	for _, tk := range seq {
-		sb.WriteString(tk.String())
-		sb.WriteByte('\n')
-	}
-	return sb.String()
 }
