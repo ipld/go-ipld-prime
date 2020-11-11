@@ -122,7 +122,6 @@ var TokenWalkSkip = errors.New("token walk: skip")
 
 // --- the stepwise token producer system (more complicated; has a userland stack) is below -->
 
-//
 // A TokenReader can be produced from any ipld.Node using NodeTokenizer.
 // TokenReader are also commonly implemented by codec packages,
 // wherein they're created over a serial data stream and tokenize that stream when pumped.
@@ -136,10 +135,16 @@ var TokenWalkSkip = errors.New("token walk: skip")
 //  Maybe putting position info directly into the Token struct would solve this satisfactorily?
 //   More comments can be found in the Token definition.
 //
-// TODO: this probably ought to take a budget parameter.
-//  It doesn't make much sense if you're walking in-memory data,
-//  but it's sure relevant if you're parsing serial data and want to pass down info for limiting how big of a string is allowed to be allocated.
-type TokenReader func() (next *Token, err error)
+// A 'budget' parameter must be provided to a TokenReader as a pointer to an integer.
+// The TokenReader should limit how much memory it uses according to the budget remaining.
+// (The budget is considered to be roughly in units of bytes, but can be treated as an approximation.)
+// The budget should primarily be managed by the caller of the TokenReader
+// (e.g., after the TokenReader returns a 20 byte string, the caller should decrement the budget by 20),
+// but a TokenReader may also do its own decrements to the budget if some operations are particularly costly and the TokenReader wants this to be accounted for.
+// The budget may be ignored if the TokenReader just yielding access to already in-memory information;
+// the main intent of the budget is to avoid resource exhausting when bringing new data into program memory.
+//
+type TokenReader func(budget *int) (next *Token, err error)
 
 type NodeTokenizer struct {
 	// This structure is designed to be embeddable.  Use Initialize when doing so.

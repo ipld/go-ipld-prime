@@ -21,7 +21,7 @@ import (
 // it will also happily do even recursive structures in map keys,
 // meaning it can be used when handling schema values like maps with complex keys.
 func TokenAssemble(na ipld.NodeAssembler, tr TokenReader, budget int) error {
-	tk, err := tr()
+	tk, err := tr(&budget)
 	if err != nil {
 		return err
 	}
@@ -43,7 +43,7 @@ func tokenAssemble(na ipld.NodeAssembler, tk *Token, tr TokenReader, budget *int
 		}
 		for {
 			// Peek one token.  We need to see if the map is about to end or not.
-			tk, err = tr()
+			tk, err = tr(budget)
 			if err != nil {
 				return err
 			}
@@ -58,7 +58,7 @@ func tokenAssemble(na ipld.NodeAssembler, tk *Token, tr TokenReader, budget *int
 			}
 			// Recurse to assemble the value.
 			//  (We don't really care to peek this token, but do so anyway to keep the calling convention regular.)
-			tk, err = tr()
+			tk, err = tr(budget)
 			if err != nil {
 				return err
 			}
@@ -80,7 +80,7 @@ func tokenAssemble(na ipld.NodeAssembler, tk *Token, tr TokenReader, budget *int
 		}
 		for {
 			// Peek one token.  We need to see if the list is about to end or not.
-			tk, err = tr()
+			tk, err = tr(budget)
 			if err != nil {
 				return err
 			}

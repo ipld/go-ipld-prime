@@ -11,7 +11,7 @@ func TestTokenAssemble(t *testing.T) {
 	for _, tcase := range tokenFixtures {
 		nb := tcase.value.Prototype().NewBuilder()
 		var readerOffset int
-		err := TokenAssemble(nb, func() (*Token, error) {
+		err := TokenAssemble(nb, func(budget *int) (*Token, error) {
 			if readerOffset > len(tcase.sequence) {
 				return nil, io.EOF
 			}
