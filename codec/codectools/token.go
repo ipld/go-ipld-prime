@@ -56,17 +56,17 @@ func (tk Token) String() string {
 type TokenKind uint8
 
 const (
-	TokenKind_MapOpen   = '{'
-	TokenKind_MapClose  = '}'
-	TokenKind_ListOpen  = '['
-	TokenKind_ListClose = ']'
-	TokenKind_Null      = '0'
-	TokenKind_Bool      = 'b'
-	TokenKind_Int       = 'i'
-	TokenKind_Float     = 'f'
-	TokenKind_String    = 's'
-	TokenKind_Bytes     = 'x'
-	TokenKind_Link      = '/'
+	TokenKind_MapOpen   TokenKind = '{'
+	TokenKind_MapClose  TokenKind = '}'
+	TokenKind_ListOpen  TokenKind = '['
+	TokenKind_ListClose TokenKind = ']'
+	TokenKind_Null      TokenKind = '0'
+	TokenKind_Bool      TokenKind = 'b'
+	TokenKind_Int       TokenKind = 'i'
+	TokenKind_Float     TokenKind = 'f'
+	TokenKind_String    TokenKind = 's'
+	TokenKind_Bytes     TokenKind = 'x'
+	TokenKind_Link      TokenKind = '/'
 )
 
 type ErrMalformedTokenSequence struct {
