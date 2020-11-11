@@ -6,20 +6,6 @@ import (
 	"github.com/ipld/go-ipld-prime"
 )
 
-// TODO: i still can't decide between marshaller vs encoder terminology.
-//   i liked the defn i had in refmt: encoder handles tokens-to-bytes; marshaller handles trees to tokens.
-//   but that distinction doesn't exist here.
-//      if it did, we'd need a token type.
-//      and in that case the encoder parts would be an internal codec code reuse choice, not necessary to expose.
-//          if this was the case, it would suggest these functions should be called marshaller.
-//   an alternate definition is: marshallers are things that twist a structure to a tokenizable form;
-//    but going from tree (already trivially tokenizable) to serial is still considered an encoder.
-//        i could also see this definition holding water, and it appears to be what i'm rolling with at the moment.
-//
-// maybe we really should make a TokenWalker thing.  Put it in codectools.
-//   i still really don't know how we'd describe links in that, though.  it's really hard to claim links are a token.
-//   maybe we can cram links into some sort of "extra" field in the token union.
-
 // Encoder is the essential definition of a function that takes IPLD Data Model data in memory and serializes it.
 // IPLD Codecs are written by implementing this function interface (as well as (typically) a matched Decoder).
 //
