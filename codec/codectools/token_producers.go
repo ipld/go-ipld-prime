@@ -129,12 +129,6 @@ var TokenWalkSkip = errors.New("token walk: skip")
 // TokenReader implementations are encouraged to yield the same token pointer repeatedly,
 // just varying the contents of the value, in order to avoid unnecessary allocations.
 //
-// TODO: as elegant as this is, it's not able to provide much help for error reporting:
-//  if I hit an error while handling the token, I'd like to be able to ask this thing where it thinks it is,
-//   and include that position info in my error report.
-//  Maybe putting position info directly into the Token struct would solve this satisfactorily?
-//   More comments can be found in the Token definition.
-//
 // A 'budget' parameter must be provided to a TokenReader as a pointer to an integer.
 // The TokenReader should limit how much memory it uses according to the budget remaining.
 // (The budget is considered to be roughly in units of bytes, but can be treated as an approximation.)

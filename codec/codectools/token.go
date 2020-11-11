@@ -19,9 +19,15 @@ type Token struct {
 
 	Node ipld.Node // Direct pointer to the original data, if this token is used to communicate data during a walk of existing in-memory data.  Absent when token is being used during deserialization.
 
-	// TODO: position info?  We seem to want this basically everywhere the token goes, so it might as well just live here.
-	//  Putting this position info into the token would require writing those fields many times, though;
-	//   hopefully we can also use them as the primary accounting position then, or else this might be problematic for speed.
+	// The following fields all track position and progress:
+	// (These may be useful to copy into any error messages if errors arise.)
+	// (Implementations may assume token reuse and treat these as state keeping;
+	// you may experience position accounting accuracy problems if *not* reusing tokens or if zeroing these fields.)
+
+	pth          []ipld.PathSegment // Set by token producers (whether marshallers or deserializers) to track logical position.
+	offset       int64              // Set by deserializers (for both textual or binary formats alike) to track progress.
+	lineOffset   int64              // Set by deserializers that work with textual data.  May be ignored by binary deserializers.
+	columnOffset int64              // Set by deserializers that work with textual data.  May be ignored by binary deserializers.
 }
 
 func (tk Token) String() string {
