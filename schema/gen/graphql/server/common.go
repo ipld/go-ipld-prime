@@ -28,6 +28,10 @@ func EmitFileHeader(w io.Writer, pkg, tsPkg string, c *config) {
 	type nodeLoader func(ctx context.Context, cid cidlink.Link, builder ipld.NodeBuilder) error
 	const nodeLoaderCtxKey = "NodeLoader"
 
+	var errNotNode = fmt.Errorf("Not IPLD Node")
+	var errInvalidLoader = fmt.Errorf("Invalid Loader Provided")
+	var errInvalidLink = fmt.Errorf("Invalid link")
+
 	`, w, map[string]string{
 		"Package":   pkg,
 		"TSPackage": tsPkg,
