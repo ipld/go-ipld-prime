@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	_ ipld.Link        = &Link{}
+	_ ipld.Link        = Link{}
 	_ ipld.LinkBuilder = LinkBuilder{}
 )
 
@@ -24,11 +24,7 @@ type byteAccesor interface {
 	Bytes() []byte
 }
 
-// Note that the Link.Load method is implemented on the pointer receiver, not the bare struct type: this is for a reason.
-// We want only the `*Link` type to satisfy `ipld.Link`'s contract: this removes the possibility of footguns
-//  wherein a user might have to check both `cl, ok := lnk.(*cidlink.Link)` AND `cl, ok := lnk.(cidlink.Link)`.
-
-func (lnk *Link) Load(ctx context.Context, lnkCtx ipld.LinkContext, na ipld.NodeAssembler, loader ipld.Loader) error {
+func (lnk Link) Load(ctx context.Context, lnkCtx ipld.LinkContext, na ipld.NodeAssembler, loader ipld.Loader) error {
 	// Open the byte reader.
 	r, err := loader(lnk, lnkCtx)
 	if err != nil {
@@ -106,7 +102,7 @@ func (lb LinkBuilder) Build(ctx context.Context, lnkCtx ipld.LinkContext, node i
 	if err != nil {
 		return nil, err
 	}
-	lnk := &Link{cid}
+	lnk := Link{cid}
 	if err := commit(lnk); err != nil {
 		return lnk, err
 	}

@@ -70,13 +70,13 @@ func ExampleCreatingLink() {
 
 	// Output:
 	// link: bafyrkmbukvrgzcs6qlsh4wvkvbe5wp7sclcblfnapnb2xfznisbykpbnlocet2qzley3cpxofoxqrnqgm3ta
-	// concrete type: `*cidlink.Link`
+	// concrete type: `cidlink.Link`
 }
 
 func ExampleLoadingLink() {
 	// Let's say we want to load this link (it's the same one we just created in the example above).
 	cid, _ := cid.Decode("bafyrkmbukvrgzcs6qlsh4wvkvbe5wp7sclcblfnapnb2xfznisbykpbnlocet2qzley3cpxofoxqrnqgm3ta")
-	lnk := &cidlink.Link{cid}
+	lnk := cidlink.Link{cid}
 
 	// First, we'll need a Loader.  This function has to take a link as a parameter,
 	//  then decides where to get the referenced raw data from,

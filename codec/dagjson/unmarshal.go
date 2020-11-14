@@ -120,7 +120,7 @@ func (st *unmarshalState) linkLookahead(na ipld.NodeAssembler, tokSrc shared.Tok
 	if err != nil {
 		return false, err
 	}
-	if err := na.AssignLink(&cidlink.Link{elCid}); err != nil {
+	if err := na.AssignLink(cidlink.Link{elCid}); err != nil {
 		return false, err
 	}
 	return true, nil

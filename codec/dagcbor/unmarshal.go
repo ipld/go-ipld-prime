@@ -173,7 +173,7 @@ func unmarshal2(na ipld.NodeAssembler, tokSrc shared.TokenSource, tk *tok.Token,
 			if err != nil {
 				return err
 			}
-			return na.AssignLink(&cidlink.Link{elCid})
+			return na.AssignLink(cidlink.Link{elCid})
 		default:
 			return fmt.Errorf("unhandled cbor tag %d", tk.Tag)
 		}
