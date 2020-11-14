@@ -28,7 +28,9 @@ import (
 
 // -- Node -->
 
-var _ ipld.Node = (*_R13String)(nil)
+var _ ipld.Node = (R13String)(nil)
+
+type R13String = *_R13String
 
 type _R13String struct {
 	raw         string // the raw content, before our ADL lens is applied to it.

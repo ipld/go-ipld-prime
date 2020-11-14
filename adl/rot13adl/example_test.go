@@ -1,6 +1,7 @@
 package rot13adl_test
 
 import (
+	"bytes"
 	"fmt"
 	"strings"
 
@@ -36,6 +37,39 @@ func ExampleUnmarshallingToADL() {
 	// reify error: <nil>
 	// adl node kind: string
 	// adl view value: "a cool string"
+}
+
+func ExampleCreatingViaADL() {
+	// Create a NodeBuilder for the ADL -- the high-level synthesized thing (not the substrate).
+	nb := rot13adl.Prototype.Node.NewBuilder()
+
+	// Create a ADL node via its builder.  This is just like creating any other node in IPLD.
+	nb.AssignString("woohoo")
+	n := nb.Build()
+
+	// We can inspect the synthetic ADL node like any other node!
+	fmt.Printf("adl node kind: %v\n", n.ReprKind())
+	fmt.Printf("adl view value: %q\n", must.String(n))
+
+	// We can get the substrate view and examine that as a node too.
+	// (This requires a cast to see that we have an ADL, though.  Not all IPLD nodes have a 'Substrate' property.)
+	substrateNode := n.(rot13adl.R13String).Substrate()
+	fmt.Printf("substrate node kind: %v\n", substrateNode.ReprKind())
+	fmt.Printf("substrate value: %q\n", must.String(substrateNode))
+
+	// To marshal the ADL, just use marshal methods on its substrate as normal:
+	var marshalBuffer bytes.Buffer
+	err := dagjson.Marshal(substrateNode, json.NewEncoder(&marshalBuffer, json.EncodeOptions{}))
+	fmt.Printf("marshalled: %v\n", marshalBuffer.String())
+	fmt.Printf("marshal error: %v\n", err)
+
+	// Output:
+	// adl node kind: string
+	// adl view value: "woohoo"
+	// substrate node kind: string
+	// substrate value: "jbbubb"
+	// marshalled: "jbbubb"
+	// marshal error: <nil>
 }
 
 // It's worth noting that the builders for an ADL substrate node still return the substrate.
