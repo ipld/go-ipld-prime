@@ -38,6 +38,11 @@ func TestReader(t *testing.T) {
 		// This is looks like one big nasty long walk, and so it is, but...
 		//  the point is to test stateful interactions, so to write it this way is telling the truth.
 
+		// Force one more GC before we begin our accounting.
+		// (This doesn't really seem like it should be necessary, because indeed, memCheckpoint is also doing a forced GC;
+		//  but empirically (at least as of go1.15), it is; flakey numbers for the very first test will result without this double-GC to prime things.)
+		runtime.GC()
+
 		// Fixed length short read should work.
 		memCheckpoint()
 		bs, err := r.Readnzc(4)
