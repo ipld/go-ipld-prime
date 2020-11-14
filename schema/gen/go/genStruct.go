@@ -507,7 +507,9 @@ func (g structBuilderGenerator) emitMapAssemblerMethods(w io.Writer) {
 			case maState_finished:
 				panic("invalid state: Finish cannot be called on an assembler that's already finished")
 			}
-			//FIXME check if all required fields are set
+			if ma.s & fieldBits__{{ $type | TypeSymbol }}_sufficient != fieldBits__{{ $type | TypeSymbol }}_sufficient {
+				panic("invalid state: Not all required fields set")
+			}
 			ma.state = maState_finished
 			*ma.m = schema.Maybe_Value
 			return nil
