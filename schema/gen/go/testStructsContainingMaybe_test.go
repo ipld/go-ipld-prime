@@ -187,15 +187,10 @@ func TestStructsContainingMaybe(t *testing.T) {
 				}
 				v.AssignString("v1")
 
-				shouldPanicOnBuild := func(t *testing.T) {
-					defer func() {
-						if r := recover(); r == nil {
-							t.Errorf("The code did not panic")
-						}
-					}()
-					_ = b.Build()
+				err = mb.Finish()
+				if _, ok := err.(ipld.ErrMissingRequiredField); !ok {
+					t.Fatalf("Expected error for missing field, got %v", err)
 				}
-				shouldPanicOnBuild(t)
 			})
 		})
 	})

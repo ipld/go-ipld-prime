@@ -508,7 +508,15 @@ func (g structBuilderGenerator) emitMapAssemblerMethods(w io.Writer) {
 				panic("invalid state: Finish cannot be called on an assembler that's already finished")
 			}
 			if ma.s & fieldBits__{{ $type | TypeSymbol }}_sufficient != fieldBits__{{ $type | TypeSymbol }}_sufficient {
-				panic("invalid state: Not all required fields set")
+				err := ipld.ErrMissingRequiredField{Missing: make([]string, 0)}
+				{{- range $i, $field := .Type.Fields }}
+				{{- if not $field.IsMaybe}}
+				if ma.s & fieldBit__{{ $type | TypeSymbol }}_{{ $field | FieldSymbolUpper }} == 0 {
+					err.Missing = append(err.Missing, "{{ $field.Name }}")
+				}
+				{{- end}}
+				{{- end}}
+				return err
 			}
 			ma.state = maState_finished
 			*ma.m = schema.Maybe_Value
