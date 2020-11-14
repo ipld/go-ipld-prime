@@ -171,4 +171,32 @@ func TestStructsContainingMaybe(t *testing.T) {
 			}
 		})
 	})
+
+	genAndCompileAndTest(t, "stroct3", "main", ts, adjCfg, func(t *testing.T, getPrototypeByName func(string) ipld.NodePrototype) {
+		t.Run("insufficient", func(t *testing.T) {
+			nrp := getPrototypeByName("Stroct")
+			t.Run("typed-create", func(t *testing.T) {
+				b := nrp.NewBuilder()
+				mb, err := b.BeginMap(0)
+				if err != nil {
+					t.Fatal(err)
+				}
+				v, err := mb.AssembleEntry("f1")
+				if err != nil {
+					t.Fatal(err)
+				}
+				v.AssignString("v1")
+
+				shouldPanicOnBuild := func(t *testing.T) {
+					defer func() {
+						if r := recover(); r == nil {
+							t.Errorf("The code did not panic")
+						}
+					}()
+					_ = b.Build()
+				}
+				shouldPanicOnBuild(t)
+			})
+		})
+	})
 }
