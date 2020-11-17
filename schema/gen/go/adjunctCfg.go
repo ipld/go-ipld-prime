@@ -65,6 +65,11 @@ func (cfg *AdjunctCfg) FieldSymbolUpper(f schema.StructField) string {
 	return strings.Title(f.Name())
 }
 
+// Comments returns a bool for whether comments should be included in gen output or not.
+func (cfg *AdjunctCfg) Comments() bool {
+	return true // FUTURE: okay, maybe this should be configurable :)
+}
+
 func (cfg *AdjunctCfg) MaybeUsesPtr(t schema.Type) bool {
 	if x, ok := cfg.maybeUsesPtr[t.Name()]; ok {
 		return x

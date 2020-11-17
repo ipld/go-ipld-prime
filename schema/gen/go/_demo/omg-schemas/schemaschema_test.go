@@ -132,27 +132,27 @@ func init() {
 	ts.Accumulate(schema.SpawnUnion("MapRepresentation",
 		[]schema.TypeName{
 			"MapRepresentation_Map",
-			"MapRepresentation_StringPairs",
-			"MapRepresentation_ListPairs",
+			"MapRepresentation_Stringpairs",
+			"MapRepresentation_Listpairs",
 		},
 		schema.SpawnUnionRepresentationKeyed(map[string]schema.TypeName{
 			"map":         "MapRepresentation_Map",
-			"stringpairs": "MapRepresentation_StringPairs",
-			"listpairs":   "MapRepresentation_ListPairs",
+			"stringpairs": "MapRepresentation_Stringpairs",
+			"listpairs":   "MapRepresentation_Listpairs",
 		}),
 	))
 	ts.Accumulate(schema.SpawnStruct("MapRepresentation_Map",
 		[]schema.StructField{},
 		schema.StructRepresentation_Map{},
 	))
-	ts.Accumulate(schema.SpawnStruct("MapRepresentation_StringPairs",
+	ts.Accumulate(schema.SpawnStruct("MapRepresentation_Stringpairs",
 		[]schema.StructField{
 			schema.SpawnStructField("innerDelim", "String", false, false),
 			schema.SpawnStructField("entryDelim", "String", false, false),
 		},
 		schema.StructRepresentation_Map{},
 	))
-	ts.Accumulate(schema.SpawnStruct("MapRepresentation_ListPairs",
+	ts.Accumulate(schema.SpawnStruct("MapRepresentation_Listpairs",
 		[]schema.StructField{},
 		schema.StructRepresentation_Map{},
 	))
@@ -193,14 +193,16 @@ func init() {
 			"UnionRepresentation_Keyed",
 			"UnionRepresentation_Envelope",
 			"UnionRepresentation_Inline",
+			"UnionRepresentation_StringPrefix",
 			"UnionRepresentation_BytePrefix",
 		},
 		schema.SpawnUnionRepresentationKeyed(map[string]schema.TypeName{
-			"kinded":     "UnionRepresentation_Kinded",
-			"keyed":      "UnionRepresentation_Keyed",
-			"envelope":   "UnionRepresentation_Envelope",
-			"inline":     "UnionRepresentation_Inline",
-			"byteprefix": "UnionRepresentation_BytePrefix",
+			"kinded":       "UnionRepresentation_Kinded",
+			"keyed":        "UnionRepresentation_Keyed",
+			"envelope":     "UnionRepresentation_Envelope",
+			"inline":       "UnionRepresentation_Inline",
+			"stringprefix": "UnionRepresentation_StringPrefix",
+			"byteprefix":   "UnionRepresentation_BytePrefix",
 		}),
 	))
 	ts.Accumulate(schema.SpawnMap("UnionRepresentation_Kinded",
@@ -224,8 +226,15 @@ func init() {
 		},
 		schema.StructRepresentation_Map{},
 	))
+	ts.Accumulate(schema.SpawnStruct("UnionRepresentation_StringPrefix",
+		[]schema.StructField{
+			schema.SpawnStructField("discriminantTable", "Map__String__TypeName", false, false), // todo: dodging inline defn's again.
+		},
+		schema.StructRepresentation_Map{},
+	))
 	ts.Accumulate(schema.SpawnStruct("UnionRepresentation_BytePrefix",
 		[]schema.StructField{
+			// REVIEW: for schema-schema overall: this is a very funny type.  Should we use strings here?  And perhaps make it use hex for maximum clarity?  This would also allow multi-byte prefixes, which would match what's already done by stringprefix representation.
 			schema.SpawnStructField("discriminantTable", "Map__TypeName__Int", false, false), // todo: dodging inline defn's again.
 		},
 		schema.StructRepresentation_Map{},
@@ -260,16 +269,16 @@ func init() {
 		[]schema.TypeName{
 			"StructRepresentation_Map",
 			"StructRepresentation_Tuple",
-			"StructRepresentation_StringPairs",
-			"StructRepresentation_StringJoin",
-			"StructRepresentation_ListPairs",
+			"StructRepresentation_Stringpairs",
+			"StructRepresentation_Stringjoin",
+			"StructRepresentation_Listpairs",
 		},
 		schema.SpawnUnionRepresentationKeyed(map[string]schema.TypeName{
 			"map":         "StructRepresentation_Map",
 			"tuple":       "StructRepresentation_Tuple",
-			"stringpairs": "StructRepresentation_StringPairs",
-			"stringjoin":  "StructRepresentation_StringJoin",
-			"listpairs":   "StructRepresentation_ListPairs",
+			"stringpairs": "StructRepresentation_Stringpairs",
+			"stringjoin":  "StructRepresentation_Stringjoin",
+			"listpairs":   "StructRepresentation_Listpairs",
 		}),
 	))
 	ts.Accumulate(schema.SpawnStruct("StructRepresentation_Map",
@@ -297,21 +306,21 @@ func init() {
 	ts.Accumulate(schema.SpawnList("List__FieldName",
 		"FieldName", false,
 	))
-	ts.Accumulate(schema.SpawnStruct("StructRepresentation_StringPairs",
+	ts.Accumulate(schema.SpawnStruct("StructRepresentation_Stringpairs",
 		[]schema.StructField{
 			schema.SpawnStructField("innerDelim", "String", false, false),
 			schema.SpawnStructField("entryDelim", "String", false, false),
 		},
 		schema.StructRepresentation_Map{},
 	))
-	ts.Accumulate(schema.SpawnStruct("StructRepresentation_StringJoin",
+	ts.Accumulate(schema.SpawnStruct("StructRepresentation_Stringjoin",
 		[]schema.StructField{
 			schema.SpawnStructField("join", "String", false, false),               // review: "delim" would seem more consistent with others -- but this is currently what the schema-schema says.
 			schema.SpawnStructField("fieldOrder", "List__FieldName", true, false), // todo: dodging inline defn's again.
 		},
 		schema.StructRepresentation_Map{},
 	))
-	ts.Accumulate(schema.SpawnStruct("StructRepresentation_ListPairs",
+	ts.Accumulate(schema.SpawnStruct("StructRepresentation_Listpairs",
 		[]schema.StructField{},
 		schema.StructRepresentation_Map{},
 	))

@@ -10,6 +10,10 @@ import (
 // EmitInternalEnums creates a file with enum types used internally.
 // For example, the state machine values used in map and list builders.
 // These always need to exist exactly once in each package created by codegen.
+//
+// The file header and import statements are included in the output of this function.
+// (The imports in this file are different than most others in codegen output;
+// we gather up any references to other packages in this file in order to simplify the rest of codegen's awareness of imports.)
 func EmitInternalEnums(packageName string, w io.Writer) {
 	fmt.Fprint(w, wish.Dedent(`
 		package `+packageName+`

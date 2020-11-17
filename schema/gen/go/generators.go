@@ -90,8 +90,9 @@ func EmitFileHeader(packageName string, w io.Writer) {
 	fmt.Fprintf(w, ")\n\n")
 }
 
-// EmitEntireType calls all methods of TypeGenerator and streams
-// all results into a single writer.
+// EmitEntireType is a helper function calls all methods of TypeGenerator
+// and streams all results into a single writer.
+// (This implies two calls to EmitNode -- one for the type-level and one for the representation-level.)
 func EmitEntireType(tg TypeGenerator, w io.Writer) {
 	tg.EmitNativeType(w)
 	tg.EmitNativeAccessors(w)
@@ -108,6 +109,8 @@ func EmitEntireType(tg TypeGenerator, w io.Writer) {
 	EmitNode(rng, w)
 }
 
+// EmitNode is a helper function that calls all methods of NodeGenerator
+// and streams all results into a single writer.
 func EmitNode(ng NodeGenerator, w io.Writer) {
 	ng.EmitNodeType(w)
 	ng.EmitNodeTypeAssertions(w)
@@ -156,8 +159,6 @@ func EmitTypeTable(pkgName string, ts schema.TypeSystem, adjCfg *AdjunctCfg, w i
 	// REVIEW: if "T__Repr" is how we want to expose this.  We could also put 'Repr' accessors on the type/prototype objects.
 	// FUTURE: types and prototypes are proposed to be the same.  Some of this text pretends they already are, but work is needed on this.
 	doTemplate(`
-		package `+pkgName+`
-
 		// Type is a struct embeding a NodePrototype/Type for every Node implementation in this package.
 		// One of its major uses is to start the construction of a value.
 		// You can use it like this:

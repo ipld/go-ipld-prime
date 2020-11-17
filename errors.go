@@ -2,6 +2,7 @@ package ipld
 
 import (
 	"fmt"
+	"strings"
 )
 
 // ErrWrongKind may be returned from functions on the Node interface when
@@ -152,6 +153,15 @@ func (e ErrIteratorOverread) Error() string {
 
 type ErrCannotBeNull struct{} // Review: arguably either ErrInvalidKindForNodePrototype.
 
-type ErrMissingRequiredField struct{}     // only possible for typed nodes -- specifically, struct types.
+// ErrMissingRequiredField is returned when calling 'Finish' on a NodeAssembler
+// for a Struct that has not has all required fields set.
+type ErrMissingRequiredField struct {
+	Missing []string
+}
+
+func (e ErrMissingRequiredField) Error() string {
+	return "missing required fields: " + strings.Join(e.Missing, ",")
+}
+
 type ErrListOverrun struct{}              // only possible for typed nodes -- specifically, struct types with list (aka tuple) representations.
 type ErrInvalidUnionDiscriminant struct{} // only possible for typed nodes -- specifically, union types.

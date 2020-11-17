@@ -20,12 +20,15 @@ func (structGenerator) IsRepr() bool { return false } // hint used in some gener
 
 func (g structGenerator) EmitNativeType(w io.Writer) {
 	doTemplate(`
+		{{- if Comments -}}
+		// {{ .Type | TypeSymbol }} matches the IPLD Schema type "{{ .Type.Name }}".  It has {{ .Type.Kind }} type-kind, and may be interrogated like {{ .ReprKind }} kind.
+		{{- end}}
+		type {{ .Type | TypeSymbol }} = *_{{ .Type | TypeSymbol }}
 		type _{{ .Type | TypeSymbol }} struct {
 			{{- range $field := .Type.Fields}}
 			{{ $field | FieldSymbolLower }} _{{ $field.Type | TypeSymbol }}{{if $field.IsMaybe }}__Maybe{{end}}
 			{{- end}}
 		}
-		type {{ .Type | TypeSymbol }} = *_{{ .Type | TypeSymbol }}
 	`, w, g.AdjCfg, g)
 }
 
@@ -33,7 +36,7 @@ func (g structGenerator) EmitNativeAccessors(w io.Writer) {
 	doTemplate(`
 		{{- $type := .Type -}} {{- /* ranging modifies dot, unhelpfully */ -}}
 		{{- range $field := .Type.Fields }}
-		func (n _{{ $type | TypeSymbol }}) Field{{ $field | FieldSymbolUpper }}()	{{ if $field.IsMaybe }}Maybe{{end}}{{ $field.Type | TypeSymbol }} {
+		func (n _{{ $type | TypeSymbol }}) Field{{ $field | FieldSymbolUpper }}() {{ if $field.IsMaybe }}Maybe{{end}}{{ $field.Type | TypeSymbol }} {
 			return &n.{{ $field | FieldSymbolLower }}
 		}
 		{{- end}}
@@ -507,7 +510,17 @@ func (g structBuilderGenerator) emitMapAssemblerMethods(w io.Writer) {
 			case maState_finished:
 				panic("invalid state: Finish cannot be called on an assembler that's already finished")
 			}
-			//FIXME check if all required fields are set
+			if ma.s & fieldBits__{{ $type | TypeSymbol }}_sufficient != fieldBits__{{ $type | TypeSymbol }}_sufficient {
+				err := ipld.ErrMissingRequiredField{Missing: make([]string, 0)}
+				{{- range $i, $field := .Type.Fields }}
+				{{- if not $field.IsMaybe}}
+				if ma.s & fieldBit__{{ $type | TypeSymbol }}_{{ $field | FieldSymbolUpper }} == 0 {
+					err.Missing = append(err.Missing, "{{ $field.Name }}")
+				}
+				{{- end}}
+				{{- end}}
+				return err
+			}
 			ma.state = maState_finished
 			*ma.m = schema.Maybe_Value
 			return nil

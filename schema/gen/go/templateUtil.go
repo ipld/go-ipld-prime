@@ -20,6 +20,7 @@ func doTemplate(tmplstr string, w io.Writer, adjCfg *AdjunctCfg, data interface{
 			"FieldSymbolLower": adjCfg.FieldSymbolLower,
 			"FieldSymbolUpper": adjCfg.FieldSymbolUpper,
 			"MaybeUsesPtr":     adjCfg.MaybeUsesPtr,
+			"Comments":         adjCfg.Comments,
 
 			// The whole AdjunctConfig can be accessed.
 			//  Access methods like UnionMemlayout through this, as e.g. `.AdjCfg.UnionMemlayout`.

@@ -21,15 +21,85 @@ func (listGenerator) IsRepr() bool { return false } // hint used in some general
 func (g listGenerator) EmitNativeType(w io.Writer) {
 	// Lists are a pretty straightforward struct enclosing a slice.
 	doTemplate(`
+		{{- if Comments -}}
+		// {{ .Type | TypeSymbol }} matches the IPLD Schema type "{{ .Type.Name }}".  It has {{ .ReprKind }} kind.
+		{{- end}}
+		type {{ .Type | TypeSymbol }} = *_{{ .Type | TypeSymbol }}
 		type _{{ .Type | TypeSymbol }} struct {
 			x []_{{ .Type.ValueType | TypeSymbol }}{{if .Type.ValueIsNullable }}__Maybe{{end}}
 		}
-		type {{ .Type | TypeSymbol }} = *_{{ .Type | TypeSymbol }}
 	`, w, g.AdjCfg, g)
 }
 
 func (g listGenerator) EmitNativeAccessors(w io.Writer) {
-	// FUTURE: come back to this -- surely something nice can be done here.
+	// Generate a speciated Lookup as well as LookupMaybe method.
+	// The Lookup method returns nil in case of *either* an out-of-range/absent value or a null value,
+	//  and so should only be used if the list type doesn't allow nullable keys or if the caller doesn't care about the difference.
+	// The LookupMaybe method returns a MaybeT type for the list value,
+	//  and is needed if the list allows nullable values and the caller wishes to distinguish between null and out-of-range/absent.
+	// (The Lookup method should be preferred for lists that have non-nullable keys, because LookupMaybe may incur additional costs;
+	//   boxing something into a maybe when it wasn't already stored that way costs an alloc(!),
+	//    and may additionally incur a memcpy if the maybe for the value type doesn't use pointers internally).
+	doTemplate(`
+		func (n *_{{ .Type | TypeSymbol }}) Lookup(idx int) {{ .Type.ValueType | TypeSymbol }} {
+			if n.Length() <= idx {
+				return nil
+			}
+			v := &n.x[idx]
+			{{- if .Type.ValueIsNullable }}
+			if v.m == schema.Maybe_Null {
+				return nil
+			}
+			return {{ if not (MaybeUsesPtr .Type.ValueType) }}&{{end}}v.v
+			{{- else}}
+			return v
+			{{- end}}
+		}
+		func (n *_{{ .Type | TypeSymbol }}) LookupMaybe(idx int) Maybe{{ .Type.ValueType | TypeSymbol }} {
+			if n.Length() <= idx {
+				return nil
+			}
+			v := &n.x[idx]
+			{{- if .Type.ValueIsNullable }}
+			return v
+			{{- else}}
+			return &_{{ .Type.ValueType | TypeSymbol }}__Maybe{
+				m: schema.Maybe_Value,
+				v: {{ if not (MaybeUsesPtr .Type.ValueType) }}*{{end}}v,
+			}
+			{{- end}}
+		}
+
+		var _{{ .Type | TypeSymbol }}__valueAbsent = _{{ .Type.ValueType | TypeSymbol }}__Maybe{m:schema.Maybe_Absent}
+	`, w, g.AdjCfg, g)
+
+	// Generate a speciated iterator.
+	//  The main advantage of this over the general ipld.ListIterator is of course keeping types visible (and concrete, to the compiler's eyes in optimizations, too).
+	//  It also elides the error return from the iterator's Next method.  (Overreads will result in -1 as an index and nil values; this is both easily avoidable, and unambiguous if you do goof and hit it.)
+	doTemplate(`
+		func (n {{ .Type | TypeSymbol }}) Iterator() *{{ .Type | TypeSymbol }}__Itr {
+			return &{{ .Type | TypeSymbol }}__Itr{n, 0}
+		}
+
+		type {{ .Type | TypeSymbol }}__Itr struct {
+			n {{ .Type | TypeSymbol }}
+			idx  int
+		}
+
+		func (itr *{{ .Type | TypeSymbol }}__Itr) Next() (idx int, v {{if .Type.ValueIsNullable }}Maybe{{end}}{{ .Type.ValueType | TypeSymbol }}) {
+			if itr.idx >= len(itr.n.x) {
+				return -1, nil
+			}
+			idx = itr.idx
+			v = &itr.n.x[itr.idx]
+			itr.idx++
+			return
+		}
+		func (itr *{{ .Type | TypeSymbol }}__Itr) Done() bool {
+			return itr.idx >= len(itr.n.x)
+		}
+
+	`, w, g.AdjCfg, g)
 }
 
 func (g listGenerator) EmitNativeBuilder(w io.Writer) {
