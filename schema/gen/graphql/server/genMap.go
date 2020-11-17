@@ -6,6 +6,27 @@ import (
 	"github.com/ipld/go-ipld-prime/schema"
 )
 
+func genMapCommon() string {
+	return `
+	func resolve_map_at(p graphql.ResolveParams) (interface{}, error) {
+		ts, ok := p.Source.(ipld.Node)
+		if !ok {
+			return nil, errNotNode
+		}
+		arg := p.Args["key"]
+
+		switch ta := arg.(type) {
+		case ipld.Node:
+			return ts.LookupByNode(ta)
+		case string:
+			return ts.LookupByString(ta)
+		default:
+			return nil, fmt.Errorf("unknown key type: %T", arg)
+		}
+	}
+	`
+}
+
 func EmitMap(t *schema.TypeMap, w io.Writer, c *config) {
 	writeTemplate(`
 	var {{ . | LocalName }} = graphql.NewObject(graphql.ObjectConfig{
@@ -18,27 +39,12 @@ func EmitMap(t *schema.TypeMap, w io.Writer, c *config) {
 						Type: graphql.NewNonNull({{ .KeyType | LocalName }}),
 					},
 				},	
-				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-					ts, ok := p.Source.({{ TypePackage }}.{{ . | TypeSymbol }})
-					if !ok {
-						return nil, errNotNode
-					}
-					arg := p.Args["key"]
-
-					switch ta := arg.(type) {
-					case ipld.Node:
-						return ts.LookupByNode(ta)
-					case string:
-						return ts.LookupByString(ta)
-					default:
-						return nil, fmt.Errorf("unknown key type: %T", arg)
-					}
-				},
+				Resolve: resolve_map_at,
 			},
 			"Keys": &graphql.Field{
 				Type: graphql.NewList({{ .KeyType | LocalName}}),
 				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-					ts, ok := p.Source.({{ TypePackage }}.{{ . | TypeSymbol }})
+					ts, ok := p.Source.(ipld.Node)
 					if !ok {
 						return nil, errNotNode
 					}
@@ -58,11 +64,11 @@ func EmitMap(t *schema.TypeMap, w io.Writer, c *config) {
 			"Values": &graphql.Field{
 				Type: graphql.NewList({{ .ValueType | LocalName}}),
 				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-					ts, ok := p.Source.({{ TypePackage }}.{{ . | TypeSymbolNoRecurse }})
+					ts, ok := p.Source.(ipld.Node)
 					if !ok {
 						return nil, errNotNode
 					}
-					it := ts.ListIterator()
+					it := ts.MapIterator()
 					children := make([]ipld.Node, 0)
 
 					for !it.Done() {
@@ -82,7 +88,52 @@ func EmitMap(t *schema.TypeMap, w io.Writer, c *config) {
 					return children, nil
 				},
 			},
+			"All": &graphql.Field{
+				Type: graphql.NewList({{ . | LocalName }}__entry),
+				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+					ts, ok := p.Source.(ipld.Node)
+					if !ok {
+						return nil, errNotNode
+					}
+					it := ts.MapIterator()
+					children := make([][]ipld.Node, 0)
+
+					for !it.Done() {
+						k, v, err := it.Next()
+						if err != nil {
+							return nil, err
+						}
+						children = append(children, []ipld.Node{k, v})
+					}
+					return children, nil
+				},
+			},
 		},	
+	})
+	var {{ . | LocalName }}__entry = graphql.NewObject(graphql.ObjectConfig{
+		Name: "{{ .Name }}_Entry",
+		Fields: graphql.Fields{
+			"Key": &graphql.Field{
+				Type: {{ .KeyType | LocalName }},
+				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+					kv, ok := p.Source.([]ipld.Node)
+					if !ok {
+						return nil, errNotNode
+					}
+					return kv[0], nil
+				},
+			},
+			"Value": &graphql.Field{
+				Type: {{ .ValueType | LocalName }},
+				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+					kv, ok := p.Source.([]ipld.Node)
+					if !ok {
+						return nil, errNotNode
+					}
+					return kv[1], nil
+				},
+			},
+		},
 	})
  	`, w, t, c)
 }
