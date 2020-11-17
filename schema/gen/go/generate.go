@@ -16,7 +16,7 @@ import (
 // All of the files produced will match the pattern "ipldsch.*.gen.go".
 func Generate(pth string, pkgName string, ts schema.TypeSystem, adjCfg *AdjunctCfg) {
 	// Emit fixed bits.
-	withFile(filepath.Join(pth, "ipldsch.minima.gen.go"), func(f io.Writer) {
+	withFile(filepath.Join(pth, "ipldsch_minima.go"), func(f io.Writer) {
 		EmitInternalEnums(pkgName, f)
 	})
 
@@ -76,7 +76,7 @@ func Generate(pth string, pkgName string, ts schema.TypeSystem, adjCfg *AdjunctC
 	}
 
 	// Emit a file with the type table, and the golang type defns for each type.
-	withFile(filepath.Join(pth, "ipldsch.types.gen.go"), func(f io.Writer) {
+	withFile(filepath.Join(pth, "ipldsch_types.go"), func(f io.Writer) {
 		// Emit headers, import statements, etc.
 		fmt.Fprintf(f, "package %s\n\n", pkgName)
 		fmt.Fprintf(f, doNotEditComment+"\n\n")
@@ -96,7 +96,7 @@ func Generate(pth string, pkgName string, ts schema.TypeSystem, adjCfg *AdjunctC
 	// Emit a file with all the Node/NodeBuilder/NodeAssembler boilerplate.
 	//  Also includes typedefs for representation-level data.
 	//  Also includes the MaybeT boilerplate.
-	withFile(filepath.Join(pth, "ipldsch.satisfaction.gen.go"), func(f io.Writer) {
+	withFile(filepath.Join(pth, "ipldsch_satisfaction.go"), func(f io.Writer) {
 		// Emit headers, import statements, etc.
 		fmt.Fprintf(f, "package %s\n\n", pkgName)
 		fmt.Fprintf(f, doNotEditComment+"\n\n")
