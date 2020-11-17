@@ -171,4 +171,27 @@ func TestStructsContainingMaybe(t *testing.T) {
 			}
 		})
 	})
+
+	genAndCompileAndTest(t, "stroct3", "main", ts, adjCfg, func(t *testing.T, getPrototypeByName func(string) ipld.NodePrototype) {
+		t.Run("insufficient", func(t *testing.T) {
+			nrp := getPrototypeByName("Stroct")
+			t.Run("typed-create", func(t *testing.T) {
+				b := nrp.NewBuilder()
+				mb, err := b.BeginMap(0)
+				if err != nil {
+					t.Fatal(err)
+				}
+				v, err := mb.AssembleEntry("f1")
+				if err != nil {
+					t.Fatal(err)
+				}
+				v.AssignString("v1")
+
+				err = mb.Finish()
+				if _, ok := err.(ipld.ErrMissingRequiredField); !ok {
+					t.Fatalf("Expected error for missing field, got %v", err)
+				}
+			})
+		})
+	})
 }
