@@ -20,6 +20,12 @@ func Generate(pth string, pkgName string, ts schema.TypeSystem, adjCfg *AdjunctC
 		EmitInternalEnums(pkgName, f)
 	})
 
+	externs, err := getExternTypes(pth)
+	if err != nil {
+		// Consider warning that duplication may be present due to inability to parse destination.
+		externs = make(map[string]struct{})
+	}
+
 	// Local helper function for applying generation logic to each type.
 	//  We will end up doing this more than once because in this layout, more than one file contains part of the story for each type.
 	applyToEachType := func(fn func(tg TypeGenerator, w io.Writer), f io.Writer) {
@@ -28,7 +34,9 @@ func Generate(pth string, pkgName string, ts schema.TypeSystem, adjCfg *AdjunctC
 		types := ts.GetTypes()
 		keys := make(sortableTypeNames, 0, len(types))
 		for tn := range types {
-			keys = append(keys, tn)
+			if _, exists := externs[tn.String()]; !exists {
+				keys = append(keys, tn)
+			}
 		}
 		sort.Sort(keys)
 		for _, tn := range keys {
@@ -80,6 +88,10 @@ func Generate(pth string, pkgName string, ts schema.TypeSystem, adjCfg *AdjunctC
 		// Emit headers, import statements, etc.
 		fmt.Fprintf(f, "package %s\n\n", pkgName)
 		fmt.Fprintf(f, doNotEditComment+"\n\n")
+		fmt.Fprintf(f, "import (\n")
+		fmt.Fprintf(f, "\tipld \"github.com/ipld/go-ipld-prime\"\n") // referenced for links
+		fmt.Fprintf(f, ")\n")
+		fmt.Fprintf(f, "var _ ipld.Node = nil // suppress errors when this dependency is not referenced\n")
 
 		// Emit the type table.
 		EmitTypeTable(pkgName, ts, adjCfg, f)
