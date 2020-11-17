@@ -45,6 +45,10 @@ func (g unionGenerator) EmitNativeType(w io.Writer) {
 	// (see further comments in the EmitNodeAssemblerType function);
 	// and since we do it in that one case, it's just as well to do it uniformly.
 	doTemplate(`
+		{{- if Comments -}}
+		// {{ .Type | TypeSymbol }} matches the IPLD Schema type "{{ .Type.Name }}".  It has {{ .Type.Kind }} type-kind, and may be interrogated like {{ .ReprKind }} kind.
+		{{- end}}
+		type {{ .Type | TypeSymbol }} = *_{{ .Type | TypeSymbol }}
 		type _{{ .Type | TypeSymbol }} struct {
 			{{- if (eq (.AdjCfg.UnionMemlayout .Type) "embedAll") }}
 			tag uint
@@ -55,8 +59,6 @@ func (g unionGenerator) EmitNativeType(w io.Writer) {
 			x _{{ .Type | TypeSymbol }}__iface
 			{{- end}}
 		}
-		type {{ .Type | TypeSymbol }} = *_{{ .Type | TypeSymbol }}
-
 		type _{{ .Type | TypeSymbol }}__iface interface {
 			_{{ .Type | TypeSymbol }}__member()
 		}

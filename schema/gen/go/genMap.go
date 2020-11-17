@@ -25,11 +25,14 @@ func (g mapGenerator) EmitNativeType(w io.Writer) {
 	// Note that the key in 'm' is *not* a pointer.
 	// The value in 'm' is a pointer into 't' (except when it's a maybe; maybes are already pointers).
 	doTemplate(`
+		{{- if Comments -}}
+		// {{ .Type | TypeSymbol }} matches the IPLD Schema type "{{ .Type.Name }}".  It has {{ .ReprKind }} kind.
+		{{- end}}
+		type {{ .Type | TypeSymbol }} = *_{{ .Type | TypeSymbol }}
 		type _{{ .Type | TypeSymbol }} struct {
 			m map[_{{ .Type.KeyType | TypeSymbol }}]{{if .Type.ValueIsNullable }}Maybe{{else}}*_{{end}}{{ .Type.ValueType | TypeSymbol }}
 			t []_{{ .Type | TypeSymbol }}__entry
 		}
-		type {{ .Type | TypeSymbol }} = *_{{ .Type | TypeSymbol }}
 	`, w, g.AdjCfg, g)
 	// - address of 'k' is used when we return keys as nodes, such as in iterators.
 	//    Having these in the 't' slice above amortizes moving all of them to heap at once,

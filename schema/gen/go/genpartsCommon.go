@@ -60,8 +60,11 @@ func emitNativeType_scalar(w io.Writer, adjCfg *AdjunctCfg, data interface{}) {
 	//  while also having the advantage of meaning we can block direct casting,
 	//   which is desirable because the compiler then ensures our validate methods can't be evaded.
 	doTemplate(`
-		type _{{ .Type | TypeSymbol }} struct{ x {{ .ReprKind | KindPrim }} }
+		{{- if Comments -}}
+		// {{ .Type | TypeSymbol }} matches the IPLD Schema type "{{ .Type.Name }}".  It has {{ .ReprKind }} kind.
+		{{- end}}
 		type {{ .Type | TypeSymbol }} = *_{{ .Type | TypeSymbol }}
+		type _{{ .Type | TypeSymbol }} struct{ x {{ .ReprKind | KindPrim }} }
 	`, w, adjCfg, data)
 }
 

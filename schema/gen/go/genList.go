@@ -21,10 +21,13 @@ func (listGenerator) IsRepr() bool { return false } // hint used in some general
 func (g listGenerator) EmitNativeType(w io.Writer) {
 	// Lists are a pretty straightforward struct enclosing a slice.
 	doTemplate(`
+		{{- if Comments -}}
+		// {{ .Type | TypeSymbol }} matches the IPLD Schema type "{{ .Type.Name }}".  It has {{ .ReprKind }} kind.
+		{{- end}}
+		type {{ .Type | TypeSymbol }} = *_{{ .Type | TypeSymbol }}
 		type _{{ .Type | TypeSymbol }} struct {
 			x []_{{ .Type.ValueType | TypeSymbol }}{{if .Type.ValueIsNullable }}__Maybe{{end}}
 		}
-		type {{ .Type | TypeSymbol }} = *_{{ .Type | TypeSymbol }}
 	`, w, g.AdjCfg, g)
 }
 
