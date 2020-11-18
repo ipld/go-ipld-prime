@@ -80,6 +80,10 @@ func Generate(pth string, pkgName string, ts schema.TypeSystem, adjCfg *AdjunctC
 		// Emit headers, import statements, etc.
 		fmt.Fprintf(f, "package %s\n\n", pkgName)
 		fmt.Fprintf(f, doNotEditComment+"\n\n")
+		fmt.Fprintf(f, "import (\n")
+		fmt.Fprintf(f, "\tipld \"github.com/ipld/go-ipld-prime\"\n") // referenced for links
+		fmt.Fprintf(f, ")\n")
+		fmt.Fprintf(f, "var _ ipld.Node = nil // suppress errors when this dependency is not referenced\n")
 
 		// Emit the type table.
 		EmitTypeTable(pkgName, ts, adjCfg, f)
