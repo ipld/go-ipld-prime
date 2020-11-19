@@ -114,16 +114,17 @@ func followingLinks(t schema.Type, linkName, into string, c *config) string {
 		if v == nil {
 			return cl.Cid, nil
 		}
-		loader, ok := v.(func(context.Context, cidlink.Link, ipld.NodeBuilder) error)
+		loader, ok := v.(func(context.Context, cidlink.Link, ipld.NodeBuilder) (ipld.Node, error))
 		if !ok {
 			return nil, errInvalidLoader
 		}
 
 		builder := %s.Type.%s__Repr.NewBuilder()
-		if err := loader(p.Context, cl, builder); err != nil {
+		n, err := loader(p.Context, cl, builder);
+		if err != nil {
 			return nil, err
 		}
-		%s = builder.Build()
+		%s = n
 	} else {
 		return nil, errInvalidLink
 	}

@@ -30,7 +30,7 @@ func EmitFileHeader(w io.Writer, pkg, tsPkg string, c *config) {
 		"{{ .TSPackage }}"
 	)
 
-	type nodeLoader func(ctx context.Context, cid cidlink.Link, builder ipld.NodeBuilder) error
+	type nodeLoader func(ctx context.Context, cid cidlink.Link, builder ipld.NodeBuilder) (ipld.Node, error)
 	const nodeLoaderCtxKey = "NodeLoader"
 
 	var errNotNode = fmt.Errorf("Not IPLD Node")
