@@ -15,6 +15,13 @@ var (
 	_ ipld.LinkBuilder = LinkBuilder{}
 )
 
+// Link implements the ipld.Link interface using a CID.
+// See https://github.com/ipfs/go-cid for more information about CIDs.
+//
+// When using this value, typically you'll use it as `Link`, and not `*Link`.
+// This includes when handling the value as an `ipld.Link` interface -- the non-pointer form is typically preferable.
+// This is because the ipld.Link inteface is often desirable to be able to use as a golang map key,
+// and in that context, pointers would not result in the desired behavior.
 type Link struct {
 	cid.Cid
 }

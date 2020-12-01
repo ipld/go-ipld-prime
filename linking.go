@@ -30,6 +30,10 @@ import (
 // It's even possible to use IPLD *entirely without* any linking implementation,
 // using it purely for json/cbor via the encoding packages and
 // foregoing the advanced traversal features around transparent link loading.
+//
+// Link interfaces are usually inhabited by a struct or string or etc, and not a pointer.
+// This is because Link is often desirable to be able to use as a golang map key,
+// and in that context, pointers would not result in the desired behavior.
 type Link interface {
 	// Load consumes serial data from a Loader and funnels the parsed
 	// data into a NodeAssembler.
