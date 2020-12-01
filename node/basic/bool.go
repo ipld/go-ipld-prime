@@ -26,16 +26,16 @@ func (plainBool) ReprKind() ipld.ReprKind {
 	return ipld.ReprKind_Bool
 }
 func (plainBool) LookupByString(string) (ipld.Node, error) {
-	return mixins.Bool{"bool"}.LookupByString("")
+	return mixins.Bool{TypeName: "bool"}.LookupByString("")
 }
 func (plainBool) LookupByNode(key ipld.Node) (ipld.Node, error) {
-	return mixins.Bool{"bool"}.LookupByNode(nil)
+	return mixins.Bool{TypeName: "bool"}.LookupByNode(nil)
 }
 func (plainBool) LookupByIndex(idx int) (ipld.Node, error) {
-	return mixins.Bool{"bool"}.LookupByIndex(0)
+	return mixins.Bool{TypeName: "bool"}.LookupByIndex(0)
 }
 func (plainBool) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
-	return mixins.Bool{"bool"}.LookupBySegment(seg)
+	return mixins.Bool{TypeName: "bool"}.LookupBySegment(seg)
 }
 func (plainBool) MapIterator() ipld.MapIterator {
 	return nil
@@ -56,19 +56,19 @@ func (n plainBool) AsBool() (bool, error) {
 	return bool(n), nil
 }
 func (plainBool) AsInt() (int, error) {
-	return mixins.Bool{"bool"}.AsInt()
+	return mixins.Bool{TypeName: "bool"}.AsInt()
 }
 func (plainBool) AsFloat() (float64, error) {
-	return mixins.Bool{"bool"}.AsFloat()
+	return mixins.Bool{TypeName: "bool"}.AsFloat()
 }
 func (plainBool) AsString() (string, error) {
-	return mixins.Bool{"bool"}.AsString()
+	return mixins.Bool{TypeName: "bool"}.AsString()
 }
 func (plainBool) AsBytes() ([]byte, error) {
-	return mixins.Bool{"bool"}.AsBytes()
+	return mixins.Bool{TypeName: "bool"}.AsBytes()
 }
 func (plainBool) AsLink() (ipld.Link, error) {
-	return mixins.Bool{"bool"}.AsLink()
+	return mixins.Bool{TypeName: "bool"}.AsLink()
 }
 func (plainBool) Prototype() ipld.NodePrototype {
 	return Prototype__Bool{}
@@ -104,32 +104,32 @@ type plainBool__Assembler struct {
 }
 
 func (plainBool__Assembler) BeginMap(sizeHint int) (ipld.MapAssembler, error) {
-	return mixins.BoolAssembler{"bool"}.BeginMap(0)
+	return mixins.BoolAssembler{TypeName: "bool"}.BeginMap(0)
 }
 func (plainBool__Assembler) BeginList(sizeHint int) (ipld.ListAssembler, error) {
-	return mixins.BoolAssembler{"bool"}.BeginList(0)
+	return mixins.BoolAssembler{TypeName: "bool"}.BeginList(0)
 }
 func (plainBool__Assembler) AssignNull() error {
-	return mixins.BoolAssembler{"bool"}.AssignNull()
+	return mixins.BoolAssembler{TypeName: "bool"}.AssignNull()
 }
 func (na *plainBool__Assembler) AssignBool(v bool) error {
 	*na.w = plainBool(v)
 	return nil
 }
 func (plainBool__Assembler) AssignInt(int) error {
-	return mixins.BoolAssembler{"bool"}.AssignInt(0)
+	return mixins.BoolAssembler{TypeName: "bool"}.AssignInt(0)
 }
 func (plainBool__Assembler) AssignFloat(float64) error {
-	return mixins.BoolAssembler{"bool"}.AssignFloat(0)
+	return mixins.BoolAssembler{TypeName: "bool"}.AssignFloat(0)
 }
 func (plainBool__Assembler) AssignString(string) error {
-	return mixins.BoolAssembler{"bool"}.AssignString("")
+	return mixins.BoolAssembler{TypeName: "bool"}.AssignString("")
 }
 func (plainBool__Assembler) AssignBytes([]byte) error {
-	return mixins.BoolAssembler{"bool"}.AssignBytes(nil)
+	return mixins.BoolAssembler{TypeName: "bool"}.AssignBytes(nil)
 }
 func (plainBool__Assembler) AssignLink(ipld.Link) error {
-	return mixins.BoolAssembler{"bool"}.AssignLink(nil)
+	return mixins.BoolAssembler{TypeName: "bool"}.AssignLink(nil)
 }
 func (na *plainBool__Assembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsBool(); err != nil {

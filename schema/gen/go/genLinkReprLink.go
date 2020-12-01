@@ -14,9 +14,9 @@ func NewLinkReprLinkGenerator(pkgName string, typ *schema.TypeLink, adjCfg *Adju
 		linkGenerator{
 			adjCfg,
 			mixins.LinkTraits{
-				pkgName,
-				string(typ.Name()),
-				adjCfg.TypeSymbol(typ),
+				PkgName:    pkgName,
+				TypeName:   string(typ.Name()),
+				TypeSymbol: adjCfg.TypeSymbol(typ),
 			},
 			pkgName,
 			typ,

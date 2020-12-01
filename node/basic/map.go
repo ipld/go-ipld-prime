@@ -48,7 +48,7 @@ func (n *plainMap) LookupByNode(key ipld.Node) (ipld.Node, error) {
 	return n.LookupByString(ks)
 }
 func (plainMap) LookupByIndex(idx int) (ipld.Node, error) {
-	return mixins.Map{"map"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "map"}.LookupByIndex(0)
 }
 func (n *plainMap) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -69,22 +69,22 @@ func (plainMap) IsNull() bool {
 	return false
 }
 func (plainMap) AsBool() (bool, error) {
-	return mixins.Map{"map"}.AsBool()
+	return mixins.Map{TypeName: "map"}.AsBool()
 }
 func (plainMap) AsInt() (int, error) {
-	return mixins.Map{"map"}.AsInt()
+	return mixins.Map{TypeName: "map"}.AsInt()
 }
 func (plainMap) AsFloat() (float64, error) {
-	return mixins.Map{"map"}.AsFloat()
+	return mixins.Map{TypeName: "map"}.AsFloat()
 }
 func (plainMap) AsString() (string, error) {
-	return mixins.Map{"map"}.AsString()
+	return mixins.Map{TypeName: "map"}.AsString()
 }
 func (plainMap) AsBytes() ([]byte, error) {
-	return mixins.Map{"map"}.AsBytes()
+	return mixins.Map{TypeName: "map"}.AsBytes()
 }
 func (plainMap) AsLink() (ipld.Link, error) {
-	return mixins.Map{"map"}.AsLink()
+	return mixins.Map{TypeName: "map"}.AsLink()
 }
 func (plainMap) Prototype() ipld.NodePrototype {
 	return Prototype__Map{}
@@ -173,28 +173,28 @@ func (na *plainMap__Assembler) BeginMap(sizeHint int) (ipld.MapAssembler, error)
 	return na, nil
 }
 func (plainMap__Assembler) BeginList(sizeHint int) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"map"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "map"}.BeginList(0)
 }
 func (plainMap__Assembler) AssignNull() error {
-	return mixins.MapAssembler{"map"}.AssignNull()
+	return mixins.MapAssembler{TypeName: "map"}.AssignNull()
 }
 func (plainMap__Assembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"map"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "map"}.AssignBool(false)
 }
 func (plainMap__Assembler) AssignInt(int) error {
-	return mixins.MapAssembler{"map"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "map"}.AssignInt(0)
 }
 func (plainMap__Assembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"map"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "map"}.AssignFloat(0)
 }
 func (plainMap__Assembler) AssignString(string) error {
-	return mixins.MapAssembler{"map"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "map"}.AssignString("")
 }
 func (plainMap__Assembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"map"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "map"}.AssignBytes(nil)
 }
 func (plainMap__Assembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"map"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "map"}.AssignLink(nil)
 }
 func (na *plainMap__Assembler) AssignNode(v ipld.Node) error {
 	// Sanity check assembler state.
@@ -305,22 +305,22 @@ func (plainMap__Assembler) ValuePrototype(_ string) ipld.NodePrototype {
 // -- MapAssembler.KeyAssembler -->
 
 func (plainMap__KeyAssembler) BeginMap(sizeHint int) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"string"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "string"}.BeginMap(0)
 }
 func (plainMap__KeyAssembler) BeginList(sizeHint int) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"string"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "string"}.BeginList(0)
 }
 func (plainMap__KeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"string"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "string"}.AssignNull()
 }
 func (plainMap__KeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"string"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "string"}.AssignBool(false)
 }
 func (plainMap__KeyAssembler) AssignInt(int) error {
-	return mixins.StringAssembler{"string"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "string"}.AssignInt(0)
 }
 func (plainMap__KeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"string"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "string"}.AssignFloat(0)
 }
 func (mka *plainMap__KeyAssembler) AssignString(v string) error {
 	// Check for dup keys; error if so.
@@ -343,10 +343,10 @@ func (mka *plainMap__KeyAssembler) AssignString(v string) error {
 	return nil
 }
 func (plainMap__KeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"string"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "string"}.AssignBytes(nil)
 }
 func (plainMap__KeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"string"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "string"}.AssignLink(nil)
 }
 func (mka *plainMap__KeyAssembler) AssignNode(v ipld.Node) error {
 	vs, err := v.AsString()

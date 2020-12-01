@@ -14,9 +14,9 @@ func NewStringReprStringGenerator(pkgName string, typ *schema.TypeString, adjCfg
 		stringGenerator{
 			adjCfg,
 			mixins.StringTraits{
-				pkgName,
-				string(typ.Name()),
-				adjCfg.TypeSymbol(typ),
+				PkgName:    pkgName,
+				TypeName:   string(typ.Name()),
+				TypeSymbol: adjCfg.TypeSymbol(typ),
 			},
 			pkgName,
 			typ,

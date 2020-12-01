@@ -234,9 +234,9 @@ func (g listGenerator) GetNodeBuilderGenerator() NodeBuilderGenerator {
 	return listBuilderGenerator{
 		g.AdjCfg,
 		mixins.ListAssemblerTraits{
-			g.PkgName,
-			g.TypeName,
-			"_" + g.AdjCfg.TypeSymbol(g.Type) + "__",
+			PkgName:       g.PkgName,
+			TypeName:      g.TypeName,
+			AppliedPrefix: "_" + g.AdjCfg.TypeSymbol(g.Type) + "__",
 		},
 		g.PkgName,
 		g.Type,

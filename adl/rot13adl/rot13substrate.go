@@ -34,16 +34,16 @@ func (*_Substrate) ReprKind() ipld.ReprKind {
 	return ipld.ReprKind_String
 }
 func (*_Substrate) LookupByString(string) (ipld.Node, error) {
-	return mixins.String{"rot13adl.internal.Substrate"}.LookupByString("")
+	return mixins.String{TypeName: "rot13adl.internal.Substrate"}.LookupByString("")
 }
 func (*_Substrate) LookupByNode(ipld.Node) (ipld.Node, error) {
-	return mixins.String{"rot13adl.internal.Substrate"}.LookupByNode(nil)
+	return mixins.String{TypeName: "rot13adl.internal.Substrate"}.LookupByNode(nil)
 }
 func (*_Substrate) LookupByIndex(idx int) (ipld.Node, error) {
-	return mixins.String{"rot13adl.internal.Substrate"}.LookupByIndex(0)
+	return mixins.String{TypeName: "rot13adl.internal.Substrate"}.LookupByIndex(0)
 }
 func (*_Substrate) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
-	return mixins.String{"rot13adl.internal.Substrate"}.LookupBySegment(seg)
+	return mixins.String{TypeName: "rot13adl.internal.Substrate"}.LookupBySegment(seg)
 }
 func (*_Substrate) MapIterator() ipld.MapIterator {
 	return nil
@@ -61,22 +61,22 @@ func (*_Substrate) IsNull() bool {
 	return false
 }
 func (*_Substrate) AsBool() (bool, error) {
-	return mixins.String{"rot13adl.internal.Substrate"}.AsBool()
+	return mixins.String{TypeName: "rot13adl.internal.Substrate"}.AsBool()
 }
 func (*_Substrate) AsInt() (int, error) {
-	return mixins.String{"rot13adl.internal.Substrate"}.AsInt()
+	return mixins.String{TypeName: "rot13adl.internal.Substrate"}.AsInt()
 }
 func (*_Substrate) AsFloat() (float64, error) {
-	return mixins.String{"rot13adl.internal.Substrate"}.AsFloat()
+	return mixins.String{TypeName: "rot13adl.internal.Substrate"}.AsFloat()
 }
 func (n *_Substrate) AsString() (string, error) {
 	return n.raw, nil
 }
 func (*_Substrate) AsBytes() ([]byte, error) {
-	return mixins.String{"rot13adl.internal.Substrate"}.AsBytes()
+	return mixins.String{TypeName: "rot13adl.internal.Substrate"}.AsBytes()
 }
 func (*_Substrate) AsLink() (ipld.Link, error) {
-	return mixins.String{"rot13adl.internal.Substrate"}.AsLink()
+	return mixins.String{TypeName: "rot13adl.internal.Substrate"}.AsLink()
 }
 func (*_Substrate) Prototype() ipld.NodePrototype {
 	return _Substrate__Prototype{}
@@ -122,23 +122,23 @@ type _Substrate__Assembler struct {
 }
 
 func (_Substrate__Assembler) BeginMap(sizeHint int) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"rot13adl.internal.Substrate"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "rot13adl.internal.Substrate"}.BeginMap(0)
 }
 func (_Substrate__Assembler) BeginList(sizeHint int) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"rot13adl.internal.Substrate"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "rot13adl.internal.Substrate"}.BeginList(0)
 }
 func (na *_Substrate__Assembler) AssignNull() error {
 	// REVIEW: unclear how this might compose with some other context (like a schema) which does allow nulls.  Probably a wrapper type?
-	return mixins.StringAssembler{"rot13adl.internal.Substrate"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "rot13adl.internal.Substrate"}.AssignNull()
 }
 func (_Substrate__Assembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"rot13adl.internal.Substrate"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "rot13adl.internal.Substrate"}.AssignBool(false)
 }
 func (_Substrate__Assembler) AssignInt(int) error {
-	return mixins.StringAssembler{"rot13adl.internal.Substrate"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "rot13adl.internal.Substrate"}.AssignInt(0)
 }
 func (_Substrate__Assembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"rot13adl.internal.Substrate"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "rot13adl.internal.Substrate"}.AssignFloat(0)
 }
 func (na *_Substrate__Assembler) AssignString(v string) error {
 	switch na.m {
@@ -153,10 +153,10 @@ func (na *_Substrate__Assembler) AssignString(v string) error {
 	return nil
 }
 func (_Substrate__Assembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"rot13adl.internal.Substrate"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "rot13adl.internal.Substrate"}.AssignBytes(nil)
 }
 func (_Substrate__Assembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"rot13adl.internal.Substrate"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "rot13adl.internal.Substrate"}.AssignLink(nil)
 }
 func (na *_Substrate__Assembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {

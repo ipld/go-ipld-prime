@@ -14,9 +14,9 @@ func NewBytesReprBytesGenerator(pkgName string, typ *schema.TypeBytes, adjCfg *A
 		bytesGenerator{
 			adjCfg,
 			mixins.BytesTraits{
-				pkgName,
-				string(typ.Name()),
-				adjCfg.TypeSymbol(typ),
+				PkgName:    pkgName,
+				TypeName:   string(typ.Name()),
+				TypeSymbol: adjCfg.TypeSymbol(typ),
 			},
 			pkgName,
 			typ,

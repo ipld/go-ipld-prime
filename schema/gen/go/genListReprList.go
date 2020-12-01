@@ -14,9 +14,9 @@ func NewListReprListGenerator(pkgName string, typ *schema.TypeList, adjCfg *Adju
 		listGenerator{
 			adjCfg,
 			mixins.ListTraits{
-				pkgName,
-				string(typ.Name()),
-				adjCfg.TypeSymbol(typ),
+				PkgName:    pkgName,
+				TypeName:   string(typ.Name()),
+				TypeSymbol: adjCfg.TypeSymbol(typ),
 			},
 			pkgName,
 			typ,
@@ -32,9 +32,9 @@ func (g listReprListGenerator) GetRepresentationNodeGen() NodeGenerator {
 	return listReprListReprGenerator{
 		g.AdjCfg,
 		mixins.ListTraits{
-			g.PkgName,
-			string(g.Type.Name()) + ".Repr",
-			"_" + g.AdjCfg.TypeSymbol(g.Type) + "__Repr",
+			PkgName:    g.PkgName,
+			TypeName:   string(g.Type.Name()) + ".Repr",
+			TypeSymbol: "_" + g.AdjCfg.TypeSymbol(g.Type) + "__Repr",
 		},
 		g.PkgName,
 		g.Type,
@@ -140,9 +140,9 @@ func (g listReprListReprGenerator) GetNodeBuilderGenerator() NodeBuilderGenerato
 	return listReprListReprBuilderGenerator{
 		g.AdjCfg,
 		mixins.ListAssemblerTraits{
-			g.PkgName,
-			g.TypeName,
-			"_" + g.AdjCfg.TypeSymbol(g.Type) + "__Repr",
+			PkgName:       g.PkgName,
+			TypeName:      g.TypeName,
+			AppliedPrefix: "_" + g.AdjCfg.TypeSymbol(g.Type) + "__Repr",
 		},
 		g.PkgName,
 		g.Type,

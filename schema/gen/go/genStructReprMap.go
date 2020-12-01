@@ -15,9 +15,9 @@ func NewStructReprMapGenerator(pkgName string, typ *schema.TypeStruct, adjCfg *A
 		structGenerator{
 			adjCfg,
 			mixins.MapTraits{
-				pkgName,
-				string(typ.Name()),
-				adjCfg.TypeSymbol(typ),
+				PkgName:    pkgName,
+				TypeName:   string(typ.Name()),
+				TypeSymbol: adjCfg.TypeSymbol(typ),
 			},
 			pkgName,
 			typ,
@@ -33,9 +33,9 @@ func (g structReprMapGenerator) GetRepresentationNodeGen() NodeGenerator {
 	return structReprMapReprGenerator{
 		g.AdjCfg,
 		mixins.MapTraits{
-			g.PkgName,
-			string(g.Type.Name()) + ".Repr",
-			"_" + g.AdjCfg.TypeSymbol(g.Type) + "__Repr",
+			PkgName:    g.PkgName,
+			TypeName:   string(g.Type.Name()) + ".Repr",
+			TypeSymbol: "_" + g.AdjCfg.TypeSymbol(g.Type) + "__Repr",
 		},
 		g.PkgName,
 		g.Type,
@@ -267,9 +267,9 @@ func (g structReprMapReprGenerator) GetNodeBuilderGenerator() NodeBuilderGenerat
 	return structReprMapReprBuilderGenerator{
 		g.AdjCfg,
 		mixins.MapAssemblerTraits{
-			g.PkgName,
-			g.TypeName,
-			"_" + g.AdjCfg.TypeSymbol(g.Type) + "__Repr",
+			PkgName:       g.PkgName,
+			TypeName:      g.TypeName,
+			AppliedPrefix: "_" + g.AdjCfg.TypeSymbol(g.Type) + "__Repr",
 		},
 		g.PkgName,
 		g.Type,
@@ -561,9 +561,9 @@ func (g structReprMapReprBuilderGenerator) emitKeyAssembler(w io.Writer) {
 		type _{{ .Type | TypeSymbol }}__ReprKeyAssembler _{{ .Type | TypeSymbol }}__ReprAssembler
 	`, w, g.AdjCfg, g)
 	stubs := mixins.StringAssemblerTraits{
-		g.PkgName,
-		g.TypeName + ".KeyAssembler", // ".Repr" is already in `g.TypeName`, so don't stutter the "Repr" part.
-		"_" + g.AdjCfg.TypeSymbol(g.Type) + "__ReprKey",
+		PkgName:       g.PkgName,
+		TypeName:      g.TypeName + ".KeyAssembler", // ".Repr" is already in `g.TypeName`, so don't stutter the "Repr" part.
+		AppliedPrefix: "_" + g.AdjCfg.TypeSymbol(g.Type) + "__ReprKey",
 	}
 	// This key assembler can disregard any idea of complex keys because it's at the representation level!
 	//  Map keys must always be plain strings at the representation level.

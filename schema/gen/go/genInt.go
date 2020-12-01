@@ -78,9 +78,9 @@ func (g intGenerator) GetNodeBuilderGenerator() NodeBuilderGenerator {
 	return intBuilderGenerator{
 		g.AdjCfg,
 		mixins.IntAssemblerTraits{
-			g.PkgName,
-			g.TypeName,
-			"_" + g.AdjCfg.TypeSymbol(g.Type) + "__",
+			PkgName:       g.PkgName,
+			TypeName:      g.TypeName,
+			AppliedPrefix: "_" + g.AdjCfg.TypeSymbol(g.Type) + "__",
 		},
 		g.PkgName,
 		g.Type,

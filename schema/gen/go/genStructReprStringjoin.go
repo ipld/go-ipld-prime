@@ -14,9 +14,9 @@ func NewStructReprStringjoinGenerator(pkgName string, typ *schema.TypeStruct, ad
 		structGenerator{
 			adjCfg,
 			mixins.MapTraits{
-				pkgName,
-				string(typ.Name()),
-				adjCfg.TypeSymbol(typ),
+				PkgName:    pkgName,
+				TypeName:   string(typ.Name()),
+				TypeSymbol: adjCfg.TypeSymbol(typ),
 			},
 			pkgName,
 			typ,
@@ -32,9 +32,9 @@ func (g structReprStringjoinGenerator) GetRepresentationNodeGen() NodeGenerator 
 	return structReprStringjoinReprGenerator{
 		g.AdjCfg,
 		mixins.StringTraits{
-			g.PkgName,
-			string(g.Type.Name()) + ".Repr",
-			"_" + g.AdjCfg.TypeSymbol(g.Type) + "__Repr",
+			PkgName:    g.PkgName,
+			TypeName:   string(g.Type.Name()) + ".Repr",
+			TypeSymbol: "_" + g.AdjCfg.TypeSymbol(g.Type) + "__Repr",
 		},
 		g.PkgName,
 		g.Type,
@@ -127,9 +127,9 @@ func (g structReprStringjoinReprGenerator) GetNodeBuilderGenerator() NodeBuilder
 	return structReprStringjoinReprBuilderGenerator{
 		g.AdjCfg,
 		mixins.StringAssemblerTraits{
-			g.PkgName,
-			g.TypeName,
-			"_" + g.AdjCfg.TypeSymbol(g.Type) + "__Repr",
+			PkgName:       g.PkgName,
+			TypeName:      g.TypeName,
+			AppliedPrefix: "_" + g.AdjCfg.TypeSymbol(g.Type) + "__Repr",
 		},
 		g.PkgName,
 		g.Type,

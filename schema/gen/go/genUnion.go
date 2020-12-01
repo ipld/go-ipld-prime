@@ -244,9 +244,9 @@ func (g unionGenerator) GetNodeBuilderGenerator() NodeBuilderGenerator {
 	return unionBuilderGenerator{
 		g.AdjCfg,
 		mixins.MapAssemblerTraits{
-			g.PkgName,
-			g.TypeName,
-			"_" + g.AdjCfg.TypeSymbol(g.Type) + "__",
+			PkgName:       g.PkgName,
+			TypeName:      g.TypeName,
+			AppliedPrefix: "_" + g.AdjCfg.TypeSymbol(g.Type) + "__",
 		},
 		g.PkgName,
 		g.Type,
@@ -602,9 +602,9 @@ func (g unionBuilderGenerator) emitKeyAssembler(w io.Writer) {
 		type _{{ .Type | TypeSymbol }}__KeyAssembler _{{ .Type | TypeSymbol }}__Assembler
 	`, w, g.AdjCfg, g)
 	stubs := mixins.StringAssemblerTraits{
-		g.PkgName,
-		g.TypeName + ".KeyAssembler",
-		"_" + g.AdjCfg.TypeSymbol(g.Type) + "__Key",
+		PkgName:       g.PkgName,
+		TypeName:      g.TypeName + ".KeyAssembler",
+		AppliedPrefix: "_" + g.AdjCfg.TypeSymbol(g.Type) + "__Key",
 	}
 	// This key assembler can disregard any idea of complex keys because we're fronting for a union!
 	//  Union member names must be strings (and quite simple ones at that).

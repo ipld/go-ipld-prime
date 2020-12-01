@@ -14,9 +14,9 @@ func NewIntReprIntGenerator(pkgName string, typ *schema.TypeInt, adjCfg *Adjunct
 		intGenerator{
 			adjCfg,
 			mixins.IntTraits{
-				pkgName,
-				string(typ.Name()),
-				adjCfg.TypeSymbol(typ),
+				PkgName:    pkgName,
+				TypeName:   string(typ.Name()),
+				TypeSymbol: adjCfg.TypeSymbol(typ),
 			},
 			pkgName,
 			typ,
