@@ -41,16 +41,16 @@ func (*_R13String) ReprKind() ipld.ReprKind {
 	return ipld.ReprKind_String
 }
 func (*_R13String) LookupByString(string) (ipld.Node, error) {
-	return mixins.String{"rot13adl.R13String"}.LookupByString("")
+	return mixins.String{TypeName: "rot13adl.R13String"}.LookupByString("")
 }
 func (*_R13String) LookupByNode(ipld.Node) (ipld.Node, error) {
-	return mixins.String{"rot13adl.R13String"}.LookupByNode(nil)
+	return mixins.String{TypeName: "rot13adl.R13String"}.LookupByNode(nil)
 }
 func (*_R13String) LookupByIndex(idx int) (ipld.Node, error) {
-	return mixins.String{"rot13adl.R13String"}.LookupByIndex(0)
+	return mixins.String{TypeName: "rot13adl.R13String"}.LookupByIndex(0)
 }
 func (*_R13String) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
-	return mixins.String{"rot13adl.R13String"}.LookupBySegment(seg)
+	return mixins.String{TypeName: "rot13adl.R13String"}.LookupBySegment(seg)
 }
 func (*_R13String) MapIterator() ipld.MapIterator {
 	return nil
@@ -68,22 +68,22 @@ func (*_R13String) IsNull() bool {
 	return false
 }
 func (*_R13String) AsBool() (bool, error) {
-	return mixins.String{"rot13adl.R13String"}.AsBool()
+	return mixins.String{TypeName: "rot13adl.R13String"}.AsBool()
 }
 func (*_R13String) AsInt() (int, error) {
-	return mixins.String{"rot13adl.R13String"}.AsInt()
+	return mixins.String{TypeName: "rot13adl.R13String"}.AsInt()
 }
 func (*_R13String) AsFloat() (float64, error) {
-	return mixins.String{"rot13adl.R13String"}.AsFloat()
+	return mixins.String{TypeName: "rot13adl.R13String"}.AsFloat()
 }
 func (n *_R13String) AsString() (string, error) {
 	return n.synthesized, nil
 }
 func (*_R13String) AsBytes() ([]byte, error) {
-	return mixins.String{"rot13adl.R13String"}.AsBytes()
+	return mixins.String{TypeName: "rot13adl.R13String"}.AsBytes()
 }
 func (*_R13String) AsLink() (ipld.Link, error) {
-	return mixins.String{"rot13adl.R13String"}.AsLink()
+	return mixins.String{TypeName: "rot13adl.R13String"}.AsLink()
 }
 func (*_R13String) Prototype() ipld.NodePrototype {
 	return _R13String__Prototype{}
@@ -139,23 +139,23 @@ type _R13String__Assembler struct {
 }
 
 func (_R13String__Assembler) BeginMap(sizeHint int) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"rot13adl.R13String"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "rot13adl.R13String"}.BeginMap(0)
 }
 func (_R13String__Assembler) BeginList(sizeHint int) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"rot13adl.R13String"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "rot13adl.R13String"}.BeginList(0)
 }
 func (na *_R13String__Assembler) AssignNull() error {
 	// REVIEW: unclear how this might compose with some other context (like a schema) which does allow nulls.  Probably a wrapper type?
-	return mixins.StringAssembler{"rot13adl.R13String"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "rot13adl.R13String"}.AssignNull()
 }
 func (_R13String__Assembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"rot13adl.R13String"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "rot13adl.R13String"}.AssignBool(false)
 }
 func (_R13String__Assembler) AssignInt(int) error {
-	return mixins.StringAssembler{"rot13adl.R13String"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "rot13adl.R13String"}.AssignInt(0)
 }
 func (_R13String__Assembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"rot13adl.R13String"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "rot13adl.R13String"}.AssignFloat(0)
 }
 func (na *_R13String__Assembler) AssignString(v string) error {
 	switch na.m {
@@ -170,10 +170,10 @@ func (na *_R13String__Assembler) AssignString(v string) error {
 	return nil
 }
 func (_R13String__Assembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"rot13adl.R13String"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "rot13adl.R13String"}.AssignBytes(nil)
 }
 func (_R13String__Assembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"rot13adl.R13String"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "rot13adl.R13String"}.AssignLink(nil)
 }
 func (na *_R13String__Assembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {

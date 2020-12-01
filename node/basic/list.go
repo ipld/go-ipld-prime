@@ -25,10 +25,10 @@ func (plainList) ReprKind() ipld.ReprKind {
 	return ipld.ReprKind_List
 }
 func (plainList) LookupByString(string) (ipld.Node, error) {
-	return mixins.List{"list"}.LookupByString("")
+	return mixins.List{TypeName: "list"}.LookupByString("")
 }
 func (plainList) LookupByNode(ipld.Node) (ipld.Node, error) {
-	return mixins.List{"list"}.LookupByNode(nil)
+	return mixins.List{TypeName: "list"}.LookupByNode(nil)
 }
 func (n *plainList) LookupByIndex(idx int) (ipld.Node, error) {
 	if n.Length() <= idx {
@@ -59,22 +59,22 @@ func (plainList) IsNull() bool {
 	return false
 }
 func (plainList) AsBool() (bool, error) {
-	return mixins.List{"list"}.AsBool()
+	return mixins.List{TypeName: "list"}.AsBool()
 }
 func (plainList) AsInt() (int, error) {
-	return mixins.List{"list"}.AsInt()
+	return mixins.List{TypeName: "list"}.AsInt()
 }
 func (plainList) AsFloat() (float64, error) {
-	return mixins.List{"list"}.AsFloat()
+	return mixins.List{TypeName: "list"}.AsFloat()
 }
 func (plainList) AsString() (string, error) {
-	return mixins.List{"list"}.AsString()
+	return mixins.List{TypeName: "list"}.AsString()
 }
 func (plainList) AsBytes() ([]byte, error) {
-	return mixins.List{"list"}.AsBytes()
+	return mixins.List{TypeName: "list"}.AsBytes()
 }
 func (plainList) AsLink() (ipld.Link, error) {
-	return mixins.List{"list"}.AsLink()
+	return mixins.List{TypeName: "list"}.AsLink()
 }
 func (plainList) Prototype() ipld.NodePrototype {
 	return Prototype__List{}
@@ -148,7 +148,7 @@ const (
 )
 
 func (plainList__Assembler) BeginMap(sizeHint int) (ipld.MapAssembler, error) {
-	return mixins.ListAssembler{"list"}.BeginMap(0)
+	return mixins.ListAssembler{TypeName: "list"}.BeginMap(0)
 }
 func (na *plainList__Assembler) BeginList(sizeHint int) (ipld.ListAssembler, error) {
 	if sizeHint < 0 {
@@ -160,25 +160,25 @@ func (na *plainList__Assembler) BeginList(sizeHint int) (ipld.ListAssembler, err
 	return na, nil
 }
 func (plainList__Assembler) AssignNull() error {
-	return mixins.ListAssembler{"list"}.AssignNull()
+	return mixins.ListAssembler{TypeName: "list"}.AssignNull()
 }
 func (plainList__Assembler) AssignBool(bool) error {
-	return mixins.ListAssembler{"list"}.AssignBool(false)
+	return mixins.ListAssembler{TypeName: "list"}.AssignBool(false)
 }
 func (plainList__Assembler) AssignInt(int) error {
-	return mixins.ListAssembler{"list"}.AssignInt(0)
+	return mixins.ListAssembler{TypeName: "list"}.AssignInt(0)
 }
 func (plainList__Assembler) AssignFloat(float64) error {
-	return mixins.ListAssembler{"list"}.AssignFloat(0)
+	return mixins.ListAssembler{TypeName: "list"}.AssignFloat(0)
 }
 func (plainList__Assembler) AssignString(string) error {
-	return mixins.ListAssembler{"list"}.AssignString("")
+	return mixins.ListAssembler{TypeName: "list"}.AssignString("")
 }
 func (plainList__Assembler) AssignBytes([]byte) error {
-	return mixins.ListAssembler{"list"}.AssignBytes(nil)
+	return mixins.ListAssembler{TypeName: "list"}.AssignBytes(nil)
 }
 func (plainList__Assembler) AssignLink(ipld.Link) error {
-	return mixins.ListAssembler{"list"}.AssignLink(nil)
+	return mixins.ListAssembler{TypeName: "list"}.AssignLink(nil)
 }
 func (na *plainList__Assembler) AssignNode(v ipld.Node) error {
 	// Sanity check, then update, assembler state.

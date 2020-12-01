@@ -14,9 +14,9 @@ func NewFloatReprFloatGenerator(pkgName string, typ *schema.TypeFloat, adjCfg *A
 		float64Generator{
 			adjCfg,
 			mixins.FloatTraits{
-				pkgName,
-				string(typ.Name()),
-				adjCfg.TypeSymbol(typ),
+				PkgName:    pkgName,
+				TypeName:   string(typ.Name()),
+				TypeSymbol: adjCfg.TypeSymbol(typ),
 			},
 			pkgName,
 			typ,

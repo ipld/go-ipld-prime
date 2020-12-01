@@ -23,9 +23,9 @@ func NewUnionReprKindedGenerator(pkgName string, typ *schema.TypeUnion, adjCfg *
 		unionGenerator{
 			adjCfg,
 			mixins.MapTraits{
-				pkgName,
-				string(typ.Name()),
-				adjCfg.TypeSymbol(typ),
+				PkgName:    pkgName,
+				TypeName:   string(typ.Name()),
+				TypeSymbol: adjCfg.TypeSymbol(typ),
 			},
 			pkgName,
 			typ,

@@ -27,9 +27,9 @@ func NewStructReprTupleGenerator(pkgName string, typ *schema.TypeStruct, adjCfg 
 		structGenerator{
 			adjCfg,
 			mixins.MapTraits{
-				pkgName,
-				string(typ.Name()),
-				adjCfg.TypeSymbol(typ),
+				PkgName:    pkgName,
+				TypeName:   string(typ.Name()),
+				TypeSymbol: adjCfg.TypeSymbol(typ),
 			},
 			pkgName,
 			typ,
@@ -45,9 +45,9 @@ func (g structReprTupleGenerator) GetRepresentationNodeGen() NodeGenerator {
 	return structReprTupleReprGenerator{
 		g.AdjCfg,
 		mixins.ListTraits{
-			g.PkgName,
-			string(g.Type.Name()) + ".Repr",
-			"_" + g.AdjCfg.TypeSymbol(g.Type) + "__Repr",
+			PkgName:    g.PkgName,
+			TypeName:   string(g.Type.Name()) + ".Repr",
+			TypeSymbol: "_" + g.AdjCfg.TypeSymbol(g.Type) + "__Repr",
 		},
 		g.PkgName,
 		g.Type,
@@ -251,9 +251,9 @@ func (g structReprTupleReprGenerator) GetNodeBuilderGenerator() NodeBuilderGener
 	return structReprTupleReprBuilderGenerator{
 		g.AdjCfg,
 		mixins.ListAssemblerTraits{
-			g.PkgName,
-			g.TypeName,
-			"_" + g.AdjCfg.TypeSymbol(g.Type) + "__Repr",
+			PkgName:       g.PkgName,
+			TypeName:      g.TypeName,
+			AppliedPrefix: "_" + g.AdjCfg.TypeSymbol(g.Type) + "__Repr",
 		},
 		g.PkgName,
 		g.Type,

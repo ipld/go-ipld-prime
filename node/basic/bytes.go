@@ -26,16 +26,16 @@ func (plainBytes) ReprKind() ipld.ReprKind {
 	return ipld.ReprKind_Bytes
 }
 func (plainBytes) LookupByString(string) (ipld.Node, error) {
-	return mixins.Bytes{"bytes"}.LookupByString("")
+	return mixins.Bytes{TypeName: "bytes"}.LookupByString("")
 }
 func (plainBytes) LookupByNode(key ipld.Node) (ipld.Node, error) {
-	return mixins.Bytes{"bytes"}.LookupByNode(nil)
+	return mixins.Bytes{TypeName: "bytes"}.LookupByNode(nil)
 }
 func (plainBytes) LookupByIndex(idx int) (ipld.Node, error) {
-	return mixins.Bytes{"bytes"}.LookupByIndex(0)
+	return mixins.Bytes{TypeName: "bytes"}.LookupByIndex(0)
 }
 func (plainBytes) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
-	return mixins.Bytes{"bytes"}.LookupBySegment(seg)
+	return mixins.Bytes{TypeName: "bytes"}.LookupBySegment(seg)
 }
 func (plainBytes) MapIterator() ipld.MapIterator {
 	return nil
@@ -53,22 +53,22 @@ func (plainBytes) IsNull() bool {
 	return false
 }
 func (plainBytes) AsBool() (bool, error) {
-	return mixins.Bytes{"bytes"}.AsBool()
+	return mixins.Bytes{TypeName: "bytes"}.AsBool()
 }
 func (plainBytes) AsInt() (int, error) {
-	return mixins.Bytes{"bytes"}.AsInt()
+	return mixins.Bytes{TypeName: "bytes"}.AsInt()
 }
 func (plainBytes) AsFloat() (float64, error) {
-	return mixins.Bytes{"bytes"}.AsFloat()
+	return mixins.Bytes{TypeName: "bytes"}.AsFloat()
 }
 func (plainBytes) AsString() (string, error) {
-	return mixins.Bytes{"bytes"}.AsString()
+	return mixins.Bytes{TypeName: "bytes"}.AsString()
 }
 func (n plainBytes) AsBytes() ([]byte, error) {
 	return []byte(n), nil
 }
 func (plainBytes) AsLink() (ipld.Link, error) {
-	return mixins.Bytes{"bytes"}.AsLink()
+	return mixins.Bytes{TypeName: "bytes"}.AsLink()
 }
 func (plainBytes) Prototype() ipld.NodePrototype {
 	return Prototype__Bytes{}
@@ -104,32 +104,32 @@ type plainBytes__Assembler struct {
 }
 
 func (plainBytes__Assembler) BeginMap(sizeHint int) (ipld.MapAssembler, error) {
-	return mixins.BytesAssembler{"bytes"}.BeginMap(0)
+	return mixins.BytesAssembler{TypeName: "bytes"}.BeginMap(0)
 }
 func (plainBytes__Assembler) BeginList(sizeHint int) (ipld.ListAssembler, error) {
-	return mixins.BytesAssembler{"bytes"}.BeginList(0)
+	return mixins.BytesAssembler{TypeName: "bytes"}.BeginList(0)
 }
 func (plainBytes__Assembler) AssignNull() error {
-	return mixins.BytesAssembler{"bytes"}.AssignNull()
+	return mixins.BytesAssembler{TypeName: "bytes"}.AssignNull()
 }
 func (plainBytes__Assembler) AssignBool(bool) error {
-	return mixins.BytesAssembler{"bytes"}.AssignBool(false)
+	return mixins.BytesAssembler{TypeName: "bytes"}.AssignBool(false)
 }
 func (plainBytes__Assembler) AssignInt(int) error {
-	return mixins.BytesAssembler{"bytes"}.AssignInt(0)
+	return mixins.BytesAssembler{TypeName: "bytes"}.AssignInt(0)
 }
 func (plainBytes__Assembler) AssignFloat(float64) error {
-	return mixins.BytesAssembler{"bytes"}.AssignFloat(0)
+	return mixins.BytesAssembler{TypeName: "bytes"}.AssignFloat(0)
 }
 func (plainBytes__Assembler) AssignString(string) error {
-	return mixins.BytesAssembler{"bytes"}.AssignString("")
+	return mixins.BytesAssembler{TypeName: "bytes"}.AssignString("")
 }
 func (na *plainBytes__Assembler) AssignBytes(v []byte) error {
 	*na.w = plainBytes(v)
 	return nil
 }
 func (plainBytes__Assembler) AssignLink(ipld.Link) error {
-	return mixins.BytesAssembler{"bytes"}.AssignLink(nil)
+	return mixins.BytesAssembler{TypeName: "bytes"}.AssignLink(nil)
 }
 func (na *plainBytes__Assembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsBytes(); err != nil {

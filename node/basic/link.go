@@ -27,16 +27,16 @@ func (plainLink) ReprKind() ipld.ReprKind {
 	return ipld.ReprKind_Link
 }
 func (plainLink) LookupByString(string) (ipld.Node, error) {
-	return mixins.Link{"link"}.LookupByString("")
+	return mixins.Link{TypeName: "link"}.LookupByString("")
 }
 func (plainLink) LookupByNode(key ipld.Node) (ipld.Node, error) {
-	return mixins.Link{"link"}.LookupByNode(nil)
+	return mixins.Link{TypeName: "link"}.LookupByNode(nil)
 }
 func (plainLink) LookupByIndex(idx int) (ipld.Node, error) {
-	return mixins.Link{"link"}.LookupByIndex(0)
+	return mixins.Link{TypeName: "link"}.LookupByIndex(0)
 }
 func (plainLink) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
-	return mixins.Link{"link"}.LookupBySegment(seg)
+	return mixins.Link{TypeName: "link"}.LookupBySegment(seg)
 }
 func (plainLink) MapIterator() ipld.MapIterator {
 	return nil
@@ -54,19 +54,19 @@ func (plainLink) IsNull() bool {
 	return false
 }
 func (plainLink) AsBool() (bool, error) {
-	return mixins.Link{"link"}.AsBool()
+	return mixins.Link{TypeName: "link"}.AsBool()
 }
 func (plainLink) AsInt() (int, error) {
-	return mixins.Link{"link"}.AsInt()
+	return mixins.Link{TypeName: "link"}.AsInt()
 }
 func (plainLink) AsFloat() (float64, error) {
-	return mixins.Link{"link"}.AsFloat()
+	return mixins.Link{TypeName: "link"}.AsFloat()
 }
 func (plainLink) AsString() (string, error) {
-	return mixins.Link{"link"}.AsString()
+	return mixins.Link{TypeName: "link"}.AsString()
 }
 func (plainLink) AsBytes() ([]byte, error) {
-	return mixins.Link{"link"}.AsBytes()
+	return mixins.Link{TypeName: "link"}.AsBytes()
 }
 func (n *plainLink) AsLink() (ipld.Link, error) {
 	return n.x, nil
@@ -105,28 +105,28 @@ type plainLink__Assembler struct {
 }
 
 func (plainLink__Assembler) BeginMap(sizeHint int) (ipld.MapAssembler, error) {
-	return mixins.LinkAssembler{"link"}.BeginMap(0)
+	return mixins.LinkAssembler{TypeName: "link"}.BeginMap(0)
 }
 func (plainLink__Assembler) BeginList(sizeHint int) (ipld.ListAssembler, error) {
-	return mixins.LinkAssembler{"link"}.BeginList(0)
+	return mixins.LinkAssembler{TypeName: "link"}.BeginList(0)
 }
 func (plainLink__Assembler) AssignNull() error {
-	return mixins.LinkAssembler{"link"}.AssignNull()
+	return mixins.LinkAssembler{TypeName: "link"}.AssignNull()
 }
 func (plainLink__Assembler) AssignBool(bool) error {
-	return mixins.LinkAssembler{"link"}.AssignBool(false)
+	return mixins.LinkAssembler{TypeName: "link"}.AssignBool(false)
 }
 func (plainLink__Assembler) AssignInt(int) error {
-	return mixins.LinkAssembler{"link"}.AssignInt(0)
+	return mixins.LinkAssembler{TypeName: "link"}.AssignInt(0)
 }
 func (plainLink__Assembler) AssignFloat(float64) error {
-	return mixins.LinkAssembler{"link"}.AssignFloat(0)
+	return mixins.LinkAssembler{TypeName: "link"}.AssignFloat(0)
 }
 func (plainLink__Assembler) AssignString(string) error {
-	return mixins.LinkAssembler{"link"}.AssignString("")
+	return mixins.LinkAssembler{TypeName: "link"}.AssignString("")
 }
 func (plainLink__Assembler) AssignBytes([]byte) error {
-	return mixins.LinkAssembler{"link"}.AssignBytes(nil)
+	return mixins.LinkAssembler{TypeName: "link"}.AssignBytes(nil)
 }
 func (na *plainLink__Assembler) AssignLink(v ipld.Link) error {
 	na.w.x = v

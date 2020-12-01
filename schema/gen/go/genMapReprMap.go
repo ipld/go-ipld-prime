@@ -14,9 +14,9 @@ func NewMapReprMapGenerator(pkgName string, typ *schema.TypeMap, adjCfg *Adjunct
 		mapGenerator{
 			adjCfg,
 			mixins.MapTraits{
-				pkgName,
-				string(typ.Name()),
-				adjCfg.TypeSymbol(typ),
+				PkgName:    pkgName,
+				TypeName:   string(typ.Name()),
+				TypeSymbol: adjCfg.TypeSymbol(typ),
 			},
 			pkgName,
 			typ,
@@ -32,9 +32,9 @@ func (g mapReprMapGenerator) GetRepresentationNodeGen() NodeGenerator {
 	return mapReprMapReprGenerator{
 		g.AdjCfg,
 		mixins.MapTraits{
-			g.PkgName,
-			string(g.Type.Name()) + ".Repr",
-			"_" + g.AdjCfg.TypeSymbol(g.Type) + "__Repr",
+			PkgName:    g.PkgName,
+			TypeName:   string(g.Type.Name()) + ".Repr",
+			TypeSymbol: "_" + g.AdjCfg.TypeSymbol(g.Type) + "__Repr",
 		},
 		g.PkgName,
 		g.Type,
@@ -133,9 +133,9 @@ func (g mapReprMapReprGenerator) GetNodeBuilderGenerator() NodeBuilderGenerator 
 	return mapReprMapReprBuilderGenerator{
 		g.AdjCfg,
 		mixins.MapAssemblerTraits{
-			g.PkgName,
-			g.TypeName,
-			"_" + g.AdjCfg.TypeSymbol(g.Type) + "__Repr",
+			PkgName:       g.PkgName,
+			TypeName:      g.TypeName,
+			AppliedPrefix: "_" + g.AdjCfg.TypeSymbol(g.Type) + "__Repr",
 		},
 		g.PkgName,
 		g.Type,

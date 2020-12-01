@@ -78,9 +78,9 @@ func (g bytesGenerator) GetNodeBuilderGenerator() NodeBuilderGenerator {
 	return bytesBuilderGenerator{
 		g.AdjCfg,
 		mixins.BytesAssemblerTraits{
-			g.PkgName,
-			g.TypeName,
-			"_" + g.AdjCfg.TypeSymbol(g.Type) + "__",
+			PkgName:       g.PkgName,
+			TypeName:      g.TypeName,
+			AppliedPrefix: "_" + g.AdjCfg.TypeSymbol(g.Type) + "__",
 		},
 		g.PkgName,
 		g.Type,

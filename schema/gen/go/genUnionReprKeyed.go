@@ -18,9 +18,9 @@ func NewUnionReprKeyedGenerator(pkgName string, typ *schema.TypeUnion, adjCfg *A
 		unionGenerator{
 			adjCfg,
 			mixins.MapTraits{
-				pkgName,
-				string(typ.Name()),
-				adjCfg.TypeSymbol(typ),
+				PkgName:    pkgName,
+				TypeName:   string(typ.Name()),
+				TypeSymbol: adjCfg.TypeSymbol(typ),
 			},
 			pkgName,
 			typ,
@@ -36,9 +36,9 @@ func (g unionReprKeyedGenerator) GetRepresentationNodeGen() NodeGenerator {
 	return unionReprKeyedReprGenerator{
 		g.AdjCfg,
 		mixins.MapTraits{
-			g.PkgName,
-			string(g.Type.Name()) + ".Repr",
-			"_" + g.AdjCfg.TypeSymbol(g.Type) + "__Repr",
+			PkgName:    g.PkgName,
+			TypeName:   string(g.Type.Name()) + ".Repr",
+			TypeSymbol: "_" + g.AdjCfg.TypeSymbol(g.Type) + "__Repr",
 		},
 		g.PkgName,
 		g.Type,
@@ -180,9 +180,9 @@ func (g unionReprKeyedReprGenerator) GetNodeBuilderGenerator() NodeBuilderGenera
 	return unionReprKeyedReprBuilderGenerator{
 		g.AdjCfg,
 		mixins.MapAssemblerTraits{
-			g.PkgName,
-			g.TypeName,
-			"_" + g.AdjCfg.TypeSymbol(g.Type) + "__Repr",
+			PkgName:       g.PkgName,
+			TypeName:      g.TypeName,
+			AppliedPrefix: "_" + g.AdjCfg.TypeSymbol(g.Type) + "__Repr",
 		},
 		g.PkgName,
 		g.Type,
@@ -471,9 +471,9 @@ func (g unionReprKeyedReprBuilderGenerator) emitKeyAssembler(w io.Writer) {
 		type _{{ .Type | TypeSymbol }}__ReprKeyAssembler _{{ .Type | TypeSymbol }}__ReprAssembler
 	`, w, g.AdjCfg, g)
 	stubs := mixins.StringAssemblerTraits{
-		g.PkgName,
-		g.TypeName + ".KeyAssembler", // ".Repr" is already in `g.TypeName`, so don't stutter the "Repr" part.
-		"_" + g.AdjCfg.TypeSymbol(g.Type) + "__ReprKey",
+		PkgName:       g.PkgName,
+		TypeName:      g.TypeName + ".KeyAssembler", // ".Repr" is already in `g.TypeName`, so don't stutter the "Repr" part.
+		AppliedPrefix: "_" + g.AdjCfg.TypeSymbol(g.Type) + "__ReprKey",
 	}
 	// This key assembler can disregard any idea of complex keys because we know that our discriminants are just strings!
 	stubs.EmitNodeAssemblerMethodBeginMap(w)

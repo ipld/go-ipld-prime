@@ -14,9 +14,9 @@ func NewBoolReprBoolGenerator(pkgName string, typ *schema.TypeBool, adjCfg *Adju
 		boolGenerator{
 			adjCfg,
 			mixins.BoolTraits{
-				pkgName,
-				string(typ.Name()),
-				adjCfg.TypeSymbol(typ),
+				PkgName:    pkgName,
+				TypeName:   string(typ.Name()),
+				TypeSymbol: adjCfg.TypeSymbol(typ),
 			},
 			pkgName,
 			typ,

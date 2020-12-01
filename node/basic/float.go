@@ -26,16 +26,16 @@ func (plainFloat) ReprKind() ipld.ReprKind {
 	return ipld.ReprKind_Float
 }
 func (plainFloat) LookupByString(string) (ipld.Node, error) {
-	return mixins.Float{"float"}.LookupByString("")
+	return mixins.Float{TypeName: "float"}.LookupByString("")
 }
 func (plainFloat) LookupByNode(key ipld.Node) (ipld.Node, error) {
-	return mixins.Float{"float"}.LookupByNode(nil)
+	return mixins.Float{TypeName: "float"}.LookupByNode(nil)
 }
 func (plainFloat) LookupByIndex(idx int) (ipld.Node, error) {
-	return mixins.Float{"float"}.LookupByIndex(0)
+	return mixins.Float{TypeName: "float"}.LookupByIndex(0)
 }
 func (plainFloat) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
-	return mixins.Float{"float"}.LookupBySegment(seg)
+	return mixins.Float{TypeName: "float"}.LookupBySegment(seg)
 }
 func (plainFloat) MapIterator() ipld.MapIterator {
 	return nil
@@ -53,22 +53,22 @@ func (plainFloat) IsNull() bool {
 	return false
 }
 func (plainFloat) AsBool() (bool, error) {
-	return mixins.Float{"float"}.AsBool()
+	return mixins.Float{TypeName: "float"}.AsBool()
 }
 func (plainFloat) AsInt() (int, error) {
-	return mixins.Float{"float"}.AsInt()
+	return mixins.Float{TypeName: "float"}.AsInt()
 }
 func (n plainFloat) AsFloat() (float64, error) {
 	return float64(n), nil
 }
 func (plainFloat) AsString() (string, error) {
-	return mixins.Float{"float"}.AsString()
+	return mixins.Float{TypeName: "float"}.AsString()
 }
 func (plainFloat) AsBytes() ([]byte, error) {
-	return mixins.Float{"float"}.AsBytes()
+	return mixins.Float{TypeName: "float"}.AsBytes()
 }
 func (plainFloat) AsLink() (ipld.Link, error) {
-	return mixins.Float{"float"}.AsLink()
+	return mixins.Float{TypeName: "float"}.AsLink()
 }
 func (plainFloat) Prototype() ipld.NodePrototype {
 	return Prototype__Float{}
@@ -104,32 +104,32 @@ type plainFloat__Assembler struct {
 }
 
 func (plainFloat__Assembler) BeginMap(sizeHint int) (ipld.MapAssembler, error) {
-	return mixins.FloatAssembler{"float"}.BeginMap(0)
+	return mixins.FloatAssembler{TypeName: "float"}.BeginMap(0)
 }
 func (plainFloat__Assembler) BeginList(sizeHint int) (ipld.ListAssembler, error) {
-	return mixins.FloatAssembler{"float"}.BeginList(0)
+	return mixins.FloatAssembler{TypeName: "float"}.BeginList(0)
 }
 func (plainFloat__Assembler) AssignNull() error {
-	return mixins.FloatAssembler{"float"}.AssignNull()
+	return mixins.FloatAssembler{TypeName: "float"}.AssignNull()
 }
 func (plainFloat__Assembler) AssignBool(bool) error {
-	return mixins.FloatAssembler{"float"}.AssignBool(false)
+	return mixins.FloatAssembler{TypeName: "float"}.AssignBool(false)
 }
 func (plainFloat__Assembler) AssignInt(int) error {
-	return mixins.FloatAssembler{"float"}.AssignInt(0)
+	return mixins.FloatAssembler{TypeName: "float"}.AssignInt(0)
 }
 func (na *plainFloat__Assembler) AssignFloat(v float64) error {
 	*na.w = plainFloat(v)
 	return nil
 }
 func (plainFloat__Assembler) AssignString(string) error {
-	return mixins.FloatAssembler{"float"}.AssignString("")
+	return mixins.FloatAssembler{TypeName: "float"}.AssignString("")
 }
 func (plainFloat__Assembler) AssignBytes([]byte) error {
-	return mixins.FloatAssembler{"float"}.AssignBytes(nil)
+	return mixins.FloatAssembler{TypeName: "float"}.AssignBytes(nil)
 }
 func (plainFloat__Assembler) AssignLink(ipld.Link) error {
-	return mixins.FloatAssembler{"float"}.AssignLink(nil)
+	return mixins.FloatAssembler{TypeName: "float"}.AssignLink(nil)
 }
 func (na *plainFloat__Assembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsFloat(); err != nil {

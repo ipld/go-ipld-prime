@@ -94,9 +94,9 @@ func (g stringGenerator) GetNodeBuilderGenerator() NodeBuilderGenerator {
 	return stringBuilderGenerator{
 		g.AdjCfg,
 		mixins.StringAssemblerTraits{
-			g.PkgName,
-			g.TypeName,
-			"_" + g.AdjCfg.TypeSymbol(g.Type) + "__",
+			PkgName:       g.PkgName,
+			TypeName:      g.TypeName,
+			AppliedPrefix: "_" + g.AdjCfg.TypeSymbol(g.Type) + "__",
 		},
 		g.PkgName,
 		g.Type,
