@@ -20,9 +20,12 @@ Planned/Upcoming Changes
 
 Here are some outlines of changes we intend to make that affect the public API:
 
-- Something about linking...
-	- But it's not clear what.  See https://github.com/ipld/go-ipld-prime/issues/55 for discussion.
-	- If nothing else, `ipld.Loader` and `ipld.Storer` will probably change to get "Link" somewhere in their name, because that's turned out to be how we're always colloquially referring to them.
+- Linking and LinkLoaders will be streamlined; and Codecs will gain more friendly APIs.
+	- See https://github.com/ipld/go-ipld-prime/issues/55 for discussion and drafts.
+	- This will probably be scheduled for around v0.9, which is anticipated to be somewhere in early 2021.
+- Most uses of `int` will become `int64`.
+	- Since the IPLD Data Model specifications state that integers must be at least 2^53, using golang `int` on a 32-bit architecture would not be spec compliant, and therefore we must use `int64`.
+	- This is scheduled for v0.7, which is anticipated to be somewhere in December 2020.
 
 This is not an exhaustive list of planned changes, and does not include any internal changes, new features, performance improvements, and so forth.
 It's purely a list of things you might want to know about as a downstream consumer planning your update cycles.
@@ -39,7 +42,44 @@ Unreleased on master
 Changes here are on the master branch, but not in any tagged release yet.
 When a release tag is made, this block of bullet points will just slide down to the [Released Changes](#released-changes) section.
 
-- _nothing yet :)_
+- Feature: codegen is a reasonably usable alpha!  We now encourage trying it out (but still only for those willing to experience an "alpha" level of friction -- UX still rough, and we know it).
+	- Consult the feature table in the codegen package readme: many major features of IPLD Schemas are now supported.
+		- Structs with tuple representations?  Yes.
+		- Keyed unions?  Yes.
+		- Structs with stringjoin representations?  Yes.  Including nested?  _Yes_.
+		- Lots of powerful stuff is now available to use.
+	- Many generated types now have more methods for accessing them in typed ways (in addition to the usual `ipld.Node` interfaces, which can access the same data, but lose explicit typing).
+		- Maps and lists now have both lookup methods and iterators which know the type of the child keys and values explicitly.
+	- Cool: when generating unions, you can choose between different implementation strategies (favoring either interfaces, or embedded values) by using Adjunct Config.  This lets you tune for either speed (reduced allocation count) or memory footprint (less allocation size, but more granular allocations).
+	- Cyclic references in types are now supported.
+		- ... mostly.  Some manual configuration may sometimes be required to make sure the generated structure wouldn't have an infinite memory size.  We'll keep working on making this smoother in the future.
+	- Field symbol overrides now work properly.  (E.g., if you have a schema with a field called "type", you can make that work now.  Just needs a field symbol override in the Adjunct Config when doing codegen!)
+	- Codegen'd link types now implemented the `schema.TypedLinkNode` interface where applicable.
+	- Structs now actually validate all required fields are present before allowing themselves to finish building.
+	- Much more testing.  And we've got a nice new declarative testcase system that makes it easier to write descriptions of how data should behave (at both the typed and representation view levels), and then just call one function to run exhaustive tests to make sure it looks the same from every inspectable API.
+	- Change: codegen now outputs a fixed set of files.  (Previously, it output one file per type in your schema.)  This makes codegen much more managable; if you remove a type from your schema, you don't have to chase down the orphaned file.  It's also just plain less clutter to look at on the filesystem.
+- Demo: as proof of the kind of work that can be done now with codegen, we've implemented the IPLD Schema schema -- the schema that describes IPLD Schema declarations -- using codegen.  It's pretty neat.
+	- Future: we'll be replacing most of the current current `schema` package with code based on this generated stuff.  Not there yet, though.  Taking this slow.
+- Feature: the `schema` typesystem info packages are improved.
+	- Cyclic references in types are now supported.
+		- (Mind that there are still some caveats about this when fed to codegen, though.)
+	- Graph completeness is now validated (e.g. missing type references emit useful errors)!
+- Feature: there's a `traversal.Get` function.  It's like `traversal.Focus`, but just returns the reached data instead of dragging you through a callback.  Handy.
+- Feature/bugfix: the DAG-CBOR codec now includes resource budgeting limits.  This means it's a lot harder for a badly-formed (or maliciously formed!) message to cause you to run out of memory while processing it.
+- Bugfix: several other panics from the DAG-CBOR codec on malformed data are now nice politely-returned errors, as they should be.
+- Bugfix: in codegen, there was a parity break between the AssembleEntry method and AssembleKey+AssembleValue in generated struct NodeAssemblers.  This has been fixed.
+- Minor: ErrNoSuchField now uses PathSegment instead of a string.  You probably won't notice (but this was important interally: we need it so we're able to describe structs with tuple representations).
+- Bugfix: an error path during CID creation is no longer incorrectly dropped.  (I don't think anyone ever ran into this; it only handled situations where the CID parameters were in some way invalid.  But anyway, it's fixed now.)
+- Performance: when `cidlink.Link.Load` is used, it will do feature detection on its `io.Reader`, and if it looks like an already-in-memory buffer, take shortcuts that do bulk operations.  I've heard this can reduce memory pressure and allocation counts nicely in applications where that's a common scenario.
+- Feature: there's now a `fluent.Reflect` convenience method.  Its job is to take some common golang structs like maps and slices of primitives, and flip them into an IPLD Node tree.
+	- This isn't very high-performance, so we don't really recommend using it in production code (certainly not in any hot paths where performance matters)... but it's dang convenient sometimes.
+- Feature: there's now a `traversal.SelectLinks` convenience method.  Its job is to walk a node tree and return a list of all the link nodes.
+	- This is both convenient, and faster than doing the same thing using general-purpose Selectors (we implemented it as a special case).
+- Demo: you can now find a "rot13" ADL in the `adl/rot13adl` package.  This might be useful reference material if you're interested in writing an ADL and wondering what that entails.
+- In progress: we've started working on some new library features for working with data as streams of "tokens".  You can find some of this in the new `codec/codectools` package.
+	- Functions are available for taking a stream of tokens and feeding them into a NodeAssembler; and for taking a Node and reading it out as a stream of tokens.
+	- The main goal in mind for this is to provide reusable components to make it easier to implement new codecs.  But maybe there will be other uses for this feature too!
+	- These APIs are brand new and are _extremely subject to change_, much more so than any other packages in this repo.  If you work with them at this stage, _do_ expect to need to update your code when things shift.
 
 
 Released Changes
@@ -74,7 +114,7 @@ This tag mostly exists as a nice stopping point before the next version coming u
 
 - Docs: several new example functions should now appear in the godoc for how to use the linking APIs.
 - Feature: codegen is back!  Use it if you dare.
-	- Generated code is now up to date with the present versions of the core interfaces (e.g., its updated for the NodeAssembler world).
+	- Generated code is now up to date with the present versions of the core interfaces (e.g., it's updated for the NodeAssembler world).
 	- We've got a nice big feature table in the codegen package readme now!  Consult that to see which features of IPLD Schemas now have codegen support.
 	- There are now several implemented and working (and robustly tested) examples of codegen for various representation strategies for the same types.  (For example, struct-with-stringjoin-representation.)  Neat!
 	- This edition of codegen uses some neat tricks to not just maintain immutability contracts, but even prevent the creation of zero-value objects which could potentially be used to evade validation phases on objects that have validation rules.  (This is a bit experimental; we'll see how it goes.)
