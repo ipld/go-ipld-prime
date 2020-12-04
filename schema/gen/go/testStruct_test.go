@@ -11,6 +11,68 @@ import (
 	"github.com/ipld/go-ipld-prime/schema"
 )
 
+func TestRequiredFields(t *testing.T) {
+	t.Parallel()
+
+	ts := schema.TypeSystem{}
+	ts.Init()
+	adjCfg := &AdjunctCfg{}
+	ts.Accumulate(schema.SpawnString("String"))
+	ts.Accumulate(schema.SpawnStruct("StructOne",
+		[]schema.StructField{
+			schema.SpawnStructField("a", "String", false, false),
+			schema.SpawnStructField("b", "String", false, false),
+		},
+		schema.SpawnStructRepresentationMap(map[string]string{
+			// no renames.  we expect a simpler error message in this case.
+		}),
+	))
+	ts.Accumulate(schema.SpawnStruct("StructTwo",
+		[]schema.StructField{
+			schema.SpawnStructField("a", "String", false, false),
+			schema.SpawnStructField("b", "String", false, false),
+		},
+		schema.SpawnStructRepresentationMap(map[string]string{
+			"b": "z",
+		}),
+	))
+
+	prefix := "struct-required-fields"
+	pkgName := "main"
+	genAndCompileAndTest(t, prefix, pkgName, ts, adjCfg, func(t *testing.T, getPrototypeByName func(string) ipld.NodePrototype) {
+		t.Run("building-type-without-required-fields-errors", func(t *testing.T) {
+			np := getPrototypeByName("StructOne")
+
+			nb := np.NewBuilder()
+			ma, _ := nb.BeginMap(0)
+			err := ma.Finish()
+
+			Wish(t, err, ShouldBeSameTypeAs, ipld.ErrMissingRequiredField{})
+			Wish(t, err.Error(), ShouldEqual, `missing required fields: a,b`)
+		})
+		t.Run("building-representation-without-required-fields-errors", func(t *testing.T) {
+			nrp := getPrototypeByName("StructOne.Repr")
+
+			nb := nrp.NewBuilder()
+			ma, _ := nb.BeginMap(0)
+			err := ma.Finish()
+
+			Wish(t, err, ShouldBeSameTypeAs, ipld.ErrMissingRequiredField{})
+			Wish(t, err.Error(), ShouldEqual, `missing required fields: a,b`)
+		})
+		t.Run("building-representation-with-renames-without-required-fields-errors", func(t *testing.T) {
+			nrp := getPrototypeByName("StructTwo.Repr")
+
+			nb := nrp.NewBuilder()
+			ma, _ := nb.BeginMap(0)
+			err := ma.Finish()
+
+			Wish(t, err, ShouldBeSameTypeAs, ipld.ErrMissingRequiredField{})
+			Wish(t, err.Error(), ShouldEqual, `missing required fields: a,b (serial:"z")`)
+		})
+	})
+}
+
 func TestStructNesting(t *testing.T) {
 	t.Parallel()
 

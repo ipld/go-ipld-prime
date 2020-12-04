@@ -55,7 +55,7 @@ When a release tag is made, this block of bullet points will just slide down to 
 		- ... mostly.  Some manual configuration may sometimes be required to make sure the generated structure wouldn't have an infinite memory size.  We'll keep working on making this smoother in the future.
 	- Field symbol overrides now work properly.  (E.g., if you have a schema with a field called "type", you can make that work now.  Just needs a field symbol override in the Adjunct Config when doing codegen!)
 	- Codegen'd link types now implemented the `schema.TypedLinkNode` interface where applicable.
-	- Structs now actually validate all required fields are present before allowing themselves to finish building.
+	- Structs now actually validate all required fields are present before allowing themselves to finish building.  Ditto for their map representations.
 	- Much more testing.  And we've got a nice new declarative testcase system that makes it easier to write descriptions of how data should behave (at both the typed and representation view levels), and then just call one function to run exhaustive tests to make sure it looks the same from every inspectable API.
 	- Change: codegen now outputs a fixed set of files.  (Previously, it output one file per type in your schema.)  This makes codegen much more managable; if you remove a type from your schema, you don't have to chase down the orphaned file.  It's also just plain less clutter to look at on the filesystem.
 - Demo: as proof of the kind of work that can be done now with codegen, we've implemented the IPLD Schema schema -- the schema that describes IPLD Schema declarations -- using codegen.  It's pretty neat.
