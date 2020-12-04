@@ -10,7 +10,16 @@ func Build(np ipld.NodePrototype, fn func(NodeAssembler)) (ipld.Node, error) {
 	err := Recover(func() {
 		fn(fna)
 	})
-	return nb.Build(), err
+	if err != nil {
+		return nil, err
+	}
+	return nb.Build(), nil
+}
+func BuildMap(np ipld.NodePrototype, sizeHint int, fn func(MapAssembler)) (ipld.Node, error) {
+	return Build(np, func(fna NodeAssembler) { fna.CreateMap(sizeHint, fn) })
+}
+func BuildList(np ipld.NodePrototype, sizeHint int, fn func(ListAssembler)) (ipld.Node, error) {
+	return Build(np, func(fna NodeAssembler) { fna.CreateList(sizeHint, fn) })
 }
 
 func MustBuild(np ipld.NodePrototype, fn func(NodeAssembler)) ipld.Node {
