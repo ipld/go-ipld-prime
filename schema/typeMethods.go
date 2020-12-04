@@ -226,6 +226,11 @@ func (r StructRepresentation_Map) GetFieldKey(field StructField) string {
 	return field.name
 }
 
+func (r StructRepresentation_Map) FieldHasRename(field StructField) bool {
+	_, ok := r.renames[field.name]
+	return ok
+}
+
 func (r StructRepresentation_Stringjoin) GetDelim() string {
 	return r.sep
 }

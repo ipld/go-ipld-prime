@@ -543,7 +543,21 @@ func (g structReprMapReprBuilderGenerator) emitMapAssemblerMethods(w io.Writer) 
 			case maState_finished:
 				panic("invalid state: Finish cannot be called on an assembler that's already finished")
 			}
-			//FIXME check if all required fields are set
+			if ma.s & fieldBits__{{ $type | TypeSymbol }}_sufficient != fieldBits__{{ $type | TypeSymbol }}_sufficient {
+				err := ipld.ErrMissingRequiredField{Missing: make([]string, 0)}
+				{{- range $i, $field := .Type.Fields }}
+				{{- if not $field.IsMaybe}}
+				if ma.s & fieldBit__{{ $type | TypeSymbol }}_{{ $field | FieldSymbolUpper }} == 0 {
+					{{- if $field | $type.RepresentationStrategy.FieldHasRename }}
+					err.Missing = append(err.Missing, "{{ $field.Name }} (serial:\"{{ $field | $type.RepresentationStrategy.GetFieldKey }}\")")
+					{{- else}}
+					err.Missing = append(err.Missing, "{{ $field.Name }}")
+					{{- end}}
+				}
+				{{- end}}
+				{{- end}}
+				return err
+			}
 			ma.state = maState_finished
 			*ma.m = schema.Maybe_Value
 			return nil
