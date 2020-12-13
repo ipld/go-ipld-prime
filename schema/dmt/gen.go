@@ -1,15 +1,16 @@
-package schemaschema
+// +build ignore
+
+package main
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/ipld/go-ipld-prime"
 	"github.com/ipld/go-ipld-prime/schema"
 	gengo "github.com/ipld/go-ipld-prime/schema/gen/go"
 )
 
-func init() {
+func main() {
 	ts := schema.TypeSystem{}
 	ts.Init()
 	adjCfg := &gengo.AdjunctCfg{
@@ -385,6 +386,5 @@ func init() {
 		panic("not happening")
 	}
 
-	os.Mkdir("./schema", 0755)
-	gengo.Generate("./schema", "schema", ts, adjCfg)
+	gengo.Generate(".", "schemadmt", ts, adjCfg)
 }
