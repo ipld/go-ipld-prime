@@ -1,4 +1,4 @@
-package schema
+package schemadmt
 
 import (
 	"strings"
@@ -6,11 +6,6 @@ import (
 
 	"github.com/ipld/go-ipld-prime/codec/dagjson"
 )
-
-// Note! This test file will not *compile*, much less *run*, unless you've invoked codegen.
-//  (We're inside a package with "_" prefixed to the name for a reason!
-//   `go test ./...` should not generally have gotten you here unawares.)
-//  Codegen outputs are not currently committed because we're rapidly iterating on them.
 
 // TestSchemaSchemaParse takes the schema-schema.json document -- the self-describing schema --
 // and attempts to unmarshal it into our code-generated schema DMT types.
