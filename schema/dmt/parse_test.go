@@ -1,10 +1,12 @@
-package schemadmt
+package schemadmt_test
 
 import (
 	"strings"
 	"testing"
 
 	"github.com/ipld/go-ipld-prime/codec/dagjson"
+	"github.com/ipld/go-ipld-prime/schema/dmt"
+	// "github.com/ipld/go-ipld-prime/schema/schema2"
 )
 
 // TestSchemaSchemaParse takes the schema-schema.json document -- the self-describing schema --
@@ -32,7 +34,7 @@ import (
 //    explicitly stated, where it should be sufficient to leave these implicit.
 //
 func TestSchemaSchemaParse(t *testing.T) {
-	nb := Type.Schema__Repr.NewBuilder()
+	nb := schemadmt.Type.Schema__Repr.NewBuilder()
 	if err := dagjson.Decoder(nb, strings.NewReader(`
 {
 	"types": {
@@ -860,4 +862,12 @@ func TestSchemaSchemaParse(t *testing.T) {
 	`)); err != nil {
 		t.Error(err)
 	}
+	// n := nb.Build().(schemadmt.Schema)
+
+	// Reify that thang!
+	// TODO: not yet :) anonymous types used in the above data are not yet implemented.
+	// _, errs := schema.BuildTypeSystem(n)
+	// if errs != nil {
+	// t.Error(errs)
+	// }
 }
