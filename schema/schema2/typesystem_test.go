@@ -13,6 +13,7 @@ import (
 )
 
 func TestBuildTypeSystem(t *testing.T) {
+	// NOTE: several of these fixtures will need updating when support for implicits is completed.
 	t.Run("SimpleHappyPath", func(t *testing.T) {
 		ts := testParse(t,
 			`{
@@ -34,7 +35,11 @@ func TestBuildTypeSystem(t *testing.T) {
 				"types": {
 					"SomeList": {
 						"list": {
-							"valueType": "Bork"
+							"valueType": "Bork",
+							"valueNullable": false,
+							"representation": {
+								"list": {}
+							}
 						}
 					}
 				}
@@ -52,7 +57,11 @@ func TestBuildTypeSystem(t *testing.T) {
 					"SomeMap": {
 						"map": {
 							"keyType": "Bork"
-							"valueType": "Spork"
+							"valueType": "Spork",
+							"valueNullable": false,
+							"representation": {
+								"map": {}
+							}
 						}
 					}
 				}
@@ -71,7 +80,11 @@ func TestBuildTypeSystem(t *testing.T) {
 					"SomeMap": {
 						"map": {
 							"keyType": "String"
-							"valueType": "String"
+							"valueType": "String",
+							"valueNullable": false,
+							"representation": {
+								"map": {}
+							}
 						}
 					},
 					"String": {
@@ -93,7 +106,11 @@ func TestBuildTypeSystem(t *testing.T) {
 					"SomeMap": {
 						"map": {
 							"keyType": "StringyStruct",
-							"valueType": "String"
+							"valueType": "String",
+							"valueNullable": false,
+							"representation": {
+								"map": {}
+							}
 						}
 					},
 					"String": {
@@ -103,10 +120,14 @@ func TestBuildTypeSystem(t *testing.T) {
 						"struct": {
 							"fields": {
 								"f1": {
-									"type": "String"
+									"type": "String",
+									"optional": false,
+									"nullable": false
 								},
 								"f2": {
-									"type": "String"
+									"type": "String",
+									"optional": false,
+									"nullable": false
 								}
 							},
 							"representation": {
@@ -132,7 +153,11 @@ func TestBuildTypeSystem(t *testing.T) {
 					"SomeMap": {
 						"map": {
 							"keyType": "StringyStruct",
-							"valueType": "String"
+							"valueType": "String",
+							"valueNullable": false,
+							"representation": {
+								"map": {}
+							}
 						}
 					},
 					"String": {
@@ -142,10 +167,14 @@ func TestBuildTypeSystem(t *testing.T) {
 						"struct": {
 							"fields": {
 								"f1": {
-									"type": "String"
+									"type": "String",
+									"optional": false,
+									"nullable": false
 								},
 								"f2": {
-									"type": "String"
+									"type": "String",
+									"optional": false,
+									"nullable": false
 								}
 							},
 							"representation": {

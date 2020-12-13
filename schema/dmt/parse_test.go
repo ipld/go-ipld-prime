@@ -14,15 +14,22 @@ import (
 // We've made some alterations to make it conform to learnings had during implementing this.
 // Some of these alterations may make it back it up to the schema-schema in the specs repo
 // (after, of course, sustaining further discussion).
-// In particular:
+//
+// The changes that might be worth upstreaming are:
 //
 // 	- 'TypeDefn' is *keyed* here, whereas it used *inline* in the schema-schema.
 //  - a 'Unit' type is introduced (and might belong in the prelude!).
 //  - enums are specified using the 'Unit' type (which means serially, they have `{}` instead of `null`).
+//  - a few naming changes, which are minor and nonsemantic.
 //
-// There's also a couple errata in the programmatic definitions of the types we used for codegen
-// where further thought generated an idea which may generate schema-schema changes,
-// but these are mostly naming and organizational, and so are minor.
+// There's also a few accumulated changes which are working around incomplete
+// features of our own tooling here, and are bugs that should be fixed (definitely not upstreamed):
+//
+//  - many field definitions have a `"optional": false, "nullable": false`
+//    explicitly stated, where it should be sufficient to leave these implicit.
+//    (These are avoiding our current lack of support for implicits.)
+//  - similarly, many map definitions have an `"valueNullable": false`
+//    explicitly stated, where it should be sufficient to leave these implicit.
 //
 func TestSchemaSchemaParse(t *testing.T) {
 	nb := Type.Schema__Repr.NewBuilder()
@@ -35,7 +42,11 @@ func TestSchemaSchemaParse(t *testing.T) {
 		"SchemaMap": {
 			"map": {
 				"keyType": "TypeName",
-				"valueType": "TypeDefn"
+				"valueType": "TypeDefn",
+				"valueNullable": false,
+				"representation": {
+					"map":{}
+				}
 			}
 		},
 		"AdvancedDataLayoutName": {
@@ -44,17 +55,25 @@ func TestSchemaSchemaParse(t *testing.T) {
 		"AdvancedDataLayoutMap": {
 			"map": {
 				"keyType": "AdvancedDataLayoutName",
-				"valueType": "AdvancedDataLayout"
+				"valueType": "AdvancedDataLayout",
+				"valueNullable": false,
+				"representation": {
+					"map":{}
+				}
 			}
 		},
 		"Schema": {
 			"struct": {
 				"fields": {
 					"types": {
-						"type": "SchemaMap"
+						"type": "SchemaMap",
+						"optional": false,
+						"nullable": false
 					},
 					"advanced": {
-						"type": "AdvancedDataLayoutMap"
+						"type": "AdvancedDataLayoutMap",
+						"optional": false,
+						"nullable": false
 					}
 				},
 				"representation": {
@@ -64,6 +83,20 @@ func TestSchemaSchemaParse(t *testing.T) {
 		},
 		"TypeDefn": {
 			"union": {
+				"members": [
+					"TypeBool",
+					"TypeString",
+					"TypeBytes",
+					"TypeInt",
+					"TypeFloat",
+					"TypeMap",
+					"TypeList",
+					"TypeLink",
+					"TypeUnion",
+					"TypeStruct",
+					"TypeEnum",
+					"TypeCopy"
+				],
 				"representation": {
 					"keyed": {
 						"bool": "TypeBool",
@@ -121,6 +154,13 @@ func TestSchemaSchemaParse(t *testing.T) {
 		},
 		"AnyScalar": {
 			"union": {
+				"members": [
+					"Bool",
+					"String",
+					"Bytes",
+					"Int",
+					"Float"
+				],
 				"representation": {
 					"kinded": {
 						"bool": "Bool",
@@ -160,7 +200,9 @@ func TestSchemaSchemaParse(t *testing.T) {
 			"struct": {
 				"fields": {
 					"representation": {
-						"type": "BytesRepresentation"
+						"type": "BytesRepresentation",
+						"optional": false,
+						"nullable": false
 					}
 				},
 				"representation": {
@@ -170,6 +212,10 @@ func TestSchemaSchemaParse(t *testing.T) {
 		},
 		"BytesRepresentation": {
 			"union": {
+				"members": [
+					"BytesRepresentation_Bytes",
+					"AdvancedDataLayoutName"
+				],
 				"representation": {
 					"keyed": {
 						"bytes": "BytesRepresentation_Bytes",
@@ -206,16 +252,24 @@ func TestSchemaSchemaParse(t *testing.T) {
 			"struct": {
 				"fields": {
 					"keyType": {
-						"type": "TypeName"
+						"type": "TypeName",
+						"optional": false,
+						"nullable": false
 					},
 					"valueType": {
-						"type": "TypeNameOrInlineDefn"
+						"type": "TypeNameOrInlineDefn",
+						"optional": false,
+						"nullable": false
 					},
 					"valueNullable": {
-						"type": "Bool"
+						"type": "Bool",
+						"optional": false,
+						"nullable": false
 					},
 					"representation": {
-						"type": "MapRepresentation"
+						"type": "MapRepresentation",
+						"optional": false,
+						"nullable": false
 					}
 				},
 				"representation": {
@@ -231,6 +285,12 @@ func TestSchemaSchemaParse(t *testing.T) {
 		},
 		"MapRepresentation": {
 			"union": {
+				"members": [
+					"MapRepresentation_Map",
+					"MapRepresentation_StringPairs",
+					"MapRepresentation_ListPairs",
+					"AdvancedDataLayoutName"
+				],
 				"representation": {
 					"keyed": {
 						"map": "MapRepresentation_Map",
@@ -253,10 +313,14 @@ func TestSchemaSchemaParse(t *testing.T) {
 			"struct": {
 				"fields": {
 					"innerDelim": {
-						"type": "String"
+						"type": "String",
+						"optional": false,
+						"nullable": false
 					},
 					"entryDelim": {
-						"type": "String"
+						"type": "String",
+						"optional": false,
+						"nullable": false
 					}
 				},
 				"representation": {
@@ -276,13 +340,19 @@ func TestSchemaSchemaParse(t *testing.T) {
 			"struct": {
 				"fields": {
 					"valueType": {
-						"type": "TypeNameOrInlineDefn"
+						"type": "TypeNameOrInlineDefn",
+						"optional": false,
+						"nullable": false
 					},
 					"valueNullable": {
-						"type": "Bool"
+						"type": "Bool",
+						"optional": false,
+						"nullable": false
 					},
 					"representation": {
-						"type": "ListRepresentation"
+						"type": "ListRepresentation",
+						"optional": false,
+						"nullable": false
 					}
 				},
 				"representation": {
@@ -298,6 +368,10 @@ func TestSchemaSchemaParse(t *testing.T) {
 		},
 		"ListRepresentation": {
 			"union": {
+				"members": [
+					"ListRepresentation_List",
+					"AdvancedDataLayoutName"
+				],
 				"representation": {
 					"keyed": {
 						"list": "ListRepresentation_List",
@@ -318,7 +392,9 @@ func TestSchemaSchemaParse(t *testing.T) {
 			"struct": {
 				"fields": {
 					"expectedType": {
-						"type": "String"
+						"type": "String",
+						"optional": false,
+						"nullable": false
 					}
 				},
 				"representation": {
@@ -336,7 +412,9 @@ func TestSchemaSchemaParse(t *testing.T) {
 			"struct": {
 				"fields": {
 					"representation": {
-						"type": "UnionRepresentation"
+						"type": "UnionRepresentation",
+						"optional": false,
+						"nullable": false
 					}
 				},
 				"representation": {
@@ -346,6 +424,13 @@ func TestSchemaSchemaParse(t *testing.T) {
 		},
 		"UnionRepresentation": {
 			"union": {
+				"members": [
+					"UnionRepresentation_Kinded",
+					"UnionRepresentation_Keyed",
+					"UnionRepresentation_Envelope",
+					"UnionRepresentation_Inline",
+					"UnionRepresentation_BytePrefix"
+				],
 				"representation": {
 					"keyed": {
 						"kinded": "UnionRepresentation_Kinded",
@@ -360,31 +445,49 @@ func TestSchemaSchemaParse(t *testing.T) {
 		"UnionRepresentation_Kinded": {
 			"map": {
 				"keyType": "RepresentationKind",
-				"valueType": "TypeName"
+				"valueType": "TypeName",
+				"valueNullable": false,
+				"representation": {
+					"map":{}
+				}
 			}
 		},
 		"UnionRepresentation_Keyed": {
 			"map": {
 				"keyType": "String",
-				"valueType": "TypeName"
+				"valueType": "TypeName",
+				"valueNullable": false,
+				"representation": {
+					"map":{}
+				}
 			}
 		},
 		"UnionRepresentation_Envelope": {
 			"struct": {
 				"fields": {
 					"discriminantKey": {
-						"type": "String"
+						"type": "String",
+						"optional": false,
+						"nullable": false
 					},
 					"contentKey": {
-						"type": "String"
+						"type": "String",
+						"optional": false,
+						"nullable": false
 					},
 					"discriminantTable": {
 						"type": {
 							"map": {
 								"keyType": "String",
-								"valueType": "TypeName"
+								"valueType": "TypeName",
+								"valueNullable": false,
+								"representation": {
+									"map":{}
+								}
 							}
-						}
+						},
+						"optional": false,
+						"nullable": false
 					}
 				},
 				"representation": {
@@ -396,15 +499,23 @@ func TestSchemaSchemaParse(t *testing.T) {
 			"struct": {
 				"fields": {
 					"discriminantKey": {
-						"type": "String"
+						"type": "String",
+						"optional": false,
+						"nullable": false
 					},
 					"discriminantTable": {
 						"type": {
 							"map": {
 								"keyType": "String",
-								"valueType": "TypeName"
+								"valueType": "TypeName",
+								"valueNullable": false,
+								"representation": {
+									"map":{}
+								}
 							}
-						}
+						},
+						"optional": false,
+						"nullable": false
 					}
 				},
 				"representation": {
@@ -419,9 +530,15 @@ func TestSchemaSchemaParse(t *testing.T) {
 						"type": {
 							"map": {
 								"keyType": "TypeName",
-								"valueType": "Int"
+								"valueType": "Int",
+								"valueNullable": false,
+								"representation": {
+									"map":{}
+								}
 							}
-						}
+						},
+						"optional": false,
+						"nullable": false
 					}
 				},
 				"representation": {
@@ -436,12 +553,20 @@ func TestSchemaSchemaParse(t *testing.T) {
 						"type": {
 							"map": {
 								"keyType": "FieldName",
-								"valueType": "StructField"
+								"valueType": "StructField",
+								"valueNullable": false,
+								"representation": {
+									"map":{}
+								}
 							}
-						}
+						},
+						"optional": false,
+						"nullable": false
 					},
 					"representation": {
-						"type": "StructRepresentation"
+						"type": "StructRepresentation",
+						"optional": false,
+						"nullable": false
 					}
 				},
 				"representation": {
@@ -456,13 +581,19 @@ func TestSchemaSchemaParse(t *testing.T) {
 			"struct": {
 				"fields": {
 					"type": {
-						"type": "TypeNameOrInlineDefn"
+						"type": "TypeNameOrInlineDefn",
+						"optional": false,
+						"nullable": false
 					},
 					"optional": {
-						"type": "Bool"
+						"type": "Bool",
+						"optional": false,
+						"nullable": false
 					},
 					"nullable": {
-						"type": "Bool"
+						"type": "Bool",
+						"optional": false,
+						"nullable": false
 					}
 				},
 				"representation": {
@@ -481,6 +612,10 @@ func TestSchemaSchemaParse(t *testing.T) {
 		},
 		"TypeNameOrInlineDefn": {
 			"union": {
+				"members": [
+					"TypeName",
+					"TypeDefnInline"
+				],
 				"representation": {
 					"kinded": {
 						"string": "TypeName",
@@ -491,6 +626,10 @@ func TestSchemaSchemaParse(t *testing.T) {
 		},
 		"TypeDefnInline": {
 			"union": {
+				"members": [
+					"TypeMap",
+					"TypeList"
+				],
 				"representation": {
 					"keyed": {
 						"map": "TypeMap",
@@ -501,6 +640,13 @@ func TestSchemaSchemaParse(t *testing.T) {
 		},
 		"StructRepresentation": {
 			"union": {
+				"members": [
+					"StructRepresentation_Map",
+					"StructRepresentation_Tuple",
+					"StructRepresentation_StringPairs",
+					"StructRepresentation_StringJoin",
+					"StructRepresentation_ListPairs"
+				],
 				"representation": {
 					"keyed": {
 						"map": "StructRepresentation_Map",
@@ -519,10 +665,15 @@ func TestSchemaSchemaParse(t *testing.T) {
 						"type": {
 							"map": {
 								"keyType": "FieldName",
-								"valueType": "StructRepresentation_Map_FieldDetails"
+								"valueType": "StructRepresentation_Map_FieldDetails",
+								"valueNullable": false,
+								"representation": {
+									"map":{}
+								}
 							}
 						},
-						"optional": true
+						"optional": true,
+						"nullable": false
 					}
 				},
 				"representation": {
@@ -535,11 +686,13 @@ func TestSchemaSchemaParse(t *testing.T) {
 				"fields": {
 					"rename": {
 						"type": "String",
-						"optional": true
+						"optional": true,
+						"nullable": false
 					},
 					"implicit": {
 						"type": "AnyScalar",
-						"optional": true
+						"optional": true,
+						"nullable": false
 					}
 				},
 				"representation": {
@@ -553,10 +706,15 @@ func TestSchemaSchemaParse(t *testing.T) {
 					"fieldOrder": {
 						"type": {
 							"list": {
-								"valueType": "FieldName"
-							}
+								"valueType": "FieldName",
+								"valueNullable": false,
+								"representation": {
+									"list":{}
+								}
+							},
 						},
-						"optional": true
+						"optional": true,
+						"nullable": false
 					}
 				},
 				"representation": {
@@ -568,10 +726,14 @@ func TestSchemaSchemaParse(t *testing.T) {
 			"struct": {
 				"fields": {
 					"innerDelim": {
-						"type": "String"
+						"type": "String",
+						"optional": false,
+						"nullable": false
 					},
 					"entryDelim": {
-						"type": "String"
+						"type": "String",
+						"optional": false,
+						"nullable": false
 					}
 				},
 				"representation": {
@@ -583,15 +745,22 @@ func TestSchemaSchemaParse(t *testing.T) {
 			"struct": {
 				"fields": {
 					"join": {
-						"type": "String"
+						"type": "String",
+						"optional": false,
+						"nullable": false
 					},
 					"fieldOrder": {
 						"type": {
 							"list": {
-								"valueType": "FieldName"
+								"valueType": "FieldName",
+								"valueNullable": false,
+								"representation": {
+									"list":{}
+								}
 							}
 						},
-						"optional": true
+						"optional": true,
+						"nullable": false
 					}
 				},
 				"representation": {
@@ -614,12 +783,20 @@ func TestSchemaSchemaParse(t *testing.T) {
 						"type": {
 							"map": {
 								"keyType": "EnumValue",
-								"valueType": "Unit"
+								"valueType": "Unit",
+								"valueNullable": false,
+								"representation": {
+									"map":{}
+								}
 							}
-						}
+						},
+						"optional": false,
+						"nullable": false
 					},
 					"representation": {
-						"type": "EnumRepresentation"
+						"type": "EnumRepresentation",
+						"optional": false,
+						"nullable": false
 					}
 				},
 				"representation": {
@@ -632,6 +809,10 @@ func TestSchemaSchemaParse(t *testing.T) {
 		},
 		"EnumRepresentation": {
 			"union": {
+				"members": [
+					"EnumRepresentation_String",
+					"EnumRepresentation_Int"
+				],
 				"representation": {
 					"keyed": {
 						"string": "EnumRepresentation_String",
@@ -643,20 +824,30 @@ func TestSchemaSchemaParse(t *testing.T) {
 		"EnumRepresentation_String": {
 			"map": {
 				"keyType": "EnumValue",
-				"valueType": "String"
+				"valueType": "String",
+				"valueNullable": false,
+				"representation": {
+					"map":{}
+				}
 			}
 		},
 		"EnumRepresentation_Int": {
 			"map": {
 				"keyType": "EnumValue",
-				"valueType": "Int"
+				"valueType": "Int",
+				"valueNullable": false,
+				"representation": {
+					"map":{}
+				}
 			}
 		},
 		"TypeCopy": {
 			"struct": {
 				"fields": {
 					"fromType": {
-						"type": "TypeName"
+						"type": "TypeName",
+						"optional": false,
+						"nullable": false
 					}
 				},
 				"representation": {
