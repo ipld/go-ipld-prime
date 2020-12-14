@@ -138,7 +138,7 @@ var TokenWalkSkip = errors.New("token walk: skip")
 // The budget may be ignored if the TokenReader just yielding access to already in-memory information;
 // the main intent of the budget is to avoid resource exhausting when bringing new data into program memory.
 //
-type TokenReader func(budget *int) (next *Token, err error)
+type TokenReader func(budget *int64) (next *Token, err error)
 
 type NodeTokenizer struct {
 	// This structure is designed to be embeddable.  Use Initialize when doing so.

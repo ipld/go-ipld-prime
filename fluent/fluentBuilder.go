@@ -15,10 +15,10 @@ func Build(np ipld.NodePrototype, fn func(NodeAssembler)) (ipld.Node, error) {
 	}
 	return nb.Build(), nil
 }
-func BuildMap(np ipld.NodePrototype, sizeHint int, fn func(MapAssembler)) (ipld.Node, error) {
+func BuildMap(np ipld.NodePrototype, sizeHint int64, fn func(MapAssembler)) (ipld.Node, error) {
 	return Build(np, func(fna NodeAssembler) { fna.CreateMap(sizeHint, fn) })
 }
-func BuildList(np ipld.NodePrototype, sizeHint int, fn func(ListAssembler)) (ipld.Node, error) {
+func BuildList(np ipld.NodePrototype, sizeHint int64, fn func(ListAssembler)) (ipld.Node, error) {
 	return Build(np, func(fna NodeAssembler) { fna.CreateList(sizeHint, fn) })
 }
 
@@ -27,10 +27,10 @@ func MustBuild(np ipld.NodePrototype, fn func(NodeAssembler)) ipld.Node {
 	fn(WrapAssembler(nb))
 	return nb.Build()
 }
-func MustBuildMap(np ipld.NodePrototype, sizeHint int, fn func(MapAssembler)) ipld.Node {
+func MustBuildMap(np ipld.NodePrototype, sizeHint int64, fn func(MapAssembler)) ipld.Node {
 	return MustBuild(np, func(fna NodeAssembler) { fna.CreateMap(sizeHint, fn) })
 }
-func MustBuildList(np ipld.NodePrototype, sizeHint int, fn func(ListAssembler)) ipld.Node {
+func MustBuildList(np ipld.NodePrototype, sizeHint int64, fn func(ListAssembler)) ipld.Node {
 	return MustBuild(np, func(fna NodeAssembler) { fna.CreateList(sizeHint, fn) })
 }
 
@@ -44,11 +44,11 @@ func WrapAssembler(na ipld.NodeAssembler) NodeAssembler {
 // and all recursive operations take a function as a parameter,
 // within which you will receive another {Map,List,}NodeAssembler.
 type NodeAssembler interface {
-	CreateMap(sizeHint int, fn func(MapAssembler))
-	CreateList(sizeHint int, fn func(ListAssembler))
+	CreateMap(sizeHint int64, fn func(MapAssembler))
+	CreateList(sizeHint int64, fn func(ListAssembler))
 	AssignNull()
 	AssignBool(bool)
-	AssignInt(int)
+	AssignInt(int64)
 	AssignFloat(float64)
 	AssignString(string)
 	AssignBytes([]byte)
@@ -81,14 +81,14 @@ type MapAssembler interface {
 type ListAssembler interface {
 	AssembleValue() NodeAssembler
 
-	ValuePrototype(idx int) ipld.NodePrototype
+	ValuePrototype(idx int64) ipld.NodePrototype
 }
 
 type nodeAssembler struct {
 	na ipld.NodeAssembler
 }
 
-func (fna *nodeAssembler) CreateMap(sizeHint int, fn func(MapAssembler)) {
+func (fna *nodeAssembler) CreateMap(sizeHint int64, fn func(MapAssembler)) {
 	if ma, err := fna.na.BeginMap(sizeHint); err != nil {
 		panic(Error{err})
 	} else {
@@ -98,7 +98,7 @@ func (fna *nodeAssembler) CreateMap(sizeHint int, fn func(MapAssembler)) {
 		}
 	}
 }
-func (fna *nodeAssembler) CreateList(sizeHint int, fn func(ListAssembler)) {
+func (fna *nodeAssembler) CreateList(sizeHint int64, fn func(ListAssembler)) {
 	if la, err := fna.na.BeginList(sizeHint); err != nil {
 		panic(Error{err})
 	} else {
@@ -118,7 +118,7 @@ func (fna *nodeAssembler) AssignBool(v bool) {
 		panic(Error{err})
 	}
 }
-func (fna *nodeAssembler) AssignInt(v int) {
+func (fna *nodeAssembler) AssignInt(v int64) {
 	if err := fna.na.AssignInt(v); err != nil {
 		panic(Error{err})
 	}
@@ -183,6 +183,6 @@ type listNodeAssembler struct {
 func (fla *listNodeAssembler) AssembleValue() NodeAssembler {
 	return &nodeAssembler{fla.la.AssembleValue()}
 }
-func (fla *listNodeAssembler) ValuePrototype(idx int) ipld.NodePrototype {
+func (fla *listNodeAssembler) ValuePrototype(idx int64) ipld.NodePrototype {
 	return fla.la.ValuePrototype(idx)
 }

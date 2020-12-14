@@ -2,6 +2,7 @@ package jsontoken
 
 import (
 	"io"
+	"math"
 	"strings"
 	"testing"
 
@@ -17,7 +18,7 @@ func makeReader(s string) *scratch.Reader {
 	return r
 }
 
-var inf int = 1 << 31
+var inf int64 = math.MaxInt64
 
 func TestDecode(t *testing.T) {
 	t.Run("SimpleString", func(t *testing.T) {

@@ -298,7 +298,7 @@ func BuildTypeSystem(schdmt schemadmt.Schema) (*TypeSystem, []error) {
 					vs[v.String()] = struct{}{}
 				}
 			case schemadmt.EnumRepresentation_Int:
-				vs := map[int]struct{}{}
+				vs := map[int64]struct{}{}
 				for itr := r.Iterator(); !itr.Done(); {
 					k, v := itr.Next()
 					if t2.FieldMembers().Lookup(k) == nil {

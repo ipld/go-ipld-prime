@@ -9,7 +9,7 @@ import (
 type Token struct {
 	Kind TokenKind
 
-	Length int       // Present for MapOpen or ListOpen.  May be -1 for "unknown" (e.g. a json tokenizer will yield this).
+	Length int64     // Present for MapOpen or ListOpen.  May be -1 for "unknown" (e.g. a json tokenizer will yield this).
 	Bool   bool      // Value.  Union: only has meaning if Kind is TokenKind_Bool.
 	Int    int64     // Value.  Union: only has meaning if Kind is TokenKind_Int.
 	Float  float64   // Value.  Union: only has meaning if Kind is TokenKind_Float.

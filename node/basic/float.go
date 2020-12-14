@@ -31,7 +31,7 @@ func (plainFloat) LookupByString(string) (ipld.Node, error) {
 func (plainFloat) LookupByNode(key ipld.Node) (ipld.Node, error) {
 	return mixins.Float{TypeName: "float"}.LookupByNode(nil)
 }
-func (plainFloat) LookupByIndex(idx int) (ipld.Node, error) {
+func (plainFloat) LookupByIndex(idx int64) (ipld.Node, error) {
 	return mixins.Float{TypeName: "float"}.LookupByIndex(0)
 }
 func (plainFloat) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
@@ -43,7 +43,7 @@ func (plainFloat) MapIterator() ipld.MapIterator {
 func (plainFloat) ListIterator() ipld.ListIterator {
 	return nil
 }
-func (plainFloat) Length() int {
+func (plainFloat) Length() int64 {
 	return -1
 }
 func (plainFloat) IsAbsent() bool {
@@ -55,7 +55,7 @@ func (plainFloat) IsNull() bool {
 func (plainFloat) AsBool() (bool, error) {
 	return mixins.Float{TypeName: "float"}.AsBool()
 }
-func (plainFloat) AsInt() (int, error) {
+func (plainFloat) AsInt() (int64, error) {
 	return mixins.Float{TypeName: "float"}.AsInt()
 }
 func (n plainFloat) AsFloat() (float64, error) {
@@ -103,10 +103,10 @@ type plainFloat__Assembler struct {
 	w *plainFloat
 }
 
-func (plainFloat__Assembler) BeginMap(sizeHint int) (ipld.MapAssembler, error) {
+func (plainFloat__Assembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
 	return mixins.FloatAssembler{TypeName: "float"}.BeginMap(0)
 }
-func (plainFloat__Assembler) BeginList(sizeHint int) (ipld.ListAssembler, error) {
+func (plainFloat__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
 	return mixins.FloatAssembler{TypeName: "float"}.BeginList(0)
 }
 func (plainFloat__Assembler) AssignNull() error {
@@ -115,7 +115,7 @@ func (plainFloat__Assembler) AssignNull() error {
 func (plainFloat__Assembler) AssignBool(bool) error {
 	return mixins.FloatAssembler{TypeName: "float"}.AssignBool(false)
 }
-func (plainFloat__Assembler) AssignInt(int) error {
+func (plainFloat__Assembler) AssignInt(int64) error {
 	return mixins.FloatAssembler{TypeName: "float"}.AssignInt(0)
 }
 func (na *plainFloat__Assembler) AssignFloat(v float64) error {

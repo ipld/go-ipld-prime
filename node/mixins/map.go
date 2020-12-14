@@ -22,7 +22,7 @@ type Map struct {
 func (Map) ReprKind() ipld.ReprKind {
 	return ipld.ReprKind_Map
 }
-func (x Map) LookupByIndex(idx int) (ipld.Node, error) {
+func (x Map) LookupByIndex(idx int64) (ipld.Node, error) {
 	return nil, ipld.ErrWrongKind{TypeName: x.TypeName, MethodName: "LookupByIndex", AppropriateKind: ipld.ReprKindSet_JustList, ActualKind: ipld.ReprKind_Map}
 }
 func (Map) ListIterator() ipld.ListIterator {
@@ -37,7 +37,7 @@ func (Map) IsNull() bool {
 func (x Map) AsBool() (bool, error) {
 	return false, ipld.ErrWrongKind{TypeName: x.TypeName, MethodName: "AsBool", AppropriateKind: ipld.ReprKindSet_JustBool, ActualKind: ipld.ReprKind_Map}
 }
-func (x Map) AsInt() (int, error) {
+func (x Map) AsInt() (int64, error) {
 	return 0, ipld.ErrWrongKind{TypeName: x.TypeName, MethodName: "AsInt", AppropriateKind: ipld.ReprKindSet_JustInt, ActualKind: ipld.ReprKind_Map}
 }
 func (x Map) AsFloat() (float64, error) {
@@ -59,7 +59,7 @@ type MapAssembler struct {
 	TypeName string
 }
 
-func (x MapAssembler) BeginList(sizeHint int) (ipld.ListAssembler, error) {
+func (x MapAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
 	return nil, ipld.ErrWrongKind{TypeName: x.TypeName, MethodName: "BeginList", AppropriateKind: ipld.ReprKindSet_JustList, ActualKind: ipld.ReprKind_Map}
 }
 func (x MapAssembler) AssignNull() error {
@@ -68,7 +68,7 @@ func (x MapAssembler) AssignNull() error {
 func (x MapAssembler) AssignBool(bool) error {
 	return ipld.ErrWrongKind{TypeName: x.TypeName, MethodName: "AssignBool", AppropriateKind: ipld.ReprKindSet_JustBool, ActualKind: ipld.ReprKind_Map}
 }
-func (x MapAssembler) AssignInt(int) error {
+func (x MapAssembler) AssignInt(int64) error {
 	return ipld.ErrWrongKind{TypeName: x.TypeName, MethodName: "AssignInt", AppropriateKind: ipld.ReprKindSet_JustInt, ActualKind: ipld.ReprKind_Map}
 }
 func (x MapAssembler) AssignFloat(float64) error {

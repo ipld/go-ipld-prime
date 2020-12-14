@@ -60,7 +60,7 @@ func TestStructReprStringjoin(t *testing.T) {
 				}).(schema.TypedNode)
 				t.Run("typed-read", func(t *testing.T) {
 					Require(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
-					Wish(t, n.Length(), ShouldEqual, 1)
+					Wish(t, n.Length(), ShouldEqual, int64(1))
 					Wish(t, must.String(must.Node(n.LookupByString("field"))), ShouldEqual, "valoo")
 				})
 				t.Run("repr-read", func(t *testing.T) {
@@ -88,7 +88,7 @@ func TestStructReprStringjoin(t *testing.T) {
 				}).(schema.TypedNode)
 				t.Run("typed-read", func(t *testing.T) {
 					Require(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
-					Wish(t, n.Length(), ShouldEqual, 2)
+					Wish(t, n.Length(), ShouldEqual, int64(2))
 					Wish(t, must.String(must.Node(n.LookupByString("foo"))), ShouldEqual, "v1")
 					Wish(t, must.String(must.Node(n.LookupByString("bar"))), ShouldEqual, "v2")
 				})
@@ -121,11 +121,11 @@ func TestStructReprStringjoin(t *testing.T) {
 				}).(schema.TypedNode)
 				t.Run("typed-read", func(t *testing.T) {
 					Require(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
-					Wish(t, n.Length(), ShouldEqual, 3)
+					Wish(t, n.Length(), ShouldEqual, int64(3))
 					Wish(t, must.String(must.Node(n.LookupByString("foo"))), ShouldEqual, "v1")
 					Wish(t, must.String(must.Node(n.LookupByString("bar"))), ShouldEqual, "v4")
 					n2 := must.Node(n.LookupByString("zap"))
-					Wish(t, n2.Length(), ShouldEqual, 2)
+					Wish(t, n2.Length(), ShouldEqual, int64(2))
 					Wish(t, must.String(must.Node(n2.LookupByString("foo"))), ShouldEqual, "v2")
 					Wish(t, must.String(must.Node(n2.LookupByString("bar"))), ShouldEqual, "v3")
 				})

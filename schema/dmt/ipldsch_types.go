@@ -220,7 +220,7 @@ type _Float struct{ x float64 }
 
 // Int matches the IPLD Schema type "Int".  It has int kind.
 type Int = *_Int
-type _Int struct{ x int }
+type _Int struct{ x int64 }
 
 // ListRepresentation matches the IPLD Schema type "ListRepresentation".  It has Union type-kind, and may be interrogated like map kind.
 type ListRepresentation = *_ListRepresentation

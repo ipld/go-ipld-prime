@@ -16,7 +16,7 @@ func emitNodeAssemblerMethodBeginMap_mapoid(w io.Writer, adjCfg *AdjunctCfg, dat
 	//  This allocation only happens if the 'w' ptr is nil, which means we're being used on a Maybe;
 	//  otherwise, the 'w' ptr should already be set, and we fill that memory location without allocating, as usual.
 	doTemplate(`
-		func (na *_{{ .Type | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Assembler) BeginMap(sizeHint int) (ipld.MapAssembler, error) {
+		func (na *_{{ .Type | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Assembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
 			switch *na.m {
 			case schema.Maybe_Value, schema.Maybe_Null:
 				panic("invalid state: cannot assign into assembler that's already finished")

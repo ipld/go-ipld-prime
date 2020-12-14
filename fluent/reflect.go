@@ -112,7 +112,7 @@ func (rcfg Reflector) ReflectIntoAssembler(na ipld.NodeAssembler, i interface{})
 			keys = append(keys, k)
 		}
 		sort.Sort(sortableStrings{keys, rcfg.MapOrder})
-		ma, err := na.BeginMap(len(x))
+		ma, err := na.BeginMap(int64(len(x)))
 		if err != nil {
 			return err
 		}
@@ -132,7 +132,7 @@ func (rcfg Reflector) ReflectIntoAssembler(na ipld.NodeAssembler, i interface{})
 			keys = append(keys, k)
 		}
 		sort.Sort(sortableStrings{keys, rcfg.MapOrder})
-		ma, err := na.BeginMap(len(x))
+		ma, err := na.BeginMap(int64(len(x)))
 		if err != nil {
 			return err
 		}
@@ -147,7 +147,7 @@ func (rcfg Reflector) ReflectIntoAssembler(na ipld.NodeAssembler, i interface{})
 		}
 		return ma.Finish()
 	case []string:
-		la, err := na.BeginList(len(x))
+		la, err := na.BeginList(int64(len(x)))
 		if err != nil {
 			return err
 		}
@@ -158,7 +158,7 @@ func (rcfg Reflector) ReflectIntoAssembler(na ipld.NodeAssembler, i interface{})
 		}
 		return la.Finish()
 	case []interface{}:
-		la, err := na.BeginList(len(x))
+		la, err := na.BeginList(int64(len(x)))
 		if err != nil {
 			return err
 		}
@@ -172,7 +172,7 @@ func (rcfg Reflector) ReflectIntoAssembler(na ipld.NodeAssembler, i interface{})
 		return na.AssignString(x)
 	case []byte:
 		return na.AssignBytes(x)
-	case int:
+	case int64:
 		return na.AssignInt(x)
 	case nil:
 		return na.AssignNull()
@@ -183,9 +183,9 @@ func (rcfg Reflector) ReflectIntoAssembler(na ipld.NodeAssembler, i interface{})
 	case reflect.Bool:
 		return na.AssignBool(rv.Bool())
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-		return na.AssignInt(int(rv.Int()))
+		return na.AssignInt(rv.Int())
 	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
-		return na.AssignInt(int(rv.Uint()))
+		return na.AssignInt(int64(rv.Uint())) // TODO: check overflow
 	case reflect.Float32, reflect.Float64:
 		return na.AssignFloat(rv.Float())
 	case reflect.String:
@@ -195,7 +195,7 @@ func (rcfg Reflector) ReflectIntoAssembler(na ipld.NodeAssembler, i interface{})
 			return na.AssignBytes(rv.Bytes())
 		}
 		l := rv.Len()
-		la, err := na.BeginList(l)
+		la, err := na.BeginList(int64(l))
 		if err != nil {
 			return err
 		}
@@ -218,7 +218,7 @@ func (rcfg Reflector) ReflectIntoAssembler(na ipld.NodeAssembler, i interface{})
 			keys = append(keys, k)
 		}
 		sort.Sort(sortableReflectStrings{keys, rcfg.MapOrder})
-		ma, err := na.BeginMap(rv.Len())
+		ma, err := na.BeginMap(int64(rv.Len()))
 		if err != nil {
 			return err
 		}
@@ -234,7 +234,7 @@ func (rcfg Reflector) ReflectIntoAssembler(na ipld.NodeAssembler, i interface{})
 		return ma.Finish()
 	case reflect.Struct:
 		l := rv.NumField()
-		ma, err := na.BeginMap(l)
+		ma, err := na.BeginMap(int64(l))
 		if err != nil {
 			return err
 		}

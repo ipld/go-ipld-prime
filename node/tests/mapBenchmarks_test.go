@@ -38,10 +38,10 @@ func BenchmarkMapStrInt_3n_BaselineJsonMarshalMapSimpleKeys(b *testing.B) {
 }
 
 var sink_s string
-var sink_i int
+var sink_i int64
 
 func BenchmarkMapStrInt_3n_BaselineNativeMapIterationSimpleKeys(b *testing.B) {
-	var x = make(map[string]int, 3)
+	var x = make(map[string]int64, 3)
 	x["whee"] = 1
 	x["woot"] = 2
 	x["waga"] = 3
@@ -59,7 +59,7 @@ func BenchmarkMapStrInt_3n_BaselineNativeMapIterationSimpleKeys(b *testing.B) {
 
 func BenchmarkMapStrInt_25n_BaselineNativeMapAssignSimpleKeys(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		var x = make(map[string]int, 25)
+		var x = make(map[string]int64, 25)
 		for i := 1; i <= 25; i++ {
 			x[tableStrInt[i-1].s] = tableStrInt[i-1].i
 		}
@@ -68,7 +68,7 @@ func BenchmarkMapStrInt_25n_BaselineNativeMapAssignSimpleKeys(b *testing.B) {
 }
 
 func BenchmarkMapStrInt_25n_BaselineNativeMapIterationSimpleKeys(b *testing.B) {
-	var x = make(map[string]int, 25)
+	var x = make(map[string]int64, 25)
 	for i := 1; i <= 25; i++ {
 		x[tableStrInt[i-1].s] = tableStrInt[i-1].i
 	}

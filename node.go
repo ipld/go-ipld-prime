@@ -1,7 +1,7 @@
 package ipld
 
 // Node represents a value in IPLD.  Any point in a tree of data is a node:
-// scalar values (like int, string, etc) are nodes, and
+// scalar values (like int64, string, etc) are nodes, and
 // so are recursive values (like map and list).
 //
 // Nodes and kinds are described in the IPLD specs at
@@ -10,7 +10,7 @@ package ipld
 // Methods on the Node interface cover the superset of all possible methods for
 // all possible kinds -- but some methods only make sense for particular kinds,
 // and thus will only make sense to call on values of the appropriate kind.
-// (For example, 'Length' on an int doesn't make sense,
+// (For example, 'Length' on an integer doesn't make sense,
 // and 'AsInt' on a map certainly doesn't work either!)
 // Use the ReprKind method to find out the kind of value before
 // calling kind-specific methods.
@@ -57,13 +57,13 @@ package ipld
 // without any additional special effort).
 type Node interface {
 	// ReprKind returns a value from the ReprKind enum describing what the
-	// essential serializable kind of this node is (map, list, int, etc).
+	// essential serializable kind of this node is (map, list, integer, etc).
 	// Most other handling of a node requires first switching upon the kind.
 	ReprKind() ReprKind
 
 	// LookupByString looks up a child object in this node and returns it.
 	// The returned Node may be any of the ReprKind:
-	// a primitive (string, int, etc), a map, a list, or a link.
+	// a primitive (string, int64, etc), a map, a list, or a link.
 	//
 	// If the Kind of this Node is not ReprKind_Map, a nil node and an error
 	// will be returned.
@@ -86,13 +86,13 @@ type Node interface {
 
 	// LookupByIndex is the equivalent of LookupByString but for indexing into a list.
 	// As with LookupByString, the returned Node may be any of the ReprKind:
-	// a primitive (string, int, etc), a map, a list, or a link.
+	// a primitive (string, int64, etc), a map, a list, or a link.
 	//
 	// If the Kind of this Node is not ReprKind_List, a nil node and an error
 	// will be returned.
 	//
 	// If idx is out of range, a nil node and an error will be returned.
-	LookupByIndex(idx int) (Node, error)
+	LookupByIndex(idx int64) (Node, error)
 
 	// LookupBySegment is will act as either LookupByString or LookupByIndex,
 	// whichever is contextually appropriate.
@@ -125,7 +125,7 @@ type Node interface {
 
 	// Length returns the length of a list, or the number of entries in a map,
 	// or -1 if the node is not of list nor map kind.
-	Length() int
+	Length() int64
 
 	// Absent nodes are returned when traversing a struct field that is
 	// defined by a schema but unset in the data.  (Absent nodes are not
@@ -142,7 +142,7 @@ type Node interface {
 
 	IsNull() bool
 	AsBool() (bool, error)
-	AsInt() (int, error)
+	AsInt() (int64, error)
 	AsFloat() (float64, error)
 	AsString() (string, error)
 	AsBytes() ([]byte, error)
@@ -254,7 +254,7 @@ type ListIterator interface {
 	// If an error is returned, the boolean will always be false (so it's
 	// correct to check the bool first and short circuit to continuing if true).
 	// If an error is returned, the key and value may be nil.
-	Next() (idx int, value Node, err error)
+	Next() (idx int64, value Node, err error)
 
 	// Done returns false as long as there's at least one more entry to iterate.
 	// When Done returns false, iteration can stop.

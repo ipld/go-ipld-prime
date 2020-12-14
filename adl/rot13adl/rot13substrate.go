@@ -39,7 +39,7 @@ func (*_Substrate) LookupByString(string) (ipld.Node, error) {
 func (*_Substrate) LookupByNode(ipld.Node) (ipld.Node, error) {
 	return mixins.String{TypeName: "rot13adl.internal.Substrate"}.LookupByNode(nil)
 }
-func (*_Substrate) LookupByIndex(idx int) (ipld.Node, error) {
+func (*_Substrate) LookupByIndex(idx int64) (ipld.Node, error) {
 	return mixins.String{TypeName: "rot13adl.internal.Substrate"}.LookupByIndex(0)
 }
 func (*_Substrate) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
@@ -51,7 +51,7 @@ func (*_Substrate) MapIterator() ipld.MapIterator {
 func (*_Substrate) ListIterator() ipld.ListIterator {
 	return nil
 }
-func (*_Substrate) Length() int {
+func (*_Substrate) Length() int64 {
 	return -1
 }
 func (*_Substrate) IsAbsent() bool {
@@ -63,7 +63,7 @@ func (*_Substrate) IsNull() bool {
 func (*_Substrate) AsBool() (bool, error) {
 	return mixins.String{TypeName: "rot13adl.internal.Substrate"}.AsBool()
 }
-func (*_Substrate) AsInt() (int, error) {
+func (*_Substrate) AsInt() (int64, error) {
 	return mixins.String{TypeName: "rot13adl.internal.Substrate"}.AsInt()
 }
 func (*_Substrate) AsFloat() (float64, error) {
@@ -121,10 +121,10 @@ type _Substrate__Assembler struct {
 	m schema.Maybe // REVIEW: if the package where this Maybe enum lives is maybe not the right home for it after all.  Or should this line use something different?  We're only using some of its values after all.
 }
 
-func (_Substrate__Assembler) BeginMap(sizeHint int) (ipld.MapAssembler, error) {
+func (_Substrate__Assembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
 	return mixins.StringAssembler{TypeName: "rot13adl.internal.Substrate"}.BeginMap(0)
 }
-func (_Substrate__Assembler) BeginList(sizeHint int) (ipld.ListAssembler, error) {
+func (_Substrate__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
 	return mixins.StringAssembler{TypeName: "rot13adl.internal.Substrate"}.BeginList(0)
 }
 func (na *_Substrate__Assembler) AssignNull() error {
@@ -134,7 +134,7 @@ func (na *_Substrate__Assembler) AssignNull() error {
 func (_Substrate__Assembler) AssignBool(bool) error {
 	return mixins.StringAssembler{TypeName: "rot13adl.internal.Substrate"}.AssignBool(false)
 }
-func (_Substrate__Assembler) AssignInt(int) error {
+func (_Substrate__Assembler) AssignInt(int64) error {
 	return mixins.StringAssembler{TypeName: "rot13adl.internal.Substrate"}.AssignInt(0)
 }
 func (_Substrate__Assembler) AssignFloat(float64) error {

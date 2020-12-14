@@ -85,7 +85,7 @@ func (g listReprListReprGenerator) EmitNodeMethodLookupByNode(w io.Writer) {
 
 func (g listReprListReprGenerator) EmitNodeMethodLookupByIndex(w io.Writer) {
 	doTemplate(`
-		func (nr *_{{ .Type | TypeSymbol }}__Repr) LookupByIndex(idx int) (ipld.Node, error) {
+		func (nr *_{{ .Type | TypeSymbol }}__Repr) LookupByIndex(idx int64) (ipld.Node, error) {
 			v, err := ({{ .Type | TypeSymbol }})(nr).LookupByIndex(idx)
 			if err != nil || v == ipld.Null {
 				return v, err
@@ -104,7 +104,7 @@ func (g listReprListReprGenerator) EmitNodeMethodListIterator(w io.Writer) {
 
 		type _{{ .Type | TypeSymbol }}__ReprListItr _{{ .Type | TypeSymbol }}__ListItr
 
-		func (itr *_{{ .Type | TypeSymbol }}__ReprListItr) Next() (idx int, v ipld.Node, err error) {
+		func (itr *_{{ .Type | TypeSymbol }}__ReprListItr) Next() (idx int64, v ipld.Node, err error) {
 			idx, v, err = (*_{{ .Type | TypeSymbol }}__ListItr)(itr).Next()
 			if err != nil || v == ipld.Null {
 				return
@@ -120,8 +120,8 @@ func (g listReprListReprGenerator) EmitNodeMethodListIterator(w io.Writer) {
 
 func (g listReprListReprGenerator) EmitNodeMethodLength(w io.Writer) {
 	doTemplate(`
-		func (rn *_{{ .Type | TypeSymbol }}__Repr) Length() int {
-			return len(rn.x)
+		func (rn *_{{ .Type | TypeSymbol }}__Repr) Length() int64 {
+			return int64(len(rn.x))
 		}
 	`, w, g.AdjCfg, g)
 }

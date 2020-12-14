@@ -115,8 +115,8 @@ func (g mapReprMapReprGenerator) EmitNodeMethodMapIterator(w io.Writer) {
 }
 func (g mapReprMapReprGenerator) EmitNodeMethodLength(w io.Writer) {
 	doTemplate(`
-		func (rn *_{{ .Type | TypeSymbol }}__Repr) Length() int {
-			return len(rn.t)
+		func (rn *_{{ .Type | TypeSymbol }}__Repr) Length() int64 {
+			return int64(len(rn.t))
 		}
 	`, w, g.AdjCfg, g)
 }

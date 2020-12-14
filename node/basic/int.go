@@ -12,13 +12,13 @@ var (
 	_ ipld.NodeAssembler = &plainInt__Assembler{}
 )
 
-func NewInt(value int) ipld.Node {
+func NewInt(value int64) ipld.Node {
 	v := plainInt(value)
 	return &v
 }
 
 // plainInt is a simple boxed int that complies with ipld.Node.
-type plainInt int
+type plainInt int64
 
 // -- Node interface methods -->
 
@@ -31,7 +31,7 @@ func (plainInt) LookupByString(string) (ipld.Node, error) {
 func (plainInt) LookupByNode(key ipld.Node) (ipld.Node, error) {
 	return mixins.Int{TypeName: "int"}.LookupByNode(nil)
 }
-func (plainInt) LookupByIndex(idx int) (ipld.Node, error) {
+func (plainInt) LookupByIndex(idx int64) (ipld.Node, error) {
 	return mixins.Int{TypeName: "int"}.LookupByIndex(0)
 }
 func (plainInt) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
@@ -43,7 +43,7 @@ func (plainInt) MapIterator() ipld.MapIterator {
 func (plainInt) ListIterator() ipld.ListIterator {
 	return nil
 }
-func (plainInt) Length() int {
+func (plainInt) Length() int64 {
 	return -1
 }
 func (plainInt) IsAbsent() bool {
@@ -55,8 +55,8 @@ func (plainInt) IsNull() bool {
 func (plainInt) AsBool() (bool, error) {
 	return mixins.Int{TypeName: "int"}.AsBool()
 }
-func (n plainInt) AsInt() (int, error) {
-	return int(n), nil
+func (n plainInt) AsInt() (int64, error) {
+	return int64(n), nil
 }
 func (plainInt) AsFloat() (float64, error) {
 	return mixins.Int{TypeName: "int"}.AsFloat()
@@ -103,10 +103,10 @@ type plainInt__Assembler struct {
 	w *plainInt
 }
 
-func (plainInt__Assembler) BeginMap(sizeHint int) (ipld.MapAssembler, error) {
+func (plainInt__Assembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
 	return mixins.IntAssembler{TypeName: "int"}.BeginMap(0)
 }
-func (plainInt__Assembler) BeginList(sizeHint int) (ipld.ListAssembler, error) {
+func (plainInt__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
 	return mixins.IntAssembler{TypeName: "int"}.BeginList(0)
 }
 func (plainInt__Assembler) AssignNull() error {
@@ -115,7 +115,7 @@ func (plainInt__Assembler) AssignNull() error {
 func (plainInt__Assembler) AssignBool(bool) error {
 	return mixins.IntAssembler{TypeName: "int"}.AssignBool(false)
 }
-func (na *plainInt__Assembler) AssignInt(v int) error {
+func (na *plainInt__Assembler) AssignInt(v int64) error {
 	*na.w = plainInt(v)
 	return nil
 }

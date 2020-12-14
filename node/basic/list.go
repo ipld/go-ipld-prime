@@ -30,7 +30,7 @@ func (plainList) LookupByString(string) (ipld.Node, error) {
 func (plainList) LookupByNode(ipld.Node) (ipld.Node, error) {
 	return mixins.List{TypeName: "list"}.LookupByNode(nil)
 }
-func (n *plainList) LookupByIndex(idx int) (ipld.Node, error) {
+func (n *plainList) LookupByIndex(idx int64) (ipld.Node, error) {
 	if n.Length() <= idx {
 		return nil, ipld.ErrNotExists{ipld.PathSegmentOfInt(idx)}
 	}
@@ -49,8 +49,8 @@ func (plainList) MapIterator() ipld.MapIterator {
 func (n *plainList) ListIterator() ipld.ListIterator {
 	return &plainList_ListIterator{n, 0}
 }
-func (n *plainList) Length() int {
-	return len(n.x)
+func (n *plainList) Length() int64 {
+	return int64(len(n.x))
 }
 func (plainList) IsAbsent() bool {
 	return false
@@ -61,7 +61,7 @@ func (plainList) IsNull() bool {
 func (plainList) AsBool() (bool, error) {
 	return mixins.List{TypeName: "list"}.AsBool()
 }
-func (plainList) AsInt() (int, error) {
+func (plainList) AsInt() (int64, error) {
 	return mixins.List{TypeName: "list"}.AsInt()
 }
 func (plainList) AsFloat() (float64, error) {
@@ -85,12 +85,12 @@ type plainList_ListIterator struct {
 	idx int
 }
 
-func (itr *plainList_ListIterator) Next() (idx int, v ipld.Node, _ error) {
+func (itr *plainList_ListIterator) Next() (idx int64, v ipld.Node, _ error) {
 	if itr.Done() {
 		return -1, nil, ipld.ErrIteratorOverread{}
 	}
 	v = itr.n.x[itr.idx]
-	idx = itr.idx
+	idx = int64(itr.idx)
 	itr.idx++
 	return
 }
@@ -147,10 +147,10 @@ const (
 	laState_finished                // 'w' will also be nil, but this is a politer statement
 )
 
-func (plainList__Assembler) BeginMap(sizeHint int) (ipld.MapAssembler, error) {
+func (plainList__Assembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
 	return mixins.ListAssembler{TypeName: "list"}.BeginMap(0)
 }
-func (na *plainList__Assembler) BeginList(sizeHint int) (ipld.ListAssembler, error) {
+func (na *plainList__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
 	if sizeHint < 0 {
 		sizeHint = 0
 	}
@@ -165,7 +165,7 @@ func (plainList__Assembler) AssignNull() error {
 func (plainList__Assembler) AssignBool(bool) error {
 	return mixins.ListAssembler{TypeName: "list"}.AssignBool(false)
 }
-func (plainList__Assembler) AssignInt(int) error {
+func (plainList__Assembler) AssignInt(int64) error {
 	return mixins.ListAssembler{TypeName: "list"}.AssignInt(0)
 }
 func (plainList__Assembler) AssignFloat(float64) error {
@@ -243,20 +243,20 @@ func (la *plainList__Assembler) Finish() error {
 	// validators could run and report errors promptly, if this type had any.
 	return nil
 }
-func (plainList__Assembler) ValuePrototype(_ int) ipld.NodePrototype {
+func (plainList__Assembler) ValuePrototype(_ int64) ipld.NodePrototype {
 	return Prototype__Any{}
 }
 
 // -- ListAssembler.ValueAssembler -->
 
-func (lva *plainList__ValueAssembler) BeginMap(sizeHint int) (ipld.MapAssembler, error) {
+func (lva *plainList__ValueAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
 	ma := plainList__ValueAssemblerMap{}
 	ma.ca.w = &plainMap{}
 	ma.p = lva.la
 	_, err := ma.ca.BeginMap(sizeHint)
 	return &ma, err
 }
-func (lva *plainList__ValueAssembler) BeginList(sizeHint int) (ipld.ListAssembler, error) {
+func (lva *plainList__ValueAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
 	la := plainList__ValueAssemblerList{}
 	la.ca.w = &plainList{}
 	la.p = lva.la
@@ -270,7 +270,7 @@ func (lva *plainList__ValueAssembler) AssignBool(v bool) error {
 	vb := plainBool(v)
 	return lva.AssignNode(&vb)
 }
-func (lva *plainList__ValueAssembler) AssignInt(v int) error {
+func (lva *plainList__ValueAssembler) AssignInt(v int64) error {
 	vb := plainInt(v)
 	return lva.AssignNode(&vb)
 }
@@ -346,7 +346,7 @@ type plainList__ValueAssemblerList struct {
 func (la *plainList__ValueAssemblerList) AssembleValue() ipld.NodeAssembler {
 	return la.ca.AssembleValue()
 }
-func (plainList__ValueAssemblerList) ValuePrototype(_ int) ipld.NodePrototype {
+func (plainList__ValueAssemblerList) ValuePrototype(_ int64) ipld.NodePrototype {
 	return Prototype__Any{}
 }
 

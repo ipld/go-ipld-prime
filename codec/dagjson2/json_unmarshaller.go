@@ -5,7 +5,7 @@ import (
 
 	"github.com/ipld/go-ipld-prime"
 	"github.com/ipld/go-ipld-prime/codec/codectools"
-	"github.com/ipld/go-ipld-prime/codec/dagjson2/token"
+	jsontoken "github.com/ipld/go-ipld-prime/codec/dagjson2/token"
 )
 
 // Unmarshal reads data from input, parses it as DAG-JSON,
@@ -39,13 +39,13 @@ func Unmarshal(into ipld.NodeAssembler, input io.Reader) error {
 type ReusableUnmarshaller struct {
 	d jsontoken.Decoder
 
-	InitialBudget int
+	InitialBudget int64
 }
 
 func (r *ReusableUnmarshaller) SetDecoderConfig(cfg jsontoken.DecoderConfig) {
 	r.d.DecoderConfig = cfg
 }
-func (r *ReusableUnmarshaller) SetInitialBudget(budget int) {
+func (r *ReusableUnmarshaller) SetInitialBudget(budget int64) {
 	r.InitialBudget = budget
 }
 

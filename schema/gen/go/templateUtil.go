@@ -42,7 +42,7 @@ func doTemplate(tmplstr string, w io.Writer, adjCfg *AdjunctCfg, data interface{
 				case ipld.ReprKind_Bool:
 					return "bool"
 				case ipld.ReprKind_Int:
-					return "int"
+					return "int64"
 				case ipld.ReprKind_Float:
 					return "float64"
 				case ipld.ReprKind_String:

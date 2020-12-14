@@ -64,7 +64,7 @@ func unmarshal2(na ipld.NodeAssembler, tokSrc shared.TokenSource, tk *tok.Token,
 				return ErrAllocationBudgetExceeded
 			}
 		}
-		ma, err := na.BeginMap(allocLen)
+		ma, err := na.BeginMap(int64(allocLen))
 		if err != nil {
 			return err
 		}
@@ -115,7 +115,7 @@ func unmarshal2(na ipld.NodeAssembler, tokSrc shared.TokenSource, tk *tok.Token,
 				return ErrAllocationBudgetExceeded
 			}
 		}
-		la, err := na.BeginList(allocLen)
+		la, err := na.BeginList(int64(allocLen))
 		if err != nil {
 			return err
 		}
@@ -188,13 +188,13 @@ func unmarshal2(na ipld.NodeAssembler, tokSrc shared.TokenSource, tk *tok.Token,
 		if *gas < 0 {
 			return ErrAllocationBudgetExceeded
 		}
-		return na.AssignInt(int(tk.Int)) // FIXME overflow check
+		return na.AssignInt(tk.Int)
 	case tok.TUint:
 		*gas -= 1
 		if *gas < 0 {
 			return ErrAllocationBudgetExceeded
 		}
-		return na.AssignInt(int(tk.Uint)) // FIXME overflow check
+		return na.AssignInt(int64(tk.Uint)) // FIXME overflow check
 	case tok.TFloat64:
 		*gas -= 1
 		if *gas < 0 {

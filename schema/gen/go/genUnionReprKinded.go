@@ -163,7 +163,7 @@ func (g unionReprKindedReprGenerator) EmitNodeMethodLookupByString(w io.Writer) 
 func (g unionReprKindedReprGenerator) EmitNodeMethodLookupByIndex(w io.Writer) {
 	doTemplate(kindedUnionNodeMethodTemplateMunge(
 		`LookupByIndex`,
-		`LookupByIndex(idx int) (ipld.Node, error)`,
+		`LookupByIndex(idx int64) (ipld.Node, error)`,
 		`{{- if .Type.RepresentationStrategy.GetMember (Kind "list") }}`,
 		`{{- if eq $member.RepresentationBehavior.String "list" }}`,
 		`.LookupByIndex(idx)`,
@@ -228,7 +228,7 @@ func (g unionReprKindedReprGenerator) EmitNodeMethodListIterator(w io.Writer) {
 func (g unionReprKindedReprGenerator) EmitNodeMethodLength(w io.Writer) {
 	doTemplate(kindedUnionNodeMethodTemplateMunge(
 		`Length`,
-		`Length() int`,
+		`Length() int64`,
 		`{{- if or (.Type.RepresentationStrategy.GetMember (Kind "map")) (.Type.RepresentationStrategy.GetMember (Kind "list")) }}`,
 		`{{- if or (eq $member.RepresentationBehavior.String "map") (eq $member.RepresentationBehavior.String "list") }}`,
 		`.Length()`,
@@ -270,7 +270,7 @@ func (g unionReprKindedReprGenerator) EmitNodeMethodAsBool(w io.Writer) {
 func (g unionReprKindedReprGenerator) EmitNodeMethodAsInt(w io.Writer) {
 	doTemplate(kindedUnionNodeMethodTemplateMunge(
 		`AsInt`,
-		`AsInt() (int, error)`,
+		`AsInt() (int64, error)`,
 		`{{- if .Type.RepresentationStrategy.GetMember (Kind "int") }}`,
 		`{{- if eq $member.RepresentationBehavior.String "int" }}`,
 		`.AsInt()`,
@@ -463,7 +463,7 @@ func kindedUnionNodeAssemblerMethodTemplateMunge(
 func (g unionReprKindedReprBuilderGenerator) EmitNodeAssemblerMethodBeginMap(w io.Writer) {
 	doTemplate(kindedUnionNodeAssemblerMethodTemplateMunge(
 		`BeginMap`,
-		`BeginMap(sizeHint int) (ipld.MapAssembler, error)`,
+		`BeginMap(sizeHint int64) (ipld.MapAssembler, error)`,
 		`{{- if eq $member.RepresentationBehavior.String "map" }}`,
 		`.BeginMap(sizeHint)`,
 		true,
@@ -472,7 +472,7 @@ func (g unionReprKindedReprBuilderGenerator) EmitNodeAssemblerMethodBeginMap(w i
 func (g unionReprKindedReprBuilderGenerator) EmitNodeAssemblerMethodBeginList(w io.Writer) {
 	doTemplate(kindedUnionNodeAssemblerMethodTemplateMunge(
 		`BeginList`,
-		`BeginList(sizeHint int) (ipld.ListAssembler, error)`,
+		`BeginList(sizeHint int64) (ipld.ListAssembler, error)`,
 		`{{- if eq $member.RepresentationBehavior.String "list" }}`,
 		`.BeginList(sizeHint)`,
 		true,
@@ -500,7 +500,7 @@ func (g unionReprKindedReprBuilderGenerator) EmitNodeAssemblerMethodAssignBool(w
 func (g unionReprKindedReprBuilderGenerator) EmitNodeAssemblerMethodAssignInt(w io.Writer) {
 	doTemplate(kindedUnionNodeAssemblerMethodTemplateMunge(
 		`AssignInt`,
-		`AssignInt(v int) error `,
+		`AssignInt(v int64) error `,
 		`{{- if eq $member.RepresentationBehavior.String "int" }}`,
 		`.AssignInt(v)`,
 		false,

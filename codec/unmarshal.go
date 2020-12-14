@@ -60,7 +60,7 @@ func unmarshal(na ipld.NodeAssembler, tokSrc shared.TokenSource, tk *tok.Token) 
 			expectLen = math.MaxInt32
 			allocLen = 0
 		}
-		ma, err := na.BeginMap(allocLen)
+		ma, err := na.BeginMap(int64(allocLen))
 		if err != nil {
 			return err
 		}
@@ -103,7 +103,7 @@ func unmarshal(na ipld.NodeAssembler, tokSrc shared.TokenSource, tk *tok.Token) 
 			expectLen = math.MaxInt32
 			allocLen = 0
 		}
-		la, err := na.BeginList(allocLen)
+		la, err := na.BeginList(int64(allocLen))
 		if err != nil {
 			return err
 		}
@@ -141,9 +141,9 @@ func unmarshal(na ipld.NodeAssembler, tokSrc shared.TokenSource, tk *tok.Token) 
 	case tok.TBool:
 		return na.AssignBool(tk.Bool)
 	case tok.TInt:
-		return na.AssignInt(int(tk.Int)) // FIXME overflow check
+		return na.AssignInt(tk.Int)
 	case tok.TUint:
-		return na.AssignInt(int(tk.Uint)) // FIXME overflow check
+		return na.AssignInt(int64(tk.Uint)) // FIXME overflow check
 	case tok.TFloat64:
 		return na.AssignFloat(tk.Float64)
 	default:

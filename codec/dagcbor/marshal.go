@@ -29,7 +29,7 @@ func marshal(n ipld.Node, tk *tok.Token, sink shared.TokenSink) error {
 	case ipld.ReprKind_Map:
 		// Emit start of map.
 		tk.Type = tok.TMapOpen
-		tk.Length = n.Length()
+		tk.Length = int(n.Length()) // TODO: overflow check
 		if _, err := sink.Step(tk); err != nil {
 			return err
 		}
@@ -59,12 +59,12 @@ func marshal(n ipld.Node, tk *tok.Token, sink shared.TokenSink) error {
 		// Emit start of list.
 		tk.Type = tok.TArrOpen
 		l := n.Length()
-		tk.Length = l
+		tk.Length = int(l) // TODO: overflow check
 		if _, err := sink.Step(tk); err != nil {
 			return err
 		}
 		// Emit list contents (and recurse).
-		for i := 0; i < l; i++ {
+		for i := int64(0); i < l; i++ {
 			v, err := n.LookupByIndex(i)
 			if err != nil {
 				return err

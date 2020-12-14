@@ -41,7 +41,7 @@ func (g listGenerator) EmitNativeAccessors(w io.Writer) {
 	//   boxing something into a maybe when it wasn't already stored that way costs an alloc(!),
 	//    and may additionally incur a memcpy if the maybe for the value type doesn't use pointers internally).
 	doTemplate(`
-		func (n *_{{ .Type | TypeSymbol }}) Lookup(idx int) {{ .Type.ValueType | TypeSymbol }} {
+		func (n *_{{ .Type | TypeSymbol }}) Lookup(idx int64) {{ .Type.ValueType | TypeSymbol }} {
 			if n.Length() <= idx {
 				return nil
 			}
@@ -55,7 +55,7 @@ func (g listGenerator) EmitNativeAccessors(w io.Writer) {
 			return v
 			{{- end}}
 		}
-		func (n *_{{ .Type | TypeSymbol }}) LookupMaybe(idx int) Maybe{{ .Type.ValueType | TypeSymbol }} {
+		func (n *_{{ .Type | TypeSymbol }}) LookupMaybe(idx int64) Maybe{{ .Type.ValueType | TypeSymbol }} {
 			if n.Length() <= idx {
 				return nil
 			}
@@ -86,11 +86,11 @@ func (g listGenerator) EmitNativeAccessors(w io.Writer) {
 			idx  int
 		}
 
-		func (itr *{{ .Type | TypeSymbol }}__Itr) Next() (idx int, v {{if .Type.ValueIsNullable }}Maybe{{end}}{{ .Type.ValueType | TypeSymbol }}) {
+		func (itr *{{ .Type | TypeSymbol }}__Itr) Next() (idx int64, v {{if .Type.ValueIsNullable }}Maybe{{end}}{{ .Type.ValueType | TypeSymbol }}) {
 			if itr.idx >= len(itr.n.x) {
 				return -1, nil
 			}
-			idx = itr.idx
+			idx = int64(itr.idx)
 			v = &itr.n.x[itr.idx]
 			itr.idx++
 			return
@@ -144,7 +144,7 @@ func (g listGenerator) EmitNodeTypeAssertions(w io.Writer) {
 
 func (g listGenerator) EmitNodeMethodLookupByIndex(w io.Writer) {
 	doTemplate(`
-		func (n {{ .Type | TypeSymbol }}) LookupByIndex(idx int) (ipld.Node, error) {
+		func (n {{ .Type | TypeSymbol }}) LookupByIndex(idx int64) (ipld.Node, error) {
 			if n.Length() <= idx {
 				return nil, ipld.ErrNotExists{ipld.PathSegmentOfInt(idx)}
 			}
@@ -162,7 +162,7 @@ func (g listGenerator) EmitNodeMethodLookupByIndex(w io.Writer) {
 }
 
 func (g listGenerator) EmitNodeMethodLookupByNode(w io.Writer) {
-	// LookupByNode will procede by coercing to int if it can; or fail; those are really the only options.
+	// LookupByNode will procede by coercing to int64 if it can; or fail; those are really the only options.
 	// REVIEW: how much coercion is done by other types varies quite wildly.  so we should figure out if that inconsistency is acceptable, and at least document it if so.
 	doTemplate(`
 		func (n {{ .Type | TypeSymbol }}) LookupByNode(k ipld.Node) (ipld.Node, error) {
@@ -186,11 +186,11 @@ func (g listGenerator) EmitNodeMethodListIterator(w io.Writer) {
 			idx  int
 		}
 
-		func (itr *_{{ .Type | TypeSymbol }}__ListItr) Next() (idx int, v ipld.Node, _ error) {
+		func (itr *_{{ .Type | TypeSymbol }}__ListItr) Next() (idx int64, v ipld.Node, _ error) {
 			if itr.idx >= len(itr.n.x) {
 				return -1, nil, ipld.ErrIteratorOverread{}
 			}
-			idx = itr.idx
+			idx = int64(itr.idx)
 			x := &itr.n.x[itr.idx]
 			{{- if .Type.ValueIsNullable }}
 			switch x.m {
@@ -214,8 +214,8 @@ func (g listGenerator) EmitNodeMethodListIterator(w io.Writer) {
 
 func (g listGenerator) EmitNodeMethodLength(w io.Writer) {
 	doTemplate(`
-		func (n {{ .Type | TypeSymbol }}) Length() int {
-			return len(n.x)
+		func (n {{ .Type | TypeSymbol }}) Length() int64 {
+			return int64(len(n.x))
 		}
 	`, w, g.AdjCfg, g)
 }

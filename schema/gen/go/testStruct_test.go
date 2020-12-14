@@ -113,7 +113,7 @@ func TestStructNesting(t *testing.T) {
 			}).(schema.TypedNode)
 			t.Run("typed-read", func(t *testing.T) {
 				Require(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
-				Wish(t, n.Length(), ShouldEqual, 1)
+				Wish(t, n.Length(), ShouldEqual, int64(1))
 				n2 := must.Node(n.LookupByString("x"))
 				Require(t, n2.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
 				Wish(t, must.String(must.Node(n2.LookupByString("s"))), ShouldEqual, "woo")
@@ -121,7 +121,7 @@ func TestStructNesting(t *testing.T) {
 			t.Run("repr-read", func(t *testing.T) {
 				nr := n.Representation()
 				Require(t, nr.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
-				Wish(t, nr.Length(), ShouldEqual, 1)
+				Wish(t, nr.Length(), ShouldEqual, int64(1))
 				n2 := must.Node(nr.LookupByString("r"))
 				Require(t, n2.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
 				Wish(t, must.String(must.Node(n2.LookupByString("q"))), ShouldEqual, "woo")

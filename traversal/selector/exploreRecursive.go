@@ -53,7 +53,7 @@ const (
 // limit (both its type and data specific to the type)
 type RecursionLimit struct {
 	mode  RecursionLimit_Mode
-	depth int
+	depth int64
 }
 
 // Mode returns the type for this recursion limit
@@ -62,7 +62,7 @@ func (rl RecursionLimit) Mode() RecursionLimit_Mode {
 }
 
 // Depth returns the depth for a depth recursion limit, or 0 otherwise
-func (rl RecursionLimit) Depth() int {
+func (rl RecursionLimit) Depth() int64 {
 	if rl.mode != RecursionLimit_Depth {
 		return 0
 	}
@@ -70,7 +70,7 @@ func (rl RecursionLimit) Depth() int {
 }
 
 // RecursionLimitDepth returns a depth limited recursion to the given depth
-func RecursionLimitDepth(depth int) RecursionLimit {
+func RecursionLimitDepth(depth int64) RecursionLimit {
 	return RecursionLimit{RecursionLimit_Depth, depth}
 }
 

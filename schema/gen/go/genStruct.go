@@ -189,7 +189,7 @@ func (g structGenerator) EmitNodeMethodMapIterator(w io.Writer) {
 
 func (g structGenerator) EmitNodeMethodLength(w io.Writer) {
 	doTemplate(`
-		func ({{ .Type | TypeSymbol }}) Length() int {
+		func ({{ .Type | TypeSymbol }}) Length() int64 {
 			return {{ len .Type.Fields }}
 		}
 	`, w, g.AdjCfg, g)
