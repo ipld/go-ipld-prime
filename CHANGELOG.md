@@ -42,15 +42,35 @@ Unreleased on master
 Changes here are on the master branch, but not in any tagged release yet.
 When a release tag is made, this block of bullet points will just slide down to the [Released Changes](#released-changes) section.
 
+- _nothing yet :)_
+
+
+Released Changes
+----------------
+
+### v0.6.0
+
+_2020 December 14_
+
+v0.6.0 is a feature-packed release and has a few bugfixes, and _no_ significant breaking changes.  Update at your earliest convenience.
+
+Most of the features have to do with codegen, which we now consider to be in **alpha** -- go ahead and use it!  (We're starting to self-host some things in it, so any changes will definitely be managed from here on out.)
+A few other small handy helper APIs have appeared as well; see the detailed notes for those.
+
+Like with the last couple of releases, our intent is to follow this smooth-sailing change with another release shortly which will include some minor but noticable API changes, and that release may require you to make some code changes.
+Therefore, we suggest upgrading to this one first, beacuse it's an easy waypoint before the next change.
+
 - Feature: codegen is a reasonably usable alpha!  We now encourage trying it out (but still only for those willing to experience an "alpha" level of friction -- UX still rough, and we know it).
 	- Consult the feature table in the codegen package readme: many major features of IPLD Schemas are now supported.
 		- Structs with tuple representations?  Yes.
 		- Keyed unions?  Yes.
 		- Structs with stringjoin representations?  Yes.  Including nested?  _Yes_.
 		- Lots of powerful stuff is now available to use.
-	- Many generated types now have more methods for accessing them in typed ways (in addition to the usual `ipld.Node` interfaces, which can access the same data, but lose explicit typing).
+		- See [the feature table in the codegen readme](https://github.com/ipld/go-ipld-prime/blob/v0.6.0/schema/gen/go/README.md#completeness) for details.
+	- Many generated types now have more methods for accessing them in typed ways (in addition to the usual `ipld.Node` interfaces, which can access the same data, but lose explicit typing).  [#106](https://github.com/ipld/go-ipld-prime/pull/106)
 		- Maps and lists now have both lookup methods and iterators which know the type of the child keys and values explicitly.
 	- Cool: when generating unions, you can choose between different implementation strategies (favoring either interfaces, or embedded values) by using Adjunct Config.  This lets you tune for either speed (reduced allocation count) or memory footprint (less allocation size, but more granular allocations).
+		- See notes in [#60](https://github.com/ipld/go-ipld-prime/pull/60) for more detail on this.  We'll be aiming to make configurability of this more approachable and better documented in future releases, as we move towards codegen tools usable as CLI tools.
 	- Cyclic references in types are now supported.
 		- ... mostly.  Some manual configuration may sometimes be required to make sure the generated structure wouldn't have an infinite memory size.  We'll keep working on making this smoother in the future.
 	- Field symbol overrides now work properly.  (E.g., if you have a schema with a field called "type", you can make that work now.  Just needs a field symbol override in the Adjunct Config when doing codegen!)
@@ -60,22 +80,23 @@ When a release tag is made, this block of bullet points will just slide down to 
 	- Change: codegen now outputs a fixed set of files.  (Previously, it output one file per type in your schema.)  This makes codegen much more managable; if you remove a type from your schema, you don't have to chase down the orphaned file.  It's also just plain less clutter to look at on the filesystem.
 - Demo: as proof of the kind of work that can be done now with codegen, we've implemented the IPLD Schema schema -- the schema that describes IPLD Schema declarations -- using codegen.  It's pretty neat.
 	- Future: we'll be replacing most of the current current `schema` package with code based on this generated stuff.  Not there yet, though.  Taking this slow.
+		- You can see the drafts of this, along with new features based on it, in [#107](https://github.com/ipld/go-ipld-prime/pull/107).
 - Feature: the `schema` typesystem info packages are improved.
 	- Cyclic references in types are now supported.
 		- (Mind that there are still some caveats about this when fed to codegen, though.)
 	- Graph completeness is now validated (e.g. missing type references emit useful errors)!
 - Feature: there's a `traversal.Get` function.  It's like `traversal.Focus`, but just returns the reached data instead of dragging you through a callback.  Handy.
-- Feature/bugfix: the DAG-CBOR codec now includes resource budgeting limits.  This means it's a lot harder for a badly-formed (or maliciously formed!) message to cause you to run out of memory while processing it.
+- Feature/bugfix: the DAG-CBOR codec now includes resource budgeting limits.  This means it's a lot harder for a badly-formed (or maliciously formed!) message to cause you to run out of memory while processing it.  [#85](https://github.com/ipld/go-ipld-prime/pull/85)
 - Bugfix: several other panics from the DAG-CBOR codec on malformed data are now nice politely-returned errors, as they should be.
 - Bugfix: in codegen, there was a parity break between the AssembleEntry method and AssembleKey+AssembleValue in generated struct NodeAssemblers.  This has been fixed.
 - Minor: ErrNoSuchField now uses PathSegment instead of a string.  You probably won't notice (but this was important interally: we need it so we're able to describe structs with tuple representations).
 - Bugfix: an error path during CID creation is no longer incorrectly dropped.  (I don't think anyone ever ran into this; it only handled situations where the CID parameters were in some way invalid.  But anyway, it's fixed now.)
 - Performance: when `cidlink.Link.Load` is used, it will do feature detection on its `io.Reader`, and if it looks like an already-in-memory buffer, take shortcuts that do bulk operations.  I've heard this can reduce memory pressure and allocation counts nicely in applications where that's a common scenario.
-- Feature: there's now a `fluent.Reflect` convenience method.  Its job is to take some common golang structs like maps and slices of primitives, and flip them into an IPLD Node tree.
+- Feature: there's now a `fluent.Reflect` convenience method.  Its job is to take some common golang structs like maps and slices of primitives, and flip them into an IPLD Node tree.  [#81](https://github.com/ipld/go-ipld-prime/pull/81)
 	- This isn't very high-performance, so we don't really recommend using it in production code (certainly not in any hot paths where performance matters)... but it's dang convenient sometimes.
-- Feature: there's now a `traversal.SelectLinks` convenience method.  Its job is to walk a node tree and return a list of all the link nodes.
+- Feature: there's now a `traversal.SelectLinks` convenience method.  Its job is to walk a node tree and return a list of all the link nodes.  [#110](https://github.com/ipld/go-ipld-prime/pull/110)
 	- This is both convenient, and faster than doing the same thing using general-purpose Selectors (we implemented it as a special case).
-- Demo: you can now find a "rot13" ADL in the `adl/rot13adl` package.  This might be useful reference material if you're interested in writing an ADL and wondering what that entails.
+- Demo: you can now find a "rot13" ADL in the `adl/rot13adl` package.  This might be useful reference material if you're interested in writing an ADL and wondering what that entails.  [#98](https://github.com/ipld/go-ipld-prime/pull/98)
 - In progress: we've started working on some new library features for working with data as streams of "tokens".  You can find some of this in the new `codec/codectools` package.
 	- Functions are available for taking a stream of tokens and feeding them into a NodeAssembler; and for taking a Node and reading it out as a stream of tokens.
 	- The main goal in mind for this is to provide reusable components to make it easier to implement new codecs.  But maybe there will be other uses for this feature too!
@@ -86,6 +107,8 @@ Released Changes
 ----------------
 
 ### v0.5.0
+
+_2020 July 2_
 
 v0.5.0 is a small release -- it just contains a bunch of renames.
 There are _no_ semantic changes bundled with this (it's _just_ renames) so this should be easy to absorb.
