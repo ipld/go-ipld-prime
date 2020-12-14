@@ -47,7 +47,7 @@ func (n *plainMap) LookupByNode(key ipld.Node) (ipld.Node, error) {
 	}
 	return n.LookupByString(ks)
 }
-func (plainMap) LookupByIndex(idx int) (ipld.Node, error) {
+func (plainMap) LookupByIndex(idx int64) (ipld.Node, error) {
 	return mixins.Map{TypeName: "map"}.LookupByIndex(0)
 }
 func (n *plainMap) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
@@ -59,8 +59,8 @@ func (n *plainMap) MapIterator() ipld.MapIterator {
 func (plainMap) ListIterator() ipld.ListIterator {
 	return nil
 }
-func (n *plainMap) Length() int {
-	return len(n.t)
+func (n *plainMap) Length() int64 {
+	return int64(len(n.t))
 }
 func (plainMap) IsAbsent() bool {
 	return false
@@ -71,7 +71,7 @@ func (plainMap) IsNull() bool {
 func (plainMap) AsBool() (bool, error) {
 	return mixins.Map{TypeName: "map"}.AsBool()
 }
-func (plainMap) AsInt() (int, error) {
+func (plainMap) AsInt() (int64, error) {
 	return mixins.Map{TypeName: "map"}.AsInt()
 }
 func (plainMap) AsFloat() (float64, error) {
@@ -162,7 +162,7 @@ const (
 	maState_finished                   // 'w' will also be nil, but this is a politer statement
 )
 
-func (na *plainMap__Assembler) BeginMap(sizeHint int) (ipld.MapAssembler, error) {
+func (na *plainMap__Assembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
 	if sizeHint < 0 {
 		sizeHint = 0
 	}
@@ -172,7 +172,7 @@ func (na *plainMap__Assembler) BeginMap(sizeHint int) (ipld.MapAssembler, error)
 	// That's it; return self as the MapAssembler.  We already have all the right methods on this structure.
 	return na, nil
 }
-func (plainMap__Assembler) BeginList(sizeHint int) (ipld.ListAssembler, error) {
+func (plainMap__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
 	return mixins.MapAssembler{TypeName: "map"}.BeginList(0)
 }
 func (plainMap__Assembler) AssignNull() error {
@@ -181,7 +181,7 @@ func (plainMap__Assembler) AssignNull() error {
 func (plainMap__Assembler) AssignBool(bool) error {
 	return mixins.MapAssembler{TypeName: "map"}.AssignBool(false)
 }
-func (plainMap__Assembler) AssignInt(int) error {
+func (plainMap__Assembler) AssignInt(int64) error {
 	return mixins.MapAssembler{TypeName: "map"}.AssignInt(0)
 }
 func (plainMap__Assembler) AssignFloat(float64) error {
@@ -304,10 +304,10 @@ func (plainMap__Assembler) ValuePrototype(_ string) ipld.NodePrototype {
 
 // -- MapAssembler.KeyAssembler -->
 
-func (plainMap__KeyAssembler) BeginMap(sizeHint int) (ipld.MapAssembler, error) {
+func (plainMap__KeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
 	return mixins.StringAssembler{TypeName: "string"}.BeginMap(0)
 }
-func (plainMap__KeyAssembler) BeginList(sizeHint int) (ipld.ListAssembler, error) {
+func (plainMap__KeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
 	return mixins.StringAssembler{TypeName: "string"}.BeginList(0)
 }
 func (plainMap__KeyAssembler) AssignNull() error {
@@ -316,7 +316,7 @@ func (plainMap__KeyAssembler) AssignNull() error {
 func (plainMap__KeyAssembler) AssignBool(bool) error {
 	return mixins.StringAssembler{TypeName: "string"}.AssignBool(false)
 }
-func (plainMap__KeyAssembler) AssignInt(int) error {
+func (plainMap__KeyAssembler) AssignInt(int64) error {
 	return mixins.StringAssembler{TypeName: "string"}.AssignInt(0)
 }
 func (plainMap__KeyAssembler) AssignFloat(float64) error {
@@ -361,14 +361,14 @@ func (plainMap__KeyAssembler) Prototype() ipld.NodePrototype {
 
 // -- MapAssembler.ValueAssembler -->
 
-func (mva *plainMap__ValueAssembler) BeginMap(sizeHint int) (ipld.MapAssembler, error) {
+func (mva *plainMap__ValueAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
 	ma := plainMap__ValueAssemblerMap{}
 	ma.ca.w = &plainMap{}
 	ma.p = mva.ma
 	_, err := ma.ca.BeginMap(sizeHint)
 	return &ma, err
 }
-func (mva *plainMap__ValueAssembler) BeginList(sizeHint int) (ipld.ListAssembler, error) {
+func (mva *plainMap__ValueAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
 	la := plainMap__ValueAssemblerList{}
 	la.ca.w = &plainList{}
 	la.p = mva.ma
@@ -382,7 +382,7 @@ func (mva *plainMap__ValueAssembler) AssignBool(v bool) error {
 	vb := plainBool(v)
 	return mva.AssignNode(&vb)
 }
-func (mva *plainMap__ValueAssembler) AssignInt(v int) error {
+func (mva *plainMap__ValueAssembler) AssignInt(v int64) error {
 	vb := plainInt(v)
 	return mva.AssignNode(&vb)
 }
@@ -460,7 +460,7 @@ type plainMap__ValueAssemblerList struct {
 func (la *plainMap__ValueAssemblerList) AssembleValue() ipld.NodeAssembler {
 	return la.ca.AssembleValue()
 }
-func (plainMap__ValueAssemblerList) ValuePrototype(_ int) ipld.NodePrototype {
+func (plainMap__ValueAssemblerList) ValuePrototype(_ int64) ipld.NodePrototype {
 	return Prototype__Any{}
 }
 

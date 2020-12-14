@@ -1,7 +1,7 @@
 package tests
 
 import (
-	"strconv"
+	"fmt"
 
 	ipld "github.com/ipld/go-ipld-prime"
 	"github.com/ipld/go-ipld-prime/must"
@@ -9,15 +9,15 @@ import (
 
 var tableStrInt = [25]struct {
 	s string
-	i int
+	i int64
 }{}
 
 func init() {
-	for i := 1; i <= 25; i++ {
+	for i := int64(1); i <= 25; i++ {
 		tableStrInt[i-1] = struct {
 			s string
-			i int
-		}{"k" + strconv.Itoa(i), i}
+			i int64
+		}{fmt.Sprintf("k%d", i), i}
 	}
 }
 

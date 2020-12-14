@@ -78,7 +78,7 @@ func (g structReprTupleReprGenerator) EmitNodeTypeAssertions(w io.Writer) {
 
 func (g structReprTupleReprGenerator) EmitNodeMethodLookupByIndex(w io.Writer) {
 	doTemplate(`
-		func (n *_{{ .Type | TypeSymbol }}__Repr) LookupByIndex(idx int) (ipld.Node, error) {
+		func (n *_{{ .Type | TypeSymbol }}__Repr) LookupByIndex(idx int64) (ipld.Node, error) {
 			switch idx {
 			{{- range $i, $field := .Type.Fields }}
 			case {{ $i }}:
@@ -170,14 +170,14 @@ func (g structReprTupleReprGenerator) EmitNodeMethodListIterator(w io.Writer) {
 			{{if .HaveTrailingOptionals }}end int{{end}}
 		}
 
-		func (itr *_{{ .Type | TypeSymbol }}__ReprListItr) Next() (idx int, v ipld.Node, err error) {
+		func (itr *_{{ .Type | TypeSymbol }}__ReprListItr) Next() (idx int64, v ipld.Node, err error) {
 			if itr.idx >= {{ len .Type.Fields }} {
 				return -1, nil, ipld.ErrIteratorOverread{}
 			}
 			switch itr.idx {
 			{{- range $i, $field := .Type.Fields }}
 			case {{ $i }}:
-				idx = itr.idx
+				idx = int64(itr.idx)
 				{{- if $field.IsOptional }}
 				if itr.n.{{ $field | FieldSymbolLower }}.m == schema.Maybe_Absent {
 					return -1, nil, ipld.ErrIteratorOverread{}
@@ -223,7 +223,7 @@ func (g structReprTupleReprGenerator) EmitNodeMethodListIterator(w io.Writer) {
 func (g structReprTupleReprGenerator) EmitNodeMethodLength(w io.Writer) {
 	// This is fun: it has to count down for any unset optional fields.
 	doTemplate(`
-		func (rn *_{{ .Type | TypeSymbol }}__Repr) Length() int {
+		func (rn *_{{ .Type | TypeSymbol }}__Repr) Length() int64 {
 			l := {{ len .Type.Fields }}
 			{{- range $field := .Type.Fields }}
 			{{- if $field.IsOptional }}
@@ -232,7 +232,7 @@ func (g structReprTupleReprGenerator) EmitNodeMethodLength(w io.Writer) {
 			}
 			{{- end}}
 			{{- end}}
-			return l
+			return int64(l)
 		}
 	`, w, g.AdjCfg, g)
 }
@@ -312,7 +312,7 @@ func (g structReprTupleReprBuilderGenerator) EmitNodeAssemblerType(w io.Writer) 
 func (g structReprTupleReprBuilderGenerator) EmitNodeAssemblerMethodBeginList(w io.Writer) {
 	// Future: This could do something strict with the sizehint; it currently ignores it.
 	doTemplate(`
-		func (na *_{{ .Type | TypeSymbol }}__ReprAssembler) BeginList(int) (ipld.ListAssembler, error) {
+		func (na *_{{ .Type | TypeSymbol }}__ReprAssembler) BeginList(int64) (ipld.ListAssembler, error) {
 			switch *na.m {
 			case schema.Maybe_Value, schema.Maybe_Null:
 				panic("invalid state: cannot assign into assembler that's already finished")
@@ -436,7 +436,7 @@ func (g structReprTupleReprBuilderGenerator) emitListAssemblerChildListAssembler
 		}
 	`, w, g.AdjCfg, g)
 	doTemplate(`
-		func (la *_{{ .Type | TypeSymbol }}__ReprAssembler) ValuePrototype(_ int) ipld.NodePrototype {
+		func (la *_{{ .Type | TypeSymbol }}__ReprAssembler) ValuePrototype(_ int64) ipld.NodePrototype {
 			panic("todo structbuilder tuplerepr valueprototype")
 		}
 	`, w, g.AdjCfg, g)

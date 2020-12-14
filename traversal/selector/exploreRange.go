@@ -10,8 +10,8 @@ import (
 // will apply a next selector to those reached nodes.
 type ExploreRange struct {
 	next     Selector // selector for element we're interested in
-	start    int
-	end      int
+	start    int64
+	end      int64
 	interest []ipld.PathSegment // index of element we're interested in
 }
 

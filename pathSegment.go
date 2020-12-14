@@ -67,7 +67,7 @@ type PathSegment struct {
 	*/
 
 	s string
-	i int
+	i int64
 }
 
 // ParsePathSegment parses a string into a PathSegment,
@@ -85,7 +85,7 @@ func PathSegmentOfString(s string) PathSegment {
 }
 
 // PathSegmentOfString boxes an int into a PathSegment.
-func PathSegmentOfInt(i int) PathSegment {
+func PathSegmentOfInt(i int64) PathSegment {
 	return PathSegment{i: i}
 }
 
@@ -102,17 +102,17 @@ func (ps PathSegment) String() string {
 	case true:
 		return ps.s
 	case false:
-		return strconv.Itoa(ps.i)
+		return strconv.FormatInt(ps.i, 10)
 	}
 	panic("unreachable")
 }
 
-// Index returns the PathSegment as an int,
+// Index returns the PathSegment as an integer,
 // or returns an error if the segment is a string that can't be parsed as an int.
-func (ps PathSegment) Index() (int, error) {
+func (ps PathSegment) Index() (int64, error) {
 	switch ps.containsString() {
 	case true:
-		return strconv.Atoi(ps.s)
+		return strconv.ParseInt(ps.s, 10, 64)
 	case false:
 		return ps.i, nil
 	}

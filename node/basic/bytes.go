@@ -31,7 +31,7 @@ func (plainBytes) LookupByString(string) (ipld.Node, error) {
 func (plainBytes) LookupByNode(key ipld.Node) (ipld.Node, error) {
 	return mixins.Bytes{TypeName: "bytes"}.LookupByNode(nil)
 }
-func (plainBytes) LookupByIndex(idx int) (ipld.Node, error) {
+func (plainBytes) LookupByIndex(idx int64) (ipld.Node, error) {
 	return mixins.Bytes{TypeName: "bytes"}.LookupByIndex(0)
 }
 func (plainBytes) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
@@ -43,7 +43,7 @@ func (plainBytes) MapIterator() ipld.MapIterator {
 func (plainBytes) ListIterator() ipld.ListIterator {
 	return nil
 }
-func (plainBytes) Length() int {
+func (plainBytes) Length() int64 {
 	return -1
 }
 func (plainBytes) IsAbsent() bool {
@@ -55,7 +55,7 @@ func (plainBytes) IsNull() bool {
 func (plainBytes) AsBool() (bool, error) {
 	return mixins.Bytes{TypeName: "bytes"}.AsBool()
 }
-func (plainBytes) AsInt() (int, error) {
+func (plainBytes) AsInt() (int64, error) {
 	return mixins.Bytes{TypeName: "bytes"}.AsInt()
 }
 func (plainBytes) AsFloat() (float64, error) {
@@ -103,10 +103,10 @@ type plainBytes__Assembler struct {
 	w *plainBytes
 }
 
-func (plainBytes__Assembler) BeginMap(sizeHint int) (ipld.MapAssembler, error) {
+func (plainBytes__Assembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
 	return mixins.BytesAssembler{TypeName: "bytes"}.BeginMap(0)
 }
-func (plainBytes__Assembler) BeginList(sizeHint int) (ipld.ListAssembler, error) {
+func (plainBytes__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
 	return mixins.BytesAssembler{TypeName: "bytes"}.BeginList(0)
 }
 func (plainBytes__Assembler) AssignNull() error {
@@ -115,7 +115,7 @@ func (plainBytes__Assembler) AssignNull() error {
 func (plainBytes__Assembler) AssignBool(bool) error {
 	return mixins.BytesAssembler{TypeName: "bytes"}.AssignBool(false)
 }
-func (plainBytes__Assembler) AssignInt(int) error {
+func (plainBytes__Assembler) AssignInt(int64) error {
 	return mixins.BytesAssembler{TypeName: "bytes"}.AssignInt(0)
 }
 func (plainBytes__Assembler) AssignFloat(float64) error {

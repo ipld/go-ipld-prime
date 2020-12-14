@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/ipld/go-ipld-prime/codec/dagjson"
-	"github.com/ipld/go-ipld-prime/schema/dmt"
+	schemadmt "github.com/ipld/go-ipld-prime/schema/dmt"
 	// "github.com/ipld/go-ipld-prime/schema/schema2"
 )
 

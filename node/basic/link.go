@@ -32,7 +32,7 @@ func (plainLink) LookupByString(string) (ipld.Node, error) {
 func (plainLink) LookupByNode(key ipld.Node) (ipld.Node, error) {
 	return mixins.Link{TypeName: "link"}.LookupByNode(nil)
 }
-func (plainLink) LookupByIndex(idx int) (ipld.Node, error) {
+func (plainLink) LookupByIndex(idx int64) (ipld.Node, error) {
 	return mixins.Link{TypeName: "link"}.LookupByIndex(0)
 }
 func (plainLink) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
@@ -44,7 +44,7 @@ func (plainLink) MapIterator() ipld.MapIterator {
 func (plainLink) ListIterator() ipld.ListIterator {
 	return nil
 }
-func (plainLink) Length() int {
+func (plainLink) Length() int64 {
 	return -1
 }
 func (plainLink) IsAbsent() bool {
@@ -56,7 +56,7 @@ func (plainLink) IsNull() bool {
 func (plainLink) AsBool() (bool, error) {
 	return mixins.Link{TypeName: "link"}.AsBool()
 }
-func (plainLink) AsInt() (int, error) {
+func (plainLink) AsInt() (int64, error) {
 	return mixins.Link{TypeName: "link"}.AsInt()
 }
 func (plainLink) AsFloat() (float64, error) {
@@ -104,10 +104,10 @@ type plainLink__Assembler struct {
 	w *plainLink
 }
 
-func (plainLink__Assembler) BeginMap(sizeHint int) (ipld.MapAssembler, error) {
+func (plainLink__Assembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
 	return mixins.LinkAssembler{TypeName: "link"}.BeginMap(0)
 }
-func (plainLink__Assembler) BeginList(sizeHint int) (ipld.ListAssembler, error) {
+func (plainLink__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
 	return mixins.LinkAssembler{TypeName: "link"}.BeginList(0)
 }
 func (plainLink__Assembler) AssignNull() error {
@@ -116,7 +116,7 @@ func (plainLink__Assembler) AssignNull() error {
 func (plainLink__Assembler) AssignBool(bool) error {
 	return mixins.LinkAssembler{TypeName: "link"}.AssignBool(false)
 }
-func (plainLink__Assembler) AssignInt(int) error {
+func (plainLink__Assembler) AssignInt(int64) error {
 	return mixins.LinkAssembler{TypeName: "link"}.AssignInt(0)
 }
 func (plainLink__Assembler) AssignFloat(float64) error {

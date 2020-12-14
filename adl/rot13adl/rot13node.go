@@ -46,7 +46,7 @@ func (*_R13String) LookupByString(string) (ipld.Node, error) {
 func (*_R13String) LookupByNode(ipld.Node) (ipld.Node, error) {
 	return mixins.String{TypeName: "rot13adl.R13String"}.LookupByNode(nil)
 }
-func (*_R13String) LookupByIndex(idx int) (ipld.Node, error) {
+func (*_R13String) LookupByIndex(idx int64) (ipld.Node, error) {
 	return mixins.String{TypeName: "rot13adl.R13String"}.LookupByIndex(0)
 }
 func (*_R13String) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
@@ -58,7 +58,7 @@ func (*_R13String) MapIterator() ipld.MapIterator {
 func (*_R13String) ListIterator() ipld.ListIterator {
 	return nil
 }
-func (*_R13String) Length() int {
+func (*_R13String) Length() int64 {
 	return -1
 }
 func (*_R13String) IsAbsent() bool {
@@ -70,7 +70,7 @@ func (*_R13String) IsNull() bool {
 func (*_R13String) AsBool() (bool, error) {
 	return mixins.String{TypeName: "rot13adl.R13String"}.AsBool()
 }
-func (*_R13String) AsInt() (int, error) {
+func (*_R13String) AsInt() (int64, error) {
 	return mixins.String{TypeName: "rot13adl.R13String"}.AsInt()
 }
 func (*_R13String) AsFloat() (float64, error) {
@@ -138,10 +138,10 @@ type _R13String__Assembler struct {
 	m schema.Maybe // REVIEW: if the package where this Maybe enum lives is maybe not the right home for it after all.  Or should this line use something different?  We're only using some of its values after all.
 }
 
-func (_R13String__Assembler) BeginMap(sizeHint int) (ipld.MapAssembler, error) {
+func (_R13String__Assembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
 	return mixins.StringAssembler{TypeName: "rot13adl.R13String"}.BeginMap(0)
 }
-func (_R13String__Assembler) BeginList(sizeHint int) (ipld.ListAssembler, error) {
+func (_R13String__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
 	return mixins.StringAssembler{TypeName: "rot13adl.R13String"}.BeginList(0)
 }
 func (na *_R13String__Assembler) AssignNull() error {
@@ -151,7 +151,7 @@ func (na *_R13String__Assembler) AssignNull() error {
 func (_R13String__Assembler) AssignBool(bool) error {
 	return mixins.StringAssembler{TypeName: "rot13adl.R13String"}.AssignBool(false)
 }
-func (_R13String__Assembler) AssignInt(int) error {
+func (_R13String__Assembler) AssignInt(int64) error {
 	return mixins.StringAssembler{TypeName: "rot13adl.R13String"}.AssignInt(0)
 }
 func (_R13String__Assembler) AssignFloat(float64) error {

@@ -82,7 +82,7 @@ func String(n ipld.Node) string {
 // must.Int unboxes the given Node via AsInt,
 // panicking in the case that the Node isn't of int kind,
 // and otherwise returning the bare native int.
-func Int(n ipld.Node) int {
+func Int(n ipld.Node) int64 {
 	if v, err := n.AsInt(); err != nil {
 		panic(err)
 	} else {

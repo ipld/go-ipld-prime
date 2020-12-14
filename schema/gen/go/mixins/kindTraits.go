@@ -58,7 +58,7 @@ func (g kindTraitsGenerator) emitNodeMethodLookupByIndex(w io.Writer) {
 		panic("gen internals error: you should've overriden this")
 	}
 	doTemplate(`
-		func ({{ .TypeSymbol }}) LookupByIndex(idx int) (ipld.Node, error) {
+		func ({{ .TypeSymbol }}) LookupByIndex(idx int64) (ipld.Node, error) {
 			return mixins.{{ .Kind.String | title }}{"{{ .PkgName }}.{{ .TypeName }}"}.LookupByIndex(0)
 		}
 	`, w, g)
@@ -102,7 +102,7 @@ func (g kindTraitsGenerator) emitNodeMethodLength(w io.Writer) {
 		panic("gen internals error: you should've overriden this")
 	}
 	doTemplate(`
-		func ({{ .TypeSymbol }}) Length() int {
+		func ({{ .TypeSymbol }}) Length() int64 {
 			return -1
 		}
 	`, w, g)
@@ -140,7 +140,7 @@ func (g kindTraitsGenerator) emitNodeMethodAsInt(w io.Writer) {
 		panic("gen internals error: you should've overriden this")
 	}
 	doTemplate(`
-		func ({{ .TypeSymbol }}) AsInt() (int, error) {
+		func ({{ .TypeSymbol }}) AsInt() (int64, error) {
 			return mixins.{{ .Kind.String | title }}{"{{ .PkgName }}.{{ .TypeName }}"}.AsInt()
 		}
 	`, w, g)
@@ -212,7 +212,7 @@ func (g kindAssemblerTraitsGenerator) emitNodeAssemblerMethodBeginMap(w io.Write
 		panic("gen internals error: you should've overriden this")
 	}
 	doTemplate(`
-		func ({{ .AppliedPrefix }}Assembler) BeginMap(sizeHint int) (ipld.MapAssembler, error) {
+		func ({{ .AppliedPrefix }}Assembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
 			return mixins.{{ .Kind.String | title }}Assembler{"{{ .PkgName }}.{{ .TypeName }}"}.BeginMap(0)
 		}
 	`, w, g)
@@ -223,7 +223,7 @@ func (g kindAssemblerTraitsGenerator) emitNodeAssemblerMethodBeginList(w io.Writ
 		panic("gen internals error: you should've overriden this")
 	}
 	doTemplate(`
-		func ({{ .AppliedPrefix }}Assembler) BeginList(sizeHint int) (ipld.ListAssembler, error) {
+		func ({{ .AppliedPrefix }}Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
 			return mixins.{{ .Kind.String | title }}Assembler{"{{ .PkgName }}.{{ .TypeName }}"}.BeginList(0)
 		}
 	`, w, g)
@@ -256,7 +256,7 @@ func (g kindAssemblerTraitsGenerator) emitNodeAssemblerMethodAssignInt(w io.Writ
 		panic("gen internals error: you should've overriden this")
 	}
 	doTemplate(`
-		func ({{ .AppliedPrefix }}Assembler) AssignInt(int) error {
+		func ({{ .AppliedPrefix }}Assembler) AssignInt(int64) error {
 			return mixins.{{ .Kind.String | title }}Assembler{"{{ .PkgName }}.{{ .TypeName }}"}.AssignInt(0)
 		}
 	`, w, g)

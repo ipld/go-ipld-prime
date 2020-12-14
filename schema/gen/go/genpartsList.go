@@ -25,7 +25,7 @@ func emitNodeAssemblerMethodBeginList_listoid(w io.Writer, adjCfg *AdjunctCfg, d
 	//  Would also want to examine if that makes desirable trades in gsloc/asmsize/speed/debuggability.
 	//  Only seems to apply to case of list-repr-list, so unclear if worth the effort.
 	doTemplate(`
-		func (na *_{{ .Type | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Assembler) BeginList(sizeHint int) (ipld.ListAssembler, error) {
+		func (na *_{{ .Type | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
 			switch *na.m {
 			case schema.Maybe_Value, schema.Maybe_Null:
 				panic("invalid state: cannot assign into assembler that's already finished")
@@ -199,7 +199,7 @@ func emitNodeAssemblerHelper_listoid_listAssemblerMethods(w io.Writer, adjCfg *A
 		}
 	`, w, adjCfg, data)
 	doTemplate(`
-		func (la *_{{ .Type | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Assembler) ValuePrototype(_ int) ipld.NodePrototype {
+		func (la *_{{ .Type | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Assembler) ValuePrototype(_ int64) ipld.NodePrototype {
 			return _{{ .Type.ValueType | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Prototype{}
 		}
 	`, w, adjCfg, data)

@@ -40,7 +40,7 @@ func (List) IsNull() bool {
 func (x List) AsBool() (bool, error) {
 	return false, ipld.ErrWrongKind{TypeName: x.TypeName, MethodName: "AsBool", AppropriateKind: ipld.ReprKindSet_JustBool, ActualKind: ipld.ReprKind_List}
 }
-func (x List) AsInt() (int, error) {
+func (x List) AsInt() (int64, error) {
 	return 0, ipld.ErrWrongKind{TypeName: x.TypeName, MethodName: "AsInt", AppropriateKind: ipld.ReprKindSet_JustInt, ActualKind: ipld.ReprKind_List}
 }
 func (x List) AsFloat() (float64, error) {
@@ -62,7 +62,7 @@ type ListAssembler struct {
 	TypeName string
 }
 
-func (x ListAssembler) BeginMap(sizeHint int) (ipld.MapAssembler, error) {
+func (x ListAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
 	return nil, ipld.ErrWrongKind{TypeName: x.TypeName, MethodName: "BeginMap", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: ipld.ReprKind_List}
 }
 func (x ListAssembler) AssignNull() error {
@@ -71,7 +71,7 @@ func (x ListAssembler) AssignNull() error {
 func (x ListAssembler) AssignBool(bool) error {
 	return ipld.ErrWrongKind{TypeName: x.TypeName, MethodName: "AssignBool", AppropriateKind: ipld.ReprKindSet_JustBool, ActualKind: ipld.ReprKind_List}
 }
-func (x ListAssembler) AssignInt(int) error {
+func (x ListAssembler) AssignInt(int64) error {
 	return ipld.ErrWrongKind{TypeName: x.TypeName, MethodName: "AssignInt", AppropriateKind: ipld.ReprKindSet_JustInt, ActualKind: ipld.ReprKind_List}
 }
 func (x ListAssembler) AssignFloat(float64) error {

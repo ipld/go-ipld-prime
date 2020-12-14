@@ -31,7 +31,7 @@ func (plainBool) LookupByString(string) (ipld.Node, error) {
 func (plainBool) LookupByNode(key ipld.Node) (ipld.Node, error) {
 	return mixins.Bool{TypeName: "bool"}.LookupByNode(nil)
 }
-func (plainBool) LookupByIndex(idx int) (ipld.Node, error) {
+func (plainBool) LookupByIndex(idx int64) (ipld.Node, error) {
 	return mixins.Bool{TypeName: "bool"}.LookupByIndex(0)
 }
 func (plainBool) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
@@ -43,7 +43,7 @@ func (plainBool) MapIterator() ipld.MapIterator {
 func (plainBool) ListIterator() ipld.ListIterator {
 	return nil
 }
-func (plainBool) Length() int {
+func (plainBool) Length() int64 {
 	return -1
 }
 func (plainBool) IsAbsent() bool {
@@ -55,7 +55,7 @@ func (plainBool) IsNull() bool {
 func (n plainBool) AsBool() (bool, error) {
 	return bool(n), nil
 }
-func (plainBool) AsInt() (int, error) {
+func (plainBool) AsInt() (int64, error) {
 	return mixins.Bool{TypeName: "bool"}.AsInt()
 }
 func (plainBool) AsFloat() (float64, error) {
@@ -103,10 +103,10 @@ type plainBool__Assembler struct {
 	w *plainBool
 }
 
-func (plainBool__Assembler) BeginMap(sizeHint int) (ipld.MapAssembler, error) {
+func (plainBool__Assembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
 	return mixins.BoolAssembler{TypeName: "bool"}.BeginMap(0)
 }
-func (plainBool__Assembler) BeginList(sizeHint int) (ipld.ListAssembler, error) {
+func (plainBool__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
 	return mixins.BoolAssembler{TypeName: "bool"}.BeginList(0)
 }
 func (plainBool__Assembler) AssignNull() error {
@@ -116,7 +116,7 @@ func (na *plainBool__Assembler) AssignBool(v bool) error {
 	*na.w = plainBool(v)
 	return nil
 }
-func (plainBool__Assembler) AssignInt(int) error {
+func (plainBool__Assembler) AssignInt(int64) error {
 	return mixins.BoolAssembler{TypeName: "bool"}.AssignInt(0)
 }
 func (plainBool__Assembler) AssignFloat(float64) error {

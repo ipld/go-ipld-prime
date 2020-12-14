@@ -34,7 +34,7 @@ func (d *Decoder) Init(r io.Reader) {
 	d.some = false
 }
 
-func (d *Decoder) Step(budget *int) (next *codectools.Token, err error) {
+func (d *Decoder) Step(budget *int64) (next *codectools.Token, err error) {
 	switch d.phase {
 	case decoderPhase_acceptValue:
 		err = d.step_acceptValue()

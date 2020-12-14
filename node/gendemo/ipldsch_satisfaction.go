@@ -8,10 +8,10 @@ import (
 	"github.com/ipld/go-ipld-prime/schema"
 )
 
-func (n Int) Int() int {
+func (n Int) Int() int64 {
 	return n.x
 }
-func (_Int__Prototype) FromInt(v int) (Int, error) {
+func (_Int__Prototype) FromInt(v int64) (Int, error) {
 	n := _Int{v}
 	return &n, nil
 }
@@ -62,7 +62,7 @@ func (Int) LookupByString(string) (ipld.Node, error) {
 func (Int) LookupByNode(ipld.Node) (ipld.Node, error) {
 	return mixins.Int{"gendemo.Int"}.LookupByNode(nil)
 }
-func (Int) LookupByIndex(idx int) (ipld.Node, error) {
+func (Int) LookupByIndex(idx int64) (ipld.Node, error) {
 	return mixins.Int{"gendemo.Int"}.LookupByIndex(0)
 }
 func (Int) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
@@ -74,7 +74,7 @@ func (Int) MapIterator() ipld.MapIterator {
 func (Int) ListIterator() ipld.ListIterator {
 	return nil
 }
-func (Int) Length() int {
+func (Int) Length() int64 {
 	return -1
 }
 func (Int) IsAbsent() bool {
@@ -86,7 +86,7 @@ func (Int) IsNull() bool {
 func (Int) AsBool() (bool, error) {
 	return mixins.Int{"gendemo.Int"}.AsBool()
 }
-func (n Int) AsInt() (int, error) {
+func (n Int) AsInt() (int64, error) {
 	return n.x, nil
 }
 func (Int) AsFloat() (float64, error) {
@@ -135,10 +135,10 @@ type _Int__Assembler struct {
 }
 
 func (na *_Int__Assembler) reset() {}
-func (_Int__Assembler) BeginMap(sizeHint int) (ipld.MapAssembler, error) {
+func (_Int__Assembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
 	return mixins.IntAssembler{"gendemo.Int"}.BeginMap(0)
 }
-func (_Int__Assembler) BeginList(sizeHint int) (ipld.ListAssembler, error) {
+func (_Int__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
 	return mixins.IntAssembler{"gendemo.Int"}.BeginList(0)
 }
 func (na *_Int__Assembler) AssignNull() error {
@@ -156,7 +156,7 @@ func (na *_Int__Assembler) AssignNull() error {
 func (_Int__Assembler) AssignBool(bool) error {
 	return mixins.IntAssembler{"gendemo.Int"}.AssignBool(false)
 }
-func (na *_Int__Assembler) AssignInt(v int) error {
+func (na *_Int__Assembler) AssignInt(v int64) error {
 	switch *na.m {
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
@@ -327,7 +327,7 @@ func (n Map__String__Msg3) LookupByNode(k ipld.Node) (ipld.Node, error) {
 	}
 	return v, nil
 }
-func (Map__String__Msg3) LookupByIndex(idx int) (ipld.Node, error) {
+func (Map__String__Msg3) LookupByIndex(idx int64) (ipld.Node, error) {
 	return mixins.Map{"gendemo.Map__String__Msg3"}.LookupByIndex(0)
 }
 func (n Map__String__Msg3) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
@@ -359,8 +359,8 @@ func (itr *_Map__String__Msg3__MapItr) Done() bool {
 func (Map__String__Msg3) ListIterator() ipld.ListIterator {
 	return nil
 }
-func (n Map__String__Msg3) Length() int {
-	return len(n.t)
+func (n Map__String__Msg3) Length() int64 {
+	return int64(len(n.t))
 }
 func (Map__String__Msg3) IsAbsent() bool {
 	return false
@@ -371,7 +371,7 @@ func (Map__String__Msg3) IsNull() bool {
 func (Map__String__Msg3) AsBool() (bool, error) {
 	return mixins.Map{"gendemo.Map__String__Msg3"}.AsBool()
 }
-func (Map__String__Msg3) AsInt() (int, error) {
+func (Map__String__Msg3) AsInt() (int64, error) {
 	return mixins.Map{"gendemo.Map__String__Msg3"}.AsInt()
 }
 func (Map__String__Msg3) AsFloat() (float64, error) {
@@ -429,7 +429,7 @@ func (na *_Map__String__Msg3__Assembler) reset() {
 	na.ka.reset()
 	na.va.reset()
 }
-func (na *_Map__String__Msg3__Assembler) BeginMap(sizeHint int) (ipld.MapAssembler, error) {
+func (na *_Map__String__Msg3__Assembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
 	switch *na.m {
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
@@ -447,7 +447,7 @@ func (na *_Map__String__Msg3__Assembler) BeginMap(sizeHint int) (ipld.MapAssembl
 	na.w.t = make([]_Map__String__Msg3__entry, 0, sizeHint)
 	return na, nil
 }
-func (_Map__String__Msg3__Assembler) BeginList(sizeHint int) (ipld.ListAssembler, error) {
+func (_Map__String__Msg3__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
 	return mixins.MapAssembler{"gendemo.Map__String__Msg3"}.BeginList(0)
 }
 func (na *_Map__String__Msg3__Assembler) AssignNull() error {
@@ -467,7 +467,7 @@ func (na *_Map__String__Msg3__Assembler) AssignNull() error {
 func (_Map__String__Msg3__Assembler) AssignBool(bool) error {
 	return mixins.MapAssembler{"gendemo.Map__String__Msg3"}.AssignBool(false)
 }
-func (_Map__String__Msg3__Assembler) AssignInt(int) error {
+func (_Map__String__Msg3__Assembler) AssignInt(int64) error {
 	return mixins.MapAssembler{"gendemo.Map__String__Msg3"}.AssignInt(0)
 }
 func (_Map__String__Msg3__Assembler) AssignFloat(float64) error {
@@ -675,7 +675,7 @@ func (nr *_Map__String__Msg3__Repr) LookupByNode(k ipld.Node) (ipld.Node, error)
 	}
 	return v.(Msg3).Representation(), nil
 }
-func (_Map__String__Msg3__Repr) LookupByIndex(idx int) (ipld.Node, error) {
+func (_Map__String__Msg3__Repr) LookupByIndex(idx int64) (ipld.Node, error) {
 	return mixins.Map{"gendemo.Map__String__Msg3.Repr"}.LookupByIndex(0)
 }
 func (n _Map__String__Msg3__Repr) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
@@ -701,8 +701,8 @@ func (itr *_Map__String__Msg3__ReprMapItr) Done() bool {
 func (_Map__String__Msg3__Repr) ListIterator() ipld.ListIterator {
 	return nil
 }
-func (rn *_Map__String__Msg3__Repr) Length() int {
-	return len(rn.t)
+func (rn *_Map__String__Msg3__Repr) Length() int64 {
+	return int64(len(rn.t))
 }
 func (_Map__String__Msg3__Repr) IsAbsent() bool {
 	return false
@@ -713,7 +713,7 @@ func (_Map__String__Msg3__Repr) IsNull() bool {
 func (_Map__String__Msg3__Repr) AsBool() (bool, error) {
 	return mixins.Map{"gendemo.Map__String__Msg3.Repr"}.AsBool()
 }
-func (_Map__String__Msg3__Repr) AsInt() (int, error) {
+func (_Map__String__Msg3__Repr) AsInt() (int64, error) {
 	return mixins.Map{"gendemo.Map__String__Msg3.Repr"}.AsInt()
 }
 func (_Map__String__Msg3__Repr) AsFloat() (float64, error) {
@@ -771,7 +771,7 @@ func (na *_Map__String__Msg3__ReprAssembler) reset() {
 	na.ka.reset()
 	na.va.reset()
 }
-func (na *_Map__String__Msg3__ReprAssembler) BeginMap(sizeHint int) (ipld.MapAssembler, error) {
+func (na *_Map__String__Msg3__ReprAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
 	switch *na.m {
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
@@ -789,7 +789,7 @@ func (na *_Map__String__Msg3__ReprAssembler) BeginMap(sizeHint int) (ipld.MapAss
 	na.w.t = make([]_Map__String__Msg3__entry, 0, sizeHint)
 	return na, nil
 }
-func (_Map__String__Msg3__ReprAssembler) BeginList(sizeHint int) (ipld.ListAssembler, error) {
+func (_Map__String__Msg3__ReprAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
 	return mixins.MapAssembler{"gendemo.Map__String__Msg3.Repr"}.BeginList(0)
 }
 func (na *_Map__String__Msg3__ReprAssembler) AssignNull() error {
@@ -809,7 +809,7 @@ func (na *_Map__String__Msg3__ReprAssembler) AssignNull() error {
 func (_Map__String__Msg3__ReprAssembler) AssignBool(bool) error {
 	return mixins.MapAssembler{"gendemo.Map__String__Msg3.Repr"}.AssignBool(false)
 }
-func (_Map__String__Msg3__ReprAssembler) AssignInt(int) error {
+func (_Map__String__Msg3__ReprAssembler) AssignInt(int64) error {
 	return mixins.MapAssembler{"gendemo.Map__String__Msg3.Repr"}.AssignInt(0)
 }
 func (_Map__String__Msg3__ReprAssembler) AssignFloat(float64) error {
@@ -1064,7 +1064,7 @@ func (n Msg3) LookupByNode(key ipld.Node) (ipld.Node, error) {
 	}
 	return n.LookupByString(ks)
 }
-func (Msg3) LookupByIndex(idx int) (ipld.Node, error) {
+func (Msg3) LookupByIndex(idx int64) (ipld.Node, error) {
 	return mixins.Map{"gendemo.Msg3"}.LookupByIndex(0)
 }
 func (n Msg3) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
@@ -1106,7 +1106,7 @@ func (itr *_Msg3__MapItr) Done() bool {
 func (Msg3) ListIterator() ipld.ListIterator {
 	return nil
 }
-func (Msg3) Length() int {
+func (Msg3) Length() int64 {
 	return 3
 }
 func (Msg3) IsAbsent() bool {
@@ -1118,7 +1118,7 @@ func (Msg3) IsNull() bool {
 func (Msg3) AsBool() (bool, error) {
 	return mixins.Map{"gendemo.Msg3"}.AsBool()
 }
-func (Msg3) AsInt() (int, error) {
+func (Msg3) AsInt() (int64, error) {
 	return mixins.Map{"gendemo.Msg3"}.AsInt()
 }
 func (Msg3) AsFloat() (float64, error) {
@@ -1189,7 +1189,7 @@ var (
 	fieldBits__Msg3_sufficient = 0 + 1<<0 + 1<<1 + 1<<2
 )
 
-func (na *_Msg3__Assembler) BeginMap(int) (ipld.MapAssembler, error) {
+func (na *_Msg3__Assembler) BeginMap(int64) (ipld.MapAssembler, error) {
 	switch *na.m {
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
@@ -1202,7 +1202,7 @@ func (na *_Msg3__Assembler) BeginMap(int) (ipld.MapAssembler, error) {
 	}
 	return na, nil
 }
-func (_Msg3__Assembler) BeginList(sizeHint int) (ipld.ListAssembler, error) {
+func (_Msg3__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
 	return mixins.MapAssembler{"gendemo.Msg3"}.BeginList(0)
 }
 func (na *_Msg3__Assembler) AssignNull() error {
@@ -1222,7 +1222,7 @@ func (na *_Msg3__Assembler) AssignNull() error {
 func (_Msg3__Assembler) AssignBool(bool) error {
 	return mixins.MapAssembler{"gendemo.Msg3"}.AssignBool(false)
 }
-func (_Msg3__Assembler) AssignInt(int) error {
+func (_Msg3__Assembler) AssignInt(int64) error {
 	return mixins.MapAssembler{"gendemo.Msg3"}.AssignInt(0)
 }
 func (_Msg3__Assembler) AssignFloat(float64) error {
@@ -1454,10 +1454,10 @@ func (ma *_Msg3__Assembler) ValuePrototype(k string) ipld.NodePrototype {
 
 type _Msg3__KeyAssembler _Msg3__Assembler
 
-func (_Msg3__KeyAssembler) BeginMap(sizeHint int) (ipld.MapAssembler, error) {
+func (_Msg3__KeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
 	return mixins.StringAssembler{"gendemo.Msg3.KeyAssembler"}.BeginMap(0)
 }
-func (_Msg3__KeyAssembler) BeginList(sizeHint int) (ipld.ListAssembler, error) {
+func (_Msg3__KeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
 	return mixins.StringAssembler{"gendemo.Msg3.KeyAssembler"}.BeginList(0)
 }
 func (na *_Msg3__KeyAssembler) AssignNull() error {
@@ -1466,7 +1466,7 @@ func (na *_Msg3__KeyAssembler) AssignNull() error {
 func (_Msg3__KeyAssembler) AssignBool(bool) error {
 	return mixins.StringAssembler{"gendemo.Msg3.KeyAssembler"}.AssignBool(false)
 }
-func (_Msg3__KeyAssembler) AssignInt(int) error {
+func (_Msg3__KeyAssembler) AssignInt(int64) error {
 	return mixins.StringAssembler{"gendemo.Msg3.KeyAssembler"}.AssignInt(0)
 }
 func (_Msg3__KeyAssembler) AssignFloat(float64) error {
@@ -1557,7 +1557,7 @@ func (n *_Msg3__Repr) LookupByNode(key ipld.Node) (ipld.Node, error) {
 	}
 	return n.LookupByString(ks)
 }
-func (_Msg3__Repr) LookupByIndex(idx int) (ipld.Node, error) {
+func (_Msg3__Repr) LookupByIndex(idx int64) (ipld.Node, error) {
 	return mixins.Map{"gendemo.Msg3.Repr"}.LookupByIndex(0)
 }
 func (n _Msg3__Repr) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
@@ -1598,9 +1598,9 @@ func (itr *_Msg3__ReprMapItr) Done() bool {
 func (_Msg3__Repr) ListIterator() ipld.ListIterator {
 	return nil
 }
-func (rn *_Msg3__Repr) Length() int {
+func (rn *_Msg3__Repr) Length() int64 {
 	l := 3
-	return l
+	return int64(l)
 }
 func (_Msg3__Repr) IsAbsent() bool {
 	return false
@@ -1611,7 +1611,7 @@ func (_Msg3__Repr) IsNull() bool {
 func (_Msg3__Repr) AsBool() (bool, error) {
 	return mixins.Map{"gendemo.Msg3.Repr"}.AsBool()
 }
-func (_Msg3__Repr) AsInt() (int, error) {
+func (_Msg3__Repr) AsInt() (int64, error) {
 	return mixins.Map{"gendemo.Msg3.Repr"}.AsInt()
 }
 func (_Msg3__Repr) AsFloat() (float64, error) {
@@ -1674,7 +1674,7 @@ func (na *_Msg3__ReprAssembler) reset() {
 	na.ca_woot.reset()
 	na.ca_waga.reset()
 }
-func (na *_Msg3__ReprAssembler) BeginMap(int) (ipld.MapAssembler, error) {
+func (na *_Msg3__ReprAssembler) BeginMap(int64) (ipld.MapAssembler, error) {
 	switch *na.m {
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
@@ -1687,7 +1687,7 @@ func (na *_Msg3__ReprAssembler) BeginMap(int) (ipld.MapAssembler, error) {
 	}
 	return na, nil
 }
-func (_Msg3__ReprAssembler) BeginList(sizeHint int) (ipld.ListAssembler, error) {
+func (_Msg3__ReprAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
 	return mixins.MapAssembler{"gendemo.Msg3.Repr"}.BeginList(0)
 }
 func (na *_Msg3__ReprAssembler) AssignNull() error {
@@ -1707,7 +1707,7 @@ func (na *_Msg3__ReprAssembler) AssignNull() error {
 func (_Msg3__ReprAssembler) AssignBool(bool) error {
 	return mixins.MapAssembler{"gendemo.Msg3.Repr"}.AssignBool(false)
 }
-func (_Msg3__ReprAssembler) AssignInt(int) error {
+func (_Msg3__ReprAssembler) AssignInt(int64) error {
 	return mixins.MapAssembler{"gendemo.Msg3.Repr"}.AssignInt(0)
 }
 func (_Msg3__ReprAssembler) AssignFloat(float64) error {
@@ -1936,10 +1936,10 @@ func (ma *_Msg3__ReprAssembler) ValuePrototype(k string) ipld.NodePrototype {
 
 type _Msg3__ReprKeyAssembler _Msg3__ReprAssembler
 
-func (_Msg3__ReprKeyAssembler) BeginMap(sizeHint int) (ipld.MapAssembler, error) {
+func (_Msg3__ReprKeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
 	return mixins.StringAssembler{"gendemo.Msg3.Repr.KeyAssembler"}.BeginMap(0)
 }
-func (_Msg3__ReprKeyAssembler) BeginList(sizeHint int) (ipld.ListAssembler, error) {
+func (_Msg3__ReprKeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
 	return mixins.StringAssembler{"gendemo.Msg3.Repr.KeyAssembler"}.BeginList(0)
 }
 func (na *_Msg3__ReprKeyAssembler) AssignNull() error {
@@ -1948,7 +1948,7 @@ func (na *_Msg3__ReprKeyAssembler) AssignNull() error {
 func (_Msg3__ReprKeyAssembler) AssignBool(bool) error {
 	return mixins.StringAssembler{"gendemo.Msg3.Repr.KeyAssembler"}.AssignBool(false)
 }
-func (_Msg3__ReprKeyAssembler) AssignInt(int) error {
+func (_Msg3__ReprKeyAssembler) AssignInt(int64) error {
 	return mixins.StringAssembler{"gendemo.Msg3.Repr.KeyAssembler"}.AssignInt(0)
 }
 func (_Msg3__ReprKeyAssembler) AssignFloat(float64) error {
@@ -2060,7 +2060,7 @@ func (String) LookupByString(string) (ipld.Node, error) {
 func (String) LookupByNode(ipld.Node) (ipld.Node, error) {
 	return mixins.String{"gendemo.String"}.LookupByNode(nil)
 }
-func (String) LookupByIndex(idx int) (ipld.Node, error) {
+func (String) LookupByIndex(idx int64) (ipld.Node, error) {
 	return mixins.String{"gendemo.String"}.LookupByIndex(0)
 }
 func (String) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
@@ -2072,7 +2072,7 @@ func (String) MapIterator() ipld.MapIterator {
 func (String) ListIterator() ipld.ListIterator {
 	return nil
 }
-func (String) Length() int {
+func (String) Length() int64 {
 	return -1
 }
 func (String) IsAbsent() bool {
@@ -2084,7 +2084,7 @@ func (String) IsNull() bool {
 func (String) AsBool() (bool, error) {
 	return mixins.String{"gendemo.String"}.AsBool()
 }
-func (String) AsInt() (int, error) {
+func (String) AsInt() (int64, error) {
 	return mixins.String{"gendemo.String"}.AsInt()
 }
 func (String) AsFloat() (float64, error) {
@@ -2133,10 +2133,10 @@ type _String__Assembler struct {
 }
 
 func (na *_String__Assembler) reset() {}
-func (_String__Assembler) BeginMap(sizeHint int) (ipld.MapAssembler, error) {
+func (_String__Assembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
 	return mixins.StringAssembler{"gendemo.String"}.BeginMap(0)
 }
-func (_String__Assembler) BeginList(sizeHint int) (ipld.ListAssembler, error) {
+func (_String__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
 	return mixins.StringAssembler{"gendemo.String"}.BeginList(0)
 }
 func (na *_String__Assembler) AssignNull() error {
@@ -2154,7 +2154,7 @@ func (na *_String__Assembler) AssignNull() error {
 func (_String__Assembler) AssignBool(bool) error {
 	return mixins.StringAssembler{"gendemo.String"}.AssignBool(false)
 }
-func (_String__Assembler) AssignInt(int) error {
+func (_String__Assembler) AssignInt(int64) error {
 	return mixins.StringAssembler{"gendemo.String"}.AssignInt(0)
 }
 func (_String__Assembler) AssignFloat(float64) error {

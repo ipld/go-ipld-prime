@@ -20,7 +20,7 @@ import (
 // TokenAssemble does not enforce the "map keys must be strings" rule which is present in the Data Model;
 // it will also happily do even recursive structures in map keys,
 // meaning it can be used when handling schema values like maps with complex keys.
-func TokenAssemble(na ipld.NodeAssembler, tr TokenReader, budget int) error {
+func TokenAssemble(na ipld.NodeAssembler, tr TokenReader, budget int64) error {
 	tk, err := tr(&budget)
 	if err != nil {
 		return err
@@ -28,7 +28,7 @@ func TokenAssemble(na ipld.NodeAssembler, tr TokenReader, budget int) error {
 	return tokenAssemble(na, tk, tr, &budget)
 }
 
-func tokenAssemble(na ipld.NodeAssembler, tk *Token, tr TokenReader, budget *int) error {
+func tokenAssemble(na ipld.NodeAssembler, tk *Token, tr TokenReader, budget *int64) error {
 	if *budget < 0 {
 		return codec.ErrBudgetExhausted{}
 	}
@@ -104,15 +104,15 @@ func tokenAssemble(na ipld.NodeAssembler, tk *Token, tr TokenReader, budget *int
 		return na.AssignBool(tk.Bool)
 	case TokenKind_Int:
 		*budget--
-		return na.AssignInt(int(tk.Int))
+		return na.AssignInt(tk.Int)
 	case TokenKind_Float:
 		*budget--
 		return na.AssignFloat(tk.Float)
 	case TokenKind_String:
-		*budget -= len(tk.Str)
+		*budget -= int64(len(tk.Str))
 		return na.AssignString(tk.Str)
 	case TokenKind_Bytes:
-		*budget -= len(tk.Bytes)
+		*budget -= int64(len(tk.Bytes))
 		return na.AssignBytes(tk.Bytes)
 	case TokenKind_Link:
 		*budget--
@@ -208,7 +208,7 @@ func (ta *TokenAssembler) Process(tk *Token) (err error) {
 			ta.stk.Pop()
 			return err
 		case TokenKind_Int:
-			err = tip.na.AssignInt(int(tk.Int)) // TODO: upgrade all of ipld to use high precision int consistently
+			err = tip.na.AssignInt(tk.Int)
 			ta.stk.Pop()
 			return err
 		case TokenKind_Float:

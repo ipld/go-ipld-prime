@@ -16,7 +16,7 @@ func emitNodeAssemblerMethodBeginMap_strictoid(w io.Writer, adjCfg *AdjunctCfg, 
 	//  otherwise, the 'w' ptr should already be set, and we fill that memory location without allocating, as usual.
 	//  (Note that the Maybe we're talking about here is for us, not our children: so it applies on unions too.)
 	doTemplate(`
-		func (na *_{{ .Type | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Assembler) BeginMap(int) (ipld.MapAssembler, error) {
+		func (na *_{{ .Type | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Assembler) BeginMap(int64) (ipld.MapAssembler, error) {
 			switch *na.m {
 			case schema.Maybe_Value, schema.Maybe_Null:
 				panic("invalid state: cannot assign into assembler that's already finished")

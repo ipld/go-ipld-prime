@@ -28,7 +28,7 @@ func (x Link) LookupByString(string) (ipld.Node, error) {
 func (x Link) LookupByNode(key ipld.Node) (ipld.Node, error) {
 	return nil, ipld.ErrWrongKind{TypeName: x.TypeName, MethodName: "LookupByNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: ipld.ReprKind_Link}
 }
-func (x Link) LookupByIndex(idx int) (ipld.Node, error) {
+func (x Link) LookupByIndex(idx int64) (ipld.Node, error) {
 	return nil, ipld.ErrWrongKind{TypeName: x.TypeName, MethodName: "LookupByIndex", AppropriateKind: ipld.ReprKindSet_JustList, ActualKind: ipld.ReprKind_Link}
 }
 func (x Link) LookupBySegment(ipld.PathSegment) (ipld.Node, error) {
@@ -40,7 +40,7 @@ func (Link) MapIterator() ipld.MapIterator {
 func (Link) ListIterator() ipld.ListIterator {
 	return nil
 }
-func (Link) Length() int {
+func (Link) Length() int64 {
 	return -1
 }
 func (Link) IsAbsent() bool {
@@ -52,7 +52,7 @@ func (Link) IsNull() bool {
 func (x Link) AsBool() (bool, error) {
 	return false, ipld.ErrWrongKind{TypeName: x.TypeName, MethodName: "AsBool", AppropriateKind: ipld.ReprKindSet_JustBool, ActualKind: ipld.ReprKind_Link}
 }
-func (x Link) AsInt() (int, error) {
+func (x Link) AsInt() (int64, error) {
 	return 0, ipld.ErrWrongKind{TypeName: x.TypeName, MethodName: "AsInt", AppropriateKind: ipld.ReprKindSet_JustInt, ActualKind: ipld.ReprKind_Link}
 }
 func (x Link) AsFloat() (float64, error) {
@@ -71,10 +71,10 @@ type LinkAssembler struct {
 	TypeName string
 }
 
-func (x LinkAssembler) BeginMap(sizeHint int) (ipld.MapAssembler, error) {
+func (x LinkAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
 	return nil, ipld.ErrWrongKind{TypeName: x.TypeName, MethodName: "BeginMap", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: ipld.ReprKind_Link}
 }
-func (x LinkAssembler) BeginList(sizeHint int) (ipld.ListAssembler, error) {
+func (x LinkAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
 	return nil, ipld.ErrWrongKind{TypeName: x.TypeName, MethodName: "BeginList", AppropriateKind: ipld.ReprKindSet_JustList, ActualKind: ipld.ReprKind_Link}
 }
 func (x LinkAssembler) AssignNull() error {
@@ -83,7 +83,7 @@ func (x LinkAssembler) AssignNull() error {
 func (x LinkAssembler) AssignBool(bool) error {
 	return ipld.ErrWrongKind{TypeName: x.TypeName, MethodName: "AssignBool", AppropriateKind: ipld.ReprKindSet_JustBool, ActualKind: ipld.ReprKind_Link}
 }
-func (x LinkAssembler) AssignInt(int) error {
+func (x LinkAssembler) AssignInt(int64) error {
 	return ipld.ErrWrongKind{TypeName: x.TypeName, MethodName: "AssignInt", AppropriateKind: ipld.ReprKindSet_JustInt, ActualKind: ipld.ReprKind_Link}
 }
 func (x LinkAssembler) AssignFloat(float64) error {

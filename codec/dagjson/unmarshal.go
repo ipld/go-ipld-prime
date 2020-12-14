@@ -208,9 +208,9 @@ func (st *unmarshalState) unmarshal(na ipld.NodeAssembler, tokSrc shared.TokenSo
 	case tok.TBool:
 		return na.AssignBool(st.tk[0].Bool)
 	case tok.TInt:
-		return na.AssignInt(int(st.tk[0].Int)) // FIXME overflow check
+		return na.AssignInt(st.tk[0].Int)
 	case tok.TUint:
-		return na.AssignInt(int(st.tk[0].Uint)) // FIXME overflow check
+		return na.AssignInt(int64(st.tk[0].Uint)) // FIXME overflow check
 	case tok.TFloat64:
 		return na.AssignFloat(st.tk[0].Float64)
 	default:

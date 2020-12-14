@@ -27,8 +27,8 @@ type SelectorSpecBuilder interface {
 	ExploreRecursive(limit selector.RecursionLimit, sequence SelectorSpec) SelectorSpec
 	ExploreUnion(...SelectorSpec) SelectorSpec
 	ExploreAll(next SelectorSpec) SelectorSpec
-	ExploreIndex(index int, next SelectorSpec) SelectorSpec
-	ExploreRange(start int, end int, next SelectorSpec) SelectorSpec
+	ExploreIndex(index int64, next SelectorSpec) SelectorSpec
+	ExploreRange(start, end int64, next SelectorSpec) SelectorSpec
 	ExploreFields(ExploreFieldsSpecBuildingClosure) SelectorSpec
 	Matcher() SelectorSpec
 }
@@ -103,7 +103,7 @@ func (ssb *selectorSpecBuilder) ExploreAll(next SelectorSpec) SelectorSpec {
 		}),
 	}
 }
-func (ssb *selectorSpecBuilder) ExploreIndex(index int, next SelectorSpec) SelectorSpec {
+func (ssb *selectorSpecBuilder) ExploreIndex(index int64, next SelectorSpec) SelectorSpec {
 	return selectorSpec{
 		fluent.MustBuildMap(ssb.np, 1, func(na fluent.MapAssembler) {
 			na.AssembleEntry(selector.SelectorKey_ExploreIndex).CreateMap(2, func(na fluent.MapAssembler) {
@@ -114,7 +114,7 @@ func (ssb *selectorSpecBuilder) ExploreIndex(index int, next SelectorSpec) Selec
 	}
 }
 
-func (ssb *selectorSpecBuilder) ExploreRange(start int, end int, next SelectorSpec) SelectorSpec {
+func (ssb *selectorSpecBuilder) ExploreRange(start, end int64, next SelectorSpec) SelectorSpec {
 	return selectorSpec{
 		fluent.MustBuildMap(ssb.np, 1, func(na fluent.MapAssembler) {
 			na.AssembleEntry(selector.SelectorKey_ExploreRange).CreateMap(3, func(na fluent.MapAssembler) {
@@ -129,7 +129,7 @@ func (ssb *selectorSpecBuilder) ExploreRange(start int, end int, next SelectorSp
 func (ssb *selectorSpecBuilder) ExploreUnion(members ...SelectorSpec) SelectorSpec {
 	return selectorSpec{
 		fluent.MustBuildMap(ssb.np, 1, func(na fluent.MapAssembler) {
-			na.AssembleEntry(selector.SelectorKey_ExploreUnion).CreateList(len(members), func(na fluent.ListAssembler) {
+			na.AssembleEntry(selector.SelectorKey_ExploreUnion).CreateList(int64(len(members)), func(na fluent.ListAssembler) {
 				for _, member := range members {
 					na.AssembleValue().AssignNode(member.Node())
 				}

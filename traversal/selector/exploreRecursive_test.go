@@ -176,7 +176,7 @@ func TestParseExploreRecursive(t *testing.T) {
 
 func TestExploreRecursiveExplore(t *testing.T) {
 	recursiveEdge := ExploreRecursiveEdge{}
-	maxDepth := 3
+	maxDepth := int64(3)
 	var rs Selector
 	t.Run("exploring should traverse until we get to maxDepth", func(t *testing.T) {
 		parentsSelector := ExploreAll{recursiveEdge}

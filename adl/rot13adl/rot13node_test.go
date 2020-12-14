@@ -6,7 +6,7 @@ import (
 	. "github.com/warpfork/go-wish"
 
 	"github.com/ipld/go-ipld-prime"
-	"github.com/ipld/go-ipld-prime/node/basic"
+	basicnode "github.com/ipld/go-ipld-prime/node/basic"
 )
 
 func TestLogicalNodeRoundtrip(t *testing.T) {

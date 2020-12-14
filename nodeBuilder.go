@@ -16,11 +16,11 @@ package ipld
 // language without first-class/compile-time support for them (as golang is)
 // would tend to push complexity and costs to execution time; we'd rather not.)
 type NodeAssembler interface {
-	BeginMap(sizeHint int) (MapAssembler, error)
-	BeginList(sizeHint int) (ListAssembler, error)
+	BeginMap(sizeHint int64) (MapAssembler, error)
+	BeginList(sizeHint int64) (ListAssembler, error)
 	AssignNull() error
 	AssignBool(bool) error
-	AssignInt(int) error
+	AssignInt(int64) error
 	AssignFloat(float64) error
 	AssignString(string) error
 	AssignBytes([]byte) error
@@ -114,7 +114,7 @@ type ListAssembler interface {
 	// If you know you are operating in a situation that won't have varying
 	// NodePrototypes, it is acceptable to call `ValuePrototype(0)` and use the
 	// resulting NodePrototype for all reasoning.
-	ValuePrototype(idx int) NodePrototype
+	ValuePrototype(idx int64) NodePrototype
 }
 
 type NodeBuilder interface {

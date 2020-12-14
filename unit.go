@@ -13,7 +13,7 @@ func (nullNode) LookupByString(key string) (Node, error) {
 func (nullNode) LookupByNode(key Node) (Node, error) {
 	return nil, ErrWrongKind{TypeName: "null", MethodName: "LookupByNode", AppropriateKind: ReprKindSet_JustMap, ActualKind: ReprKind_Null}
 }
-func (nullNode) LookupByIndex(idx int) (Node, error) {
+func (nullNode) LookupByIndex(idx int64) (Node, error) {
 	return nil, ErrWrongKind{TypeName: "null", MethodName: "LookupByIndex", AppropriateKind: ReprKindSet_JustList, ActualKind: ReprKind_Null}
 }
 func (nullNode) LookupBySegment(seg PathSegment) (Node, error) {
@@ -25,7 +25,7 @@ func (nullNode) MapIterator() MapIterator {
 func (nullNode) ListIterator() ListIterator {
 	return nil
 }
-func (nullNode) Length() int {
+func (nullNode) Length() int64 {
 	return -1
 }
 func (nullNode) IsAbsent() bool {
@@ -37,7 +37,7 @@ func (nullNode) IsNull() bool {
 func (nullNode) AsBool() (bool, error) {
 	return false, ErrWrongKind{TypeName: "null", MethodName: "AsBool", AppropriateKind: ReprKindSet_JustBool, ActualKind: ReprKind_Null}
 }
-func (nullNode) AsInt() (int, error) {
+func (nullNode) AsInt() (int64, error) {
 	return 0, ErrWrongKind{TypeName: "null", MethodName: "AsInt", AppropriateKind: ReprKindSet_JustInt, ActualKind: ReprKind_Null}
 }
 func (nullNode) AsFloat() (float64, error) {
@@ -75,7 +75,7 @@ func (absentNode) LookupByString(key string) (Node, error) {
 func (absentNode) LookupByNode(key Node) (Node, error) {
 	return nil, ErrWrongKind{TypeName: "absent", MethodName: "LookupByNode", AppropriateKind: ReprKindSet_JustMap, ActualKind: ReprKind_Null}
 }
-func (absentNode) LookupByIndex(idx int) (Node, error) {
+func (absentNode) LookupByIndex(idx int64) (Node, error) {
 	return nil, ErrWrongKind{TypeName: "absent", MethodName: "LookupByIndex", AppropriateKind: ReprKindSet_JustList, ActualKind: ReprKind_Null}
 }
 func (absentNode) LookupBySegment(seg PathSegment) (Node, error) {
@@ -87,7 +87,7 @@ func (absentNode) MapIterator() MapIterator {
 func (absentNode) ListIterator() ListIterator {
 	return nil
 }
-func (absentNode) Length() int {
+func (absentNode) Length() int64 {
 	return -1
 }
 func (absentNode) IsAbsent() bool {
@@ -99,7 +99,7 @@ func (absentNode) IsNull() bool {
 func (absentNode) AsBool() (bool, error) {
 	return false, ErrWrongKind{TypeName: "absent", MethodName: "AsBool", AppropriateKind: ReprKindSet_JustBool, ActualKind: ReprKind_Null}
 }
-func (absentNode) AsInt() (int, error) {
+func (absentNode) AsInt() (int64, error) {
 	return 0, ErrWrongKind{TypeName: "absent", MethodName: "AsInt", AppropriateKind: ReprKindSet_JustInt, ActualKind: ReprKind_Null}
 }
 func (absentNode) AsFloat() (float64, error) {

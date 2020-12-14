@@ -28,7 +28,7 @@ func (x Int) LookupByString(string) (ipld.Node, error) {
 func (x Int) LookupByNode(key ipld.Node) (ipld.Node, error) {
 	return nil, ipld.ErrWrongKind{TypeName: x.TypeName, MethodName: "LookupByNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: ipld.ReprKind_Int}
 }
-func (x Int) LookupByIndex(idx int) (ipld.Node, error) {
+func (x Int) LookupByIndex(idx int64) (ipld.Node, error) {
 	return nil, ipld.ErrWrongKind{TypeName: x.TypeName, MethodName: "LookupByIndex", AppropriateKind: ipld.ReprKindSet_JustList, ActualKind: ipld.ReprKind_Int}
 }
 func (x Int) LookupBySegment(ipld.PathSegment) (ipld.Node, error) {
@@ -40,7 +40,7 @@ func (Int) MapIterator() ipld.MapIterator {
 func (Int) ListIterator() ipld.ListIterator {
 	return nil
 }
-func (Int) Length() int {
+func (Int) Length() int64 {
 	return -1
 }
 func (Int) IsAbsent() bool {
@@ -71,10 +71,10 @@ type IntAssembler struct {
 	TypeName string
 }
 
-func (x IntAssembler) BeginMap(sizeHint int) (ipld.MapAssembler, error) {
+func (x IntAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
 	return nil, ipld.ErrWrongKind{TypeName: x.TypeName, MethodName: "BeginMap", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: ipld.ReprKind_Int}
 }
-func (x IntAssembler) BeginList(sizeHint int) (ipld.ListAssembler, error) {
+func (x IntAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
 	return nil, ipld.ErrWrongKind{TypeName: x.TypeName, MethodName: "BeginList", AppropriateKind: ipld.ReprKindSet_JustList, ActualKind: ipld.ReprKind_Int}
 }
 func (x IntAssembler) AssignNull() error {

@@ -13,25 +13,25 @@ func SpecTestMapStrInt(t *testing.T, np ipld.NodePrototype) {
 	t.Run("map<str,int>, 3 entries", func(t *testing.T) {
 		n := buildMapStrIntN3(np)
 		t.Run("reads back out", func(t *testing.T) {
-			Wish(t, n.Length(), ShouldEqual, 3)
+			Wish(t, n.Length(), ShouldEqual, int64(3))
 
 			v, err := n.LookupByString("whee")
 			Wish(t, err, ShouldEqual, nil)
 			v2, err := v.AsInt()
 			Wish(t, err, ShouldEqual, nil)
-			Wish(t, v2, ShouldEqual, 1)
+			Wish(t, v2, ShouldEqual, int64(1))
 
 			v, err = n.LookupByString("waga")
 			Wish(t, err, ShouldEqual, nil)
 			v2, err = v.AsInt()
 			Wish(t, err, ShouldEqual, nil)
-			Wish(t, v2, ShouldEqual, 3)
+			Wish(t, v2, ShouldEqual, int64(3))
 
 			v, err = n.LookupByString("woot")
 			Wish(t, err, ShouldEqual, nil)
 			v2, err = v.AsInt()
 			Wish(t, err, ShouldEqual, nil)
-			Wish(t, v2, ShouldEqual, 2)
+			Wish(t, v2, ShouldEqual, int64(2))
 		})
 		t.Run("reads via iteration", func(t *testing.T) {
 			itr := n.MapIterator()
@@ -44,7 +44,7 @@ func SpecTestMapStrInt(t *testing.T, np ipld.NodePrototype) {
 			Wish(t, k2, ShouldEqual, "whee")
 			v2, err := v.AsInt()
 			Wish(t, err, ShouldEqual, nil)
-			Wish(t, v2, ShouldEqual, 1)
+			Wish(t, v2, ShouldEqual, int64(1))
 
 			Wish(t, itr.Done(), ShouldEqual, false)
 			k, v, err = itr.Next()
@@ -54,7 +54,7 @@ func SpecTestMapStrInt(t *testing.T, np ipld.NodePrototype) {
 			Wish(t, k2, ShouldEqual, "woot")
 			v2, err = v.AsInt()
 			Wish(t, err, ShouldEqual, nil)
-			Wish(t, v2, ShouldEqual, 2)
+			Wish(t, v2, ShouldEqual, int64(2))
 
 			Wish(t, itr.Done(), ShouldEqual, false)
 			k, v, err = itr.Next()
@@ -64,7 +64,7 @@ func SpecTestMapStrInt(t *testing.T, np ipld.NodePrototype) {
 			Wish(t, k2, ShouldEqual, "waga")
 			v2, err = v.AsInt()
 			Wish(t, err, ShouldEqual, nil)
-			Wish(t, v2, ShouldEqual, 3)
+			Wish(t, v2, ShouldEqual, int64(3))
 
 			Wish(t, itr.Done(), ShouldEqual, true)
 			k, v, err = itr.Next()
@@ -124,12 +124,12 @@ func SpecTestMapStrInt(t *testing.T, np ipld.NodePrototype) {
 		// ... and neither of these should've had visible effects!
 		Wish(t, ma.Finish(), ShouldEqual, nil)
 		n := nb.Build()
-		Wish(t, n.Length(), ShouldEqual, 1)
+		Wish(t, n.Length(), ShouldEqual, int64(1))
 		v, err := n.LookupByString("whee")
 		Wish(t, err, ShouldEqual, nil)
 		v2, err := v.AsInt()
 		Wish(t, err, ShouldEqual, nil)
-		Wish(t, v2, ShouldEqual, 1)
+		Wish(t, v2, ShouldEqual, int64(1))
 	})
 	t.Run("builder reset works", func(t *testing.T) {
 		// TODO
@@ -169,7 +169,7 @@ func SpecTestMapStrMapStrInt(t *testing.T, np ipld.NodePrototype) {
 		n := nb.Build()
 
 		t.Run("reads back out", func(t *testing.T) {
-			Wish(t, n.Length(), ShouldEqual, 3)
+			Wish(t, n.Length(), ShouldEqual, int64(3))
 
 			v, err := n.LookupByString("woot")
 			Wish(t, err, ShouldEqual, nil)
@@ -177,12 +177,12 @@ func SpecTestMapStrMapStrInt(t *testing.T, np ipld.NodePrototype) {
 			Wish(t, err, ShouldEqual, nil)
 			v3, err := v2.AsInt()
 			Wish(t, err, ShouldEqual, nil)
-			Wish(t, v3, ShouldEqual, 3)
+			Wish(t, v3, ShouldEqual, int64(3))
 			v2, err = v.LookupByString("m2k2")
 			Wish(t, err, ShouldEqual, nil)
 			v3, err = v2.AsInt()
 			Wish(t, err, ShouldEqual, nil)
-			Wish(t, v3, ShouldEqual, 4)
+			Wish(t, v3, ShouldEqual, int64(4))
 		})
 	})
 }
@@ -214,7 +214,7 @@ func SpecTestMapStrListStr(t *testing.T, np ipld.NodePrototype) {
 		n := nb.Build()
 
 		t.Run("reads back out", func(t *testing.T) {
-			Wish(t, n.Length(), ShouldEqual, 3)
+			Wish(t, n.Length(), ShouldEqual, int64(3))
 
 			v, err := n.LookupByString("qwer")
 			Wish(t, err, ShouldEqual, nil)

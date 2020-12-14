@@ -31,5 +31,5 @@ func TestPathSegmentZeroValue(t *testing.T) {
 	Wish(t, PathSegment{}.String(), ShouldEqual, "0")
 	i, err := PathSegment{}.Index()
 	Wish(t, err, ShouldEqual, nil)
-	Wish(t, i, ShouldEqual, 0)
+	Wish(t, i, ShouldEqual, int64(0))
 }

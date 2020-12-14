@@ -50,13 +50,13 @@ func TestStructReprTuple(t *testing.T) {
 				}).(schema.TypedNode)
 				t.Run("typed-read", func(t *testing.T) {
 					Require(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
-					Wish(t, n.Length(), ShouldEqual, 1)
+					Wish(t, n.Length(), ShouldEqual, int64(1))
 					Wish(t, must.String(must.Node(n.LookupByString("field"))), ShouldEqual, "valoo")
 				})
 				t.Run("repr-read", func(t *testing.T) {
 					nr := n.Representation()
 					Require(t, nr.ReprKind(), ShouldEqual, ipld.ReprKind_List)
-					Wish(t, nr.Length(), ShouldEqual, 1)
+					Wish(t, nr.Length(), ShouldEqual, int64(1))
 					Wish(t, must.String(must.Node(nr.LookupByIndex(0))), ShouldEqual, "valoo")
 				})
 			})
@@ -81,7 +81,7 @@ func TestStructReprTuple(t *testing.T) {
 				}).(schema.TypedNode)
 				t.Run("typed-read", func(t *testing.T) {
 					Require(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
-					Wish(t, n.Length(), ShouldEqual, 4)
+					Wish(t, n.Length(), ShouldEqual, int64(4))
 					Wish(t, must.String(must.Node(n.LookupByString("foo"))), ShouldEqual, "0")
 					Wish(t, must.String(must.Node(n.LookupByString("bar"))), ShouldEqual, "1")
 					Wish(t, must.String(must.Node(n.LookupByString("baz"))), ShouldEqual, "2")
@@ -90,7 +90,7 @@ func TestStructReprTuple(t *testing.T) {
 				t.Run("repr-read", func(t *testing.T) {
 					nr := n.Representation()
 					Require(t, nr.ReprKind(), ShouldEqual, ipld.ReprKind_List)
-					Wish(t, nr.Length(), ShouldEqual, 4)
+					Wish(t, nr.Length(), ShouldEqual, int64(4))
 					Wish(t, must.String(must.Node(nr.LookupByIndex(0))), ShouldEqual, "0")
 					Wish(t, must.String(must.Node(nr.LookupByIndex(1))), ShouldEqual, "1")
 					Wish(t, must.String(must.Node(nr.LookupByIndex(2))), ShouldEqual, "2")
@@ -119,7 +119,7 @@ func TestStructReprTuple(t *testing.T) {
 				}).(schema.TypedNode)
 				t.Run("typed-read", func(t *testing.T) {
 					Require(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
-					Wish(t, n.Length(), ShouldEqual, 4)
+					Wish(t, n.Length(), ShouldEqual, int64(4))
 					Wish(t, must.String(must.Node(n.LookupByString("foo"))), ShouldEqual, "0")
 					Wish(t, must.Node(n.LookupByString("bar")), ShouldEqual, ipld.Null)
 					Wish(t, must.Node(n.LookupByString("baz")), ShouldEqual, ipld.Absent)
@@ -128,7 +128,7 @@ func TestStructReprTuple(t *testing.T) {
 				t.Run("repr-read", func(t *testing.T) {
 					nr := n.Representation()
 					Require(t, nr.ReprKind(), ShouldEqual, ipld.ReprKind_List)
-					Wish(t, nr.Length(), ShouldEqual, 2)
+					Wish(t, nr.Length(), ShouldEqual, int64(2))
 					Wish(t, must.String(must.Node(nr.LookupByIndex(0))), ShouldEqual, "0")
 					Wish(t, must.Node(nr.LookupByIndex(1)), ShouldEqual, ipld.Null)
 				})

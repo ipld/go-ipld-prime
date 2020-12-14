@@ -34,7 +34,7 @@ type typeSlab struct {
 
 // Int matches the IPLD Schema type "Int".  It has int kind.
 type Int = *_Int
-type _Int struct{ x int }
+type _Int struct{ x int64 }
 
 // Map__String__Msg3 matches the IPLD Schema type "Map__String__Msg3".  It has map kind.
 type Map__String__Msg3 = *_Map__String__Msg3

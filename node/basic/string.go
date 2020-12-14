@@ -36,7 +36,7 @@ func (plainString) LookupByString(string) (ipld.Node, error) {
 func (plainString) LookupByNode(key ipld.Node) (ipld.Node, error) {
 	return mixins.String{TypeName: "string"}.LookupByNode(nil)
 }
-func (plainString) LookupByIndex(idx int) (ipld.Node, error) {
+func (plainString) LookupByIndex(idx int64) (ipld.Node, error) {
 	return mixins.String{TypeName: "string"}.LookupByIndex(0)
 }
 func (plainString) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
@@ -48,7 +48,7 @@ func (plainString) MapIterator() ipld.MapIterator {
 func (plainString) ListIterator() ipld.ListIterator {
 	return nil
 }
-func (plainString) Length() int {
+func (plainString) Length() int64 {
 	return -1
 }
 func (plainString) IsAbsent() bool {
@@ -60,7 +60,7 @@ func (plainString) IsNull() bool {
 func (plainString) AsBool() (bool, error) {
 	return mixins.String{TypeName: "string"}.AsBool()
 }
-func (plainString) AsInt() (int, error) {
+func (plainString) AsInt() (int64, error) {
 	return mixins.String{TypeName: "string"}.AsInt()
 }
 func (plainString) AsFloat() (float64, error) {
@@ -108,10 +108,10 @@ type plainString__Assembler struct {
 	w *plainString
 }
 
-func (plainString__Assembler) BeginMap(sizeHint int) (ipld.MapAssembler, error) {
+func (plainString__Assembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
 	return mixins.StringAssembler{TypeName: "string"}.BeginMap(0)
 }
-func (plainString__Assembler) BeginList(sizeHint int) (ipld.ListAssembler, error) {
+func (plainString__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
 	return mixins.StringAssembler{TypeName: "string"}.BeginList(0)
 }
 func (plainString__Assembler) AssignNull() error {
@@ -120,7 +120,7 @@ func (plainString__Assembler) AssignNull() error {
 func (plainString__Assembler) AssignBool(bool) error {
 	return mixins.StringAssembler{TypeName: "string"}.AssignBool(false)
 }
-func (plainString__Assembler) AssignInt(int) error {
+func (plainString__Assembler) AssignInt(int64) error {
 	return mixins.StringAssembler{TypeName: "string"}.AssignInt(0)
 }
 func (plainString__Assembler) AssignFloat(float64) error {
