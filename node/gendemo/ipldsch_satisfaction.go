@@ -180,7 +180,7 @@ func (_Int__Assembler) AssignBytes([]byte) error {
 func (_Int__Assembler) AssignLink(ipld.Link) error {
 	return mixins.IntAssembler{"gendemo.Int"}.AssignLink(nil)
 }
-func (na *_Int__Assembler) AssignNode(v ipld.Node) error {
+func (na *_Int__Assembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -482,7 +482,7 @@ func (_Map__String__Msg3__Assembler) AssignBytes([]byte) error {
 func (_Map__String__Msg3__Assembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"gendemo.Map__String__Msg3"}.AssignLink(nil)
 }
-func (na *_Map__String__Msg3__Assembler) AssignNode(v ipld.Node) error {
+func (na *_Map__String__Msg3__Assembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -503,7 +503,7 @@ func (na *_Map__String__Msg3__Assembler) AssignNode(v ipld.Node) error {
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "gendemo.Map__String__Msg3", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "gendemo.Map__String__Msg3", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -511,10 +511,10 @@ func (na *_Map__String__Msg3__Assembler) AssignNode(v ipld.Node) error {
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -824,7 +824,7 @@ func (_Map__String__Msg3__ReprAssembler) AssignBytes([]byte) error {
 func (_Map__String__Msg3__ReprAssembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"gendemo.Map__String__Msg3.Repr"}.AssignLink(nil)
 }
-func (na *_Map__String__Msg3__ReprAssembler) AssignNode(v ipld.Node) error {
+func (na *_Map__String__Msg3__ReprAssembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -845,7 +845,7 @@ func (na *_Map__String__Msg3__ReprAssembler) AssignNode(v ipld.Node) error {
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "gendemo.Map__String__Msg3.Repr", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "gendemo.Map__String__Msg3.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -853,10 +853,10 @@ func (na *_Map__String__Msg3__ReprAssembler) AssignNode(v ipld.Node) error {
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -1237,7 +1237,7 @@ func (_Msg3__Assembler) AssignBytes([]byte) error {
 func (_Msg3__Assembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"gendemo.Msg3"}.AssignLink(nil)
 }
-func (na *_Msg3__Assembler) AssignNode(v ipld.Node) error {
+func (na *_Msg3__Assembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -1258,7 +1258,7 @@ func (na *_Msg3__Assembler) AssignNode(v ipld.Node) error {
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "gendemo.Msg3", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "gendemo.Msg3", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -1266,10 +1266,10 @@ func (na *_Msg3__Assembler) AssignNode(v ipld.Node) error {
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -1509,7 +1509,7 @@ func (_Msg3__KeyAssembler) AssignBytes([]byte) error {
 func (_Msg3__KeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"gendemo.Msg3.KeyAssembler"}.AssignLink(nil)
 }
-func (ka *_Msg3__KeyAssembler) AssignNode(v ipld.Node) error {
+func (ka *_Msg3__KeyAssembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {
@@ -1722,7 +1722,7 @@ func (_Msg3__ReprAssembler) AssignBytes([]byte) error {
 func (_Msg3__ReprAssembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"gendemo.Msg3.Repr"}.AssignLink(nil)
 }
-func (na *_Msg3__ReprAssembler) AssignNode(v ipld.Node) error {
+func (na *_Msg3__ReprAssembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -1743,7 +1743,7 @@ func (na *_Msg3__ReprAssembler) AssignNode(v ipld.Node) error {
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "gendemo.Msg3.Repr", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "gendemo.Msg3.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -1751,10 +1751,10 @@ func (na *_Msg3__ReprAssembler) AssignNode(v ipld.Node) error {
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -1991,7 +1991,7 @@ func (_Msg3__ReprKeyAssembler) AssignBytes([]byte) error {
 func (_Msg3__ReprKeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"gendemo.Msg3.Repr.KeyAssembler"}.AssignLink(nil)
 }
-func (ka *_Msg3__ReprKeyAssembler) AssignNode(v ipld.Node) error {
+func (ka *_Msg3__ReprKeyAssembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {
@@ -2178,7 +2178,7 @@ func (_String__Assembler) AssignBytes([]byte) error {
 func (_String__Assembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"gendemo.String"}.AssignLink(nil)
 }
-func (na *_String__Assembler) AssignNode(v ipld.Node) error {
+func (na *_String__Assembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}

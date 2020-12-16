@@ -120,8 +120,8 @@ func (g linkBuilderGenerator) EmitNodeAssemblerMethodAssignNull(w io.Writer) {
 func (g linkBuilderGenerator) EmitNodeAssemblerMethodAssignLink(w io.Writer) {
 	emitNodeAssemblerMethodAssignKind_scalar(w, g.AdjCfg, g)
 }
-func (g linkBuilderGenerator) EmitNodeAssemblerMethodAssignNode(w io.Writer) {
-	emitNodeAssemblerMethodAssignNode_scalar(w, g.AdjCfg, g)
+func (g linkBuilderGenerator) EmitNodeAssemblerMethodConvertFrom(w io.Writer) {
+	emitNodeAssemblerMethodConvertFrom_scalar(w, g.AdjCfg, g)
 }
 func (g linkBuilderGenerator) EmitNodeAssemblerOtherBits(w io.Writer) {
 	// Nothing needed here for link kinds.

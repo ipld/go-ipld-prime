@@ -197,8 +197,8 @@ func (g listReprListReprBuilderGenerator) EmitNodeAssemblerMethodBeginList(w io.
 func (g listReprListReprBuilderGenerator) EmitNodeAssemblerMethodAssignNull(w io.Writer) {
 	emitNodeAssemblerMethodAssignNull_recursive(w, g.AdjCfg, g)
 }
-func (g listReprListReprBuilderGenerator) EmitNodeAssemblerMethodAssignNode(w io.Writer) {
-	emitNodeAssemblerMethodAssignNode_listoid(w, g.AdjCfg, g)
+func (g listReprListReprBuilderGenerator) EmitNodeAssemblerMethodConvertFrom(w io.Writer) {
+	emitNodeAssemblerMethodConvertFrom_listoid(w, g.AdjCfg, g)
 }
 func (g listReprListReprBuilderGenerator) EmitNodeAssemblerOtherBits(w io.Writer) {
 	emitNodeAssemblerHelper_listoid_tidyHelper(w, g.AdjCfg, g)

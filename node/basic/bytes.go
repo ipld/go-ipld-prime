@@ -131,7 +131,7 @@ func (na *plainBytes__Assembler) AssignBytes(v []byte) error {
 func (plainBytes__Assembler) AssignLink(ipld.Link) error {
 	return mixins.BytesAssembler{TypeName: "bytes"}.AssignLink(nil)
 }
-func (na *plainBytes__Assembler) AssignNode(v ipld.Node) error {
+func (na *plainBytes__Assembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsBytes(); err != nil {
 		return err
 	} else {

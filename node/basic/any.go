@@ -148,7 +148,7 @@ func (nb *anyBuilder) AssignLink(v ipld.Link) error {
 	nb.scalarNode = NewLink(v)
 	return nil
 }
-func (nb *anyBuilder) AssignNode(v ipld.Node) error {
+func (nb *anyBuilder) ConvertFrom(v ipld.Node) error {
 	if nb.kind != ipld.ReprKind_Invalid {
 		panic("misuse")
 	}

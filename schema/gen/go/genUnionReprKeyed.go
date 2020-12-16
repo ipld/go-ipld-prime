@@ -248,10 +248,10 @@ func (g unionReprKeyedReprBuilderGenerator) EmitNodeAssemblerMethodAssignNull(w 
 	//  but it's functionally accurate: the generated method should include a branch for the 'midvalue' state.
 	emitNodeAssemblerMethodAssignNull_recursive(w, g.AdjCfg, g)
 }
-func (g unionReprKeyedReprBuilderGenerator) EmitNodeAssemblerMethodAssignNode(w io.Writer) {
+func (g unionReprKeyedReprBuilderGenerator) EmitNodeAssemblerMethodConvertFrom(w io.Writer) {
 	// DRY: this is once again not-coincidentally very nearly equal to the type-level method.  Would be good to dedup them... after we do the get-to-the-point-in-phase-3 improvement.
 	doTemplate(`
-		func (na *_{{ .Type | TypeSymbol }}__ReprAssembler) AssignNode(v ipld.Node) error {
+		func (na *_{{ .Type | TypeSymbol }}__ReprAssembler) ConvertFrom(v ipld.Node) error {
 			if v.IsNull() {
 				return na.AssignNull()
 			}
@@ -274,7 +274,7 @@ func (g unionReprKeyedReprBuilderGenerator) EmitNodeAssemblerMethodAssignNode(w 
 				return nil
 			}
 			if v.ReprKind() != ipld.ReprKind_Map {
-				return ipld.ErrWrongKind{TypeName: "{{ .PkgName }}.{{ .Type.Name }}.Repr", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+				return ipld.ErrWrongKind{TypeName: "{{ .PkgName }}.{{ .Type.Name }}.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 			}
 			itr := v.MapIterator()
 			for !itr.Done() {
@@ -282,10 +282,10 @@ func (g unionReprKeyedReprBuilderGenerator) EmitNodeAssemblerMethodAssignNode(w 
 				if err != nil {
 					return err
 				}
-				if err := na.AssembleKey().AssignNode(k); err != nil {
+				if err := na.AssembleKey().ConvertFrom(k); err != nil {
 					return err
 				}
-				if err := na.AssembleValue().AssignNode(v); err != nil {
+				if err := na.AssembleValue().ConvertFrom(v); err != nil {
 					return err
 				}
 			}
@@ -509,7 +509,7 @@ func (g unionReprKeyedReprBuilderGenerator) emitKeyAssembler(w io.Writer) {
 	stubs.EmitNodeAssemblerMethodAssignBytes(w)
 	stubs.EmitNodeAssemblerMethodAssignLink(w)
 	doTemplate(`
-		func (ka *_{{ .Type | TypeSymbol }}__ReprKeyAssembler) AssignNode(v ipld.Node) error {
+		func (ka *_{{ .Type | TypeSymbol }}__ReprKeyAssembler) ConvertFrom(v ipld.Node) error {
 			if v2, err := v.AsString(); err != nil {
 				return err
 			} else {

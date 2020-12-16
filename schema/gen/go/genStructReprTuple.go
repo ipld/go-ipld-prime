@@ -332,8 +332,8 @@ func (g structReprTupleReprBuilderGenerator) EmitNodeAssemblerMethodBeginList(w 
 func (g structReprTupleReprBuilderGenerator) EmitNodeAssemblerMethodAssignNull(w io.Writer) {
 	emitNodeAssemblerMethodAssignNull_recursive(w, g.AdjCfg, g)
 }
-func (g structReprTupleReprBuilderGenerator) EmitNodeAssemblerMethodAssignNode(w io.Writer) {
-	emitNodeAssemblerMethodAssignNode_listoid(w, g.AdjCfg, g)
+func (g structReprTupleReprBuilderGenerator) EmitNodeAssemblerMethodConvertFrom(w io.Writer) {
+	emitNodeAssemblerMethodConvertFrom_listoid(w, g.AdjCfg, g)
 }
 func (g structReprTupleReprBuilderGenerator) EmitNodeAssemblerOtherBits(w io.Writer) {
 	g.emitListAssemblerChildTidyHelper(w)
