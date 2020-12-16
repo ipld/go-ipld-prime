@@ -111,8 +111,8 @@ func (g boolBuilderGenerator) EmitNodeAssemblerMethodAssignNull(w io.Writer) {
 func (g boolBuilderGenerator) EmitNodeAssemblerMethodAssignBool(w io.Writer) {
 	emitNodeAssemblerMethodAssignKind_scalar(w, g.AdjCfg, g)
 }
-func (g boolBuilderGenerator) EmitNodeAssemblerMethodAssignNode(w io.Writer) {
-	emitNodeAssemblerMethodAssignNode_scalar(w, g.AdjCfg, g)
+func (g boolBuilderGenerator) EmitNodeAssemblerMethodConvertFrom(w io.Writer) {
+	emitNodeAssemblerMethodConvertFrom_scalar(w, g.AdjCfg, g)
 }
 func (g boolBuilderGenerator) EmitNodeAssemblerOtherBits(w io.Writer) {
 	// Nothing needed here for bool kinds.

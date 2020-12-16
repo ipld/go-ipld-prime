@@ -131,7 +131,7 @@ func (plainBool__Assembler) AssignBytes([]byte) error {
 func (plainBool__Assembler) AssignLink(ipld.Link) error {
 	return mixins.BoolAssembler{TypeName: "bool"}.AssignLink(nil)
 }
-func (na *plainBool__Assembler) AssignNode(v ipld.Node) error {
+func (na *plainBool__Assembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsBool(); err != nil {
 		return err
 	} else {

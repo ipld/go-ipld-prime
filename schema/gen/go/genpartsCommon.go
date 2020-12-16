@@ -252,13 +252,13 @@ func emitNodeAssemblerMethodAssignKind_scalar(w io.Writer, adjCfg *AdjunctCfg, d
 
 // leans heavily on the fact all the AsFoo and AssignFoo methods follow a very consistent textual pattern.
 // FUTURE: may be able to get this to work for recursives, too -- but maps and lists each have very unique bottom thirds of this function.
-func emitNodeAssemblerMethodAssignNode_scalar(w io.Writer, adjCfg *AdjunctCfg, data interface{}) {
-	// AssignNode goes through three phases:
+func emitNodeAssemblerMethodConvertFrom_scalar(w io.Writer, adjCfg *AdjunctCfg, data interface{}) {
+	// ConvertFrom goes through three phases:
 	// 1. is it null?  Jump over to AssignNull (which may or may not reject it).
 	// 2. is it our own type?  Handle specially -- we might be able to do efficient things.
 	// 3. is it the right kind to morph into us?  Do so.
 	doTemplate(`
-		func (na *_{{ .Type | TypeSymbol }}__Assembler) AssignNode(v ipld.Node) error {
+		func (na *_{{ .Type | TypeSymbol }}__Assembler) ConvertFrom(v ipld.Node) error {
 			if v.IsNull() {
 				return na.AssignNull()
 			}

@@ -329,15 +329,15 @@ func (g structReprMapReprBuilderGenerator) EmitNodeAssemblerMethodBeginMap(w io.
 func (g structReprMapReprBuilderGenerator) EmitNodeAssemblerMethodAssignNull(w io.Writer) {
 	emitNodeAssemblerMethodAssignNull_recursive(w, g.AdjCfg, g)
 }
-func (g structReprMapReprBuilderGenerator) EmitNodeAssemblerMethodAssignNode(w io.Writer) {
-	// AssignNode goes through three phases:
+func (g structReprMapReprBuilderGenerator) EmitNodeAssemblerMethodConvertFrom(w io.Writer) {
+	// ConvertFrom goes through three phases:
 	// 1. is it null?  Jump over to AssignNull (which may or may not reject it).
 	// 2. is it our own type?  Handle specially -- we might be able to do efficient things.
 	// 3. is it the right kind to morph into us?  Do so.
 	//
 	// We do not set m=midvalue in phase 3 -- it shouldn't matter unless you're trying to pull off concurrent access, which is wrong and unsafe regardless.
 	doTemplate(`
-		func (na *_{{ .Type | TypeSymbol }}__ReprAssembler) AssignNode(v ipld.Node) error {
+		func (na *_{{ .Type | TypeSymbol }}__ReprAssembler) ConvertFrom(v ipld.Node) error {
 			if v.IsNull() {
 				return na.AssignNull()
 			}
@@ -360,7 +360,7 @@ func (g structReprMapReprBuilderGenerator) EmitNodeAssemblerMethodAssignNode(w i
 				return nil
 			}
 			if v.ReprKind() != ipld.ReprKind_Map {
-				return ipld.ErrWrongKind{TypeName: "{{ .PkgName }}.{{ .Type.Name }}.Repr", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+				return ipld.ErrWrongKind{TypeName: "{{ .PkgName }}.{{ .Type.Name }}.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 			}
 			itr := v.MapIterator()
 			for !itr.Done() {
@@ -368,10 +368,10 @@ func (g structReprMapReprBuilderGenerator) EmitNodeAssemblerMethodAssignNode(w i
 				if err != nil {
 					return err
 				}
-				if err := na.AssembleKey().AssignNode(k); err != nil {
+				if err := na.AssembleKey().ConvertFrom(k); err != nil {
 					return err
 				}
-				if err := na.AssembleValue().AssignNode(v); err != nil {
+				if err := na.AssembleValue().ConvertFrom(v); err != nil {
 					return err
 				}
 			}
@@ -612,7 +612,7 @@ func (g structReprMapReprBuilderGenerator) emitKeyAssembler(w io.Writer) {
 	stubs.EmitNodeAssemblerMethodAssignBytes(w)
 	stubs.EmitNodeAssemblerMethodAssignLink(w)
 	doTemplate(`
-		func (ka *_{{ .Type | TypeSymbol }}__ReprKeyAssembler) AssignNode(v ipld.Node) error {
+		func (ka *_{{ .Type | TypeSymbol }}__ReprKeyAssembler) ConvertFrom(v ipld.Node) error {
 			if v2, err := v.AsString(); err != nil {
 				return err
 			} else {

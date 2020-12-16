@@ -288,8 +288,8 @@ func (g listBuilderGenerator) EmitNodeAssemblerMethodBeginList(w io.Writer) {
 func (g listBuilderGenerator) EmitNodeAssemblerMethodAssignNull(w io.Writer) {
 	emitNodeAssemblerMethodAssignNull_recursive(w, g.AdjCfg, g)
 }
-func (g listBuilderGenerator) EmitNodeAssemblerMethodAssignNode(w io.Writer) {
-	emitNodeAssemblerMethodAssignNode_listoid(w, g.AdjCfg, g)
+func (g listBuilderGenerator) EmitNodeAssemblerMethodConvertFrom(w io.Writer) {
+	emitNodeAssemblerMethodConvertFrom_listoid(w, g.AdjCfg, g)
 }
 func (g listBuilderGenerator) EmitNodeAssemblerOtherBits(w io.Writer) {
 	emitNodeAssemblerHelper_listoid_tidyHelper(w, g.AdjCfg, g)

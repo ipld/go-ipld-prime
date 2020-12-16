@@ -103,6 +103,6 @@ func (intReprIntReprBuilderGenerator) EmitNodeAssemblerMethodAssignFloat(io.Writ
 func (intReprIntReprBuilderGenerator) EmitNodeAssemblerMethodAssignString(io.Writer) {}
 func (intReprIntReprBuilderGenerator) EmitNodeAssemblerMethodAssignBytes(io.Writer)  {}
 func (intReprIntReprBuilderGenerator) EmitNodeAssemblerMethodAssignLink(io.Writer)   {}
-func (intReprIntReprBuilderGenerator) EmitNodeAssemblerMethodAssignNode(io.Writer)   {}
+func (intReprIntReprBuilderGenerator) EmitNodeAssemblerMethodConvertFrom(io.Writer)   {}
 func (intReprIntReprBuilderGenerator) EmitNodeAssemblerMethodPrototype(io.Writer)    {}
 func (intReprIntReprBuilderGenerator) EmitNodeAssemblerOtherBits(io.Writer)          {}

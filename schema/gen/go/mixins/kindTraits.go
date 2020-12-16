@@ -306,7 +306,7 @@ func (g kindAssemblerTraitsGenerator) emitNodeAssemblerMethodAssignLink(w io.Wri
 	`, w, g)
 }
 
-// bailed on extracting a common emitNodeAssemblerMethodAssignNode: way too many variations.
+// bailed on extracting a common emitNodeAssemblerMethodConvertFrom: way too many variations.
 
 func (g kindAssemblerTraitsGenerator) emitNodeAssemblerMethodPrototype(w io.Writer) {
 	doTemplate(`

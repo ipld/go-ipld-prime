@@ -131,7 +131,7 @@ func (plainFloat__Assembler) AssignBytes([]byte) error {
 func (plainFloat__Assembler) AssignLink(ipld.Link) error {
 	return mixins.FloatAssembler{TypeName: "float"}.AssignLink(nil)
 }
-func (na *plainFloat__Assembler) AssignNode(v ipld.Node) error {
+func (na *plainFloat__Assembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsFloat(); err != nil {
 		return err
 	} else {

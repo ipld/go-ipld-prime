@@ -158,7 +158,7 @@ func (_Substrate__Assembler) AssignBytes([]byte) error {
 func (_Substrate__Assembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{TypeName: "rot13adl.internal.Substrate"}.AssignLink(nil)
 }
-func (na *_Substrate__Assembler) AssignNode(v ipld.Node) error {
+func (na *_Substrate__Assembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}

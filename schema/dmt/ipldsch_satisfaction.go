@@ -299,7 +299,7 @@ func (_AnyScalar__Assembler) AssignBytes([]byte) error {
 func (_AnyScalar__Assembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.AnyScalar"}.AssignLink(nil)
 }
-func (na *_AnyScalar__Assembler) AssignNode(v ipld.Node) error {
+func (na *_AnyScalar__Assembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -320,7 +320,7 @@ func (na *_AnyScalar__Assembler) AssignNode(v ipld.Node) error {
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.AnyScalar", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.AnyScalar", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -328,10 +328,10 @@ func (na *_AnyScalar__Assembler) AssignNode(v ipld.Node) error {
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -570,7 +570,7 @@ func (_AnyScalar__KeyAssembler) AssignBytes([]byte) error {
 func (_AnyScalar__KeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.AnyScalar.KeyAssembler"}.AssignLink(nil)
 }
-func (ka *_AnyScalar__KeyAssembler) AssignNode(v ipld.Node) error {
+func (ka *_AnyScalar__KeyAssembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {
@@ -856,7 +856,7 @@ func (na *_AnyScalar__ReprAssembler) AssignLink(v ipld.Link) error {
 	}
 	return schema.ErrNotUnionStructure{TypeName: "schemadmt.AnyScalar.Repr", Detail: "AssignLink called but is not valid for any of the kinds that are valid members of this union"}
 }
-func (na *_AnyScalar__ReprAssembler) AssignNode(v ipld.Node) error {
+func (na *_AnyScalar__ReprAssembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -903,10 +903,10 @@ func (na *_AnyScalar__ReprAssembler) AssignNode(v ipld.Node) error {
 			if err != nil {
 				return err
 			}
-			if err := na.AssembleKey().AssignNode(k); err != nil {
+			if err := na.AssembleKey().ConvertFrom(k); err != nil {
 				return err
 			}
-			if err := na.AssembleValue().AssignNode(v); err != nil {
+			if err := na.AssembleValue().ConvertFrom(v); err != nil {
 				return err
 			}
 		}
@@ -922,7 +922,7 @@ func (na *_AnyScalar__ReprAssembler) AssignNode(v ipld.Node) error {
 			if err != nil {
 				return err
 			}
-			if err := na.AssembleValue().AssignNode(v); err != nil {
+			if err := na.AssembleValue().ConvertFrom(v); err != nil {
 				return err
 			}
 		}
@@ -1110,7 +1110,7 @@ func (_Bool__Assembler) AssignBytes([]byte) error {
 func (_Bool__Assembler) AssignLink(ipld.Link) error {
 	return mixins.BoolAssembler{"schemadmt.Bool"}.AssignLink(nil)
 }
-func (na *_Bool__Assembler) AssignNode(v ipld.Node) error {
+func (na *_Bool__Assembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -1323,7 +1323,7 @@ func (na *_Bytes__Assembler) AssignBytes(v []byte) error {
 func (_Bytes__Assembler) AssignLink(ipld.Link) error {
 	return mixins.BytesAssembler{"schemadmt.Bytes"}.AssignLink(nil)
 }
-func (na *_Bytes__Assembler) AssignNode(v ipld.Node) error {
+func (na *_Bytes__Assembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -1610,7 +1610,7 @@ func (_EnumRepresentation__Assembler) AssignBytes([]byte) error {
 func (_EnumRepresentation__Assembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.EnumRepresentation"}.AssignLink(nil)
 }
-func (na *_EnumRepresentation__Assembler) AssignNode(v ipld.Node) error {
+func (na *_EnumRepresentation__Assembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -1631,7 +1631,7 @@ func (na *_EnumRepresentation__Assembler) AssignNode(v ipld.Node) error {
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.EnumRepresentation", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.EnumRepresentation", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -1639,10 +1639,10 @@ func (na *_EnumRepresentation__Assembler) AssignNode(v ipld.Node) error {
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -1827,7 +1827,7 @@ func (_EnumRepresentation__KeyAssembler) AssignBytes([]byte) error {
 func (_EnumRepresentation__KeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.EnumRepresentation.KeyAssembler"}.AssignLink(nil)
 }
-func (ka *_EnumRepresentation__KeyAssembler) AssignNode(v ipld.Node) error {
+func (ka *_EnumRepresentation__KeyAssembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {
@@ -2046,7 +2046,7 @@ func (_EnumRepresentation__ReprAssembler) AssignBytes([]byte) error {
 func (_EnumRepresentation__ReprAssembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.EnumRepresentation.Repr"}.AssignLink(nil)
 }
-func (na *_EnumRepresentation__ReprAssembler) AssignNode(v ipld.Node) error {
+func (na *_EnumRepresentation__ReprAssembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -2067,7 +2067,7 @@ func (na *_EnumRepresentation__ReprAssembler) AssignNode(v ipld.Node) error {
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.EnumRepresentation.Repr", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.EnumRepresentation.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -2075,10 +2075,10 @@ func (na *_EnumRepresentation__ReprAssembler) AssignNode(v ipld.Node) error {
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -2263,7 +2263,7 @@ func (_EnumRepresentation__ReprKeyAssembler) AssignBytes([]byte) error {
 func (_EnumRepresentation__ReprKeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.EnumRepresentation.Repr.KeyAssembler"}.AssignLink(nil)
 }
-func (ka *_EnumRepresentation__ReprKeyAssembler) AssignNode(v ipld.Node) error {
+func (ka *_EnumRepresentation__ReprKeyAssembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {
@@ -2535,7 +2535,7 @@ func (_EnumRepresentation_Int__Assembler) AssignBytes([]byte) error {
 func (_EnumRepresentation_Int__Assembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.EnumRepresentation_Int"}.AssignLink(nil)
 }
-func (na *_EnumRepresentation_Int__Assembler) AssignNode(v ipld.Node) error {
+func (na *_EnumRepresentation_Int__Assembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -2556,7 +2556,7 @@ func (na *_EnumRepresentation_Int__Assembler) AssignNode(v ipld.Node) error {
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.EnumRepresentation_Int", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.EnumRepresentation_Int", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -2564,10 +2564,10 @@ func (na *_EnumRepresentation_Int__Assembler) AssignNode(v ipld.Node) error {
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -2877,7 +2877,7 @@ func (_EnumRepresentation_Int__ReprAssembler) AssignBytes([]byte) error {
 func (_EnumRepresentation_Int__ReprAssembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.EnumRepresentation_Int.Repr"}.AssignLink(nil)
 }
-func (na *_EnumRepresentation_Int__ReprAssembler) AssignNode(v ipld.Node) error {
+func (na *_EnumRepresentation_Int__ReprAssembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -2898,7 +2898,7 @@ func (na *_EnumRepresentation_Int__ReprAssembler) AssignNode(v ipld.Node) error 
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.EnumRepresentation_Int.Repr", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.EnumRepresentation_Int.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -2906,10 +2906,10 @@ func (na *_EnumRepresentation_Int__ReprAssembler) AssignNode(v ipld.Node) error 
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -3304,7 +3304,7 @@ func (_EnumRepresentation_String__Assembler) AssignBytes([]byte) error {
 func (_EnumRepresentation_String__Assembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.EnumRepresentation_String"}.AssignLink(nil)
 }
-func (na *_EnumRepresentation_String__Assembler) AssignNode(v ipld.Node) error {
+func (na *_EnumRepresentation_String__Assembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -3325,7 +3325,7 @@ func (na *_EnumRepresentation_String__Assembler) AssignNode(v ipld.Node) error {
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.EnumRepresentation_String", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.EnumRepresentation_String", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -3333,10 +3333,10 @@ func (na *_EnumRepresentation_String__Assembler) AssignNode(v ipld.Node) error {
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -3646,7 +3646,7 @@ func (_EnumRepresentation_String__ReprAssembler) AssignBytes([]byte) error {
 func (_EnumRepresentation_String__ReprAssembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.EnumRepresentation_String.Repr"}.AssignLink(nil)
 }
-func (na *_EnumRepresentation_String__ReprAssembler) AssignNode(v ipld.Node) error {
+func (na *_EnumRepresentation_String__ReprAssembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -3667,7 +3667,7 @@ func (na *_EnumRepresentation_String__ReprAssembler) AssignNode(v ipld.Node) err
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.EnumRepresentation_String.Repr", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.EnumRepresentation_String.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -3675,10 +3675,10 @@ func (na *_EnumRepresentation_String__ReprAssembler) AssignNode(v ipld.Node) err
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -3988,7 +3988,7 @@ func (_EnumValue__Assembler) AssignBytes([]byte) error {
 func (_EnumValue__Assembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.EnumValue"}.AssignLink(nil)
 }
-func (na *_EnumValue__Assembler) AssignNode(v ipld.Node) error {
+func (na *_EnumValue__Assembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -4205,7 +4205,7 @@ func (_FieldName__Assembler) AssignBytes([]byte) error {
 func (_FieldName__Assembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.FieldName"}.AssignLink(nil)
 }
-func (na *_FieldName__Assembler) AssignNode(v ipld.Node) error {
+func (na *_FieldName__Assembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -4418,7 +4418,7 @@ func (_Float__Assembler) AssignBytes([]byte) error {
 func (_Float__Assembler) AssignLink(ipld.Link) error {
 	return mixins.FloatAssembler{"schemadmt.Float"}.AssignLink(nil)
 }
-func (na *_Float__Assembler) AssignNode(v ipld.Node) error {
+func (na *_Float__Assembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -4631,7 +4631,7 @@ func (_Int__Assembler) AssignBytes([]byte) error {
 func (_Int__Assembler) AssignLink(ipld.Link) error {
 	return mixins.IntAssembler{"schemadmt.Int"}.AssignLink(nil)
 }
-func (na *_Int__Assembler) AssignNode(v ipld.Node) error {
+func (na *_Int__Assembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -4903,7 +4903,7 @@ func (_ListRepresentation__Assembler) AssignBytes([]byte) error {
 func (_ListRepresentation__Assembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.ListRepresentation"}.AssignLink(nil)
 }
-func (na *_ListRepresentation__Assembler) AssignNode(v ipld.Node) error {
+func (na *_ListRepresentation__Assembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -4924,7 +4924,7 @@ func (na *_ListRepresentation__Assembler) AssignNode(v ipld.Node) error {
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.ListRepresentation", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.ListRepresentation", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -4932,10 +4932,10 @@ func (na *_ListRepresentation__Assembler) AssignNode(v ipld.Node) error {
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -5102,7 +5102,7 @@ func (_ListRepresentation__KeyAssembler) AssignBytes([]byte) error {
 func (_ListRepresentation__KeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.ListRepresentation.KeyAssembler"}.AssignLink(nil)
 }
-func (ka *_ListRepresentation__KeyAssembler) AssignNode(v ipld.Node) error {
+func (ka *_ListRepresentation__KeyAssembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {
@@ -5308,7 +5308,7 @@ func (_ListRepresentation__ReprAssembler) AssignBytes([]byte) error {
 func (_ListRepresentation__ReprAssembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.ListRepresentation.Repr"}.AssignLink(nil)
 }
-func (na *_ListRepresentation__ReprAssembler) AssignNode(v ipld.Node) error {
+func (na *_ListRepresentation__ReprAssembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -5329,7 +5329,7 @@ func (na *_ListRepresentation__ReprAssembler) AssignNode(v ipld.Node) error {
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.ListRepresentation.Repr", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.ListRepresentation.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -5337,10 +5337,10 @@ func (na *_ListRepresentation__ReprAssembler) AssignNode(v ipld.Node) error {
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -5507,7 +5507,7 @@ func (_ListRepresentation__ReprKeyAssembler) AssignBytes([]byte) error {
 func (_ListRepresentation__ReprKeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.ListRepresentation.Repr.KeyAssembler"}.AssignLink(nil)
 }
-func (ka *_ListRepresentation__ReprKeyAssembler) AssignNode(v ipld.Node) error {
+func (ka *_ListRepresentation__ReprKeyAssembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {
@@ -5727,7 +5727,7 @@ func (_ListRepresentation_List__Assembler) AssignBytes([]byte) error {
 func (_ListRepresentation_List__Assembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.ListRepresentation_List"}.AssignLink(nil)
 }
-func (na *_ListRepresentation_List__Assembler) AssignNode(v ipld.Node) error {
+func (na *_ListRepresentation_List__Assembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -5748,7 +5748,7 @@ func (na *_ListRepresentation_List__Assembler) AssignNode(v ipld.Node) error {
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.ListRepresentation_List", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.ListRepresentation_List", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -5756,10 +5756,10 @@ func (na *_ListRepresentation_List__Assembler) AssignNode(v ipld.Node) error {
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -5897,7 +5897,7 @@ func (_ListRepresentation_List__KeyAssembler) AssignBytes([]byte) error {
 func (_ListRepresentation_List__KeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.ListRepresentation_List.KeyAssembler"}.AssignLink(nil)
 }
-func (ka *_ListRepresentation_List__KeyAssembler) AssignNode(v ipld.Node) error {
+func (ka *_ListRepresentation_List__KeyAssembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {
@@ -6085,7 +6085,7 @@ func (_ListRepresentation_List__ReprAssembler) AssignBytes([]byte) error {
 func (_ListRepresentation_List__ReprAssembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.ListRepresentation_List.Repr"}.AssignLink(nil)
 }
-func (na *_ListRepresentation_List__ReprAssembler) AssignNode(v ipld.Node) error {
+func (na *_ListRepresentation_List__ReprAssembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -6106,7 +6106,7 @@ func (na *_ListRepresentation_List__ReprAssembler) AssignNode(v ipld.Node) error
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.ListRepresentation_List.Repr", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.ListRepresentation_List.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -6114,10 +6114,10 @@ func (na *_ListRepresentation_List__ReprAssembler) AssignNode(v ipld.Node) error
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -6255,7 +6255,7 @@ func (_ListRepresentation_List__ReprKeyAssembler) AssignBytes([]byte) error {
 func (_ListRepresentation_List__ReprKeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.ListRepresentation_List.Repr.KeyAssembler"}.AssignLink(nil)
 }
-func (ka *_ListRepresentation_List__ReprKeyAssembler) AssignNode(v ipld.Node) error {
+func (ka *_ListRepresentation_List__ReprKeyAssembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {
@@ -6520,7 +6520,7 @@ func (_List__FieldName__Assembler) AssignBytes([]byte) error {
 func (_List__FieldName__Assembler) AssignLink(ipld.Link) error {
 	return mixins.ListAssembler{"schemadmt.List__FieldName"}.AssignLink(nil)
 }
-func (na *_List__FieldName__Assembler) AssignNode(v ipld.Node) error {
+func (na *_List__FieldName__Assembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -6541,7 +6541,7 @@ func (na *_List__FieldName__Assembler) AssignNode(v ipld.Node) error {
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_List {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.List__FieldName", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustList, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.List__FieldName", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustList, ActualKind: v.ReprKind()}
 	}
 	itr := v.ListIterator()
 	for !itr.Done() {
@@ -6549,7 +6549,7 @@ func (na *_List__FieldName__Assembler) AssignNode(v ipld.Node) error {
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -6786,7 +6786,7 @@ func (_List__FieldName__ReprAssembler) AssignBytes([]byte) error {
 func (_List__FieldName__ReprAssembler) AssignLink(ipld.Link) error {
 	return mixins.ListAssembler{"schemadmt.List__FieldName.Repr"}.AssignLink(nil)
 }
-func (na *_List__FieldName__ReprAssembler) AssignNode(v ipld.Node) error {
+func (na *_List__FieldName__ReprAssembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -6807,7 +6807,7 @@ func (na *_List__FieldName__ReprAssembler) AssignNode(v ipld.Node) error {
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_List {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.List__FieldName.Repr", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustList, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.List__FieldName.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustList, ActualKind: v.ReprKind()}
 	}
 	itr := v.ListIterator()
 	for !itr.Done() {
@@ -6815,7 +6815,7 @@ func (na *_List__FieldName__ReprAssembler) AssignNode(v ipld.Node) error {
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -7127,7 +7127,7 @@ func (_List__TypeName__Assembler) AssignBytes([]byte) error {
 func (_List__TypeName__Assembler) AssignLink(ipld.Link) error {
 	return mixins.ListAssembler{"schemadmt.List__TypeName"}.AssignLink(nil)
 }
-func (na *_List__TypeName__Assembler) AssignNode(v ipld.Node) error {
+func (na *_List__TypeName__Assembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -7148,7 +7148,7 @@ func (na *_List__TypeName__Assembler) AssignNode(v ipld.Node) error {
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_List {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.List__TypeName", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustList, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.List__TypeName", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustList, ActualKind: v.ReprKind()}
 	}
 	itr := v.ListIterator()
 	for !itr.Done() {
@@ -7156,7 +7156,7 @@ func (na *_List__TypeName__Assembler) AssignNode(v ipld.Node) error {
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -7393,7 +7393,7 @@ func (_List__TypeName__ReprAssembler) AssignBytes([]byte) error {
 func (_List__TypeName__ReprAssembler) AssignLink(ipld.Link) error {
 	return mixins.ListAssembler{"schemadmt.List__TypeName.Repr"}.AssignLink(nil)
 }
-func (na *_List__TypeName__ReprAssembler) AssignNode(v ipld.Node) error {
+func (na *_List__TypeName__ReprAssembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -7414,7 +7414,7 @@ func (na *_List__TypeName__ReprAssembler) AssignNode(v ipld.Node) error {
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_List {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.List__TypeName.Repr", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustList, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.List__TypeName.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustList, ActualKind: v.ReprKind()}
 	}
 	itr := v.ListIterator()
 	for !itr.Done() {
@@ -7422,7 +7422,7 @@ func (na *_List__TypeName__ReprAssembler) AssignNode(v ipld.Node) error {
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -7741,7 +7741,7 @@ func (_MapRepresentation__Assembler) AssignBytes([]byte) error {
 func (_MapRepresentation__Assembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.MapRepresentation"}.AssignLink(nil)
 }
-func (na *_MapRepresentation__Assembler) AssignNode(v ipld.Node) error {
+func (na *_MapRepresentation__Assembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -7762,7 +7762,7 @@ func (na *_MapRepresentation__Assembler) AssignNode(v ipld.Node) error {
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.MapRepresentation", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.MapRepresentation", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -7770,10 +7770,10 @@ func (na *_MapRepresentation__Assembler) AssignNode(v ipld.Node) error {
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -7976,7 +7976,7 @@ func (_MapRepresentation__KeyAssembler) AssignBytes([]byte) error {
 func (_MapRepresentation__KeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.MapRepresentation.KeyAssembler"}.AssignLink(nil)
 }
-func (ka *_MapRepresentation__KeyAssembler) AssignNode(v ipld.Node) error {
+func (ka *_MapRepresentation__KeyAssembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {
@@ -8208,7 +8208,7 @@ func (_MapRepresentation__ReprAssembler) AssignBytes([]byte) error {
 func (_MapRepresentation__ReprAssembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.MapRepresentation.Repr"}.AssignLink(nil)
 }
-func (na *_MapRepresentation__ReprAssembler) AssignNode(v ipld.Node) error {
+func (na *_MapRepresentation__ReprAssembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -8229,7 +8229,7 @@ func (na *_MapRepresentation__ReprAssembler) AssignNode(v ipld.Node) error {
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.MapRepresentation.Repr", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.MapRepresentation.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -8237,10 +8237,10 @@ func (na *_MapRepresentation__ReprAssembler) AssignNode(v ipld.Node) error {
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -8443,7 +8443,7 @@ func (_MapRepresentation__ReprKeyAssembler) AssignBytes([]byte) error {
 func (_MapRepresentation__ReprKeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.MapRepresentation.Repr.KeyAssembler"}.AssignLink(nil)
 }
-func (ka *_MapRepresentation__ReprKeyAssembler) AssignNode(v ipld.Node) error {
+func (ka *_MapRepresentation__ReprKeyAssembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {
@@ -8663,7 +8663,7 @@ func (_MapRepresentation_Listpairs__Assembler) AssignBytes([]byte) error {
 func (_MapRepresentation_Listpairs__Assembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.MapRepresentation_Listpairs"}.AssignLink(nil)
 }
-func (na *_MapRepresentation_Listpairs__Assembler) AssignNode(v ipld.Node) error {
+func (na *_MapRepresentation_Listpairs__Assembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -8684,7 +8684,7 @@ func (na *_MapRepresentation_Listpairs__Assembler) AssignNode(v ipld.Node) error
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.MapRepresentation_Listpairs", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.MapRepresentation_Listpairs", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -8692,10 +8692,10 @@ func (na *_MapRepresentation_Listpairs__Assembler) AssignNode(v ipld.Node) error
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -8833,7 +8833,7 @@ func (_MapRepresentation_Listpairs__KeyAssembler) AssignBytes([]byte) error {
 func (_MapRepresentation_Listpairs__KeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.MapRepresentation_Listpairs.KeyAssembler"}.AssignLink(nil)
 }
-func (ka *_MapRepresentation_Listpairs__KeyAssembler) AssignNode(v ipld.Node) error {
+func (ka *_MapRepresentation_Listpairs__KeyAssembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {
@@ -9021,7 +9021,7 @@ func (_MapRepresentation_Listpairs__ReprAssembler) AssignBytes([]byte) error {
 func (_MapRepresentation_Listpairs__ReprAssembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.MapRepresentation_Listpairs.Repr"}.AssignLink(nil)
 }
-func (na *_MapRepresentation_Listpairs__ReprAssembler) AssignNode(v ipld.Node) error {
+func (na *_MapRepresentation_Listpairs__ReprAssembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -9042,7 +9042,7 @@ func (na *_MapRepresentation_Listpairs__ReprAssembler) AssignNode(v ipld.Node) e
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.MapRepresentation_Listpairs.Repr", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.MapRepresentation_Listpairs.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -9050,10 +9050,10 @@ func (na *_MapRepresentation_Listpairs__ReprAssembler) AssignNode(v ipld.Node) e
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -9191,7 +9191,7 @@ func (_MapRepresentation_Listpairs__ReprKeyAssembler) AssignBytes([]byte) error 
 func (_MapRepresentation_Listpairs__ReprKeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.MapRepresentation_Listpairs.Repr.KeyAssembler"}.AssignLink(nil)
 }
-func (ka *_MapRepresentation_Listpairs__ReprKeyAssembler) AssignNode(v ipld.Node) error {
+func (ka *_MapRepresentation_Listpairs__ReprKeyAssembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {
@@ -9411,7 +9411,7 @@ func (_MapRepresentation_Map__Assembler) AssignBytes([]byte) error {
 func (_MapRepresentation_Map__Assembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.MapRepresentation_Map"}.AssignLink(nil)
 }
-func (na *_MapRepresentation_Map__Assembler) AssignNode(v ipld.Node) error {
+func (na *_MapRepresentation_Map__Assembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -9432,7 +9432,7 @@ func (na *_MapRepresentation_Map__Assembler) AssignNode(v ipld.Node) error {
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.MapRepresentation_Map", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.MapRepresentation_Map", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -9440,10 +9440,10 @@ func (na *_MapRepresentation_Map__Assembler) AssignNode(v ipld.Node) error {
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -9581,7 +9581,7 @@ func (_MapRepresentation_Map__KeyAssembler) AssignBytes([]byte) error {
 func (_MapRepresentation_Map__KeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.MapRepresentation_Map.KeyAssembler"}.AssignLink(nil)
 }
-func (ka *_MapRepresentation_Map__KeyAssembler) AssignNode(v ipld.Node) error {
+func (ka *_MapRepresentation_Map__KeyAssembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {
@@ -9769,7 +9769,7 @@ func (_MapRepresentation_Map__ReprAssembler) AssignBytes([]byte) error {
 func (_MapRepresentation_Map__ReprAssembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.MapRepresentation_Map.Repr"}.AssignLink(nil)
 }
-func (na *_MapRepresentation_Map__ReprAssembler) AssignNode(v ipld.Node) error {
+func (na *_MapRepresentation_Map__ReprAssembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -9790,7 +9790,7 @@ func (na *_MapRepresentation_Map__ReprAssembler) AssignNode(v ipld.Node) error {
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.MapRepresentation_Map.Repr", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.MapRepresentation_Map.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -9798,10 +9798,10 @@ func (na *_MapRepresentation_Map__ReprAssembler) AssignNode(v ipld.Node) error {
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -9939,7 +9939,7 @@ func (_MapRepresentation_Map__ReprKeyAssembler) AssignBytes([]byte) error {
 func (_MapRepresentation_Map__ReprKeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.MapRepresentation_Map.Repr.KeyAssembler"}.AssignLink(nil)
 }
-func (ka *_MapRepresentation_Map__ReprKeyAssembler) AssignNode(v ipld.Node) error {
+func (ka *_MapRepresentation_Map__ReprKeyAssembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {
@@ -10185,7 +10185,7 @@ func (_MapRepresentation_Stringpairs__Assembler) AssignBytes([]byte) error {
 func (_MapRepresentation_Stringpairs__Assembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.MapRepresentation_Stringpairs"}.AssignLink(nil)
 }
-func (na *_MapRepresentation_Stringpairs__Assembler) AssignNode(v ipld.Node) error {
+func (na *_MapRepresentation_Stringpairs__Assembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -10206,7 +10206,7 @@ func (na *_MapRepresentation_Stringpairs__Assembler) AssignNode(v ipld.Node) err
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.MapRepresentation_Stringpairs", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.MapRepresentation_Stringpairs", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -10214,10 +10214,10 @@ func (na *_MapRepresentation_Stringpairs__Assembler) AssignNode(v ipld.Node) err
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -10423,7 +10423,7 @@ func (_MapRepresentation_Stringpairs__KeyAssembler) AssignBytes([]byte) error {
 func (_MapRepresentation_Stringpairs__KeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.MapRepresentation_Stringpairs.KeyAssembler"}.AssignLink(nil)
 }
-func (ka *_MapRepresentation_Stringpairs__KeyAssembler) AssignNode(v ipld.Node) error {
+func (ka *_MapRepresentation_Stringpairs__KeyAssembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {
@@ -10628,7 +10628,7 @@ func (_MapRepresentation_Stringpairs__ReprAssembler) AssignBytes([]byte) error {
 func (_MapRepresentation_Stringpairs__ReprAssembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.MapRepresentation_Stringpairs.Repr"}.AssignLink(nil)
 }
-func (na *_MapRepresentation_Stringpairs__ReprAssembler) AssignNode(v ipld.Node) error {
+func (na *_MapRepresentation_Stringpairs__ReprAssembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -10649,7 +10649,7 @@ func (na *_MapRepresentation_Stringpairs__ReprAssembler) AssignNode(v ipld.Node)
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.MapRepresentation_Stringpairs.Repr", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.MapRepresentation_Stringpairs.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -10657,10 +10657,10 @@ func (na *_MapRepresentation_Stringpairs__ReprAssembler) AssignNode(v ipld.Node)
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -10864,7 +10864,7 @@ func (_MapRepresentation_Stringpairs__ReprKeyAssembler) AssignBytes([]byte) erro
 func (_MapRepresentation_Stringpairs__ReprKeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.MapRepresentation_Stringpairs.Repr.KeyAssembler"}.AssignLink(nil)
 }
-func (ka *_MapRepresentation_Stringpairs__ReprKeyAssembler) AssignNode(v ipld.Node) error {
+func (ka *_MapRepresentation_Stringpairs__ReprKeyAssembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {
@@ -11136,7 +11136,7 @@ func (_Map__EnumValue__Unit__Assembler) AssignBytes([]byte) error {
 func (_Map__EnumValue__Unit__Assembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.Map__EnumValue__Unit"}.AssignLink(nil)
 }
-func (na *_Map__EnumValue__Unit__Assembler) AssignNode(v ipld.Node) error {
+func (na *_Map__EnumValue__Unit__Assembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -11157,7 +11157,7 @@ func (na *_Map__EnumValue__Unit__Assembler) AssignNode(v ipld.Node) error {
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.Map__EnumValue__Unit", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.Map__EnumValue__Unit", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -11165,10 +11165,10 @@ func (na *_Map__EnumValue__Unit__Assembler) AssignNode(v ipld.Node) error {
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -11478,7 +11478,7 @@ func (_Map__EnumValue__Unit__ReprAssembler) AssignBytes([]byte) error {
 func (_Map__EnumValue__Unit__ReprAssembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.Map__EnumValue__Unit.Repr"}.AssignLink(nil)
 }
-func (na *_Map__EnumValue__Unit__ReprAssembler) AssignNode(v ipld.Node) error {
+func (na *_Map__EnumValue__Unit__ReprAssembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -11499,7 +11499,7 @@ func (na *_Map__EnumValue__Unit__ReprAssembler) AssignNode(v ipld.Node) error {
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.Map__EnumValue__Unit.Repr", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.Map__EnumValue__Unit.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -11507,10 +11507,10 @@ func (na *_Map__EnumValue__Unit__ReprAssembler) AssignNode(v ipld.Node) error {
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -11905,7 +11905,7 @@ func (_Map__FieldName__StructField__Assembler) AssignBytes([]byte) error {
 func (_Map__FieldName__StructField__Assembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.Map__FieldName__StructField"}.AssignLink(nil)
 }
-func (na *_Map__FieldName__StructField__Assembler) AssignNode(v ipld.Node) error {
+func (na *_Map__FieldName__StructField__Assembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -11926,7 +11926,7 @@ func (na *_Map__FieldName__StructField__Assembler) AssignNode(v ipld.Node) error
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.Map__FieldName__StructField", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.Map__FieldName__StructField", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -11934,10 +11934,10 @@ func (na *_Map__FieldName__StructField__Assembler) AssignNode(v ipld.Node) error
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -12247,7 +12247,7 @@ func (_Map__FieldName__StructField__ReprAssembler) AssignBytes([]byte) error {
 func (_Map__FieldName__StructField__ReprAssembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.Map__FieldName__StructField.Repr"}.AssignLink(nil)
 }
-func (na *_Map__FieldName__StructField__ReprAssembler) AssignNode(v ipld.Node) error {
+func (na *_Map__FieldName__StructField__ReprAssembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -12268,7 +12268,7 @@ func (na *_Map__FieldName__StructField__ReprAssembler) AssignNode(v ipld.Node) e
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.Map__FieldName__StructField.Repr", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.Map__FieldName__StructField.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -12276,10 +12276,10 @@ func (na *_Map__FieldName__StructField__ReprAssembler) AssignNode(v ipld.Node) e
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -12674,7 +12674,7 @@ func (_Map__FieldName__StructRepresentation_Map_FieldDetails__Assembler) AssignB
 func (_Map__FieldName__StructRepresentation_Map_FieldDetails__Assembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.Map__FieldName__StructRepresentation_Map_FieldDetails"}.AssignLink(nil)
 }
-func (na *_Map__FieldName__StructRepresentation_Map_FieldDetails__Assembler) AssignNode(v ipld.Node) error {
+func (na *_Map__FieldName__StructRepresentation_Map_FieldDetails__Assembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -12695,7 +12695,7 @@ func (na *_Map__FieldName__StructRepresentation_Map_FieldDetails__Assembler) Ass
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.Map__FieldName__StructRepresentation_Map_FieldDetails", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.Map__FieldName__StructRepresentation_Map_FieldDetails", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -12703,10 +12703,10 @@ func (na *_Map__FieldName__StructRepresentation_Map_FieldDetails__Assembler) Ass
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -13016,7 +13016,7 @@ func (_Map__FieldName__StructRepresentation_Map_FieldDetails__ReprAssembler) Ass
 func (_Map__FieldName__StructRepresentation_Map_FieldDetails__ReprAssembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.Map__FieldName__StructRepresentation_Map_FieldDetails.Repr"}.AssignLink(nil)
 }
-func (na *_Map__FieldName__StructRepresentation_Map_FieldDetails__ReprAssembler) AssignNode(v ipld.Node) error {
+func (na *_Map__FieldName__StructRepresentation_Map_FieldDetails__ReprAssembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -13037,7 +13037,7 @@ func (na *_Map__FieldName__StructRepresentation_Map_FieldDetails__ReprAssembler)
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.Map__FieldName__StructRepresentation_Map_FieldDetails.Repr", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.Map__FieldName__StructRepresentation_Map_FieldDetails.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -13045,10 +13045,10 @@ func (na *_Map__FieldName__StructRepresentation_Map_FieldDetails__ReprAssembler)
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -13443,7 +13443,7 @@ func (_Map__String__TypeName__Assembler) AssignBytes([]byte) error {
 func (_Map__String__TypeName__Assembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.Map__String__TypeName"}.AssignLink(nil)
 }
-func (na *_Map__String__TypeName__Assembler) AssignNode(v ipld.Node) error {
+func (na *_Map__String__TypeName__Assembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -13464,7 +13464,7 @@ func (na *_Map__String__TypeName__Assembler) AssignNode(v ipld.Node) error {
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.Map__String__TypeName", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.Map__String__TypeName", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -13472,10 +13472,10 @@ func (na *_Map__String__TypeName__Assembler) AssignNode(v ipld.Node) error {
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -13785,7 +13785,7 @@ func (_Map__String__TypeName__ReprAssembler) AssignBytes([]byte) error {
 func (_Map__String__TypeName__ReprAssembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.Map__String__TypeName.Repr"}.AssignLink(nil)
 }
-func (na *_Map__String__TypeName__ReprAssembler) AssignNode(v ipld.Node) error {
+func (na *_Map__String__TypeName__ReprAssembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -13806,7 +13806,7 @@ func (na *_Map__String__TypeName__ReprAssembler) AssignNode(v ipld.Node) error {
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.Map__String__TypeName.Repr", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.Map__String__TypeName.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -13814,10 +13814,10 @@ func (na *_Map__String__TypeName__ReprAssembler) AssignNode(v ipld.Node) error {
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -14212,7 +14212,7 @@ func (_Map__TypeName__Int__Assembler) AssignBytes([]byte) error {
 func (_Map__TypeName__Int__Assembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.Map__TypeName__Int"}.AssignLink(nil)
 }
-func (na *_Map__TypeName__Int__Assembler) AssignNode(v ipld.Node) error {
+func (na *_Map__TypeName__Int__Assembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -14233,7 +14233,7 @@ func (na *_Map__TypeName__Int__Assembler) AssignNode(v ipld.Node) error {
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.Map__TypeName__Int", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.Map__TypeName__Int", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -14241,10 +14241,10 @@ func (na *_Map__TypeName__Int__Assembler) AssignNode(v ipld.Node) error {
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -14554,7 +14554,7 @@ func (_Map__TypeName__Int__ReprAssembler) AssignBytes([]byte) error {
 func (_Map__TypeName__Int__ReprAssembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.Map__TypeName__Int.Repr"}.AssignLink(nil)
 }
-func (na *_Map__TypeName__Int__ReprAssembler) AssignNode(v ipld.Node) error {
+func (na *_Map__TypeName__Int__ReprAssembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -14575,7 +14575,7 @@ func (na *_Map__TypeName__Int__ReprAssembler) AssignNode(v ipld.Node) error {
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.Map__TypeName__Int.Repr", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.Map__TypeName__Int.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -14583,10 +14583,10 @@ func (na *_Map__TypeName__Int__ReprAssembler) AssignNode(v ipld.Node) error {
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -14896,7 +14896,7 @@ func (_RepresentationKind__Assembler) AssignBytes([]byte) error {
 func (_RepresentationKind__Assembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.RepresentationKind"}.AssignLink(nil)
 }
-func (na *_RepresentationKind__Assembler) AssignNode(v ipld.Node) error {
+func (na *_RepresentationKind__Assembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -15160,7 +15160,7 @@ func (_Schema__Assembler) AssignBytes([]byte) error {
 func (_Schema__Assembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.Schema"}.AssignLink(nil)
 }
-func (na *_Schema__Assembler) AssignNode(v ipld.Node) error {
+func (na *_Schema__Assembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -15181,7 +15181,7 @@ func (na *_Schema__Assembler) AssignNode(v ipld.Node) error {
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.Schema", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.Schema", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -15189,10 +15189,10 @@ func (na *_Schema__Assembler) AssignNode(v ipld.Node) error {
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -15364,7 +15364,7 @@ func (_Schema__KeyAssembler) AssignBytes([]byte) error {
 func (_Schema__KeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.Schema.KeyAssembler"}.AssignLink(nil)
 }
-func (ka *_Schema__KeyAssembler) AssignNode(v ipld.Node) error {
+func (ka *_Schema__KeyAssembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {
@@ -15561,7 +15561,7 @@ func (_Schema__ReprAssembler) AssignBytes([]byte) error {
 func (_Schema__ReprAssembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.Schema.Repr"}.AssignLink(nil)
 }
-func (na *_Schema__ReprAssembler) AssignNode(v ipld.Node) error {
+func (na *_Schema__ReprAssembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -15582,7 +15582,7 @@ func (na *_Schema__ReprAssembler) AssignNode(v ipld.Node) error {
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.Schema.Repr", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.Schema.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -15590,10 +15590,10 @@ func (na *_Schema__ReprAssembler) AssignNode(v ipld.Node) error {
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -15764,7 +15764,7 @@ func (_Schema__ReprKeyAssembler) AssignBytes([]byte) error {
 func (_Schema__ReprKeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.Schema.Repr.KeyAssembler"}.AssignLink(nil)
 }
-func (ka *_Schema__ReprKeyAssembler) AssignNode(v ipld.Node) error {
+func (ka *_Schema__ReprKeyAssembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {
@@ -16036,7 +16036,7 @@ func (_SchemaMap__Assembler) AssignBytes([]byte) error {
 func (_SchemaMap__Assembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.SchemaMap"}.AssignLink(nil)
 }
-func (na *_SchemaMap__Assembler) AssignNode(v ipld.Node) error {
+func (na *_SchemaMap__Assembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -16057,7 +16057,7 @@ func (na *_SchemaMap__Assembler) AssignNode(v ipld.Node) error {
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.SchemaMap", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.SchemaMap", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -16065,10 +16065,10 @@ func (na *_SchemaMap__Assembler) AssignNode(v ipld.Node) error {
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -16378,7 +16378,7 @@ func (_SchemaMap__ReprAssembler) AssignBytes([]byte) error {
 func (_SchemaMap__ReprAssembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.SchemaMap.Repr"}.AssignLink(nil)
 }
-func (na *_SchemaMap__ReprAssembler) AssignNode(v ipld.Node) error {
+func (na *_SchemaMap__ReprAssembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -16399,7 +16399,7 @@ func (na *_SchemaMap__ReprAssembler) AssignNode(v ipld.Node) error {
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.SchemaMap.Repr", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.SchemaMap.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -16407,10 +16407,10 @@ func (na *_SchemaMap__ReprAssembler) AssignNode(v ipld.Node) error {
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -16720,7 +16720,7 @@ func (_String__Assembler) AssignBytes([]byte) error {
 func (_String__Assembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.String"}.AssignLink(nil)
 }
-func (na *_String__Assembler) AssignNode(v ipld.Node) error {
+func (na *_String__Assembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -17008,7 +17008,7 @@ func (_StructField__Assembler) AssignBytes([]byte) error {
 func (_StructField__Assembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.StructField"}.AssignLink(nil)
 }
-func (na *_StructField__Assembler) AssignNode(v ipld.Node) error {
+func (na *_StructField__Assembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -17029,7 +17029,7 @@ func (na *_StructField__Assembler) AssignNode(v ipld.Node) error {
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.StructField", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.StructField", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -17037,10 +17037,10 @@ func (na *_StructField__Assembler) AssignNode(v ipld.Node) error {
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -17280,7 +17280,7 @@ func (_StructField__KeyAssembler) AssignBytes([]byte) error {
 func (_StructField__KeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.StructField.KeyAssembler"}.AssignLink(nil)
 }
-func (ka *_StructField__KeyAssembler) AssignNode(v ipld.Node) error {
+func (ka *_StructField__KeyAssembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {
@@ -17493,7 +17493,7 @@ func (_StructField__ReprAssembler) AssignBytes([]byte) error {
 func (_StructField__ReprAssembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.StructField.Repr"}.AssignLink(nil)
 }
-func (na *_StructField__ReprAssembler) AssignNode(v ipld.Node) error {
+func (na *_StructField__ReprAssembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -17514,7 +17514,7 @@ func (na *_StructField__ReprAssembler) AssignNode(v ipld.Node) error {
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.StructField.Repr", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.StructField.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -17522,10 +17522,10 @@ func (na *_StructField__ReprAssembler) AssignNode(v ipld.Node) error {
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -17762,7 +17762,7 @@ func (_StructField__ReprKeyAssembler) AssignBytes([]byte) error {
 func (_StructField__ReprKeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.StructField.Repr.KeyAssembler"}.AssignLink(nil)
 }
-func (ka *_StructField__ReprKeyAssembler) AssignNode(v ipld.Node) error {
+func (ka *_StructField__ReprKeyAssembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {
@@ -18064,7 +18064,7 @@ func (_StructRepresentation__Assembler) AssignBytes([]byte) error {
 func (_StructRepresentation__Assembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.StructRepresentation"}.AssignLink(nil)
 }
-func (na *_StructRepresentation__Assembler) AssignNode(v ipld.Node) error {
+func (na *_StructRepresentation__Assembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -18085,7 +18085,7 @@ func (na *_StructRepresentation__Assembler) AssignNode(v ipld.Node) error {
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.StructRepresentation", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.StructRepresentation", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -18093,10 +18093,10 @@ func (na *_StructRepresentation__Assembler) AssignNode(v ipld.Node) error {
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -18335,7 +18335,7 @@ func (_StructRepresentation__KeyAssembler) AssignBytes([]byte) error {
 func (_StructRepresentation__KeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.StructRepresentation.KeyAssembler"}.AssignLink(nil)
 }
-func (ka *_StructRepresentation__KeyAssembler) AssignNode(v ipld.Node) error {
+func (ka *_StructRepresentation__KeyAssembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {
@@ -18593,7 +18593,7 @@ func (_StructRepresentation__ReprAssembler) AssignBytes([]byte) error {
 func (_StructRepresentation__ReprAssembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.StructRepresentation.Repr"}.AssignLink(nil)
 }
-func (na *_StructRepresentation__ReprAssembler) AssignNode(v ipld.Node) error {
+func (na *_StructRepresentation__ReprAssembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -18614,7 +18614,7 @@ func (na *_StructRepresentation__ReprAssembler) AssignNode(v ipld.Node) error {
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.StructRepresentation.Repr", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.StructRepresentation.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -18622,10 +18622,10 @@ func (na *_StructRepresentation__ReprAssembler) AssignNode(v ipld.Node) error {
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -18864,7 +18864,7 @@ func (_StructRepresentation__ReprKeyAssembler) AssignBytes([]byte) error {
 func (_StructRepresentation__ReprKeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.StructRepresentation.Repr.KeyAssembler"}.AssignLink(nil)
 }
-func (ka *_StructRepresentation__ReprKeyAssembler) AssignNode(v ipld.Node) error {
+func (ka *_StructRepresentation__ReprKeyAssembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {
@@ -19084,7 +19084,7 @@ func (_StructRepresentation_Listpairs__Assembler) AssignBytes([]byte) error {
 func (_StructRepresentation_Listpairs__Assembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.StructRepresentation_Listpairs"}.AssignLink(nil)
 }
-func (na *_StructRepresentation_Listpairs__Assembler) AssignNode(v ipld.Node) error {
+func (na *_StructRepresentation_Listpairs__Assembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -19105,7 +19105,7 @@ func (na *_StructRepresentation_Listpairs__Assembler) AssignNode(v ipld.Node) er
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.StructRepresentation_Listpairs", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.StructRepresentation_Listpairs", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -19113,10 +19113,10 @@ func (na *_StructRepresentation_Listpairs__Assembler) AssignNode(v ipld.Node) er
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -19254,7 +19254,7 @@ func (_StructRepresentation_Listpairs__KeyAssembler) AssignBytes([]byte) error {
 func (_StructRepresentation_Listpairs__KeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.StructRepresentation_Listpairs.KeyAssembler"}.AssignLink(nil)
 }
-func (ka *_StructRepresentation_Listpairs__KeyAssembler) AssignNode(v ipld.Node) error {
+func (ka *_StructRepresentation_Listpairs__KeyAssembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {
@@ -19442,7 +19442,7 @@ func (_StructRepresentation_Listpairs__ReprAssembler) AssignBytes([]byte) error 
 func (_StructRepresentation_Listpairs__ReprAssembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.StructRepresentation_Listpairs.Repr"}.AssignLink(nil)
 }
-func (na *_StructRepresentation_Listpairs__ReprAssembler) AssignNode(v ipld.Node) error {
+func (na *_StructRepresentation_Listpairs__ReprAssembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -19463,7 +19463,7 @@ func (na *_StructRepresentation_Listpairs__ReprAssembler) AssignNode(v ipld.Node
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.StructRepresentation_Listpairs.Repr", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.StructRepresentation_Listpairs.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -19471,10 +19471,10 @@ func (na *_StructRepresentation_Listpairs__ReprAssembler) AssignNode(v ipld.Node
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -19612,7 +19612,7 @@ func (_StructRepresentation_Listpairs__ReprKeyAssembler) AssignBytes([]byte) err
 func (_StructRepresentation_Listpairs__ReprKeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.StructRepresentation_Listpairs.Repr.KeyAssembler"}.AssignLink(nil)
 }
-func (ka *_StructRepresentation_Listpairs__ReprKeyAssembler) AssignNode(v ipld.Node) error {
+func (ka *_StructRepresentation_Listpairs__ReprKeyAssembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {
@@ -19853,7 +19853,7 @@ func (_StructRepresentation_Map__Assembler) AssignBytes([]byte) error {
 func (_StructRepresentation_Map__Assembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.StructRepresentation_Map"}.AssignLink(nil)
 }
-func (na *_StructRepresentation_Map__Assembler) AssignNode(v ipld.Node) error {
+func (na *_StructRepresentation_Map__Assembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -19874,7 +19874,7 @@ func (na *_StructRepresentation_Map__Assembler) AssignNode(v ipld.Node) error {
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.StructRepresentation_Map", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.StructRepresentation_Map", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -19882,10 +19882,10 @@ func (na *_StructRepresentation_Map__Assembler) AssignNode(v ipld.Node) error {
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -20053,7 +20053,7 @@ func (_StructRepresentation_Map__KeyAssembler) AssignBytes([]byte) error {
 func (_StructRepresentation_Map__KeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.StructRepresentation_Map.KeyAssembler"}.AssignLink(nil)
 }
-func (ka *_StructRepresentation_Map__KeyAssembler) AssignNode(v ipld.Node) error {
+func (ka *_StructRepresentation_Map__KeyAssembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {
@@ -20269,7 +20269,7 @@ func (_StructRepresentation_Map__ReprAssembler) AssignBytes([]byte) error {
 func (_StructRepresentation_Map__ReprAssembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.StructRepresentation_Map.Repr"}.AssignLink(nil)
 }
-func (na *_StructRepresentation_Map__ReprAssembler) AssignNode(v ipld.Node) error {
+func (na *_StructRepresentation_Map__ReprAssembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -20290,7 +20290,7 @@ func (na *_StructRepresentation_Map__ReprAssembler) AssignNode(v ipld.Node) erro
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.StructRepresentation_Map.Repr", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.StructRepresentation_Map.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -20298,10 +20298,10 @@ func (na *_StructRepresentation_Map__ReprAssembler) AssignNode(v ipld.Node) erro
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -20471,7 +20471,7 @@ func (_StructRepresentation_Map__ReprKeyAssembler) AssignBytes([]byte) error {
 func (_StructRepresentation_Map__ReprKeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.StructRepresentation_Map.Repr.KeyAssembler"}.AssignLink(nil)
 }
-func (ka *_StructRepresentation_Map__ReprKeyAssembler) AssignNode(v ipld.Node) error {
+func (ka *_StructRepresentation_Map__ReprKeyAssembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {
@@ -20731,7 +20731,7 @@ func (_StructRepresentation_Map_FieldDetails__Assembler) AssignBytes([]byte) err
 func (_StructRepresentation_Map_FieldDetails__Assembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.StructRepresentation_Map_FieldDetails"}.AssignLink(nil)
 }
-func (na *_StructRepresentation_Map_FieldDetails__Assembler) AssignNode(v ipld.Node) error {
+func (na *_StructRepresentation_Map_FieldDetails__Assembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -20752,7 +20752,7 @@ func (na *_StructRepresentation_Map_FieldDetails__Assembler) AssignNode(v ipld.N
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.StructRepresentation_Map_FieldDetails", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.StructRepresentation_Map_FieldDetails", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -20760,10 +20760,10 @@ func (na *_StructRepresentation_Map_FieldDetails__Assembler) AssignNode(v ipld.N
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -20961,7 +20961,7 @@ func (_StructRepresentation_Map_FieldDetails__KeyAssembler) AssignBytes([]byte) 
 func (_StructRepresentation_Map_FieldDetails__KeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.StructRepresentation_Map_FieldDetails.KeyAssembler"}.AssignLink(nil)
 }
-func (ka *_StructRepresentation_Map_FieldDetails__KeyAssembler) AssignNode(v ipld.Node) error {
+func (ka *_StructRepresentation_Map_FieldDetails__KeyAssembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {
@@ -21200,7 +21200,7 @@ func (_StructRepresentation_Map_FieldDetails__ReprAssembler) AssignBytes([]byte)
 func (_StructRepresentation_Map_FieldDetails__ReprAssembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.StructRepresentation_Map_FieldDetails.Repr"}.AssignLink(nil)
 }
-func (na *_StructRepresentation_Map_FieldDetails__ReprAssembler) AssignNode(v ipld.Node) error {
+func (na *_StructRepresentation_Map_FieldDetails__ReprAssembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -21221,7 +21221,7 @@ func (na *_StructRepresentation_Map_FieldDetails__ReprAssembler) AssignNode(v ip
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.StructRepresentation_Map_FieldDetails.Repr", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.StructRepresentation_Map_FieldDetails.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -21229,10 +21229,10 @@ func (na *_StructRepresentation_Map_FieldDetails__ReprAssembler) AssignNode(v ip
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -21434,7 +21434,7 @@ func (_StructRepresentation_Map_FieldDetails__ReprKeyAssembler) AssignBytes([]by
 func (_StructRepresentation_Map_FieldDetails__ReprKeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.StructRepresentation_Map_FieldDetails.Repr.KeyAssembler"}.AssignLink(nil)
 }
-func (ka *_StructRepresentation_Map_FieldDetails__ReprKeyAssembler) AssignNode(v ipld.Node) error {
+func (ka *_StructRepresentation_Map_FieldDetails__ReprKeyAssembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {
@@ -21687,7 +21687,7 @@ func (_StructRepresentation_Stringjoin__Assembler) AssignBytes([]byte) error {
 func (_StructRepresentation_Stringjoin__Assembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.StructRepresentation_Stringjoin"}.AssignLink(nil)
 }
-func (na *_StructRepresentation_Stringjoin__Assembler) AssignNode(v ipld.Node) error {
+func (na *_StructRepresentation_Stringjoin__Assembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -21708,7 +21708,7 @@ func (na *_StructRepresentation_Stringjoin__Assembler) AssignNode(v ipld.Node) e
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.StructRepresentation_Stringjoin", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.StructRepresentation_Stringjoin", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -21716,10 +21716,10 @@ func (na *_StructRepresentation_Stringjoin__Assembler) AssignNode(v ipld.Node) e
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -21921,7 +21921,7 @@ func (_StructRepresentation_Stringjoin__KeyAssembler) AssignBytes([]byte) error 
 func (_StructRepresentation_Stringjoin__KeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.StructRepresentation_Stringjoin.KeyAssembler"}.AssignLink(nil)
 }
-func (ka *_StructRepresentation_Stringjoin__KeyAssembler) AssignNode(v ipld.Node) error {
+func (ka *_StructRepresentation_Stringjoin__KeyAssembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {
@@ -22145,7 +22145,7 @@ func (_StructRepresentation_Stringjoin__ReprAssembler) AssignBytes([]byte) error
 func (_StructRepresentation_Stringjoin__ReprAssembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.StructRepresentation_Stringjoin.Repr"}.AssignLink(nil)
 }
-func (na *_StructRepresentation_Stringjoin__ReprAssembler) AssignNode(v ipld.Node) error {
+func (na *_StructRepresentation_Stringjoin__ReprAssembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -22166,7 +22166,7 @@ func (na *_StructRepresentation_Stringjoin__ReprAssembler) AssignNode(v ipld.Nod
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.StructRepresentation_Stringjoin.Repr", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.StructRepresentation_Stringjoin.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -22174,10 +22174,10 @@ func (na *_StructRepresentation_Stringjoin__ReprAssembler) AssignNode(v ipld.Nod
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -22380,7 +22380,7 @@ func (_StructRepresentation_Stringjoin__ReprKeyAssembler) AssignBytes([]byte) er
 func (_StructRepresentation_Stringjoin__ReprKeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.StructRepresentation_Stringjoin.Repr.KeyAssembler"}.AssignLink(nil)
 }
-func (ka *_StructRepresentation_Stringjoin__ReprKeyAssembler) AssignNode(v ipld.Node) error {
+func (ka *_StructRepresentation_Stringjoin__ReprKeyAssembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {
@@ -22626,7 +22626,7 @@ func (_StructRepresentation_Stringpairs__Assembler) AssignBytes([]byte) error {
 func (_StructRepresentation_Stringpairs__Assembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.StructRepresentation_Stringpairs"}.AssignLink(nil)
 }
-func (na *_StructRepresentation_Stringpairs__Assembler) AssignNode(v ipld.Node) error {
+func (na *_StructRepresentation_Stringpairs__Assembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -22647,7 +22647,7 @@ func (na *_StructRepresentation_Stringpairs__Assembler) AssignNode(v ipld.Node) 
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.StructRepresentation_Stringpairs", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.StructRepresentation_Stringpairs", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -22655,10 +22655,10 @@ func (na *_StructRepresentation_Stringpairs__Assembler) AssignNode(v ipld.Node) 
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -22864,7 +22864,7 @@ func (_StructRepresentation_Stringpairs__KeyAssembler) AssignBytes([]byte) error
 func (_StructRepresentation_Stringpairs__KeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.StructRepresentation_Stringpairs.KeyAssembler"}.AssignLink(nil)
 }
-func (ka *_StructRepresentation_Stringpairs__KeyAssembler) AssignNode(v ipld.Node) error {
+func (ka *_StructRepresentation_Stringpairs__KeyAssembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {
@@ -23069,7 +23069,7 @@ func (_StructRepresentation_Stringpairs__ReprAssembler) AssignBytes([]byte) erro
 func (_StructRepresentation_Stringpairs__ReprAssembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.StructRepresentation_Stringpairs.Repr"}.AssignLink(nil)
 }
-func (na *_StructRepresentation_Stringpairs__ReprAssembler) AssignNode(v ipld.Node) error {
+func (na *_StructRepresentation_Stringpairs__ReprAssembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -23090,7 +23090,7 @@ func (na *_StructRepresentation_Stringpairs__ReprAssembler) AssignNode(v ipld.No
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.StructRepresentation_Stringpairs.Repr", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.StructRepresentation_Stringpairs.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -23098,10 +23098,10 @@ func (na *_StructRepresentation_Stringpairs__ReprAssembler) AssignNode(v ipld.No
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -23305,7 +23305,7 @@ func (_StructRepresentation_Stringpairs__ReprKeyAssembler) AssignBytes([]byte) e
 func (_StructRepresentation_Stringpairs__ReprKeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.StructRepresentation_Stringpairs.Repr.KeyAssembler"}.AssignLink(nil)
 }
-func (ka *_StructRepresentation_Stringpairs__ReprKeyAssembler) AssignNode(v ipld.Node) error {
+func (ka *_StructRepresentation_Stringpairs__ReprKeyAssembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {
@@ -23546,7 +23546,7 @@ func (_StructRepresentation_Tuple__Assembler) AssignBytes([]byte) error {
 func (_StructRepresentation_Tuple__Assembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.StructRepresentation_Tuple"}.AssignLink(nil)
 }
-func (na *_StructRepresentation_Tuple__Assembler) AssignNode(v ipld.Node) error {
+func (na *_StructRepresentation_Tuple__Assembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -23567,7 +23567,7 @@ func (na *_StructRepresentation_Tuple__Assembler) AssignNode(v ipld.Node) error 
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.StructRepresentation_Tuple", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.StructRepresentation_Tuple", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -23575,10 +23575,10 @@ func (na *_StructRepresentation_Tuple__Assembler) AssignNode(v ipld.Node) error 
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -23746,7 +23746,7 @@ func (_StructRepresentation_Tuple__KeyAssembler) AssignBytes([]byte) error {
 func (_StructRepresentation_Tuple__KeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.StructRepresentation_Tuple.KeyAssembler"}.AssignLink(nil)
 }
-func (ka *_StructRepresentation_Tuple__KeyAssembler) AssignNode(v ipld.Node) error {
+func (ka *_StructRepresentation_Tuple__KeyAssembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {
@@ -23962,7 +23962,7 @@ func (_StructRepresentation_Tuple__ReprAssembler) AssignBytes([]byte) error {
 func (_StructRepresentation_Tuple__ReprAssembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.StructRepresentation_Tuple.Repr"}.AssignLink(nil)
 }
-func (na *_StructRepresentation_Tuple__ReprAssembler) AssignNode(v ipld.Node) error {
+func (na *_StructRepresentation_Tuple__ReprAssembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -23983,7 +23983,7 @@ func (na *_StructRepresentation_Tuple__ReprAssembler) AssignNode(v ipld.Node) er
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.StructRepresentation_Tuple.Repr", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.StructRepresentation_Tuple.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -23991,10 +23991,10 @@ func (na *_StructRepresentation_Tuple__ReprAssembler) AssignNode(v ipld.Node) er
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -24164,7 +24164,7 @@ func (_StructRepresentation_Tuple__ReprKeyAssembler) AssignBytes([]byte) error {
 func (_StructRepresentation_Tuple__ReprKeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.StructRepresentation_Tuple.Repr.KeyAssembler"}.AssignLink(nil)
 }
-func (ka *_StructRepresentation_Tuple__ReprKeyAssembler) AssignNode(v ipld.Node) error {
+func (ka *_StructRepresentation_Tuple__ReprKeyAssembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {
@@ -24384,7 +24384,7 @@ func (_TypeBool__Assembler) AssignBytes([]byte) error {
 func (_TypeBool__Assembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.TypeBool"}.AssignLink(nil)
 }
-func (na *_TypeBool__Assembler) AssignNode(v ipld.Node) error {
+func (na *_TypeBool__Assembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -24405,7 +24405,7 @@ func (na *_TypeBool__Assembler) AssignNode(v ipld.Node) error {
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeBool", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeBool", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -24413,10 +24413,10 @@ func (na *_TypeBool__Assembler) AssignNode(v ipld.Node) error {
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -24554,7 +24554,7 @@ func (_TypeBool__KeyAssembler) AssignBytes([]byte) error {
 func (_TypeBool__KeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.TypeBool.KeyAssembler"}.AssignLink(nil)
 }
-func (ka *_TypeBool__KeyAssembler) AssignNode(v ipld.Node) error {
+func (ka *_TypeBool__KeyAssembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {
@@ -24742,7 +24742,7 @@ func (_TypeBool__ReprAssembler) AssignBytes([]byte) error {
 func (_TypeBool__ReprAssembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.TypeBool.Repr"}.AssignLink(nil)
 }
-func (na *_TypeBool__ReprAssembler) AssignNode(v ipld.Node) error {
+func (na *_TypeBool__ReprAssembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -24763,7 +24763,7 @@ func (na *_TypeBool__ReprAssembler) AssignNode(v ipld.Node) error {
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeBool.Repr", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeBool.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -24771,10 +24771,10 @@ func (na *_TypeBool__ReprAssembler) AssignNode(v ipld.Node) error {
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -24912,7 +24912,7 @@ func (_TypeBool__ReprKeyAssembler) AssignBytes([]byte) error {
 func (_TypeBool__ReprKeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.TypeBool.Repr.KeyAssembler"}.AssignLink(nil)
 }
-func (ka *_TypeBool__ReprKeyAssembler) AssignNode(v ipld.Node) error {
+func (ka *_TypeBool__ReprKeyAssembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {
@@ -25132,7 +25132,7 @@ func (_TypeBytes__Assembler) AssignBytes([]byte) error {
 func (_TypeBytes__Assembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.TypeBytes"}.AssignLink(nil)
 }
-func (na *_TypeBytes__Assembler) AssignNode(v ipld.Node) error {
+func (na *_TypeBytes__Assembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -25153,7 +25153,7 @@ func (na *_TypeBytes__Assembler) AssignNode(v ipld.Node) error {
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeBytes", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeBytes", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -25161,10 +25161,10 @@ func (na *_TypeBytes__Assembler) AssignNode(v ipld.Node) error {
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -25302,7 +25302,7 @@ func (_TypeBytes__KeyAssembler) AssignBytes([]byte) error {
 func (_TypeBytes__KeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.TypeBytes.KeyAssembler"}.AssignLink(nil)
 }
-func (ka *_TypeBytes__KeyAssembler) AssignNode(v ipld.Node) error {
+func (ka *_TypeBytes__KeyAssembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {
@@ -25490,7 +25490,7 @@ func (_TypeBytes__ReprAssembler) AssignBytes([]byte) error {
 func (_TypeBytes__ReprAssembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.TypeBytes.Repr"}.AssignLink(nil)
 }
-func (na *_TypeBytes__ReprAssembler) AssignNode(v ipld.Node) error {
+func (na *_TypeBytes__ReprAssembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -25511,7 +25511,7 @@ func (na *_TypeBytes__ReprAssembler) AssignNode(v ipld.Node) error {
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeBytes.Repr", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeBytes.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -25519,10 +25519,10 @@ func (na *_TypeBytes__ReprAssembler) AssignNode(v ipld.Node) error {
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -25660,7 +25660,7 @@ func (_TypeBytes__ReprKeyAssembler) AssignBytes([]byte) error {
 func (_TypeBytes__ReprKeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.TypeBytes.Repr.KeyAssembler"}.AssignLink(nil)
 }
-func (ka *_TypeBytes__ReprKeyAssembler) AssignNode(v ipld.Node) error {
+func (ka *_TypeBytes__ReprKeyAssembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {
@@ -25894,7 +25894,7 @@ func (_TypeCopy__Assembler) AssignBytes([]byte) error {
 func (_TypeCopy__Assembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.TypeCopy"}.AssignLink(nil)
 }
-func (na *_TypeCopy__Assembler) AssignNode(v ipld.Node) error {
+func (na *_TypeCopy__Assembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -25915,7 +25915,7 @@ func (na *_TypeCopy__Assembler) AssignNode(v ipld.Node) error {
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeCopy", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeCopy", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -25923,10 +25923,10 @@ func (na *_TypeCopy__Assembler) AssignNode(v ipld.Node) error {
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -26098,7 +26098,7 @@ func (_TypeCopy__KeyAssembler) AssignBytes([]byte) error {
 func (_TypeCopy__KeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.TypeCopy.KeyAssembler"}.AssignLink(nil)
 }
-func (ka *_TypeCopy__KeyAssembler) AssignNode(v ipld.Node) error {
+func (ka *_TypeCopy__KeyAssembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {
@@ -26295,7 +26295,7 @@ func (_TypeCopy__ReprAssembler) AssignBytes([]byte) error {
 func (_TypeCopy__ReprAssembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.TypeCopy.Repr"}.AssignLink(nil)
 }
-func (na *_TypeCopy__ReprAssembler) AssignNode(v ipld.Node) error {
+func (na *_TypeCopy__ReprAssembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -26316,7 +26316,7 @@ func (na *_TypeCopy__ReprAssembler) AssignNode(v ipld.Node) error {
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeCopy.Repr", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeCopy.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -26324,10 +26324,10 @@ func (na *_TypeCopy__ReprAssembler) AssignNode(v ipld.Node) error {
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -26498,7 +26498,7 @@ func (_TypeCopy__ReprKeyAssembler) AssignBytes([]byte) error {
 func (_TypeCopy__ReprKeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.TypeCopy.Repr.KeyAssembler"}.AssignLink(nil)
 }
-func (ka *_TypeCopy__ReprKeyAssembler) AssignNode(v ipld.Node) error {
+func (ka *_TypeCopy__ReprKeyAssembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {
@@ -26905,7 +26905,7 @@ func (_TypeDefn__Assembler) AssignBytes([]byte) error {
 func (_TypeDefn__Assembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.TypeDefn"}.AssignLink(nil)
 }
-func (na *_TypeDefn__Assembler) AssignNode(v ipld.Node) error {
+func (na *_TypeDefn__Assembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -26926,7 +26926,7 @@ func (na *_TypeDefn__Assembler) AssignNode(v ipld.Node) error {
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeDefn", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeDefn", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -26934,10 +26934,10 @@ func (na *_TypeDefn__Assembler) AssignNode(v ipld.Node) error {
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -27302,7 +27302,7 @@ func (_TypeDefn__KeyAssembler) AssignBytes([]byte) error {
 func (_TypeDefn__KeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.TypeDefn.KeyAssembler"}.AssignLink(nil)
 }
-func (ka *_TypeDefn__KeyAssembler) AssignNode(v ipld.Node) error {
+func (ka *_TypeDefn__KeyAssembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {
@@ -27651,7 +27651,7 @@ func (_TypeDefn__ReprAssembler) AssignBytes([]byte) error {
 func (_TypeDefn__ReprAssembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.TypeDefn.Repr"}.AssignLink(nil)
 }
-func (na *_TypeDefn__ReprAssembler) AssignNode(v ipld.Node) error {
+func (na *_TypeDefn__ReprAssembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -27672,7 +27672,7 @@ func (na *_TypeDefn__ReprAssembler) AssignNode(v ipld.Node) error {
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeDefn.Repr", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeDefn.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -27680,10 +27680,10 @@ func (na *_TypeDefn__ReprAssembler) AssignNode(v ipld.Node) error {
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -28048,7 +28048,7 @@ func (_TypeDefn__ReprKeyAssembler) AssignBytes([]byte) error {
 func (_TypeDefn__ReprKeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.TypeDefn.Repr.KeyAssembler"}.AssignLink(nil)
 }
-func (ka *_TypeDefn__ReprKeyAssembler) AssignNode(v ipld.Node) error {
+func (ka *_TypeDefn__ReprKeyAssembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {
@@ -28300,7 +28300,7 @@ func (_TypeDefnInline__Assembler) AssignBytes([]byte) error {
 func (_TypeDefnInline__Assembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.TypeDefnInline"}.AssignLink(nil)
 }
-func (na *_TypeDefnInline__Assembler) AssignNode(v ipld.Node) error {
+func (na *_TypeDefnInline__Assembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -28321,7 +28321,7 @@ func (na *_TypeDefnInline__Assembler) AssignNode(v ipld.Node) error {
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeDefnInline", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeDefnInline", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -28329,10 +28329,10 @@ func (na *_TypeDefnInline__Assembler) AssignNode(v ipld.Node) error {
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -28533,7 +28533,7 @@ func (_TypeDefnInline__KeyAssembler) AssignBytes([]byte) error {
 func (_TypeDefnInline__KeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.TypeDefnInline.KeyAssembler"}.AssignLink(nil)
 }
-func (ka *_TypeDefnInline__KeyAssembler) AssignNode(v ipld.Node) error {
+func (ka *_TypeDefnInline__KeyAssembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {
@@ -28754,7 +28754,7 @@ func (_TypeDefnInline__ReprAssembler) AssignBytes([]byte) error {
 func (_TypeDefnInline__ReprAssembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.TypeDefnInline.Repr"}.AssignLink(nil)
 }
-func (na *_TypeDefnInline__ReprAssembler) AssignNode(v ipld.Node) error {
+func (na *_TypeDefnInline__ReprAssembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -28775,7 +28775,7 @@ func (na *_TypeDefnInline__ReprAssembler) AssignNode(v ipld.Node) error {
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeDefnInline.Repr", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeDefnInline.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -28783,10 +28783,10 @@ func (na *_TypeDefnInline__ReprAssembler) AssignNode(v ipld.Node) error {
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -28987,7 +28987,7 @@ func (_TypeDefnInline__ReprKeyAssembler) AssignBytes([]byte) error {
 func (_TypeDefnInline__ReprKeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.TypeDefnInline.Repr.KeyAssembler"}.AssignLink(nil)
 }
-func (ka *_TypeDefnInline__ReprKeyAssembler) AssignNode(v ipld.Node) error {
+func (ka *_TypeDefnInline__ReprKeyAssembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {
@@ -29233,7 +29233,7 @@ func (_TypeEnum__Assembler) AssignBytes([]byte) error {
 func (_TypeEnum__Assembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.TypeEnum"}.AssignLink(nil)
 }
-func (na *_TypeEnum__Assembler) AssignNode(v ipld.Node) error {
+func (na *_TypeEnum__Assembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -29254,7 +29254,7 @@ func (na *_TypeEnum__Assembler) AssignNode(v ipld.Node) error {
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeEnum", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeEnum", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -29262,10 +29262,10 @@ func (na *_TypeEnum__Assembler) AssignNode(v ipld.Node) error {
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -29471,7 +29471,7 @@ func (_TypeEnum__KeyAssembler) AssignBytes([]byte) error {
 func (_TypeEnum__KeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.TypeEnum.KeyAssembler"}.AssignLink(nil)
 }
-func (ka *_TypeEnum__KeyAssembler) AssignNode(v ipld.Node) error {
+func (ka *_TypeEnum__KeyAssembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {
@@ -29676,7 +29676,7 @@ func (_TypeEnum__ReprAssembler) AssignBytes([]byte) error {
 func (_TypeEnum__ReprAssembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.TypeEnum.Repr"}.AssignLink(nil)
 }
-func (na *_TypeEnum__ReprAssembler) AssignNode(v ipld.Node) error {
+func (na *_TypeEnum__ReprAssembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -29697,7 +29697,7 @@ func (na *_TypeEnum__ReprAssembler) AssignNode(v ipld.Node) error {
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeEnum.Repr", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeEnum.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -29705,10 +29705,10 @@ func (na *_TypeEnum__ReprAssembler) AssignNode(v ipld.Node) error {
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -29912,7 +29912,7 @@ func (_TypeEnum__ReprKeyAssembler) AssignBytes([]byte) error {
 func (_TypeEnum__ReprKeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.TypeEnum.Repr.KeyAssembler"}.AssignLink(nil)
 }
-func (ka *_TypeEnum__ReprKeyAssembler) AssignNode(v ipld.Node) error {
+func (ka *_TypeEnum__ReprKeyAssembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {
@@ -30132,7 +30132,7 @@ func (_TypeFloat__Assembler) AssignBytes([]byte) error {
 func (_TypeFloat__Assembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.TypeFloat"}.AssignLink(nil)
 }
-func (na *_TypeFloat__Assembler) AssignNode(v ipld.Node) error {
+func (na *_TypeFloat__Assembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -30153,7 +30153,7 @@ func (na *_TypeFloat__Assembler) AssignNode(v ipld.Node) error {
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeFloat", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeFloat", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -30161,10 +30161,10 @@ func (na *_TypeFloat__Assembler) AssignNode(v ipld.Node) error {
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -30302,7 +30302,7 @@ func (_TypeFloat__KeyAssembler) AssignBytes([]byte) error {
 func (_TypeFloat__KeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.TypeFloat.KeyAssembler"}.AssignLink(nil)
 }
-func (ka *_TypeFloat__KeyAssembler) AssignNode(v ipld.Node) error {
+func (ka *_TypeFloat__KeyAssembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {
@@ -30490,7 +30490,7 @@ func (_TypeFloat__ReprAssembler) AssignBytes([]byte) error {
 func (_TypeFloat__ReprAssembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.TypeFloat.Repr"}.AssignLink(nil)
 }
-func (na *_TypeFloat__ReprAssembler) AssignNode(v ipld.Node) error {
+func (na *_TypeFloat__ReprAssembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -30511,7 +30511,7 @@ func (na *_TypeFloat__ReprAssembler) AssignNode(v ipld.Node) error {
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeFloat.Repr", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeFloat.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -30519,10 +30519,10 @@ func (na *_TypeFloat__ReprAssembler) AssignNode(v ipld.Node) error {
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -30660,7 +30660,7 @@ func (_TypeFloat__ReprKeyAssembler) AssignBytes([]byte) error {
 func (_TypeFloat__ReprKeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.TypeFloat.Repr.KeyAssembler"}.AssignLink(nil)
 }
-func (ka *_TypeFloat__ReprKeyAssembler) AssignNode(v ipld.Node) error {
+func (ka *_TypeFloat__ReprKeyAssembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {
@@ -30880,7 +30880,7 @@ func (_TypeInt__Assembler) AssignBytes([]byte) error {
 func (_TypeInt__Assembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.TypeInt"}.AssignLink(nil)
 }
-func (na *_TypeInt__Assembler) AssignNode(v ipld.Node) error {
+func (na *_TypeInt__Assembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -30901,7 +30901,7 @@ func (na *_TypeInt__Assembler) AssignNode(v ipld.Node) error {
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeInt", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeInt", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -30909,10 +30909,10 @@ func (na *_TypeInt__Assembler) AssignNode(v ipld.Node) error {
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -31050,7 +31050,7 @@ func (_TypeInt__KeyAssembler) AssignBytes([]byte) error {
 func (_TypeInt__KeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.TypeInt.KeyAssembler"}.AssignLink(nil)
 }
-func (ka *_TypeInt__KeyAssembler) AssignNode(v ipld.Node) error {
+func (ka *_TypeInt__KeyAssembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {
@@ -31238,7 +31238,7 @@ func (_TypeInt__ReprAssembler) AssignBytes([]byte) error {
 func (_TypeInt__ReprAssembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.TypeInt.Repr"}.AssignLink(nil)
 }
-func (na *_TypeInt__ReprAssembler) AssignNode(v ipld.Node) error {
+func (na *_TypeInt__ReprAssembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -31259,7 +31259,7 @@ func (na *_TypeInt__ReprAssembler) AssignNode(v ipld.Node) error {
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeInt.Repr", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeInt.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -31267,10 +31267,10 @@ func (na *_TypeInt__ReprAssembler) AssignNode(v ipld.Node) error {
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -31408,7 +31408,7 @@ func (_TypeInt__ReprKeyAssembler) AssignBytes([]byte) error {
 func (_TypeInt__ReprKeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.TypeInt.Repr.KeyAssembler"}.AssignLink(nil)
 }
-func (ka *_TypeInt__ReprKeyAssembler) AssignNode(v ipld.Node) error {
+func (ka *_TypeInt__ReprKeyAssembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {
@@ -31649,7 +31649,7 @@ func (_TypeLink__Assembler) AssignBytes([]byte) error {
 func (_TypeLink__Assembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.TypeLink"}.AssignLink(nil)
 }
-func (na *_TypeLink__Assembler) AssignNode(v ipld.Node) error {
+func (na *_TypeLink__Assembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -31670,7 +31670,7 @@ func (na *_TypeLink__Assembler) AssignNode(v ipld.Node) error {
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeLink", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeLink", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -31678,10 +31678,10 @@ func (na *_TypeLink__Assembler) AssignNode(v ipld.Node) error {
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -31849,7 +31849,7 @@ func (_TypeLink__KeyAssembler) AssignBytes([]byte) error {
 func (_TypeLink__KeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.TypeLink.KeyAssembler"}.AssignLink(nil)
 }
-func (ka *_TypeLink__KeyAssembler) AssignNode(v ipld.Node) error {
+func (ka *_TypeLink__KeyAssembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {
@@ -32065,7 +32065,7 @@ func (_TypeLink__ReprAssembler) AssignBytes([]byte) error {
 func (_TypeLink__ReprAssembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.TypeLink.Repr"}.AssignLink(nil)
 }
-func (na *_TypeLink__ReprAssembler) AssignNode(v ipld.Node) error {
+func (na *_TypeLink__ReprAssembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -32086,7 +32086,7 @@ func (na *_TypeLink__ReprAssembler) AssignNode(v ipld.Node) error {
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeLink.Repr", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeLink.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -32094,10 +32094,10 @@ func (na *_TypeLink__ReprAssembler) AssignNode(v ipld.Node) error {
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -32267,7 +32267,7 @@ func (_TypeLink__ReprKeyAssembler) AssignBytes([]byte) error {
 func (_TypeLink__ReprKeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.TypeLink.Repr.KeyAssembler"}.AssignLink(nil)
 }
-func (ka *_TypeLink__ReprKeyAssembler) AssignNode(v ipld.Node) error {
+func (ka *_TypeLink__ReprKeyAssembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {
@@ -32525,7 +32525,7 @@ func (_TypeList__Assembler) AssignBytes([]byte) error {
 func (_TypeList__Assembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.TypeList"}.AssignLink(nil)
 }
-func (na *_TypeList__Assembler) AssignNode(v ipld.Node) error {
+func (na *_TypeList__Assembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -32546,7 +32546,7 @@ func (na *_TypeList__Assembler) AssignNode(v ipld.Node) error {
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeList", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeList", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -32554,10 +32554,10 @@ func (na *_TypeList__Assembler) AssignNode(v ipld.Node) error {
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -32797,7 +32797,7 @@ func (_TypeList__KeyAssembler) AssignBytes([]byte) error {
 func (_TypeList__KeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.TypeList.KeyAssembler"}.AssignLink(nil)
 }
-func (ka *_TypeList__KeyAssembler) AssignNode(v ipld.Node) error {
+func (ka *_TypeList__KeyAssembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {
@@ -33010,7 +33010,7 @@ func (_TypeList__ReprAssembler) AssignBytes([]byte) error {
 func (_TypeList__ReprAssembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.TypeList.Repr"}.AssignLink(nil)
 }
-func (na *_TypeList__ReprAssembler) AssignNode(v ipld.Node) error {
+func (na *_TypeList__ReprAssembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -33031,7 +33031,7 @@ func (na *_TypeList__ReprAssembler) AssignNode(v ipld.Node) error {
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeList.Repr", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeList.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -33039,10 +33039,10 @@ func (na *_TypeList__ReprAssembler) AssignNode(v ipld.Node) error {
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -33279,7 +33279,7 @@ func (_TypeList__ReprKeyAssembler) AssignBytes([]byte) error {
 func (_TypeList__ReprKeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.TypeList.Repr.KeyAssembler"}.AssignLink(nil)
 }
-func (ka *_TypeList__ReprKeyAssembler) AssignNode(v ipld.Node) error {
+func (ka *_TypeList__ReprKeyAssembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {
@@ -33549,7 +33549,7 @@ func (_TypeMap__Assembler) AssignBytes([]byte) error {
 func (_TypeMap__Assembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.TypeMap"}.AssignLink(nil)
 }
-func (na *_TypeMap__Assembler) AssignNode(v ipld.Node) error {
+func (na *_TypeMap__Assembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -33570,7 +33570,7 @@ func (na *_TypeMap__Assembler) AssignNode(v ipld.Node) error {
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeMap", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeMap", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -33578,10 +33578,10 @@ func (na *_TypeMap__Assembler) AssignNode(v ipld.Node) error {
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -33855,7 +33855,7 @@ func (_TypeMap__KeyAssembler) AssignBytes([]byte) error {
 func (_TypeMap__KeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.TypeMap.KeyAssembler"}.AssignLink(nil)
 }
-func (ka *_TypeMap__KeyAssembler) AssignNode(v ipld.Node) error {
+func (ka *_TypeMap__KeyAssembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {
@@ -34076,7 +34076,7 @@ func (_TypeMap__ReprAssembler) AssignBytes([]byte) error {
 func (_TypeMap__ReprAssembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.TypeMap.Repr"}.AssignLink(nil)
 }
-func (na *_TypeMap__ReprAssembler) AssignNode(v ipld.Node) error {
+func (na *_TypeMap__ReprAssembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -34097,7 +34097,7 @@ func (na *_TypeMap__ReprAssembler) AssignNode(v ipld.Node) error {
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeMap.Repr", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeMap.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -34105,10 +34105,10 @@ func (na *_TypeMap__ReprAssembler) AssignNode(v ipld.Node) error {
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -34378,7 +34378,7 @@ func (_TypeMap__ReprKeyAssembler) AssignBytes([]byte) error {
 func (_TypeMap__ReprKeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.TypeMap.Repr.KeyAssembler"}.AssignLink(nil)
 }
-func (ka *_TypeMap__ReprKeyAssembler) AssignNode(v ipld.Node) error {
+func (ka *_TypeMap__ReprKeyAssembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {
@@ -34565,7 +34565,7 @@ func (_TypeName__Assembler) AssignBytes([]byte) error {
 func (_TypeName__Assembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.TypeName"}.AssignLink(nil)
 }
-func (na *_TypeName__Assembler) AssignNode(v ipld.Node) error {
+func (na *_TypeName__Assembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -34852,7 +34852,7 @@ func (_TypeNameOrInlineDefn__Assembler) AssignBytes([]byte) error {
 func (_TypeNameOrInlineDefn__Assembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.TypeNameOrInlineDefn"}.AssignLink(nil)
 }
-func (na *_TypeNameOrInlineDefn__Assembler) AssignNode(v ipld.Node) error {
+func (na *_TypeNameOrInlineDefn__Assembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -34873,7 +34873,7 @@ func (na *_TypeNameOrInlineDefn__Assembler) AssignNode(v ipld.Node) error {
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeNameOrInlineDefn", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeNameOrInlineDefn", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -34881,10 +34881,10 @@ func (na *_TypeNameOrInlineDefn__Assembler) AssignNode(v ipld.Node) error {
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -35069,7 +35069,7 @@ func (_TypeNameOrInlineDefn__KeyAssembler) AssignBytes([]byte) error {
 func (_TypeNameOrInlineDefn__KeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.TypeNameOrInlineDefn.KeyAssembler"}.AssignLink(nil)
 }
-func (ka *_TypeNameOrInlineDefn__KeyAssembler) AssignNode(v ipld.Node) error {
+func (ka *_TypeNameOrInlineDefn__KeyAssembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {
@@ -35321,7 +35321,7 @@ func (na *_TypeNameOrInlineDefn__ReprAssembler) AssignLink(v ipld.Link) error {
 	}
 	return schema.ErrNotUnionStructure{TypeName: "schemadmt.TypeNameOrInlineDefn.Repr", Detail: "AssignLink called but is not valid for any of the kinds that are valid members of this union"}
 }
-func (na *_TypeNameOrInlineDefn__ReprAssembler) AssignNode(v ipld.Node) error {
+func (na *_TypeNameOrInlineDefn__ReprAssembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -35368,10 +35368,10 @@ func (na *_TypeNameOrInlineDefn__ReprAssembler) AssignNode(v ipld.Node) error {
 			if err != nil {
 				return err
 			}
-			if err := na.AssembleKey().AssignNode(k); err != nil {
+			if err := na.AssembleKey().ConvertFrom(k); err != nil {
 				return err
 			}
-			if err := na.AssembleValue().AssignNode(v); err != nil {
+			if err := na.AssembleValue().ConvertFrom(v); err != nil {
 				return err
 			}
 		}
@@ -35387,7 +35387,7 @@ func (na *_TypeNameOrInlineDefn__ReprAssembler) AssignNode(v ipld.Node) error {
 			if err != nil {
 				return err
 			}
-			if err := na.AssembleValue().AssignNode(v); err != nil {
+			if err := na.AssembleValue().ConvertFrom(v); err != nil {
 				return err
 			}
 		}
@@ -35612,7 +35612,7 @@ func (_TypeString__Assembler) AssignBytes([]byte) error {
 func (_TypeString__Assembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.TypeString"}.AssignLink(nil)
 }
-func (na *_TypeString__Assembler) AssignNode(v ipld.Node) error {
+func (na *_TypeString__Assembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -35633,7 +35633,7 @@ func (na *_TypeString__Assembler) AssignNode(v ipld.Node) error {
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeString", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeString", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -35641,10 +35641,10 @@ func (na *_TypeString__Assembler) AssignNode(v ipld.Node) error {
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -35782,7 +35782,7 @@ func (_TypeString__KeyAssembler) AssignBytes([]byte) error {
 func (_TypeString__KeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.TypeString.KeyAssembler"}.AssignLink(nil)
 }
-func (ka *_TypeString__KeyAssembler) AssignNode(v ipld.Node) error {
+func (ka *_TypeString__KeyAssembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {
@@ -35970,7 +35970,7 @@ func (_TypeString__ReprAssembler) AssignBytes([]byte) error {
 func (_TypeString__ReprAssembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.TypeString.Repr"}.AssignLink(nil)
 }
-func (na *_TypeString__ReprAssembler) AssignNode(v ipld.Node) error {
+func (na *_TypeString__ReprAssembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -35991,7 +35991,7 @@ func (na *_TypeString__ReprAssembler) AssignNode(v ipld.Node) error {
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeString.Repr", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeString.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -35999,10 +35999,10 @@ func (na *_TypeString__ReprAssembler) AssignNode(v ipld.Node) error {
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -36140,7 +36140,7 @@ func (_TypeString__ReprKeyAssembler) AssignBytes([]byte) error {
 func (_TypeString__ReprKeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.TypeString.Repr.KeyAssembler"}.AssignLink(nil)
 }
-func (ka *_TypeString__ReprKeyAssembler) AssignNode(v ipld.Node) error {
+func (ka *_TypeString__ReprKeyAssembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {
@@ -36386,7 +36386,7 @@ func (_TypeStruct__Assembler) AssignBytes([]byte) error {
 func (_TypeStruct__Assembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.TypeStruct"}.AssignLink(nil)
 }
-func (na *_TypeStruct__Assembler) AssignNode(v ipld.Node) error {
+func (na *_TypeStruct__Assembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -36407,7 +36407,7 @@ func (na *_TypeStruct__Assembler) AssignNode(v ipld.Node) error {
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeStruct", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeStruct", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -36415,10 +36415,10 @@ func (na *_TypeStruct__Assembler) AssignNode(v ipld.Node) error {
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -36624,7 +36624,7 @@ func (_TypeStruct__KeyAssembler) AssignBytes([]byte) error {
 func (_TypeStruct__KeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.TypeStruct.KeyAssembler"}.AssignLink(nil)
 }
-func (ka *_TypeStruct__KeyAssembler) AssignNode(v ipld.Node) error {
+func (ka *_TypeStruct__KeyAssembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {
@@ -36829,7 +36829,7 @@ func (_TypeStruct__ReprAssembler) AssignBytes([]byte) error {
 func (_TypeStruct__ReprAssembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.TypeStruct.Repr"}.AssignLink(nil)
 }
-func (na *_TypeStruct__ReprAssembler) AssignNode(v ipld.Node) error {
+func (na *_TypeStruct__ReprAssembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -36850,7 +36850,7 @@ func (na *_TypeStruct__ReprAssembler) AssignNode(v ipld.Node) error {
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeStruct.Repr", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeStruct.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -36858,10 +36858,10 @@ func (na *_TypeStruct__ReprAssembler) AssignNode(v ipld.Node) error {
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -37065,7 +37065,7 @@ func (_TypeStruct__ReprKeyAssembler) AssignBytes([]byte) error {
 func (_TypeStruct__ReprKeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.TypeStruct.Repr.KeyAssembler"}.AssignLink(nil)
 }
-func (ka *_TypeStruct__ReprKeyAssembler) AssignNode(v ipld.Node) error {
+func (ka *_TypeStruct__ReprKeyAssembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {
@@ -37311,7 +37311,7 @@ func (_TypeUnion__Assembler) AssignBytes([]byte) error {
 func (_TypeUnion__Assembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.TypeUnion"}.AssignLink(nil)
 }
-func (na *_TypeUnion__Assembler) AssignNode(v ipld.Node) error {
+func (na *_TypeUnion__Assembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -37332,7 +37332,7 @@ func (na *_TypeUnion__Assembler) AssignNode(v ipld.Node) error {
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeUnion", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeUnion", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -37340,10 +37340,10 @@ func (na *_TypeUnion__Assembler) AssignNode(v ipld.Node) error {
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -37549,7 +37549,7 @@ func (_TypeUnion__KeyAssembler) AssignBytes([]byte) error {
 func (_TypeUnion__KeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.TypeUnion.KeyAssembler"}.AssignLink(nil)
 }
-func (ka *_TypeUnion__KeyAssembler) AssignNode(v ipld.Node) error {
+func (ka *_TypeUnion__KeyAssembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {
@@ -37754,7 +37754,7 @@ func (_TypeUnion__ReprAssembler) AssignBytes([]byte) error {
 func (_TypeUnion__ReprAssembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.TypeUnion.Repr"}.AssignLink(nil)
 }
-func (na *_TypeUnion__ReprAssembler) AssignNode(v ipld.Node) error {
+func (na *_TypeUnion__ReprAssembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -37775,7 +37775,7 @@ func (na *_TypeUnion__ReprAssembler) AssignNode(v ipld.Node) error {
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeUnion.Repr", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeUnion.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -37783,10 +37783,10 @@ func (na *_TypeUnion__ReprAssembler) AssignNode(v ipld.Node) error {
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -37990,7 +37990,7 @@ func (_TypeUnion__ReprKeyAssembler) AssignBytes([]byte) error {
 func (_TypeUnion__ReprKeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.TypeUnion.Repr.KeyAssembler"}.AssignLink(nil)
 }
-func (ka *_TypeUnion__ReprKeyAssembler) AssignNode(v ipld.Node) error {
+func (ka *_TypeUnion__ReprKeyAssembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {
@@ -38307,7 +38307,7 @@ func (_UnionRepresentation__Assembler) AssignBytes([]byte) error {
 func (_UnionRepresentation__Assembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.UnionRepresentation"}.AssignLink(nil)
 }
-func (na *_UnionRepresentation__Assembler) AssignNode(v ipld.Node) error {
+func (na *_UnionRepresentation__Assembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -38328,7 +38328,7 @@ func (na *_UnionRepresentation__Assembler) AssignNode(v ipld.Node) error {
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.UnionRepresentation", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.UnionRepresentation", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -38336,10 +38336,10 @@ func (na *_UnionRepresentation__Assembler) AssignNode(v ipld.Node) error {
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -38596,7 +38596,7 @@ func (_UnionRepresentation__KeyAssembler) AssignBytes([]byte) error {
 func (_UnionRepresentation__KeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.UnionRepresentation.KeyAssembler"}.AssignLink(nil)
 }
-func (ka *_UnionRepresentation__KeyAssembler) AssignNode(v ipld.Node) error {
+func (ka *_UnionRepresentation__KeyAssembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {
@@ -38867,7 +38867,7 @@ func (_UnionRepresentation__ReprAssembler) AssignBytes([]byte) error {
 func (_UnionRepresentation__ReprAssembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.UnionRepresentation.Repr"}.AssignLink(nil)
 }
-func (na *_UnionRepresentation__ReprAssembler) AssignNode(v ipld.Node) error {
+func (na *_UnionRepresentation__ReprAssembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -38888,7 +38888,7 @@ func (na *_UnionRepresentation__ReprAssembler) AssignNode(v ipld.Node) error {
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.UnionRepresentation.Repr", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.UnionRepresentation.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -38896,10 +38896,10 @@ func (na *_UnionRepresentation__ReprAssembler) AssignNode(v ipld.Node) error {
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -39156,7 +39156,7 @@ func (_UnionRepresentation__ReprKeyAssembler) AssignBytes([]byte) error {
 func (_UnionRepresentation__ReprKeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.UnionRepresentation.Repr.KeyAssembler"}.AssignLink(nil)
 }
-func (ka *_UnionRepresentation__ReprKeyAssembler) AssignNode(v ipld.Node) error {
+func (ka *_UnionRepresentation__ReprKeyAssembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {
@@ -39390,7 +39390,7 @@ func (_UnionRepresentation_BytePrefix__Assembler) AssignBytes([]byte) error {
 func (_UnionRepresentation_BytePrefix__Assembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.UnionRepresentation_BytePrefix"}.AssignLink(nil)
 }
-func (na *_UnionRepresentation_BytePrefix__Assembler) AssignNode(v ipld.Node) error {
+func (na *_UnionRepresentation_BytePrefix__Assembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -39411,7 +39411,7 @@ func (na *_UnionRepresentation_BytePrefix__Assembler) AssignNode(v ipld.Node) er
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.UnionRepresentation_BytePrefix", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.UnionRepresentation_BytePrefix", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -39419,10 +39419,10 @@ func (na *_UnionRepresentation_BytePrefix__Assembler) AssignNode(v ipld.Node) er
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -39594,7 +39594,7 @@ func (_UnionRepresentation_BytePrefix__KeyAssembler) AssignBytes([]byte) error {
 func (_UnionRepresentation_BytePrefix__KeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.UnionRepresentation_BytePrefix.KeyAssembler"}.AssignLink(nil)
 }
-func (ka *_UnionRepresentation_BytePrefix__KeyAssembler) AssignNode(v ipld.Node) error {
+func (ka *_UnionRepresentation_BytePrefix__KeyAssembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {
@@ -39791,7 +39791,7 @@ func (_UnionRepresentation_BytePrefix__ReprAssembler) AssignBytes([]byte) error 
 func (_UnionRepresentation_BytePrefix__ReprAssembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.UnionRepresentation_BytePrefix.Repr"}.AssignLink(nil)
 }
-func (na *_UnionRepresentation_BytePrefix__ReprAssembler) AssignNode(v ipld.Node) error {
+func (na *_UnionRepresentation_BytePrefix__ReprAssembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -39812,7 +39812,7 @@ func (na *_UnionRepresentation_BytePrefix__ReprAssembler) AssignNode(v ipld.Node
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.UnionRepresentation_BytePrefix.Repr", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.UnionRepresentation_BytePrefix.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -39820,10 +39820,10 @@ func (na *_UnionRepresentation_BytePrefix__ReprAssembler) AssignNode(v ipld.Node
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -39994,7 +39994,7 @@ func (_UnionRepresentation_BytePrefix__ReprKeyAssembler) AssignBytes([]byte) err
 func (_UnionRepresentation_BytePrefix__ReprKeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.UnionRepresentation_BytePrefix.Repr.KeyAssembler"}.AssignLink(nil)
 }
-func (ka *_UnionRepresentation_BytePrefix__ReprKeyAssembler) AssignNode(v ipld.Node) error {
+func (ka *_UnionRepresentation_BytePrefix__ReprKeyAssembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {
@@ -40252,7 +40252,7 @@ func (_UnionRepresentation_Envelope__Assembler) AssignBytes([]byte) error {
 func (_UnionRepresentation_Envelope__Assembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.UnionRepresentation_Envelope"}.AssignLink(nil)
 }
-func (na *_UnionRepresentation_Envelope__Assembler) AssignNode(v ipld.Node) error {
+func (na *_UnionRepresentation_Envelope__Assembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -40273,7 +40273,7 @@ func (na *_UnionRepresentation_Envelope__Assembler) AssignNode(v ipld.Node) erro
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.UnionRepresentation_Envelope", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.UnionRepresentation_Envelope", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -40281,10 +40281,10 @@ func (na *_UnionRepresentation_Envelope__Assembler) AssignNode(v ipld.Node) erro
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -40524,7 +40524,7 @@ func (_UnionRepresentation_Envelope__KeyAssembler) AssignBytes([]byte) error {
 func (_UnionRepresentation_Envelope__KeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.UnionRepresentation_Envelope.KeyAssembler"}.AssignLink(nil)
 }
-func (ka *_UnionRepresentation_Envelope__KeyAssembler) AssignNode(v ipld.Node) error {
+func (ka *_UnionRepresentation_Envelope__KeyAssembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {
@@ -40737,7 +40737,7 @@ func (_UnionRepresentation_Envelope__ReprAssembler) AssignBytes([]byte) error {
 func (_UnionRepresentation_Envelope__ReprAssembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.UnionRepresentation_Envelope.Repr"}.AssignLink(nil)
 }
-func (na *_UnionRepresentation_Envelope__ReprAssembler) AssignNode(v ipld.Node) error {
+func (na *_UnionRepresentation_Envelope__ReprAssembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -40758,7 +40758,7 @@ func (na *_UnionRepresentation_Envelope__ReprAssembler) AssignNode(v ipld.Node) 
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.UnionRepresentation_Envelope.Repr", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.UnionRepresentation_Envelope.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -40766,10 +40766,10 @@ func (na *_UnionRepresentation_Envelope__ReprAssembler) AssignNode(v ipld.Node) 
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -41006,7 +41006,7 @@ func (_UnionRepresentation_Envelope__ReprKeyAssembler) AssignBytes([]byte) error
 func (_UnionRepresentation_Envelope__ReprKeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.UnionRepresentation_Envelope.Repr.KeyAssembler"}.AssignLink(nil)
 }
-func (ka *_UnionRepresentation_Envelope__ReprKeyAssembler) AssignNode(v ipld.Node) error {
+func (ka *_UnionRepresentation_Envelope__ReprKeyAssembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {
@@ -41252,7 +41252,7 @@ func (_UnionRepresentation_Inline__Assembler) AssignBytes([]byte) error {
 func (_UnionRepresentation_Inline__Assembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.UnionRepresentation_Inline"}.AssignLink(nil)
 }
-func (na *_UnionRepresentation_Inline__Assembler) AssignNode(v ipld.Node) error {
+func (na *_UnionRepresentation_Inline__Assembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -41273,7 +41273,7 @@ func (na *_UnionRepresentation_Inline__Assembler) AssignNode(v ipld.Node) error 
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.UnionRepresentation_Inline", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.UnionRepresentation_Inline", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -41281,10 +41281,10 @@ func (na *_UnionRepresentation_Inline__Assembler) AssignNode(v ipld.Node) error 
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -41490,7 +41490,7 @@ func (_UnionRepresentation_Inline__KeyAssembler) AssignBytes([]byte) error {
 func (_UnionRepresentation_Inline__KeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.UnionRepresentation_Inline.KeyAssembler"}.AssignLink(nil)
 }
-func (ka *_UnionRepresentation_Inline__KeyAssembler) AssignNode(v ipld.Node) error {
+func (ka *_UnionRepresentation_Inline__KeyAssembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {
@@ -41695,7 +41695,7 @@ func (_UnionRepresentation_Inline__ReprAssembler) AssignBytes([]byte) error {
 func (_UnionRepresentation_Inline__ReprAssembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.UnionRepresentation_Inline.Repr"}.AssignLink(nil)
 }
-func (na *_UnionRepresentation_Inline__ReprAssembler) AssignNode(v ipld.Node) error {
+func (na *_UnionRepresentation_Inline__ReprAssembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -41716,7 +41716,7 @@ func (na *_UnionRepresentation_Inline__ReprAssembler) AssignNode(v ipld.Node) er
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.UnionRepresentation_Inline.Repr", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.UnionRepresentation_Inline.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -41724,10 +41724,10 @@ func (na *_UnionRepresentation_Inline__ReprAssembler) AssignNode(v ipld.Node) er
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -41931,7 +41931,7 @@ func (_UnionRepresentation_Inline__ReprKeyAssembler) AssignBytes([]byte) error {
 func (_UnionRepresentation_Inline__ReprKeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.UnionRepresentation_Inline.Repr.KeyAssembler"}.AssignLink(nil)
 }
-func (ka *_UnionRepresentation_Inline__ReprKeyAssembler) AssignNode(v ipld.Node) error {
+func (ka *_UnionRepresentation_Inline__ReprKeyAssembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {
@@ -42203,7 +42203,7 @@ func (_UnionRepresentation_Keyed__Assembler) AssignBytes([]byte) error {
 func (_UnionRepresentation_Keyed__Assembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.UnionRepresentation_Keyed"}.AssignLink(nil)
 }
-func (na *_UnionRepresentation_Keyed__Assembler) AssignNode(v ipld.Node) error {
+func (na *_UnionRepresentation_Keyed__Assembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -42224,7 +42224,7 @@ func (na *_UnionRepresentation_Keyed__Assembler) AssignNode(v ipld.Node) error {
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.UnionRepresentation_Keyed", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.UnionRepresentation_Keyed", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -42232,10 +42232,10 @@ func (na *_UnionRepresentation_Keyed__Assembler) AssignNode(v ipld.Node) error {
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -42545,7 +42545,7 @@ func (_UnionRepresentation_Keyed__ReprAssembler) AssignBytes([]byte) error {
 func (_UnionRepresentation_Keyed__ReprAssembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.UnionRepresentation_Keyed.Repr"}.AssignLink(nil)
 }
-func (na *_UnionRepresentation_Keyed__ReprAssembler) AssignNode(v ipld.Node) error {
+func (na *_UnionRepresentation_Keyed__ReprAssembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -42566,7 +42566,7 @@ func (na *_UnionRepresentation_Keyed__ReprAssembler) AssignNode(v ipld.Node) err
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.UnionRepresentation_Keyed.Repr", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.UnionRepresentation_Keyed.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -42574,10 +42574,10 @@ func (na *_UnionRepresentation_Keyed__ReprAssembler) AssignNode(v ipld.Node) err
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -42972,7 +42972,7 @@ func (_UnionRepresentation_Kinded__Assembler) AssignBytes([]byte) error {
 func (_UnionRepresentation_Kinded__Assembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.UnionRepresentation_Kinded"}.AssignLink(nil)
 }
-func (na *_UnionRepresentation_Kinded__Assembler) AssignNode(v ipld.Node) error {
+func (na *_UnionRepresentation_Kinded__Assembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -42993,7 +42993,7 @@ func (na *_UnionRepresentation_Kinded__Assembler) AssignNode(v ipld.Node) error 
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.UnionRepresentation_Kinded", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.UnionRepresentation_Kinded", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -43001,10 +43001,10 @@ func (na *_UnionRepresentation_Kinded__Assembler) AssignNode(v ipld.Node) error 
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -43314,7 +43314,7 @@ func (_UnionRepresentation_Kinded__ReprAssembler) AssignBytes([]byte) error {
 func (_UnionRepresentation_Kinded__ReprAssembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.UnionRepresentation_Kinded.Repr"}.AssignLink(nil)
 }
-func (na *_UnionRepresentation_Kinded__ReprAssembler) AssignNode(v ipld.Node) error {
+func (na *_UnionRepresentation_Kinded__ReprAssembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -43335,7 +43335,7 @@ func (na *_UnionRepresentation_Kinded__ReprAssembler) AssignNode(v ipld.Node) er
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.UnionRepresentation_Kinded.Repr", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.UnionRepresentation_Kinded.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -43343,10 +43343,10 @@ func (na *_UnionRepresentation_Kinded__ReprAssembler) AssignNode(v ipld.Node) er
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -43703,7 +43703,7 @@ func (_UnionRepresentation_StringPrefix__Assembler) AssignBytes([]byte) error {
 func (_UnionRepresentation_StringPrefix__Assembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.UnionRepresentation_StringPrefix"}.AssignLink(nil)
 }
-func (na *_UnionRepresentation_StringPrefix__Assembler) AssignNode(v ipld.Node) error {
+func (na *_UnionRepresentation_StringPrefix__Assembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -43724,7 +43724,7 @@ func (na *_UnionRepresentation_StringPrefix__Assembler) AssignNode(v ipld.Node) 
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.UnionRepresentation_StringPrefix", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.UnionRepresentation_StringPrefix", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -43732,10 +43732,10 @@ func (na *_UnionRepresentation_StringPrefix__Assembler) AssignNode(v ipld.Node) 
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -43907,7 +43907,7 @@ func (_UnionRepresentation_StringPrefix__KeyAssembler) AssignBytes([]byte) error
 func (_UnionRepresentation_StringPrefix__KeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.UnionRepresentation_StringPrefix.KeyAssembler"}.AssignLink(nil)
 }
-func (ka *_UnionRepresentation_StringPrefix__KeyAssembler) AssignNode(v ipld.Node) error {
+func (ka *_UnionRepresentation_StringPrefix__KeyAssembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {
@@ -44104,7 +44104,7 @@ func (_UnionRepresentation_StringPrefix__ReprAssembler) AssignBytes([]byte) erro
 func (_UnionRepresentation_StringPrefix__ReprAssembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.UnionRepresentation_StringPrefix.Repr"}.AssignLink(nil)
 }
-func (na *_UnionRepresentation_StringPrefix__ReprAssembler) AssignNode(v ipld.Node) error {
+func (na *_UnionRepresentation_StringPrefix__ReprAssembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -44125,7 +44125,7 @@ func (na *_UnionRepresentation_StringPrefix__ReprAssembler) AssignNode(v ipld.No
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.UnionRepresentation_StringPrefix.Repr", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.UnionRepresentation_StringPrefix.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -44133,10 +44133,10 @@ func (na *_UnionRepresentation_StringPrefix__ReprAssembler) AssignNode(v ipld.No
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -44307,7 +44307,7 @@ func (_UnionRepresentation_StringPrefix__ReprKeyAssembler) AssignBytes([]byte) e
 func (_UnionRepresentation_StringPrefix__ReprKeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.UnionRepresentation_StringPrefix.Repr.KeyAssembler"}.AssignLink(nil)
 }
-func (ka *_UnionRepresentation_StringPrefix__ReprKeyAssembler) AssignNode(v ipld.Node) error {
+func (ka *_UnionRepresentation_StringPrefix__ReprKeyAssembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {
@@ -44527,7 +44527,7 @@ func (_Unit__Assembler) AssignBytes([]byte) error {
 func (_Unit__Assembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.Unit"}.AssignLink(nil)
 }
-func (na *_Unit__Assembler) AssignNode(v ipld.Node) error {
+func (na *_Unit__Assembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -44548,7 +44548,7 @@ func (na *_Unit__Assembler) AssignNode(v ipld.Node) error {
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.Unit", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.Unit", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -44556,10 +44556,10 @@ func (na *_Unit__Assembler) AssignNode(v ipld.Node) error {
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -44697,7 +44697,7 @@ func (_Unit__KeyAssembler) AssignBytes([]byte) error {
 func (_Unit__KeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.Unit.KeyAssembler"}.AssignLink(nil)
 }
-func (ka *_Unit__KeyAssembler) AssignNode(v ipld.Node) error {
+func (ka *_Unit__KeyAssembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {
@@ -44885,7 +44885,7 @@ func (_Unit__ReprAssembler) AssignBytes([]byte) error {
 func (_Unit__ReprAssembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{"schemadmt.Unit.Repr"}.AssignLink(nil)
 }
-func (na *_Unit__ReprAssembler) AssignNode(v ipld.Node) error {
+func (na *_Unit__ReprAssembler) ConvertFrom(v ipld.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -44906,7 +44906,7 @@ func (na *_Unit__ReprAssembler) AssignNode(v ipld.Node) error {
 		return nil
 	}
 	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.Unit.Repr", MethodName: "AssignNode", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+		return ipld.ErrWrongKind{TypeName: "schemadmt.Unit.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -44914,10 +44914,10 @@ func (na *_Unit__ReprAssembler) AssignNode(v ipld.Node) error {
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().AssignNode(k); err != nil {
+		if err := na.AssembleKey().ConvertFrom(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().AssignNode(v); err != nil {
+		if err := na.AssembleValue().ConvertFrom(v); err != nil {
 			return err
 		}
 	}
@@ -45055,7 +45055,7 @@ func (_Unit__ReprKeyAssembler) AssignBytes([]byte) error {
 func (_Unit__ReprKeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{"schemadmt.Unit.Repr.KeyAssembler"}.AssignLink(nil)
 }
-func (ka *_Unit__ReprKeyAssembler) AssignNode(v ipld.Node) error {
+func (ka *_Unit__ReprKeyAssembler) ConvertFrom(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {
