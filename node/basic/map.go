@@ -30,8 +30,8 @@ type plainMap__Entry struct {
 
 // -- Node interface methods -->
 
-func (plainMap) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (plainMap) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n *plainMap) LookupByString(key string) (ipld.Node, error) {
 	v, exists := n.m[key]
@@ -214,8 +214,8 @@ func (na *plainMap__Assembler) ConvertFrom(v ipld.Node) error {
 	}
 	// If the above shortcut didn't work, resort to a generic copy.
 	//  We call ConvertFrom for all the child values, giving them a chance to hit shortcuts even if we didn't.
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "map", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "map", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {

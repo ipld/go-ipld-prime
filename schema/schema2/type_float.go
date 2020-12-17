@@ -21,14 +21,14 @@ func (t *TypeFloat) TypeSystem() *TypeSystem {
 	return t.ts
 }
 
-func (TypeFloat) Kind() Kind {
-	return Kind_Float
+func (TypeFloat) TypeKind() TypeKind {
+	return TypeKind_Float
 }
 
 func (t *TypeFloat) Name() TypeName {
 	return t.name
 }
 
-func (t TypeFloat) RepresentationBehavior() ipld.ReprKind {
-	return ipld.ReprKind_Float
+func (t TypeFloat) RepresentationBehavior() ipld.Kind {
+	return ipld.Kind_Float
 }

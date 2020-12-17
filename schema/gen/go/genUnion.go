@@ -46,7 +46,7 @@ func (g unionGenerator) EmitNativeType(w io.Writer) {
 	// and since we do it in that one case, it's just as well to do it uniformly.
 	doTemplate(`
 		{{- if Comments -}}
-		// {{ .Type | TypeSymbol }} matches the IPLD Schema type "{{ .Type.Name }}".  It has {{ .Type.Kind }} type-kind, and may be interrogated like {{ .ReprKind }} kind.
+		// {{ .Type | TypeSymbol }} matches the IPLD Schema type "{{ .Type.Name }}".  It has {{ .Type.TypeKind }} type-kind, and may be interrogated like {{ .Kind }} kind.
 		{{- end}}
 		type {{ .Type | TypeSymbol }} = *_{{ .Type | TypeSymbol }}
 		type _{{ .Type | TypeSymbol }} struct {
@@ -371,8 +371,8 @@ func (g unionBuilderGenerator) EmitNodeAssemblerMethodConvertFrom(w io.Writer) {
 				*na.m = schema.Maybe_Value
 				return nil
 			}
-			if v.ReprKind() != ipld.ReprKind_Map {
-				return ipld.ErrWrongKind{TypeName: "{{ .PkgName }}.{{ .Type.Name }}", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+			if v.Kind() != ipld.Kind_Map {
+				return ipld.ErrWrongKind{TypeName: "{{ .PkgName }}.{{ .Type.Name }}", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 			}
 			itr := v.MapIterator()
 			for !itr.Done() {

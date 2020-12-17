@@ -6,9 +6,9 @@ import (
 
 // schema.TypedNode is a superset of the ipld.Node interface, and has additional behaviors.
 //
-// A schema.TypedNode can be inspected for its schema.Type and schema.Kind,
+// A schema.TypedNode can be inspected for its schema.Type and schema.TypeKind,
 // which conveys much more and richer information than the Data Model layer
-// ipld.ReprKind.
+// ipld.Kind.
 //
 // There are many different implementations of schema.TypedNode.
 // One implementation can wrap any other existing ipld.Node (i.e., it's zero-copy)
@@ -28,13 +28,13 @@ import (
 // return ErrNotExists, because the representation isn't a schema.TypedNode!
 type TypedNode interface {
 	// schema.TypedNode acts just like a regular Node for almost all purposes;
-	// which ipld.ReprKind it acts as is determined by the TypeKind.
+	// which ipld.Kind it acts as is determined by the TypeKind.
 	// (Note that the representation strategy of the type does *not* affect
-	// the ReprKind of schema.TypedNode -- rather, the representation strategy
-	// affects the `.Representation().ReprKind()`.)
+	// the Kind of schema.TypedNode -- rather, the representation strategy
+	// affects the `.Representation().Kind()`.)
 	//
-	// For example: if the `.Type().Kind()` of this node is "struct",
-	// it will act like ReprKind() == "map"
+	// For example: if the `.Type().TypeKind()` of this node is "struct",
+	// it will act like Kind() == "map"
 	// (even if Type().(Struct).ReprStrategy() is "tuple").
 	ipld.Node
 
@@ -44,10 +44,10 @@ type TypedNode interface {
 	// Representation returns an ipld.Node which sees the data in this node
 	// in its representation form.
 	//
-	// For example: if the `.Type().Kind()` of this node is "struct",
-	// `.Representation().Kind()` may vary based on its representation strategy:
-	// if the representation strategy is "map", then it will be ReprKind=="map";
-	// if the streatgy is "tuple", then it will be ReprKind=="list".
+	// For example: if the `.Type().TypeKind()` of this node is "struct",
+	// `.Representation().TypeKind()` may vary based on its representation strategy:
+	// if the representation strategy is "map", then it will be Kind=="map";
+	// if the streatgy is "tuple", then it will be Kind=="list".
 	Representation() ipld.Node
 }
 

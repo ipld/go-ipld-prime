@@ -87,16 +87,16 @@ func (prog *Progress) get(n ipld.Node, p ipld.Path, trackProgress bool) (ipld.No
 	var prev ipld.Node // for LinkContext
 	for i, seg := range segments {
 		// Traverse the segment.
-		switch n.ReprKind() {
-		case ipld.ReprKind_Invalid:
+		switch n.Kind() {
+		case ipld.Kind_Invalid:
 			panic(fmt.Errorf("invalid node encountered at %q", p.Truncate(i)))
-		case ipld.ReprKind_Map:
+		case ipld.Kind_Map:
 			next, err := n.LookupByString(seg.String())
 			if err != nil {
 				return nil, fmt.Errorf("error traversing segment %q on node at %q: %s", seg, p.Truncate(i), err)
 			}
 			prev, n = n, next
-		case ipld.ReprKind_List:
+		case ipld.Kind_List:
 			intSeg, err := seg.Index()
 			if err != nil {
 				return nil, fmt.Errorf("error traversing segment %q on node at %q: the segment cannot be parsed as a number and the node is a list", seg, p.Truncate(i))
@@ -110,7 +110,7 @@ func (prog *Progress) get(n ipld.Node, p ipld.Path, trackProgress bool) (ipld.No
 			return nil, fmt.Errorf("cannot traverse node at %q: %s", p.Truncate(i), fmt.Errorf("cannot traverse terminals"))
 		}
 		// Dereference any links.
-		for n.ReprKind() == ipld.ReprKind_Link {
+		for n.Kind() == ipld.Kind_Link {
 			lnk, _ := n.AsLink()
 			// Assemble the LinkContext in case the Loader or NBChooser want it.
 			lnkCtx := ipld.LinkContext{

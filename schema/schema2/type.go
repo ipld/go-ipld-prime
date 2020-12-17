@@ -50,24 +50,24 @@ type Type interface {
 	// that string will not be required to be unique.
 	Name() TypeName
 
-	// Returns the Kind of this Type.
+	// Returns the TypeKind of this Type.
 	//
 	// The returned value is a 1:1 association with which of the concrete
 	// "schema.Type*" structs this interface can be cast to.
 	//
-	// Note that a schema.Kind is a different enum than ipld.ReprKind;
+	// Note that a schema.TypeKind is a different enum than ipld.Kind;
 	// and furthermore, there's no strict relationship between them.
-	// schema.TypedNode values can be described by *two* distinct ReprKinds:
+	// schema.TypedNode values can be described by *two* distinct Kinds:
 	// one which describes how the Node itself will act,
 	// and another which describes how the Node presents for serialization.
 	// For some combinations of Type and representation strategy, one or both
-	// of the ReprKinds can be determined statically; but not always:
+	// of the Kinds can be determined statically; but not always:
 	// it can sometimes be necessary to inspect the value quite concretely
-	// (e.g., `schema.TypedNode{}.Representation().ReprKind()`) in order to find
+	// (e.g., `schema.TypedNode{}.Representation().Kind()`) in order to find
 	// out exactly how a node will be serialized!  This is because some types
 	// can vary in representation kind based on their value (specifically,
 	// kinded-representation unions have this property).
-	Kind() Kind
+	TypeKind() TypeKind
 
 	// RepresentationBehavior returns a description of how the representation
 	// of this type will behave in terms of the IPLD Data Model.
@@ -81,7 +81,7 @@ type Type interface {
 	// (It follows that a kinded union cannot have another kinded union as a member.)
 	//
 	// You may also be interested in a related property that might have been called "TypeBehavior".
-	// However, this method doesn't exist, because it's a deterministic property of `Kind()`!
-	// You can use `Kind.ActsLike()` to get type-level behavioral information.
-	RepresentationBehavior() ipld.ReprKind
+	// However, this method doesn't exist, because it's a deterministic property of `TypeKind()`!
+	// You can use `TypeKind.ActsLike()` to get type-level behavioral information.
+	RepresentationBehavior() ipld.Kind
 }

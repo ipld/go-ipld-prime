@@ -52,7 +52,7 @@ func (g stringReprStringReprGenerator) EmitNodeTypeAssertions(w io.Writer) {
 		var _ ipld.Node = &_{{ .Type | TypeSymbol }}__Repr{}
 	`, w, g.AdjCfg, g)
 }
-func (stringReprStringReprGenerator) EmitNodeMethodReprKind(io.Writer)        {}
+func (stringReprStringReprGenerator) EmitNodeMethodKind(io.Writer)            {}
 func (stringReprStringReprGenerator) EmitNodeMethodLookupByString(io.Writer)  {}
 func (stringReprStringReprGenerator) EmitNodeMethodLookupByNode(io.Writer)    {}
 func (stringReprStringReprGenerator) EmitNodeMethodLookupByIndex(io.Writer)   {}
@@ -103,6 +103,6 @@ func (stringReprStringReprBuilderGenerator) EmitNodeAssemblerMethodAssignFloat(i
 func (stringReprStringReprBuilderGenerator) EmitNodeAssemblerMethodAssignString(io.Writer) {}
 func (stringReprStringReprBuilderGenerator) EmitNodeAssemblerMethodAssignBytes(io.Writer)  {}
 func (stringReprStringReprBuilderGenerator) EmitNodeAssemblerMethodAssignLink(io.Writer)   {}
-func (stringReprStringReprBuilderGenerator) EmitNodeAssemblerMethodConvertFrom(io.Writer)   {}
+func (stringReprStringReprBuilderGenerator) EmitNodeAssemblerMethodConvertFrom(io.Writer)  {}
 func (stringReprStringReprBuilderGenerator) EmitNodeAssemblerMethodPrototype(io.Writer)    {}
 func (stringReprStringReprBuilderGenerator) EmitNodeAssemblerOtherBits(io.Writer)          {}

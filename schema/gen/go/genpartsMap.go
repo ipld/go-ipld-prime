@@ -72,8 +72,8 @@ func emitNodeAssemblerMethodConvertFrom_mapoid(w io.Writer, adjCfg *AdjunctCfg, 
 				*na.m = schema.Maybe_Value
 				return nil
 			}
-			if v.ReprKind() != ipld.ReprKind_Map {
-				return ipld.ErrWrongKind{TypeName: "{{ .PkgName }}.{{ .Type.Name }}{{ if .IsRepr }}.Repr{{end}}", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+			if v.Kind() != ipld.Kind_Map {
+				return ipld.ErrWrongKind{TypeName: "{{ .PkgName }}.{{ .Type.Name }}{{ if .IsRepr }}.Repr{{end}}", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 			}
 			itr := v.MapIterator()
 			for !itr.Done() {
@@ -217,7 +217,7 @@ func emitNodeAssemblerHelper_mapoid_mapAssemblerMethods(w io.Writer, adjCfg *Adj
 			}
 
 			var k2 _{{ .Type.KeyType | TypeSymbol }}
-			{{- if or (not (eq .Type.KeyType.Kind.String "String")) .IsRepr }}
+			{{- if or (not (eq .Type.KeyType.TypeKind.String "String")) .IsRepr }}
 			if err := (_{{ .Type.KeyType | TypeSymbol }}__ReprPrototype{}).fromString(&k2, k); err != nil {
 				return nil, err // TODO wrap in some kind of ErrInvalidKey
 			}

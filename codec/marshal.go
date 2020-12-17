@@ -23,14 +23,14 @@ func Marshal(n ipld.Node, sink shared.TokenSink) error {
 }
 
 func marshal(n ipld.Node, tk *tok.Token, sink shared.TokenSink) error {
-	switch n.ReprKind() {
-	case ipld.ReprKind_Invalid:
+	switch n.Kind() {
+	case ipld.Kind_Invalid:
 		return fmt.Errorf("cannot traverse a node that is absent")
-	case ipld.ReprKind_Null:
+	case ipld.Kind_Null:
 		tk.Type = tok.TNull
 		_, err := sink.Step(tk)
 		return err
-	case ipld.ReprKind_Map:
+	case ipld.Kind_Map:
 		// Emit start of map.
 		tk.Type = tok.TMapOpen
 		tk.Length = int(n.Length()) // TODO: overflow check
@@ -59,7 +59,7 @@ func marshal(n ipld.Node, tk *tok.Token, sink shared.TokenSink) error {
 		tk.Type = tok.TMapClose
 		_, err := sink.Step(tk)
 		return err
-	case ipld.ReprKind_List:
+	case ipld.Kind_List:
 		// Emit start of list.
 		tk.Type = tok.TArrOpen
 		l := n.Length()
@@ -81,7 +81,7 @@ func marshal(n ipld.Node, tk *tok.Token, sink shared.TokenSink) error {
 		tk.Type = tok.TArrClose
 		_, err := sink.Step(tk)
 		return err
-	case ipld.ReprKind_Bool:
+	case ipld.Kind_Bool:
 		v, err := n.AsBool()
 		if err != nil {
 			return err
@@ -90,7 +90,7 @@ func marshal(n ipld.Node, tk *tok.Token, sink shared.TokenSink) error {
 		tk.Bool = v
 		_, err = sink.Step(tk)
 		return err
-	case ipld.ReprKind_Int:
+	case ipld.Kind_Int:
 		v, err := n.AsInt()
 		if err != nil {
 			return err
@@ -99,7 +99,7 @@ func marshal(n ipld.Node, tk *tok.Token, sink shared.TokenSink) error {
 		tk.Int = int64(v)
 		_, err = sink.Step(tk)
 		return err
-	case ipld.ReprKind_Float:
+	case ipld.Kind_Float:
 		v, err := n.AsFloat()
 		if err != nil {
 			return err
@@ -108,7 +108,7 @@ func marshal(n ipld.Node, tk *tok.Token, sink shared.TokenSink) error {
 		tk.Float64 = v
 		_, err = sink.Step(tk)
 		return err
-	case ipld.ReprKind_String:
+	case ipld.Kind_String:
 		v, err := n.AsString()
 		if err != nil {
 			return err
@@ -117,7 +117,7 @@ func marshal(n ipld.Node, tk *tok.Token, sink shared.TokenSink) error {
 		tk.Str = v
 		_, err = sink.Step(tk)
 		return err
-	case ipld.ReprKind_Bytes:
+	case ipld.Kind_Bytes:
 		v, err := n.AsBytes()
 		if err != nil {
 			return err
@@ -126,7 +126,7 @@ func marshal(n ipld.Node, tk *tok.Token, sink shared.TokenSink) error {
 		tk.Bytes = v
 		_, err = sink.Step(tk)
 		return err
-	case ipld.ReprKind_Link:
+	case ipld.Kind_Link:
 		return fmt.Errorf("link emission not supported by this codec without a schema!  (maybe you want dag-cbor or dag-json)")
 	default:
 		panic("unreachable")

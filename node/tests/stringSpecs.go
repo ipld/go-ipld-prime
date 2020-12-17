@@ -15,7 +15,7 @@ func SpecTestString(t *testing.T, np ipld.NodePrototype) {
 		Wish(t, err, ShouldEqual, nil)
 		n := nb.Build()
 
-		Wish(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_String)
+		Wish(t, n.Kind(), ShouldEqual, ipld.Kind_String)
 		Wish(t, n.IsNull(), ShouldEqual, false)
 		x, err := n.AsString()
 		Wish(t, err, ShouldEqual, nil)

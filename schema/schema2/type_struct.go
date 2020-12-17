@@ -54,26 +54,26 @@ func (t *TypeStruct) TypeSystem() *TypeSystem {
 	return t.ts
 }
 
-func (TypeStruct) Kind() Kind {
-	return Kind_Struct
+func (TypeStruct) TypeKind() TypeKind {
+	return TypeKind_Struct
 }
 
 func (t *TypeStruct) Name() TypeName {
 	return t.name
 }
 
-func (t TypeStruct) RepresentationBehavior() ipld.ReprKind {
+func (t TypeStruct) RepresentationBehavior() ipld.Kind {
 	switch t.dmt.FieldRepresentation().AsInterface().(type) {
 	case schemadmt.StructRepresentation_Map:
-		return ipld.ReprKind_Map
+		return ipld.Kind_Map
 	case schemadmt.StructRepresentation_Tuple:
-		return ipld.ReprKind_List
+		return ipld.Kind_List
 	case schemadmt.StructRepresentation_Stringpairs:
-		return ipld.ReprKind_String
+		return ipld.Kind_String
 	case schemadmt.StructRepresentation_Stringjoin:
-		return ipld.ReprKind_String
+		return ipld.Kind_String
 	case schemadmt.StructRepresentation_Listpairs:
-		return ipld.ReprKind_List
+		return ipld.Kind_List
 	default:
 		panic("unreachable")
 	}

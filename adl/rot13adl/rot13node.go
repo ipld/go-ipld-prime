@@ -37,8 +37,8 @@ type _R13String struct {
 	synthesized string // the content that the ADL presents.  calculated proactively from the original, in this implementation (though you could imagine implementing it lazily, in either direction, too).
 }
 
-func (*_R13String) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_String
+func (*_R13String) Kind() ipld.Kind {
+	return ipld.Kind_String
 }
 func (*_R13String) LookupByString(string) (ipld.Node, error) {
 	return mixins.String{TypeName: "rot13adl.R13String"}.LookupByString("")

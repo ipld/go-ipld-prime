@@ -21,7 +21,7 @@ func (structGenerator) IsRepr() bool { return false } // hint used in some gener
 func (g structGenerator) EmitNativeType(w io.Writer) {
 	doTemplate(`
 		{{- if Comments -}}
-		// {{ .Type | TypeSymbol }} matches the IPLD Schema type "{{ .Type.Name }}".  It has {{ .Type.Kind }} type-kind, and may be interrogated like {{ .ReprKind }} kind.
+		// {{ .Type | TypeSymbol }} matches the IPLD Schema type "{{ .Type.Name }}".  It has {{ .Type.TypeKind }} type-kind, and may be interrogated like {{ .Kind }} kind.
 		{{- end}}
 		type {{ .Type | TypeSymbol }} = *_{{ .Type | TypeSymbol }}
 		type _{{ .Type | TypeSymbol }} struct {
@@ -310,8 +310,8 @@ func (g structBuilderGenerator) EmitNodeAssemblerMethodConvertFrom(w io.Writer) 
 				*na.m = schema.Maybe_Value
 				return nil
 			}
-			if v.ReprKind() != ipld.ReprKind_Map {
-				return ipld.ErrWrongKind{TypeName: "{{ .PkgName }}.{{ .Type.Name }}", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+			if v.Kind() != ipld.Kind_Map {
+				return ipld.ErrWrongKind{TypeName: "{{ .PkgName }}.{{ .Type.Name }}", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 			}
 			itr := v.MapIterator()
 			for !itr.Done() {

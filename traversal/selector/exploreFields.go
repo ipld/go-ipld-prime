@@ -41,14 +41,14 @@ func (s ExploreFields) Decide(n ipld.Node) bool {
 // ParseExploreFields assembles a Selector
 // from a ExploreFields selector node
 func (pc ParseContext) ParseExploreFields(n ipld.Node) (Selector, error) {
-	if n.ReprKind() != ipld.ReprKind_Map {
+	if n.Kind() != ipld.Kind_Map {
 		return nil, fmt.Errorf("selector spec parse rejected: selector body must be a map")
 	}
 	fields, err := n.LookupByString(SelectorKey_Fields)
 	if err != nil {
 		return nil, fmt.Errorf("selector spec parse rejected: fields in ExploreFields selector must be present")
 	}
-	if fields.ReprKind() != ipld.ReprKind_Map {
+	if fields.Kind() != ipld.Kind_Map {
 		return nil, fmt.Errorf("selector spec parse rejected: fields in ExploreFields selector must be a map")
 	}
 	x := ExploreFields{

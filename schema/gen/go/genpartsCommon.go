@@ -61,10 +61,10 @@ func emitNativeType_scalar(w io.Writer, adjCfg *AdjunctCfg, data interface{}) {
 	//   which is desirable because the compiler then ensures our validate methods can't be evaded.
 	doTemplate(`
 		{{- if Comments -}}
-		// {{ .Type | TypeSymbol }} matches the IPLD Schema type "{{ .Type.Name }}".  It has {{ .ReprKind }} kind.
+		// {{ .Type | TypeSymbol }} matches the IPLD Schema type "{{ .Type.Name }}".  It has {{ .Kind }} kind.
 		{{- end}}
 		type {{ .Type | TypeSymbol }} = *_{{ .Type | TypeSymbol }}
-		type _{{ .Type | TypeSymbol }} struct{ x {{ .ReprKind | KindPrim }} }
+		type _{{ .Type | TypeSymbol }} struct{ x {{ .Kind | KindPrim }} }
 	`, w, adjCfg, data)
 }
 
@@ -73,7 +73,7 @@ func emitNativeAccessors_scalar(w io.Writer, adjCfg *AdjunctCfg, data interface{
 	//  this method unboxes without needing to return an error that's statically impossible,
 	//   which makes it easier to use in chaining.
 	doTemplate(`
-		func (n {{ .Type | TypeSymbol }}) {{ .ReprKind.String | title }}() {{ .ReprKind | KindPrim }} {
+		func (n {{ .Type | TypeSymbol }}) {{ .Kind.String | title }}() {{ .Kind | KindPrim }} {
 			return n.x
 		}
 	`, w, adjCfg, data)
@@ -86,7 +86,7 @@ func emitNativeBuilder_scalar(w io.Writer, adjCfg *AdjunctCfg, data interface{})
 	//  it needs no new memory, so it would be inappropriate to attach to the builder or assembler.
 	// FUTURE: should engage validation flow.
 	doTemplate(`
-		func (_{{ .Type | TypeSymbol }}__Prototype) From{{ .ReprKind.String | title }}(v {{ .ReprKind | KindPrim }}) ({{ .Type | TypeSymbol }}, error) {
+		func (_{{ .Type | TypeSymbol }}__Prototype) From{{ .Kind.String | title }}(v {{ .Kind | KindPrim }}) ({{ .Type | TypeSymbol }}, error) {
 			n := _{{ .Type | TypeSymbol }}{v}
 			return &n, nil
 		}
@@ -102,7 +102,7 @@ func emitNodeTypeAssertions_typical(w io.Writer, adjCfg *AdjunctCfg, data interf
 
 func emitNodeMethodAsKind_scalar(w io.Writer, adjCfg *AdjunctCfg, data interface{}) {
 	doTemplate(`
-		func (n {{ .Type | TypeSymbol }}) As{{ .ReprKind.String | title }}() ({{ .ReprKind | KindPrim }}, error) {
+		func (n {{ .Type | TypeSymbol }}) As{{ .Kind.String | title }}() ({{ .Kind | KindPrim }}, error) {
 			return n.x, nil
 		}
 	`, w, adjCfg, data)
@@ -197,7 +197,7 @@ func emitNodeAssemblerMethodAssignNull_scalar(w io.Writer, adjCfg *AdjunctCfg, d
 				*na.m = schema.Maybe_Null
 				return nil
 			case schema.Maybe_Absent:
-				return mixins.{{ .ReprKind.String | title }}Assembler{"{{ .PkgName }}.{{ .TypeName }}{{ if .IsRepr }}.Repr{{end}}"}.AssignNull()
+				return mixins.{{ .Kind.String | title }}Assembler{"{{ .PkgName }}.{{ .TypeName }}{{ if .IsRepr }}.Repr{{end}}"}.AssignNull()
 			case schema.Maybe_Value, schema.Maybe_Null:
 				panic("invalid state: cannot assign into assembler that's already finished")
 			}
@@ -215,7 +215,7 @@ func emitNodeAssemblerMethodAssignNull_recursive(w io.Writer, adjCfg *AdjunctCfg
 				*na.m = schema.Maybe_Null
 				return nil
 			case schema.Maybe_Absent:
-				return mixins.{{ .ReprKind.String | title }}Assembler{"{{ .PkgName }}.{{ .TypeName }}{{ if .IsRepr }}.Repr{{end}}"}.AssignNull()
+				return mixins.{{ .Kind.String | title }}Assembler{"{{ .PkgName }}.{{ .TypeName }}{{ if .IsRepr }}.Repr{{end}}"}.AssignNull()
 			case schema.Maybe_Value, schema.Maybe_Null:
 				panic("invalid state: cannot assign into assembler that's already finished")
 			case midvalue:
@@ -233,7 +233,7 @@ func emitNodeAssemblerMethodAssignKind_scalar(w io.Writer, adjCfg *AdjunctCfg, d
 	//  This allocation only happens if the 'w' ptr is nil, which means we're being used on a Maybe;
 	//  otherwise, the 'w' ptr should already be set, and we fill that memory location without allocating, as usual.
 	doTemplate(`
-		func (na *_{{ .Type | TypeSymbol }}__Assembler) Assign{{ .ReprKind.String | title }}(v {{ .ReprKind | KindPrim }}) error {
+		func (na *_{{ .Type | TypeSymbol }}__Assembler) Assign{{ .Kind.String | title }}(v {{ .Kind | KindPrim }}) error {
 			switch *na.m {
 			case schema.Maybe_Value, schema.Maybe_Null:
 				panic("invalid state: cannot assign into assembler that's already finished")
@@ -278,10 +278,10 @@ func emitNodeAssemblerMethodConvertFrom_scalar(w io.Writer, adjCfg *AdjunctCfg, 
 				*na.m = schema.Maybe_Value
 				return nil
 			}
-			if v2, err := v.As{{ .ReprKind.String | title }}(); err != nil {
+			if v2, err := v.As{{ .Kind.String | title }}(); err != nil {
 				return err
 			} else {
-				return na.Assign{{ .ReprKind.String | title }}(v2)
+				return na.Assign{{ .Kind.String | title }}(v2)
 			}
 		}
 	`, w, adjCfg, data)

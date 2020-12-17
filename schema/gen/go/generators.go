@@ -38,7 +38,7 @@ type TypeGenerator interface {
 type NodeGenerator interface {
 	EmitNodeType(io.Writer)           // usually already covered by EmitNativeType for the primary node, but has a nonzero body for the repr node
 	EmitNodeTypeAssertions(io.Writer) // optional to include this content
-	EmitNodeMethodReprKind(io.Writer)
+	EmitNodeMethodKind(io.Writer)
 	EmitNodeMethodLookupByString(io.Writer)
 	EmitNodeMethodLookupByNode(io.Writer)
 	EmitNodeMethodLookupByIndex(io.Writer)
@@ -114,7 +114,7 @@ func EmitEntireType(tg TypeGenerator, w io.Writer) {
 func EmitNode(ng NodeGenerator, w io.Writer) {
 	ng.EmitNodeType(w)
 	ng.EmitNodeTypeAssertions(w)
-	ng.EmitNodeMethodReprKind(w)
+	ng.EmitNodeMethodKind(w)
 	ng.EmitNodeMethodLookupByString(w)
 	ng.EmitNodeMethodLookupByNode(w)
 	ng.EmitNodeMethodLookupByIndex(w)

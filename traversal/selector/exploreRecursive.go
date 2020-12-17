@@ -168,7 +168,7 @@ func (erc *exploreRecursiveContext) Link(s Selector) bool {
 
 // ParseExploreRecursive assembles a Selector from a ExploreRecursive selector node
 func (pc ParseContext) ParseExploreRecursive(n ipld.Node) (Selector, error) {
-	if n.ReprKind() != ipld.ReprKind_Map {
+	if n.Kind() != ipld.Kind_Map {
 		return nil, fmt.Errorf("selector spec parse rejected: selector body must be a map")
 	}
 
@@ -196,7 +196,7 @@ func (pc ParseContext) ParseExploreRecursive(n ipld.Node) (Selector, error) {
 }
 
 func parseLimit(n ipld.Node) (RecursionLimit, error) {
-	if n.ReprKind() != ipld.ReprKind_Map {
+	if n.Kind() != ipld.Kind_Map {
 		return RecursionLimit{}, fmt.Errorf("selector spec parse rejected: limit in ExploreRecursive is a keyed union and thus must be a map")
 	}
 	if n.Length() != 1 {

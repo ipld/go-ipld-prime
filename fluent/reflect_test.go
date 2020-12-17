@@ -23,7 +23,7 @@ func TestReflect(t *testing.T) {
 			},
 		})
 		Wish(t, err, ShouldEqual, nil)
-		Wish(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
+		Wish(t, n.Kind(), ShouldEqual, ipld.Kind_Map)
 		t.Run("CorrectContents", func(t *testing.T) {
 			Wish(t, n.Length(), ShouldEqual, int64(3))
 			Wish(t, must.String(must.Node(n.LookupByString("k1"))), ShouldEqual, "fine")
@@ -67,7 +67,7 @@ func TestReflect(t *testing.T) {
 			M: Woo{"thanks", "really"},
 		})
 		Wish(t, err, ShouldEqual, nil)
-		Wish(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
+		Wish(t, n.Kind(), ShouldEqual, ipld.Kind_Map)
 		t.Run("CorrectContents", func(t *testing.T) {
 			Wish(t, n.Length(), ShouldEqual, int64(3))
 			Wish(t, must.String(must.Node(n.LookupByString("X"))), ShouldEqual, "fine")
@@ -99,7 +99,7 @@ func TestReflect(t *testing.T) {
 		}
 		n, err := fluent.Reflect(basicnode.Prototype.Any, Bar{"foo"})
 		Wish(t, err, ShouldEqual, nil)
-		Wish(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
+		Wish(t, n.Kind(), ShouldEqual, ipld.Kind_Map)
 		Wish(t, must.String(must.Node(n.LookupByString("Z"))), ShouldEqual, "foo")
 	})
 	t.Run("Interface", func(t *testing.T) {
@@ -108,16 +108,16 @@ func TestReflect(t *testing.T) {
 		}
 		n, err := fluent.Reflect(basicnode.Prototype.Any, Zaz{map[string]interface{}{"wow": "wee"}})
 		Wish(t, err, ShouldEqual, nil)
-		Wish(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
+		Wish(t, n.Kind(), ShouldEqual, ipld.Kind_Map)
 		n, err = n.LookupByString("Z")
 		Wish(t, err, ShouldEqual, nil)
-		Wish(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
+		Wish(t, n.Kind(), ShouldEqual, ipld.Kind_Map)
 		Wish(t, must.String(must.Node(n.LookupByString("wow"))), ShouldEqual, "wee")
 	})
 	t.Run("Bytes", func(t *testing.T) {
 		n, err := fluent.Reflect(basicnode.Prototype.Any, []byte{0x1, 0x2, 0x3})
 		Wish(t, err, ShouldEqual, nil)
-		Wish(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Bytes)
+		Wish(t, n.Kind(), ShouldEqual, ipld.Kind_Bytes)
 		b, err := n.AsBytes()
 		Wish(t, err, ShouldEqual, nil)
 		Wish(t, b, ShouldEqual, []byte{0x1, 0x2, 0x3})
@@ -129,10 +129,10 @@ func TestReflect(t *testing.T) {
 		}
 		n, err := fluent.Reflect(basicnode.Prototype.Any, Bar{[]byte{0x1, 0x2, 0x3}})
 		Wish(t, err, ShouldEqual, nil)
-		Wish(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
+		Wish(t, n.Kind(), ShouldEqual, ipld.Kind_Map)
 		n, err = n.LookupByString("Z")
 		Wish(t, err, ShouldEqual, nil)
-		Wish(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Bytes)
+		Wish(t, n.Kind(), ShouldEqual, ipld.Kind_Bytes)
 		b, err := n.AsBytes()
 		Wish(t, err, ShouldEqual, nil)
 		Wish(t, b, ShouldEqual, []byte{0x1, 0x2, 0x3})
@@ -143,10 +143,10 @@ func TestReflect(t *testing.T) {
 		}
 		n, err := fluent.Reflect(basicnode.Prototype.Any, Zaz{[]byte{0x1, 0x2, 0x3}})
 		Wish(t, err, ShouldEqual, nil)
-		Wish(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
+		Wish(t, n.Kind(), ShouldEqual, ipld.Kind_Map)
 		n, err = n.LookupByString("Z")
 		Wish(t, err, ShouldEqual, nil)
-		Wish(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Bytes)
+		Wish(t, n.Kind(), ShouldEqual, ipld.Kind_Bytes)
 		b, err := n.AsBytes()
 		Wish(t, err, ShouldEqual, nil)
 		Wish(t, b, ShouldEqual, []byte{0x1, 0x2, 0x3})

@@ -29,8 +29,8 @@ func SelectLinks(n ipld.Node) ([]ipld.Link, error) {
 }
 
 func accumulateLinks(a *[]ipld.Link, n ipld.Node) error {
-	switch n.ReprKind() {
-	case ipld.ReprKind_Map:
+	switch n.Kind() {
+	case ipld.Kind_Map:
 		for itr := n.MapIterator(); !itr.Done(); {
 			_, v, err := itr.Next()
 			if err != nil {
@@ -38,7 +38,7 @@ func accumulateLinks(a *[]ipld.Link, n ipld.Node) error {
 			}
 			accumulateLinks(a, v)
 		}
-	case ipld.ReprKind_List:
+	case ipld.Kind_List:
 		for itr := n.ListIterator(); !itr.Done(); {
 			_, v, err := itr.Next()
 			if err != nil {
@@ -46,7 +46,7 @@ func accumulateLinks(a *[]ipld.Link, n ipld.Node) error {
 			}
 			accumulateLinks(a, v)
 		}
-	case ipld.ReprKind_Link:
+	case ipld.Kind_Link:
 		lnk, _ := n.AsLink()
 		*a = append(*a, lnk)
 	}

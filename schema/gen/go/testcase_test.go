@@ -237,7 +237,7 @@ func wishPoint(t *testing.T, n ipld.Node, point testcasePoint) {
 //
 // If the expected value is a primitive string, it'll AsStrong on the Node; etc.
 //
-// Using an ipld.ReprKind value is also possible, which will just check the kind and not the value contents.
+// Using an ipld.Kind value is also possible, which will just check the kind and not the value contents.
 //
 // If an ipld.Node is the expected value, a full deep ShouldEqual is used as normal.
 func closeEnough(actual, expected interface{}) (string, bool) {
@@ -249,17 +249,17 @@ func closeEnough(actual, expected interface{}) (string, bool) {
 		return "this checker only supports checking ipld.Node values", false
 	}
 	switch expected.(type) {
-	case ipld.ReprKind:
-		return ShouldEqual(a.ReprKind(), expected)
+	case ipld.Kind:
+		return ShouldEqual(a.Kind(), expected)
 	case string:
-		if a.ReprKind() != ipld.ReprKind_String {
-			return fmt.Sprintf("expected something with kind string, got kind %s", a.ReprKind()), false
+		if a.Kind() != ipld.Kind_String {
+			return fmt.Sprintf("expected something with kind string, got kind %s", a.Kind()), false
 		}
 		x, _ := a.AsString()
 		return ShouldEqual(x, expected)
 	case int:
-		if a.ReprKind() != ipld.ReprKind_Int {
-			return fmt.Sprintf("expected something with kind int, got kind %s", a.ReprKind()), false
+		if a.Kind() != ipld.Kind_Int {
+			return fmt.Sprintf("expected something with kind int, got kind %s", a.Kind()), false
 		}
 		x, _ := a.AsInt()
 		return ShouldEqual(x, expected)

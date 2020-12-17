@@ -5,10 +5,10 @@ import (
 	"io"
 )
 
-type ReprKind uint8
+type Kind uint8
 
 type Node interface {
-	ReprKind() ReprKind
+	Kind() Kind
 	LookupByString(key string) (Node, error)
 	LookupByNode(key Node) (Node, error)
 	LookupByIndex(idx int) (Node, error)

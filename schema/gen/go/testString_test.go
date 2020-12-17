@@ -29,11 +29,11 @@ func TestString(t *testing.T) {
 			Wish(t, nb.AssignString("woiu"), ShouldEqual, nil)
 			n := nb.Build().(schema.TypedNode)
 			t.Run("read string", func(t *testing.T) {
-				Wish(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_String)
+				Wish(t, n.Kind(), ShouldEqual, ipld.Kind_String)
 			})
 			t.Run("read representation", func(t *testing.T) {
 				nr := n.Representation()
-				Wish(t, nr.ReprKind(), ShouldEqual, ipld.ReprKind_String)
+				Wish(t, nr.Kind(), ShouldEqual, ipld.Kind_String)
 				Wish(t, str(nr), ShouldEqual, "woiu")
 			})
 		})

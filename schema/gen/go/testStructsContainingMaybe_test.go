@@ -53,7 +53,7 @@ func TestStructsContainingMaybe(t *testing.T) {
 			typeJson: `{"f1":"a","f2":"b","f3":"c","f4":"d","f5":"e"}`,
 			reprJson: `{"r1":"a","r2":"b","r3":"c","r4":"d","f5":"e"}`,
 			typePoints: []testcasePoint{
-				{"", ipld.ReprKind_Map},
+				{"", ipld.Kind_Map},
 				{"f1", "a"},
 				{"f2", "b"},
 				{"f3", "c"},
@@ -61,7 +61,7 @@ func TestStructsContainingMaybe(t *testing.T) {
 				{"f5", "e"},
 			},
 			reprPoints: []testcasePoint{
-				{"", ipld.ReprKind_Map},
+				{"", ipld.Kind_Map},
 				{"r1", "a"},
 				{"r2", "b"},
 				{"r3", "c"},
@@ -74,7 +74,7 @@ func TestStructsContainingMaybe(t *testing.T) {
 			typeJson: `{"f1":"a","f2":"b","f3":null,"f4":null,"f5":"e"}`,
 			reprJson: `{"r1":"a","r2":"b","r3":null,"r4":null,"f5":"e"}`,
 			typePoints: []testcasePoint{
-				{"", ipld.ReprKind_Map},
+				{"", ipld.Kind_Map},
 				{"f1", "a"},
 				{"f2", "b"},
 				{"f3", ipld.Null},
@@ -82,7 +82,7 @@ func TestStructsContainingMaybe(t *testing.T) {
 				{"f5", "e"},
 			},
 			reprPoints: []testcasePoint{
-				{"", ipld.ReprKind_Map},
+				{"", ipld.Kind_Map},
 				{"r1", "a"},
 				{"r2", "b"},
 				{"r3", ipld.Null},
@@ -95,7 +95,7 @@ func TestStructsContainingMaybe(t *testing.T) {
 			typeJson: `{"f1":"a","f3":"c","f5":"e"}`,
 			reprJson: `{"r1":"a","r3":"c","f5":"e"}`,
 			typePoints: []testcasePoint{
-				{"", ipld.ReprKind_Map},
+				{"", ipld.Kind_Map},
 				{"f1", "a"},
 				{"f2", ipld.Absent},
 				{"f3", "c"},
@@ -103,7 +103,7 @@ func TestStructsContainingMaybe(t *testing.T) {
 				{"f5", "e"},
 			},
 			reprPoints: []testcasePoint{
-				{"", ipld.ReprKind_Map},
+				{"", ipld.Kind_Map},
 				{"r1", "a"},
 				//{"r2", ipld.ErrNotExists{}}, // TODO: need better error typing from traversal package.
 				{"r3", "c"},
@@ -123,7 +123,7 @@ func TestStructsContainingMaybe(t *testing.T) {
 			typeJson: `{"f1":"a","f2":"b","f3":null}`,
 			reprJson: `{"r1":"a","r2":"b","r3":null}`,
 			typePoints: []testcasePoint{
-				{"", ipld.ReprKind_Map},
+				{"", ipld.Kind_Map},
 				{"f1", "a"},
 				{"f2", "b"},
 				{"f3", ipld.Null},
@@ -131,7 +131,7 @@ func TestStructsContainingMaybe(t *testing.T) {
 				{"f5", ipld.Absent},
 			},
 			reprPoints: []testcasePoint{
-				{"", ipld.ReprKind_Map},
+				{"", ipld.Kind_Map},
 				{"r1", "a"},
 				{"r2", "b"},
 				{"r3", ipld.Null},

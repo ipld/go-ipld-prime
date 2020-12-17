@@ -21,16 +21,16 @@ func (t *TypeMap) TypeSystem() *TypeSystem {
 	return t.ts
 }
 
-func (TypeMap) Kind() Kind {
-	return Kind_Map
+func (TypeMap) TypeKind() TypeKind {
+	return TypeKind_Map
 }
 
 func (t *TypeMap) Name() TypeName {
 	return t.name
 }
 
-func (t TypeMap) RepresentationBehavior() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (t TypeMap) RepresentationBehavior() ipld.Kind {
+	return ipld.Kind_Map
 }
 
 // -- specific to TypeMap -->

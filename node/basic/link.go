@@ -23,8 +23,8 @@ type plainLink struct {
 
 // -- Node interface methods -->
 
-func (plainLink) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Link
+func (plainLink) Kind() ipld.Kind {
+	return ipld.Kind_Link
 }
 func (plainLink) LookupByString(string) (ipld.Node, error) {
 	return mixins.Link{TypeName: "link"}.LookupByString("")

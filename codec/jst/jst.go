@@ -177,8 +177,8 @@ func (tab *table) IsRow(n ipld.Node) bool {
 	// FUTURE: this entire function's behavior might be *heavily* redirected by config.
 	//  Having it attached to the table struct might not even be sensible by the end of the day.
 	//  Alternately: unclear if we need this function at all, if the "trailing" and "ownLine" entryStyle can simply carry the day for all userstories like comments and etc.
-	switch n.ReprKind() {
-	case ipld.ReprKind_Map:
+	switch n.Kind() {
+	case ipld.Kind_Map:
 		if n.Length() < 1 {
 			return false
 		}
@@ -188,7 +188,7 @@ func (tab *table) IsRow(n ipld.Node) bool {
 			return true
 		}
 		return columnName(ks) == tab.cols[0]
-	case ipld.ReprKind_List:
+	case ipld.Kind_List:
 		// FUTURE: maybe this could be 'true', but it requires very different logic.  And it's not in my first-draft pareto priority choices.
 		return false
 	default:
@@ -202,16 +202,16 @@ func (tab *table) IsRow(n ipld.Node) bool {
 func peekMightBeTable(ctx *state, n ipld.Node) (bool, tableGroupID) {
 	// FUTURE: might need to apply a selector or other rules from ctx.cfg to say additonal "no"s.
 	// FUTURE: the ctx.cfg can also override what the tableGroupID is.
-	switch n.ReprKind() {
-	case ipld.ReprKind_Map:
+	switch n.Kind() {
+	case ipld.Kind_Map:
 		// TODO: maps can definitely be tables!  but gonna come back to this.  and by default, they're not.
 		return false, ""
-	case ipld.ReprKind_List:
+	case ipld.Kind_List:
 		if n.Length() < 1 {
 			return false, ""
 		}
 		n0, _ := n.LookupByIndex(0)
-		if n0.ReprKind() != ipld.ReprKind_Map {
+		if n0.Kind() != ipld.Kind_Map {
 			return false, ""
 		}
 		if n0.Length() < 1 {
@@ -228,10 +228,10 @@ func peekMightBeTable(ctx *state, n ipld.Node) (bool, tableGroupID) {
 //  some row values might themselves be tables,
 //   which removes them from the column flow and changes our size counting).
 func stride(ctx *state, n ipld.Node) error {
-	switch n.ReprKind() {
-	case ipld.ReprKind_Map:
+	switch n.Kind() {
+	case ipld.Kind_Map:
 		panic("todo")
-	case ipld.ReprKind_List:
+	case ipld.Kind_List:
 		return strideList(ctx, n)
 	default:
 		// There's never anything we need to record for scalars that their parents don't already note.
@@ -283,10 +283,10 @@ func strideList(ctx *state, listNode ipld.Node) error {
 }
 
 func marshal(ctx *state, n ipld.Node, w io.Writer) error {
-	switch n.ReprKind() {
-	case ipld.ReprKind_Map:
+	switch n.Kind() {
+	case ipld.Kind_Map:
 		panic("todo")
-	case ipld.ReprKind_List:
+	case ipld.Kind_List:
 		return marshalList(ctx, n, w)
 	default:
 		return marshalPlain(ctx, n, w)
@@ -335,7 +335,7 @@ func marshalList(ctx *state, listNode ipld.Node, w io.Writer) error {
 	return nil
 }
 func marshalListValue(ctx *state, tab *table, row ipld.Node, w io.Writer) error {
-	if row.ReprKind() != ipld.ReprKind_Map {
+	if row.Kind() != ipld.Kind_Map {
 		// TODO make this a lot more open... scalars aren't exactly "rows" for example but we can surely print them just fine.
 		panic("table rows can only be maps at present")
 	}

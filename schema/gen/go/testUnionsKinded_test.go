@@ -27,9 +27,9 @@ func TestUnionKinded(t *testing.T) {
 			"String",
 			"SmolStruct",
 		},
-		schema.SpawnUnionRepresentationKinded(map[ipld.ReprKind]schema.TypeName{
-			ipld.ReprKind_String: "String",
-			ipld.ReprKind_Map:    "SmolStruct",
+		schema.SpawnUnionRepresentationKinded(map[ipld.Kind]schema.TypeName{
+			ipld.Kind_String: "String",
+			ipld.Kind_Map:    "SmolStruct",
 		}),
 	))
 
@@ -41,12 +41,12 @@ func TestUnionKinded(t *testing.T) {
 			typeJson: `{"String":"whee"}`,
 			reprJson: `"whee"`,
 			typePoints: []testcasePoint{
-				{"", ipld.ReprKind_Map},
+				{"", ipld.Kind_Map},
 				{"String", "whee"},
 				//{"SmolStruct", ipld.ErrNotExists{}}, // TODO: need better error typing from traversal package.
 			},
 			reprPoints: []testcasePoint{
-				{"", ipld.ReprKind_String},
+				{"", ipld.Kind_String},
 				{"", "whee"},
 			},
 		},
@@ -55,13 +55,13 @@ func TestUnionKinded(t *testing.T) {
 			typeJson: `{"SmolStruct":{"s":"whee"}}`,
 			reprJson: `{"q":"whee"}`,
 			typePoints: []testcasePoint{
-				{"", ipld.ReprKind_Map},
+				{"", ipld.Kind_Map},
 				//{"String", ipld.ErrNotExists{}}, // TODO: need better error typing from traversal package.
-				{"SmolStruct", ipld.ReprKind_Map},
+				{"SmolStruct", ipld.Kind_Map},
 				{"SmolStruct/s", "whee"},
 			},
 			reprPoints: []testcasePoint{
-				{"", ipld.ReprKind_Map},
+				{"", ipld.Kind_Map},
 				{"q", "whee"},
 			},
 		},

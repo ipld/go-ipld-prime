@@ -22,8 +22,8 @@ type plainFloat float64
 
 // -- Node interface methods -->
 
-func (plainFloat) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Float
+func (plainFloat) Kind() ipld.Kind {
+	return ipld.Kind_Float
 }
 func (plainFloat) LookupByString(string) (ipld.Node, error) {
 	return mixins.Float{TypeName: "float"}.LookupByString("")

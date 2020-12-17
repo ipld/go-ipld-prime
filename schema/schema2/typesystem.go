@@ -160,7 +160,7 @@ func BuildTypeSystem(schdmt schemadmt.Schema) (*TypeSystem, []error) {
 					//  We create these temporary things rather than looking in the typesystem map we're accumulating because it makes the process work correctly regardless of order.
 					//  For some of the kinds, this is fairly overkill (we know that the representation behavior of a bool type is bool because it doesn't have any other representation strategies!)
 					//   but I've ground the whole thing out in a consistent way anyway.
-					var mkind ipld.ReprKind
+					var mkind ipld.Kind
 					switch t3 := typesdmt.Lookup(v).AsInterface().(type) {
 					case schemadmt.TypeBool:
 						mkind = TypeBool{dmt: t3}.RepresentationBehavior()
@@ -179,7 +179,7 @@ func BuildTypeSystem(schdmt schemadmt.Schema) (*TypeSystem, []error) {
 					case schemadmt.TypeLink:
 						mkind = TypeLink{dmt: t3}.RepresentationBehavior()
 					case schemadmt.TypeUnion:
-						mkind = TypeUnion{dmt: t3}.RepresentationBehavior() // this actually flies!  it will yield ReprKind_Invalid for a kinded union, though, which we'll treat with a special error message.
+						mkind = TypeUnion{dmt: t3}.RepresentationBehavior() // this actually flies!  it will yield Kind_Invalid for a kinded union, though, which we'll treat with a special error message.
 					case schemadmt.TypeStruct:
 						mkind = TypeStruct{dmt: t3}.RepresentationBehavior()
 					case schemadmt.TypeEnum:
@@ -190,7 +190,7 @@ func BuildTypeSystem(schdmt schemadmt.Schema) (*TypeSystem, []error) {
 						panic("unreachable")
 					}
 					// TODO RepresentationKind is supposed to be an enum, but is not presently generated as such.  This block's use of `k` as a string should turn into something cleaner when enum gen is implemented and used for RepresentationKind.
-					if mkind == ipld.ReprKind_Invalid {
+					if mkind == ipld.Kind_Invalid {
 						ee = append(ee, fmt.Errorf("kinded union %s declares a %s kind should be received as type %s, which is not sensible because that type is also a kinded union", tn, k, v))
 					} else if k.String() != mkind.String() {
 						ee = append(ee, fmt.Errorf("kinded union %s declares a %s kind should be received as type %s, but that type's representation kind is %s", tn, k, v, mkind))
@@ -207,7 +207,7 @@ func BuildTypeSystem(schdmt schemadmt.Schema) (*TypeSystem, []error) {
 					_, v := itr.Next()
 					// As with the switch above which handles kinded union members, we go for the full destructuring here.
 					//  It's slightly overkill considering that most of the type kinds will flatly error in practice, but consistency is nice.
-					var mkind ipld.ReprKind
+					var mkind ipld.Kind
 					switch t3 := typesdmt.Lookup(v).AsInterface().(type) {
 					case schemadmt.TypeBool:
 						mkind = TypeBool{dmt: t3}.RepresentationBehavior()
@@ -240,7 +240,7 @@ func BuildTypeSystem(schdmt schemadmt.Schema) (*TypeSystem, []error) {
 					case schemadmt.TypeStruct:
 						// Check representation strategy first.  Still has to be mappy.
 						t4 := TypeStruct{dmt: t3}
-						if t4.RepresentationBehavior() != ipld.ReprKind_Map {
+						if t4.RepresentationBehavior() != ipld.Kind_Map {
 							goto kindcheck // it'll fail, of course, but this goto DRY's the error message.
 						}
 
@@ -267,7 +267,7 @@ func BuildTypeSystem(schdmt schemadmt.Schema) (*TypeSystem, []error) {
 						panic("unreachable")
 					}
 				kindcheck:
-					if mkind != ipld.ReprKind_Map {
+					if mkind != ipld.Kind_Map {
 						ee = append(ee, fmt.Errorf("union %s has representation strategy inline, which requires all members have map representations, so %s (which has representation kind %s) is not a valid member", tn, v, mkind))
 					}
 				}
