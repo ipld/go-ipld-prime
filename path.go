@@ -147,11 +147,19 @@ func (p Path) String() string {
 	return sb.String()
 }
 
-// Segements returns a slice of the path segment strings.
+// Segments returns a slice of the path segment strings.
 //
 // It is not lawful to mutate nor append the returned slice.
 func (p Path) Segments() []PathSegment {
 	return p.segments
+}
+
+// Len returns the number of segments in this path.
+//
+// Zero segments means the path refers to "the current node".
+// One segment means it refers to a child of the current node; etc.
+func (p Path) Len() int {
+	return len(p.segments)
 }
 
 // Join creates a new path composed of the concatenation of this and the given path's segments.
@@ -190,4 +198,21 @@ func (p Path) Parent() Path {
 // Truncate returns a path with only as many segments remaining as requested.
 func (p Path) Truncate(i int) Path {
 	return Path{p.segments[0:i]}
+}
+
+// Last returns the trailing segment of the path.
+func (p Path) Last() PathSegment {
+	if len(p.segments) < 1 {
+		return PathSegment{}
+	}
+	return p.segments[len(p.segments)-1]
+}
+
+// Shift returns the first segment of the path together with the remaining path after that first segment.
+// If applied to a zero-length path, it returns an empty segment and the same zero-length path.
+func (p Path) Shift() (PathSegment, Path) {
+	if len(p.segments) < 1 {
+		return PathSegment{}, Path{}
+	}
+	return p.segments[0], Path{p.segments[1:]}
 }
