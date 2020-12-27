@@ -94,9 +94,9 @@ func (prog Progress) walkAdv(n ipld.Node, s selector.Selector, fn AdvVisitFn) er
 			return err
 		}
 	}
-	nk := n.ReprKind()
+	nk := n.Kind()
 	switch nk {
-	case ipld.ReprKind_Map, ipld.ReprKind_List: // continue
+	case ipld.Kind_Map, ipld.Kind_List: // continue
 	default:
 		return nil
 	}
@@ -118,7 +118,7 @@ func (prog Progress) walkAdv_iterateAll(n ipld.Node, s selector.Selector, fn Adv
 		if sNext != nil {
 			progNext := prog
 			progNext.Path = prog.Path.AppendSegment(ps)
-			if v.ReprKind() == ipld.ReprKind_Link {
+			if v.Kind() == ipld.Kind_Link {
 				lnk, _ := v.AsLink()
 				progNext.LastBlock.Path = progNext.Path
 				progNext.LastBlock.Link = lnk
@@ -150,7 +150,7 @@ func (prog Progress) walkAdv_iterateSelective(n ipld.Node, attn []ipld.PathSegme
 		if sNext != nil {
 			progNext := prog
 			progNext.Path = prog.Path.AppendSegment(ps)
-			if v.ReprKind() == ipld.ReprKind_Link {
+			if v.Kind() == ipld.Kind_Link {
 				lnk, _ := v.AsLink()
 				progNext.LastBlock.Path = progNext.Path
 				progNext.LastBlock.Link = lnk

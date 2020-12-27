@@ -21,14 +21,14 @@ func (t *TypeBool) TypeSystem() *TypeSystem {
 	return t.ts
 }
 
-func (TypeBool) Kind() Kind {
-	return Kind_Bool
+func (TypeBool) TypeKind() TypeKind {
+	return TypeKind_Bool
 }
 
 func (t *TypeBool) Name() TypeName {
 	return t.name
 }
 
-func (t TypeBool) RepresentationBehavior() ipld.ReprKind {
-	return ipld.ReprKind_Bool
+func (t TypeBool) RepresentationBehavior() ipld.Kind {
+	return ipld.Kind_Bool
 }

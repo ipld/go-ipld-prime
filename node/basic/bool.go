@@ -22,8 +22,8 @@ type plainBool bool
 
 // -- Node interface methods -->
 
-func (plainBool) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Bool
+func (plainBool) Kind() ipld.Kind {
+	return ipld.Kind_Bool
 }
 func (plainBool) LookupByString(string) (ipld.Node, error) {
 	return mixins.Bool{TypeName: "bool"}.LookupByString("")

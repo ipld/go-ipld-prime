@@ -82,8 +82,8 @@ func emitNodeAssemblerMethodConvertFrom_listoid(w io.Writer, adjCfg *AdjunctCfg,
 				*na.m = schema.Maybe_Value
 				return nil
 			}
-			if v.ReprKind() != ipld.ReprKind_List {
-				return ipld.ErrWrongKind{TypeName: "{{ .PkgName }}.{{ .Type.Name }}{{ if .IsRepr }}.Repr{{end}}", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustList, ActualKind: v.ReprKind()}
+			if v.Kind() != ipld.Kind_List {
+				return ipld.ErrWrongKind{TypeName: "{{ .PkgName }}.{{ .Type.Name }}{{ if .IsRepr }}.Repr{{end}}", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustList, ActualKind: v.Kind()}
 			}
 			itr := v.ListIterator()
 			for !itr.Done() {

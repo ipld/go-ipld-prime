@@ -21,14 +21,14 @@ func (t *TypeString) TypeSystem() *TypeSystem {
 	return t.ts
 }
 
-func (TypeString) Kind() Kind {
-	return Kind_String
+func (TypeString) TypeKind() TypeKind {
+	return TypeKind_String
 }
 
 func (t *TypeString) Name() TypeName {
 	return t.name
 }
 
-func (t TypeString) RepresentationBehavior() ipld.ReprKind {
-	return ipld.ReprKind_String
+func (t TypeString) RepresentationBehavior() ipld.Kind {
+	return ipld.Kind_String
 }

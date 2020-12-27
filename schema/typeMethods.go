@@ -12,57 +12,57 @@ func (t *typeBase) _Type(ts *TypeSystem) {
 func (t typeBase) TypeSystem() *TypeSystem { return t.universe }
 func (t typeBase) Name() TypeName          { return t.name }
 
-func (TypeBool) Kind() Kind   { return Kind_Bool }
-func (TypeString) Kind() Kind { return Kind_String }
-func (TypeBytes) Kind() Kind  { return Kind_Bytes }
-func (TypeInt) Kind() Kind    { return Kind_Int }
-func (TypeFloat) Kind() Kind  { return Kind_Float }
-func (TypeMap) Kind() Kind    { return Kind_Map }
-func (TypeList) Kind() Kind   { return Kind_List }
-func (TypeLink) Kind() Kind   { return Kind_Link }
-func (TypeUnion) Kind() Kind  { return Kind_Union }
-func (TypeStruct) Kind() Kind { return Kind_Struct }
-func (TypeEnum) Kind() Kind   { return Kind_Enum }
+func (TypeBool) TypeKind() TypeKind   { return TypeKind_Bool }
+func (TypeString) TypeKind() TypeKind { return TypeKind_String }
+func (TypeBytes) TypeKind() TypeKind  { return TypeKind_Bytes }
+func (TypeInt) TypeKind() TypeKind    { return TypeKind_Int }
+func (TypeFloat) TypeKind() TypeKind  { return TypeKind_Float }
+func (TypeMap) TypeKind() TypeKind    { return TypeKind_Map }
+func (TypeList) TypeKind() TypeKind   { return TypeKind_List }
+func (TypeLink) TypeKind() TypeKind   { return TypeKind_Link }
+func (TypeUnion) TypeKind() TypeKind  { return TypeKind_Union }
+func (TypeStruct) TypeKind() TypeKind { return TypeKind_Struct }
+func (TypeEnum) TypeKind() TypeKind   { return TypeKind_Enum }
 
-func (TypeBool) RepresentationBehavior() ipld.ReprKind   { return ipld.ReprKind_Bool }
-func (TypeString) RepresentationBehavior() ipld.ReprKind { return ipld.ReprKind_String }
-func (TypeBytes) RepresentationBehavior() ipld.ReprKind  { return ipld.ReprKind_Bytes }
-func (TypeInt) RepresentationBehavior() ipld.ReprKind    { return ipld.ReprKind_Int }
-func (TypeFloat) RepresentationBehavior() ipld.ReprKind  { return ipld.ReprKind_Float }
-func (TypeMap) RepresentationBehavior() ipld.ReprKind    { return ipld.ReprKind_Map }
-func (TypeList) RepresentationBehavior() ipld.ReprKind   { return ipld.ReprKind_List }
-func (TypeLink) RepresentationBehavior() ipld.ReprKind   { return ipld.ReprKind_Link }
-func (t TypeUnion) RepresentationBehavior() ipld.ReprKind {
+func (TypeBool) RepresentationBehavior() ipld.Kind   { return ipld.Kind_Bool }
+func (TypeString) RepresentationBehavior() ipld.Kind { return ipld.Kind_String }
+func (TypeBytes) RepresentationBehavior() ipld.Kind  { return ipld.Kind_Bytes }
+func (TypeInt) RepresentationBehavior() ipld.Kind    { return ipld.Kind_Int }
+func (TypeFloat) RepresentationBehavior() ipld.Kind  { return ipld.Kind_Float }
+func (TypeMap) RepresentationBehavior() ipld.Kind    { return ipld.Kind_Map }
+func (TypeList) RepresentationBehavior() ipld.Kind   { return ipld.Kind_List }
+func (TypeLink) RepresentationBehavior() ipld.Kind   { return ipld.Kind_Link }
+func (t TypeUnion) RepresentationBehavior() ipld.Kind {
 	switch t.representation.(type) {
 	case UnionRepresentation_Keyed:
-		return ipld.ReprKind_Map
+		return ipld.Kind_Map
 	case UnionRepresentation_Kinded:
-		return ipld.ReprKind_Invalid // you can't know with this one, until you see the value (and thus can its inhabitant's behavior)!
+		return ipld.Kind_Invalid // you can't know with this one, until you see the value (and thus can its inhabitant's behavior)!
 	case UnionRepresentation_Envelope:
-		return ipld.ReprKind_Map
+		return ipld.Kind_Map
 	case UnionRepresentation_Inline:
-		return ipld.ReprKind_Map
+		return ipld.Kind_Map
 	default:
 		panic("unreachable")
 	}
 }
-func (t TypeStruct) RepresentationBehavior() ipld.ReprKind {
+func (t TypeStruct) RepresentationBehavior() ipld.Kind {
 	switch t.representation.(type) {
 	case StructRepresentation_Map:
-		return ipld.ReprKind_Map
+		return ipld.Kind_Map
 	case StructRepresentation_Tuple:
-		return ipld.ReprKind_List
+		return ipld.Kind_List
 	case StructRepresentation_StringPairs:
-		return ipld.ReprKind_String
+		return ipld.Kind_String
 	case StructRepresentation_Stringjoin:
-		return ipld.ReprKind_String
+		return ipld.Kind_String
 	default:
 		panic("unreachable")
 	}
 }
-func (t TypeEnum) RepresentationBehavior() ipld.ReprKind {
+func (t TypeEnum) RepresentationBehavior() ipld.Kind {
 	// TODO: this should have a representation strategy switch too; sometimes that will indicate int representation behavior.
-	return ipld.ReprKind_String
+	return ipld.Kind_String
 }
 
 /* interesting methods per Type type */
@@ -150,7 +150,7 @@ func (r UnionRepresentation_Keyed) GetDiscriminant(t Type) string {
 
 // GetMember returns type info for the member matching the kind argument,
 // or may return nil if that kind is not mapped to a member of this union.
-func (r UnionRepresentation_Kinded) GetMember(k ipld.ReprKind) TypeName {
+func (r UnionRepresentation_Kinded) GetMember(k ipld.Kind) TypeName {
 	return r.table[k]
 }
 

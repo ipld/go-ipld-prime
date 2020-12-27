@@ -40,8 +40,8 @@ func TokenWalk(n ipld.Node, visitFn func(tk *Token) error) error {
 }
 
 func tokenWalk(tk *Token, n ipld.Node, visitFn func(*Token) error) error {
-	switch n.ReprKind() {
-	case ipld.ReprKind_Map:
+	switch n.Kind() {
+	case ipld.Kind_Map:
 		tk.Kind = TokenKind_MapOpen
 		tk.Length = n.Length()
 		tk.Node = n
@@ -64,7 +64,7 @@ func tokenWalk(tk *Token, n ipld.Node, visitFn func(*Token) error) error {
 		tk.Kind = TokenKind_MapClose
 		tk.Node = n
 		return visitFn(tk)
-	case ipld.ReprKind_List:
+	case ipld.Kind_List:
 		tk.Kind = TokenKind_ListOpen
 		tk.Length = n.Length()
 		tk.Node = n
@@ -84,36 +84,36 @@ func tokenWalk(tk *Token, n ipld.Node, visitFn func(*Token) error) error {
 		tk.Kind = TokenKind_ListClose
 		tk.Node = n
 		return visitFn(tk)
-	case ipld.ReprKind_Null:
+	case ipld.Kind_Null:
 		tk.Kind = TokenKind_Null
 		return visitFn(tk)
-	case ipld.ReprKind_Bool:
+	case ipld.Kind_Bool:
 		tk.Kind = TokenKind_Bool
 		tk.Bool, _ = n.AsBool()
 		return visitFn(tk)
-	case ipld.ReprKind_Int:
+	case ipld.Kind_Int:
 		tk.Kind = TokenKind_Int
 		i, _ := n.AsInt()
 		tk.Int = int64(i) // TODO: upgrade all of ipld to use high precision int consistently
 		return visitFn(tk)
-	case ipld.ReprKind_Float:
+	case ipld.Kind_Float:
 		tk.Kind = TokenKind_Float
 		tk.Float, _ = n.AsFloat()
 		return visitFn(tk)
-	case ipld.ReprKind_String:
+	case ipld.Kind_String:
 		tk.Kind = TokenKind_String
 		tk.Str, _ = n.AsString()
 		return visitFn(tk)
-	case ipld.ReprKind_Bytes:
+	case ipld.Kind_Bytes:
 		tk.Kind = TokenKind_Bytes
 		tk.Bytes, _ = n.AsBytes()
 		return visitFn(tk)
-	case ipld.ReprKind_Link:
+	case ipld.Kind_Link:
 		tk.Kind = TokenKind_Link
 		tk.Link, _ = n.AsLink()
 		return visitFn(tk)
 	default:
-		panic(fmt.Errorf("unrecognized node kind (%q?)", n.ReprKind()))
+		panic(fmt.Errorf("unrecognized node kind (%q?)", n.Kind()))
 	}
 	return nil
 }
@@ -195,58 +195,58 @@ func (nt *NodeTokenizer) ReadToken() (next *Token, err error) {
 	tip := nt.stk.Tip()
 	switch tip.state {
 	case 0:
-		switch tip.n.ReprKind() {
-		case ipld.ReprKind_Map:
+		switch tip.n.Kind() {
+		case ipld.Kind_Map:
 			nt.tk.Kind = TokenKind_MapOpen
 			nt.tk.Length = tip.n.Length()
 			nt.tk.Node = tip.n
 			tip.state = 2
 			tip.mitr = tip.n.MapIterator()
 			return &nt.tk, nil
-		case ipld.ReprKind_List:
+		case ipld.Kind_List:
 			nt.tk.Kind = TokenKind_ListOpen
 			nt.tk.Length = tip.n.Length()
 			nt.tk.Node = tip.n
 			tip.state = 1
 			tip.litr = tip.n.ListIterator()
 			return &nt.tk, nil
-		case ipld.ReprKind_Null:
+		case ipld.Kind_Null:
 			nt.tk.Kind = TokenKind_Null
 			nt.stk.Pop()
 			return &nt.tk, nil
-		case ipld.ReprKind_Bool:
+		case ipld.Kind_Bool:
 			nt.tk.Kind = TokenKind_Bool
 			nt.tk.Bool, _ = tip.n.AsBool()
 			nt.stk.Pop()
 			return &nt.tk, nil
-		case ipld.ReprKind_Int:
+		case ipld.Kind_Int:
 			nt.tk.Kind = TokenKind_Int
 			i, _ := tip.n.AsInt()
 			nt.tk.Int = int64(i) // TODO: upgrade all of ipld to use high precision int consistently
 			nt.stk.Pop()
 			return &nt.tk, nil
-		case ipld.ReprKind_Float:
+		case ipld.Kind_Float:
 			nt.tk.Kind = TokenKind_Float
 			nt.tk.Float, _ = tip.n.AsFloat()
 			nt.stk.Pop()
 			return &nt.tk, nil
-		case ipld.ReprKind_String:
+		case ipld.Kind_String:
 			nt.tk.Kind = TokenKind_String
 			nt.tk.Str, _ = tip.n.AsString()
 			nt.stk.Pop()
 			return &nt.tk, nil
-		case ipld.ReprKind_Bytes:
+		case ipld.Kind_Bytes:
 			nt.tk.Kind = TokenKind_Bytes
 			nt.tk.Bytes, _ = tip.n.AsBytes()
 			nt.stk.Pop()
 			return &nt.tk, nil
-		case ipld.ReprKind_Link:
+		case ipld.Kind_Link:
 			nt.tk.Kind = TokenKind_Link
 			nt.tk.Link, _ = tip.n.AsLink()
 			nt.stk.Pop()
 			return &nt.tk, nil
 		default:
-			panic(fmt.Errorf("unrecognized node kind (%q?)", tip.n.ReprKind()))
+			panic(fmt.Errorf("unrecognized node kind (%q?)", tip.n.Kind()))
 		}
 	case 1:
 		if tip.litr.Done() {

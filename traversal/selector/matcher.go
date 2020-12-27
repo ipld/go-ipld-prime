@@ -39,7 +39,7 @@ func (s Matcher) Decide(n ipld.Node) bool {
 // from a matcher selector node
 // TODO: Parse labels and conditions
 func (pc ParseContext) ParseMatcher(n ipld.Node) (Selector, error) {
-	if n.ReprKind() != ipld.ReprKind_Map {
+	if n.Kind() != ipld.Kind_Map {
 		return nil, fmt.Errorf("selector spec parse rejected: selector body must be a map")
 	}
 	return Matcher{}, nil

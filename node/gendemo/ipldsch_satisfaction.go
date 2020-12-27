@@ -53,8 +53,8 @@ func (m MaybeInt) Must() Int {
 var _ ipld.Node = (Int)(&_Int{})
 var _ schema.TypedNode = (Int)(&_Int{})
 
-func (Int) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Int
+func (Int) Kind() ipld.Kind {
+	return ipld.Kind_Int
 }
 func (Int) LookupByString(string) (ipld.Node, error) {
 	return mixins.Int{"gendemo.Int"}.LookupByString("")
@@ -301,8 +301,8 @@ func (m MaybeMap__String__Msg3) Must() Map__String__Msg3 {
 var _ ipld.Node = (Map__String__Msg3)(&_Map__String__Msg3{})
 var _ schema.TypedNode = (Map__String__Msg3)(&_Map__String__Msg3{})
 
-func (Map__String__Msg3) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (Map__String__Msg3) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n Map__String__Msg3) LookupByString(k string) (ipld.Node, error) {
 	var k2 _String
@@ -502,8 +502,8 @@ func (na *_Map__String__Msg3__Assembler) ConvertFrom(v ipld.Node) error {
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "gendemo.Map__String__Msg3", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "gendemo.Map__String__Msg3", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -658,8 +658,8 @@ type _Map__String__Msg3__Repr _Map__String__Msg3
 
 var _ ipld.Node = &_Map__String__Msg3__Repr{}
 
-func (_Map__String__Msg3__Repr) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (_Map__String__Msg3__Repr) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (nr *_Map__String__Msg3__Repr) LookupByString(k string) (ipld.Node, error) {
 	v, err := (Map__String__Msg3)(nr).LookupByString(k)
@@ -844,8 +844,8 @@ func (na *_Map__String__Msg3__ReprAssembler) ConvertFrom(v ipld.Node) error {
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "gendemo.Map__String__Msg3.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "gendemo.Map__String__Msg3.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -1042,8 +1042,8 @@ var (
 var _ ipld.Node = (Msg3)(&_Msg3{})
 var _ schema.TypedNode = (Msg3)(&_Msg3{})
 
-func (Msg3) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (Msg3) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n Msg3) LookupByString(key string) (ipld.Node, error) {
 	switch key {
@@ -1257,8 +1257,8 @@ func (na *_Msg3__Assembler) ConvertFrom(v ipld.Node) error {
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "gendemo.Msg3", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "gendemo.Msg3", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -1535,8 +1535,8 @@ var (
 )
 var _ ipld.Node = &_Msg3__Repr{}
 
-func (_Msg3__Repr) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (_Msg3__Repr) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n *_Msg3__Repr) LookupByString(key string) (ipld.Node, error) {
 	switch key {
@@ -1742,8 +1742,8 @@ func (na *_Msg3__ReprAssembler) ConvertFrom(v ipld.Node) error {
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "gendemo.Msg3.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "gendemo.Msg3.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -2051,8 +2051,8 @@ func (m MaybeString) Must() String {
 var _ ipld.Node = (String)(&_String{})
 var _ schema.TypedNode = (String)(&_String{})
 
-func (String) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_String
+func (String) Kind() ipld.Kind {
+	return ipld.Kind_String
 }
 func (String) LookupByString(string) (ipld.Node, error) {
 	return mixins.String{"gendemo.String"}.LookupByString("")

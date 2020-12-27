@@ -21,7 +21,7 @@ func (s ExploreIndex) Interests() []ipld.PathSegment {
 // Explore returns the node's selector if
 // the path matches the index for this selector or nil if not
 func (s ExploreIndex) Explore(n ipld.Node, p ipld.PathSegment) Selector {
-	if n.ReprKind() != ipld.ReprKind_List {
+	if n.Kind() != ipld.Kind_List {
 		return nil
 	}
 	expectedIndex, expectedErr := p.Index()
@@ -40,7 +40,7 @@ func (s ExploreIndex) Decide(n ipld.Node) bool {
 // ParseExploreIndex assembles a Selector
 // from a ExploreIndex selector node
 func (pc ParseContext) ParseExploreIndex(n ipld.Node) (Selector, error) {
-	if n.ReprKind() != ipld.ReprKind_Map {
+	if n.Kind() != ipld.Kind_Map {
 		return nil, fmt.Errorf("selector spec parse rejected: selector body must be a map")
 	}
 	indexNode, err := n.LookupByString(SelectorKey_Index)

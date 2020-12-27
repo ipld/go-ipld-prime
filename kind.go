@@ -1,74 +1,74 @@
 package ipld
 
-// ReprKind represents the primitive kind in the IPLD data model.
+// Kind represents the primitive kind in the IPLD data model.
 // All of these kinds map directly onto serializable data.
 //
-// Note that ReprKind contains the concept of "map", but not "struct"
+// Note that Kind contains the concept of "map", but not "struct"
 // or "object" -- those are a concepts that could be introduced in a
 // type system layers, but are *not* present in the data model layer,
-// and therefore they aren't included in the ReprKind enum.
-type ReprKind uint8
+// and therefore they aren't included in the Kind enum.
+type Kind uint8
 
 const (
-	ReprKind_Invalid ReprKind = 0
-	ReprKind_Map     ReprKind = '{'
-	ReprKind_List    ReprKind = '['
-	ReprKind_Null    ReprKind = '0'
-	ReprKind_Bool    ReprKind = 'b'
-	ReprKind_Int     ReprKind = 'i'
-	ReprKind_Float   ReprKind = 'f'
-	ReprKind_String  ReprKind = 's'
-	ReprKind_Bytes   ReprKind = 'x'
-	ReprKind_Link    ReprKind = '/'
+	Kind_Invalid Kind = 0
+	Kind_Map     Kind = '{'
+	Kind_List    Kind = '['
+	Kind_Null    Kind = '0'
+	Kind_Bool    Kind = 'b'
+	Kind_Int     Kind = 'i'
+	Kind_Float   Kind = 'f'
+	Kind_String  Kind = 's'
+	Kind_Bytes   Kind = 'x'
+	Kind_Link    Kind = '/'
 )
 
-func (k ReprKind) String() string {
+func (k Kind) String() string {
 	switch k {
-	case ReprKind_Invalid:
+	case Kind_Invalid:
 		return "INVALID"
-	case ReprKind_Map:
+	case Kind_Map:
 		return "map"
-	case ReprKind_List:
+	case Kind_List:
 		return "list"
-	case ReprKind_Null:
+	case Kind_Null:
 		return "null"
-	case ReprKind_Bool:
+	case Kind_Bool:
 		return "bool"
-	case ReprKind_Int:
+	case Kind_Int:
 		return "int"
-	case ReprKind_Float:
+	case Kind_Float:
 		return "float"
-	case ReprKind_String:
+	case Kind_String:
 		return "string"
-	case ReprKind_Bytes:
+	case Kind_Bytes:
 		return "bytes"
-	case ReprKind_Link:
+	case Kind_Link:
 		return "link"
 	default:
 		panic("invalid enumeration value!")
 	}
 }
 
-// ReprKindSet is a type with a few enumerated consts that are commonly used
+// KindSet is a type with a few enumerated consts that are commonly used
 // (mostly, in error messages).
-type ReprKindSet []ReprKind
+type KindSet []Kind
 
 var (
-	ReprKindSet_Recursive = ReprKindSet{ReprKind_Map, ReprKind_List}
-	ReprKindSet_Scalar    = ReprKindSet{ReprKind_Null, ReprKind_Bool, ReprKind_Int, ReprKind_Float, ReprKind_String, ReprKind_Bytes, ReprKind_Link}
+	KindSet_Recursive = KindSet{Kind_Map, Kind_List}
+	KindSet_Scalar    = KindSet{Kind_Null, Kind_Bool, Kind_Int, Kind_Float, Kind_String, Kind_Bytes, Kind_Link}
 
-	ReprKindSet_JustMap    = ReprKindSet{ReprKind_Map}
-	ReprKindSet_JustList   = ReprKindSet{ReprKind_List}
-	ReprKindSet_JustNull   = ReprKindSet{ReprKind_Null}
-	ReprKindSet_JustBool   = ReprKindSet{ReprKind_Bool}
-	ReprKindSet_JustInt    = ReprKindSet{ReprKind_Int}
-	ReprKindSet_JustFloat  = ReprKindSet{ReprKind_Float}
-	ReprKindSet_JustString = ReprKindSet{ReprKind_String}
-	ReprKindSet_JustBytes  = ReprKindSet{ReprKind_Bytes}
-	ReprKindSet_JustLink   = ReprKindSet{ReprKind_Link}
+	KindSet_JustMap    = KindSet{Kind_Map}
+	KindSet_JustList   = KindSet{Kind_List}
+	KindSet_JustNull   = KindSet{Kind_Null}
+	KindSet_JustBool   = KindSet{Kind_Bool}
+	KindSet_JustInt    = KindSet{Kind_Int}
+	KindSet_JustFloat  = KindSet{Kind_Float}
+	KindSet_JustString = KindSet{Kind_String}
+	KindSet_JustBytes  = KindSet{Kind_Bytes}
+	KindSet_JustLink   = KindSet{Kind_Link}
 )
 
-func (x ReprKindSet) String() string {
+func (x KindSet) String() string {
 	s := ""
 	for i := 0; i < len(x)-1; i++ {
 		s += x[i].String() + " or "
@@ -77,7 +77,7 @@ func (x ReprKindSet) String() string {
 	return s
 }
 
-func (x ReprKindSet) Contains(e ReprKind) bool {
+func (x KindSet) Contains(e Kind) bool {
 	for _, v := range x {
 		if v == e {
 			return true

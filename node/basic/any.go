@@ -17,7 +17,7 @@ var (
 // REVIEW: if there's any point in keeping this around.  It's here for completeness,
 // but not currently used anywhere in package, and also not currently exported.
 // type anyNode struct {
-// 	kind ipld.ReprKind
+// 	kind ipld.Kind
 //
 // 	plainMap
 // 	plainList
@@ -57,7 +57,7 @@ type anyBuilder struct {
 	// kind is set on first interaction, and used to select which builder to delegate 'Build' to!
 	// As soon as it's been set to a value other than zero (being "Invalid"), all other Assign/Begin calls will fail since something is already in progress.
 	// May also be set to the magic value '99', which means "i dunno, I'm just carrying another node of unknown prototype".
-	kind ipld.ReprKind
+	kind ipld.Kind
 
 	// Only one of the following ends up being used...
 	//  but we don't know in advance which one, so all are embeded here.
@@ -78,78 +78,78 @@ func (nb *anyBuilder) Reset() {
 }
 
 func (nb *anyBuilder) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	if nb.kind != ipld.ReprKind_Invalid {
+	if nb.kind != ipld.Kind_Invalid {
 		panic("misuse")
 	}
-	nb.kind = ipld.ReprKind_Map
+	nb.kind = ipld.Kind_Map
 	nb.mapBuilder.w = &plainMap{}
 	return nb.mapBuilder.BeginMap(sizeHint)
 }
 func (nb *anyBuilder) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	if nb.kind != ipld.ReprKind_Invalid {
+	if nb.kind != ipld.Kind_Invalid {
 		panic("misuse")
 	}
-	nb.kind = ipld.ReprKind_List
+	nb.kind = ipld.Kind_List
 	nb.listBuilder.w = &plainList{}
 	return nb.listBuilder.BeginList(sizeHint)
 }
 func (nb *anyBuilder) AssignNull() error {
-	if nb.kind != ipld.ReprKind_Invalid {
+	if nb.kind != ipld.Kind_Invalid {
 		panic("misuse")
 	}
-	nb.kind = ipld.ReprKind_Null
+	nb.kind = ipld.Kind_Null
 	return nil
 }
 func (nb *anyBuilder) AssignBool(v bool) error {
-	if nb.kind != ipld.ReprKind_Invalid {
+	if nb.kind != ipld.Kind_Invalid {
 		panic("misuse")
 	}
-	nb.kind = ipld.ReprKind_Bool
+	nb.kind = ipld.Kind_Bool
 	nb.scalarNode = NewBool(v)
 	return nil
 }
 func (nb *anyBuilder) AssignInt(v int64) error {
-	if nb.kind != ipld.ReprKind_Invalid {
+	if nb.kind != ipld.Kind_Invalid {
 		panic("misuse")
 	}
-	nb.kind = ipld.ReprKind_Int
+	nb.kind = ipld.Kind_Int
 	nb.scalarNode = NewInt(v)
 	return nil
 }
 func (nb *anyBuilder) AssignFloat(v float64) error {
-	if nb.kind != ipld.ReprKind_Invalid {
+	if nb.kind != ipld.Kind_Invalid {
 		panic("misuse")
 	}
-	nb.kind = ipld.ReprKind_Float
+	nb.kind = ipld.Kind_Float
 	nb.scalarNode = NewFloat(v)
 	return nil
 }
 func (nb *anyBuilder) AssignString(v string) error {
-	if nb.kind != ipld.ReprKind_Invalid {
+	if nb.kind != ipld.Kind_Invalid {
 		panic("misuse")
 	}
-	nb.kind = ipld.ReprKind_String
+	nb.kind = ipld.Kind_String
 	nb.scalarNode = NewString(v)
 	return nil
 }
 func (nb *anyBuilder) AssignBytes(v []byte) error {
-	if nb.kind != ipld.ReprKind_Invalid {
+	if nb.kind != ipld.Kind_Invalid {
 		panic("misuse")
 	}
-	nb.kind = ipld.ReprKind_Bytes
+	nb.kind = ipld.Kind_Bytes
 	nb.scalarNode = NewBytes(v)
 	return nil
 }
 func (nb *anyBuilder) AssignLink(v ipld.Link) error {
-	if nb.kind != ipld.ReprKind_Invalid {
+	if nb.kind != ipld.Kind_Invalid {
 		panic("misuse")
 	}
-	nb.kind = ipld.ReprKind_Link
+	nb.kind = ipld.Kind_Link
 	nb.scalarNode = NewLink(v)
 	return nil
 }
 func (nb *anyBuilder) ConvertFrom(v ipld.Node) error {
-	if nb.kind != ipld.ReprKind_Invalid {
+	if nb.kind != ipld.Kind_Invalid {
 		panic("misuse")
 	}
 	nb.kind = 99
@@ -162,25 +162,25 @@ func (anyBuilder) Prototype() ipld.NodePrototype {
 
 func (nb *anyBuilder) Build() ipld.Node {
 	switch nb.kind {
-	case ipld.ReprKind_Invalid:
+	case ipld.Kind_Invalid:
 		panic("misuse")
-	case ipld.ReprKind_Map:
+	case ipld.Kind_Map:
 		return nb.mapBuilder.Build()
-	case ipld.ReprKind_List:
+	case ipld.Kind_List:
 		return nb.listBuilder.Build()
-	case ipld.ReprKind_Null:
+	case ipld.Kind_Null:
 		return ipld.Null
-	case ipld.ReprKind_Bool:
+	case ipld.Kind_Bool:
 		return nb.scalarNode
-	case ipld.ReprKind_Int:
+	case ipld.Kind_Int:
 		return nb.scalarNode
-	case ipld.ReprKind_Float:
+	case ipld.Kind_Float:
 		return nb.scalarNode
-	case ipld.ReprKind_String:
+	case ipld.Kind_String:
 		return nb.scalarNode
-	case ipld.ReprKind_Bytes:
+	case ipld.Kind_Bytes:
 		return nb.scalarNode
-	case ipld.ReprKind_Link:
+	case ipld.Kind_Link:
 		return nb.scalarNode
 	case 99:
 		return nb.scalarNode

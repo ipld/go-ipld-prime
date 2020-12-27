@@ -26,7 +26,7 @@ func (g mapGenerator) EmitNativeType(w io.Writer) {
 	// The value in 'm' is a pointer into 't' (except when it's a maybe; maybes are already pointers).
 	doTemplate(`
 		{{- if Comments -}}
-		// {{ .Type | TypeSymbol }} matches the IPLD Schema type "{{ .Type.Name }}".  It has {{ .ReprKind }} kind.
+		// {{ .Type | TypeSymbol }} matches the IPLD Schema type "{{ .Type.Name }}".  It has {{ .Kind }} kind.
 		{{- end}}
 		type {{ .Type | TypeSymbol }} = *_{{ .Type | TypeSymbol }}
 		type _{{ .Type | TypeSymbol }} struct {
@@ -167,7 +167,7 @@ func (g mapGenerator) EmitNodeMethodLookupByString(w io.Writer) {
 	doTemplate(`
 		func (n {{ .Type | TypeSymbol }}) LookupByString(k string) (ipld.Node, error) {
 			var k2 _{{ .Type.KeyType | TypeSymbol }}
-			{{- if eq .Type.KeyType.Kind.String "String" }}
+			{{- if eq .Type.KeyType.TypeKind.String "String" }}
 			if err := (_{{ .Type.KeyType | TypeSymbol }}__Prototype{}).fromString(&k2, k); err != nil {
 				return nil, err // TODO wrap in some kind of ErrInvalidKey
 			}

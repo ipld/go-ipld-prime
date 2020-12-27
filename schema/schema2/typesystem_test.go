@@ -27,7 +27,7 @@ func TestBuildTypeSystem(t *testing.T) {
 			nil,
 		)
 		Wish(t, ts.types["Woop"], ShouldBeSameTypeAs, &TypeString{})
-		Wish(t, ts.types["Woop"].Kind(), ShouldEqual, Kind_String)
+		Wish(t, ts.types["Woop"].TypeKind(), ShouldEqual, TypeKind_String)
 	})
 	t.Run("MissingTypeInList", func(t *testing.T) {
 		testParse(t,
@@ -96,7 +96,7 @@ func TestBuildTypeSystem(t *testing.T) {
 			nil,
 		)
 		Wish(t, ts.types["SomeMap"], ShouldBeSameTypeAs, &TypeMap{})
-		Wish(t, ts.types["SomeMap"].Kind(), ShouldEqual, Kind_Map)
+		Wish(t, ts.types["SomeMap"].TypeKind(), ShouldEqual, TypeKind_Map)
 		Wish(t, ts.types["SomeMap"].(*TypeMap).KeyType().Name().String(), ShouldEqual, "String")
 	})
 	t.Run("ComplexValidMapKeyType", func(t *testing.T) {
@@ -143,7 +143,7 @@ func TestBuildTypeSystem(t *testing.T) {
 			nil,
 		)
 		Wish(t, ts.types["SomeMap"], ShouldBeSameTypeAs, &TypeMap{})
-		Wish(t, ts.types["SomeMap"].Kind(), ShouldEqual, Kind_Map)
+		Wish(t, ts.types["SomeMap"].TypeKind(), ShouldEqual, TypeKind_Map)
 		Wish(t, ts.types["SomeMap"].(*TypeMap).KeyType().Name().String(), ShouldEqual, "StringyStruct")
 	})
 	t.Run("InvalidMapKeyType", func(t *testing.T) {

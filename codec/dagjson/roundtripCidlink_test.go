@@ -68,8 +68,8 @@ func TestUnmarshalTrickyMapContainingLink(t *testing.T) {
 	err = Decoder(nb, strings.NewReader(tricky))
 	Require(t, err, ShouldEqual, nil)
 	n := nb.Build()
-	Wish(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
+	Wish(t, n.Kind(), ShouldEqual, ipld.Kind_Map)
 	n2, err := n.LookupByString("/")
 	Require(t, err, ShouldEqual, nil)
-	Wish(t, n2.ReprKind(), ShouldEqual, ipld.ReprKind_Link)
+	Wish(t, n2.Kind(), ShouldEqual, ipld.Kind_Link)
 }

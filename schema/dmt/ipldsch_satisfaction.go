@@ -69,8 +69,8 @@ var (
 var _ ipld.Node = (AnyScalar)(&_AnyScalar{})
 var _ schema.TypedNode = (AnyScalar)(&_AnyScalar{})
 
-func (AnyScalar) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (AnyScalar) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n AnyScalar) LookupByString(key string) (ipld.Node, error) {
 	switch key {
@@ -319,8 +319,8 @@ func (na *_AnyScalar__Assembler) ConvertFrom(v ipld.Node) error {
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.AnyScalar", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.AnyScalar", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -591,33 +591,33 @@ type _AnyScalar__Repr _AnyScalar
 
 var _ ipld.Node = &_AnyScalar__Repr{}
 
-func (n *_AnyScalar__Repr) ReprKind() ipld.ReprKind {
+func (n *_AnyScalar__Repr) Kind() ipld.Kind {
 	switch n.tag {
 	case 1:
-		return ipld.ReprKind_Bool
+		return ipld.Kind_Bool
 	case 2:
-		return ipld.ReprKind_String
+		return ipld.Kind_String
 	case 3:
-		return ipld.ReprKind_Bytes
+		return ipld.Kind_Bytes
 	case 4:
-		return ipld.ReprKind_Int
+		return ipld.Kind_Int
 	case 5:
-		return ipld.ReprKind_Float
+		return ipld.Kind_Float
 	default:
 		panic("unreachable")
 	}
 }
 func (n *_AnyScalar__Repr) LookupByString(key string) (ipld.Node, error) {
-	return nil, ipld.ErrWrongKind{TypeName: "schemadmt.AnyScalar.Repr", MethodName: "LookupByString", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: n.ReprKind()}
+	return nil, ipld.ErrWrongKind{TypeName: "schemadmt.AnyScalar.Repr", MethodName: "LookupByString", AppropriateKind: ipld.KindSet_JustMap, ActualKind: n.Kind()}
 }
 func (n *_AnyScalar__Repr) LookupByNode(key ipld.Node) (ipld.Node, error) {
-	return nil, ipld.ErrWrongKind{TypeName: "schemadmt.AnyScalar.Repr", MethodName: "LookupByNode", AppropriateKind: ipld.ReprKindSet_Recursive, ActualKind: n.ReprKind()}
+	return nil, ipld.ErrWrongKind{TypeName: "schemadmt.AnyScalar.Repr", MethodName: "LookupByNode", AppropriateKind: ipld.KindSet_Recursive, ActualKind: n.Kind()}
 }
 func (n *_AnyScalar__Repr) LookupByIndex(idx int64) (ipld.Node, error) {
-	return nil, ipld.ErrWrongKind{TypeName: "schemadmt.AnyScalar.Repr", MethodName: "LookupByIndex", AppropriateKind: ipld.ReprKindSet_JustList, ActualKind: n.ReprKind()}
+	return nil, ipld.ErrWrongKind{TypeName: "schemadmt.AnyScalar.Repr", MethodName: "LookupByIndex", AppropriateKind: ipld.KindSet_JustList, ActualKind: n.Kind()}
 }
 func (n *_AnyScalar__Repr) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
-	return nil, ipld.ErrWrongKind{TypeName: "schemadmt.AnyScalar.Repr", MethodName: "LookupBySegment", AppropriateKind: ipld.ReprKindSet_Recursive, ActualKind: n.ReprKind()}
+	return nil, ipld.ErrWrongKind{TypeName: "schemadmt.AnyScalar.Repr", MethodName: "LookupBySegment", AppropriateKind: ipld.KindSet_Recursive, ActualKind: n.Kind()}
 }
 func (n *_AnyScalar__Repr) MapIterator() ipld.MapIterator {
 	return nil
@@ -639,7 +639,7 @@ func (n *_AnyScalar__Repr) AsBool() (bool, error) {
 	case 1:
 		return n.x1.Representation().AsBool()
 	default:
-		return false, ipld.ErrWrongKind{TypeName: "schemadmt.AnyScalar.Repr", MethodName: "AsBool", AppropriateKind: ipld.ReprKindSet_JustBool, ActualKind: n.ReprKind()}
+		return false, ipld.ErrWrongKind{TypeName: "schemadmt.AnyScalar.Repr", MethodName: "AsBool", AppropriateKind: ipld.KindSet_JustBool, ActualKind: n.Kind()}
 	}
 }
 func (n *_AnyScalar__Repr) AsInt() (int64, error) {
@@ -647,7 +647,7 @@ func (n *_AnyScalar__Repr) AsInt() (int64, error) {
 	case 4:
 		return n.x4.Representation().AsInt()
 	default:
-		return 0, ipld.ErrWrongKind{TypeName: "schemadmt.AnyScalar.Repr", MethodName: "AsInt", AppropriateKind: ipld.ReprKindSet_JustInt, ActualKind: n.ReprKind()}
+		return 0, ipld.ErrWrongKind{TypeName: "schemadmt.AnyScalar.Repr", MethodName: "AsInt", AppropriateKind: ipld.KindSet_JustInt, ActualKind: n.Kind()}
 	}
 }
 func (n *_AnyScalar__Repr) AsFloat() (float64, error) {
@@ -655,7 +655,7 @@ func (n *_AnyScalar__Repr) AsFloat() (float64, error) {
 	case 5:
 		return n.x5.Representation().AsFloat()
 	default:
-		return 0, ipld.ErrWrongKind{TypeName: "schemadmt.AnyScalar.Repr", MethodName: "AsFloat", AppropriateKind: ipld.ReprKindSet_JustFloat, ActualKind: n.ReprKind()}
+		return 0, ipld.ErrWrongKind{TypeName: "schemadmt.AnyScalar.Repr", MethodName: "AsFloat", AppropriateKind: ipld.KindSet_JustFloat, ActualKind: n.Kind()}
 	}
 }
 func (n *_AnyScalar__Repr) AsString() (string, error) {
@@ -663,7 +663,7 @@ func (n *_AnyScalar__Repr) AsString() (string, error) {
 	case 2:
 		return n.x2.Representation().AsString()
 	default:
-		return "", ipld.ErrWrongKind{TypeName: "schemadmt.AnyScalar.Repr", MethodName: "AsString", AppropriateKind: ipld.ReprKindSet_JustString, ActualKind: n.ReprKind()}
+		return "", ipld.ErrWrongKind{TypeName: "schemadmt.AnyScalar.Repr", MethodName: "AsString", AppropriateKind: ipld.KindSet_JustString, ActualKind: n.Kind()}
 	}
 }
 func (n *_AnyScalar__Repr) AsBytes() ([]byte, error) {
@@ -671,11 +671,11 @@ func (n *_AnyScalar__Repr) AsBytes() ([]byte, error) {
 	case 3:
 		return n.x3.Representation().AsBytes()
 	default:
-		return nil, ipld.ErrWrongKind{TypeName: "schemadmt.AnyScalar.Repr", MethodName: "AsBytes", AppropriateKind: ipld.ReprKindSet_JustBytes, ActualKind: n.ReprKind()}
+		return nil, ipld.ErrWrongKind{TypeName: "schemadmt.AnyScalar.Repr", MethodName: "AsBytes", AppropriateKind: ipld.KindSet_JustBytes, ActualKind: n.Kind()}
 	}
 }
 func (n *_AnyScalar__Repr) AsLink() (ipld.Link, error) {
-	return nil, ipld.ErrWrongKind{TypeName: "schemadmt.AnyScalar.Repr", MethodName: "AsLink", AppropriateKind: ipld.ReprKindSet_JustLink, ActualKind: n.ReprKind()}
+	return nil, ipld.ErrWrongKind{TypeName: "schemadmt.AnyScalar.Repr", MethodName: "AsLink", AppropriateKind: ipld.KindSet_JustLink, ActualKind: n.Kind()}
 }
 func (_AnyScalar__Repr) Prototype() ipld.NodePrototype {
 	return _AnyScalar__ReprPrototype{}
@@ -876,23 +876,23 @@ func (na *_AnyScalar__ReprAssembler) ConvertFrom(v ipld.Node) error {
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	switch v.ReprKind() {
-	case ipld.ReprKind_Bool:
+	switch v.Kind() {
+	case ipld.Kind_Bool:
 		v2, _ := v.AsBool()
 		return na.AssignBool(v2)
-	case ipld.ReprKind_Int:
+	case ipld.Kind_Int:
 		v2, _ := v.AsInt()
 		return na.AssignInt(v2)
-	case ipld.ReprKind_Float:
+	case ipld.Kind_Float:
 		v2, _ := v.AsFloat()
 		return na.AssignFloat(v2)
-	case ipld.ReprKind_String:
+	case ipld.Kind_String:
 		v2, _ := v.AsString()
 		return na.AssignString(v2)
-	case ipld.ReprKind_Bytes:
+	case ipld.Kind_Bytes:
 		v2, _ := v.AsBytes()
 		return na.AssignBytes(v2)
-	case ipld.ReprKind_Map:
+	case ipld.Kind_Map:
 		na, err := na.BeginMap(v.Length())
 		if err != nil {
 			return err
@@ -911,7 +911,7 @@ func (na *_AnyScalar__ReprAssembler) ConvertFrom(v ipld.Node) error {
 			}
 		}
 		return na.Finish()
-	case ipld.ReprKind_List:
+	case ipld.Kind_List:
 		na, err := na.BeginList(v.Length())
 		if err != nil {
 			return err
@@ -927,7 +927,7 @@ func (na *_AnyScalar__ReprAssembler) ConvertFrom(v ipld.Node) error {
 			}
 		}
 		return na.Finish()
-	case ipld.ReprKind_Link:
+	case ipld.Kind_Link:
 		v2, _ := v.AsLink()
 		return na.AssignLink(v2)
 	default:
@@ -983,8 +983,8 @@ func (m MaybeBool) Must() Bool {
 var _ ipld.Node = (Bool)(&_Bool{})
 var _ schema.TypedNode = (Bool)(&_Bool{})
 
-func (Bool) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Bool
+func (Bool) Kind() ipld.Kind {
+	return ipld.Kind_Bool
 }
 func (Bool) LookupByString(string) (ipld.Node, error) {
 	return mixins.Bool{"schemadmt.Bool"}.LookupByString("")
@@ -1196,8 +1196,8 @@ func (m MaybeBytes) Must() Bytes {
 var _ ipld.Node = (Bytes)(&_Bytes{})
 var _ schema.TypedNode = (Bytes)(&_Bytes{})
 
-func (Bytes) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Bytes
+func (Bytes) Kind() ipld.Kind {
+	return ipld.Kind_Bytes
 }
 func (Bytes) LookupByString(string) (ipld.Node, error) {
 	return mixins.Bytes{"schemadmt.Bytes"}.LookupByString("")
@@ -1416,8 +1416,8 @@ var (
 var _ ipld.Node = (EnumRepresentation)(&_EnumRepresentation{})
 var _ schema.TypedNode = (EnumRepresentation)(&_EnumRepresentation{})
 
-func (EnumRepresentation) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (EnumRepresentation) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n EnumRepresentation) LookupByString(key string) (ipld.Node, error) {
 	switch key {
@@ -1630,8 +1630,8 @@ func (na *_EnumRepresentation__Assembler) ConvertFrom(v ipld.Node) error {
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.EnumRepresentation", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.EnumRepresentation", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -1852,8 +1852,8 @@ var (
 )
 var _ ipld.Node = &_EnumRepresentation__Repr{}
 
-func (_EnumRepresentation__Repr) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (_EnumRepresentation__Repr) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n *_EnumRepresentation__Repr) LookupByString(key string) (ipld.Node, error) {
 	switch key {
@@ -2066,8 +2066,8 @@ func (na *_EnumRepresentation__ReprAssembler) ConvertFrom(v ipld.Node) error {
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.EnumRepresentation.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.EnumRepresentation.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -2354,8 +2354,8 @@ func (m MaybeEnumRepresentation_Int) Must() EnumRepresentation_Int {
 var _ ipld.Node = (EnumRepresentation_Int)(&_EnumRepresentation_Int{})
 var _ schema.TypedNode = (EnumRepresentation_Int)(&_EnumRepresentation_Int{})
 
-func (EnumRepresentation_Int) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (EnumRepresentation_Int) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n EnumRepresentation_Int) LookupByString(k string) (ipld.Node, error) {
 	var k2 _EnumValue
@@ -2555,8 +2555,8 @@ func (na *_EnumRepresentation_Int__Assembler) ConvertFrom(v ipld.Node) error {
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.EnumRepresentation_Int", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.EnumRepresentation_Int", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -2711,8 +2711,8 @@ type _EnumRepresentation_Int__Repr _EnumRepresentation_Int
 
 var _ ipld.Node = &_EnumRepresentation_Int__Repr{}
 
-func (_EnumRepresentation_Int__Repr) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (_EnumRepresentation_Int__Repr) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (nr *_EnumRepresentation_Int__Repr) LookupByString(k string) (ipld.Node, error) {
 	v, err := (EnumRepresentation_Int)(nr).LookupByString(k)
@@ -2897,8 +2897,8 @@ func (na *_EnumRepresentation_Int__ReprAssembler) ConvertFrom(v ipld.Node) error
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.EnumRepresentation_Int.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.EnumRepresentation_Int.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -3123,8 +3123,8 @@ func (m MaybeEnumRepresentation_String) Must() EnumRepresentation_String {
 var _ ipld.Node = (EnumRepresentation_String)(&_EnumRepresentation_String{})
 var _ schema.TypedNode = (EnumRepresentation_String)(&_EnumRepresentation_String{})
 
-func (EnumRepresentation_String) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (EnumRepresentation_String) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n EnumRepresentation_String) LookupByString(k string) (ipld.Node, error) {
 	var k2 _EnumValue
@@ -3324,8 +3324,8 @@ func (na *_EnumRepresentation_String__Assembler) ConvertFrom(v ipld.Node) error 
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.EnumRepresentation_String", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.EnumRepresentation_String", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -3480,8 +3480,8 @@ type _EnumRepresentation_String__Repr _EnumRepresentation_String
 
 var _ ipld.Node = &_EnumRepresentation_String__Repr{}
 
-func (_EnumRepresentation_String__Repr) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (_EnumRepresentation_String__Repr) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (nr *_EnumRepresentation_String__Repr) LookupByString(k string) (ipld.Node, error) {
 	v, err := (EnumRepresentation_String)(nr).LookupByString(k)
@@ -3666,8 +3666,8 @@ func (na *_EnumRepresentation_String__ReprAssembler) ConvertFrom(v ipld.Node) er
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.EnumRepresentation_String.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.EnumRepresentation_String.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -3861,8 +3861,8 @@ func (m MaybeEnumValue) Must() EnumValue {
 var _ ipld.Node = (EnumValue)(&_EnumValue{})
 var _ schema.TypedNode = (EnumValue)(&_EnumValue{})
 
-func (EnumValue) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_String
+func (EnumValue) Kind() ipld.Kind {
+	return ipld.Kind_String
 }
 func (EnumValue) LookupByString(string) (ipld.Node, error) {
 	return mixins.String{"schemadmt.EnumValue"}.LookupByString("")
@@ -4078,8 +4078,8 @@ func (m MaybeFieldName) Must() FieldName {
 var _ ipld.Node = (FieldName)(&_FieldName{})
 var _ schema.TypedNode = (FieldName)(&_FieldName{})
 
-func (FieldName) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_String
+func (FieldName) Kind() ipld.Kind {
+	return ipld.Kind_String
 }
 func (FieldName) LookupByString(string) (ipld.Node, error) {
 	return mixins.String{"schemadmt.FieldName"}.LookupByString("")
@@ -4291,8 +4291,8 @@ func (m MaybeFloat) Must() Float {
 var _ ipld.Node = (Float)(&_Float{})
 var _ schema.TypedNode = (Float)(&_Float{})
 
-func (Float) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Float
+func (Float) Kind() ipld.Kind {
+	return ipld.Kind_Float
 }
 func (Float) LookupByString(string) (ipld.Node, error) {
 	return mixins.Float{"schemadmt.Float"}.LookupByString("")
@@ -4504,8 +4504,8 @@ func (m MaybeInt) Must() Int {
 var _ ipld.Node = (Int)(&_Int{})
 var _ schema.TypedNode = (Int)(&_Int{})
 
-func (Int) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Int
+func (Int) Kind() ipld.Kind {
+	return ipld.Kind_Int
 }
 func (Int) LookupByString(string) (ipld.Node, error) {
 	return mixins.Int{"schemadmt.Int"}.LookupByString("")
@@ -4721,8 +4721,8 @@ var (
 var _ ipld.Node = (ListRepresentation)(&_ListRepresentation{})
 var _ schema.TypedNode = (ListRepresentation)(&_ListRepresentation{})
 
-func (ListRepresentation) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (ListRepresentation) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n ListRepresentation) LookupByString(key string) (ipld.Node, error) {
 	switch key {
@@ -4923,8 +4923,8 @@ func (na *_ListRepresentation__Assembler) ConvertFrom(v ipld.Node) error {
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.ListRepresentation", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.ListRepresentation", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -5126,8 +5126,8 @@ var (
 )
 var _ ipld.Node = &_ListRepresentation__Repr{}
 
-func (_ListRepresentation__Repr) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (_ListRepresentation__Repr) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n *_ListRepresentation__Repr) LookupByString(key string) (ipld.Node, error) {
 	switch key {
@@ -5328,8 +5328,8 @@ func (na *_ListRepresentation__ReprAssembler) ConvertFrom(v ipld.Node) error {
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.ListRepresentation.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.ListRepresentation.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -5556,8 +5556,8 @@ var ()
 var _ ipld.Node = (ListRepresentation_List)(&_ListRepresentation_List{})
 var _ schema.TypedNode = (ListRepresentation_List)(&_ListRepresentation_List{})
 
-func (ListRepresentation_List) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (ListRepresentation_List) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n ListRepresentation_List) LookupByString(key string) (ipld.Node, error) {
 	switch key {
@@ -5747,8 +5747,8 @@ func (na *_ListRepresentation_List__Assembler) ConvertFrom(v ipld.Node) error {
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.ListRepresentation_List", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.ListRepresentation_List", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -5919,8 +5919,8 @@ type _ListRepresentation_List__Repr _ListRepresentation_List
 var ()
 var _ ipld.Node = &_ListRepresentation_List__Repr{}
 
-func (_ListRepresentation_List__Repr) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (_ListRepresentation_List__Repr) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n *_ListRepresentation_List__Repr) LookupByString(key string) (ipld.Node, error) {
 	switch key {
@@ -6105,8 +6105,8 @@ func (na *_ListRepresentation_List__ReprAssembler) ConvertFrom(v ipld.Node) erro
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.ListRepresentation_List.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.ListRepresentation_List.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -6345,8 +6345,8 @@ func (m MaybeList__FieldName) Must() List__FieldName {
 var _ ipld.Node = (List__FieldName)(&_List__FieldName{})
 var _ schema.TypedNode = (List__FieldName)(&_List__FieldName{})
 
-func (List__FieldName) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_List
+func (List__FieldName) Kind() ipld.Kind {
+	return ipld.Kind_List
 }
 func (List__FieldName) LookupByString(string) (ipld.Node, error) {
 	return mixins.List{"schemadmt.List__FieldName"}.LookupByString("")
@@ -6540,8 +6540,8 @@ func (na *_List__FieldName__Assembler) ConvertFrom(v ipld.Node) error {
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_List {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.List__FieldName", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustList, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_List {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.List__FieldName", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustList, ActualKind: v.Kind()}
 	}
 	itr := v.ListIterator()
 	for !itr.Done() {
@@ -6617,8 +6617,8 @@ type _List__FieldName__Repr _List__FieldName
 
 var _ ipld.Node = &_List__FieldName__Repr{}
 
-func (_List__FieldName__Repr) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_List
+func (_List__FieldName__Repr) Kind() ipld.Kind {
+	return ipld.Kind_List
 }
 func (_List__FieldName__Repr) LookupByString(string) (ipld.Node, error) {
 	return mixins.List{"schemadmt.List__FieldName.Repr"}.LookupByString("")
@@ -6806,8 +6806,8 @@ func (na *_List__FieldName__ReprAssembler) ConvertFrom(v ipld.Node) error {
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_List {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.List__FieldName.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustList, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_List {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.List__FieldName.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustList, ActualKind: v.Kind()}
 	}
 	itr := v.ListIterator()
 	for !itr.Done() {
@@ -6952,8 +6952,8 @@ func (m MaybeList__TypeName) Must() List__TypeName {
 var _ ipld.Node = (List__TypeName)(&_List__TypeName{})
 var _ schema.TypedNode = (List__TypeName)(&_List__TypeName{})
 
-func (List__TypeName) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_List
+func (List__TypeName) Kind() ipld.Kind {
+	return ipld.Kind_List
 }
 func (List__TypeName) LookupByString(string) (ipld.Node, error) {
 	return mixins.List{"schemadmt.List__TypeName"}.LookupByString("")
@@ -7147,8 +7147,8 @@ func (na *_List__TypeName__Assembler) ConvertFrom(v ipld.Node) error {
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_List {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.List__TypeName", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustList, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_List {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.List__TypeName", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustList, ActualKind: v.Kind()}
 	}
 	itr := v.ListIterator()
 	for !itr.Done() {
@@ -7224,8 +7224,8 @@ type _List__TypeName__Repr _List__TypeName
 
 var _ ipld.Node = &_List__TypeName__Repr{}
 
-func (_List__TypeName__Repr) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_List
+func (_List__TypeName__Repr) Kind() ipld.Kind {
+	return ipld.Kind_List
 }
 func (_List__TypeName__Repr) LookupByString(string) (ipld.Node, error) {
 	return mixins.List{"schemadmt.List__TypeName.Repr"}.LookupByString("")
@@ -7413,8 +7413,8 @@ func (na *_List__TypeName__ReprAssembler) ConvertFrom(v ipld.Node) error {
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_List {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.List__TypeName.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustList, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_List {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.List__TypeName.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustList, ActualKind: v.Kind()}
 	}
 	itr := v.ListIterator()
 	for !itr.Done() {
@@ -7535,8 +7535,8 @@ var (
 var _ ipld.Node = (MapRepresentation)(&_MapRepresentation{})
 var _ schema.TypedNode = (MapRepresentation)(&_MapRepresentation{})
 
-func (MapRepresentation) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (MapRepresentation) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n MapRepresentation) LookupByString(key string) (ipld.Node, error) {
 	switch key {
@@ -7761,8 +7761,8 @@ func (na *_MapRepresentation__Assembler) ConvertFrom(v ipld.Node) error {
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.MapRepresentation", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.MapRepresentation", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -8002,8 +8002,8 @@ var (
 )
 var _ ipld.Node = &_MapRepresentation__Repr{}
 
-func (_MapRepresentation__Repr) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (_MapRepresentation__Repr) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n *_MapRepresentation__Repr) LookupByString(key string) (ipld.Node, error) {
 	switch key {
@@ -8228,8 +8228,8 @@ func (na *_MapRepresentation__ReprAssembler) ConvertFrom(v ipld.Node) error {
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.MapRepresentation.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.MapRepresentation.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -8492,8 +8492,8 @@ var ()
 var _ ipld.Node = (MapRepresentation_Listpairs)(&_MapRepresentation_Listpairs{})
 var _ schema.TypedNode = (MapRepresentation_Listpairs)(&_MapRepresentation_Listpairs{})
 
-func (MapRepresentation_Listpairs) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (MapRepresentation_Listpairs) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n MapRepresentation_Listpairs) LookupByString(key string) (ipld.Node, error) {
 	switch key {
@@ -8683,8 +8683,8 @@ func (na *_MapRepresentation_Listpairs__Assembler) ConvertFrom(v ipld.Node) erro
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.MapRepresentation_Listpairs", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.MapRepresentation_Listpairs", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -8855,8 +8855,8 @@ type _MapRepresentation_Listpairs__Repr _MapRepresentation_Listpairs
 var ()
 var _ ipld.Node = &_MapRepresentation_Listpairs__Repr{}
 
-func (_MapRepresentation_Listpairs__Repr) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (_MapRepresentation_Listpairs__Repr) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n *_MapRepresentation_Listpairs__Repr) LookupByString(key string) (ipld.Node, error) {
 	switch key {
@@ -9041,8 +9041,8 @@ func (na *_MapRepresentation_Listpairs__ReprAssembler) ConvertFrom(v ipld.Node) 
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.MapRepresentation_Listpairs.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.MapRepresentation_Listpairs.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -9240,8 +9240,8 @@ var ()
 var _ ipld.Node = (MapRepresentation_Map)(&_MapRepresentation_Map{})
 var _ schema.TypedNode = (MapRepresentation_Map)(&_MapRepresentation_Map{})
 
-func (MapRepresentation_Map) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (MapRepresentation_Map) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n MapRepresentation_Map) LookupByString(key string) (ipld.Node, error) {
 	switch key {
@@ -9431,8 +9431,8 @@ func (na *_MapRepresentation_Map__Assembler) ConvertFrom(v ipld.Node) error {
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.MapRepresentation_Map", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.MapRepresentation_Map", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -9603,8 +9603,8 @@ type _MapRepresentation_Map__Repr _MapRepresentation_Map
 var ()
 var _ ipld.Node = &_MapRepresentation_Map__Repr{}
 
-func (_MapRepresentation_Map__Repr) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (_MapRepresentation_Map__Repr) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n *_MapRepresentation_Map__Repr) LookupByString(key string) (ipld.Node, error) {
 	switch key {
@@ -9789,8 +9789,8 @@ func (na *_MapRepresentation_Map__ReprAssembler) ConvertFrom(v ipld.Node) error 
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.MapRepresentation_Map.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.MapRepresentation_Map.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -9998,8 +9998,8 @@ var (
 var _ ipld.Node = (MapRepresentation_Stringpairs)(&_MapRepresentation_Stringpairs{})
 var _ schema.TypedNode = (MapRepresentation_Stringpairs)(&_MapRepresentation_Stringpairs{})
 
-func (MapRepresentation_Stringpairs) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (MapRepresentation_Stringpairs) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n MapRepresentation_Stringpairs) LookupByString(key string) (ipld.Node, error) {
 	switch key {
@@ -10205,8 +10205,8 @@ func (na *_MapRepresentation_Stringpairs__Assembler) ConvertFrom(v ipld.Node) er
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.MapRepresentation_Stringpairs", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.MapRepresentation_Stringpairs", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -10448,8 +10448,8 @@ var (
 )
 var _ ipld.Node = &_MapRepresentation_Stringpairs__Repr{}
 
-func (_MapRepresentation_Stringpairs__Repr) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (_MapRepresentation_Stringpairs__Repr) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n *_MapRepresentation_Stringpairs__Repr) LookupByString(key string) (ipld.Node, error) {
 	switch key {
@@ -10648,8 +10648,8 @@ func (na *_MapRepresentation_Stringpairs__ReprAssembler) ConvertFrom(v ipld.Node
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.MapRepresentation_Stringpairs.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.MapRepresentation_Stringpairs.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -10955,8 +10955,8 @@ func (m MaybeMap__EnumValue__Unit) Must() Map__EnumValue__Unit {
 var _ ipld.Node = (Map__EnumValue__Unit)(&_Map__EnumValue__Unit{})
 var _ schema.TypedNode = (Map__EnumValue__Unit)(&_Map__EnumValue__Unit{})
 
-func (Map__EnumValue__Unit) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (Map__EnumValue__Unit) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n Map__EnumValue__Unit) LookupByString(k string) (ipld.Node, error) {
 	var k2 _EnumValue
@@ -11156,8 +11156,8 @@ func (na *_Map__EnumValue__Unit__Assembler) ConvertFrom(v ipld.Node) error {
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.Map__EnumValue__Unit", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.Map__EnumValue__Unit", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -11312,8 +11312,8 @@ type _Map__EnumValue__Unit__Repr _Map__EnumValue__Unit
 
 var _ ipld.Node = &_Map__EnumValue__Unit__Repr{}
 
-func (_Map__EnumValue__Unit__Repr) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (_Map__EnumValue__Unit__Repr) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (nr *_Map__EnumValue__Unit__Repr) LookupByString(k string) (ipld.Node, error) {
 	v, err := (Map__EnumValue__Unit)(nr).LookupByString(k)
@@ -11498,8 +11498,8 @@ func (na *_Map__EnumValue__Unit__ReprAssembler) ConvertFrom(v ipld.Node) error {
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.Map__EnumValue__Unit.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.Map__EnumValue__Unit.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -11724,8 +11724,8 @@ func (m MaybeMap__FieldName__StructField) Must() Map__FieldName__StructField {
 var _ ipld.Node = (Map__FieldName__StructField)(&_Map__FieldName__StructField{})
 var _ schema.TypedNode = (Map__FieldName__StructField)(&_Map__FieldName__StructField{})
 
-func (Map__FieldName__StructField) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (Map__FieldName__StructField) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n Map__FieldName__StructField) LookupByString(k string) (ipld.Node, error) {
 	var k2 _FieldName
@@ -11925,8 +11925,8 @@ func (na *_Map__FieldName__StructField__Assembler) ConvertFrom(v ipld.Node) erro
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.Map__FieldName__StructField", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.Map__FieldName__StructField", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -12081,8 +12081,8 @@ type _Map__FieldName__StructField__Repr _Map__FieldName__StructField
 
 var _ ipld.Node = &_Map__FieldName__StructField__Repr{}
 
-func (_Map__FieldName__StructField__Repr) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (_Map__FieldName__StructField__Repr) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (nr *_Map__FieldName__StructField__Repr) LookupByString(k string) (ipld.Node, error) {
 	v, err := (Map__FieldName__StructField)(nr).LookupByString(k)
@@ -12267,8 +12267,8 @@ func (na *_Map__FieldName__StructField__ReprAssembler) ConvertFrom(v ipld.Node) 
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.Map__FieldName__StructField.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.Map__FieldName__StructField.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -12493,8 +12493,8 @@ func (m MaybeMap__FieldName__StructRepresentation_Map_FieldDetails) Must() Map__
 var _ ipld.Node = (Map__FieldName__StructRepresentation_Map_FieldDetails)(&_Map__FieldName__StructRepresentation_Map_FieldDetails{})
 var _ schema.TypedNode = (Map__FieldName__StructRepresentation_Map_FieldDetails)(&_Map__FieldName__StructRepresentation_Map_FieldDetails{})
 
-func (Map__FieldName__StructRepresentation_Map_FieldDetails) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (Map__FieldName__StructRepresentation_Map_FieldDetails) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n Map__FieldName__StructRepresentation_Map_FieldDetails) LookupByString(k string) (ipld.Node, error) {
 	var k2 _FieldName
@@ -12694,8 +12694,8 @@ func (na *_Map__FieldName__StructRepresentation_Map_FieldDetails__Assembler) Con
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.Map__FieldName__StructRepresentation_Map_FieldDetails", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.Map__FieldName__StructRepresentation_Map_FieldDetails", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -12850,8 +12850,8 @@ type _Map__FieldName__StructRepresentation_Map_FieldDetails__Repr _Map__FieldNam
 
 var _ ipld.Node = &_Map__FieldName__StructRepresentation_Map_FieldDetails__Repr{}
 
-func (_Map__FieldName__StructRepresentation_Map_FieldDetails__Repr) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (_Map__FieldName__StructRepresentation_Map_FieldDetails__Repr) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (nr *_Map__FieldName__StructRepresentation_Map_FieldDetails__Repr) LookupByString(k string) (ipld.Node, error) {
 	v, err := (Map__FieldName__StructRepresentation_Map_FieldDetails)(nr).LookupByString(k)
@@ -13036,8 +13036,8 @@ func (na *_Map__FieldName__StructRepresentation_Map_FieldDetails__ReprAssembler)
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.Map__FieldName__StructRepresentation_Map_FieldDetails.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.Map__FieldName__StructRepresentation_Map_FieldDetails.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -13262,8 +13262,8 @@ func (m MaybeMap__String__TypeName) Must() Map__String__TypeName {
 var _ ipld.Node = (Map__String__TypeName)(&_Map__String__TypeName{})
 var _ schema.TypedNode = (Map__String__TypeName)(&_Map__String__TypeName{})
 
-func (Map__String__TypeName) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (Map__String__TypeName) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n Map__String__TypeName) LookupByString(k string) (ipld.Node, error) {
 	var k2 _String
@@ -13463,8 +13463,8 @@ func (na *_Map__String__TypeName__Assembler) ConvertFrom(v ipld.Node) error {
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.Map__String__TypeName", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.Map__String__TypeName", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -13619,8 +13619,8 @@ type _Map__String__TypeName__Repr _Map__String__TypeName
 
 var _ ipld.Node = &_Map__String__TypeName__Repr{}
 
-func (_Map__String__TypeName__Repr) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (_Map__String__TypeName__Repr) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (nr *_Map__String__TypeName__Repr) LookupByString(k string) (ipld.Node, error) {
 	v, err := (Map__String__TypeName)(nr).LookupByString(k)
@@ -13805,8 +13805,8 @@ func (na *_Map__String__TypeName__ReprAssembler) ConvertFrom(v ipld.Node) error 
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.Map__String__TypeName.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.Map__String__TypeName.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -14031,8 +14031,8 @@ func (m MaybeMap__TypeName__Int) Must() Map__TypeName__Int {
 var _ ipld.Node = (Map__TypeName__Int)(&_Map__TypeName__Int{})
 var _ schema.TypedNode = (Map__TypeName__Int)(&_Map__TypeName__Int{})
 
-func (Map__TypeName__Int) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (Map__TypeName__Int) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n Map__TypeName__Int) LookupByString(k string) (ipld.Node, error) {
 	var k2 _String
@@ -14232,8 +14232,8 @@ func (na *_Map__TypeName__Int__Assembler) ConvertFrom(v ipld.Node) error {
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.Map__TypeName__Int", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.Map__TypeName__Int", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -14388,8 +14388,8 @@ type _Map__TypeName__Int__Repr _Map__TypeName__Int
 
 var _ ipld.Node = &_Map__TypeName__Int__Repr{}
 
-func (_Map__TypeName__Int__Repr) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (_Map__TypeName__Int__Repr) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (nr *_Map__TypeName__Int__Repr) LookupByString(k string) (ipld.Node, error) {
 	v, err := (Map__TypeName__Int)(nr).LookupByString(k)
@@ -14574,8 +14574,8 @@ func (na *_Map__TypeName__Int__ReprAssembler) ConvertFrom(v ipld.Node) error {
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.Map__TypeName__Int.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.Map__TypeName__Int.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -14769,8 +14769,8 @@ func (m MaybeRepresentationKind) Must() RepresentationKind {
 var _ ipld.Node = (RepresentationKind)(&_RepresentationKind{})
 var _ schema.TypedNode = (RepresentationKind)(&_RepresentationKind{})
 
-func (RepresentationKind) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_String
+func (RepresentationKind) Kind() ipld.Kind {
+	return ipld.Kind_String
 }
 func (RepresentationKind) LookupByString(string) (ipld.Node, error) {
 	return mixins.String{"schemadmt.RepresentationKind"}.LookupByString("")
@@ -14981,8 +14981,8 @@ var (
 var _ ipld.Node = (Schema)(&_Schema{})
 var _ schema.TypedNode = (Schema)(&_Schema{})
 
-func (Schema) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (Schema) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n Schema) LookupByString(key string) (ipld.Node, error) {
 	switch key {
@@ -15180,8 +15180,8 @@ func (na *_Schema__Assembler) ConvertFrom(v ipld.Node) error {
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.Schema", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.Schema", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -15388,8 +15388,8 @@ var (
 )
 var _ ipld.Node = &_Schema__Repr{}
 
-func (_Schema__Repr) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (_Schema__Repr) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n *_Schema__Repr) LookupByString(key string) (ipld.Node, error) {
 	switch key {
@@ -15581,8 +15581,8 @@ func (na *_Schema__ReprAssembler) ConvertFrom(v ipld.Node) error {
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.Schema.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.Schema.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -15855,8 +15855,8 @@ func (m MaybeSchemaMap) Must() SchemaMap {
 var _ ipld.Node = (SchemaMap)(&_SchemaMap{})
 var _ schema.TypedNode = (SchemaMap)(&_SchemaMap{})
 
-func (SchemaMap) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (SchemaMap) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n SchemaMap) LookupByString(k string) (ipld.Node, error) {
 	var k2 _TypeName
@@ -16056,8 +16056,8 @@ func (na *_SchemaMap__Assembler) ConvertFrom(v ipld.Node) error {
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.SchemaMap", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.SchemaMap", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -16212,8 +16212,8 @@ type _SchemaMap__Repr _SchemaMap
 
 var _ ipld.Node = &_SchemaMap__Repr{}
 
-func (_SchemaMap__Repr) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (_SchemaMap__Repr) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (nr *_SchemaMap__Repr) LookupByString(k string) (ipld.Node, error) {
 	v, err := (SchemaMap)(nr).LookupByString(k)
@@ -16398,8 +16398,8 @@ func (na *_SchemaMap__ReprAssembler) ConvertFrom(v ipld.Node) error {
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.SchemaMap.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.SchemaMap.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -16593,8 +16593,8 @@ func (m MaybeString) Must() String {
 var _ ipld.Node = (String)(&_String{})
 var _ schema.TypedNode = (String)(&_String{})
 
-func (String) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_String
+func (String) Kind() ipld.Kind {
+	return ipld.Kind_String
 }
 func (String) LookupByString(string) (ipld.Node, error) {
 	return mixins.String{"schemadmt.String"}.LookupByString("")
@@ -16813,8 +16813,8 @@ var (
 var _ ipld.Node = (StructField)(&_StructField{})
 var _ schema.TypedNode = (StructField)(&_StructField{})
 
-func (StructField) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (StructField) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n StructField) LookupByString(key string) (ipld.Node, error) {
 	switch key {
@@ -17028,8 +17028,8 @@ func (na *_StructField__Assembler) ConvertFrom(v ipld.Node) error {
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.StructField", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.StructField", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -17306,8 +17306,8 @@ var (
 )
 var _ ipld.Node = &_StructField__Repr{}
 
-func (_StructField__Repr) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (_StructField__Repr) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n *_StructField__Repr) LookupByString(key string) (ipld.Node, error) {
 	switch key {
@@ -17513,8 +17513,8 @@ func (na *_StructField__ReprAssembler) ConvertFrom(v ipld.Node) error {
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.StructField.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.StructField.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -17834,8 +17834,8 @@ var (
 var _ ipld.Node = (StructRepresentation)(&_StructRepresentation{})
 var _ schema.TypedNode = (StructRepresentation)(&_StructRepresentation{})
 
-func (StructRepresentation) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (StructRepresentation) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n StructRepresentation) LookupByString(key string) (ipld.Node, error) {
 	switch key {
@@ -18084,8 +18084,8 @@ func (na *_StructRepresentation__Assembler) ConvertFrom(v ipld.Node) error {
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.StructRepresentation", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.StructRepresentation", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -18363,8 +18363,8 @@ var (
 )
 var _ ipld.Node = &_StructRepresentation__Repr{}
 
-func (_StructRepresentation__Repr) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (_StructRepresentation__Repr) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n *_StructRepresentation__Repr) LookupByString(key string) (ipld.Node, error) {
 	switch key {
@@ -18613,8 +18613,8 @@ func (na *_StructRepresentation__ReprAssembler) ConvertFrom(v ipld.Node) error {
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.StructRepresentation.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.StructRepresentation.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -18913,8 +18913,8 @@ var ()
 var _ ipld.Node = (StructRepresentation_Listpairs)(&_StructRepresentation_Listpairs{})
 var _ schema.TypedNode = (StructRepresentation_Listpairs)(&_StructRepresentation_Listpairs{})
 
-func (StructRepresentation_Listpairs) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (StructRepresentation_Listpairs) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n StructRepresentation_Listpairs) LookupByString(key string) (ipld.Node, error) {
 	switch key {
@@ -19104,8 +19104,8 @@ func (na *_StructRepresentation_Listpairs__Assembler) ConvertFrom(v ipld.Node) e
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.StructRepresentation_Listpairs", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.StructRepresentation_Listpairs", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -19276,8 +19276,8 @@ type _StructRepresentation_Listpairs__Repr _StructRepresentation_Listpairs
 var ()
 var _ ipld.Node = &_StructRepresentation_Listpairs__Repr{}
 
-func (_StructRepresentation_Listpairs__Repr) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (_StructRepresentation_Listpairs__Repr) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n *_StructRepresentation_Listpairs__Repr) LookupByString(key string) (ipld.Node, error) {
 	switch key {
@@ -19462,8 +19462,8 @@ func (na *_StructRepresentation_Listpairs__ReprAssembler) ConvertFrom(v ipld.Nod
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.StructRepresentation_Listpairs.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.StructRepresentation_Listpairs.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -19667,8 +19667,8 @@ var (
 var _ ipld.Node = (StructRepresentation_Map)(&_StructRepresentation_Map{})
 var _ schema.TypedNode = (StructRepresentation_Map)(&_StructRepresentation_Map{})
 
-func (StructRepresentation_Map) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (StructRepresentation_Map) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n StructRepresentation_Map) LookupByString(key string) (ipld.Node, error) {
 	switch key {
@@ -19873,8 +19873,8 @@ func (na *_StructRepresentation_Map__Assembler) ConvertFrom(v ipld.Node) error {
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.StructRepresentation_Map", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.StructRepresentation_Map", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -20077,8 +20077,8 @@ var (
 )
 var _ ipld.Node = &_StructRepresentation_Map__Repr{}
 
-func (_StructRepresentation_Map__Repr) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (_StructRepresentation_Map__Repr) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n *_StructRepresentation_Map__Repr) LookupByString(key string) (ipld.Node, error) {
 	switch key {
@@ -20289,8 +20289,8 @@ func (na *_StructRepresentation_Map__ReprAssembler) ConvertFrom(v ipld.Node) err
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.StructRepresentation_Map.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.StructRepresentation_Map.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -20530,8 +20530,8 @@ var (
 var _ ipld.Node = (StructRepresentation_Map_FieldDetails)(&_StructRepresentation_Map_FieldDetails{})
 var _ schema.TypedNode = (StructRepresentation_Map_FieldDetails)(&_StructRepresentation_Map_FieldDetails{})
 
-func (StructRepresentation_Map_FieldDetails) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (StructRepresentation_Map_FieldDetails) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n StructRepresentation_Map_FieldDetails) LookupByString(key string) (ipld.Node, error) {
 	switch key {
@@ -20751,8 +20751,8 @@ func (na *_StructRepresentation_Map_FieldDetails__Assembler) ConvertFrom(v ipld.
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.StructRepresentation_Map_FieldDetails", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.StructRepresentation_Map_FieldDetails", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -20986,8 +20986,8 @@ var (
 )
 var _ ipld.Node = &_StructRepresentation_Map_FieldDetails__Repr{}
 
-func (_StructRepresentation_Map_FieldDetails__Repr) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (_StructRepresentation_Map_FieldDetails__Repr) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n *_StructRepresentation_Map_FieldDetails__Repr) LookupByString(key string) (ipld.Node, error) {
 	switch key {
@@ -21220,8 +21220,8 @@ func (na *_StructRepresentation_Map_FieldDetails__ReprAssembler) ConvertFrom(v i
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.StructRepresentation_Map_FieldDetails.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.StructRepresentation_Map_FieldDetails.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -21493,8 +21493,8 @@ var (
 var _ ipld.Node = (StructRepresentation_Stringjoin)(&_StructRepresentation_Stringjoin{})
 var _ schema.TypedNode = (StructRepresentation_Stringjoin)(&_StructRepresentation_Stringjoin{})
 
-func (StructRepresentation_Stringjoin) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (StructRepresentation_Stringjoin) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n StructRepresentation_Stringjoin) LookupByString(key string) (ipld.Node, error) {
 	switch key {
@@ -21707,8 +21707,8 @@ func (na *_StructRepresentation_Stringjoin__Assembler) ConvertFrom(v ipld.Node) 
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.StructRepresentation_Stringjoin", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.StructRepresentation_Stringjoin", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -21946,8 +21946,8 @@ var (
 )
 var _ ipld.Node = &_StructRepresentation_Stringjoin__Repr{}
 
-func (_StructRepresentation_Stringjoin__Repr) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (_StructRepresentation_Stringjoin__Repr) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n *_StructRepresentation_Stringjoin__Repr) LookupByString(key string) (ipld.Node, error) {
 	switch key {
@@ -22165,8 +22165,8 @@ func (na *_StructRepresentation_Stringjoin__ReprAssembler) ConvertFrom(v ipld.No
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.StructRepresentation_Stringjoin.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.StructRepresentation_Stringjoin.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -22439,8 +22439,8 @@ var (
 var _ ipld.Node = (StructRepresentation_Stringpairs)(&_StructRepresentation_Stringpairs{})
 var _ schema.TypedNode = (StructRepresentation_Stringpairs)(&_StructRepresentation_Stringpairs{})
 
-func (StructRepresentation_Stringpairs) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (StructRepresentation_Stringpairs) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n StructRepresentation_Stringpairs) LookupByString(key string) (ipld.Node, error) {
 	switch key {
@@ -22646,8 +22646,8 @@ func (na *_StructRepresentation_Stringpairs__Assembler) ConvertFrom(v ipld.Node)
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.StructRepresentation_Stringpairs", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.StructRepresentation_Stringpairs", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -22889,8 +22889,8 @@ var (
 )
 var _ ipld.Node = &_StructRepresentation_Stringpairs__Repr{}
 
-func (_StructRepresentation_Stringpairs__Repr) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (_StructRepresentation_Stringpairs__Repr) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n *_StructRepresentation_Stringpairs__Repr) LookupByString(key string) (ipld.Node, error) {
 	switch key {
@@ -23089,8 +23089,8 @@ func (na *_StructRepresentation_Stringpairs__ReprAssembler) ConvertFrom(v ipld.N
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.StructRepresentation_Stringpairs.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.StructRepresentation_Stringpairs.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -23360,8 +23360,8 @@ var (
 var _ ipld.Node = (StructRepresentation_Tuple)(&_StructRepresentation_Tuple{})
 var _ schema.TypedNode = (StructRepresentation_Tuple)(&_StructRepresentation_Tuple{})
 
-func (StructRepresentation_Tuple) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (StructRepresentation_Tuple) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n StructRepresentation_Tuple) LookupByString(key string) (ipld.Node, error) {
 	switch key {
@@ -23566,8 +23566,8 @@ func (na *_StructRepresentation_Tuple__Assembler) ConvertFrom(v ipld.Node) error
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.StructRepresentation_Tuple", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.StructRepresentation_Tuple", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -23770,8 +23770,8 @@ var (
 )
 var _ ipld.Node = &_StructRepresentation_Tuple__Repr{}
 
-func (_StructRepresentation_Tuple__Repr) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (_StructRepresentation_Tuple__Repr) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n *_StructRepresentation_Tuple__Repr) LookupByString(key string) (ipld.Node, error) {
 	switch key {
@@ -23982,8 +23982,8 @@ func (na *_StructRepresentation_Tuple__ReprAssembler) ConvertFrom(v ipld.Node) e
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.StructRepresentation_Tuple.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.StructRepresentation_Tuple.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -24213,8 +24213,8 @@ var ()
 var _ ipld.Node = (TypeBool)(&_TypeBool{})
 var _ schema.TypedNode = (TypeBool)(&_TypeBool{})
 
-func (TypeBool) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (TypeBool) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n TypeBool) LookupByString(key string) (ipld.Node, error) {
 	switch key {
@@ -24404,8 +24404,8 @@ func (na *_TypeBool__Assembler) ConvertFrom(v ipld.Node) error {
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeBool", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeBool", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -24576,8 +24576,8 @@ type _TypeBool__Repr _TypeBool
 var ()
 var _ ipld.Node = &_TypeBool__Repr{}
 
-func (_TypeBool__Repr) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (_TypeBool__Repr) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n *_TypeBool__Repr) LookupByString(key string) (ipld.Node, error) {
 	switch key {
@@ -24762,8 +24762,8 @@ func (na *_TypeBool__ReprAssembler) ConvertFrom(v ipld.Node) error {
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeBool.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeBool.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -24961,8 +24961,8 @@ var ()
 var _ ipld.Node = (TypeBytes)(&_TypeBytes{})
 var _ schema.TypedNode = (TypeBytes)(&_TypeBytes{})
 
-func (TypeBytes) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (TypeBytes) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n TypeBytes) LookupByString(key string) (ipld.Node, error) {
 	switch key {
@@ -25152,8 +25152,8 @@ func (na *_TypeBytes__Assembler) ConvertFrom(v ipld.Node) error {
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeBytes", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeBytes", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -25324,8 +25324,8 @@ type _TypeBytes__Repr _TypeBytes
 var ()
 var _ ipld.Node = &_TypeBytes__Repr{}
 
-func (_TypeBytes__Repr) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (_TypeBytes__Repr) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n *_TypeBytes__Repr) LookupByString(key string) (ipld.Node, error) {
 	switch key {
@@ -25510,8 +25510,8 @@ func (na *_TypeBytes__ReprAssembler) ConvertFrom(v ipld.Node) error {
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeBytes.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeBytes.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -25715,8 +25715,8 @@ var (
 var _ ipld.Node = (TypeCopy)(&_TypeCopy{})
 var _ schema.TypedNode = (TypeCopy)(&_TypeCopy{})
 
-func (TypeCopy) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (TypeCopy) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n TypeCopy) LookupByString(key string) (ipld.Node, error) {
 	switch key {
@@ -25914,8 +25914,8 @@ func (na *_TypeCopy__Assembler) ConvertFrom(v ipld.Node) error {
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeCopy", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeCopy", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -26122,8 +26122,8 @@ var (
 )
 var _ ipld.Node = &_TypeCopy__Repr{}
 
-func (_TypeCopy__Repr) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (_TypeCopy__Repr) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n *_TypeCopy__Repr) LookupByString(key string) (ipld.Node, error) {
 	switch key {
@@ -26315,8 +26315,8 @@ func (na *_TypeCopy__ReprAssembler) ConvertFrom(v ipld.Node) error {
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeCopy.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeCopy.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -26591,8 +26591,8 @@ var (
 var _ ipld.Node = (TypeDefn)(&_TypeDefn{})
 var _ schema.TypedNode = (TypeDefn)(&_TypeDefn{})
 
-func (TypeDefn) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (TypeDefn) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n TypeDefn) LookupByString(key string) (ipld.Node, error) {
 	switch key {
@@ -26925,8 +26925,8 @@ func (na *_TypeDefn__Assembler) ConvertFrom(v ipld.Node) error {
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeDefn", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeDefn", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -27337,8 +27337,8 @@ var (
 )
 var _ ipld.Node = &_TypeDefn__Repr{}
 
-func (_TypeDefn__Repr) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (_TypeDefn__Repr) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n *_TypeDefn__Repr) LookupByString(key string) (ipld.Node, error) {
 	switch key {
@@ -27671,8 +27671,8 @@ func (na *_TypeDefn__ReprAssembler) ConvertFrom(v ipld.Node) error {
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeDefn.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeDefn.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -28104,8 +28104,8 @@ var (
 var _ ipld.Node = (TypeDefnInline)(&_TypeDefnInline{})
 var _ schema.TypedNode = (TypeDefnInline)(&_TypeDefnInline{})
 
-func (TypeDefnInline) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (TypeDefnInline) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n TypeDefnInline) LookupByString(key string) (ipld.Node, error) {
 	switch key {
@@ -28320,8 +28320,8 @@ func (na *_TypeDefnInline__Assembler) ConvertFrom(v ipld.Node) error {
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeDefnInline", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeDefnInline", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -28558,8 +28558,8 @@ var (
 )
 var _ ipld.Node = &_TypeDefnInline__Repr{}
 
-func (_TypeDefnInline__Repr) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (_TypeDefnInline__Repr) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n *_TypeDefnInline__Repr) LookupByString(key string) (ipld.Node, error) {
 	switch key {
@@ -28774,8 +28774,8 @@ func (na *_TypeDefnInline__ReprAssembler) ConvertFrom(v ipld.Node) error {
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeDefnInline.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeDefnInline.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -29046,8 +29046,8 @@ var (
 var _ ipld.Node = (TypeEnum)(&_TypeEnum{})
 var _ schema.TypedNode = (TypeEnum)(&_TypeEnum{})
 
-func (TypeEnum) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (TypeEnum) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n TypeEnum) LookupByString(key string) (ipld.Node, error) {
 	switch key {
@@ -29253,8 +29253,8 @@ func (na *_TypeEnum__Assembler) ConvertFrom(v ipld.Node) error {
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeEnum", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeEnum", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -29496,8 +29496,8 @@ var (
 )
 var _ ipld.Node = &_TypeEnum__Repr{}
 
-func (_TypeEnum__Repr) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (_TypeEnum__Repr) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n *_TypeEnum__Repr) LookupByString(key string) (ipld.Node, error) {
 	switch key {
@@ -29696,8 +29696,8 @@ func (na *_TypeEnum__ReprAssembler) ConvertFrom(v ipld.Node) error {
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeEnum.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeEnum.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -29961,8 +29961,8 @@ var ()
 var _ ipld.Node = (TypeFloat)(&_TypeFloat{})
 var _ schema.TypedNode = (TypeFloat)(&_TypeFloat{})
 
-func (TypeFloat) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (TypeFloat) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n TypeFloat) LookupByString(key string) (ipld.Node, error) {
 	switch key {
@@ -30152,8 +30152,8 @@ func (na *_TypeFloat__Assembler) ConvertFrom(v ipld.Node) error {
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeFloat", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeFloat", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -30324,8 +30324,8 @@ type _TypeFloat__Repr _TypeFloat
 var ()
 var _ ipld.Node = &_TypeFloat__Repr{}
 
-func (_TypeFloat__Repr) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (_TypeFloat__Repr) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n *_TypeFloat__Repr) LookupByString(key string) (ipld.Node, error) {
 	switch key {
@@ -30510,8 +30510,8 @@ func (na *_TypeFloat__ReprAssembler) ConvertFrom(v ipld.Node) error {
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeFloat.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeFloat.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -30709,8 +30709,8 @@ var ()
 var _ ipld.Node = (TypeInt)(&_TypeInt{})
 var _ schema.TypedNode = (TypeInt)(&_TypeInt{})
 
-func (TypeInt) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (TypeInt) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n TypeInt) LookupByString(key string) (ipld.Node, error) {
 	switch key {
@@ -30900,8 +30900,8 @@ func (na *_TypeInt__Assembler) ConvertFrom(v ipld.Node) error {
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeInt", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeInt", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -31072,8 +31072,8 @@ type _TypeInt__Repr _TypeInt
 var ()
 var _ ipld.Node = &_TypeInt__Repr{}
 
-func (_TypeInt__Repr) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (_TypeInt__Repr) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n *_TypeInt__Repr) LookupByString(key string) (ipld.Node, error) {
 	switch key {
@@ -31258,8 +31258,8 @@ func (na *_TypeInt__ReprAssembler) ConvertFrom(v ipld.Node) error {
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeInt.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeInt.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -31463,8 +31463,8 @@ var (
 var _ ipld.Node = (TypeLink)(&_TypeLink{})
 var _ schema.TypedNode = (TypeLink)(&_TypeLink{})
 
-func (TypeLink) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (TypeLink) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n TypeLink) LookupByString(key string) (ipld.Node, error) {
 	switch key {
@@ -31669,8 +31669,8 @@ func (na *_TypeLink__Assembler) ConvertFrom(v ipld.Node) error {
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeLink", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeLink", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -31873,8 +31873,8 @@ var (
 )
 var _ ipld.Node = &_TypeLink__Repr{}
 
-func (_TypeLink__Repr) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (_TypeLink__Repr) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n *_TypeLink__Repr) LookupByString(key string) (ipld.Node, error) {
 	switch key {
@@ -32085,8 +32085,8 @@ func (na *_TypeLink__ReprAssembler) ConvertFrom(v ipld.Node) error {
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeLink.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeLink.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -32330,8 +32330,8 @@ var (
 var _ ipld.Node = (TypeList)(&_TypeList{})
 var _ schema.TypedNode = (TypeList)(&_TypeList{})
 
-func (TypeList) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (TypeList) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n TypeList) LookupByString(key string) (ipld.Node, error) {
 	switch key {
@@ -32545,8 +32545,8 @@ func (na *_TypeList__Assembler) ConvertFrom(v ipld.Node) error {
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeList", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeList", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -32823,8 +32823,8 @@ var (
 )
 var _ ipld.Node = &_TypeList__Repr{}
 
-func (_TypeList__Repr) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (_TypeList__Repr) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n *_TypeList__Repr) LookupByString(key string) (ipld.Node, error) {
 	switch key {
@@ -33030,8 +33030,8 @@ func (na *_TypeList__ReprAssembler) ConvertFrom(v ipld.Node) error {
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeList.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeList.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -33346,8 +33346,8 @@ var (
 var _ ipld.Node = (TypeMap)(&_TypeMap{})
 var _ schema.TypedNode = (TypeMap)(&_TypeMap{})
 
-func (TypeMap) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (TypeMap) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n TypeMap) LookupByString(key string) (ipld.Node, error) {
 	switch key {
@@ -33569,8 +33569,8 @@ func (na *_TypeMap__Assembler) ConvertFrom(v ipld.Node) error {
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeMap", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeMap", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -33882,8 +33882,8 @@ var (
 )
 var _ ipld.Node = &_TypeMap__Repr{}
 
-func (_TypeMap__Repr) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (_TypeMap__Repr) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n *_TypeMap__Repr) LookupByString(key string) (ipld.Node, error) {
 	switch key {
@@ -34096,8 +34096,8 @@ func (na *_TypeMap__ReprAssembler) ConvertFrom(v ipld.Node) error {
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeMap.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeMap.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -34438,8 +34438,8 @@ func (m MaybeTypeName) Must() TypeName {
 var _ ipld.Node = (TypeName)(&_TypeName{})
 var _ schema.TypedNode = (TypeName)(&_TypeName{})
 
-func (TypeName) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_String
+func (TypeName) Kind() ipld.Kind {
+	return ipld.Kind_String
 }
 func (TypeName) LookupByString(string) (ipld.Node, error) {
 	return mixins.String{"schemadmt.TypeName"}.LookupByString("")
@@ -34658,8 +34658,8 @@ var (
 var _ ipld.Node = (TypeNameOrInlineDefn)(&_TypeNameOrInlineDefn{})
 var _ schema.TypedNode = (TypeNameOrInlineDefn)(&_TypeNameOrInlineDefn{})
 
-func (TypeNameOrInlineDefn) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (TypeNameOrInlineDefn) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n TypeNameOrInlineDefn) LookupByString(key string) (ipld.Node, error) {
 	switch key {
@@ -34872,8 +34872,8 @@ func (na *_TypeNameOrInlineDefn__Assembler) ConvertFrom(v ipld.Node) error {
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeNameOrInlineDefn", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeNameOrInlineDefn", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -35090,12 +35090,12 @@ type _TypeNameOrInlineDefn__Repr _TypeNameOrInlineDefn
 
 var _ ipld.Node = &_TypeNameOrInlineDefn__Repr{}
 
-func (n *_TypeNameOrInlineDefn__Repr) ReprKind() ipld.ReprKind {
+func (n *_TypeNameOrInlineDefn__Repr) Kind() ipld.Kind {
 	switch n.tag {
 	case 1:
-		return ipld.ReprKind_String
+		return ipld.Kind_String
 	case 2:
-		return ipld.ReprKind_Map
+		return ipld.Kind_Map
 	default:
 		panic("unreachable")
 	}
@@ -35105,7 +35105,7 @@ func (n *_TypeNameOrInlineDefn__Repr) LookupByString(key string) (ipld.Node, err
 	case 2:
 		return n.x2.Representation().LookupByString(key)
 	default:
-		return nil, ipld.ErrWrongKind{TypeName: "schemadmt.TypeNameOrInlineDefn.Repr", MethodName: "LookupByString", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: n.ReprKind()}
+		return nil, ipld.ErrWrongKind{TypeName: "schemadmt.TypeNameOrInlineDefn.Repr", MethodName: "LookupByString", AppropriateKind: ipld.KindSet_JustMap, ActualKind: n.Kind()}
 	}
 }
 func (n *_TypeNameOrInlineDefn__Repr) LookupByNode(key ipld.Node) (ipld.Node, error) {
@@ -35113,18 +35113,18 @@ func (n *_TypeNameOrInlineDefn__Repr) LookupByNode(key ipld.Node) (ipld.Node, er
 	case 2:
 		return n.x2.Representation().LookupByNode(key)
 	default:
-		return nil, ipld.ErrWrongKind{TypeName: "schemadmt.TypeNameOrInlineDefn.Repr", MethodName: "LookupByNode", AppropriateKind: ipld.ReprKindSet_Recursive, ActualKind: n.ReprKind()}
+		return nil, ipld.ErrWrongKind{TypeName: "schemadmt.TypeNameOrInlineDefn.Repr", MethodName: "LookupByNode", AppropriateKind: ipld.KindSet_Recursive, ActualKind: n.Kind()}
 	}
 }
 func (n *_TypeNameOrInlineDefn__Repr) LookupByIndex(idx int64) (ipld.Node, error) {
-	return nil, ipld.ErrWrongKind{TypeName: "schemadmt.TypeNameOrInlineDefn.Repr", MethodName: "LookupByIndex", AppropriateKind: ipld.ReprKindSet_JustList, ActualKind: n.ReprKind()}
+	return nil, ipld.ErrWrongKind{TypeName: "schemadmt.TypeNameOrInlineDefn.Repr", MethodName: "LookupByIndex", AppropriateKind: ipld.KindSet_JustList, ActualKind: n.Kind()}
 }
 func (n *_TypeNameOrInlineDefn__Repr) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	switch n.tag {
 	case 2:
 		return n.x2.Representation().LookupBySegment(seg)
 	default:
-		return nil, ipld.ErrWrongKind{TypeName: "schemadmt.TypeNameOrInlineDefn.Repr", MethodName: "LookupBySegment", AppropriateKind: ipld.ReprKindSet_Recursive, ActualKind: n.ReprKind()}
+		return nil, ipld.ErrWrongKind{TypeName: "schemadmt.TypeNameOrInlineDefn.Repr", MethodName: "LookupBySegment", AppropriateKind: ipld.KindSet_Recursive, ActualKind: n.Kind()}
 	}
 }
 func (n *_TypeNameOrInlineDefn__Repr) MapIterator() ipld.MapIterator {
@@ -35153,27 +35153,27 @@ func (n *_TypeNameOrInlineDefn__Repr) IsNull() bool {
 	return false
 }
 func (n *_TypeNameOrInlineDefn__Repr) AsBool() (bool, error) {
-	return false, ipld.ErrWrongKind{TypeName: "schemadmt.TypeNameOrInlineDefn.Repr", MethodName: "AsBool", AppropriateKind: ipld.ReprKindSet_JustBool, ActualKind: n.ReprKind()}
+	return false, ipld.ErrWrongKind{TypeName: "schemadmt.TypeNameOrInlineDefn.Repr", MethodName: "AsBool", AppropriateKind: ipld.KindSet_JustBool, ActualKind: n.Kind()}
 }
 func (n *_TypeNameOrInlineDefn__Repr) AsInt() (int64, error) {
-	return 0, ipld.ErrWrongKind{TypeName: "schemadmt.TypeNameOrInlineDefn.Repr", MethodName: "AsInt", AppropriateKind: ipld.ReprKindSet_JustInt, ActualKind: n.ReprKind()}
+	return 0, ipld.ErrWrongKind{TypeName: "schemadmt.TypeNameOrInlineDefn.Repr", MethodName: "AsInt", AppropriateKind: ipld.KindSet_JustInt, ActualKind: n.Kind()}
 }
 func (n *_TypeNameOrInlineDefn__Repr) AsFloat() (float64, error) {
-	return 0, ipld.ErrWrongKind{TypeName: "schemadmt.TypeNameOrInlineDefn.Repr", MethodName: "AsFloat", AppropriateKind: ipld.ReprKindSet_JustFloat, ActualKind: n.ReprKind()}
+	return 0, ipld.ErrWrongKind{TypeName: "schemadmt.TypeNameOrInlineDefn.Repr", MethodName: "AsFloat", AppropriateKind: ipld.KindSet_JustFloat, ActualKind: n.Kind()}
 }
 func (n *_TypeNameOrInlineDefn__Repr) AsString() (string, error) {
 	switch n.tag {
 	case 1:
 		return n.x1.Representation().AsString()
 	default:
-		return "", ipld.ErrWrongKind{TypeName: "schemadmt.TypeNameOrInlineDefn.Repr", MethodName: "AsString", AppropriateKind: ipld.ReprKindSet_JustString, ActualKind: n.ReprKind()}
+		return "", ipld.ErrWrongKind{TypeName: "schemadmt.TypeNameOrInlineDefn.Repr", MethodName: "AsString", AppropriateKind: ipld.KindSet_JustString, ActualKind: n.Kind()}
 	}
 }
 func (n *_TypeNameOrInlineDefn__Repr) AsBytes() ([]byte, error) {
-	return nil, ipld.ErrWrongKind{TypeName: "schemadmt.TypeNameOrInlineDefn.Repr", MethodName: "AsBytes", AppropriateKind: ipld.ReprKindSet_JustBytes, ActualKind: n.ReprKind()}
+	return nil, ipld.ErrWrongKind{TypeName: "schemadmt.TypeNameOrInlineDefn.Repr", MethodName: "AsBytes", AppropriateKind: ipld.KindSet_JustBytes, ActualKind: n.Kind()}
 }
 func (n *_TypeNameOrInlineDefn__Repr) AsLink() (ipld.Link, error) {
-	return nil, ipld.ErrWrongKind{TypeName: "schemadmt.TypeNameOrInlineDefn.Repr", MethodName: "AsLink", AppropriateKind: ipld.ReprKindSet_JustLink, ActualKind: n.ReprKind()}
+	return nil, ipld.ErrWrongKind{TypeName: "schemadmt.TypeNameOrInlineDefn.Repr", MethodName: "AsLink", AppropriateKind: ipld.KindSet_JustLink, ActualKind: n.Kind()}
 }
 func (_TypeNameOrInlineDefn__Repr) Prototype() ipld.NodePrototype {
 	return _TypeNameOrInlineDefn__ReprPrototype{}
@@ -35341,23 +35341,23 @@ func (na *_TypeNameOrInlineDefn__ReprAssembler) ConvertFrom(v ipld.Node) error {
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	switch v.ReprKind() {
-	case ipld.ReprKind_Bool:
+	switch v.Kind() {
+	case ipld.Kind_Bool:
 		v2, _ := v.AsBool()
 		return na.AssignBool(v2)
-	case ipld.ReprKind_Int:
+	case ipld.Kind_Int:
 		v2, _ := v.AsInt()
 		return na.AssignInt(v2)
-	case ipld.ReprKind_Float:
+	case ipld.Kind_Float:
 		v2, _ := v.AsFloat()
 		return na.AssignFloat(v2)
-	case ipld.ReprKind_String:
+	case ipld.Kind_String:
 		v2, _ := v.AsString()
 		return na.AssignString(v2)
-	case ipld.ReprKind_Bytes:
+	case ipld.Kind_Bytes:
 		v2, _ := v.AsBytes()
 		return na.AssignBytes(v2)
-	case ipld.ReprKind_Map:
+	case ipld.Kind_Map:
 		na, err := na.BeginMap(v.Length())
 		if err != nil {
 			return err
@@ -35376,7 +35376,7 @@ func (na *_TypeNameOrInlineDefn__ReprAssembler) ConvertFrom(v ipld.Node) error {
 			}
 		}
 		return na.Finish()
-	case ipld.ReprKind_List:
+	case ipld.Kind_List:
 		na, err := na.BeginList(v.Length())
 		if err != nil {
 			return err
@@ -35392,7 +35392,7 @@ func (na *_TypeNameOrInlineDefn__ReprAssembler) ConvertFrom(v ipld.Node) error {
 			}
 		}
 		return na.Finish()
-	case ipld.ReprKind_Link:
+	case ipld.Kind_Link:
 		v2, _ := v.AsLink()
 		return na.AssignLink(v2)
 	default:
@@ -35441,8 +35441,8 @@ var ()
 var _ ipld.Node = (TypeString)(&_TypeString{})
 var _ schema.TypedNode = (TypeString)(&_TypeString{})
 
-func (TypeString) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (TypeString) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n TypeString) LookupByString(key string) (ipld.Node, error) {
 	switch key {
@@ -35632,8 +35632,8 @@ func (na *_TypeString__Assembler) ConvertFrom(v ipld.Node) error {
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeString", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeString", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -35804,8 +35804,8 @@ type _TypeString__Repr _TypeString
 var ()
 var _ ipld.Node = &_TypeString__Repr{}
 
-func (_TypeString__Repr) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (_TypeString__Repr) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n *_TypeString__Repr) LookupByString(key string) (ipld.Node, error) {
 	switch key {
@@ -35990,8 +35990,8 @@ func (na *_TypeString__ReprAssembler) ConvertFrom(v ipld.Node) error {
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeString.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeString.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -36199,8 +36199,8 @@ var (
 var _ ipld.Node = (TypeStruct)(&_TypeStruct{})
 var _ schema.TypedNode = (TypeStruct)(&_TypeStruct{})
 
-func (TypeStruct) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (TypeStruct) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n TypeStruct) LookupByString(key string) (ipld.Node, error) {
 	switch key {
@@ -36406,8 +36406,8 @@ func (na *_TypeStruct__Assembler) ConvertFrom(v ipld.Node) error {
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeStruct", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeStruct", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -36649,8 +36649,8 @@ var (
 )
 var _ ipld.Node = &_TypeStruct__Repr{}
 
-func (_TypeStruct__Repr) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (_TypeStruct__Repr) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n *_TypeStruct__Repr) LookupByString(key string) (ipld.Node, error) {
 	switch key {
@@ -36849,8 +36849,8 @@ func (na *_TypeStruct__ReprAssembler) ConvertFrom(v ipld.Node) error {
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeStruct.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeStruct.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -37124,8 +37124,8 @@ var (
 var _ ipld.Node = (TypeUnion)(&_TypeUnion{})
 var _ schema.TypedNode = (TypeUnion)(&_TypeUnion{})
 
-func (TypeUnion) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (TypeUnion) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n TypeUnion) LookupByString(key string) (ipld.Node, error) {
 	switch key {
@@ -37331,8 +37331,8 @@ func (na *_TypeUnion__Assembler) ConvertFrom(v ipld.Node) error {
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeUnion", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeUnion", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -37574,8 +37574,8 @@ var (
 )
 var _ ipld.Node = &_TypeUnion__Repr{}
 
-func (_TypeUnion__Repr) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (_TypeUnion__Repr) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n *_TypeUnion__Repr) LookupByString(key string) (ipld.Node, error) {
 	switch key {
@@ -37774,8 +37774,8 @@ func (na *_TypeUnion__ReprAssembler) ConvertFrom(v ipld.Node) error {
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeUnion.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.TypeUnion.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -38065,8 +38065,8 @@ var (
 var _ ipld.Node = (UnionRepresentation)(&_UnionRepresentation{})
 var _ schema.TypedNode = (UnionRepresentation)(&_UnionRepresentation{})
 
-func (UnionRepresentation) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (UnionRepresentation) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n UnionRepresentation) LookupByString(key string) (ipld.Node, error) {
 	switch key {
@@ -38327,8 +38327,8 @@ func (na *_UnionRepresentation__Assembler) ConvertFrom(v ipld.Node) error {
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.UnionRepresentation", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.UnionRepresentation", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -38625,8 +38625,8 @@ var (
 )
 var _ ipld.Node = &_UnionRepresentation__Repr{}
 
-func (_UnionRepresentation__Repr) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (_UnionRepresentation__Repr) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n *_UnionRepresentation__Repr) LookupByString(key string) (ipld.Node, error) {
 	switch key {
@@ -38887,8 +38887,8 @@ func (na *_UnionRepresentation__ReprAssembler) ConvertFrom(v ipld.Node) error {
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.UnionRepresentation.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.UnionRepresentation.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -39211,8 +39211,8 @@ var (
 var _ ipld.Node = (UnionRepresentation_BytePrefix)(&_UnionRepresentation_BytePrefix{})
 var _ schema.TypedNode = (UnionRepresentation_BytePrefix)(&_UnionRepresentation_BytePrefix{})
 
-func (UnionRepresentation_BytePrefix) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (UnionRepresentation_BytePrefix) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n UnionRepresentation_BytePrefix) LookupByString(key string) (ipld.Node, error) {
 	switch key {
@@ -39410,8 +39410,8 @@ func (na *_UnionRepresentation_BytePrefix__Assembler) ConvertFrom(v ipld.Node) e
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.UnionRepresentation_BytePrefix", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.UnionRepresentation_BytePrefix", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -39618,8 +39618,8 @@ var (
 )
 var _ ipld.Node = &_UnionRepresentation_BytePrefix__Repr{}
 
-func (_UnionRepresentation_BytePrefix__Repr) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (_UnionRepresentation_BytePrefix__Repr) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n *_UnionRepresentation_BytePrefix__Repr) LookupByString(key string) (ipld.Node, error) {
 	switch key {
@@ -39811,8 +39811,8 @@ func (na *_UnionRepresentation_BytePrefix__ReprAssembler) ConvertFrom(v ipld.Nod
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.UnionRepresentation_BytePrefix.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.UnionRepresentation_BytePrefix.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -40057,8 +40057,8 @@ var (
 var _ ipld.Node = (UnionRepresentation_Envelope)(&_UnionRepresentation_Envelope{})
 var _ schema.TypedNode = (UnionRepresentation_Envelope)(&_UnionRepresentation_Envelope{})
 
-func (UnionRepresentation_Envelope) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (UnionRepresentation_Envelope) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n UnionRepresentation_Envelope) LookupByString(key string) (ipld.Node, error) {
 	switch key {
@@ -40272,8 +40272,8 @@ func (na *_UnionRepresentation_Envelope__Assembler) ConvertFrom(v ipld.Node) err
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.UnionRepresentation_Envelope", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.UnionRepresentation_Envelope", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -40550,8 +40550,8 @@ var (
 )
 var _ ipld.Node = &_UnionRepresentation_Envelope__Repr{}
 
-func (_UnionRepresentation_Envelope__Repr) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (_UnionRepresentation_Envelope__Repr) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n *_UnionRepresentation_Envelope__Repr) LookupByString(key string) (ipld.Node, error) {
 	switch key {
@@ -40757,8 +40757,8 @@ func (na *_UnionRepresentation_Envelope__ReprAssembler) ConvertFrom(v ipld.Node)
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.UnionRepresentation_Envelope.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.UnionRepresentation_Envelope.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -41065,8 +41065,8 @@ var (
 var _ ipld.Node = (UnionRepresentation_Inline)(&_UnionRepresentation_Inline{})
 var _ schema.TypedNode = (UnionRepresentation_Inline)(&_UnionRepresentation_Inline{})
 
-func (UnionRepresentation_Inline) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (UnionRepresentation_Inline) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n UnionRepresentation_Inline) LookupByString(key string) (ipld.Node, error) {
 	switch key {
@@ -41272,8 +41272,8 @@ func (na *_UnionRepresentation_Inline__Assembler) ConvertFrom(v ipld.Node) error
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.UnionRepresentation_Inline", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.UnionRepresentation_Inline", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -41515,8 +41515,8 @@ var (
 )
 var _ ipld.Node = &_UnionRepresentation_Inline__Repr{}
 
-func (_UnionRepresentation_Inline__Repr) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (_UnionRepresentation_Inline__Repr) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n *_UnionRepresentation_Inline__Repr) LookupByString(key string) (ipld.Node, error) {
 	switch key {
@@ -41715,8 +41715,8 @@ func (na *_UnionRepresentation_Inline__ReprAssembler) ConvertFrom(v ipld.Node) e
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.UnionRepresentation_Inline.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.UnionRepresentation_Inline.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -42022,8 +42022,8 @@ func (m MaybeUnionRepresentation_Keyed) Must() UnionRepresentation_Keyed {
 var _ ipld.Node = (UnionRepresentation_Keyed)(&_UnionRepresentation_Keyed{})
 var _ schema.TypedNode = (UnionRepresentation_Keyed)(&_UnionRepresentation_Keyed{})
 
-func (UnionRepresentation_Keyed) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (UnionRepresentation_Keyed) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n UnionRepresentation_Keyed) LookupByString(k string) (ipld.Node, error) {
 	var k2 _String
@@ -42223,8 +42223,8 @@ func (na *_UnionRepresentation_Keyed__Assembler) ConvertFrom(v ipld.Node) error 
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.UnionRepresentation_Keyed", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.UnionRepresentation_Keyed", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -42379,8 +42379,8 @@ type _UnionRepresentation_Keyed__Repr _UnionRepresentation_Keyed
 
 var _ ipld.Node = &_UnionRepresentation_Keyed__Repr{}
 
-func (_UnionRepresentation_Keyed__Repr) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (_UnionRepresentation_Keyed__Repr) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (nr *_UnionRepresentation_Keyed__Repr) LookupByString(k string) (ipld.Node, error) {
 	v, err := (UnionRepresentation_Keyed)(nr).LookupByString(k)
@@ -42565,8 +42565,8 @@ func (na *_UnionRepresentation_Keyed__ReprAssembler) ConvertFrom(v ipld.Node) er
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.UnionRepresentation_Keyed.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.UnionRepresentation_Keyed.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -42791,8 +42791,8 @@ func (m MaybeUnionRepresentation_Kinded) Must() UnionRepresentation_Kinded {
 var _ ipld.Node = (UnionRepresentation_Kinded)(&_UnionRepresentation_Kinded{})
 var _ schema.TypedNode = (UnionRepresentation_Kinded)(&_UnionRepresentation_Kinded{})
 
-func (UnionRepresentation_Kinded) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (UnionRepresentation_Kinded) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n UnionRepresentation_Kinded) LookupByString(k string) (ipld.Node, error) {
 	var k2 _RepresentationKind
@@ -42992,8 +42992,8 @@ func (na *_UnionRepresentation_Kinded__Assembler) ConvertFrom(v ipld.Node) error
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.UnionRepresentation_Kinded", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.UnionRepresentation_Kinded", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -43148,8 +43148,8 @@ type _UnionRepresentation_Kinded__Repr _UnionRepresentation_Kinded
 
 var _ ipld.Node = &_UnionRepresentation_Kinded__Repr{}
 
-func (_UnionRepresentation_Kinded__Repr) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (_UnionRepresentation_Kinded__Repr) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (nr *_UnionRepresentation_Kinded__Repr) LookupByString(k string) (ipld.Node, error) {
 	v, err := (UnionRepresentation_Kinded)(nr).LookupByString(k)
@@ -43334,8 +43334,8 @@ func (na *_UnionRepresentation_Kinded__ReprAssembler) ConvertFrom(v ipld.Node) e
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.UnionRepresentation_Kinded.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.UnionRepresentation_Kinded.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -43524,8 +43524,8 @@ var (
 var _ ipld.Node = (UnionRepresentation_StringPrefix)(&_UnionRepresentation_StringPrefix{})
 var _ schema.TypedNode = (UnionRepresentation_StringPrefix)(&_UnionRepresentation_StringPrefix{})
 
-func (UnionRepresentation_StringPrefix) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (UnionRepresentation_StringPrefix) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n UnionRepresentation_StringPrefix) LookupByString(key string) (ipld.Node, error) {
 	switch key {
@@ -43723,8 +43723,8 @@ func (na *_UnionRepresentation_StringPrefix__Assembler) ConvertFrom(v ipld.Node)
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.UnionRepresentation_StringPrefix", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.UnionRepresentation_StringPrefix", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -43931,8 +43931,8 @@ var (
 )
 var _ ipld.Node = &_UnionRepresentation_StringPrefix__Repr{}
 
-func (_UnionRepresentation_StringPrefix__Repr) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (_UnionRepresentation_StringPrefix__Repr) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n *_UnionRepresentation_StringPrefix__Repr) LookupByString(key string) (ipld.Node, error) {
 	switch key {
@@ -44124,8 +44124,8 @@ func (na *_UnionRepresentation_StringPrefix__ReprAssembler) ConvertFrom(v ipld.N
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.UnionRepresentation_StringPrefix.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.UnionRepresentation_StringPrefix.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -44356,8 +44356,8 @@ var ()
 var _ ipld.Node = (Unit)(&_Unit{})
 var _ schema.TypedNode = (Unit)(&_Unit{})
 
-func (Unit) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (Unit) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n Unit) LookupByString(key string) (ipld.Node, error) {
 	switch key {
@@ -44547,8 +44547,8 @@ func (na *_Unit__Assembler) ConvertFrom(v ipld.Node) error {
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.Unit", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.Unit", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -44719,8 +44719,8 @@ type _Unit__Repr _Unit
 var ()
 var _ ipld.Node = &_Unit__Repr{}
 
-func (_Unit__Repr) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Map
+func (_Unit__Repr) Kind() ipld.Kind {
+	return ipld.Kind_Map
 }
 func (n *_Unit__Repr) LookupByString(key string) (ipld.Node, error) {
 	switch key {
@@ -44905,8 +44905,8 @@ func (na *_Unit__ReprAssembler) ConvertFrom(v ipld.Node) error {
 		*na.m = schema.Maybe_Value
 		return nil
 	}
-	if v.ReprKind() != ipld.ReprKind_Map {
-		return ipld.ErrWrongKind{TypeName: "schemadmt.Unit.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_Map {
+		return ipld.ErrWrongKind{TypeName: "schemadmt.Unit.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {

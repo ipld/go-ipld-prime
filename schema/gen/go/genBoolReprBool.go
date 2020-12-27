@@ -52,7 +52,7 @@ func (g boolReprBoolReprGenerator) EmitNodeTypeAssertions(w io.Writer) {
 		var _ ipld.Node = &_{{ .Type | TypeSymbol }}__Repr{}
 	`, w, g.AdjCfg, g)
 }
-func (boolReprBoolReprGenerator) EmitNodeMethodReprKind(io.Writer)        {}
+func (boolReprBoolReprGenerator) EmitNodeMethodKind(io.Writer)            {}
 func (boolReprBoolReprGenerator) EmitNodeMethodLookupByString(io.Writer)  {}
 func (boolReprBoolReprGenerator) EmitNodeMethodLookupByNode(io.Writer)    {}
 func (boolReprBoolReprGenerator) EmitNodeMethodLookupByIndex(io.Writer)   {}
@@ -103,6 +103,6 @@ func (boolReprBoolReprBuilderGenerator) EmitNodeAssemblerMethodAssignFloat(io.Wr
 func (boolReprBoolReprBuilderGenerator) EmitNodeAssemblerMethodAssignString(io.Writer) {}
 func (boolReprBoolReprBuilderGenerator) EmitNodeAssemblerMethodAssignBytes(io.Writer)  {}
 func (boolReprBoolReprBuilderGenerator) EmitNodeAssemblerMethodAssignLink(io.Writer)   {}
-func (boolReprBoolReprBuilderGenerator) EmitNodeAssemblerMethodConvertFrom(io.Writer)   {}
+func (boolReprBoolReprBuilderGenerator) EmitNodeAssemblerMethodConvertFrom(io.Writer)  {}
 func (boolReprBoolReprBuilderGenerator) EmitNodeAssemblerMethodPrototype(io.Writer)    {}
 func (boolReprBoolReprBuilderGenerator) EmitNodeAssemblerOtherBits(io.Writer)          {}

@@ -7,7 +7,7 @@ import (
 	"github.com/ipld/go-ipld-prime/schema/gen/go/mixins"
 )
 
-var _ TypeGenerator = &unionReprKindedGenerator{}
+var _ TypeGenerator = &unionKindedGenerator{}
 
 // Kinded union representations are quite wild: their behavior varies almost completely per inhabitant,
 //  and their implementation is generally delegating directly to something else,
@@ -18,8 +18,8 @@ var _ TypeGenerator = &unionReprKindedGenerator{}
 //  this depends on whether the error is an ErrWrongKind that was found while checking the method for appropriateness on the union's inhabitant
 //  versus if the error came from the union inhabitant itself after delegation occured.
 
-func NewUnionReprKindedGenerator(pkgName string, typ *schema.TypeUnion, adjCfg *AdjunctCfg) TypeGenerator {
-	return unionReprKindedGenerator{
+func NewUnionKindedGenerator(pkgName string, typ *schema.TypeUnion, adjCfg *AdjunctCfg) TypeGenerator {
+	return unionKindedGenerator{
 		unionGenerator{
 			adjCfg,
 			mixins.MapTraits{
@@ -33,19 +33,19 @@ func NewUnionReprKindedGenerator(pkgName string, typ *schema.TypeUnion, adjCfg *
 	}
 }
 
-type unionReprKindedGenerator struct {
+type unionKindedGenerator struct {
 	unionGenerator
 }
 
-func (g unionReprKindedGenerator) GetRepresentationNodeGen() NodeGenerator {
-	return unionReprKindedReprGenerator{
+func (g unionKindedGenerator) GetRepresentationNodeGen() NodeGenerator {
+	return unionKindedReprGenerator{
 		g.AdjCfg,
 		g.PkgName,
 		g.Type,
 	}
 }
 
-type unionReprKindedReprGenerator struct {
+type unionKindedReprGenerator struct {
 	// Note that there's no MapTraits (or any other FooTraits) mixin in this one!
 	//  This is no accident: *None* of them apply!
 
@@ -54,24 +54,24 @@ type unionReprKindedReprGenerator struct {
 	Type    *schema.TypeUnion
 }
 
-func (unionReprKindedReprGenerator) IsRepr() bool { return true } // hint used in some generalized templates.
+func (unionKindedReprGenerator) IsRepr() bool { return true } // hint used in some generalized templates.
 
-func (g unionReprKindedReprGenerator) EmitNodeType(w io.Writer) {
+func (g unionKindedReprGenerator) EmitNodeType(w io.Writer) {
 	// The type is structurally the same, but will have a different set of methods.
 	doTemplate(`
 		type _{{ .Type | TypeSymbol }}__Repr _{{ .Type | TypeSymbol }}
 	`, w, g.AdjCfg, g)
 }
 
-func (g unionReprKindedReprGenerator) EmitNodeTypeAssertions(w io.Writer) {
+func (g unionKindedReprGenerator) EmitNodeTypeAssertions(w io.Writer) {
 	doTemplate(`
 		var _ ipld.Node = &_{{ .Type | TypeSymbol }}__Repr{}
 	`, w, g.AdjCfg, g)
 }
 
-func (g unionReprKindedReprGenerator) EmitNodeMethodReprKind(w io.Writer) {
+func (g unionKindedReprGenerator) EmitNodeMethodKind(w io.Writer) {
 	doTemplate(`
-		func (n *_{{ .Type | TypeSymbol }}__Repr) ReprKind() ipld.ReprKind {
+		func (n *_{{ .Type | TypeSymbol }}__Repr) Kind() ipld.Kind {
 			{{- if (eq (.AdjCfg.UnionMemlayout .Type) "embedAll") }}
 			switch n.tag {
 			{{- range $i, $member := .Type.Members }}
@@ -115,7 +115,7 @@ func kindedUnionNodeMethodTemplateMunge(
 
 	errorClause := `return ` + nopeSentinel
 	if !nopeSentinelOnly {
-		errorClause += `, ipld.ErrWrongKind{TypeName: "{{ .PkgName }}.{{ .Type.Name }}.Repr", MethodName: "` + methodName + `", AppropriateKind: ` + appropriateKind + `, ActualKind: n.ReprKind()}`
+		errorClause += `, ipld.ErrWrongKind{TypeName: "{{ .PkgName }}.{{ .Type.Name }}.Repr", MethodName: "` + methodName + `", AppropriateKind: ` + appropriateKind + `, ActualKind: n.Kind()}`
 	}
 	return `
 		func (n *_{{ .Type | TypeSymbol }}__Repr) ` + methodSig + ` {
@@ -147,98 +147,98 @@ func kindedUnionNodeMethodTemplateMunge(
 	`
 }
 
-func (g unionReprKindedReprGenerator) EmitNodeMethodLookupByString(w io.Writer) {
+func (g unionKindedReprGenerator) EmitNodeMethodLookupByString(w io.Writer) {
 	doTemplate(kindedUnionNodeMethodTemplateMunge(
 		`LookupByString`,
 		`LookupByString(key string) (ipld.Node, error)`,
 		`{{- if .Type.RepresentationStrategy.GetMember (Kind "map") }}`,
 		`{{- if eq $member.RepresentationBehavior.String "map" }}`,
 		`.LookupByString(key)`,
-		`ipld.ReprKindSet_JustMap`,
+		`ipld.KindSet_JustMap`,
 		`nil`,
 		false,
 	), w, g.AdjCfg, g)
 }
 
-func (g unionReprKindedReprGenerator) EmitNodeMethodLookupByIndex(w io.Writer) {
+func (g unionKindedReprGenerator) EmitNodeMethodLookupByIndex(w io.Writer) {
 	doTemplate(kindedUnionNodeMethodTemplateMunge(
 		`LookupByIndex`,
 		`LookupByIndex(idx int64) (ipld.Node, error)`,
 		`{{- if .Type.RepresentationStrategy.GetMember (Kind "list") }}`,
 		`{{- if eq $member.RepresentationBehavior.String "list" }}`,
 		`.LookupByIndex(idx)`,
-		`ipld.ReprKindSet_JustList`,
+		`ipld.KindSet_JustList`,
 		`nil`,
 		false,
 	), w, g.AdjCfg, g)
 }
 
-func (g unionReprKindedReprGenerator) EmitNodeMethodLookupByNode(w io.Writer) {
+func (g unionKindedReprGenerator) EmitNodeMethodLookupByNode(w io.Writer) {
 	doTemplate(kindedUnionNodeMethodTemplateMunge(
 		`LookupByNode`,
 		`LookupByNode(key ipld.Node) (ipld.Node, error)`,
 		`{{- if or (.Type.RepresentationStrategy.GetMember (Kind "map")) (.Type.RepresentationStrategy.GetMember (Kind "list")) }}`,
 		`{{- if or (eq $member.RepresentationBehavior.String "map") (eq $member.RepresentationBehavior.String "list") }}`,
 		`.LookupByNode(key)`,
-		`ipld.ReprKindSet_Recursive`,
+		`ipld.KindSet_Recursive`,
 		`nil`,
 		false,
 	), w, g.AdjCfg, g)
 }
 
-func (g unionReprKindedReprGenerator) EmitNodeMethodLookupBySegment(w io.Writer) {
+func (g unionKindedReprGenerator) EmitNodeMethodLookupBySegment(w io.Writer) {
 	doTemplate(kindedUnionNodeMethodTemplateMunge(
 		`LookupBySegment`,
 		`LookupBySegment(seg ipld.PathSegment) (ipld.Node, error)`,
 		`{{- if or (.Type.RepresentationStrategy.GetMember (Kind "map")) (.Type.RepresentationStrategy.GetMember (Kind "list")) }}`,
 		`{{- if or (eq $member.RepresentationBehavior.String "map") (eq $member.RepresentationBehavior.String "list") }}`,
 		`.LookupBySegment(seg)`,
-		`ipld.ReprKindSet_Recursive`,
+		`ipld.KindSet_Recursive`,
 		`nil`,
 		false,
 	), w, g.AdjCfg, g)
 }
 
-func (g unionReprKindedReprGenerator) EmitNodeMethodMapIterator(w io.Writer) {
+func (g unionKindedReprGenerator) EmitNodeMethodMapIterator(w io.Writer) {
 	doTemplate(kindedUnionNodeMethodTemplateMunge(
 		`MapIterator`,
 		`MapIterator() ipld.MapIterator`,
 		`{{- if .Type.RepresentationStrategy.GetMember (Kind "map") }}`,
 		`{{- if eq $member.RepresentationBehavior.String "map" }}`,
 		`.MapIterator()`,
-		`ipld.ReprKindSet_JustMap`,
+		`ipld.KindSet_JustMap`,
 		`nil`,
 		true,
 	), w, g.AdjCfg, g)
 }
 
-func (g unionReprKindedReprGenerator) EmitNodeMethodListIterator(w io.Writer) {
+func (g unionKindedReprGenerator) EmitNodeMethodListIterator(w io.Writer) {
 	doTemplate(kindedUnionNodeMethodTemplateMunge(
 		`ListIterator`,
 		`ListIterator() ipld.ListIterator`,
 		`{{- if .Type.RepresentationStrategy.GetMember (Kind "list") }}`,
 		`{{- if eq $member.RepresentationBehavior.String "list" }}`,
 		`.ListIterator()`,
-		`ipld.ReprKindSet_JustList`,
+		`ipld.KindSet_JustList`,
 		`nil`,
 		true,
 	), w, g.AdjCfg, g)
 }
 
-func (g unionReprKindedReprGenerator) EmitNodeMethodLength(w io.Writer) {
+func (g unionKindedReprGenerator) EmitNodeMethodLength(w io.Writer) {
 	doTemplate(kindedUnionNodeMethodTemplateMunge(
 		`Length`,
 		`Length() int64`,
 		`{{- if or (.Type.RepresentationStrategy.GetMember (Kind "map")) (.Type.RepresentationStrategy.GetMember (Kind "list")) }}`,
 		`{{- if or (eq $member.RepresentationBehavior.String "map") (eq $member.RepresentationBehavior.String "list") }}`,
 		`.Length()`,
-		`ipld.ReprKindSet_Recursive`,
+		`ipld.KindSet_Recursive`,
 		`-1`,
 		true,
 	), w, g.AdjCfg, g)
 }
 
-func (g unionReprKindedReprGenerator) EmitNodeMethodIsAbsent(w io.Writer) {
+func (g unionKindedReprGenerator) EmitNodeMethodIsAbsent(w io.Writer) {
 	doTemplate(`
 		func (n *_{{ .Type | TypeSymbol }}__Repr) IsAbsent() bool {
 			return false
@@ -246,7 +246,7 @@ func (g unionReprKindedReprGenerator) EmitNodeMethodIsAbsent(w io.Writer) {
 	`, w, g.AdjCfg, g)
 }
 
-func (g unionReprKindedReprGenerator) EmitNodeMethodIsNull(w io.Writer) {
+func (g unionKindedReprGenerator) EmitNodeMethodIsNull(w io.Writer) {
 	doTemplate(`
 		func (n *_{{ .Type | TypeSymbol }}__Repr) IsNull() bool {
 			return false
@@ -254,117 +254,117 @@ func (g unionReprKindedReprGenerator) EmitNodeMethodIsNull(w io.Writer) {
 	`, w, g.AdjCfg, g)
 }
 
-func (g unionReprKindedReprGenerator) EmitNodeMethodAsBool(w io.Writer) {
+func (g unionKindedReprGenerator) EmitNodeMethodAsBool(w io.Writer) {
 	doTemplate(kindedUnionNodeMethodTemplateMunge(
 		`AsBool`,
 		`AsBool() (bool, error)`,
 		`{{- if .Type.RepresentationStrategy.GetMember (Kind "bool") }}`,
 		`{{- if eq $member.RepresentationBehavior.String "bool" }}`,
 		`.AsBool()`,
-		`ipld.ReprKindSet_JustBool`,
+		`ipld.KindSet_JustBool`,
 		`false`,
 		false,
 	), w, g.AdjCfg, g)
 }
 
-func (g unionReprKindedReprGenerator) EmitNodeMethodAsInt(w io.Writer) {
+func (g unionKindedReprGenerator) EmitNodeMethodAsInt(w io.Writer) {
 	doTemplate(kindedUnionNodeMethodTemplateMunge(
 		`AsInt`,
 		`AsInt() (int64, error)`,
 		`{{- if .Type.RepresentationStrategy.GetMember (Kind "int") }}`,
 		`{{- if eq $member.RepresentationBehavior.String "int" }}`,
 		`.AsInt()`,
-		`ipld.ReprKindSet_JustInt`,
+		`ipld.KindSet_JustInt`,
 		`0`,
 		false,
 	), w, g.AdjCfg, g)
 }
 
-func (g unionReprKindedReprGenerator) EmitNodeMethodAsFloat(w io.Writer) {
+func (g unionKindedReprGenerator) EmitNodeMethodAsFloat(w io.Writer) {
 	doTemplate(kindedUnionNodeMethodTemplateMunge(
 		`AsFloat`,
 		`AsFloat() (float64, error)`,
 		`{{- if .Type.RepresentationStrategy.GetMember (Kind "float") }}`,
 		`{{- if eq $member.RepresentationBehavior.String "float" }}`,
 		`.AsFloat()`,
-		`ipld.ReprKindSet_JustFloat`,
+		`ipld.KindSet_JustFloat`,
 		`0`,
 		false,
 	), w, g.AdjCfg, g)
 }
 
-func (g unionReprKindedReprGenerator) EmitNodeMethodAsString(w io.Writer) {
+func (g unionKindedReprGenerator) EmitNodeMethodAsString(w io.Writer) {
 	doTemplate(kindedUnionNodeMethodTemplateMunge(
 		`AsString`,
 		`AsString() (string, error)`,
 		`{{- if .Type.RepresentationStrategy.GetMember (Kind "string") }}`,
 		`{{- if eq $member.RepresentationBehavior.String "string" }}`,
 		`.AsString()`,
-		`ipld.ReprKindSet_JustString`,
+		`ipld.KindSet_JustString`,
 		`""`,
 		false,
 	), w, g.AdjCfg, g)
 }
 
-func (g unionReprKindedReprGenerator) EmitNodeMethodAsBytes(w io.Writer) {
+func (g unionKindedReprGenerator) EmitNodeMethodAsBytes(w io.Writer) {
 	doTemplate(kindedUnionNodeMethodTemplateMunge(
 		`AsBytes`,
 		`AsBytes() ([]byte, error)`,
 		`{{- if .Type.RepresentationStrategy.GetMember (Kind "bytes") }}`,
 		`{{- if eq $member.RepresentationBehavior.String "bytes" }}`,
 		`.AsBytes()`,
-		`ipld.ReprKindSet_JustBytes`,
+		`ipld.KindSet_JustBytes`,
 		`nil`,
 		false,
 	), w, g.AdjCfg, g)
 }
 
-func (g unionReprKindedReprGenerator) EmitNodeMethodAsLink(w io.Writer) {
+func (g unionKindedReprGenerator) EmitNodeMethodAsLink(w io.Writer) {
 	doTemplate(kindedUnionNodeMethodTemplateMunge(
 		`AsLink`,
 		`AsLink() (ipld.Link, error)`,
 		`{{- if .Type.RepresentationStrategy.GetMember (Kind "link") }}`,
 		`{{- if eq $member.RepresentationBehavior.String "link" }}`,
 		`.AsLink()`,
-		`ipld.ReprKindSet_JustLink`,
+		`ipld.KindSet_JustLink`,
 		`nil`,
 		false,
 	), w, g.AdjCfg, g)
 }
 
-func (g unionReprKindedReprGenerator) EmitNodeMethodPrototype(w io.Writer) {
+func (g unionKindedReprGenerator) EmitNodeMethodPrototype(w io.Writer) {
 	emitNodeMethodPrototype_typical(w, g.AdjCfg, g)
 }
 
-func (g unionReprKindedReprGenerator) EmitNodePrototypeType(w io.Writer) {
+func (g unionKindedReprGenerator) EmitNodePrototypeType(w io.Writer) {
 	emitNodePrototypeType_typical(w, g.AdjCfg, g)
 }
 
 // --- NodeBuilder and NodeAssembler --->
 
-func (g unionReprKindedReprGenerator) GetNodeBuilderGenerator() NodeBuilderGenerator {
-	return unionReprKindedReprBuilderGenerator{
+func (g unionKindedReprGenerator) GetNodeBuilderGenerator() NodeBuilderGenerator {
+	return unionKindedReprBuilderGenerator{
 		g.AdjCfg,
 		g.PkgName,
 		g.Type,
 	}
 }
 
-type unionReprKindedReprBuilderGenerator struct {
+type unionKindedReprBuilderGenerator struct {
 	AdjCfg  *AdjunctCfg
 	PkgName string
 	Type    *schema.TypeUnion
 }
 
-func (unionReprKindedReprBuilderGenerator) IsRepr() bool { return true } // hint used in some generalized templates.
+func (unionKindedReprBuilderGenerator) IsRepr() bool { return true } // hint used in some generalized templates.
 
-func (g unionReprKindedReprBuilderGenerator) EmitNodeBuilderType(w io.Writer) {
+func (g unionKindedReprBuilderGenerator) EmitNodeBuilderType(w io.Writer) {
 	emitEmitNodeBuilderType_typical(w, g.AdjCfg, g)
 }
-func (g unionReprKindedReprBuilderGenerator) EmitNodeBuilderMethods(w io.Writer) {
+func (g unionKindedReprBuilderGenerator) EmitNodeBuilderMethods(w io.Writer) {
 	emitNodeBuilderMethods_typical(w, g.AdjCfg, g)
 }
-func (g unionReprKindedReprBuilderGenerator) EmitNodeAssemblerType(w io.Writer) {
+func (g unionKindedReprBuilderGenerator) EmitNodeAssemblerType(w io.Writer) {
 	// Much of this is familiar: the 'w', the 'm' are all as usual.
 	// Some things may look a little odd here compared to all other assemblers:
 	//  we're kinda halfway between what's conventionally seen for a scalar and what's conventionally seen for a recursive.
@@ -460,7 +460,7 @@ func kindedUnionNodeAssemblerMethodTemplateMunge(
 	`
 }
 
-func (g unionReprKindedReprBuilderGenerator) EmitNodeAssemblerMethodBeginMap(w io.Writer) {
+func (g unionKindedReprBuilderGenerator) EmitNodeAssemblerMethodBeginMap(w io.Writer) {
 	doTemplate(kindedUnionNodeAssemblerMethodTemplateMunge(
 		`BeginMap`,
 		`BeginMap(sizeHint int64) (ipld.MapAssembler, error)`,
@@ -469,7 +469,7 @@ func (g unionReprKindedReprBuilderGenerator) EmitNodeAssemblerMethodBeginMap(w i
 		true,
 	), w, g.AdjCfg, g)
 }
-func (g unionReprKindedReprBuilderGenerator) EmitNodeAssemblerMethodBeginList(w io.Writer) {
+func (g unionKindedReprBuilderGenerator) EmitNodeAssemblerMethodBeginList(w io.Writer) {
 	doTemplate(kindedUnionNodeAssemblerMethodTemplateMunge(
 		`BeginList`,
 		`BeginList(sizeHint int64) (ipld.ListAssembler, error)`,
@@ -478,7 +478,7 @@ func (g unionReprKindedReprBuilderGenerator) EmitNodeAssemblerMethodBeginList(w 
 		true,
 	), w, g.AdjCfg, g)
 }
-func (g unionReprKindedReprBuilderGenerator) EmitNodeAssemblerMethodAssignNull(w io.Writer) {
+func (g unionKindedReprBuilderGenerator) EmitNodeAssemblerMethodAssignNull(w io.Writer) {
 	// TODO: I think this may need some special handling to account for if our union is itself used in a nullable circumstance; that should overrule this behavior.
 	doTemplate(kindedUnionNodeAssemblerMethodTemplateMunge(
 		`AssignNull`,
@@ -488,7 +488,7 @@ func (g unionReprKindedReprBuilderGenerator) EmitNodeAssemblerMethodAssignNull(w
 		false,
 	), w, g.AdjCfg, g)
 }
-func (g unionReprKindedReprBuilderGenerator) EmitNodeAssemblerMethodAssignBool(w io.Writer) {
+func (g unionKindedReprBuilderGenerator) EmitNodeAssemblerMethodAssignBool(w io.Writer) {
 	doTemplate(kindedUnionNodeAssemblerMethodTemplateMunge(
 		`AssignBool`,
 		`AssignBool(v bool) error `,
@@ -497,7 +497,7 @@ func (g unionReprKindedReprBuilderGenerator) EmitNodeAssemblerMethodAssignBool(w
 		false,
 	), w, g.AdjCfg, g)
 }
-func (g unionReprKindedReprBuilderGenerator) EmitNodeAssemblerMethodAssignInt(w io.Writer) {
+func (g unionKindedReprBuilderGenerator) EmitNodeAssemblerMethodAssignInt(w io.Writer) {
 	doTemplate(kindedUnionNodeAssemblerMethodTemplateMunge(
 		`AssignInt`,
 		`AssignInt(v int64) error `,
@@ -506,7 +506,7 @@ func (g unionReprKindedReprBuilderGenerator) EmitNodeAssemblerMethodAssignInt(w 
 		false,
 	), w, g.AdjCfg, g)
 }
-func (g unionReprKindedReprBuilderGenerator) EmitNodeAssemblerMethodAssignFloat(w io.Writer) {
+func (g unionKindedReprBuilderGenerator) EmitNodeAssemblerMethodAssignFloat(w io.Writer) {
 	doTemplate(kindedUnionNodeAssemblerMethodTemplateMunge(
 		`AssignFloat`,
 		`AssignFloat(v float64) error `,
@@ -515,7 +515,7 @@ func (g unionReprKindedReprBuilderGenerator) EmitNodeAssemblerMethodAssignFloat(
 		false,
 	), w, g.AdjCfg, g)
 }
-func (g unionReprKindedReprBuilderGenerator) EmitNodeAssemblerMethodAssignString(w io.Writer) {
+func (g unionKindedReprBuilderGenerator) EmitNodeAssemblerMethodAssignString(w io.Writer) {
 	doTemplate(kindedUnionNodeAssemblerMethodTemplateMunge(
 		`AssignString`,
 		`AssignString(v string) error `,
@@ -524,7 +524,7 @@ func (g unionReprKindedReprBuilderGenerator) EmitNodeAssemblerMethodAssignString
 		false,
 	), w, g.AdjCfg, g)
 }
-func (g unionReprKindedReprBuilderGenerator) EmitNodeAssemblerMethodAssignBytes(w io.Writer) {
+func (g unionKindedReprBuilderGenerator) EmitNodeAssemblerMethodAssignBytes(w io.Writer) {
 	doTemplate(kindedUnionNodeAssemblerMethodTemplateMunge(
 		`AssignBytes`,
 		`AssignBytes(v []byte) error `,
@@ -533,7 +533,7 @@ func (g unionReprKindedReprBuilderGenerator) EmitNodeAssemblerMethodAssignBytes(
 		false,
 	), w, g.AdjCfg, g)
 }
-func (g unionReprKindedReprBuilderGenerator) EmitNodeAssemblerMethodAssignLink(w io.Writer) {
+func (g unionKindedReprBuilderGenerator) EmitNodeAssemblerMethodAssignLink(w io.Writer) {
 	doTemplate(kindedUnionNodeAssemblerMethodTemplateMunge(
 		`AssignLink`,
 		`AssignLink(v ipld.Link) error `,
@@ -542,7 +542,7 @@ func (g unionReprKindedReprBuilderGenerator) EmitNodeAssemblerMethodAssignLink(w
 		false,
 	), w, g.AdjCfg, g)
 }
-func (g unionReprKindedReprBuilderGenerator) EmitNodeAssemblerMethodConvertFrom(w io.Writer) {
+func (g unionKindedReprBuilderGenerator) EmitNodeAssemblerMethodConvertFrom(w io.Writer) {
 	// This is a very mundane ConvertFrom: it just calls out to the other methods on this type.
 	//  However, even that is a little more exciting than usual: because we can't *necessarily* reject any kind of arg,
 	//   we have the whole barrage of switch cases here.  We then leave any particular rejections to those methods.
@@ -573,23 +573,23 @@ func (g unionReprKindedReprBuilderGenerator) EmitNodeAssemblerMethodConvertFrom(
 				*na.m = schema.Maybe_Value
 				return nil
 			}
-			switch v.ReprKind() {
-			case ipld.ReprKind_Bool:
+			switch v.Kind() {
+			case ipld.Kind_Bool:
 				v2, _ := v.AsBool()
 				return na.AssignBool(v2)
-			case ipld.ReprKind_Int:
+			case ipld.Kind_Int:
 				v2, _ := v.AsInt()
 				return na.AssignInt(v2)
-			case ipld.ReprKind_Float:
+			case ipld.Kind_Float:
 				v2, _ := v.AsFloat()
 				return na.AssignFloat(v2)
-			case ipld.ReprKind_String:
+			case ipld.Kind_String:
 				v2, _ := v.AsString()
 				return na.AssignString(v2)
-			case ipld.ReprKind_Bytes:
+			case ipld.Kind_Bytes:
 				v2, _ := v.AsBytes()
 				return na.AssignBytes(v2)
-			case ipld.ReprKind_Map:
+			case ipld.Kind_Map:
 				na, err := na.BeginMap(v.Length())
 				if err != nil {
 					return err
@@ -608,7 +608,7 @@ func (g unionReprKindedReprBuilderGenerator) EmitNodeAssemblerMethodConvertFrom(
 					}
 				}
 				return na.Finish()
-			case ipld.ReprKind_List:
+			case ipld.Kind_List:
 				na, err := na.BeginList(v.Length())
 				if err != nil {
 					return err
@@ -624,7 +624,7 @@ func (g unionReprKindedReprBuilderGenerator) EmitNodeAssemblerMethodConvertFrom(
 					}
 				}
 				return na.Finish()
-			case ipld.ReprKind_Link:
+			case ipld.Kind_Link:
 				v2, _ := v.AsLink()
 				return na.AssignLink(v2)
 			default:
@@ -633,13 +633,13 @@ func (g unionReprKindedReprBuilderGenerator) EmitNodeAssemblerMethodConvertFrom(
 		}
 	`, w, g.AdjCfg, g)
 }
-func (g unionReprKindedReprBuilderGenerator) EmitNodeAssemblerMethodPrototype(w io.Writer) {
+func (g unionKindedReprBuilderGenerator) EmitNodeAssemblerMethodPrototype(w io.Writer) {
 	doTemplate(`
 		func (na *_{{ .Type | TypeSymbol }}__ReprAssembler) Prototype() ipld.NodePrototype {
 			return _{{ .Type | TypeSymbol }}__ReprPrototype{}
 		}
 	`, w, g.AdjCfg, g)
 }
-func (g unionReprKindedReprBuilderGenerator) EmitNodeAssemblerOtherBits(w io.Writer) {
+func (g unionKindedReprBuilderGenerator) EmitNodeAssemblerOtherBits(w io.Writer) {
 	// somewhat shockingly: nothing.
 }

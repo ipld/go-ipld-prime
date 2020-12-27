@@ -89,7 +89,7 @@ func (cfg *AdjunctCfg) MaybeUsesPtr(t schema.Type) bool {
 // This should probably be improved in type-safety,
 // and validated more aggressively up front when adjcfg is loaded.
 func (cfg *AdjunctCfg) UnionMemlayout(t schema.Type) string {
-	if t.Kind() != schema.Kind_Union {
+	if t.TypeKind() != schema.TypeKind_Union {
 		panic(fmt.Errorf("%s is not a union!", t.Name()))
 	}
 	v, ok := cfg.CfgUnionMemlayout[t.Name()]

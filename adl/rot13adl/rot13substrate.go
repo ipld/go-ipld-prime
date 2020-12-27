@@ -30,8 +30,8 @@ type _Substrate _R13String
 //  and I'm not sure what, if any, suffix actually makes meaningful sense to a user either.
 //  I added the segment ".internal." to the middle of the name mangle; does this seem helpful?
 
-func (*_Substrate) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_String
+func (*_Substrate) Kind() ipld.Kind {
+	return ipld.Kind_String
 }
 func (*_Substrate) LookupByString(string) (ipld.Node, error) {
 	return mixins.String{TypeName: "rot13adl.internal.Substrate"}.LookupByString("")

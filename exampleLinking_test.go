@@ -110,7 +110,7 @@ func ExampleLoadingLink() {
 	n := nb.Build()
 
 	// Tada!  We have the data as node that we can traverse and use as desired.
-	fmt.Printf("we loaded a %s with %d entries\n", n.ReprKind(), n.Length())
+	fmt.Printf("we loaded a %s with %d entries\n", n.Kind(), n.Length())
 
 	// Output:
 	// we loaded a map with 1 entries

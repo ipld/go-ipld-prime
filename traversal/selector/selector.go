@@ -32,7 +32,7 @@ func ParseSelector(n ipld.Node) (Selector, error) {
 
 // ParseSelector creates a Selector from an IPLD Selector Node with the given context
 func (pc ParseContext) ParseSelector(n ipld.Node) (Selector, error) {
-	if n.ReprKind() != ipld.ReprKind_Map {
+	if n.Kind() != ipld.Kind_Map {
 		return nil, fmt.Errorf("selector spec parse rejected: selector is a keyed union and thus must be a map")
 	}
 	if n.Length() != 1 {
@@ -82,7 +82,7 @@ type SegmentIterator interface {
 
 // NewSegmentIterator generates a new iterator based on the node type
 func NewSegmentIterator(n ipld.Node) SegmentIterator {
-	if n.ReprKind() == ipld.ReprKind_List {
+	if n.Kind() == ipld.Kind_List {
 		return listSegmentIterator{n.ListIterator()}
 	}
 	return mapSegmentIterator{n.MapIterator()}

@@ -33,20 +33,20 @@ func (t *TypeEnum) TypeSystem() *TypeSystem {
 	return t.ts
 }
 
-func (TypeEnum) Kind() Kind {
-	return Kind_Struct
+func (TypeEnum) TypeKind() TypeKind {
+	return TypeKind_Struct
 }
 
 func (t *TypeEnum) Name() TypeName {
 	return t.name
 }
 
-func (t TypeEnum) RepresentationBehavior() ipld.ReprKind {
+func (t TypeEnum) RepresentationBehavior() ipld.Kind {
 	switch t.dmt.FieldRepresentation().AsInterface().(type) {
 	case schemadmt.EnumRepresentation_String:
-		return ipld.ReprKind_String
+		return ipld.Kind_String
 	case schemadmt.EnumRepresentation_Int:
-		return ipld.ReprKind_Int
+		return ipld.Kind_Int
 	default:
 		panic("unreachable")
 	}

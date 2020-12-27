@@ -28,11 +28,11 @@ type kindTraitsGenerator struct {
 	PkgName    string
 	TypeName   string // as will be printed in messages (e.g. can be goosed up a bit, like "Thing.Repr" instead of "_Thing__Repr").
 	TypeSymbol string // the identifier in code (sometimes is munged internals like "_Thing__Repr" corresponding to no publicly admitted schema.Type.Name).
-	Kind       ipld.ReprKind
+	Kind   ipld.Kind
 }
 
 func (g kindTraitsGenerator) emitNodeMethodLookupByString(w io.Writer) {
-	if ipld.ReprKindSet_JustMap.Contains(g.Kind) {
+	if ipld.KindSet_JustMap.Contains(g.Kind) {
 		panic("gen internals error: you should've overriden this")
 	}
 	doTemplate(`
@@ -43,7 +43,7 @@ func (g kindTraitsGenerator) emitNodeMethodLookupByString(w io.Writer) {
 }
 
 func (g kindTraitsGenerator) emitNodeMethodLookupByNode(w io.Writer) {
-	if ipld.ReprKindSet_JustMap.Contains(g.Kind) {
+	if ipld.KindSet_JustMap.Contains(g.Kind) {
 		panic("gen internals error: you should've overriden this")
 	}
 	doTemplate(`
@@ -54,7 +54,7 @@ func (g kindTraitsGenerator) emitNodeMethodLookupByNode(w io.Writer) {
 }
 
 func (g kindTraitsGenerator) emitNodeMethodLookupByIndex(w io.Writer) {
-	if ipld.ReprKindSet_JustList.Contains(g.Kind) {
+	if ipld.KindSet_JustList.Contains(g.Kind) {
 		panic("gen internals error: you should've overriden this")
 	}
 	doTemplate(`
@@ -65,7 +65,7 @@ func (g kindTraitsGenerator) emitNodeMethodLookupByIndex(w io.Writer) {
 }
 
 func (g kindTraitsGenerator) emitNodeMethodLookupBySegment(w io.Writer) {
-	if ipld.ReprKindSet_Recursive.Contains(g.Kind) {
+	if ipld.KindSet_Recursive.Contains(g.Kind) {
 		panic("gen internals error: you should've overriden this")
 	}
 	doTemplate(`
@@ -76,7 +76,7 @@ func (g kindTraitsGenerator) emitNodeMethodLookupBySegment(w io.Writer) {
 }
 
 func (g kindTraitsGenerator) emitNodeMethodMapIterator(w io.Writer) {
-	if ipld.ReprKindSet_JustMap.Contains(g.Kind) {
+	if ipld.KindSet_JustMap.Contains(g.Kind) {
 		panic("gen internals error: you should've overriden this")
 	}
 	doTemplate(`
@@ -87,7 +87,7 @@ func (g kindTraitsGenerator) emitNodeMethodMapIterator(w io.Writer) {
 }
 
 func (g kindTraitsGenerator) emitNodeMethodListIterator(w io.Writer) {
-	if ipld.ReprKindSet_JustList.Contains(g.Kind) {
+	if ipld.KindSet_JustList.Contains(g.Kind) {
 		panic("gen internals error: you should've overriden this")
 	}
 	doTemplate(`
@@ -98,7 +98,7 @@ func (g kindTraitsGenerator) emitNodeMethodListIterator(w io.Writer) {
 }
 
 func (g kindTraitsGenerator) emitNodeMethodLength(w io.Writer) {
-	if ipld.ReprKindSet_Recursive.Contains(g.Kind) {
+	if ipld.KindSet_Recursive.Contains(g.Kind) {
 		panic("gen internals error: you should've overriden this")
 	}
 	doTemplate(`
@@ -125,7 +125,7 @@ func (g kindTraitsGenerator) emitNodeMethodIsNull(w io.Writer) {
 }
 
 func (g kindTraitsGenerator) emitNodeMethodAsBool(w io.Writer) {
-	if ipld.ReprKindSet_JustBool.Contains(g.Kind) {
+	if ipld.KindSet_JustBool.Contains(g.Kind) {
 		panic("gen internals error: you should've overriden this")
 	}
 	doTemplate(`
@@ -136,7 +136,7 @@ func (g kindTraitsGenerator) emitNodeMethodAsBool(w io.Writer) {
 }
 
 func (g kindTraitsGenerator) emitNodeMethodAsInt(w io.Writer) {
-	if ipld.ReprKindSet_JustInt.Contains(g.Kind) {
+	if ipld.KindSet_JustInt.Contains(g.Kind) {
 		panic("gen internals error: you should've overriden this")
 	}
 	doTemplate(`
@@ -147,7 +147,7 @@ func (g kindTraitsGenerator) emitNodeMethodAsInt(w io.Writer) {
 }
 
 func (g kindTraitsGenerator) emitNodeMethodAsFloat(w io.Writer) {
-	if ipld.ReprKindSet_JustFloat.Contains(g.Kind) {
+	if ipld.KindSet_JustFloat.Contains(g.Kind) {
 		panic("gen internals error: you should've overriden this")
 	}
 	doTemplate(`
@@ -158,7 +158,7 @@ func (g kindTraitsGenerator) emitNodeMethodAsFloat(w io.Writer) {
 }
 
 func (g kindTraitsGenerator) emitNodeMethodAsString(w io.Writer) {
-	if ipld.ReprKindSet_JustString.Contains(g.Kind) {
+	if ipld.KindSet_JustString.Contains(g.Kind) {
 		panic("gen internals error: you should've overriden this")
 	}
 	doTemplate(`
@@ -169,7 +169,7 @@ func (g kindTraitsGenerator) emitNodeMethodAsString(w io.Writer) {
 }
 
 func (g kindTraitsGenerator) emitNodeMethodAsBytes(w io.Writer) {
-	if ipld.ReprKindSet_JustBytes.Contains(g.Kind) {
+	if ipld.KindSet_JustBytes.Contains(g.Kind) {
 		panic("gen internals error: you should've overriden this")
 	}
 	doTemplate(`
@@ -180,7 +180,7 @@ func (g kindTraitsGenerator) emitNodeMethodAsBytes(w io.Writer) {
 }
 
 func (g kindTraitsGenerator) emitNodeMethodAsLink(w io.Writer) {
-	if ipld.ReprKindSet_JustLink.Contains(g.Kind) {
+	if ipld.KindSet_JustLink.Contains(g.Kind) {
 		panic("gen internals error: you should've overriden this")
 	}
 	doTemplate(`
@@ -196,7 +196,7 @@ type kindAssemblerTraitsGenerator struct {
 	PkgName       string
 	TypeName      string // as will be printed in messages (e.g. can be goosed up a bit, like "Thing.Repr" instead of "_Thing__Repr").
 	AppliedPrefix string // the prefix of what to attach methods to... this one is a little wild: should probably be either "_{{ .Type | TypeSymbol }}__" or "_{{ .Type | TypeSymbol }}__Repr", and we'll just add the words "Builder" and "Assembler".
-	Kind          ipld.ReprKind
+	Kind      ipld.Kind
 }
 
 // bailed on extracting a common emitNodeBuilderType: too many variations in content and pointer placement to be worth it.
@@ -208,7 +208,7 @@ type kindAssemblerTraitsGenerator struct {
 //  - to still be ready for boatloads of exceptions if the representation isn't directly castable to and from the type-level node.
 
 func (g kindAssemblerTraitsGenerator) emitNodeAssemblerMethodBeginMap(w io.Writer) {
-	if ipld.ReprKindSet_JustMap.Contains(g.Kind) {
+	if ipld.KindSet_JustMap.Contains(g.Kind) {
 		panic("gen internals error: you should've overriden this")
 	}
 	doTemplate(`
@@ -219,7 +219,7 @@ func (g kindAssemblerTraitsGenerator) emitNodeAssemblerMethodBeginMap(w io.Write
 }
 
 func (g kindAssemblerTraitsGenerator) emitNodeAssemblerMethodBeginList(w io.Writer) {
-	if ipld.ReprKindSet_JustList.Contains(g.Kind) {
+	if ipld.KindSet_JustList.Contains(g.Kind) {
 		panic("gen internals error: you should've overriden this")
 	}
 	doTemplate(`
@@ -230,7 +230,7 @@ func (g kindAssemblerTraitsGenerator) emitNodeAssemblerMethodBeginList(w io.Writ
 }
 
 func (g kindAssemblerTraitsGenerator) emitNodeAssemblerMethodAssignNull(w io.Writer) {
-	if ipld.ReprKindSet_JustNull.Contains(g.Kind) {
+	if ipld.KindSet_JustNull.Contains(g.Kind) {
 		panic("gen internals error: you should've overriden this")
 	}
 	doTemplate(`
@@ -241,7 +241,7 @@ func (g kindAssemblerTraitsGenerator) emitNodeAssemblerMethodAssignNull(w io.Wri
 }
 
 func (g kindAssemblerTraitsGenerator) emitNodeAssemblerMethodAssignBool(w io.Writer) {
-	if ipld.ReprKindSet_JustBool.Contains(g.Kind) {
+	if ipld.KindSet_JustBool.Contains(g.Kind) {
 		panic("gen internals error: you should've overriden this")
 	}
 	doTemplate(`
@@ -252,7 +252,7 @@ func (g kindAssemblerTraitsGenerator) emitNodeAssemblerMethodAssignBool(w io.Wri
 }
 
 func (g kindAssemblerTraitsGenerator) emitNodeAssemblerMethodAssignInt(w io.Writer) {
-	if ipld.ReprKindSet_JustInt.Contains(g.Kind) {
+	if ipld.KindSet_JustInt.Contains(g.Kind) {
 		panic("gen internals error: you should've overriden this")
 	}
 	doTemplate(`
@@ -263,7 +263,7 @@ func (g kindAssemblerTraitsGenerator) emitNodeAssemblerMethodAssignInt(w io.Writ
 }
 
 func (g kindAssemblerTraitsGenerator) emitNodeAssemblerMethodAssignFloat(w io.Writer) {
-	if ipld.ReprKindSet_JustFloat.Contains(g.Kind) {
+	if ipld.KindSet_JustFloat.Contains(g.Kind) {
 		panic("gen internals error: you should've overriden this")
 	}
 	doTemplate(`
@@ -274,7 +274,7 @@ func (g kindAssemblerTraitsGenerator) emitNodeAssemblerMethodAssignFloat(w io.Wr
 }
 
 func (g kindAssemblerTraitsGenerator) emitNodeAssemblerMethodAssignString(w io.Writer) {
-	if ipld.ReprKindSet_JustString.Contains(g.Kind) {
+	if ipld.KindSet_JustString.Contains(g.Kind) {
 		panic("gen internals error: you should've overriden this")
 	}
 	doTemplate(`
@@ -285,7 +285,7 @@ func (g kindAssemblerTraitsGenerator) emitNodeAssemblerMethodAssignString(w io.W
 }
 
 func (g kindAssemblerTraitsGenerator) emitNodeAssemblerMethodAssignBytes(w io.Writer) {
-	if ipld.ReprKindSet_JustBytes.Contains(g.Kind) {
+	if ipld.KindSet_JustBytes.Contains(g.Kind) {
 		panic("gen internals error: you should've overriden this")
 	}
 	doTemplate(`
@@ -296,7 +296,7 @@ func (g kindAssemblerTraitsGenerator) emitNodeAssemblerMethodAssignBytes(w io.Wr
 }
 
 func (g kindAssemblerTraitsGenerator) emitNodeAssemblerMethodAssignLink(w io.Writer) {
-	if ipld.ReprKindSet_JustLink.Contains(g.Kind) {
+	if ipld.KindSet_JustLink.Contains(g.Kind) {
 		panic("gen internals error: you should've overriden this")
 	}
 	doTemplate(`

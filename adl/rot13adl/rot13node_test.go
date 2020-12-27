@@ -40,7 +40,7 @@ func TestReify(t *testing.T) {
 		synth, err := Reify(sn)
 		// Inspect the resulting high level node.
 		Require(t, err, ShouldEqual, nil)
-		Wish(t, synth.ReprKind(), ShouldEqual, ipld.ReprKind_String)
+		Wish(t, synth.Kind(), ShouldEqual, ipld.Kind_String)
 		s, err := synth.AsString()
 		Wish(t, err, ShouldEqual, nil)
 		Wish(t, s, ShouldEqual, "abcd")
@@ -54,7 +54,7 @@ func TestReify(t *testing.T) {
 		synth, err := Reify(sn)
 		// Inspect the resulting high level node.
 		Require(t, err, ShouldEqual, nil)
-		Wish(t, synth.ReprKind(), ShouldEqual, ipld.ReprKind_String)
+		Wish(t, synth.Kind(), ShouldEqual, ipld.Kind_String)
 		s, err := synth.AsString()
 		Wish(t, err, ShouldEqual, nil)
 		Wish(t, s, ShouldEqual, "abcd")

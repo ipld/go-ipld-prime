@@ -22,8 +22,8 @@ type plainBytes []byte
 
 // -- Node interface methods -->
 
-func (plainBytes) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Bytes
+func (plainBytes) Kind() ipld.Kind {
+	return ipld.Kind_Bytes
 }
 func (plainBytes) LookupByString(string) (ipld.Node, error) {
 	return mixins.Bytes{TypeName: "bytes"}.LookupByString("")

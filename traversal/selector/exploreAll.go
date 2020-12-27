@@ -29,7 +29,7 @@ func (s ExploreAll) Decide(n ipld.Node) bool {
 
 // ParseExploreAll assembles a Selector from a ExploreAll selector node
 func (pc ParseContext) ParseExploreAll(n ipld.Node) (Selector, error) {
-	if n.ReprKind() != ipld.ReprKind_Map {
+	if n.Kind() != ipld.Kind_Map {
 		return nil, fmt.Errorf("selector spec parse rejected: selector body must be a map")
 	}
 	next, err := n.LookupByString(SelectorKey_Next)

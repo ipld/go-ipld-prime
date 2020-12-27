@@ -104,7 +104,7 @@ func SpawnUnion(name TypeName, members []TypeName, repr UnionRepresentation) *Ty
 func SpawnUnionRepresentationKeyed(table map[string]TypeName) UnionRepresentation_Keyed {
 	return UnionRepresentation_Keyed{table}
 }
-func SpawnUnionRepresentationKinded(table map[ipld.ReprKind]TypeName) UnionRepresentation_Kinded {
+func SpawnUnionRepresentationKinded(table map[ipld.Kind]TypeName) UnionRepresentation_Kinded {
 	return UnionRepresentation_Kinded{table}
 }
 

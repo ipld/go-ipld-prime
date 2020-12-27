@@ -36,7 +36,7 @@ func TestListsContainingMaybe(t *testing.T) {
 					la.AssembleValue().AssignString("2")
 				}).(schema.TypedNode)
 				t.Run("typed-read", func(t *testing.T) {
-					Require(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_List)
+					Require(t, n.Kind(), ShouldEqual, ipld.Kind_List)
 					Wish(t, n.Length(), ShouldEqual, int64(2))
 					Wish(t, must.String(must.Node(n.LookupByIndex(0))), ShouldEqual, "1")
 					Wish(t, must.String(must.Node(n.LookupByIndex(1))), ShouldEqual, "2")
@@ -45,7 +45,7 @@ func TestListsContainingMaybe(t *testing.T) {
 				})
 				t.Run("repr-read", func(t *testing.T) {
 					nr := n.Representation()
-					Require(t, nr.ReprKind(), ShouldEqual, ipld.ReprKind_List)
+					Require(t, nr.Kind(), ShouldEqual, ipld.Kind_List)
 					Wish(t, nr.Length(), ShouldEqual, int64(2))
 					Wish(t, must.String(must.Node(nr.LookupByIndex(0))), ShouldEqual, "1")
 					Wish(t, must.String(must.Node(nr.LookupByIndex(1))), ShouldEqual, "2")
@@ -71,7 +71,7 @@ func TestListsContainingMaybe(t *testing.T) {
 					la.AssembleValue().AssignNull()
 				}).(schema.TypedNode)
 				t.Run("typed-read", func(t *testing.T) {
-					Require(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_List)
+					Require(t, n.Kind(), ShouldEqual, ipld.Kind_List)
 					Wish(t, n.Length(), ShouldEqual, int64(2))
 					Wish(t, must.String(must.Node(n.LookupByIndex(0))), ShouldEqual, "1")
 					Wish(t, must.Node(n.LookupByIndex(1)), ShouldEqual, ipld.Null)
@@ -80,7 +80,7 @@ func TestListsContainingMaybe(t *testing.T) {
 				})
 				t.Run("repr-read", func(t *testing.T) {
 					nr := n.Representation()
-					Require(t, nr.ReprKind(), ShouldEqual, ipld.ReprKind_List)
+					Require(t, nr.Kind(), ShouldEqual, ipld.Kind_List)
 					Wish(t, nr.Length(), ShouldEqual, int64(2))
 					Wish(t, must.String(must.Node(n.LookupByIndex(0))), ShouldEqual, "1")
 					Wish(t, must.Node(n.LookupByIndex(1)), ShouldEqual, ipld.Null)
@@ -166,7 +166,7 @@ func TestListsContainingLists(t *testing.T) {
 				})
 			}).(schema.TypedNode)
 			t.Run("typed-read", func(t *testing.T) {
-				Require(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_List)
+				Require(t, n.Kind(), ShouldEqual, ipld.Kind_List)
 				Require(t, n.Length(), ShouldEqual, int64(3))
 				Require(t, must.Node(n.LookupByIndex(0)).Length(), ShouldEqual, int64(3))
 				Require(t, must.Node(n.LookupByIndex(1)).Length(), ShouldEqual, int64(1))
@@ -179,7 +179,7 @@ func TestListsContainingLists(t *testing.T) {
 			})
 			t.Run("repr-read", func(t *testing.T) {
 				nr := n.Representation()
-				Require(t, nr.ReprKind(), ShouldEqual, ipld.ReprKind_List)
+				Require(t, nr.Kind(), ShouldEqual, ipld.Kind_List)
 				Require(t, nr.Length(), ShouldEqual, int64(3))
 				Require(t, must.Node(nr.LookupByIndex(0)).Length(), ShouldEqual, int64(3))
 				Require(t, must.Node(nr.LookupByIndex(1)).Length(), ShouldEqual, int64(1))

@@ -21,16 +21,16 @@ func (t *TypeLink) TypeSystem() *TypeSystem {
 	return t.ts
 }
 
-func (TypeLink) Kind() Kind {
-	return Kind_Link
+func (TypeLink) TypeKind() TypeKind {
+	return TypeKind_Link
 }
 
 func (t *TypeLink) Name() TypeName {
 	return t.name
 }
 
-func (t TypeLink) RepresentationBehavior() ipld.ReprKind {
-	return ipld.ReprKind_Link
+func (t TypeLink) RepresentationBehavior() ipld.Kind {
+	return ipld.Kind_Link
 }
 
 // -- specific to TypeLink -->

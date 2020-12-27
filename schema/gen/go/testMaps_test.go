@@ -36,7 +36,7 @@ func TestMapsContainingMaybe(t *testing.T) {
 					ma.AssembleEntry("two").AssignString("2")
 				}).(schema.TypedNode)
 				t.Run("typed-read", func(t *testing.T) {
-					Require(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
+					Require(t, n.Kind(), ShouldEqual, ipld.Kind_Map)
 					Wish(t, n.Length(), ShouldEqual, int64(2))
 					Wish(t, must.String(must.Node(n.LookupByString("one"))), ShouldEqual, "1")
 					Wish(t, must.String(must.Node(n.LookupByString("two"))), ShouldEqual, "2")
@@ -45,7 +45,7 @@ func TestMapsContainingMaybe(t *testing.T) {
 				})
 				t.Run("repr-read", func(t *testing.T) {
 					nr := n.Representation()
-					Require(t, nr.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
+					Require(t, nr.Kind(), ShouldEqual, ipld.Kind_Map)
 					Wish(t, nr.Length(), ShouldEqual, int64(2))
 					Wish(t, must.String(must.Node(nr.LookupByString("one"))), ShouldEqual, "1")
 					Wish(t, must.String(must.Node(nr.LookupByString("two"))), ShouldEqual, "2")
@@ -71,7 +71,7 @@ func TestMapsContainingMaybe(t *testing.T) {
 					ma.AssembleEntry("none").AssignNull()
 				}).(schema.TypedNode)
 				t.Run("typed-read", func(t *testing.T) {
-					Require(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
+					Require(t, n.Kind(), ShouldEqual, ipld.Kind_Map)
 					Wish(t, n.Length(), ShouldEqual, int64(2))
 					Wish(t, must.String(must.Node(n.LookupByString("one"))), ShouldEqual, "1")
 					Wish(t, must.Node(n.LookupByString("none")), ShouldEqual, ipld.Null)
@@ -80,7 +80,7 @@ func TestMapsContainingMaybe(t *testing.T) {
 				})
 				t.Run("repr-read", func(t *testing.T) {
 					nr := n.Representation()
-					Require(t, nr.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
+					Require(t, nr.Kind(), ShouldEqual, ipld.Kind_Map)
 					Wish(t, nr.Length(), ShouldEqual, int64(2))
 					Wish(t, must.String(must.Node(nr.LookupByString("one"))), ShouldEqual, "1")
 					Wish(t, must.Node(nr.LookupByString("none")), ShouldEqual, ipld.Null)
@@ -163,18 +163,18 @@ func TestMapsContainingMaps(t *testing.T) {
 		}
 		reading := func(t *testing.T, n ipld.Node, fieldName string) {
 			withNode(n, func(n ipld.Node) {
-				Require(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
+				Require(t, n.Kind(), ShouldEqual, ipld.Kind_Map)
 				Wish(t, n.Length(), ShouldEqual, int64(3))
 				withNode(must.Node(n.LookupByString("one")), func(n ipld.Node) {
-					Require(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
+					Require(t, n.Kind(), ShouldEqual, ipld.Kind_Map)
 					Wish(t, n.Length(), ShouldEqual, int64(2))
 					withNode(must.Node(n.LookupByString("zot")), func(n ipld.Node) {
-						Require(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
+						Require(t, n.Kind(), ShouldEqual, ipld.Kind_Map)
 						Wish(t, n.Length(), ShouldEqual, int64(1))
 						Wish(t, must.String(must.Node(n.LookupByString(fieldName))), ShouldEqual, "11")
 					})
 					withNode(must.Node(n.LookupByString("zop")), func(n ipld.Node) {
-						Require(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
+						Require(t, n.Kind(), ShouldEqual, ipld.Kind_Map)
 						Wish(t, n.Length(), ShouldEqual, int64(1))
 						Wish(t, must.String(must.Node(n.LookupByString(fieldName))), ShouldEqual, "12")
 					})
@@ -182,7 +182,7 @@ func TestMapsContainingMaps(t *testing.T) {
 				withNode(must.Node(n.LookupByString("two")), func(n ipld.Node) {
 					Wish(t, n.Length(), ShouldEqual, int64(1))
 					withNode(must.Node(n.LookupByString("zim")), func(n ipld.Node) {
-						Require(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
+						Require(t, n.Kind(), ShouldEqual, ipld.Kind_Map)
 						Wish(t, n.Length(), ShouldEqual, int64(1))
 						Wish(t, must.String(must.Node(n.LookupByString(fieldName))), ShouldEqual, "21")
 					})
@@ -255,18 +255,18 @@ func TestMapsWithComplexKeys(t *testing.T) {
 				ma.AssembleValue().AssignString("3")
 			}).(schema.TypedNode)
 			t.Run("typed-read", func(t *testing.T) {
-				Require(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
+				Require(t, n.Kind(), ShouldEqual, ipld.Kind_Map)
 				Wish(t, n.Length(), ShouldEqual, int64(3))
 				n2 := must.Node(n.LookupByString("c:d"))
-				Require(t, n2.ReprKind(), ShouldEqual, ipld.ReprKind_String)
+				Require(t, n2.Kind(), ShouldEqual, ipld.Kind_String)
 				Wish(t, must.String(n2), ShouldEqual, "2")
 			})
 			t.Run("repr-read", func(t *testing.T) {
 				nr := n.Representation()
-				Require(t, nr.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
+				Require(t, nr.Kind(), ShouldEqual, ipld.Kind_Map)
 				Wish(t, nr.Length(), ShouldEqual, int64(3))
 				n2 := must.Node(nr.LookupByString("c:d"))
-				Require(t, n2.ReprKind(), ShouldEqual, ipld.ReprKind_String)
+				Require(t, n2.Kind(), ShouldEqual, ipld.Kind_String)
 				Wish(t, must.String(n2), ShouldEqual, "2")
 			})
 		})

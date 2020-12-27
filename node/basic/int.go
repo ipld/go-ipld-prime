@@ -22,8 +22,8 @@ type plainInt int64
 
 // -- Node interface methods -->
 
-func (plainInt) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_Int
+func (plainInt) Kind() ipld.Kind {
+	return ipld.Kind_Int
 }
 func (plainInt) LookupByString(string) (ipld.Node, error) {
 	return mixins.Int{TypeName: "int"}.LookupByString("")

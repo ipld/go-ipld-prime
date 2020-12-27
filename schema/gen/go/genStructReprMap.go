@@ -359,8 +359,8 @@ func (g structReprMapReprBuilderGenerator) EmitNodeAssemblerMethodConvertFrom(w 
 				*na.m = schema.Maybe_Value
 				return nil
 			}
-			if v.ReprKind() != ipld.ReprKind_Map {
-				return ipld.ErrWrongKind{TypeName: "{{ .PkgName }}.{{ .Type.Name }}.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustMap, ActualKind: v.ReprKind()}
+			if v.Kind() != ipld.Kind_Map {
+				return ipld.ErrWrongKind{TypeName: "{{ .PkgName }}.{{ .Type.Name }}.Repr", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 			}
 			itr := v.MapIterator()
 			for !itr.Done() {

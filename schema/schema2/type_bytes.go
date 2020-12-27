@@ -21,14 +21,14 @@ func (t *TypeBytes) TypeSystem() *TypeSystem {
 	return t.ts
 }
 
-func (TypeBytes) Kind() Kind {
-	return Kind_Bytes
+func (TypeBytes) TypeKind() TypeKind {
+	return TypeKind_Bytes
 }
 
 func (t *TypeBytes) Name() TypeName {
 	return t.name
 }
 
-func (t TypeBytes) RepresentationBehavior() ipld.ReprKind {
-	return ipld.ReprKind_Bytes
+func (t TypeBytes) RepresentationBehavior() ipld.Kind {
+	return ipld.Kind_Bytes
 }

@@ -4,20 +4,20 @@ var Null Node = nullNode{}
 
 type nullNode struct{}
 
-func (nullNode) ReprKind() ReprKind {
-	return ReprKind_Null
+func (nullNode) Kind() Kind {
+	return Kind_Null
 }
 func (nullNode) LookupByString(key string) (Node, error) {
-	return nil, ErrWrongKind{TypeName: "null", MethodName: "LookupByString", AppropriateKind: ReprKindSet_JustMap, ActualKind: ReprKind_Null}
+	return nil, ErrWrongKind{TypeName: "null", MethodName: "LookupByString", AppropriateKind: KindSet_JustMap, ActualKind: Kind_Null}
 }
 func (nullNode) LookupByNode(key Node) (Node, error) {
-	return nil, ErrWrongKind{TypeName: "null", MethodName: "LookupByNode", AppropriateKind: ReprKindSet_JustMap, ActualKind: ReprKind_Null}
+	return nil, ErrWrongKind{TypeName: "null", MethodName: "LookupByNode", AppropriateKind: KindSet_JustMap, ActualKind: Kind_Null}
 }
 func (nullNode) LookupByIndex(idx int64) (Node, error) {
-	return nil, ErrWrongKind{TypeName: "null", MethodName: "LookupByIndex", AppropriateKind: ReprKindSet_JustList, ActualKind: ReprKind_Null}
+	return nil, ErrWrongKind{TypeName: "null", MethodName: "LookupByIndex", AppropriateKind: KindSet_JustList, ActualKind: Kind_Null}
 }
 func (nullNode) LookupBySegment(seg PathSegment) (Node, error) {
-	return nil, ErrWrongKind{TypeName: "null", MethodName: "LookupBySegment", AppropriateKind: ReprKindSet_Recursive, ActualKind: ReprKind_Null}
+	return nil, ErrWrongKind{TypeName: "null", MethodName: "LookupBySegment", AppropriateKind: KindSet_Recursive, ActualKind: Kind_Null}
 }
 func (nullNode) MapIterator() MapIterator {
 	return nil
@@ -35,22 +35,22 @@ func (nullNode) IsNull() bool {
 	return true
 }
 func (nullNode) AsBool() (bool, error) {
-	return false, ErrWrongKind{TypeName: "null", MethodName: "AsBool", AppropriateKind: ReprKindSet_JustBool, ActualKind: ReprKind_Null}
+	return false, ErrWrongKind{TypeName: "null", MethodName: "AsBool", AppropriateKind: KindSet_JustBool, ActualKind: Kind_Null}
 }
 func (nullNode) AsInt() (int64, error) {
-	return 0, ErrWrongKind{TypeName: "null", MethodName: "AsInt", AppropriateKind: ReprKindSet_JustInt, ActualKind: ReprKind_Null}
+	return 0, ErrWrongKind{TypeName: "null", MethodName: "AsInt", AppropriateKind: KindSet_JustInt, ActualKind: Kind_Null}
 }
 func (nullNode) AsFloat() (float64, error) {
-	return 0, ErrWrongKind{TypeName: "null", MethodName: "AsFloat", AppropriateKind: ReprKindSet_JustFloat, ActualKind: ReprKind_Null}
+	return 0, ErrWrongKind{TypeName: "null", MethodName: "AsFloat", AppropriateKind: KindSet_JustFloat, ActualKind: Kind_Null}
 }
 func (nullNode) AsString() (string, error) {
-	return "", ErrWrongKind{TypeName: "null", MethodName: "AsString", AppropriateKind: ReprKindSet_JustString, ActualKind: ReprKind_Null}
+	return "", ErrWrongKind{TypeName: "null", MethodName: "AsString", AppropriateKind: KindSet_JustString, ActualKind: Kind_Null}
 }
 func (nullNode) AsBytes() ([]byte, error) {
-	return nil, ErrWrongKind{TypeName: "null", MethodName: "AsBytes", AppropriateKind: ReprKindSet_JustBytes, ActualKind: ReprKind_Null}
+	return nil, ErrWrongKind{TypeName: "null", MethodName: "AsBytes", AppropriateKind: KindSet_JustBytes, ActualKind: Kind_Null}
 }
 func (nullNode) AsLink() (Link, error) {
-	return nil, ErrWrongKind{TypeName: "null", MethodName: "AsLink", AppropriateKind: ReprKindSet_JustLink, ActualKind: ReprKind_Null}
+	return nil, ErrWrongKind{TypeName: "null", MethodName: "AsLink", AppropriateKind: KindSet_JustLink, ActualKind: Kind_Null}
 }
 func (nullNode) Prototype() NodePrototype {
 	return nullPrototype{}
@@ -66,20 +66,20 @@ var Absent Node = absentNode{}
 
 type absentNode struct{}
 
-func (absentNode) ReprKind() ReprKind {
-	return ReprKind_Null
+func (absentNode) Kind() Kind {
+	return Kind_Null
 }
 func (absentNode) LookupByString(key string) (Node, error) {
-	return nil, ErrWrongKind{TypeName: "absent", MethodName: "LookupByString", AppropriateKind: ReprKindSet_JustMap, ActualKind: ReprKind_Null}
+	return nil, ErrWrongKind{TypeName: "absent", MethodName: "LookupByString", AppropriateKind: KindSet_JustMap, ActualKind: Kind_Null}
 }
 func (absentNode) LookupByNode(key Node) (Node, error) {
-	return nil, ErrWrongKind{TypeName: "absent", MethodName: "LookupByNode", AppropriateKind: ReprKindSet_JustMap, ActualKind: ReprKind_Null}
+	return nil, ErrWrongKind{TypeName: "absent", MethodName: "LookupByNode", AppropriateKind: KindSet_JustMap, ActualKind: Kind_Null}
 }
 func (absentNode) LookupByIndex(idx int64) (Node, error) {
-	return nil, ErrWrongKind{TypeName: "absent", MethodName: "LookupByIndex", AppropriateKind: ReprKindSet_JustList, ActualKind: ReprKind_Null}
+	return nil, ErrWrongKind{TypeName: "absent", MethodName: "LookupByIndex", AppropriateKind: KindSet_JustList, ActualKind: Kind_Null}
 }
 func (absentNode) LookupBySegment(seg PathSegment) (Node, error) {
-	return nil, ErrWrongKind{TypeName: "absent", MethodName: "LookupBySegment", AppropriateKind: ReprKindSet_Recursive, ActualKind: ReprKind_Null}
+	return nil, ErrWrongKind{TypeName: "absent", MethodName: "LookupBySegment", AppropriateKind: KindSet_Recursive, ActualKind: Kind_Null}
 }
 func (absentNode) MapIterator() MapIterator {
 	return nil
@@ -97,22 +97,22 @@ func (absentNode) IsNull() bool {
 	return false
 }
 func (absentNode) AsBool() (bool, error) {
-	return false, ErrWrongKind{TypeName: "absent", MethodName: "AsBool", AppropriateKind: ReprKindSet_JustBool, ActualKind: ReprKind_Null}
+	return false, ErrWrongKind{TypeName: "absent", MethodName: "AsBool", AppropriateKind: KindSet_JustBool, ActualKind: Kind_Null}
 }
 func (absentNode) AsInt() (int64, error) {
-	return 0, ErrWrongKind{TypeName: "absent", MethodName: "AsInt", AppropriateKind: ReprKindSet_JustInt, ActualKind: ReprKind_Null}
+	return 0, ErrWrongKind{TypeName: "absent", MethodName: "AsInt", AppropriateKind: KindSet_JustInt, ActualKind: Kind_Null}
 }
 func (absentNode) AsFloat() (float64, error) {
-	return 0, ErrWrongKind{TypeName: "absent", MethodName: "AsFloat", AppropriateKind: ReprKindSet_JustFloat, ActualKind: ReprKind_Null}
+	return 0, ErrWrongKind{TypeName: "absent", MethodName: "AsFloat", AppropriateKind: KindSet_JustFloat, ActualKind: Kind_Null}
 }
 func (absentNode) AsString() (string, error) {
-	return "", ErrWrongKind{TypeName: "absent", MethodName: "AsString", AppropriateKind: ReprKindSet_JustString, ActualKind: ReprKind_Null}
+	return "", ErrWrongKind{TypeName: "absent", MethodName: "AsString", AppropriateKind: KindSet_JustString, ActualKind: Kind_Null}
 }
 func (absentNode) AsBytes() ([]byte, error) {
-	return nil, ErrWrongKind{TypeName: "absent", MethodName: "AsBytes", AppropriateKind: ReprKindSet_JustBytes, ActualKind: ReprKind_Null}
+	return nil, ErrWrongKind{TypeName: "absent", MethodName: "AsBytes", AppropriateKind: KindSet_JustBytes, ActualKind: Kind_Null}
 }
 func (absentNode) AsLink() (Link, error) {
-	return nil, ErrWrongKind{TypeName: "absent", MethodName: "AsLink", AppropriateKind: ReprKindSet_JustLink, ActualKind: ReprKind_Null}
+	return nil, ErrWrongKind{TypeName: "absent", MethodName: "AsLink", AppropriateKind: KindSet_JustLink, ActualKind: Kind_Null}
 }
 func (absentNode) Prototype() NodePrototype {
 	return absentPrototype{}

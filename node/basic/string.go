@@ -27,8 +27,8 @@ type plainString string
 
 // -- Node interface methods -->
 
-func (plainString) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_String
+func (plainString) Kind() ipld.Kind {
+	return ipld.Kind_String
 }
 func (plainString) LookupByString(string) (ipld.Node, error) {
 	return mixins.String{TypeName: "string"}.LookupByString("")

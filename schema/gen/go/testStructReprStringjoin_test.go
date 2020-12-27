@@ -59,13 +59,13 @@ func TestStructReprStringjoin(t *testing.T) {
 					ma.AssembleEntry("field").AssignString("valoo")
 				}).(schema.TypedNode)
 				t.Run("typed-read", func(t *testing.T) {
-					Require(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
+					Require(t, n.Kind(), ShouldEqual, ipld.Kind_Map)
 					Wish(t, n.Length(), ShouldEqual, int64(1))
 					Wish(t, must.String(must.Node(n.LookupByString("field"))), ShouldEqual, "valoo")
 				})
 				t.Run("repr-read", func(t *testing.T) {
 					nr := n.Representation()
-					Require(t, nr.ReprKind(), ShouldEqual, ipld.ReprKind_String)
+					Require(t, nr.Kind(), ShouldEqual, ipld.Kind_String)
 					Wish(t, must.String(nr), ShouldEqual, "valoo")
 				})
 			})
@@ -87,14 +87,14 @@ func TestStructReprStringjoin(t *testing.T) {
 					ma.AssembleEntry("bar").AssignString("v2")
 				}).(schema.TypedNode)
 				t.Run("typed-read", func(t *testing.T) {
-					Require(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
+					Require(t, n.Kind(), ShouldEqual, ipld.Kind_Map)
 					Wish(t, n.Length(), ShouldEqual, int64(2))
 					Wish(t, must.String(must.Node(n.LookupByString("foo"))), ShouldEqual, "v1")
 					Wish(t, must.String(must.Node(n.LookupByString("bar"))), ShouldEqual, "v2")
 				})
 				t.Run("repr-read", func(t *testing.T) {
 					nr := n.Representation()
-					Require(t, nr.ReprKind(), ShouldEqual, ipld.ReprKind_String)
+					Require(t, nr.Kind(), ShouldEqual, ipld.Kind_String)
 					Wish(t, must.String(nr), ShouldEqual, "v1:v2")
 				})
 			})
@@ -120,7 +120,7 @@ func TestStructReprStringjoin(t *testing.T) {
 					ma.AssembleEntry("bar").AssignString("v4")
 				}).(schema.TypedNode)
 				t.Run("typed-read", func(t *testing.T) {
-					Require(t, n.ReprKind(), ShouldEqual, ipld.ReprKind_Map)
+					Require(t, n.Kind(), ShouldEqual, ipld.Kind_Map)
 					Wish(t, n.Length(), ShouldEqual, int64(3))
 					Wish(t, must.String(must.Node(n.LookupByString("foo"))), ShouldEqual, "v1")
 					Wish(t, must.String(must.Node(n.LookupByString("bar"))), ShouldEqual, "v4")
@@ -131,7 +131,7 @@ func TestStructReprStringjoin(t *testing.T) {
 				})
 				t.Run("repr-read", func(t *testing.T) {
 					nr := n.Representation()
-					Require(t, nr.ReprKind(), ShouldEqual, ipld.ReprKind_String)
+					Require(t, nr.Kind(), ShouldEqual, ipld.Kind_String)
 					Wish(t, must.String(nr), ShouldEqual, "v1-v2:v3-v4")
 				})
 			})

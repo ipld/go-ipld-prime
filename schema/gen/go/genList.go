@@ -22,7 +22,7 @@ func (g listGenerator) EmitNativeType(w io.Writer) {
 	// Lists are a pretty straightforward struct enclosing a slice.
 	doTemplate(`
 		{{- if Comments -}}
-		// {{ .Type | TypeSymbol }} matches the IPLD Schema type "{{ .Type.Name }}".  It has {{ .ReprKind }} kind.
+		// {{ .Type | TypeSymbol }} matches the IPLD Schema type "{{ .Type.Name }}".  It has {{ .Kind }} kind.
 		{{- end}}
 		type {{ .Type | TypeSymbol }} = *_{{ .Type | TypeSymbol }}
 		type _{{ .Type | TypeSymbol }} struct {

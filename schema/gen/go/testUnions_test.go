@@ -32,12 +32,12 @@ func TestUnionKeyed(t *testing.T) {
 			typeJson: `{"String":"whee"}`,
 			reprJson: `{"a":"whee"}`,
 			typePoints: []testcasePoint{
-				{"", ipld.ReprKind_Map},
+				{"", ipld.Kind_Map},
 				{"String", "whee"},
 				//{"Strung", ipld.ErrNotExists{}}, // TODO: need better error typing from traversal package.
 			},
 			reprPoints: []testcasePoint{
-				{"", ipld.ReprKind_Map},
+				{"", ipld.Kind_Map},
 				{"a", "whee"},
 				//{"b", ipld.ErrNotExists{}}, // TODO: need better error typing from traversal package.
 			},
@@ -47,12 +47,12 @@ func TestUnionKeyed(t *testing.T) {
 			typeJson: `{"Strung":"whee"}`,
 			reprJson: `{"b":"whee"}`,
 			typePoints: []testcasePoint{
-				{"", ipld.ReprKind_Map},
+				{"", ipld.Kind_Map},
 				//{"String", ipld.ErrNotExists{}}, // TODO: need better error typing from traversal package.
 				{"Strung", "whee"},
 			},
 			reprPoints: []testcasePoint{
-				{"", ipld.ReprKind_Map},
+				{"", ipld.Kind_Map},
 				//{"a", ipld.ErrNotExists{}}, // TODO: need better error typing from traversal package.
 				{"b", "whee"},
 			},
@@ -126,12 +126,12 @@ func TestUnionKeyedComplexChildren(t *testing.T) {
 			typeJson: `{"String":"whee"}`,
 			reprJson: `{"a":"whee"}`,
 			typePoints: []testcasePoint{
-				{"", ipld.ReprKind_Map},
+				{"", ipld.Kind_Map},
 				{"String", "whee"},
 				//{"SmolStruct", ipld.ErrNotExists{}}, // TODO: need better error typing from traversal package.
 			},
 			reprPoints: []testcasePoint{
-				{"", ipld.ReprKind_Map},
+				{"", ipld.Kind_Map},
 				{"a", "whee"},
 				//{"b", ipld.ErrNotExists{}}, // TODO: need better error typing from traversal package.
 			},
@@ -141,15 +141,15 @@ func TestUnionKeyedComplexChildren(t *testing.T) {
 			typeJson: `{"SmolStruct":{"s":"whee"}}`,
 			reprJson: `{"b":{"q":"whee"}}`,
 			typePoints: []testcasePoint{
-				{"", ipld.ReprKind_Map},
+				{"", ipld.Kind_Map},
 				//{"String", ipld.ErrNotExists{}}, // TODO: need better error typing from traversal package.
-				{"SmolStruct", ipld.ReprKind_Map},
+				{"SmolStruct", ipld.Kind_Map},
 				{"SmolStruct/s", "whee"},
 			},
 			reprPoints: []testcasePoint{
-				{"", ipld.ReprKind_Map},
+				{"", ipld.Kind_Map},
 				//{"a", ipld.ErrNotExists{}}, // TODO: need better error typing from traversal package.
-				{"b", ipld.ReprKind_Map},
+				{"b", ipld.Kind_Map},
 				{"b/q", "whee"},
 			},
 		},

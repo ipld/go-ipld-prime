@@ -12,7 +12,7 @@ package ipld
 // and thus will only make sense to call on values of the appropriate kind.
 // (For example, 'Length' on an integer doesn't make sense,
 // and 'AsInt' on a map certainly doesn't work either!)
-// Use the ReprKind method to find out the kind of value before
+// Use the Kind method to find out the kind of value before
 // calling kind-specific methods.
 // Individual method documentation state which kinds the method is valid for.
 // (If you're familiar with the stdlib reflect package, you'll find
@@ -56,16 +56,16 @@ package ipld
 // in all ways this interface specifies (so you can traverse typed nodes, etc,
 // without any additional special effort).
 type Node interface {
-	// ReprKind returns a value from the ReprKind enum describing what the
+	// Kind returns a value from the Kind enum describing what the
 	// essential serializable kind of this node is (map, list, integer, etc).
 	// Most other handling of a node requires first switching upon the kind.
-	ReprKind() ReprKind
+	Kind() Kind
 
 	// LookupByString looks up a child object in this node and returns it.
-	// The returned Node may be any of the ReprKind:
+	// The returned Node may be any of the Kind:
 	// a primitive (string, int64, etc), a map, a list, or a link.
 	//
-	// If the Kind of this Node is not ReprKind_Map, a nil node and an error
+	// If the Kind of this Node is not Kind_Map, a nil node and an error
 	// will be returned.
 	//
 	// If the key does not exist, a nil node and an error will be returned.
@@ -85,10 +85,10 @@ type Node interface {
 	LookupByNode(key Node) (Node, error)
 
 	// LookupByIndex is the equivalent of LookupByString but for indexing into a list.
-	// As with LookupByString, the returned Node may be any of the ReprKind:
+	// As with LookupByString, the returned Node may be any of the Kind:
 	// a primitive (string, int64, etc), a map, a list, or a link.
 	//
-	// If the Kind of this Node is not ReprKind_List, a nil node and an error
+	// If the Kind of this Node is not Kind_List, a nil node and an error
 	// will be returned.
 	//
 	// If idx is out of range, a nil node and an error will be returned.
@@ -134,7 +134,7 @@ type Node interface {
 	// unambiguously make the distinction between values that are
 	// present-and-null versus values that are absent.
 	//
-	// Absent nodes respond to `ReprKind()` as `ipld.ReprKind_Null`,
+	// Absent nodes respond to `Kind()` as `ipld.Kind_Null`,
 	// for lack of any better descriptive value; you should therefore
 	// always check IsAbsent rather than just a switch on kind
 	// when it may be important to handle absent values distinctly.

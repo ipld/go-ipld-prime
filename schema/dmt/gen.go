@@ -80,9 +80,9 @@ func main() {
 			"TypeName",
 			"TypeDefnInline",
 		},
-		schema.SpawnUnionRepresentationKinded(map[ipld.ReprKind]schema.TypeName{
-			ipld.ReprKind_String: "TypeName",
-			ipld.ReprKind_Map:    "TypeDefnInline",
+		schema.SpawnUnionRepresentationKinded(map[ipld.Kind]schema.TypeName{
+			ipld.Kind_String: "TypeName",
+			ipld.Kind_Map:    "TypeDefnInline",
 		}),
 	))
 	ts.Accumulate(schema.SpawnUnion("TypeDefnInline", // n.b. previously called "TypeTerm".
@@ -370,12 +370,12 @@ func main() {
 			"Int",
 			"Float",
 		},
-		schema.SpawnUnionRepresentationKinded(map[ipld.ReprKind]schema.TypeName{
-			ipld.ReprKind_Bool:   "Bool",
-			ipld.ReprKind_String: "String",
-			ipld.ReprKind_Bytes:  "Bytes",
-			ipld.ReprKind_Int:    "Int",
-			ipld.ReprKind_Float:  "Float",
+		schema.SpawnUnionRepresentationKinded(map[ipld.Kind]schema.TypeName{
+			ipld.Kind_Bool:   "Bool",
+			ipld.Kind_String: "String",
+			ipld.Kind_Bytes:  "Bytes",
+			ipld.Kind_Int:    "Int",
+			ipld.Kind_Float:  "Float",
 		}),
 	))
 

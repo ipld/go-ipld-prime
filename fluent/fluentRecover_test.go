@@ -20,7 +20,7 @@ func TestRecover(t *testing.T) {
 				t.Fatal("should not be reached")
 			}),
 			ShouldEqual,
-			fluent.Error{ipld.ErrWrongKind{TypeName: "string", MethodName: "AssignInt", AppropriateKind: ipld.ReprKindSet_JustInt, ActualKind: ipld.ReprKind_String}},
+			fluent.Error{ipld.ErrWrongKind{TypeName: "string", MethodName: "AssignInt", AppropriateKind: ipld.KindSet_JustInt, ActualKind: ipld.Kind_String}},
 		)
 	})
 	t.Run("correct build should return nil", func(t *testing.T) {

@@ -38,7 +38,7 @@ func ExampleUnmarshalData() {
 	dagjson.Decoder(nb, serial)   // Hand the builder to decoding -- decoding will fill it in!
 	n := nb.Build()               // Call 'Build' to get the resulting Node.  (It's immutable!)
 
-	fmt.Printf("the data decoded was a %s kind\n", n.ReprKind())
+	fmt.Printf("the data decoded was a %s kind\n", n.Kind())
 	fmt.Printf("the length of the node is %d\n", n.Length())
 
 	// Output:

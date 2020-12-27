@@ -21,8 +21,8 @@ type plainList struct {
 
 // -- Node interface methods -->
 
-func (plainList) ReprKind() ipld.ReprKind {
-	return ipld.ReprKind_List
+func (plainList) Kind() ipld.Kind {
+	return ipld.Kind_List
 }
 func (plainList) LookupByString(string) (ipld.Node, error) {
 	return mixins.List{TypeName: "list"}.LookupByString("")
@@ -198,8 +198,8 @@ func (na *plainList__Assembler) ConvertFrom(v ipld.Node) error {
 	}
 	// If the above shortcut didn't work, resort to a generic copy.
 	//  We call ConvertFrom for all the child values, giving them a chance to hit shortcuts even if we didn't.
-	if v.ReprKind() != ipld.ReprKind_List {
-		return ipld.ErrWrongKind{TypeName: "list", MethodName: "ConvertFrom", AppropriateKind: ipld.ReprKindSet_JustList, ActualKind: v.ReprKind()}
+	if v.Kind() != ipld.Kind_List {
+		return ipld.ErrWrongKind{TypeName: "list", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustList, ActualKind: v.Kind()}
 	}
 	itr := v.ListIterator()
 	for !itr.Done() {

@@ -29,7 +29,7 @@ func ExampleUnmarshallingToADL() {
 	fmt.Printf("reify error: %v\n", err)
 
 	// We can inspect the synthetic ADL node like any other node!
-	fmt.Printf("adl node kind: %v\n", syntheticView.ReprKind())
+	fmt.Printf("adl node kind: %v\n", syntheticView.Kind())
 	fmt.Printf("adl view value: %q\n", must.String(syntheticView))
 
 	// Output:
@@ -48,13 +48,13 @@ func ExampleCreatingViaADL() {
 	n := nb.Build()
 
 	// We can inspect the synthetic ADL node like any other node!
-	fmt.Printf("adl node kind: %v\n", n.ReprKind())
+	fmt.Printf("adl node kind: %v\n", n.Kind())
 	fmt.Printf("adl view value: %q\n", must.String(n))
 
 	// We can get the substrate view and examine that as a node too.
 	// (This requires a cast to see that we have an ADL, though.  Not all IPLD nodes have a 'Substrate' property.)
 	substrateNode := n.(rot13adl.R13String).Substrate()
-	fmt.Printf("substrate node kind: %v\n", substrateNode.ReprKind())
+	fmt.Printf("substrate node kind: %v\n", substrateNode.Kind())
 	fmt.Printf("substrate value: %q\n", must.String(substrateNode))
 
 	// To marshal the ADL, just use marshal methods on its substrate as normal:
