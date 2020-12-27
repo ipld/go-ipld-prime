@@ -19,7 +19,7 @@ Overview of Important Types
 
 - `ipld.Node` -- see the section on Nodes above; this is *the* interface.
 - `ipld.NodeBuilder` -- an interface for building new Nodes.
-- `ipld.ReprKind` -- this enumeration describes all the major kinds at the Data Model layer.
+- `ipld.Kind` -- this enumeration describes all the major kinds at the Data Model layer.
 - `fluent.Node` -- similar to `ipld.Node`, but methods don't return errors, instead
   carrying them until actually checked and/or using panics, making them easy to compose
   in long expressions.  See the full page for [Fluent APIs](./fluent.md) for more.
@@ -41,14 +41,14 @@ See the [godocs for Node](https://godoc.org/github.com/ipld/go-ipld-prime#Node).
 
 ### kinds
 
-The `Node.ReprKind()` method returns an `ipld.ReprKind` enum value describing what
+The `Node.Kind()` method returns an `ipld.Kind` enum value describing what
 kind of data this node contains in terms of the IPLD Data Model.
 
 The validity of many other methods can be anticipated by switching on the kind:
-for example, `AsString` is definitely going to error if `ReprKind() == ipld.ReprKind_Map`,
-and `LookupByString` is definitely going to error if `ReprKind() == ipld.ReprKind_String`.
+for example, `AsString` is definitely going to error if `Kind() == ipld.Kind_Map`,
+and `LookupByString` is definitely going to error if `Kind() == ipld.Kind_String`.
 
-See the [godocs for ReprKind](https://godoc.org/github.com/ipld/go-ipld-prime#ReprKind).
+See the [godocs for Kind](https://godoc.org/github.com/ipld/go-ipld-prime#Kind).
 
 
 Node implementations

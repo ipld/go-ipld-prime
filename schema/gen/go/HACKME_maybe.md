@@ -41,7 +41,7 @@ The concept of "null" has a Kind in the IPLD Data Model.
 It's implemented by the `ipld.nullNode` type (which has no fields -- it's a "unit" type),
 and is exposed as the `ipld.Null` singleton value.
 
-(More generally, `ipld.Node` can be null by having its `Kind()` method return `ipld.ReprKind_Null`,
+(More generally, `ipld.Node` can be null by having its `Kind()` method return `ipld.Kind_Null`,
 and having the `IsNull()` method return `true`.
 However, most code prefers to return the `ipld.Null` singleton value whenever it can.)
 
@@ -62,7 +62,7 @@ Absent is implemented by the `ipld.absentNode` type (which has no fields -- it's
 and is exposed as the `ipld.Absent` singleton value.
 
 (More generally, an `ipld.Node` can describe itself as containing "absent" by having the `IsAbsent()` method return `true`.
-(The `Kind()` method still returns `ipld.ReprKind_Null`, for lack of better option.)
+(The `Kind()` method still returns `ipld.Kind_Null`, for lack of better option.)
 However, most code prefers to return the `ipld.Absent` singleton value whenever it can.)
 
 Absent values aren't really used at the Data Model level.
