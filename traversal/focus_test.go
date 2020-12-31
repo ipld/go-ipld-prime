@@ -13,6 +13,7 @@ import (
 
 	cid "github.com/ipfs/go-cid"
 	ipld "github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/must"
 
 	_ "github.com/ipld/go-ipld-prime/codec/dagjson"
 	"github.com/ipld/go-ipld-prime/fluent"
@@ -206,4 +207,197 @@ func TestGetWithLinkLoading(t *testing.T) {
 		Wish(t, err, ShouldEqual, nil)
 		Wish(t, n, ShouldEqual, basicnode.NewString("zoo"))
 	})
+}
+
+func TestFocusedTransform(t *testing.T) {
+	t.Run("UpdateMapEntry", func(t *testing.T) {
+		n, err := traversal.FocusedTransform(rootNode, ipld.ParsePath("plain"), func(progress traversal.Progress, prev ipld.Node) (ipld.Node, error) {
+			Wish(t, progress.Path.String(), ShouldEqual, "plain")
+			Wish(t, must.String(prev), ShouldEqual, "olde string")
+			nb := prev.Prototype().NewBuilder()
+			nb.AssignString("new string!")
+			return nb.Build(), nil
+		}, false)
+		Wish(t, err, ShouldEqual, nil)
+		Wish(t, n.Kind(), ShouldEqual, ipld.Kind_Map)
+		// updated value should be there
+		Wish(t, must.Node(n.LookupByString("plain")), ShouldEqual, basicnode.NewString("new string!"))
+		// everything else should be there
+		Wish(t, must.Node(n.LookupByString("linkedString")), ShouldEqual, must.Node(rootNode.LookupByString("linkedString")))
+		Wish(t, must.Node(n.LookupByString("linkedMap")), ShouldEqual, must.Node(rootNode.LookupByString("linkedMap")))
+		Wish(t, must.Node(n.LookupByString("linkedList")), ShouldEqual, must.Node(rootNode.LookupByString("linkedList")))
+		// everything should still be in the same order
+		Wish(t, keys(n), ShouldEqual, []string{"plain", "linkedString", "linkedMap", "linkedList"})
+	})
+	t.Run("UpdateDeeperMap", func(t *testing.T) {
+		n, err := traversal.FocusedTransform(middleMapNode, ipld.ParsePath("nested/alink"), func(progress traversal.Progress, prev ipld.Node) (ipld.Node, error) {
+			Wish(t, progress.Path.String(), ShouldEqual, "nested/alink")
+			Wish(t, prev, ShouldEqual, basicnode.NewLink(leafAlphaLnk))
+			return basicnode.NewString("new string!"), nil
+		}, false)
+		Wish(t, err, ShouldEqual, nil)
+		Wish(t, n.Kind(), ShouldEqual, ipld.Kind_Map)
+		// updated value should be there
+		Wish(t, must.Node(must.Node(n.LookupByString("nested")).LookupByString("alink")), ShouldEqual, basicnode.NewString("new string!"))
+		// everything else in the parent map should should be there!
+		Wish(t, must.Node(n.LookupByString("foo")), ShouldEqual, must.Node(middleMapNode.LookupByString("foo")))
+		Wish(t, must.Node(n.LookupByString("bar")), ShouldEqual, must.Node(middleMapNode.LookupByString("bar")))
+		// everything should still be in the same order
+		Wish(t, keys(n), ShouldEqual, []string{"foo", "bar", "nested"})
+	})
+	t.Run("AppendIfNotExists", func(t *testing.T) {
+		n, err := traversal.FocusedTransform(rootNode, ipld.ParsePath("newpart"), func(progress traversal.Progress, prev ipld.Node) (ipld.Node, error) {
+			Wish(t, progress.Path.String(), ShouldEqual, "newpart")
+			Wish(t, prev, ShouldEqual, nil) // REVIEW: should ipld.Absent be used here?  I lean towards "no" but am unsure what's least surprising here.
+			// An interesting thing to note about inserting a value this way is that you have no `prev.Prototype().NewBuilder()` to use if you wanted to.
+			//  But if that's an issue, then what you do is a focus or walk (transforming or not) to the parent node, get its child prototypes, and go from there.
+			return basicnode.NewString("new string!"), nil
+		}, false)
+		Wish(t, err, ShouldEqual, nil)
+		Wish(t, n.Kind(), ShouldEqual, ipld.Kind_Map)
+		// updated value should be there
+		Wish(t, must.Node(n.LookupByString("newpart")), ShouldEqual, basicnode.NewString("new string!"))
+		// everything should still be in the same order... with the new entry at the end.
+		Wish(t, keys(n), ShouldEqual, []string{"plain", "linkedString", "linkedMap", "linkedList", "newpart"})
+	})
+	t.Run("CreateParents", func(t *testing.T) {
+		n, err := traversal.FocusedTransform(rootNode, ipld.ParsePath("newsection/newpart"), func(progress traversal.Progress, prev ipld.Node) (ipld.Node, error) {
+			Wish(t, progress.Path.String(), ShouldEqual, "newsection/newpart")
+			Wish(t, prev, ShouldEqual, nil) // REVIEW: should ipld.Absent be used here?  I lean towards "no" but am unsure what's least surprising here.
+			return basicnode.NewString("new string!"), nil
+		}, true)
+		Wish(t, err, ShouldEqual, nil)
+		Wish(t, n.Kind(), ShouldEqual, ipld.Kind_Map)
+		// a new map node in the middle should've been created
+		n2 := must.Node(n.LookupByString("newsection"))
+		Wish(t, n2.Kind(), ShouldEqual, ipld.Kind_Map)
+		// updated value should in there
+		Wish(t, must.Node(n2.LookupByString("newpart")), ShouldEqual, basicnode.NewString("new string!"))
+		// everything in the root map should still be in the same order... with the new entry at the end.
+		Wish(t, keys(n), ShouldEqual, []string{"plain", "linkedString", "linkedMap", "linkedList", "newsection"})
+		// and the created intermediate map of course has just one entry.
+		Wish(t, keys(n2), ShouldEqual, []string{"newpart"})
+	})
+	t.Run("CreateParentsRequiresPermission", func(t *testing.T) {
+		_, err := traversal.FocusedTransform(rootNode, ipld.ParsePath("newsection/newpart"), func(progress traversal.Progress, prev ipld.Node) (ipld.Node, error) {
+			Wish(t, true, ShouldEqual, false) // ought not be reached
+			return nil, nil
+		}, false)
+		Wish(t, err, ShouldEqual, fmt.Errorf("transform: parent position at \"newsection\" did not exist (and createParents was false)"))
+	})
+	t.Run("UpdateListEntry", func(t *testing.T) {
+		n, err := traversal.FocusedTransform(middleListNode, ipld.ParsePath("2"), func(progress traversal.Progress, prev ipld.Node) (ipld.Node, error) {
+			Wish(t, progress.Path.String(), ShouldEqual, "2")
+			Wish(t, prev, ShouldEqual, basicnode.NewLink(leafBetaLnk))
+			return basicnode.NewString("new string!"), nil
+		}, false)
+		Wish(t, err, ShouldEqual, nil)
+		Wish(t, n.Kind(), ShouldEqual, ipld.Kind_List)
+		// updated value should be there
+		Wish(t, must.Node(n.LookupByIndex(2)), ShouldEqual, basicnode.NewString("new string!"))
+		// everything else should be there
+		Wish(t, n.Length(), ShouldEqual, int64(4))
+		Wish(t, must.Node(n.LookupByIndex(0)), ShouldEqual, basicnode.NewLink(leafAlphaLnk))
+		Wish(t, must.Node(n.LookupByIndex(1)), ShouldEqual, basicnode.NewLink(leafAlphaLnk))
+		Wish(t, must.Node(n.LookupByIndex(3)), ShouldEqual, basicnode.NewLink(leafAlphaLnk))
+	})
+	t.Run("AppendToList", func(t *testing.T) {
+		n, err := traversal.FocusedTransform(middleListNode, ipld.ParsePath("-"), func(progress traversal.Progress, prev ipld.Node) (ipld.Node, error) {
+			Wish(t, progress.Path.String(), ShouldEqual, "4")
+			Wish(t, prev, ShouldEqual, nil)
+			return basicnode.NewString("new string!"), nil
+		}, false)
+		Wish(t, err, ShouldEqual, nil)
+		Wish(t, n.Kind(), ShouldEqual, ipld.Kind_List)
+		// updated value should be there
+		Wish(t, must.Node(n.LookupByIndex(4)), ShouldEqual, basicnode.NewString("new string!"))
+		// everything else should be there
+		Wish(t, n.Length(), ShouldEqual, int64(5))
+	})
+	t.Run("ListBounds", func(t *testing.T) {
+		_, err := traversal.FocusedTransform(middleListNode, ipld.ParsePath("4"), func(progress traversal.Progress, prev ipld.Node) (ipld.Node, error) {
+			Wish(t, true, ShouldEqual, false) // ought not be reached
+			return nil, nil
+		}, false)
+		Wish(t, err, ShouldEqual, fmt.Errorf("transform: cannot navigate path segment \"4\" at \"\" because it is beyond the list bounds"))
+	})
+	t.Run("ReplaceRoot", func(t *testing.T) { // a fairly degenerate case and no reason to do this, but should work.
+		n, err := traversal.FocusedTransform(middleListNode, ipld.ParsePath(""), func(progress traversal.Progress, prev ipld.Node) (ipld.Node, error) {
+			Wish(t, progress.Path.String(), ShouldEqual, "")
+			Wish(t, prev, ShouldEqual, middleListNode)
+			nb := basicnode.Prototype.Any.NewBuilder()
+			la, _ := nb.BeginList(0)
+			la.Finish()
+			return nb.Build(), nil
+		}, false)
+		Wish(t, err, ShouldEqual, nil)
+		Wish(t, n.Kind(), ShouldEqual, ipld.Kind_List)
+		Wish(t, n.Length(), ShouldEqual, int64(0))
+	})
+}
+
+func TestFocusedTransformWithLinks(t *testing.T) {
+	var storage2 = make(map[ipld.Link][]byte)
+	cfg := traversal.Config{
+		LinkLoader: func(lnk ipld.Link, _ ipld.LinkContext) (io.Reader, error) {
+			return bytes.NewReader(storage[lnk]), nil
+		},
+		LinkTargetNodePrototypeChooser: func(_ ipld.Link, _ ipld.LinkContext) (ipld.NodePrototype, error) {
+			return basicnode.Prototype.Any, nil
+		},
+		LinkStorer: func(lnkCtx ipld.LinkContext) (io.Writer, ipld.StoreCommitter, error) {
+			wr := bytes.Buffer{}
+			return &wr, func(link ipld.Link) error {
+				storage2[link] = wr.Bytes()
+				return nil
+			}, nil
+		},
+	}
+	t.Run("UpdateMapBeyondLink", func(t *testing.T) {
+		n, err := traversal.Progress{
+			Cfg: &cfg,
+		}.FocusedTransform(rootNode, ipld.ParsePath("linkedMap/nested/nonlink"), func(progress traversal.Progress, prev ipld.Node) (ipld.Node, error) {
+			Wish(t, progress.Path.String(), ShouldEqual, "linkedMap/nested/nonlink")
+			Wish(t, must.String(prev), ShouldEqual, "zoo")
+			Wish(t, progress.LastBlock.Path.String(), ShouldEqual, "linkedMap")
+			Wish(t, progress.LastBlock.Link.String(), ShouldEqual, "baguqefye7xlxqda")
+			nb := prev.Prototype().NewBuilder()
+			nb.AssignString("new string!")
+			return nb.Build(), nil
+		}, false)
+		Wish(t, err, ShouldEqual, nil)
+		Wish(t, n.Kind(), ShouldEqual, ipld.Kind_Map)
+		// there should be a new object in our new storage!
+		Wish(t, len(storage2), ShouldEqual, 1)
+		// cleanup for next test
+		storage2 = make(map[ipld.Link][]byte)
+	})
+	t.Run("UpdateNotBeyondLink", func(t *testing.T) {
+		// This is replacing a link with a non-link.  Doing so shouldn't hit storage.
+		n, err := traversal.Progress{
+			Cfg: &cfg,
+		}.FocusedTransform(rootNode, ipld.ParsePath("linkedMap"), func(progress traversal.Progress, prev ipld.Node) (ipld.Node, error) {
+			Wish(t, progress.Path.String(), ShouldEqual, "linkedMap")
+			nb := prev.Prototype().NewBuilder()
+			nb.AssignString("new string!")
+			return nb.Build(), nil
+		}, false)
+		Wish(t, err, ShouldEqual, nil)
+		Wish(t, n.Kind(), ShouldEqual, ipld.Kind_Map)
+		// there should be no new objects in our new storage!
+		Wish(t, len(storage2), ShouldEqual, 0)
+		// cleanup for next test
+		storage2 = make(map[ipld.Link][]byte)
+	})
+
+	// link traverse to scalar // this is unspecifiable using the current path syntax!  you'll just end up replacing the link with the scalar!
+}
+
+func keys(n ipld.Node) []string {
+	v := make([]string, 0, n.Length())
+	for itr := n.MapIterator(); !itr.Done(); {
+		k, _, _ := itr.Next()
+		v = append(v, must.String(k))
+	}
+	return v
 }

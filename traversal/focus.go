@@ -36,8 +36,8 @@ func Get(n ipld.Node, p ipld.Path) (ipld.Node, error) {
 // It cannot cross links automatically (since this requires configuration).
 // Use the equivalent FocusedTransform function on the Progress structure
 // for more advanced and configurable walks.
-func FocusedTransform(n ipld.Node, p ipld.Path, fn TransformFn) (ipld.Node, error) {
-	return Progress{}.FocusedTransform(n, p, fn)
+func FocusedTransform(n ipld.Node, p ipld.Path, fn TransformFn, createParents bool) (ipld.Node, error) {
+	return Progress{}.FocusedTransform(n, p, fn, createParents)
 }
 
 // Focus traverses a Node graph according to a path, reaches a single Node,
@@ -171,13 +171,200 @@ func (prog *Progress) get(n ipld.Node, p ipld.Path, trackProgress bool) (ipld.No
 // using more TransformFn calls as desired to produce the replacement elements
 // if it so happens that those replacement elements are easiest to construct
 // by regarding them as incremental updates to the previous values.
+// (This approach can also be used when doing other modifications like insertion
+// or reordering -- which would otherwise be tricky to define, since
+// each operation could change the meaning of subsequently used indexes.)
+//
+// As a special case, list appending is supported by using the path segment "-".
+// (This is determined by the node it applies to -- if that path segment
+// is applied to a map, it's just a regular map key of the string of dash.)
 //
 // Note that anything you can do with the Transform function, you can also
 // do with regular Node and NodeBuilder usage directly.  Transform just
 // does a large amount of the intermediate bookkeeping that's useful when
 // creating new values which are partial updates to existing values.
 //
-// This feature is not yet implemented.
-func (prog Progress) FocusedTransform(n ipld.Node, p ipld.Path, fn TransformFn) (ipld.Node, error) {
-	panic("TODO") // TODO surprisingly different from Focus -- need to store nodes we traversed, and able do building.
+func (prog Progress) FocusedTransform(n ipld.Node, p ipld.Path, fn TransformFn, createParents bool) (ipld.Node, error) {
+	prog.init()
+	nb := n.Prototype().NewBuilder()
+	if err := prog.focusedTransform(n, nb, p, fn, createParents); err != nil {
+		return nil, err
+	}
+	return nb.Build(), nil
+}
+
+// focusedTransform assumes that an update will actually happen, and as it recurses deeper,
+// begins building an updated node tree.
+//
+// As implemented, this is not actually efficient if the update will be a no-op; it won't notice until it gets there.
+func (prog Progress) focusedTransform(n ipld.Node, na ipld.NodeAssembler, p ipld.Path, fn TransformFn, createParents bool) error {
+	if p.Len() == 0 {
+		n2, err := fn(prog, n)
+		if err != nil {
+			return err
+		}
+		return na.ConvertFrom(n2)
+	}
+	seg, p2 := p.Shift()
+	// Special branch for if we've entered createParent mode in an earlier step.
+	//  This needs slightly different logic because there's no prior node to reference
+	//   (and we wouldn't want to waste time creating a dummy one).
+	if n == nil {
+		ma, err := na.BeginMap(1)
+		if err != nil {
+			return err
+		}
+		prog.Path = prog.Path.AppendSegment(seg)
+		if err := ma.AssembleKey().AssignString(seg.String()); err != nil {
+			return err
+		}
+		if err := prog.focusedTransform(nil, ma.AssembleValue(), p2, fn, createParents); err != nil {
+			return err
+		}
+		return ma.Finish()
+	}
+	// Handle node based on kind.
+	//  If it's a recursive kind (map or list), we'll be recursing on it.
+	//  If it's a link, load it!  And recurse on it.
+	//  If it's a scalar kind (any of the rest), we'll... be erroring, actually;
+	//   if we're at the end, it was already handled at the top of the function,
+	//   so we only get to this case if we were expecting to go deeper.
+	switch n.Kind() {
+	case ipld.Kind_Map:
+		ma, err := na.BeginMap(n.Length())
+		if err != nil {
+			return err
+		}
+		// Copy children over.  Replace the target (preserving its current position!) while doing this, if found.
+		//  Note that we don't recurse into copying children (assuming ConvertFrom doesn't); this is as shallow/COW as the ConvertFrom implementation permits.
+		var replaced bool
+		for itr := n.MapIterator(); !itr.Done(); {
+			k, v, err := itr.Next()
+			if err != nil {
+				return err
+			}
+			if err := ma.AssembleKey().ConvertFrom(k); err != nil {
+				return err
+			}
+			if asPathSegment(k).Equals(seg) {
+				prog.Path = prog.Path.AppendSegment(seg)
+				if err := prog.focusedTransform(v, ma.AssembleValue(), p2, fn, createParents); err != nil {
+					return err
+				}
+				replaced = true
+			} else {
+				if err := ma.AssembleValue().ConvertFrom(v); err != nil {
+					return err
+				}
+			}
+		}
+		if replaced {
+			return ma.Finish()
+		}
+		// If we didn't find the target yet: append it.
+		//  If we're at the end, always do this;
+		//  if we're in the middle, only do this if createParents mode is enabled.
+		prog.Path = prog.Path.AppendSegment(seg)
+		if p.Len() > 1 && !createParents {
+			return fmt.Errorf("transform: parent position at %q did not exist (and createParents was false)", prog.Path)
+		}
+		if err := ma.AssembleKey().AssignString(seg.String()); err != nil {
+			return err
+		}
+		if err := prog.focusedTransform(nil, ma.AssembleValue(), p2, fn, createParents); err != nil {
+			return err
+		}
+		return ma.Finish()
+	case ipld.Kind_List:
+		la, err := na.BeginList(n.Length())
+		if err != nil {
+			return err
+		}
+		// First figure out if this path segment can apply to a list sanely at all.
+		//  Simultaneously, get it in numeric format, so subsequent operations are cheaper.
+		ti, err := seg.Index()
+		if err != nil {
+			if seg.String() == "-" {
+				ti = -1
+			} else {
+				return fmt.Errorf("transform: cannot navigate path segment %q at %q because a list is here", seg, prog.Path)
+			}
+		}
+		// Copy children over.  Replace the target (preserving its current position!) while doing this, if found.
+		//  Note that we don't recurse into copying children (assuming ConvertFrom doesn't); this is as shallow/COW as the ConvertFrom implementation permits.
+		var replaced bool
+		for itr := n.ListIterator(); !itr.Done(); {
+			i, v, err := itr.Next()
+			if err != nil {
+				return err
+			}
+			if ti == i {
+				prog.Path = prog.Path.AppendSegment(seg)
+				if err := prog.focusedTransform(v, la.AssembleValue(), p2, fn, createParents); err != nil {
+					return err
+				}
+				replaced = true
+			} else {
+				if err := la.AssembleValue().ConvertFrom(v); err != nil {
+					return err
+				}
+			}
+		}
+		if replaced {
+			return la.Finish()
+		}
+		// If we didn't find the target yet: hopefully this was an append operation;
+		//  if it wasn't, then it's index out of bounds.  We don't arbitrarily extend lists with filler.
+		if ti >= 0 {
+			return fmt.Errorf("transform: cannot navigate path segment %q at %q because it is beyond the list bounds", seg, prog.Path)
+		}
+		prog.Path = prog.Path.AppendSegment(ipld.PathSegmentOfInt(n.Length()))
+		if err := prog.focusedTransform(nil, la.AssembleValue(), p2, fn, createParents); err != nil {
+			return err
+		}
+		return la.Finish()
+	case ipld.Kind_Link:
+		lnkCtx := ipld.LinkContext{
+			LinkPath:   prog.Path,
+			LinkNode:   n,
+			ParentNode: nil, // TODO inconvenient that we don't have this.  maybe this whole case should be a helper function.
+		}
+		lnk, _ := n.AsLink()
+		// Pick what in-memory format we will build.
+		np, err := prog.Cfg.LinkTargetNodePrototypeChooser(lnk, lnkCtx)
+		if err != nil {
+			return fmt.Errorf("transform: error traversing node at %q: could not load link %q: %s", prog.Path, lnk, err)
+		}
+		nb := np.NewBuilder()
+		// Load link!
+		err = lnk.Load(
+			prog.Cfg.Ctx,
+			lnkCtx,
+			nb,
+			prog.Cfg.LinkLoader,
+		)
+		if err != nil {
+			return fmt.Errorf("transform: error traversing node at %q: could not load link %q: %s", prog.Path, lnk, err)
+		}
+		prog.LastBlock.Path = prog.Path
+		prog.LastBlock.Link = lnk
+		n = nb.Build()
+		// Recurse.
+		//  Start a new builder for this, using the same prototype we just used for loading the link.
+		//   (Or more specifically: this is an opportunity for just resetting a builder and reusing memory!)
+		//  When we come back... we'll have to engage serialization and storage on the new node!
+		//  Path isn't updated here (neither progress nor to-go).
+		nb.Reset()
+		if err := prog.focusedTransform(n, nb, p, fn, createParents); err != nil {
+			return err
+		}
+		n = nb.Build()
+		lnk, err = lnk.LinkBuilder().Build(prog.Cfg.Ctx, lnkCtx, n, prog.Cfg.LinkStorer)
+		if err != nil {
+			return fmt.Errorf("transform: error storing transformed node at %q: %s", prog.Path, err)
+		}
+		return na.AssignLink(lnk)
+	default:
+		return fmt.Errorf("transform: parent position at %q was a scalar, cannot go deeper", prog.Path)
+	}
 }
