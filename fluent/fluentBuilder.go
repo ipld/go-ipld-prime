@@ -53,7 +53,7 @@ type NodeAssembler interface {
 	AssignString(string)
 	AssignBytes([]byte)
 	AssignLink(ipld.Link)
-	ConvertFrom(ipld.Node)
+	AssignNode(ipld.Node)
 
 	Prototype() ipld.NodePrototype
 }
@@ -143,8 +143,8 @@ func (fna *nodeAssembler) AssignLink(v ipld.Link) {
 		panic(Error{err})
 	}
 }
-func (fna *nodeAssembler) ConvertFrom(v ipld.Node) {
-	if err := fna.na.ConvertFrom(v); err != nil {
+func (fna *nodeAssembler) AssignNode(v ipld.Node) {
+	if err := fna.na.AssignNode(v); err != nil {
 		panic(Error{err})
 	}
 }

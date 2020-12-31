@@ -88,7 +88,7 @@ func (ssb *selectorSpecBuilder) ExploreRecursive(limit selector.RecursionLimit, 
 						panic("Unsupported recursion limit type")
 					}
 				})
-				na.AssembleEntry(selector.SelectorKey_Sequence).ConvertFrom(sequence.Node())
+				na.AssembleEntry(selector.SelectorKey_Sequence).AssignNode(sequence.Node())
 			})
 		}),
 	}
@@ -98,7 +98,7 @@ func (ssb *selectorSpecBuilder) ExploreAll(next SelectorSpec) SelectorSpec {
 	return selectorSpec{
 		fluent.MustBuildMap(ssb.np, 1, func(na fluent.MapAssembler) {
 			na.AssembleEntry(selector.SelectorKey_ExploreAll).CreateMap(1, func(na fluent.MapAssembler) {
-				na.AssembleEntry(selector.SelectorKey_Next).ConvertFrom(next.Node())
+				na.AssembleEntry(selector.SelectorKey_Next).AssignNode(next.Node())
 			})
 		}),
 	}
@@ -108,7 +108,7 @@ func (ssb *selectorSpecBuilder) ExploreIndex(index int64, next SelectorSpec) Sel
 		fluent.MustBuildMap(ssb.np, 1, func(na fluent.MapAssembler) {
 			na.AssembleEntry(selector.SelectorKey_ExploreIndex).CreateMap(2, func(na fluent.MapAssembler) {
 				na.AssembleEntry(selector.SelectorKey_Index).AssignInt(index)
-				na.AssembleEntry(selector.SelectorKey_Next).ConvertFrom(next.Node())
+				na.AssembleEntry(selector.SelectorKey_Next).AssignNode(next.Node())
 			})
 		}),
 	}
@@ -120,7 +120,7 @@ func (ssb *selectorSpecBuilder) ExploreRange(start, end int64, next SelectorSpec
 			na.AssembleEntry(selector.SelectorKey_ExploreRange).CreateMap(3, func(na fluent.MapAssembler) {
 				na.AssembleEntry(selector.SelectorKey_Start).AssignInt(start)
 				na.AssembleEntry(selector.SelectorKey_End).AssignInt(end)
-				na.AssembleEntry(selector.SelectorKey_Next).ConvertFrom(next.Node())
+				na.AssembleEntry(selector.SelectorKey_Next).AssignNode(next.Node())
 			})
 		}),
 	}
@@ -131,7 +131,7 @@ func (ssb *selectorSpecBuilder) ExploreUnion(members ...SelectorSpec) SelectorSp
 		fluent.MustBuildMap(ssb.np, 1, func(na fluent.MapAssembler) {
 			na.AssembleEntry(selector.SelectorKey_ExploreUnion).CreateList(int64(len(members)), func(na fluent.ListAssembler) {
 				for _, member := range members {
-					na.AssembleValue().ConvertFrom(member.Node())
+					na.AssembleValue().AssignNode(member.Node())
 				}
 			})
 		}),
@@ -163,5 +163,5 @@ type exploreFieldsSpecBuilder struct {
 }
 
 func (efsb exploreFieldsSpecBuilder) Insert(field string, s SelectorSpec) {
-	efsb.na.AssembleEntry(field).ConvertFrom(s.Node())
+	efsb.na.AssembleEntry(field).AssignNode(s.Node())
 }

@@ -131,7 +131,7 @@ func (plainInt__Assembler) AssignBytes([]byte) error {
 func (plainInt__Assembler) AssignLink(ipld.Link) error {
 	return mixins.IntAssembler{TypeName: "int"}.AssignLink(nil)
 }
-func (na *plainInt__Assembler) ConvertFrom(v ipld.Node) error {
+func (na *plainInt__Assembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsInt(); err != nil {
 		return err
 	} else {

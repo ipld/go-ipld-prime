@@ -26,7 +26,7 @@ type NodeAssembler interface {
 	AssignBytes([]byte) error
 	AssignLink(Link) error
 
-	ConvertFrom(Node) error // if you already have a completely constructed subtree, this method puts the whole thing in place at once.
+	AssignNode(Node) error // if you already have a completely constructed subtree, this method puts the whole thing in place at once.
 
 	// Prototype returns a NodePrototype describing what kind of value we're assembling.
 	//
@@ -34,9 +34,9 @@ type NodeAssembler interface {
 	// just feed data and check errors), but it's here.
 	//
 	// Using `this.Prototype().NewBuilder()` to produce a new `Node`,
-	// then giving that node to `this.ConvertFrom(n)` should always work.
+	// then giving that node to `this.AssignNode(n)` should always work.
 	// (Note that this is not necessarily an _exclusive_ statement on what
-	// sort of values will be accepted by `this.ConvertFrom(n)`.)
+	// sort of values will be accepted by `this.AssignNode(n)`.)
 	Prototype() NodePrototype
 }
 

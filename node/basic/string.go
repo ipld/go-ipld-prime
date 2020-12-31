@@ -136,7 +136,7 @@ func (plainString__Assembler) AssignBytes([]byte) error {
 func (plainString__Assembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{TypeName: "string"}.AssignLink(nil)
 }
-func (na *plainString__Assembler) ConvertFrom(v ipld.Node) error {
+func (na *plainString__Assembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
 		return err
 	} else {

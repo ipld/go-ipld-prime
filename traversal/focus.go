@@ -203,7 +203,7 @@ func (prog Progress) focusedTransform(n ipld.Node, na ipld.NodeAssembler, p ipld
 		if err != nil {
 			return err
 		}
-		return na.ConvertFrom(n2)
+		return na.AssignNode(n2)
 	}
 	seg, p2 := p.Shift()
 	// Special branch for if we've entered createParent mode in an earlier step.
@@ -236,14 +236,14 @@ func (prog Progress) focusedTransform(n ipld.Node, na ipld.NodeAssembler, p ipld
 			return err
 		}
 		// Copy children over.  Replace the target (preserving its current position!) while doing this, if found.
-		//  Note that we don't recurse into copying children (assuming ConvertFrom doesn't); this is as shallow/COW as the ConvertFrom implementation permits.
+		//  Note that we don't recurse into copying children (assuming AssignNode doesn't); this is as shallow/COW as the AssignNode implementation permits.
 		var replaced bool
 		for itr := n.MapIterator(); !itr.Done(); {
 			k, v, err := itr.Next()
 			if err != nil {
 				return err
 			}
-			if err := ma.AssembleKey().ConvertFrom(k); err != nil {
+			if err := ma.AssembleKey().AssignNode(k); err != nil {
 				return err
 			}
 			if asPathSegment(k).Equals(seg) {
@@ -253,7 +253,7 @@ func (prog Progress) focusedTransform(n ipld.Node, na ipld.NodeAssembler, p ipld
 				}
 				replaced = true
 			} else {
-				if err := ma.AssembleValue().ConvertFrom(v); err != nil {
+				if err := ma.AssembleValue().AssignNode(v); err != nil {
 					return err
 				}
 			}
@@ -291,7 +291,7 @@ func (prog Progress) focusedTransform(n ipld.Node, na ipld.NodeAssembler, p ipld
 			}
 		}
 		// Copy children over.  Replace the target (preserving its current position!) while doing this, if found.
-		//  Note that we don't recurse into copying children (assuming ConvertFrom doesn't); this is as shallow/COW as the ConvertFrom implementation permits.
+		//  Note that we don't recurse into copying children (assuming AssignNode doesn't); this is as shallow/COW as the AssignNode implementation permits.
 		var replaced bool
 		for itr := n.ListIterator(); !itr.Done(); {
 			i, v, err := itr.Next()
@@ -305,7 +305,7 @@ func (prog Progress) focusedTransform(n ipld.Node, na ipld.NodeAssembler, p ipld
 				}
 				replaced = true
 			} else {
-				if err := la.AssembleValue().ConvertFrom(v); err != nil {
+				if err := la.AssembleValue().AssignNode(v); err != nil {
 					return err
 				}
 			}

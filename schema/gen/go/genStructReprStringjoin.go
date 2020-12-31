@@ -214,13 +214,13 @@ func (g structReprStringjoinReprBuilderGenerator) EmitNodeAssemblerMethodAssignS
 	`, w, g.AdjCfg, g)
 }
 
-func (g structReprStringjoinReprBuilderGenerator) EmitNodeAssemblerMethodConvertFrom(w io.Writer) {
-	// ConvertFrom goes through three phases:
+func (g structReprStringjoinReprBuilderGenerator) EmitNodeAssemblerMethodAssignNode(w io.Writer) {
+	// AssignNode goes through three phases:
 	// 1. is it null?  Jump over to AssignNull (which may or may not reject it).
 	// 2. is it our own type?  Handle specially -- we might be able to do efficient things.
 	// 3. is it the right kind to morph into us?  Do so.
 	doTemplate(`
-		func (na *_{{ .Type | TypeSymbol }}__ReprAssembler) ConvertFrom(v ipld.Node) error {
+		func (na *_{{ .Type | TypeSymbol }}__ReprAssembler) AssignNode(v ipld.Node) error {
 			if v.IsNull() {
 				return na.AssignNull()
 			}

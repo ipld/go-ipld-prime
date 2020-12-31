@@ -339,8 +339,8 @@ func (g unionBuilderGenerator) EmitNodeAssemblerMethodAssignNull(w io.Writer) {
 	//  but it's functionally accurate: the generated method should include a branch for the 'midvalue' state.
 	emitNodeAssemblerMethodAssignNull_recursive(w, g.AdjCfg, g)
 }
-func (g unionBuilderGenerator) EmitNodeAssemblerMethodConvertFrom(w io.Writer) {
-	// ConvertFrom goes through three phases:
+func (g unionBuilderGenerator) EmitNodeAssemblerMethodAssignNode(w io.Writer) {
+	// AssignNode goes through three phases:
 	// 1. is it null?  Jump over to AssignNull (which may or may not reject it).
 	// 2. is it our own type?  Handle specially -- we might be able to do efficient things.
 	// 3. is it the right kind to morph into us?  Do so.
@@ -349,7 +349,7 @@ func (g unionBuilderGenerator) EmitNodeAssemblerMethodConvertFrom(w io.Writer) {
 	//
 	// DRY: this turns out to be textually identical to the method for structs!  (At least, for now.  It could/should probably be optimized to get to the point faster in phase 3.)
 	doTemplate(`
-		func (na *_{{ .Type | TypeSymbol }}__Assembler) ConvertFrom(v ipld.Node) error {
+		func (na *_{{ .Type | TypeSymbol }}__Assembler) AssignNode(v ipld.Node) error {
 			if v.IsNull() {
 				return na.AssignNull()
 			}
@@ -372,7 +372,7 @@ func (g unionBuilderGenerator) EmitNodeAssemblerMethodConvertFrom(w io.Writer) {
 				return nil
 			}
 			if v.Kind() != ipld.Kind_Map {
-				return ipld.ErrWrongKind{TypeName: "{{ .PkgName }}.{{ .Type.Name }}", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
+				return ipld.ErrWrongKind{TypeName: "{{ .PkgName }}.{{ .Type.Name }}", MethodName: "AssignNode", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 			}
 			itr := v.MapIterator()
 			for !itr.Done() {
@@ -380,10 +380,10 @@ func (g unionBuilderGenerator) EmitNodeAssemblerMethodConvertFrom(w io.Writer) {
 				if err != nil {
 					return err
 				}
-				if err := na.AssembleKey().ConvertFrom(k); err != nil {
+				if err := na.AssembleKey().AssignNode(k); err != nil {
 					return err
 				}
-				if err := na.AssembleValue().ConvertFrom(v); err != nil {
+				if err := na.AssembleValue().AssignNode(v); err != nil {
 					return err
 				}
 			}
@@ -641,7 +641,7 @@ func (g unionBuilderGenerator) emitKeyAssembler(w io.Writer) {
 	stubs.EmitNodeAssemblerMethodAssignBytes(w)
 	stubs.EmitNodeAssemblerMethodAssignLink(w)
 	doTemplate(`
-		func (ka *_{{ .Type | TypeSymbol }}__KeyAssembler) ConvertFrom(v ipld.Node) error {
+		func (ka *_{{ .Type | TypeSymbol }}__KeyAssembler) AssignNode(v ipld.Node) error {
 			if v2, err := v.AsString(); err != nil {
 				return err
 			} else {

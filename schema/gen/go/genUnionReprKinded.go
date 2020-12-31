@@ -542,8 +542,8 @@ func (g unionKindedReprBuilderGenerator) EmitNodeAssemblerMethodAssignLink(w io.
 		false,
 	), w, g.AdjCfg, g)
 }
-func (g unionKindedReprBuilderGenerator) EmitNodeAssemblerMethodConvertFrom(w io.Writer) {
-	// This is a very mundane ConvertFrom: it just calls out to the other methods on this type.
+func (g unionKindedReprBuilderGenerator) EmitNodeAssemblerMethodAssignNode(w io.Writer) {
+	// This is a very mundane AssignNode: it just calls out to the other methods on this type.
 	//  However, even that is a little more exciting than usual: because we can't *necessarily* reject any kind of arg,
 	//   we have the whole barrage of switch cases here.  We then leave any particular rejections to those methods.
 	//  Several cases could be statically replaced with errors and it would be an improvement.
@@ -551,7 +551,7 @@ func (g unionKindedReprBuilderGenerator) EmitNodeAssemblerMethodConvertFrom(w io
 	// Errors are problematic again, same as is noted in kindedUnionNodeAssemblerMethodTemplateMunge.
 	//  We also end up returning errors with other method names due to how we delegate; unfortunate.
 	doTemplate(`
-		func (na *_{{ .Type | TypeSymbol }}__ReprAssembler) ConvertFrom(v ipld.Node) error {
+		func (na *_{{ .Type | TypeSymbol }}__ReprAssembler) AssignNode(v ipld.Node) error {
 			if v.IsNull() {
 				return na.AssignNull()
 			}
@@ -600,10 +600,10 @@ func (g unionKindedReprBuilderGenerator) EmitNodeAssemblerMethodConvertFrom(w io
 					if err != nil {
 						return err
 					}
-					if err := na.AssembleKey().ConvertFrom(k); err != nil {
+					if err := na.AssembleKey().AssignNode(k); err != nil {
 						return err
 					}
-					if err := na.AssembleValue().ConvertFrom(v); err != nil {
+					if err := na.AssembleValue().AssignNode(v); err != nil {
 						return err
 					}
 				}
@@ -619,7 +619,7 @@ func (g unionKindedReprBuilderGenerator) EmitNodeAssemblerMethodConvertFrom(w io
 					if err != nil {
 						return err
 					}
-					if err := na.AssembleValue().ConvertFrom(v); err != nil {
+					if err := na.AssembleValue().AssignNode(v); err != nil {
 						return err
 					}
 				}

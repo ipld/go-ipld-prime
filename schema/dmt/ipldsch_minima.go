@@ -45,7 +45,7 @@ func (ea _ErrorThunkAssembler) AssignFloat(float64) error                     { 
 func (ea _ErrorThunkAssembler) AssignString(string) error                     { return ea.e }
 func (ea _ErrorThunkAssembler) AssignBytes([]byte) error                      { return ea.e }
 func (ea _ErrorThunkAssembler) AssignLink(ipld.Link) error                    { return ea.e }
-func (ea _ErrorThunkAssembler) ConvertFrom(ipld.Node) error                   { return ea.e }
+func (ea _ErrorThunkAssembler) AssignNode(ipld.Node) error                    { return ea.e }
 func (ea _ErrorThunkAssembler) Prototype() ipld.NodePrototype {
 	panic(fmt.Errorf("cannot get prototype from error-carrying assembler: already derailed with error: %w", ea.e))
 }

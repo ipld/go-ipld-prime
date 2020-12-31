@@ -196,8 +196,8 @@ func (g mapReprMapReprBuilderGenerator) EmitNodeAssemblerMethodBeginMap(w io.Wri
 func (g mapReprMapReprBuilderGenerator) EmitNodeAssemblerMethodAssignNull(w io.Writer) {
 	emitNodeAssemblerMethodAssignNull_recursive(w, g.AdjCfg, g)
 }
-func (g mapReprMapReprBuilderGenerator) EmitNodeAssemblerMethodConvertFrom(w io.Writer) {
-	emitNodeAssemblerMethodConvertFrom_mapoid(w, g.AdjCfg, g)
+func (g mapReprMapReprBuilderGenerator) EmitNodeAssemblerMethodAssignNode(w io.Writer) {
+	emitNodeAssemblerMethodAssignNode_mapoid(w, g.AdjCfg, g)
 }
 func (g mapReprMapReprBuilderGenerator) EmitNodeAssemblerOtherBits(w io.Writer) {
 	emitNodeAssemblerHelper_mapoid_keyTidyHelper(w, g.AdjCfg, g)

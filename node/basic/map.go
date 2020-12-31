@@ -196,7 +196,7 @@ func (plainMap__Assembler) AssignBytes([]byte) error {
 func (plainMap__Assembler) AssignLink(ipld.Link) error {
 	return mixins.MapAssembler{TypeName: "map"}.AssignLink(nil)
 }
-func (na *plainMap__Assembler) ConvertFrom(v ipld.Node) error {
+func (na *plainMap__Assembler) AssignNode(v ipld.Node) error {
 	// Sanity check assembler state.
 	//  Update of state to 'finished' comes later; where exactly depends on if shortcuts apply.
 	if na.state != maState_initial {
@@ -213,9 +213,9 @@ func (na *plainMap__Assembler) ConvertFrom(v ipld.Node) error {
 		return nil
 	}
 	// If the above shortcut didn't work, resort to a generic copy.
-	//  We call ConvertFrom for all the child values, giving them a chance to hit shortcuts even if we didn't.
+	//  We call AssignNode for all the child values, giving them a chance to hit shortcuts even if we didn't.
 	if v.Kind() != ipld.Kind_Map {
-		return ipld.ErrWrongKind{TypeName: "map", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
+		return ipld.ErrWrongKind{TypeName: "map", MethodName: "AssignNode", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
 	}
 	itr := v.MapIterator()
 	for !itr.Done() {
@@ -223,10 +223,10 @@ func (na *plainMap__Assembler) ConvertFrom(v ipld.Node) error {
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleKey().ConvertFrom(k); err != nil {
+		if err := na.AssembleKey().AssignNode(k); err != nil {
 			return err
 		}
-		if err := na.AssembleValue().ConvertFrom(v); err != nil {
+		if err := na.AssembleValue().AssignNode(v); err != nil {
 			return err
 		}
 	}
@@ -348,7 +348,7 @@ func (plainMap__KeyAssembler) AssignBytes([]byte) error {
 func (plainMap__KeyAssembler) AssignLink(ipld.Link) error {
 	return mixins.StringAssembler{TypeName: "string"}.AssignLink(nil)
 }
-func (mka *plainMap__KeyAssembler) ConvertFrom(v ipld.Node) error {
+func (mka *plainMap__KeyAssembler) AssignNode(v ipld.Node) error {
 	vs, err := v.AsString()
 	if err != nil {
 		return fmt.Errorf("cannot assign non-string node into map key assembler") // FIXME:errors: this doesn't quite fit in ErrWrongKind cleanly; new error type?
@@ -376,33 +376,33 @@ func (mva *plainMap__ValueAssembler) BeginList(sizeHint int64) (ipld.ListAssembl
 	return &la, err
 }
 func (mva *plainMap__ValueAssembler) AssignNull() error {
-	return mva.ConvertFrom(ipld.Null)
+	return mva.AssignNode(ipld.Null)
 }
 func (mva *plainMap__ValueAssembler) AssignBool(v bool) error {
 	vb := plainBool(v)
-	return mva.ConvertFrom(&vb)
+	return mva.AssignNode(&vb)
 }
 func (mva *plainMap__ValueAssembler) AssignInt(v int64) error {
 	vb := plainInt(v)
-	return mva.ConvertFrom(&vb)
+	return mva.AssignNode(&vb)
 }
 func (mva *plainMap__ValueAssembler) AssignFloat(v float64) error {
 	vb := plainFloat(v)
-	return mva.ConvertFrom(&vb)
+	return mva.AssignNode(&vb)
 }
 func (mva *plainMap__ValueAssembler) AssignString(v string) error {
 	vb := plainString(v)
-	return mva.ConvertFrom(&vb)
+	return mva.AssignNode(&vb)
 }
 func (mva *plainMap__ValueAssembler) AssignBytes(v []byte) error {
 	vb := plainBytes(v)
-	return mva.ConvertFrom(&vb)
+	return mva.AssignNode(&vb)
 }
 func (mva *plainMap__ValueAssembler) AssignLink(v ipld.Link) error {
 	vb := plainLink{v}
-	return mva.ConvertFrom(&vb)
+	return mva.AssignNode(&vb)
 }
-func (mva *plainMap__ValueAssembler) ConvertFrom(v ipld.Node) error {
+func (mva *plainMap__ValueAssembler) AssignNode(v ipld.Node) error {
 	l := len(mva.ma.w.t) - 1
 	mva.ma.w.t[l].v = v
 	mva.ma.w.m[string(mva.ma.w.t[l].k)] = v
@@ -445,7 +445,7 @@ func (ma *plainMap__ValueAssemblerMap) Finish() error {
 	}
 	w := ma.ca.w
 	ma.ca.w = nil
-	return ma.p.va.ConvertFrom(w)
+	return ma.p.va.AssignNode(w)
 }
 
 type plainMap__ValueAssemblerList struct {
@@ -470,5 +470,5 @@ func (la *plainMap__ValueAssemblerList) Finish() error {
 	}
 	w := la.ca.w
 	la.ca.w = nil
-	return la.p.va.ConvertFrom(w)
+	return la.p.va.AssignNode(w)
 }

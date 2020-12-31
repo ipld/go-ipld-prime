@@ -132,7 +132,7 @@ func (na *plainLink__Assembler) AssignLink(v ipld.Link) error {
 	na.w.x = v
 	return nil
 }
-func (na *plainLink__Assembler) ConvertFrom(v ipld.Node) error {
+func (na *plainLink__Assembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsLink(); err != nil {
 		return err
 	} else {

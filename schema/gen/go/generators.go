@@ -72,7 +72,7 @@ type NodeBuilderGenerator interface {
 	EmitNodeAssemblerMethodAssignString(io.Writer)
 	EmitNodeAssemblerMethodAssignBytes(io.Writer)
 	EmitNodeAssemblerMethodAssignLink(io.Writer)
-	EmitNodeAssemblerMethodConvertFrom(io.Writer)
+	EmitNodeAssemblerMethodAssignNode(io.Writer)
 	EmitNodeAssemblerMethodPrototype(io.Writer)
 	EmitNodeAssemblerOtherBits(io.Writer) // key and value child assemblers are done here.
 }
@@ -150,7 +150,7 @@ func EmitNode(ng NodeGenerator, w io.Writer) {
 	nbg.EmitNodeAssemblerMethodAssignString(w)
 	nbg.EmitNodeAssemblerMethodAssignBytes(w)
 	nbg.EmitNodeAssemblerMethodAssignLink(w)
-	nbg.EmitNodeAssemblerMethodConvertFrom(w)
+	nbg.EmitNodeAssemblerMethodAssignNode(w)
 	nbg.EmitNodeAssemblerMethodPrototype(w)
 	nbg.EmitNodeAssemblerOtherBits(w)
 }

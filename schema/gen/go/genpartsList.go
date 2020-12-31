@@ -5,7 +5,7 @@ import (
 )
 
 // FIXME docs: these methods all say "-oid" but I think that was overoptimistic and not actually that applicable, really.
-//  ConvertFrom?  Okay, that one's fine.
+//  AssignNode?  Okay, that one's fine.
 //  The rest?  They're all *very* emphatic about knowing either:
 //   - that na.w.x is a slice; or,
 //   - that there's only one 'va' (one type; and that it's reused).
@@ -49,8 +49,8 @@ func emitNodeAssemblerMethodBeginList_listoid(w io.Writer, adjCfg *AdjunctCfg, d
 	`, w, adjCfg, data)
 }
 
-func emitNodeAssemblerMethodConvertFrom_listoid(w io.Writer, adjCfg *AdjunctCfg, data interface{}) {
-	// ConvertFrom goes through three phases:
+func emitNodeAssemblerMethodAssignNode_listoid(w io.Writer, adjCfg *AdjunctCfg, data interface{}) {
+	// AssignNode goes through three phases:
 	// 1. is it null?  Jump over to AssignNull (which may or may not reject it).
 	// 2. is it our own type?  Handle specially -- we might be able to do efficient things.
 	// 3. is it the right kind to morph into us?  Do so.
@@ -60,7 +60,7 @@ func emitNodeAssemblerMethodConvertFrom_listoid(w io.Writer, adjCfg *AdjunctCfg,
 	// This works easily for both type-level and representational nodes because
 	//  any divergences that have to do with the child value are nicely hidden behind `AssembleValue`.
 	doTemplate(`
-		func (na *_{{ .Type | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Assembler) ConvertFrom(v ipld.Node) error {
+		func (na *_{{ .Type | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Assembler) AssignNode(v ipld.Node) error {
 			if v.IsNull() {
 				return na.AssignNull()
 			}
@@ -83,7 +83,7 @@ func emitNodeAssemblerMethodConvertFrom_listoid(w io.Writer, adjCfg *AdjunctCfg,
 				return nil
 			}
 			if v.Kind() != ipld.Kind_List {
-				return ipld.ErrWrongKind{TypeName: "{{ .PkgName }}.{{ .Type.Name }}{{ if .IsRepr }}.Repr{{end}}", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustList, ActualKind: v.Kind()}
+				return ipld.ErrWrongKind{TypeName: "{{ .PkgName }}.{{ .Type.Name }}{{ if .IsRepr }}.Repr{{end}}", MethodName: "AssignNode", AppropriateKind: ipld.KindSet_JustList, ActualKind: v.Kind()}
 			}
 			itr := v.ListIterator()
 			for !itr.Done() {
@@ -91,7 +91,7 @@ func emitNodeAssemblerMethodConvertFrom_listoid(w io.Writer, adjCfg *AdjunctCfg,
 				if err != nil {
 					return err
 				}
-				if err := na.AssembleValue().ConvertFrom(v); err != nil {
+				if err := na.AssembleValue().AssignNode(v); err != nil {
 					return err
 				}
 			}

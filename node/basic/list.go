@@ -180,7 +180,7 @@ func (plainList__Assembler) AssignBytes([]byte) error {
 func (plainList__Assembler) AssignLink(ipld.Link) error {
 	return mixins.ListAssembler{TypeName: "list"}.AssignLink(nil)
 }
-func (na *plainList__Assembler) ConvertFrom(v ipld.Node) error {
+func (na *plainList__Assembler) AssignNode(v ipld.Node) error {
 	// Sanity check, then update, assembler state.
 	//  Update of state to 'finished' comes later; where exactly depends on if shortcuts apply.
 	if na.state != laState_initial {
@@ -197,9 +197,9 @@ func (na *plainList__Assembler) ConvertFrom(v ipld.Node) error {
 		return nil
 	}
 	// If the above shortcut didn't work, resort to a generic copy.
-	//  We call ConvertFrom for all the child values, giving them a chance to hit shortcuts even if we didn't.
+	//  We call AssignNode for all the child values, giving them a chance to hit shortcuts even if we didn't.
 	if v.Kind() != ipld.Kind_List {
-		return ipld.ErrWrongKind{TypeName: "list", MethodName: "ConvertFrom", AppropriateKind: ipld.KindSet_JustList, ActualKind: v.Kind()}
+		return ipld.ErrWrongKind{TypeName: "list", MethodName: "AssignNode", AppropriateKind: ipld.KindSet_JustList, ActualKind: v.Kind()}
 	}
 	itr := v.ListIterator()
 	for !itr.Done() {
@@ -207,7 +207,7 @@ func (na *plainList__Assembler) ConvertFrom(v ipld.Node) error {
 		if err != nil {
 			return err
 		}
-		if err := na.AssembleValue().ConvertFrom(v); err != nil {
+		if err := na.AssembleValue().AssignNode(v); err != nil {
 			return err
 		}
 	}
@@ -264,33 +264,33 @@ func (lva *plainList__ValueAssembler) BeginList(sizeHint int64) (ipld.ListAssemb
 	return &la, err
 }
 func (lva *plainList__ValueAssembler) AssignNull() error {
-	return lva.ConvertFrom(ipld.Null)
+	return lva.AssignNode(ipld.Null)
 }
 func (lva *plainList__ValueAssembler) AssignBool(v bool) error {
 	vb := plainBool(v)
-	return lva.ConvertFrom(&vb)
+	return lva.AssignNode(&vb)
 }
 func (lva *plainList__ValueAssembler) AssignInt(v int64) error {
 	vb := plainInt(v)
-	return lva.ConvertFrom(&vb)
+	return lva.AssignNode(&vb)
 }
 func (lva *plainList__ValueAssembler) AssignFloat(v float64) error {
 	vb := plainFloat(v)
-	return lva.ConvertFrom(&vb)
+	return lva.AssignNode(&vb)
 }
 func (lva *plainList__ValueAssembler) AssignString(v string) error {
 	vb := plainString(v)
-	return lva.ConvertFrom(&vb)
+	return lva.AssignNode(&vb)
 }
 func (lva *plainList__ValueAssembler) AssignBytes(v []byte) error {
 	vb := plainBytes(v)
-	return lva.ConvertFrom(&vb)
+	return lva.AssignNode(&vb)
 }
 func (lva *plainList__ValueAssembler) AssignLink(v ipld.Link) error {
 	vb := plainLink{v}
-	return lva.ConvertFrom(&vb)
+	return lva.AssignNode(&vb)
 }
-func (lva *plainList__ValueAssembler) ConvertFrom(v ipld.Node) error {
+func (lva *plainList__ValueAssembler) AssignNode(v ipld.Node) error {
 	lva.la.w.x = append(lva.la.w.x, v)
 	lva.la.state = laState_initial
 	lva.la = nil // invalidate self to prevent further incorrect use.
@@ -331,7 +331,7 @@ func (ma *plainList__ValueAssemblerMap) Finish() error {
 	}
 	w := ma.ca.w
 	ma.ca.w = nil
-	return ma.p.va.ConvertFrom(w)
+	return ma.p.va.AssignNode(w)
 }
 
 type plainList__ValueAssemblerList struct {
@@ -356,5 +356,5 @@ func (la *plainList__ValueAssemblerList) Finish() error {
 	}
 	w := la.ca.w
 	la.ca.w = nil
-	return la.p.va.ConvertFrom(w)
+	return la.p.va.AssignNode(w)
 }

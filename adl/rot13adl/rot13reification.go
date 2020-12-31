@@ -49,9 +49,9 @@ func Reify(maybeSubstrateRoot ipld.Node) (ipld.Node, error) {
 	//  and assign into it from the raw node, validating in the process,
 	//   which again just leans directly on the shape validation logic already given to us by the schema logic on that type.
 	// (Checking the concrete type of maybeSubstrateRoot in search of a shortcut is seemingly a tad redundant,
-	//  because the ConvertFrom path later also has such a check!
+	//  because the AssignNode path later also has such a check!
 	//  However, doing it earlier allows us to avoid an allocation;
-	//   the ConvertFrom path doesn't become available until after NewBuilder is invoked, and NewBuilder is where allocations happen.)
+	//   the AssignNode path doesn't become available until after NewBuilder is invoked, and NewBuilder is where allocations happen.)
 
 	// Check if we can recognize the maybeSubstrateRoot as being our own substrate types;
 	//  if it is, we can shortcut pretty drastically.
@@ -63,9 +63,9 @@ func Reify(maybeSubstrateRoot ipld.Node) (ipld.Node, error) {
 	}
 
 	// Shortcut didn't work.  Process via the data model.
-	//  The ConvertFrom method on the substrate type already contains all the logic necessary for this, so we use that.
+	//  The AssignNode method on the substrate type already contains all the logic necessary for this, so we use that.
 	nb := Prototype.SubstrateRoot.NewBuilder()
-	if err := nb.ConvertFrom(maybeSubstrateRoot); err != nil {
+	if err := nb.AssignNode(maybeSubstrateRoot); err != nil {
 		fmt.Errorf("rot13adl.Reify failed: data does not match expected shape for substrate: %w", err)
 	}
 	return (*_R13String)(nb.Build().(*_Substrate)), nil

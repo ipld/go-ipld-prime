@@ -28,7 +28,7 @@ type kindTraitsGenerator struct {
 	PkgName    string
 	TypeName   string // as will be printed in messages (e.g. can be goosed up a bit, like "Thing.Repr" instead of "_Thing__Repr").
 	TypeSymbol string // the identifier in code (sometimes is munged internals like "_Thing__Repr" corresponding to no publicly admitted schema.Type.Name).
-	Kind   ipld.Kind
+	Kind       ipld.Kind
 }
 
 func (g kindTraitsGenerator) emitNodeMethodLookupByString(w io.Writer) {
@@ -196,7 +196,7 @@ type kindAssemblerTraitsGenerator struct {
 	PkgName       string
 	TypeName      string // as will be printed in messages (e.g. can be goosed up a bit, like "Thing.Repr" instead of "_Thing__Repr").
 	AppliedPrefix string // the prefix of what to attach methods to... this one is a little wild: should probably be either "_{{ .Type | TypeSymbol }}__" or "_{{ .Type | TypeSymbol }}__Repr", and we'll just add the words "Builder" and "Assembler".
-	Kind      ipld.Kind
+	Kind          ipld.Kind
 }
 
 // bailed on extracting a common emitNodeBuilderType: too many variations in content and pointer placement to be worth it.
@@ -306,7 +306,7 @@ func (g kindAssemblerTraitsGenerator) emitNodeAssemblerMethodAssignLink(w io.Wri
 	`, w, g)
 }
 
-// bailed on extracting a common emitNodeAssemblerMethodConvertFrom: way too many variations.
+// bailed on extracting a common emitNodeAssemblerMethodAssignNode: way too many variations.
 
 func (g kindAssemblerTraitsGenerator) emitNodeAssemblerMethodPrototype(w io.Writer) {
 	doTemplate(`
