@@ -23,9 +23,6 @@ Here are some outlines of changes we intend to make that affect the public API:
 - Linking and LinkLoaders will be streamlined; and Codecs will gain more friendly APIs.
 	- See https://github.com/ipld/go-ipld-prime/issues/55 for discussion and drafts.
 	- This will probably be scheduled for around v0.9, which is anticipated to be somewhere in early 2021.
-- Most uses of `int` will become `int64`.
-	- Since the IPLD Data Model specifications state that integers must be at least 2^53, using golang `int` on a 32-bit architecture would not be spec compliant, and therefore we must use `int64`.
-	- This is scheduled for v0.7, which is anticipated to be somewhere in December 2020.
 
 This is not an exhaustive list of planned changes, and does not include any internal changes, new features, performance improvements, and so forth.
 It's purely a list of things you might want to know about as a downstream consumer planning your update cycles.
@@ -47,6 +44,42 @@ When a release tag is made, this block of bullet points will just slide down to 
 
 Released Changes
 ----------------
+
+### v0.7.0
+
+_2020 December 31_
+
+v0.7.0 is a small release that makes a couple of breaking changes since v0.6.0.
+However, the good news is: they're all very small changes, and we've kept them in a tiny group,
+so if you're already on v0.6.0, this update should be easy.
+And we've got scripts to help you.
+
+There's also one cool new feature: `traversal.FocusedTransform` is now available to help you make mutations to large documents conveniently.
+
+- Change: all interfaces and APIs now use golang `int64` rather than golang `int`.  [#125](https://github.com/ipld/go-ipld-prime/pull/125)
+	- This is necessary because the IPLD Data Model specifies that integers must be "at least 2^53" in range, and so since go-ipld-prime may also be used on 32-bit architectures, it is necessary that we not use the `int` type, which would fail to be Data Model-compliant on those architectures.
+	- The following GNU sed lines should assist this transition in your code, although some other changes that are more difficult automate may also be necessary:
+		```
+		sed -ri 's/(func.* AsInt.*)\<int\>/\1int64/g' **/*.go
+		sed -ri 's/(func.* AssignInt.*)\<int\>/\1int64/g' **/*.go
+		sed -ri 's/(func.* Length.*)\<int\>/\1int64/g' **/*.go
+		sed -ri 's/(func.* LookupByIndex.*)\<int\>/\1int64/g' **/*.go
+		sed -ri 's/(func.* Next.*)\<int\>/\1int64/g' **/*.go
+		sed -ri 's/(func.* ValuePrototype.*)\<int\>/\1int64/g' **/*.go
+		```
+- Change: we've renamed the types talking about "kinds" for greater clarity.  `ipld.ReprKind` is now just `ipld.Kind`; `schema.Kind` is now `schema.TypeKind`.  We expect to use "kind" and "typekind" consistently in prose and documentation from now on, as well.  [#127](https://github.com/ipld/go-ipld-prime/pull/127)
+	- Pretty much everyone who's used this library has said "ReprKind" didn't really make sense as a type name, so, uh, yeah.  You were all correct.  It's fixed now.
+	- "kind" now always means "IPLD Data Model kind", and "typekind" now always means "the kinds which an IPLD Schema type can have".
+	- You can find more examples of how we expect to use this in a sentence from now on in the discussion that lead to the rename: https://github.com/ipld/go-ipld-prime/issues/94#issuecomment-745307919
+	- The following GNU sed lines should assist this transition in your code:
+		```
+		sed -ri 's/\<Kind\(\)/TypeKind()/g' **/*.go
+		sed -ri 's/\<Kind_/TypeKind_/g' **/*.go
+		sed -i 's/\<Kind\>/TypeKind/g' **/*.go
+		sed -i 's/ReprKind/Kind/g' **/*.go
+		```
+- Feature: `traversal.FocusedTransform` works now!  :tada:  You can use this to take a node, say what path inside it you want to update, and then give it an updated value.  Super handy.  [#130](https://github.com/ipld/go-ipld-prime/pull/130)
+
 
 ### v0.6.0
 
