@@ -18,7 +18,7 @@ var _ TypeGenerator = &unionKindedGenerator{}
 //  this depends on whether the error is an ErrWrongKind that was found while checking the method for appropriateness on the union's inhabitant
 //  versus if the error came from the union inhabitant itself after delegation occured.
 
-func NewUnionKindedGenerator(pkgName string, typ *schema.TypeUnion, adjCfg *AdjunctCfg) TypeGenerator {
+func NewUnionReprKindedGenerator(pkgName string, typ *schema.TypeUnion, adjCfg *AdjunctCfg) TypeGenerator {
 	return unionKindedGenerator{
 		unionGenerator{
 			adjCfg,

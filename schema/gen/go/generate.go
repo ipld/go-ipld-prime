@@ -73,7 +73,7 @@ func Generate(pth string, pkgName string, ts schema.TypeSystem, adjCfg *AdjunctC
 				case schema.UnionRepresentation_Keyed:
 					fn(NewUnionReprKeyedGenerator(pkgName, t2, adjCfg), f)
 				case schema.UnionRepresentation_Kinded:
-					fn(NewUnionKindedGenerator(pkgName, t2, adjCfg), f)
+					fn(NewUnionReprKindedGenerator(pkgName, t2, adjCfg), f)
 				default:
 					panic("unrecognized union representation strategy")
 				}
