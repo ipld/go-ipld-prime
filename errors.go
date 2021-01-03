@@ -123,14 +123,14 @@ func (e ErrInvalidSegmentForList) Error() string {
 	return v + fmt.Sprintf(": %q: %s", e.TroubleSegment.s, e.Reason)
 }
 
-// ErrUnmatchable is the catch-all type for parse errors in schema representation work.
+// ErrUnmatchable is the error raised when processing data with IPLD Schemas and
+// finding data which cannot be matched into the schema.
+// It will be returned by NodeAssemblers and NodeBuilders when they are fed unmatchable data.
+// As a result, it will also often be seen returned from unmarshalling
+// when unmarshalling into schema-constrained NodeAssemblers.
 //
-// REVIEW: are builders at type level ever going to return this?  i don't think so.
-// REVIEW: can this ever be triggered during the marshalling direction?  perhaps not.
-// REVIEW: do things like ErrWrongKind end up being wrapped by this?  that doesn't seem pretty.
-// REVIEW: do natural representations ever trigger this?  i don't think so.  maybe that's a hint towards a better name.
-// REVIEW: are user validation functions encouraged to return this?  or something else?
-//
+// ErrUnmatchable provides the name of the type in the schema that data couldn't be matched to,
+// and wraps another error as the more detailed reason.
 type ErrUnmatchable struct {
 	// TypeName will indicate the named type of a node the function was called on.
 	TypeName string
@@ -140,7 +140,13 @@ type ErrUnmatchable struct {
 }
 
 func (e ErrUnmatchable) Error() string {
-	return fmt.Sprintf("parsing of %s rejected: %s", e.TypeName, e.Reason)
+	return fmt.Sprintf("matching data to schema of %s rejected: %s", e.TypeName, e.Reason)
+}
+
+// Reasonf returns a new ErrUnmatchable with a Reason field set to the Errorf of the arguments.
+// It's a helper function for creating untyped error reasons without importing the fmt package.
+func (e ErrUnmatchable) Reasonf(format string, a ...interface{}) ErrUnmatchable {
+	return ErrUnmatchable{e.TypeName, fmt.Errorf(format, a...)}
 }
 
 // ErrIteratorOverread is returned when calling 'Next' on a MapIterator or
