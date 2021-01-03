@@ -48,6 +48,8 @@ type structReprStringjoinReprGenerator struct {
 	Type    *schema.TypeStruct
 }
 
+func (structReprStringjoinReprGenerator) IsRepr() bool { return true } // hint used in some generalized templates.
+
 func (g structReprStringjoinReprGenerator) EmitNodeType(w io.Writer) {
 	// The type is structurally the same, but will have a different set of methods.
 	doTemplate(`
@@ -100,25 +102,11 @@ func (g structReprStringjoinReprGenerator) EmitNodeMethodAsString(w io.Writer) {
 }
 
 func (g structReprStringjoinReprGenerator) EmitNodeMethodPrototype(w io.Writer) {
-	// REVIEW: this appears to be standard even across kinds; can we extract it?
-	doTemplate(`
-		func (_{{ .Type | TypeSymbol }}__Repr) Prototype() ipld.NodePrototype {
-			return _{{ .Type | TypeSymbol }}__ReprPrototype{}
-		}
-	`, w, g.AdjCfg, g)
+	emitNodeMethodPrototype_typical(w, g.AdjCfg, g)
 }
 
 func (g structReprStringjoinReprGenerator) EmitNodePrototypeType(w io.Writer) {
-	// REVIEW: this appears to be standard even across kinds; can we extract it?
-	doTemplate(`
-		type _{{ .Type | TypeSymbol }}__ReprPrototype struct{}
-
-		func (_{{ .Type | TypeSymbol }}__ReprPrototype) NewBuilder() ipld.NodeBuilder {
-			var nb _{{ .Type | TypeSymbol }}__ReprBuilder
-			nb.Reset()
-			return &nb
-		}
-	`, w, g.AdjCfg, g)
+	emitNodePrototypeType_typical(w, g.AdjCfg, g)
 }
 
 // --- NodeBuilder and NodeAssembler --->
