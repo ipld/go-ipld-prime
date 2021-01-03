@@ -40,13 +40,17 @@ func (g unionGenerator) EmitNativeType(w io.Writer) {
 	//
 	// The interface *mostly* isn't used... except for in the return type of a speciated function which can be used to do golang-native type switches.
 	//
+	// The interface also includes a requirement for an errorless primitive access method (such as `String() string`)
+	// if our representation strategy is one that has that semantic (e.g., stringprefix repr does).
+	//
 	// A note about index: in all cases the index of a member type is used, we increment it by one, to avoid using zero.
 	// We do this because it's desirable to reserve the zero in the 'tag' field (if we generate one) as a sentinel value
 	// (see further comments in the EmitNodeAssemblerType function);
 	// and since we do it in that one case, it's just as well to do it uniformly.
 	doTemplate(`
 		{{- if Comments -}}
-		// {{ .Type | TypeSymbol }} matches the IPLD Schema type "{{ .Type.Name }}".  It has {{ .Type.TypeKind }} type-kind, and may be interrogated like {{ .Kind }} kind.
+		// {{ .Type | TypeSymbol }} matches the IPLD Schema type "{{ .Type.Name }}".
+		// {{ .Type | TypeSymbol }} has {{ .Type.TypeKind }} typekind, which means its data model behaviors are that of a {{ .Kind }} kind.
 		{{- end}}
 		type {{ .Type | TypeSymbol }} = *_{{ .Type | TypeSymbol }}
 		type _{{ .Type | TypeSymbol }} struct {
@@ -61,6 +65,9 @@ func (g unionGenerator) EmitNativeType(w io.Writer) {
 		}
 		type _{{ .Type | TypeSymbol }}__iface interface {
 			_{{ .Type | TypeSymbol }}__member()
+			{{- if (eq (.Type.RepresentationStrategy | printf "%T") "schema.UnionRepresentation_Stringprefix") }}
+			String() string
+			{{- end}}
 		}
 
 		{{- range $member := .Type.Members }}

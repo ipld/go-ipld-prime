@@ -148,6 +148,19 @@ func (r UnionRepresentation_Keyed) GetDiscriminant(t Type) string {
 	panic("that type isn't a member of this union")
 }
 
+func (r UnionRepresentation_Stringprefix) GetDelim() string {
+	return r.delim
+}
+
+func (r UnionRepresentation_Stringprefix) GetDiscriminant(t Type) string {
+	for d, t2 := range r.table {
+		if t2 == t.Name() {
+			return d
+		}
+	}
+	panic("that type isn't a member of this union")
+}
+
 // GetMember returns type info for the member matching the kind argument,
 // or may return nil if that kind is not mapped to a member of this union.
 func (r UnionRepresentation_Kinded) GetMember(k ipld.Kind) TypeName {
