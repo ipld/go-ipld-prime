@@ -71,6 +71,9 @@ func BuildMap(e *error, na ipld.NodeAssembler, sizeHint int64, fn func(ma ipld.M
 		return
 	}
 	fn(ma)
+	if *e != nil {
+		return
+	}
 	*e = ma.Finish()
 }
 
@@ -108,6 +111,9 @@ func BuildList(e *error, na ipld.NodeAssembler, sizeHint int64, fn func(la ipld.
 		return
 	}
 	fn(la)
+	if *e != nil {
+		return
+	}
 	*e = la.Finish()
 }
 
