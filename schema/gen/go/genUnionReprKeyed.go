@@ -338,6 +338,7 @@ func (g unionReprKeyedReprBuilderGenerator) emitMapAssemblerMethods(w io.Writer)
 			if ma.ca != 0 {
 				return nil, schema.ErrNotUnionStructure{TypeName:"{{ .PkgName }}.{{ .Type.Name }}.Repr", Detail: "cannot add another entry -- a union can only contain one thing!"}
 			}
+			{{- if .Type.Members }}
 			switch k {
 			{{- range $i, $member := .Type.Members }}
 			case "{{ $member | dot.Type.RepresentationStrategy.GetDiscriminant }}":
@@ -359,9 +360,9 @@ func (g unionReprKeyedReprBuilderGenerator) emitMapAssemblerMethods(w io.Writer)
 				return ma.ca{{ add $i 1 }}, nil
 				{{- end}}
 			{{- end}}
-			default:
-				return nil, ipld.ErrInvalidKey{TypeName:"{{ .PkgName }}.{{ .Type.Name }}.Repr", Key:&_String{k}}
 			}
+			{{- end}}
+			return nil, ipld.ErrInvalidKey{TypeName:"{{ .PkgName }}.{{ .Type.Name }}.Repr", Key:&_String{k}}
 		}
 	`, w, g.AdjCfg, g)
 
@@ -500,10 +501,8 @@ func (g unionReprKeyedReprBuilderGenerator) emitKeyAssembler(w io.Writer) {
 				ka.state = maState_expectValue
 				return nil
 			{{- end}}
-			default:
-				return ipld.ErrInvalidKey{TypeName:"{{ .PkgName }}.{{ .Type.Name }}.Repr", Key:&_String{k}} // TODO: error quality: ErrInvalidUnionDiscriminant ?
 			}
-			return nil
+			return ipld.ErrInvalidKey{TypeName:"{{ .PkgName }}.{{ .Type.Name }}.Repr", Key:&_String{k}} // TODO: error quality: ErrInvalidUnionDiscriminant ?
 		}
 	`, w, g.AdjCfg, g)
 	stubs.EmitNodeAssemblerMethodAssignBytes(w)
