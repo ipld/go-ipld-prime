@@ -430,32 +430,36 @@ func kindedUnionNodeAssemblerMethodTemplateMunge(
 			case midvalue:
 				panic("invalid state: cannot assign into assembler that's already working on a larger structure!")
 			}
+			{{- $returned := false -}}
 			{{- range $i, $member := .Type.Members }}
 			` + condClause + `
-			{{- if dot.Type | MaybeUsesPtr }}
-			if na.w == nil {
-				na.w = &_{{ dot.Type | TypeSymbol }}{}
-			}
-			{{- end}}
-			na.ca = {{ add $i 1 }}
-			{{- if (eq (dot.AdjCfg.UnionMemlayout dot.Type) "embedAll") }}
-			na.w.tag = {{ add $i 1 }}
-			na.ca{{ add $i 1 }}.w = &na.w.x{{ add $i 1 }}
-			na.ca{{ add $i 1 }}.m = na.m
-			return na.ca{{ add $i 1 }}` + retClause + `
-			{{- else if (eq (dot.AdjCfg.UnionMemlayout dot.Type) "interface") }}
-			x := &_{{ $member | TypeSymbol }}{}
-			na.w.x = x
-			if na.ca{{ add $i 1 }} == nil {
-				na.ca{{ add $i 1 }} = &_{{ $member | TypeSymbol }}__ReprAssembler{}
-			}
-			na.ca{{ add $i 1 }}.w = x
-			na.ca{{ add $i 1 }}.m = na.m
-			return na.ca{{ add $i 1 }}` + retClause + `
-			{{- end}}
-			{{- end}}
-			{{- end}}
+				{{- if dot.Type | MaybeUsesPtr }}
+					if na.w == nil {
+						na.w = &_{{ dot.Type | TypeSymbol }}{}
+					}
+				{{- end}}
+				na.ca = {{ add $i 1 }}
+				{{- if (eq (dot.AdjCfg.UnionMemlayout dot.Type) "embedAll") }}
+					na.w.tag = {{ add $i 1 }}
+					na.ca{{ add $i 1 }}.w = &na.w.x{{ add $i 1 }}
+					na.ca{{ add $i 1 }}.m = na.m
+					return na.ca{{ add $i 1 }}` + retClause + `
+				{{- else if (eq (dot.AdjCfg.UnionMemlayout dot.Type) "interface") }}
+					x := &_{{ $member | TypeSymbol }}{}
+					na.w.x = x
+					if na.ca{{ add $i 1 }} == nil {
+						na.ca{{ add $i 1 }} = &_{{ $member | TypeSymbol }}__ReprAssembler{}
+					}
+					na.ca{{ add $i 1 }}.w = x
+					na.ca{{ add $i 1 }}.m = na.m
+					return na.ca{{ add $i 1 }}` + retClause + `
+				{{- end}}
+				{{- $returned = true -}}
+			{{- end }}
+			{{- end }}
+			{{- if not $returned }}
 			return ` + maybeNilComma + ` schema.ErrNotUnionStructure{TypeName: "{{ .PkgName }}.{{ .Type.Name }}.Repr", Detail: "` + methodName + ` called but is not valid for any of the kinds that are valid members of this union"}
+			{{- end }}
 		}
 	`
 }

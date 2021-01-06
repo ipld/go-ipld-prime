@@ -1360,9 +1360,8 @@ func (ma *_Msg3__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, error) 
 		ma.ca_waga.w = &ma.w.waga
 		ma.ca_waga.m = &ma.cm
 		return &ma.ca_waga, nil
-	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "gendemo.Msg3", Key: &_String{k}}
 	}
+	return nil, ipld.ErrInvalidKey{TypeName: "gendemo.Msg3", Key: &_String{k}}
 }
 func (ma *_Msg3__Assembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -1843,8 +1842,8 @@ func (ma *_Msg3__ReprAssembler) AssembleEntry(k string) (ipld.NodeAssembler, err
 		ma.ca_waga.m = &ma.cm
 		return &ma.ca_waga, nil
 	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "gendemo.Msg3.Repr", Key: &_String{k}}
 	}
+	return nil, ipld.ErrInvalidKey{TypeName: "gendemo.Msg3.Repr", Key: &_String{k}}
 }
 func (ma *_Msg3__ReprAssembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -1966,6 +1965,7 @@ func (ka *_Msg3__ReprKeyAssembler) AssignString(k string) error {
 		ka.s += fieldBit__Msg3_Whee
 		ka.state = maState_expectValue
 		ka.f = 0
+		return nil
 	case "woot":
 		if ka.s&fieldBit__Msg3_Woot != 0 {
 			return ipld.ErrRepeatedMapKey{&fieldName__Msg3_Woot_serial}
@@ -1973,6 +1973,7 @@ func (ka *_Msg3__ReprKeyAssembler) AssignString(k string) error {
 		ka.s += fieldBit__Msg3_Woot
 		ka.state = maState_expectValue
 		ka.f = 1
+		return nil
 	case "waga":
 		if ka.s&fieldBit__Msg3_Waga != 0 {
 			return ipld.ErrRepeatedMapKey{&fieldName__Msg3_Waga_serial}
@@ -1980,10 +1981,9 @@ func (ka *_Msg3__ReprKeyAssembler) AssignString(k string) error {
 		ka.s += fieldBit__Msg3_Waga
 		ka.state = maState_expectValue
 		ka.f = 2
-	default:
-		return ipld.ErrInvalidKey{TypeName: "gendemo.Msg3.Repr", Key: &_String{k}}
+		return nil
 	}
-	return nil
+	return ipld.ErrInvalidKey{TypeName: "gendemo.Msg3.Repr", Key: &_String{k}}
 }
 func (_Msg3__ReprKeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{"gendemo.Msg3.Repr.KeyAssembler"}.AssignBytes(nil)

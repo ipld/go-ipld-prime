@@ -148,6 +148,9 @@ func (g structGenerator) EmitNodeMethodMapIterator(w io.Writer) {
 		}
 
 		func (itr *_{{ .Type | TypeSymbol }}__MapItr) Next() (k ipld.Node, v ipld.Node, _ error) {
+			{{- if not .Type.Fields }}
+			return nil, nil, ipld.ErrIteratorOverread{}
+			{{ else -}}
 			if itr.idx >= {{ len .Type.Fields }} {
 				return nil, nil, ipld.ErrIteratorOverread{}
 			}
@@ -179,6 +182,7 @@ func (g structGenerator) EmitNodeMethodMapIterator(w io.Writer) {
 			}
 			itr.idx++
 			return
+			{{- end}}
 		}
 		func (itr *_{{ .Type | TypeSymbol }}__MapItr) Done() bool {
 			return itr.idx >= {{ len .Type.Fields }}
@@ -418,8 +422,9 @@ func (g structBuilderGenerator) emitMapAssemblerMethods(w io.Writer) {
 			case maState_finished:
 				panic("invalid state: AssembleEntry cannot be called on an assembler that's already finished")
 			}
-			switch k {
 			{{- $type := .Type -}} {{- /* ranging modifies dot, unhelpfully */ -}}
+			{{- if .Type.Fields }}
+			switch k {
 			{{- range $i, $field := .Type.Fields }}
 			case "{{ $field.Name }}":
 				if ma.s & fieldBit__{{ $type | TypeSymbol }}_{{ $field | FieldSymbolUpper }} != 0 {
@@ -440,9 +445,9 @@ func (g structBuilderGenerator) emitMapAssemblerMethods(w io.Writer) {
 				{{- end}}
 				return &ma.ca_{{ $field | FieldSymbolLower }}, nil
 			{{- end}}
-			default:
-				return nil, ipld.ErrInvalidKey{TypeName:"{{ .PkgName }}.{{ .Type.Name }}", Key:&_String{k}}
 			}
+			{{- end}}
+			return nil, ipld.ErrInvalidKey{TypeName:"{{ .PkgName }}.{{ .Type.Name }}", Key:&_String{k}}
 		}
 		func (ma *_{{ .Type | TypeSymbol }}__Assembler) AssembleKey() ipld.NodeAssembler {
 			switch ma.state {

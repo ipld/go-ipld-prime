@@ -180,7 +180,11 @@ func (g structReprMapReprGenerator) EmitNodeMethodMapIterator(w io.Writer) {
 		}
 
 		func (itr *_{{ .Type | TypeSymbol }}__ReprMapItr) Next() (k ipld.Node, v ipld.Node, _ error) {
-		{{ if .HaveOptionals }}advance:{{end -}}
+			{{- if not .Type.Fields }}
+			{{- /* TODO: deduplicate all these methods which just error */ -}}
+			return nil, nil, ipld.ErrIteratorOverread{}
+			{{ else -}}
+			{{ if .HaveOptionals }}advance:{{end -}}
 			if itr.idx >= {{ len .Type.Fields }} {
 				return nil, nil, ipld.ErrIteratorOverread{}
 			}
@@ -212,6 +216,7 @@ func (g structReprMapReprGenerator) EmitNodeMethodMapIterator(w io.Writer) {
 			}
 			itr.idx++
 			return
+			{{- end}}
 		}
 		{{- if .HaveTrailingOptionals }}
 		func (itr *_{{ .Type | TypeSymbol }}__ReprMapItr) Done() bool {
@@ -455,8 +460,9 @@ func (g structReprMapReprBuilderGenerator) emitMapAssemblerMethods(w io.Writer) 
 			case maState_finished:
 				panic("invalid state: AssembleEntry cannot be called on an assembler that's already finished")
 			}
-			switch k {
 			{{- $type := .Type -}} {{- /* ranging modifies dot, unhelpfully */ -}}
+			{{- if .Type.Fields }}
+			switch k {
 			{{- range $i, $field := .Type.Fields }}
 			case "{{ $field | $type.RepresentationStrategy.GetFieldKey }}":
 				if ma.s & fieldBit__{{ $type | TypeSymbol }}_{{ $field | FieldSymbolUpper }} != 0 {
@@ -476,8 +482,9 @@ func (g structReprMapReprBuilderGenerator) emitMapAssemblerMethods(w io.Writer) 
 				return &ma.ca_{{ $field | FieldSymbolLower }}, nil
 			{{- end}}
 			default:
-				return nil, ipld.ErrInvalidKey{TypeName:"{{ .PkgName }}.{{ .Type.Name }}.Repr", Key:&_String{k}}
 			}
+			{{- end}}
+			return nil, ipld.ErrInvalidKey{TypeName:"{{ .PkgName }}.{{ .Type.Name }}.Repr", Key:&_String{k}}
 		}
 		func (ma *_{{ .Type | TypeSymbol }}__ReprAssembler) AssembleKey() ipld.NodeAssembler {
 			switch ma.state {
@@ -592,6 +599,7 @@ func (g structReprMapReprBuilderGenerator) emitKeyAssembler(w io.Writer) {
 			if ka.state != maState_midKey {
 				panic("misuse: KeyAssembler held beyond its valid lifetime")
 			}
+			{{- if .Type.Fields }}
 			switch k {
 			{{- $type := .Type -}} {{- /* ranging modifies dot, unhelpfully */ -}}
 			{{- range $i, $field := .Type.Fields }}
@@ -602,11 +610,11 @@ func (g structReprMapReprBuilderGenerator) emitKeyAssembler(w io.Writer) {
 				ka.s += fieldBit__{{ $type | TypeSymbol }}_{{ $field | FieldSymbolUpper }}
 				ka.state = maState_expectValue
 				ka.f = {{ $i }}
-			{{- end}}
-			default:
-				return ipld.ErrInvalidKey{TypeName:"{{ .PkgName }}.{{ .Type.Name }}.Repr", Key:&_String{k}}
+				return nil
+			{{- end }}
 			}
-			return nil
+			{{- end }}
+			return ipld.ErrInvalidKey{TypeName:"{{ .PkgName }}.{{ .Type.Name }}.Repr", Key:&_String{k}}
 		}
 	`, w, g.AdjCfg, g)
 	stubs.EmitNodeAssemblerMethodAssignBytes(w)

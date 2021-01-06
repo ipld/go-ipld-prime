@@ -403,9 +403,8 @@ func (ma *_AnyScalar__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, er
 		ma.ca5.w = &ma.w.x5
 		ma.ca5.m = &ma.cm
 		return &ma.ca5, nil
-	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.AnyScalar", Key: &_String{k}}
 	}
+	return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.AnyScalar", Key: &_String{k}}
 }
 func (ma *_AnyScalar__Assembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -559,10 +558,8 @@ func (ka *_AnyScalar__KeyAssembler) AssignString(k string) error {
 		ka.w.tag = 5
 		ka.state = maState_expectValue
 		return nil
-	default:
-		return ipld.ErrInvalidKey{TypeName: "schemadmt.AnyScalar", Key: &_String{k}} // TODO: error quality: ErrInvalidUnionDiscriminant ?
 	}
-	return nil
+	return ipld.ErrInvalidKey{TypeName: "schemadmt.AnyScalar", Key: &_String{k}} // TODO: error quality: ErrInvalidUnionDiscriminant ?
 }
 func (_AnyScalar__KeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{"schemadmt.AnyScalar.KeyAssembler"}.AssignBytes(nil)
@@ -777,7 +774,6 @@ func (na *_AnyScalar__ReprAssembler) AssignBool(v bool) error {
 	na.ca1.w = &na.w.x1
 	na.ca1.m = na.m
 	return na.ca1.AssignBool(v)
-	return schema.ErrNotUnionStructure{TypeName: "schemadmt.AnyScalar.Repr", Detail: "AssignBool called but is not valid for any of the kinds that are valid members of this union"}
 }
 func (na *_AnyScalar__ReprAssembler) AssignInt(v int64) error {
 	switch *na.m {
@@ -794,7 +790,6 @@ func (na *_AnyScalar__ReprAssembler) AssignInt(v int64) error {
 	na.ca4.w = &na.w.x4
 	na.ca4.m = na.m
 	return na.ca4.AssignInt(v)
-	return schema.ErrNotUnionStructure{TypeName: "schemadmt.AnyScalar.Repr", Detail: "AssignInt called but is not valid for any of the kinds that are valid members of this union"}
 }
 func (na *_AnyScalar__ReprAssembler) AssignFloat(v float64) error {
 	switch *na.m {
@@ -811,7 +806,6 @@ func (na *_AnyScalar__ReprAssembler) AssignFloat(v float64) error {
 	na.ca5.w = &na.w.x5
 	na.ca5.m = na.m
 	return na.ca5.AssignFloat(v)
-	return schema.ErrNotUnionStructure{TypeName: "schemadmt.AnyScalar.Repr", Detail: "AssignFloat called but is not valid for any of the kinds that are valid members of this union"}
 }
 func (na *_AnyScalar__ReprAssembler) AssignString(v string) error {
 	switch *na.m {
@@ -828,7 +822,6 @@ func (na *_AnyScalar__ReprAssembler) AssignString(v string) error {
 	na.ca2.w = &na.w.x2
 	na.ca2.m = na.m
 	return na.ca2.AssignString(v)
-	return schema.ErrNotUnionStructure{TypeName: "schemadmt.AnyScalar.Repr", Detail: "AssignString called but is not valid for any of the kinds that are valid members of this union"}
 }
 func (na *_AnyScalar__ReprAssembler) AssignBytes(v []byte) error {
 	switch *na.m {
@@ -845,7 +838,6 @@ func (na *_AnyScalar__ReprAssembler) AssignBytes(v []byte) error {
 	na.ca3.w = &na.w.x3
 	na.ca3.m = na.m
 	return na.ca3.AssignBytes(v)
-	return schema.ErrNotUnionStructure{TypeName: "schemadmt.AnyScalar.Repr", Detail: "AssignBytes called but is not valid for any of the kinds that are valid members of this union"}
 }
 func (na *_AnyScalar__ReprAssembler) AssignLink(v ipld.Link) error {
 	switch *na.m {
@@ -1693,9 +1685,8 @@ func (ma *_EnumRepresentation__Assembler) AssembleEntry(k string) (ipld.NodeAsse
 		ma.ca2.w = &ma.w.x2
 		ma.ca2.m = &ma.cm
 		return &ma.ca2, nil
-	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.EnumRepresentation", Key: &_String{k}}
 	}
+	return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.EnumRepresentation", Key: &_String{k}}
 }
 func (ma *_EnumRepresentation__Assembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -1816,10 +1807,8 @@ func (ka *_EnumRepresentation__KeyAssembler) AssignString(k string) error {
 		ka.w.tag = 2
 		ka.state = maState_expectValue
 		return nil
-	default:
-		return ipld.ErrInvalidKey{TypeName: "schemadmt.EnumRepresentation", Key: &_String{k}} // TODO: error quality: ErrInvalidUnionDiscriminant ?
 	}
-	return nil
+	return ipld.ErrInvalidKey{TypeName: "schemadmt.EnumRepresentation", Key: &_String{k}} // TODO: error quality: ErrInvalidUnionDiscriminant ?
 }
 func (_EnumRepresentation__KeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{"schemadmt.EnumRepresentation.KeyAssembler"}.AssignBytes(nil)
@@ -2129,9 +2118,8 @@ func (ma *_EnumRepresentation__ReprAssembler) AssembleEntry(k string) (ipld.Node
 		ma.ca2.w = &ma.w.x2
 		ma.ca2.m = &ma.cm
 		return &ma.ca2, nil
-	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.EnumRepresentation.Repr", Key: &_String{k}}
 	}
+	return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.EnumRepresentation.Repr", Key: &_String{k}}
 }
 func (ma *_EnumRepresentation__ReprAssembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -2252,10 +2240,8 @@ func (ka *_EnumRepresentation__ReprKeyAssembler) AssignString(k string) error {
 		ka.w.tag = 2
 		ka.state = maState_expectValue
 		return nil
-	default:
-		return ipld.ErrInvalidKey{TypeName: "schemadmt.EnumRepresentation.Repr", Key: &_String{k}} // TODO: error quality: ErrInvalidUnionDiscriminant ?
 	}
-	return nil
+	return ipld.ErrInvalidKey{TypeName: "schemadmt.EnumRepresentation.Repr", Key: &_String{k}} // TODO: error quality: ErrInvalidUnionDiscriminant ?
 }
 func (_EnumRepresentation__ReprKeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{"schemadmt.EnumRepresentation.Repr.KeyAssembler"}.AssignBytes(nil)
@@ -4979,9 +4965,8 @@ func (ma *_ListRepresentation__Assembler) AssembleEntry(k string) (ipld.NodeAsse
 		ma.ca1.w = &ma.w.x1
 		ma.ca1.m = &ma.cm
 		return &ma.ca1, nil
-	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.ListRepresentation", Key: &_String{k}}
 	}
+	return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.ListRepresentation", Key: &_String{k}}
 }
 func (ma *_ListRepresentation__Assembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -5091,10 +5076,8 @@ func (ka *_ListRepresentation__KeyAssembler) AssignString(k string) error {
 		ka.w.tag = 1
 		ka.state = maState_expectValue
 		return nil
-	default:
-		return ipld.ErrInvalidKey{TypeName: "schemadmt.ListRepresentation", Key: &_String{k}} // TODO: error quality: ErrInvalidUnionDiscriminant ?
 	}
-	return nil
+	return ipld.ErrInvalidKey{TypeName: "schemadmt.ListRepresentation", Key: &_String{k}} // TODO: error quality: ErrInvalidUnionDiscriminant ?
 }
 func (_ListRepresentation__KeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{"schemadmt.ListRepresentation.KeyAssembler"}.AssignBytes(nil)
@@ -5384,9 +5367,8 @@ func (ma *_ListRepresentation__ReprAssembler) AssembleEntry(k string) (ipld.Node
 		ma.ca1.w = &ma.w.x1
 		ma.ca1.m = &ma.cm
 		return &ma.ca1, nil
-	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.ListRepresentation.Repr", Key: &_String{k}}
 	}
+	return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.ListRepresentation.Repr", Key: &_String{k}}
 }
 func (ma *_ListRepresentation__ReprAssembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -5496,10 +5478,8 @@ func (ka *_ListRepresentation__ReprKeyAssembler) AssignString(k string) error {
 		ka.w.tag = 1
 		ka.state = maState_expectValue
 		return nil
-	default:
-		return ipld.ErrInvalidKey{TypeName: "schemadmt.ListRepresentation.Repr", Key: &_String{k}} // TODO: error quality: ErrInvalidUnionDiscriminant ?
 	}
-	return nil
+	return ipld.ErrInvalidKey{TypeName: "schemadmt.ListRepresentation.Repr", Key: &_String{k}} // TODO: error quality: ErrInvalidUnionDiscriminant ?
 }
 func (_ListRepresentation__ReprKeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{"schemadmt.ListRepresentation.Repr.KeyAssembler"}.AssignBytes(nil)
@@ -5588,15 +5568,8 @@ type _ListRepresentation_List__MapItr struct {
 }
 
 func (itr *_ListRepresentation_List__MapItr) Next() (k ipld.Node, v ipld.Node, _ error) {
-	if itr.idx >= 0 {
-		return nil, nil, ipld.ErrIteratorOverread{}
-	}
-	switch itr.idx {
-	default:
-		panic("unreachable")
-	}
-	itr.idx++
-	return
+	return nil, nil, ipld.ErrIteratorOverread{}
+
 }
 func (itr *_ListRepresentation_List__MapItr) Done() bool {
 	return itr.idx >= 0
@@ -5789,10 +5762,7 @@ func (ma *_ListRepresentation_List__Assembler) AssembleEntry(k string) (ipld.Nod
 	case maState_finished:
 		panic("invalid state: AssembleEntry cannot be called on an assembler that's already finished")
 	}
-	switch k {
-	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.ListRepresentation_List", Key: &_String{k}}
-	}
+	return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.ListRepresentation_List", Key: &_String{k}}
 }
 func (ma *_ListRepresentation_List__Assembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -5951,15 +5921,8 @@ type _ListRepresentation_List__ReprMapItr struct {
 }
 
 func (itr *_ListRepresentation_List__ReprMapItr) Next() (k ipld.Node, v ipld.Node, _ error) {
-	if itr.idx >= 0 {
-		return nil, nil, ipld.ErrIteratorOverread{}
-	}
-	switch itr.idx {
-	default:
-		panic("unreachable")
-	}
-	itr.idx++
-	return
+	return nil, nil, ipld.ErrIteratorOverread{}
+
 }
 func (itr *_ListRepresentation_List__ReprMapItr) Done() bool {
 	return itr.idx >= 0
@@ -6147,10 +6110,7 @@ func (ma *_ListRepresentation_List__ReprAssembler) AssembleEntry(k string) (ipld
 	case maState_finished:
 		panic("invalid state: AssembleEntry cannot be called on an assembler that's already finished")
 	}
-	switch k {
-	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.ListRepresentation_List.Repr", Key: &_String{k}}
-	}
+	return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.ListRepresentation_List.Repr", Key: &_String{k}}
 }
 func (ma *_ListRepresentation_List__ReprAssembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -6243,11 +6203,7 @@ func (ka *_ListRepresentation_List__ReprKeyAssembler) AssignString(k string) err
 	if ka.state != maState_midKey {
 		panic("misuse: KeyAssembler held beyond its valid lifetime")
 	}
-	switch k {
-	default:
-		return ipld.ErrInvalidKey{TypeName: "schemadmt.ListRepresentation_List.Repr", Key: &_String{k}}
-	}
-	return nil
+	return ipld.ErrInvalidKey{TypeName: "schemadmt.ListRepresentation_List.Repr", Key: &_String{k}}
 }
 func (_ListRepresentation_List__ReprKeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{"schemadmt.ListRepresentation_List.Repr.KeyAssembler"}.AssignBytes(nil)
@@ -7831,9 +7787,8 @@ func (ma *_MapRepresentation__Assembler) AssembleEntry(k string) (ipld.NodeAssem
 		ma.ca3.w = &ma.w.x3
 		ma.ca3.m = &ma.cm
 		return &ma.ca3, nil
-	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.MapRepresentation", Key: &_String{k}}
 	}
+	return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.MapRepresentation", Key: &_String{k}}
 }
 func (ma *_MapRepresentation__Assembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -7965,10 +7920,8 @@ func (ka *_MapRepresentation__KeyAssembler) AssignString(k string) error {
 		ka.w.tag = 3
 		ka.state = maState_expectValue
 		return nil
-	default:
-		return ipld.ErrInvalidKey{TypeName: "schemadmt.MapRepresentation", Key: &_String{k}} // TODO: error quality: ErrInvalidUnionDiscriminant ?
 	}
-	return nil
+	return ipld.ErrInvalidKey{TypeName: "schemadmt.MapRepresentation", Key: &_String{k}} // TODO: error quality: ErrInvalidUnionDiscriminant ?
 }
 func (_MapRepresentation__KeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{"schemadmt.MapRepresentation.KeyAssembler"}.AssignBytes(nil)
@@ -8298,9 +8251,8 @@ func (ma *_MapRepresentation__ReprAssembler) AssembleEntry(k string) (ipld.NodeA
 		ma.ca3.w = &ma.w.x3
 		ma.ca3.m = &ma.cm
 		return &ma.ca3, nil
-	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.MapRepresentation.Repr", Key: &_String{k}}
 	}
+	return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.MapRepresentation.Repr", Key: &_String{k}}
 }
 func (ma *_MapRepresentation__ReprAssembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -8432,10 +8384,8 @@ func (ka *_MapRepresentation__ReprKeyAssembler) AssignString(k string) error {
 		ka.w.tag = 3
 		ka.state = maState_expectValue
 		return nil
-	default:
-		return ipld.ErrInvalidKey{TypeName: "schemadmt.MapRepresentation.Repr", Key: &_String{k}} // TODO: error quality: ErrInvalidUnionDiscriminant ?
 	}
-	return nil
+	return ipld.ErrInvalidKey{TypeName: "schemadmt.MapRepresentation.Repr", Key: &_String{k}} // TODO: error quality: ErrInvalidUnionDiscriminant ?
 }
 func (_MapRepresentation__ReprKeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{"schemadmt.MapRepresentation.Repr.KeyAssembler"}.AssignBytes(nil)
@@ -8524,15 +8474,8 @@ type _MapRepresentation_Listpairs__MapItr struct {
 }
 
 func (itr *_MapRepresentation_Listpairs__MapItr) Next() (k ipld.Node, v ipld.Node, _ error) {
-	if itr.idx >= 0 {
-		return nil, nil, ipld.ErrIteratorOverread{}
-	}
-	switch itr.idx {
-	default:
-		panic("unreachable")
-	}
-	itr.idx++
-	return
+	return nil, nil, ipld.ErrIteratorOverread{}
+
 }
 func (itr *_MapRepresentation_Listpairs__MapItr) Done() bool {
 	return itr.idx >= 0
@@ -8725,10 +8668,7 @@ func (ma *_MapRepresentation_Listpairs__Assembler) AssembleEntry(k string) (ipld
 	case maState_finished:
 		panic("invalid state: AssembleEntry cannot be called on an assembler that's already finished")
 	}
-	switch k {
-	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.MapRepresentation_Listpairs", Key: &_String{k}}
-	}
+	return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.MapRepresentation_Listpairs", Key: &_String{k}}
 }
 func (ma *_MapRepresentation_Listpairs__Assembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -8887,15 +8827,8 @@ type _MapRepresentation_Listpairs__ReprMapItr struct {
 }
 
 func (itr *_MapRepresentation_Listpairs__ReprMapItr) Next() (k ipld.Node, v ipld.Node, _ error) {
-	if itr.idx >= 0 {
-		return nil, nil, ipld.ErrIteratorOverread{}
-	}
-	switch itr.idx {
-	default:
-		panic("unreachable")
-	}
-	itr.idx++
-	return
+	return nil, nil, ipld.ErrIteratorOverread{}
+
 }
 func (itr *_MapRepresentation_Listpairs__ReprMapItr) Done() bool {
 	return itr.idx >= 0
@@ -9083,10 +9016,7 @@ func (ma *_MapRepresentation_Listpairs__ReprAssembler) AssembleEntry(k string) (
 	case maState_finished:
 		panic("invalid state: AssembleEntry cannot be called on an assembler that's already finished")
 	}
-	switch k {
-	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.MapRepresentation_Listpairs.Repr", Key: &_String{k}}
-	}
+	return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.MapRepresentation_Listpairs.Repr", Key: &_String{k}}
 }
 func (ma *_MapRepresentation_Listpairs__ReprAssembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -9179,11 +9109,7 @@ func (ka *_MapRepresentation_Listpairs__ReprKeyAssembler) AssignString(k string)
 	if ka.state != maState_midKey {
 		panic("misuse: KeyAssembler held beyond its valid lifetime")
 	}
-	switch k {
-	default:
-		return ipld.ErrInvalidKey{TypeName: "schemadmt.MapRepresentation_Listpairs.Repr", Key: &_String{k}}
-	}
-	return nil
+	return ipld.ErrInvalidKey{TypeName: "schemadmt.MapRepresentation_Listpairs.Repr", Key: &_String{k}}
 }
 func (_MapRepresentation_Listpairs__ReprKeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{"schemadmt.MapRepresentation_Listpairs.Repr.KeyAssembler"}.AssignBytes(nil)
@@ -9272,15 +9198,8 @@ type _MapRepresentation_Map__MapItr struct {
 }
 
 func (itr *_MapRepresentation_Map__MapItr) Next() (k ipld.Node, v ipld.Node, _ error) {
-	if itr.idx >= 0 {
-		return nil, nil, ipld.ErrIteratorOverread{}
-	}
-	switch itr.idx {
-	default:
-		panic("unreachable")
-	}
-	itr.idx++
-	return
+	return nil, nil, ipld.ErrIteratorOverread{}
+
 }
 func (itr *_MapRepresentation_Map__MapItr) Done() bool {
 	return itr.idx >= 0
@@ -9473,10 +9392,7 @@ func (ma *_MapRepresentation_Map__Assembler) AssembleEntry(k string) (ipld.NodeA
 	case maState_finished:
 		panic("invalid state: AssembleEntry cannot be called on an assembler that's already finished")
 	}
-	switch k {
-	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.MapRepresentation_Map", Key: &_String{k}}
-	}
+	return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.MapRepresentation_Map", Key: &_String{k}}
 }
 func (ma *_MapRepresentation_Map__Assembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -9635,15 +9551,8 @@ type _MapRepresentation_Map__ReprMapItr struct {
 }
 
 func (itr *_MapRepresentation_Map__ReprMapItr) Next() (k ipld.Node, v ipld.Node, _ error) {
-	if itr.idx >= 0 {
-		return nil, nil, ipld.ErrIteratorOverread{}
-	}
-	switch itr.idx {
-	default:
-		panic("unreachable")
-	}
-	itr.idx++
-	return
+	return nil, nil, ipld.ErrIteratorOverread{}
+
 }
 func (itr *_MapRepresentation_Map__ReprMapItr) Done() bool {
 	return itr.idx >= 0
@@ -9831,10 +9740,7 @@ func (ma *_MapRepresentation_Map__ReprAssembler) AssembleEntry(k string) (ipld.N
 	case maState_finished:
 		panic("invalid state: AssembleEntry cannot be called on an assembler that's already finished")
 	}
-	switch k {
-	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.MapRepresentation_Map.Repr", Key: &_String{k}}
-	}
+	return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.MapRepresentation_Map.Repr", Key: &_String{k}}
 }
 func (ma *_MapRepresentation_Map__ReprAssembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -9927,11 +9833,7 @@ func (ka *_MapRepresentation_Map__ReprKeyAssembler) AssignString(k string) error
 	if ka.state != maState_midKey {
 		panic("misuse: KeyAssembler held beyond its valid lifetime")
 	}
-	switch k {
-	default:
-		return ipld.ErrInvalidKey{TypeName: "schemadmt.MapRepresentation_Map.Repr", Key: &_String{k}}
-	}
-	return nil
+	return ipld.ErrInvalidKey{TypeName: "schemadmt.MapRepresentation_Map.Repr", Key: &_String{k}}
 }
 func (_MapRepresentation_Map__ReprKeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{"schemadmt.MapRepresentation_Map.Repr.KeyAssembler"}.AssignBytes(nil)
@@ -10288,9 +10190,8 @@ func (ma *_MapRepresentation_Stringpairs__Assembler) AssembleEntry(k string) (ip
 		ma.ca_entryDelim.w = &ma.w.entryDelim
 		ma.ca_entryDelim.m = &ma.cm
 		return &ma.ca_entryDelim, nil
-	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.MapRepresentation_Stringpairs", Key: &_String{k}}
 	}
+	return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.MapRepresentation_Stringpairs", Key: &_String{k}}
 }
 func (ma *_MapRepresentation_Stringpairs__Assembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -10730,8 +10631,8 @@ func (ma *_MapRepresentation_Stringpairs__ReprAssembler) AssembleEntry(k string)
 		ma.ca_entryDelim.m = &ma.cm
 		return &ma.ca_entryDelim, nil
 	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.MapRepresentation_Stringpairs.Repr", Key: &_String{k}}
 	}
+	return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.MapRepresentation_Stringpairs.Repr", Key: &_String{k}}
 }
 func (ma *_MapRepresentation_Stringpairs__ReprAssembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -10846,6 +10747,7 @@ func (ka *_MapRepresentation_Stringpairs__ReprKeyAssembler) AssignString(k strin
 		ka.s += fieldBit__MapRepresentation_Stringpairs_InnerDelim
 		ka.state = maState_expectValue
 		ka.f = 0
+		return nil
 	case "entryDelim":
 		if ka.s&fieldBit__MapRepresentation_Stringpairs_EntryDelim != 0 {
 			return ipld.ErrRepeatedMapKey{&fieldName__MapRepresentation_Stringpairs_EntryDelim_serial}
@@ -10853,10 +10755,9 @@ func (ka *_MapRepresentation_Stringpairs__ReprKeyAssembler) AssignString(k strin
 		ka.s += fieldBit__MapRepresentation_Stringpairs_EntryDelim
 		ka.state = maState_expectValue
 		ka.f = 1
-	default:
-		return ipld.ErrInvalidKey{TypeName: "schemadmt.MapRepresentation_Stringpairs.Repr", Key: &_String{k}}
+		return nil
 	}
-	return nil
+	return ipld.ErrInvalidKey{TypeName: "schemadmt.MapRepresentation_Stringpairs.Repr", Key: &_String{k}}
 }
 func (_MapRepresentation_Stringpairs__ReprKeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{"schemadmt.MapRepresentation_Stringpairs.Repr.KeyAssembler"}.AssignBytes(nil)
@@ -15243,9 +15144,8 @@ func (ma *_Schema__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, error
 		ma.ca_types.w = &ma.w.types
 		ma.ca_types.m = &ma.cm
 		return &ma.ca_types, nil
-	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.Schema", Key: &_String{k}}
 	}
+	return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.Schema", Key: &_String{k}}
 }
 func (ma *_Schema__Assembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -15644,8 +15544,8 @@ func (ma *_Schema__ReprAssembler) AssembleEntry(k string) (ipld.NodeAssembler, e
 		ma.ca_types.m = &ma.cm
 		return &ma.ca_types, nil
 	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.Schema.Repr", Key: &_String{k}}
 	}
+	return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.Schema.Repr", Key: &_String{k}}
 }
 func (ma *_Schema__ReprAssembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -15753,10 +15653,9 @@ func (ka *_Schema__ReprKeyAssembler) AssignString(k string) error {
 		ka.s += fieldBit__Schema_Types
 		ka.state = maState_expectValue
 		ka.f = 0
-	default:
-		return ipld.ErrInvalidKey{TypeName: "schemadmt.Schema.Repr", Key: &_String{k}}
+		return nil
 	}
-	return nil
+	return ipld.ErrInvalidKey{TypeName: "schemadmt.Schema.Repr", Key: &_String{k}}
 }
 func (_Schema__ReprKeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{"schemadmt.Schema.Repr.KeyAssembler"}.AssignBytes(nil)
@@ -17131,9 +17030,8 @@ func (ma *_StructField__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, 
 		ma.ca_nullable.w = &ma.w.nullable
 		ma.ca_nullable.m = &ma.cm
 		return &ma.ca_nullable, nil
-	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.StructField", Key: &_String{k}}
 	}
+	return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.StructField", Key: &_String{k}}
 }
 func (ma *_StructField__Assembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -17614,8 +17512,8 @@ func (ma *_StructField__ReprAssembler) AssembleEntry(k string) (ipld.NodeAssembl
 		ma.ca_nullable.m = &ma.cm
 		return &ma.ca_nullable, nil
 	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.StructField.Repr", Key: &_String{k}}
 	}
+	return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.StructField.Repr", Key: &_String{k}}
 }
 func (ma *_StructField__ReprAssembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -17737,6 +17635,7 @@ func (ka *_StructField__ReprKeyAssembler) AssignString(k string) error {
 		ka.s += fieldBit__StructField_Type
 		ka.state = maState_expectValue
 		ka.f = 0
+		return nil
 	case "optional":
 		if ka.s&fieldBit__StructField_Optional != 0 {
 			return ipld.ErrRepeatedMapKey{&fieldName__StructField_Optional_serial}
@@ -17744,6 +17643,7 @@ func (ka *_StructField__ReprKeyAssembler) AssignString(k string) error {
 		ka.s += fieldBit__StructField_Optional
 		ka.state = maState_expectValue
 		ka.f = 1
+		return nil
 	case "nullable":
 		if ka.s&fieldBit__StructField_Nullable != 0 {
 			return ipld.ErrRepeatedMapKey{&fieldName__StructField_Nullable_serial}
@@ -17751,10 +17651,9 @@ func (ka *_StructField__ReprKeyAssembler) AssignString(k string) error {
 		ka.s += fieldBit__StructField_Nullable
 		ka.state = maState_expectValue
 		ka.f = 2
-	default:
-		return ipld.ErrInvalidKey{TypeName: "schemadmt.StructField.Repr", Key: &_String{k}}
+		return nil
 	}
-	return nil
+	return ipld.ErrInvalidKey{TypeName: "schemadmt.StructField.Repr", Key: &_String{k}}
 }
 func (_StructField__ReprKeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{"schemadmt.StructField.Repr.KeyAssembler"}.AssignBytes(nil)
@@ -18168,9 +18067,8 @@ func (ma *_StructRepresentation__Assembler) AssembleEntry(k string) (ipld.NodeAs
 		ma.ca5.w = &ma.w.x5
 		ma.ca5.m = &ma.cm
 		return &ma.ca5, nil
-	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.StructRepresentation", Key: &_String{k}}
 	}
+	return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.StructRepresentation", Key: &_String{k}}
 }
 func (ma *_StructRepresentation__Assembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -18324,10 +18222,8 @@ func (ka *_StructRepresentation__KeyAssembler) AssignString(k string) error {
 		ka.w.tag = 5
 		ka.state = maState_expectValue
 		return nil
-	default:
-		return ipld.ErrInvalidKey{TypeName: "schemadmt.StructRepresentation", Key: &_String{k}} // TODO: error quality: ErrInvalidUnionDiscriminant ?
 	}
-	return nil
+	return ipld.ErrInvalidKey{TypeName: "schemadmt.StructRepresentation", Key: &_String{k}} // TODO: error quality: ErrInvalidUnionDiscriminant ?
 }
 func (_StructRepresentation__KeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{"schemadmt.StructRepresentation.KeyAssembler"}.AssignBytes(nil)
@@ -18697,9 +18593,8 @@ func (ma *_StructRepresentation__ReprAssembler) AssembleEntry(k string) (ipld.No
 		ma.ca5.w = &ma.w.x5
 		ma.ca5.m = &ma.cm
 		return &ma.ca5, nil
-	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.StructRepresentation.Repr", Key: &_String{k}}
 	}
+	return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.StructRepresentation.Repr", Key: &_String{k}}
 }
 func (ma *_StructRepresentation__ReprAssembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -18853,10 +18748,8 @@ func (ka *_StructRepresentation__ReprKeyAssembler) AssignString(k string) error 
 		ka.w.tag = 5
 		ka.state = maState_expectValue
 		return nil
-	default:
-		return ipld.ErrInvalidKey{TypeName: "schemadmt.StructRepresentation.Repr", Key: &_String{k}} // TODO: error quality: ErrInvalidUnionDiscriminant ?
 	}
-	return nil
+	return ipld.ErrInvalidKey{TypeName: "schemadmt.StructRepresentation.Repr", Key: &_String{k}} // TODO: error quality: ErrInvalidUnionDiscriminant ?
 }
 func (_StructRepresentation__ReprKeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{"schemadmt.StructRepresentation.Repr.KeyAssembler"}.AssignBytes(nil)
@@ -18945,15 +18838,8 @@ type _StructRepresentation_Listpairs__MapItr struct {
 }
 
 func (itr *_StructRepresentation_Listpairs__MapItr) Next() (k ipld.Node, v ipld.Node, _ error) {
-	if itr.idx >= 0 {
-		return nil, nil, ipld.ErrIteratorOverread{}
-	}
-	switch itr.idx {
-	default:
-		panic("unreachable")
-	}
-	itr.idx++
-	return
+	return nil, nil, ipld.ErrIteratorOverread{}
+
 }
 func (itr *_StructRepresentation_Listpairs__MapItr) Done() bool {
 	return itr.idx >= 0
@@ -19146,10 +19032,7 @@ func (ma *_StructRepresentation_Listpairs__Assembler) AssembleEntry(k string) (i
 	case maState_finished:
 		panic("invalid state: AssembleEntry cannot be called on an assembler that's already finished")
 	}
-	switch k {
-	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.StructRepresentation_Listpairs", Key: &_String{k}}
-	}
+	return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.StructRepresentation_Listpairs", Key: &_String{k}}
 }
 func (ma *_StructRepresentation_Listpairs__Assembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -19308,15 +19191,8 @@ type _StructRepresentation_Listpairs__ReprMapItr struct {
 }
 
 func (itr *_StructRepresentation_Listpairs__ReprMapItr) Next() (k ipld.Node, v ipld.Node, _ error) {
-	if itr.idx >= 0 {
-		return nil, nil, ipld.ErrIteratorOverread{}
-	}
-	switch itr.idx {
-	default:
-		panic("unreachable")
-	}
-	itr.idx++
-	return
+	return nil, nil, ipld.ErrIteratorOverread{}
+
 }
 func (itr *_StructRepresentation_Listpairs__ReprMapItr) Done() bool {
 	return itr.idx >= 0
@@ -19504,10 +19380,7 @@ func (ma *_StructRepresentation_Listpairs__ReprAssembler) AssembleEntry(k string
 	case maState_finished:
 		panic("invalid state: AssembleEntry cannot be called on an assembler that's already finished")
 	}
-	switch k {
-	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.StructRepresentation_Listpairs.Repr", Key: &_String{k}}
-	}
+	return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.StructRepresentation_Listpairs.Repr", Key: &_String{k}}
 }
 func (ma *_StructRepresentation_Listpairs__ReprAssembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -19600,11 +19473,7 @@ func (ka *_StructRepresentation_Listpairs__ReprKeyAssembler) AssignString(k stri
 	if ka.state != maState_midKey {
 		panic("misuse: KeyAssembler held beyond its valid lifetime")
 	}
-	switch k {
-	default:
-		return ipld.ErrInvalidKey{TypeName: "schemadmt.StructRepresentation_Listpairs.Repr", Key: &_String{k}}
-	}
-	return nil
+	return ipld.ErrInvalidKey{TypeName: "schemadmt.StructRepresentation_Listpairs.Repr", Key: &_String{k}}
 }
 func (_StructRepresentation_Listpairs__ReprKeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{"schemadmt.StructRepresentation_Listpairs.Repr.KeyAssembler"}.AssignBytes(nil)
@@ -19935,9 +19804,8 @@ func (ma *_StructRepresentation_Map__Assembler) AssembleEntry(k string) (ipld.No
 		ma.ca_fields.w = ma.w.fields.v
 		ma.ca_fields.m = &ma.w.fields.m
 		return &ma.ca_fields, nil
-	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.StructRepresentation_Map", Key: &_String{k}}
 	}
+	return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.StructRepresentation_Map", Key: &_String{k}}
 }
 func (ma *_StructRepresentation_Map__Assembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -20353,8 +20221,8 @@ func (ma *_StructRepresentation_Map__ReprAssembler) AssembleEntry(k string) (ipl
 
 		return &ma.ca_fields, nil
 	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.StructRepresentation_Map.Repr", Key: &_String{k}}
 	}
+	return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.StructRepresentation_Map.Repr", Key: &_String{k}}
 }
 func (ma *_StructRepresentation_Map__ReprAssembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -20460,10 +20328,9 @@ func (ka *_StructRepresentation_Map__ReprKeyAssembler) AssignString(k string) er
 		ka.s += fieldBit__StructRepresentation_Map_Fields
 		ka.state = maState_expectValue
 		ka.f = 0
-	default:
-		return ipld.ErrInvalidKey{TypeName: "schemadmt.StructRepresentation_Map.Repr", Key: &_String{k}}
+		return nil
 	}
-	return nil
+	return ipld.ErrInvalidKey{TypeName: "schemadmt.StructRepresentation_Map.Repr", Key: &_String{k}}
 }
 func (_StructRepresentation_Map__ReprKeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{"schemadmt.StructRepresentation_Map.Repr.KeyAssembler"}.AssignBytes(nil)
@@ -20832,9 +20699,8 @@ func (ma *_StructRepresentation_Map_FieldDetails__Assembler) AssembleEntry(k str
 		ma.ca_implicit.w = ma.w.implicit.v
 		ma.ca_implicit.m = &ma.w.implicit.m
 		return &ma.ca_implicit, nil
-	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.StructRepresentation_Map_FieldDetails", Key: &_String{k}}
 	}
+	return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.StructRepresentation_Map_FieldDetails", Key: &_String{k}}
 }
 func (ma *_StructRepresentation_Map_FieldDetails__Assembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -21304,8 +21170,8 @@ func (ma *_StructRepresentation_Map_FieldDetails__ReprAssembler) AssembleEntry(k
 
 		return &ma.ca_implicit, nil
 	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.StructRepresentation_Map_FieldDetails.Repr", Key: &_String{k}}
 	}
+	return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.StructRepresentation_Map_FieldDetails.Repr", Key: &_String{k}}
 }
 func (ma *_StructRepresentation_Map_FieldDetails__ReprAssembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -21416,6 +21282,7 @@ func (ka *_StructRepresentation_Map_FieldDetails__ReprKeyAssembler) AssignString
 		ka.s += fieldBit__StructRepresentation_Map_FieldDetails_Rename
 		ka.state = maState_expectValue
 		ka.f = 0
+		return nil
 	case "implicit":
 		if ka.s&fieldBit__StructRepresentation_Map_FieldDetails_Implicit != 0 {
 			return ipld.ErrRepeatedMapKey{&fieldName__StructRepresentation_Map_FieldDetails_Implicit_serial}
@@ -21423,10 +21290,9 @@ func (ka *_StructRepresentation_Map_FieldDetails__ReprKeyAssembler) AssignString
 		ka.s += fieldBit__StructRepresentation_Map_FieldDetails_Implicit
 		ka.state = maState_expectValue
 		ka.f = 1
-	default:
-		return ipld.ErrInvalidKey{TypeName: "schemadmt.StructRepresentation_Map_FieldDetails.Repr", Key: &_String{k}}
+		return nil
 	}
-	return nil
+	return ipld.ErrInvalidKey{TypeName: "schemadmt.StructRepresentation_Map_FieldDetails.Repr", Key: &_String{k}}
 }
 func (_StructRepresentation_Map_FieldDetails__ReprKeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{"schemadmt.StructRepresentation_Map_FieldDetails.Repr.KeyAssembler"}.AssignBytes(nil)
@@ -21789,9 +21655,8 @@ func (ma *_StructRepresentation_Stringjoin__Assembler) AssembleEntry(k string) (
 		ma.ca_fieldOrder.w = ma.w.fieldOrder.v
 		ma.ca_fieldOrder.m = &ma.w.fieldOrder.m
 		return &ma.ca_fieldOrder, nil
-	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.StructRepresentation_Stringjoin", Key: &_String{k}}
 	}
+	return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.StructRepresentation_Stringjoin", Key: &_String{k}}
 }
 func (ma *_StructRepresentation_Stringjoin__Assembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -22248,8 +22113,8 @@ func (ma *_StructRepresentation_Stringjoin__ReprAssembler) AssembleEntry(k strin
 
 		return &ma.ca_fieldOrder, nil
 	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.StructRepresentation_Stringjoin.Repr", Key: &_String{k}}
 	}
+	return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.StructRepresentation_Stringjoin.Repr", Key: &_String{k}}
 }
 func (ma *_StructRepresentation_Stringjoin__ReprAssembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -22362,6 +22227,7 @@ func (ka *_StructRepresentation_Stringjoin__ReprKeyAssembler) AssignString(k str
 		ka.s += fieldBit__StructRepresentation_Stringjoin_Join
 		ka.state = maState_expectValue
 		ka.f = 0
+		return nil
 	case "fieldOrder":
 		if ka.s&fieldBit__StructRepresentation_Stringjoin_FieldOrder != 0 {
 			return ipld.ErrRepeatedMapKey{&fieldName__StructRepresentation_Stringjoin_FieldOrder_serial}
@@ -22369,10 +22235,9 @@ func (ka *_StructRepresentation_Stringjoin__ReprKeyAssembler) AssignString(k str
 		ka.s += fieldBit__StructRepresentation_Stringjoin_FieldOrder
 		ka.state = maState_expectValue
 		ka.f = 1
-	default:
-		return ipld.ErrInvalidKey{TypeName: "schemadmt.StructRepresentation_Stringjoin.Repr", Key: &_String{k}}
+		return nil
 	}
-	return nil
+	return ipld.ErrInvalidKey{TypeName: "schemadmt.StructRepresentation_Stringjoin.Repr", Key: &_String{k}}
 }
 func (_StructRepresentation_Stringjoin__ReprKeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{"schemadmt.StructRepresentation_Stringjoin.Repr.KeyAssembler"}.AssignBytes(nil)
@@ -22729,9 +22594,8 @@ func (ma *_StructRepresentation_Stringpairs__Assembler) AssembleEntry(k string) 
 		ma.ca_entryDelim.w = &ma.w.entryDelim
 		ma.ca_entryDelim.m = &ma.cm
 		return &ma.ca_entryDelim, nil
-	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.StructRepresentation_Stringpairs", Key: &_String{k}}
 	}
+	return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.StructRepresentation_Stringpairs", Key: &_String{k}}
 }
 func (ma *_StructRepresentation_Stringpairs__Assembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -23171,8 +23035,8 @@ func (ma *_StructRepresentation_Stringpairs__ReprAssembler) AssembleEntry(k stri
 		ma.ca_entryDelim.m = &ma.cm
 		return &ma.ca_entryDelim, nil
 	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.StructRepresentation_Stringpairs.Repr", Key: &_String{k}}
 	}
+	return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.StructRepresentation_Stringpairs.Repr", Key: &_String{k}}
 }
 func (ma *_StructRepresentation_Stringpairs__ReprAssembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -23287,6 +23151,7 @@ func (ka *_StructRepresentation_Stringpairs__ReprKeyAssembler) AssignString(k st
 		ka.s += fieldBit__StructRepresentation_Stringpairs_InnerDelim
 		ka.state = maState_expectValue
 		ka.f = 0
+		return nil
 	case "entryDelim":
 		if ka.s&fieldBit__StructRepresentation_Stringpairs_EntryDelim != 0 {
 			return ipld.ErrRepeatedMapKey{&fieldName__StructRepresentation_Stringpairs_EntryDelim_serial}
@@ -23294,10 +23159,9 @@ func (ka *_StructRepresentation_Stringpairs__ReprKeyAssembler) AssignString(k st
 		ka.s += fieldBit__StructRepresentation_Stringpairs_EntryDelim
 		ka.state = maState_expectValue
 		ka.f = 1
-	default:
-		return ipld.ErrInvalidKey{TypeName: "schemadmt.StructRepresentation_Stringpairs.Repr", Key: &_String{k}}
+		return nil
 	}
-	return nil
+	return ipld.ErrInvalidKey{TypeName: "schemadmt.StructRepresentation_Stringpairs.Repr", Key: &_String{k}}
 }
 func (_StructRepresentation_Stringpairs__ReprKeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{"schemadmt.StructRepresentation_Stringpairs.Repr.KeyAssembler"}.AssignBytes(nil)
@@ -23628,9 +23492,8 @@ func (ma *_StructRepresentation_Tuple__Assembler) AssembleEntry(k string) (ipld.
 		ma.ca_fieldOrder.w = ma.w.fieldOrder.v
 		ma.ca_fieldOrder.m = &ma.w.fieldOrder.m
 		return &ma.ca_fieldOrder, nil
-	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.StructRepresentation_Tuple", Key: &_String{k}}
 	}
+	return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.StructRepresentation_Tuple", Key: &_String{k}}
 }
 func (ma *_StructRepresentation_Tuple__Assembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -24046,8 +23909,8 @@ func (ma *_StructRepresentation_Tuple__ReprAssembler) AssembleEntry(k string) (i
 
 		return &ma.ca_fieldOrder, nil
 	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.StructRepresentation_Tuple.Repr", Key: &_String{k}}
 	}
+	return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.StructRepresentation_Tuple.Repr", Key: &_String{k}}
 }
 func (ma *_StructRepresentation_Tuple__ReprAssembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -24153,10 +24016,9 @@ func (ka *_StructRepresentation_Tuple__ReprKeyAssembler) AssignString(k string) 
 		ka.s += fieldBit__StructRepresentation_Tuple_FieldOrder
 		ka.state = maState_expectValue
 		ka.f = 0
-	default:
-		return ipld.ErrInvalidKey{TypeName: "schemadmt.StructRepresentation_Tuple.Repr", Key: &_String{k}}
+		return nil
 	}
-	return nil
+	return ipld.ErrInvalidKey{TypeName: "schemadmt.StructRepresentation_Tuple.Repr", Key: &_String{k}}
 }
 func (_StructRepresentation_Tuple__ReprKeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{"schemadmt.StructRepresentation_Tuple.Repr.KeyAssembler"}.AssignBytes(nil)
@@ -24245,15 +24107,8 @@ type _TypeBool__MapItr struct {
 }
 
 func (itr *_TypeBool__MapItr) Next() (k ipld.Node, v ipld.Node, _ error) {
-	if itr.idx >= 0 {
-		return nil, nil, ipld.ErrIteratorOverread{}
-	}
-	switch itr.idx {
-	default:
-		panic("unreachable")
-	}
-	itr.idx++
-	return
+	return nil, nil, ipld.ErrIteratorOverread{}
+
 }
 func (itr *_TypeBool__MapItr) Done() bool {
 	return itr.idx >= 0
@@ -24446,10 +24301,7 @@ func (ma *_TypeBool__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, err
 	case maState_finished:
 		panic("invalid state: AssembleEntry cannot be called on an assembler that's already finished")
 	}
-	switch k {
-	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.TypeBool", Key: &_String{k}}
-	}
+	return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.TypeBool", Key: &_String{k}}
 }
 func (ma *_TypeBool__Assembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -24608,15 +24460,8 @@ type _TypeBool__ReprMapItr struct {
 }
 
 func (itr *_TypeBool__ReprMapItr) Next() (k ipld.Node, v ipld.Node, _ error) {
-	if itr.idx >= 0 {
-		return nil, nil, ipld.ErrIteratorOverread{}
-	}
-	switch itr.idx {
-	default:
-		panic("unreachable")
-	}
-	itr.idx++
-	return
+	return nil, nil, ipld.ErrIteratorOverread{}
+
 }
 func (itr *_TypeBool__ReprMapItr) Done() bool {
 	return itr.idx >= 0
@@ -24804,10 +24649,7 @@ func (ma *_TypeBool__ReprAssembler) AssembleEntry(k string) (ipld.NodeAssembler,
 	case maState_finished:
 		panic("invalid state: AssembleEntry cannot be called on an assembler that's already finished")
 	}
-	switch k {
-	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.TypeBool.Repr", Key: &_String{k}}
-	}
+	return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.TypeBool.Repr", Key: &_String{k}}
 }
 func (ma *_TypeBool__ReprAssembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -24900,11 +24742,7 @@ func (ka *_TypeBool__ReprKeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
 		panic("misuse: KeyAssembler held beyond its valid lifetime")
 	}
-	switch k {
-	default:
-		return ipld.ErrInvalidKey{TypeName: "schemadmt.TypeBool.Repr", Key: &_String{k}}
-	}
-	return nil
+	return ipld.ErrInvalidKey{TypeName: "schemadmt.TypeBool.Repr", Key: &_String{k}}
 }
 func (_TypeBool__ReprKeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{"schemadmt.TypeBool.Repr.KeyAssembler"}.AssignBytes(nil)
@@ -24993,15 +24831,8 @@ type _TypeBytes__MapItr struct {
 }
 
 func (itr *_TypeBytes__MapItr) Next() (k ipld.Node, v ipld.Node, _ error) {
-	if itr.idx >= 0 {
-		return nil, nil, ipld.ErrIteratorOverread{}
-	}
-	switch itr.idx {
-	default:
-		panic("unreachable")
-	}
-	itr.idx++
-	return
+	return nil, nil, ipld.ErrIteratorOverread{}
+
 }
 func (itr *_TypeBytes__MapItr) Done() bool {
 	return itr.idx >= 0
@@ -25194,10 +25025,7 @@ func (ma *_TypeBytes__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, er
 	case maState_finished:
 		panic("invalid state: AssembleEntry cannot be called on an assembler that's already finished")
 	}
-	switch k {
-	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.TypeBytes", Key: &_String{k}}
-	}
+	return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.TypeBytes", Key: &_String{k}}
 }
 func (ma *_TypeBytes__Assembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -25356,15 +25184,8 @@ type _TypeBytes__ReprMapItr struct {
 }
 
 func (itr *_TypeBytes__ReprMapItr) Next() (k ipld.Node, v ipld.Node, _ error) {
-	if itr.idx >= 0 {
-		return nil, nil, ipld.ErrIteratorOverread{}
-	}
-	switch itr.idx {
-	default:
-		panic("unreachable")
-	}
-	itr.idx++
-	return
+	return nil, nil, ipld.ErrIteratorOverread{}
+
 }
 func (itr *_TypeBytes__ReprMapItr) Done() bool {
 	return itr.idx >= 0
@@ -25552,10 +25373,7 @@ func (ma *_TypeBytes__ReprAssembler) AssembleEntry(k string) (ipld.NodeAssembler
 	case maState_finished:
 		panic("invalid state: AssembleEntry cannot be called on an assembler that's already finished")
 	}
-	switch k {
-	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.TypeBytes.Repr", Key: &_String{k}}
-	}
+	return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.TypeBytes.Repr", Key: &_String{k}}
 }
 func (ma *_TypeBytes__ReprAssembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -25648,11 +25466,7 @@ func (ka *_TypeBytes__ReprKeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
 		panic("misuse: KeyAssembler held beyond its valid lifetime")
 	}
-	switch k {
-	default:
-		return ipld.ErrInvalidKey{TypeName: "schemadmt.TypeBytes.Repr", Key: &_String{k}}
-	}
-	return nil
+	return ipld.ErrInvalidKey{TypeName: "schemadmt.TypeBytes.Repr", Key: &_String{k}}
 }
 func (_TypeBytes__ReprKeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{"schemadmt.TypeBytes.Repr.KeyAssembler"}.AssignBytes(nil)
@@ -25977,9 +25791,8 @@ func (ma *_TypeCopy__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, err
 		ma.ca_fromType.w = &ma.w.fromType
 		ma.ca_fromType.m = &ma.cm
 		return &ma.ca_fromType, nil
-	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.TypeCopy", Key: &_String{k}}
 	}
+	return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.TypeCopy", Key: &_String{k}}
 }
 func (ma *_TypeCopy__Assembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -26378,8 +26191,8 @@ func (ma *_TypeCopy__ReprAssembler) AssembleEntry(k string) (ipld.NodeAssembler,
 		ma.ca_fromType.m = &ma.cm
 		return &ma.ca_fromType, nil
 	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.TypeCopy.Repr", Key: &_String{k}}
 	}
+	return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.TypeCopy.Repr", Key: &_String{k}}
 }
 func (ma *_TypeCopy__ReprAssembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -26487,10 +26300,9 @@ func (ka *_TypeCopy__ReprKeyAssembler) AssignString(k string) error {
 		ka.s += fieldBit__TypeCopy_FromType
 		ka.state = maState_expectValue
 		ka.f = 0
-	default:
-		return ipld.ErrInvalidKey{TypeName: "schemadmt.TypeCopy.Repr", Key: &_String{k}}
+		return nil
 	}
-	return nil
+	return ipld.ErrInvalidKey{TypeName: "schemadmt.TypeCopy.Repr", Key: &_String{k}}
 }
 func (_TypeCopy__ReprKeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{"schemadmt.TypeCopy.Repr.KeyAssembler"}.AssignBytes(nil)
@@ -27058,9 +26870,8 @@ func (ma *_TypeDefn__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, err
 		ma.ca12.w = &ma.w.x12
 		ma.ca12.m = &ma.cm
 		return &ma.ca12, nil
-	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.TypeDefn", Key: &_String{k}}
 	}
+	return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.TypeDefn", Key: &_String{k}}
 }
 func (ma *_TypeDefn__Assembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -27291,10 +27102,8 @@ func (ka *_TypeDefn__KeyAssembler) AssignString(k string) error {
 		ka.w.tag = 12
 		ka.state = maState_expectValue
 		return nil
-	default:
-		return ipld.ErrInvalidKey{TypeName: "schemadmt.TypeDefn", Key: &_String{k}} // TODO: error quality: ErrInvalidUnionDiscriminant ?
 	}
-	return nil
+	return ipld.ErrInvalidKey{TypeName: "schemadmt.TypeDefn", Key: &_String{k}} // TODO: error quality: ErrInvalidUnionDiscriminant ?
 }
 func (_TypeDefn__KeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{"schemadmt.TypeDefn.KeyAssembler"}.AssignBytes(nil)
@@ -27804,9 +27613,8 @@ func (ma *_TypeDefn__ReprAssembler) AssembleEntry(k string) (ipld.NodeAssembler,
 		ma.ca12.w = &ma.w.x12
 		ma.ca12.m = &ma.cm
 		return &ma.ca12, nil
-	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.TypeDefn.Repr", Key: &_String{k}}
 	}
+	return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.TypeDefn.Repr", Key: &_String{k}}
 }
 func (ma *_TypeDefn__ReprAssembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -28037,10 +27845,8 @@ func (ka *_TypeDefn__ReprKeyAssembler) AssignString(k string) error {
 		ka.w.tag = 12
 		ka.state = maState_expectValue
 		return nil
-	default:
-		return ipld.ErrInvalidKey{TypeName: "schemadmt.TypeDefn.Repr", Key: &_String{k}} // TODO: error quality: ErrInvalidUnionDiscriminant ?
 	}
-	return nil
+	return ipld.ErrInvalidKey{TypeName: "schemadmt.TypeDefn.Repr", Key: &_String{k}} // TODO: error quality: ErrInvalidUnionDiscriminant ?
 }
 func (_TypeDefn__ReprKeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{"schemadmt.TypeDefn.Repr.KeyAssembler"}.AssignBytes(nil)
@@ -28391,9 +28197,8 @@ func (ma *_TypeDefnInline__Assembler) AssembleEntry(k string) (ipld.NodeAssemble
 		ma.ca2.w = x
 		ma.ca2.m = &ma.cm
 		return ma.ca2, nil
-	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.TypeDefnInline", Key: &_String{k}}
 	}
+	return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.TypeDefnInline", Key: &_String{k}}
 }
 func (ma *_TypeDefnInline__Assembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -28522,10 +28327,8 @@ func (ka *_TypeDefnInline__KeyAssembler) AssignString(k string) error {
 		ka.ca = 2
 		ka.state = maState_expectValue
 		return nil
-	default:
-		return ipld.ErrInvalidKey{TypeName: "schemadmt.TypeDefnInline", Key: &_String{k}} // TODO: error quality: ErrInvalidUnionDiscriminant ?
 	}
-	return nil
+	return ipld.ErrInvalidKey{TypeName: "schemadmt.TypeDefnInline", Key: &_String{k}} // TODO: error quality: ErrInvalidUnionDiscriminant ?
 }
 func (_TypeDefnInline__KeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{"schemadmt.TypeDefnInline.KeyAssembler"}.AssignBytes(nil)
@@ -28845,9 +28648,8 @@ func (ma *_TypeDefnInline__ReprAssembler) AssembleEntry(k string) (ipld.NodeAsse
 		ma.ca2.w = x
 		ma.ca2.m = &ma.cm
 		return ma.ca2, nil
-	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.TypeDefnInline.Repr", Key: &_String{k}}
 	}
+	return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.TypeDefnInline.Repr", Key: &_String{k}}
 }
 func (ma *_TypeDefnInline__ReprAssembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -28976,10 +28778,8 @@ func (ka *_TypeDefnInline__ReprKeyAssembler) AssignString(k string) error {
 		ka.ca = 2
 		ka.state = maState_expectValue
 		return nil
-	default:
-		return ipld.ErrInvalidKey{TypeName: "schemadmt.TypeDefnInline.Repr", Key: &_String{k}} // TODO: error quality: ErrInvalidUnionDiscriminant ?
 	}
-	return nil
+	return ipld.ErrInvalidKey{TypeName: "schemadmt.TypeDefnInline.Repr", Key: &_String{k}} // TODO: error quality: ErrInvalidUnionDiscriminant ?
 }
 func (_TypeDefnInline__ReprKeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{"schemadmt.TypeDefnInline.Repr.KeyAssembler"}.AssignBytes(nil)
@@ -29336,9 +29136,8 @@ func (ma *_TypeEnum__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, err
 		ma.ca_representation.w = &ma.w.representation
 		ma.ca_representation.m = &ma.cm
 		return &ma.ca_representation, nil
-	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.TypeEnum", Key: &_String{k}}
 	}
+	return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.TypeEnum", Key: &_String{k}}
 }
 func (ma *_TypeEnum__Assembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -29778,8 +29577,8 @@ func (ma *_TypeEnum__ReprAssembler) AssembleEntry(k string) (ipld.NodeAssembler,
 		ma.ca_representation.m = &ma.cm
 		return &ma.ca_representation, nil
 	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.TypeEnum.Repr", Key: &_String{k}}
 	}
+	return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.TypeEnum.Repr", Key: &_String{k}}
 }
 func (ma *_TypeEnum__ReprAssembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -29894,6 +29693,7 @@ func (ka *_TypeEnum__ReprKeyAssembler) AssignString(k string) error {
 		ka.s += fieldBit__TypeEnum_Members
 		ka.state = maState_expectValue
 		ka.f = 0
+		return nil
 	case "representation":
 		if ka.s&fieldBit__TypeEnum_Representation != 0 {
 			return ipld.ErrRepeatedMapKey{&fieldName__TypeEnum_Representation_serial}
@@ -29901,10 +29701,9 @@ func (ka *_TypeEnum__ReprKeyAssembler) AssignString(k string) error {
 		ka.s += fieldBit__TypeEnum_Representation
 		ka.state = maState_expectValue
 		ka.f = 1
-	default:
-		return ipld.ErrInvalidKey{TypeName: "schemadmt.TypeEnum.Repr", Key: &_String{k}}
+		return nil
 	}
-	return nil
+	return ipld.ErrInvalidKey{TypeName: "schemadmt.TypeEnum.Repr", Key: &_String{k}}
 }
 func (_TypeEnum__ReprKeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{"schemadmt.TypeEnum.Repr.KeyAssembler"}.AssignBytes(nil)
@@ -29993,15 +29792,8 @@ type _TypeFloat__MapItr struct {
 }
 
 func (itr *_TypeFloat__MapItr) Next() (k ipld.Node, v ipld.Node, _ error) {
-	if itr.idx >= 0 {
-		return nil, nil, ipld.ErrIteratorOverread{}
-	}
-	switch itr.idx {
-	default:
-		panic("unreachable")
-	}
-	itr.idx++
-	return
+	return nil, nil, ipld.ErrIteratorOverread{}
+
 }
 func (itr *_TypeFloat__MapItr) Done() bool {
 	return itr.idx >= 0
@@ -30194,10 +29986,7 @@ func (ma *_TypeFloat__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, er
 	case maState_finished:
 		panic("invalid state: AssembleEntry cannot be called on an assembler that's already finished")
 	}
-	switch k {
-	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.TypeFloat", Key: &_String{k}}
-	}
+	return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.TypeFloat", Key: &_String{k}}
 }
 func (ma *_TypeFloat__Assembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -30356,15 +30145,8 @@ type _TypeFloat__ReprMapItr struct {
 }
 
 func (itr *_TypeFloat__ReprMapItr) Next() (k ipld.Node, v ipld.Node, _ error) {
-	if itr.idx >= 0 {
-		return nil, nil, ipld.ErrIteratorOverread{}
-	}
-	switch itr.idx {
-	default:
-		panic("unreachable")
-	}
-	itr.idx++
-	return
+	return nil, nil, ipld.ErrIteratorOverread{}
+
 }
 func (itr *_TypeFloat__ReprMapItr) Done() bool {
 	return itr.idx >= 0
@@ -30552,10 +30334,7 @@ func (ma *_TypeFloat__ReprAssembler) AssembleEntry(k string) (ipld.NodeAssembler
 	case maState_finished:
 		panic("invalid state: AssembleEntry cannot be called on an assembler that's already finished")
 	}
-	switch k {
-	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.TypeFloat.Repr", Key: &_String{k}}
-	}
+	return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.TypeFloat.Repr", Key: &_String{k}}
 }
 func (ma *_TypeFloat__ReprAssembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -30648,11 +30427,7 @@ func (ka *_TypeFloat__ReprKeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
 		panic("misuse: KeyAssembler held beyond its valid lifetime")
 	}
-	switch k {
-	default:
-		return ipld.ErrInvalidKey{TypeName: "schemadmt.TypeFloat.Repr", Key: &_String{k}}
-	}
-	return nil
+	return ipld.ErrInvalidKey{TypeName: "schemadmt.TypeFloat.Repr", Key: &_String{k}}
 }
 func (_TypeFloat__ReprKeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{"schemadmt.TypeFloat.Repr.KeyAssembler"}.AssignBytes(nil)
@@ -30741,15 +30516,8 @@ type _TypeInt__MapItr struct {
 }
 
 func (itr *_TypeInt__MapItr) Next() (k ipld.Node, v ipld.Node, _ error) {
-	if itr.idx >= 0 {
-		return nil, nil, ipld.ErrIteratorOverread{}
-	}
-	switch itr.idx {
-	default:
-		panic("unreachable")
-	}
-	itr.idx++
-	return
+	return nil, nil, ipld.ErrIteratorOverread{}
+
 }
 func (itr *_TypeInt__MapItr) Done() bool {
 	return itr.idx >= 0
@@ -30942,10 +30710,7 @@ func (ma *_TypeInt__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, erro
 	case maState_finished:
 		panic("invalid state: AssembleEntry cannot be called on an assembler that's already finished")
 	}
-	switch k {
-	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.TypeInt", Key: &_String{k}}
-	}
+	return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.TypeInt", Key: &_String{k}}
 }
 func (ma *_TypeInt__Assembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -31104,15 +30869,8 @@ type _TypeInt__ReprMapItr struct {
 }
 
 func (itr *_TypeInt__ReprMapItr) Next() (k ipld.Node, v ipld.Node, _ error) {
-	if itr.idx >= 0 {
-		return nil, nil, ipld.ErrIteratorOverread{}
-	}
-	switch itr.idx {
-	default:
-		panic("unreachable")
-	}
-	itr.idx++
-	return
+	return nil, nil, ipld.ErrIteratorOverread{}
+
 }
 func (itr *_TypeInt__ReprMapItr) Done() bool {
 	return itr.idx >= 0
@@ -31300,10 +31058,7 @@ func (ma *_TypeInt__ReprAssembler) AssembleEntry(k string) (ipld.NodeAssembler, 
 	case maState_finished:
 		panic("invalid state: AssembleEntry cannot be called on an assembler that's already finished")
 	}
-	switch k {
-	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.TypeInt.Repr", Key: &_String{k}}
-	}
+	return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.TypeInt.Repr", Key: &_String{k}}
 }
 func (ma *_TypeInt__ReprAssembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -31396,11 +31151,7 @@ func (ka *_TypeInt__ReprKeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
 		panic("misuse: KeyAssembler held beyond its valid lifetime")
 	}
-	switch k {
-	default:
-		return ipld.ErrInvalidKey{TypeName: "schemadmt.TypeInt.Repr", Key: &_String{k}}
-	}
-	return nil
+	return ipld.ErrInvalidKey{TypeName: "schemadmt.TypeInt.Repr", Key: &_String{k}}
 }
 func (_TypeInt__ReprKeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{"schemadmt.TypeInt.Repr.KeyAssembler"}.AssignBytes(nil)
@@ -31731,9 +31482,8 @@ func (ma *_TypeLink__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, err
 		ma.ca_expectedType.w = ma.w.expectedType.v
 		ma.ca_expectedType.m = &ma.w.expectedType.m
 		return &ma.ca_expectedType, nil
-	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.TypeLink", Key: &_String{k}}
 	}
+	return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.TypeLink", Key: &_String{k}}
 }
 func (ma *_TypeLink__Assembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -32149,8 +31899,8 @@ func (ma *_TypeLink__ReprAssembler) AssembleEntry(k string) (ipld.NodeAssembler,
 
 		return &ma.ca_expectedType, nil
 	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.TypeLink.Repr", Key: &_String{k}}
 	}
+	return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.TypeLink.Repr", Key: &_String{k}}
 }
 func (ma *_TypeLink__ReprAssembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -32256,10 +32006,9 @@ func (ka *_TypeLink__ReprKeyAssembler) AssignString(k string) error {
 		ka.s += fieldBit__TypeLink_ExpectedType
 		ka.state = maState_expectValue
 		ka.f = 0
-	default:
-		return ipld.ErrInvalidKey{TypeName: "schemadmt.TypeLink.Repr", Key: &_String{k}}
+		return nil
 	}
-	return nil
+	return ipld.ErrInvalidKey{TypeName: "schemadmt.TypeLink.Repr", Key: &_String{k}}
 }
 func (_TypeLink__ReprKeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{"schemadmt.TypeLink.Repr.KeyAssembler"}.AssignBytes(nil)
@@ -32648,9 +32397,8 @@ func (ma *_TypeList__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, err
 		ma.ca_representation.w = &ma.w.representation
 		ma.ca_representation.m = &ma.cm
 		return &ma.ca_representation, nil
-	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.TypeList", Key: &_String{k}}
 	}
+	return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.TypeList", Key: &_String{k}}
 }
 func (ma *_TypeList__Assembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -33131,8 +32879,8 @@ func (ma *_TypeList__ReprAssembler) AssembleEntry(k string) (ipld.NodeAssembler,
 		ma.ca_representation.m = &ma.cm
 		return &ma.ca_representation, nil
 	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.TypeList.Repr", Key: &_String{k}}
 	}
+	return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.TypeList.Repr", Key: &_String{k}}
 }
 func (ma *_TypeList__ReprAssembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -33254,6 +33002,7 @@ func (ka *_TypeList__ReprKeyAssembler) AssignString(k string) error {
 		ka.s += fieldBit__TypeList_ValueType
 		ka.state = maState_expectValue
 		ka.f = 0
+		return nil
 	case "valueNullable":
 		if ka.s&fieldBit__TypeList_ValueNullable != 0 {
 			return ipld.ErrRepeatedMapKey{&fieldName__TypeList_ValueNullable_serial}
@@ -33261,6 +33010,7 @@ func (ka *_TypeList__ReprKeyAssembler) AssignString(k string) error {
 		ka.s += fieldBit__TypeList_ValueNullable
 		ka.state = maState_expectValue
 		ka.f = 1
+		return nil
 	case "representation":
 		if ka.s&fieldBit__TypeList_Representation != 0 {
 			return ipld.ErrRepeatedMapKey{&fieldName__TypeList_Representation_serial}
@@ -33268,10 +33018,9 @@ func (ka *_TypeList__ReprKeyAssembler) AssignString(k string) error {
 		ka.s += fieldBit__TypeList_Representation
 		ka.state = maState_expectValue
 		ka.f = 2
-	default:
-		return ipld.ErrInvalidKey{TypeName: "schemadmt.TypeList.Repr", Key: &_String{k}}
+		return nil
 	}
-	return nil
+	return ipld.ErrInvalidKey{TypeName: "schemadmt.TypeList.Repr", Key: &_String{k}}
 }
 func (_TypeList__ReprKeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{"schemadmt.TypeList.Repr.KeyAssembler"}.AssignBytes(nil)
@@ -33692,9 +33441,8 @@ func (ma *_TypeMap__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, erro
 		ma.ca_representation.w = &ma.w.representation
 		ma.ca_representation.m = &ma.cm
 		return &ma.ca_representation, nil
-	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.TypeMap", Key: &_String{k}}
 	}
+	return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.TypeMap", Key: &_String{k}}
 }
 func (ma *_TypeMap__Assembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -34216,8 +33964,8 @@ func (ma *_TypeMap__ReprAssembler) AssembleEntry(k string) (ipld.NodeAssembler, 
 		ma.ca_representation.m = &ma.cm
 		return &ma.ca_representation, nil
 	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.TypeMap.Repr", Key: &_String{k}}
 	}
+	return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.TypeMap.Repr", Key: &_String{k}}
 }
 func (ma *_TypeMap__ReprAssembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -34346,6 +34094,7 @@ func (ka *_TypeMap__ReprKeyAssembler) AssignString(k string) error {
 		ka.s += fieldBit__TypeMap_KeyType
 		ka.state = maState_expectValue
 		ka.f = 0
+		return nil
 	case "valueType":
 		if ka.s&fieldBit__TypeMap_ValueType != 0 {
 			return ipld.ErrRepeatedMapKey{&fieldName__TypeMap_ValueType_serial}
@@ -34353,6 +34102,7 @@ func (ka *_TypeMap__ReprKeyAssembler) AssignString(k string) error {
 		ka.s += fieldBit__TypeMap_ValueType
 		ka.state = maState_expectValue
 		ka.f = 1
+		return nil
 	case "valueNullable":
 		if ka.s&fieldBit__TypeMap_ValueNullable != 0 {
 			return ipld.ErrRepeatedMapKey{&fieldName__TypeMap_ValueNullable_serial}
@@ -34360,6 +34110,7 @@ func (ka *_TypeMap__ReprKeyAssembler) AssignString(k string) error {
 		ka.s += fieldBit__TypeMap_ValueNullable
 		ka.state = maState_expectValue
 		ka.f = 2
+		return nil
 	case "representation":
 		if ka.s&fieldBit__TypeMap_Representation != 0 {
 			return ipld.ErrRepeatedMapKey{&fieldName__TypeMap_Representation_serial}
@@ -34367,10 +34118,9 @@ func (ka *_TypeMap__ReprKeyAssembler) AssignString(k string) error {
 		ka.s += fieldBit__TypeMap_Representation
 		ka.state = maState_expectValue
 		ka.f = 3
-	default:
-		return ipld.ErrInvalidKey{TypeName: "schemadmt.TypeMap.Repr", Key: &_String{k}}
+		return nil
 	}
-	return nil
+	return ipld.ErrInvalidKey{TypeName: "schemadmt.TypeMap.Repr", Key: &_String{k}}
 }
 func (_TypeMap__ReprKeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{"schemadmt.TypeMap.Repr.KeyAssembler"}.AssignBytes(nil)
@@ -34935,9 +34685,8 @@ func (ma *_TypeNameOrInlineDefn__Assembler) AssembleEntry(k string) (ipld.NodeAs
 		ma.ca2.w = &ma.w.x2
 		ma.ca2.m = &ma.cm
 		return &ma.ca2, nil
-	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.TypeNameOrInlineDefn", Key: &_String{k}}
 	}
+	return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.TypeNameOrInlineDefn", Key: &_String{k}}
 }
 func (ma *_TypeNameOrInlineDefn__Assembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -35058,10 +34807,8 @@ func (ka *_TypeNameOrInlineDefn__KeyAssembler) AssignString(k string) error {
 		ka.w.tag = 2
 		ka.state = maState_expectValue
 		return nil
-	default:
-		return ipld.ErrInvalidKey{TypeName: "schemadmt.TypeNameOrInlineDefn", Key: &_String{k}} // TODO: error quality: ErrInvalidUnionDiscriminant ?
 	}
-	return nil
+	return ipld.ErrInvalidKey{TypeName: "schemadmt.TypeNameOrInlineDefn", Key: &_String{k}} // TODO: error quality: ErrInvalidUnionDiscriminant ?
 }
 func (_TypeNameOrInlineDefn__KeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{"schemadmt.TypeNameOrInlineDefn.KeyAssembler"}.AssignBytes(nil)
@@ -35239,7 +34986,6 @@ func (na *_TypeNameOrInlineDefn__ReprAssembler) BeginMap(sizeHint int64) (ipld.M
 	na.ca2.w = &na.w.x2
 	na.ca2.m = na.m
 	return na.ca2.BeginMap(sizeHint)
-	return nil, schema.ErrNotUnionStructure{TypeName: "schemadmt.TypeNameOrInlineDefn.Repr", Detail: "BeginMap called but is not valid for any of the kinds that are valid members of this union"}
 }
 func (na *_TypeNameOrInlineDefn__ReprAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
 	switch *na.m {
@@ -35301,7 +35047,6 @@ func (na *_TypeNameOrInlineDefn__ReprAssembler) AssignString(v string) error {
 	na.ca1.w = &na.w.x1
 	na.ca1.m = na.m
 	return na.ca1.AssignString(v)
-	return schema.ErrNotUnionStructure{TypeName: "schemadmt.TypeNameOrInlineDefn.Repr", Detail: "AssignString called but is not valid for any of the kinds that are valid members of this union"}
 }
 func (na *_TypeNameOrInlineDefn__ReprAssembler) AssignBytes(v []byte) error {
 	switch *na.m {
@@ -35473,15 +35218,8 @@ type _TypeString__MapItr struct {
 }
 
 func (itr *_TypeString__MapItr) Next() (k ipld.Node, v ipld.Node, _ error) {
-	if itr.idx >= 0 {
-		return nil, nil, ipld.ErrIteratorOverread{}
-	}
-	switch itr.idx {
-	default:
-		panic("unreachable")
-	}
-	itr.idx++
-	return
+	return nil, nil, ipld.ErrIteratorOverread{}
+
 }
 func (itr *_TypeString__MapItr) Done() bool {
 	return itr.idx >= 0
@@ -35674,10 +35412,7 @@ func (ma *_TypeString__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, e
 	case maState_finished:
 		panic("invalid state: AssembleEntry cannot be called on an assembler that's already finished")
 	}
-	switch k {
-	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.TypeString", Key: &_String{k}}
-	}
+	return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.TypeString", Key: &_String{k}}
 }
 func (ma *_TypeString__Assembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -35836,15 +35571,8 @@ type _TypeString__ReprMapItr struct {
 }
 
 func (itr *_TypeString__ReprMapItr) Next() (k ipld.Node, v ipld.Node, _ error) {
-	if itr.idx >= 0 {
-		return nil, nil, ipld.ErrIteratorOverread{}
-	}
-	switch itr.idx {
-	default:
-		panic("unreachable")
-	}
-	itr.idx++
-	return
+	return nil, nil, ipld.ErrIteratorOverread{}
+
 }
 func (itr *_TypeString__ReprMapItr) Done() bool {
 	return itr.idx >= 0
@@ -36032,10 +35760,7 @@ func (ma *_TypeString__ReprAssembler) AssembleEntry(k string) (ipld.NodeAssemble
 	case maState_finished:
 		panic("invalid state: AssembleEntry cannot be called on an assembler that's already finished")
 	}
-	switch k {
-	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.TypeString.Repr", Key: &_String{k}}
-	}
+	return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.TypeString.Repr", Key: &_String{k}}
 }
 func (ma *_TypeString__ReprAssembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -36128,11 +35853,7 @@ func (ka *_TypeString__ReprKeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
 		panic("misuse: KeyAssembler held beyond its valid lifetime")
 	}
-	switch k {
-	default:
-		return ipld.ErrInvalidKey{TypeName: "schemadmt.TypeString.Repr", Key: &_String{k}}
-	}
-	return nil
+	return ipld.ErrInvalidKey{TypeName: "schemadmt.TypeString.Repr", Key: &_String{k}}
 }
 func (_TypeString__ReprKeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{"schemadmt.TypeString.Repr.KeyAssembler"}.AssignBytes(nil)
@@ -36489,9 +36210,8 @@ func (ma *_TypeStruct__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, e
 		ma.ca_representation.w = &ma.w.representation
 		ma.ca_representation.m = &ma.cm
 		return &ma.ca_representation, nil
-	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.TypeStruct", Key: &_String{k}}
 	}
+	return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.TypeStruct", Key: &_String{k}}
 }
 func (ma *_TypeStruct__Assembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -36931,8 +36651,8 @@ func (ma *_TypeStruct__ReprAssembler) AssembleEntry(k string) (ipld.NodeAssemble
 		ma.ca_representation.m = &ma.cm
 		return &ma.ca_representation, nil
 	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.TypeStruct.Repr", Key: &_String{k}}
 	}
+	return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.TypeStruct.Repr", Key: &_String{k}}
 }
 func (ma *_TypeStruct__ReprAssembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -37047,6 +36767,7 @@ func (ka *_TypeStruct__ReprKeyAssembler) AssignString(k string) error {
 		ka.s += fieldBit__TypeStruct_Fields
 		ka.state = maState_expectValue
 		ka.f = 0
+		return nil
 	case "representation":
 		if ka.s&fieldBit__TypeStruct_Representation != 0 {
 			return ipld.ErrRepeatedMapKey{&fieldName__TypeStruct_Representation_serial}
@@ -37054,10 +36775,9 @@ func (ka *_TypeStruct__ReprKeyAssembler) AssignString(k string) error {
 		ka.s += fieldBit__TypeStruct_Representation
 		ka.state = maState_expectValue
 		ka.f = 1
-	default:
-		return ipld.ErrInvalidKey{TypeName: "schemadmt.TypeStruct.Repr", Key: &_String{k}}
+		return nil
 	}
-	return nil
+	return ipld.ErrInvalidKey{TypeName: "schemadmt.TypeStruct.Repr", Key: &_String{k}}
 }
 func (_TypeStruct__ReprKeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{"schemadmt.TypeStruct.Repr.KeyAssembler"}.AssignBytes(nil)
@@ -37414,9 +37134,8 @@ func (ma *_TypeUnion__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, er
 		ma.ca_representation.w = &ma.w.representation
 		ma.ca_representation.m = &ma.cm
 		return &ma.ca_representation, nil
-	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.TypeUnion", Key: &_String{k}}
 	}
+	return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.TypeUnion", Key: &_String{k}}
 }
 func (ma *_TypeUnion__Assembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -37856,8 +37575,8 @@ func (ma *_TypeUnion__ReprAssembler) AssembleEntry(k string) (ipld.NodeAssembler
 		ma.ca_representation.m = &ma.cm
 		return &ma.ca_representation, nil
 	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.TypeUnion.Repr", Key: &_String{k}}
 	}
+	return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.TypeUnion.Repr", Key: &_String{k}}
 }
 func (ma *_TypeUnion__ReprAssembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -37972,6 +37691,7 @@ func (ka *_TypeUnion__ReprKeyAssembler) AssignString(k string) error {
 		ka.s += fieldBit__TypeUnion_Members
 		ka.state = maState_expectValue
 		ka.f = 0
+		return nil
 	case "representation":
 		if ka.s&fieldBit__TypeUnion_Representation != 0 {
 			return ipld.ErrRepeatedMapKey{&fieldName__TypeUnion_Representation_serial}
@@ -37979,10 +37699,9 @@ func (ka *_TypeUnion__ReprKeyAssembler) AssignString(k string) error {
 		ka.s += fieldBit__TypeUnion_Representation
 		ka.state = maState_expectValue
 		ka.f = 1
-	default:
-		return ipld.ErrInvalidKey{TypeName: "schemadmt.TypeUnion.Repr", Key: &_String{k}}
+		return nil
 	}
-	return nil
+	return ipld.ErrInvalidKey{TypeName: "schemadmt.TypeUnion.Repr", Key: &_String{k}}
 }
 func (_TypeUnion__ReprKeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{"schemadmt.TypeUnion.Repr.KeyAssembler"}.AssignBytes(nil)
@@ -38418,9 +38137,8 @@ func (ma *_UnionRepresentation__Assembler) AssembleEntry(k string) (ipld.NodeAss
 		ma.ca6.w = &ma.w.x6
 		ma.ca6.m = &ma.cm
 		return &ma.ca6, nil
-	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.UnionRepresentation", Key: &_String{k}}
 	}
+	return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.UnionRepresentation", Key: &_String{k}}
 }
 func (ma *_UnionRepresentation__Assembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -38585,10 +38303,8 @@ func (ka *_UnionRepresentation__KeyAssembler) AssignString(k string) error {
 		ka.w.tag = 6
 		ka.state = maState_expectValue
 		return nil
-	default:
-		return ipld.ErrInvalidKey{TypeName: "schemadmt.UnionRepresentation", Key: &_String{k}} // TODO: error quality: ErrInvalidUnionDiscriminant ?
 	}
-	return nil
+	return ipld.ErrInvalidKey{TypeName: "schemadmt.UnionRepresentation", Key: &_String{k}} // TODO: error quality: ErrInvalidUnionDiscriminant ?
 }
 func (_UnionRepresentation__KeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{"schemadmt.UnionRepresentation.KeyAssembler"}.AssignBytes(nil)
@@ -38978,9 +38694,8 @@ func (ma *_UnionRepresentation__ReprAssembler) AssembleEntry(k string) (ipld.Nod
 		ma.ca6.w = &ma.w.x6
 		ma.ca6.m = &ma.cm
 		return &ma.ca6, nil
-	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.UnionRepresentation.Repr", Key: &_String{k}}
 	}
+	return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.UnionRepresentation.Repr", Key: &_String{k}}
 }
 func (ma *_UnionRepresentation__ReprAssembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -39145,10 +38860,8 @@ func (ka *_UnionRepresentation__ReprKeyAssembler) AssignString(k string) error {
 		ka.w.tag = 6
 		ka.state = maState_expectValue
 		return nil
-	default:
-		return ipld.ErrInvalidKey{TypeName: "schemadmt.UnionRepresentation.Repr", Key: &_String{k}} // TODO: error quality: ErrInvalidUnionDiscriminant ?
 	}
-	return nil
+	return ipld.ErrInvalidKey{TypeName: "schemadmt.UnionRepresentation.Repr", Key: &_String{k}} // TODO: error quality: ErrInvalidUnionDiscriminant ?
 }
 func (_UnionRepresentation__ReprKeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{"schemadmt.UnionRepresentation.Repr.KeyAssembler"}.AssignBytes(nil)
@@ -39473,9 +39186,8 @@ func (ma *_UnionRepresentation_BytePrefix__Assembler) AssembleEntry(k string) (i
 		ma.ca_discriminantTable.w = &ma.w.discriminantTable
 		ma.ca_discriminantTable.m = &ma.cm
 		return &ma.ca_discriminantTable, nil
-	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.UnionRepresentation_BytePrefix", Key: &_String{k}}
 	}
+	return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.UnionRepresentation_BytePrefix", Key: &_String{k}}
 }
 func (ma *_UnionRepresentation_BytePrefix__Assembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -39874,8 +39586,8 @@ func (ma *_UnionRepresentation_BytePrefix__ReprAssembler) AssembleEntry(k string
 		ma.ca_discriminantTable.m = &ma.cm
 		return &ma.ca_discriminantTable, nil
 	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.UnionRepresentation_BytePrefix.Repr", Key: &_String{k}}
 	}
+	return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.UnionRepresentation_BytePrefix.Repr", Key: &_String{k}}
 }
 func (ma *_UnionRepresentation_BytePrefix__ReprAssembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -39983,10 +39695,9 @@ func (ka *_UnionRepresentation_BytePrefix__ReprKeyAssembler) AssignString(k stri
 		ka.s += fieldBit__UnionRepresentation_BytePrefix_DiscriminantTable
 		ka.state = maState_expectValue
 		ka.f = 0
-	default:
-		return ipld.ErrInvalidKey{TypeName: "schemadmt.UnionRepresentation_BytePrefix.Repr", Key: &_String{k}}
+		return nil
 	}
-	return nil
+	return ipld.ErrInvalidKey{TypeName: "schemadmt.UnionRepresentation_BytePrefix.Repr", Key: &_String{k}}
 }
 func (_UnionRepresentation_BytePrefix__ReprKeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{"schemadmt.UnionRepresentation_BytePrefix.Repr.KeyAssembler"}.AssignBytes(nil)
@@ -40375,9 +40086,8 @@ func (ma *_UnionRepresentation_Envelope__Assembler) AssembleEntry(k string) (ipl
 		ma.ca_discriminantTable.w = &ma.w.discriminantTable
 		ma.ca_discriminantTable.m = &ma.cm
 		return &ma.ca_discriminantTable, nil
-	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.UnionRepresentation_Envelope", Key: &_String{k}}
 	}
+	return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.UnionRepresentation_Envelope", Key: &_String{k}}
 }
 func (ma *_UnionRepresentation_Envelope__Assembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -40858,8 +40568,8 @@ func (ma *_UnionRepresentation_Envelope__ReprAssembler) AssembleEntry(k string) 
 		ma.ca_discriminantTable.m = &ma.cm
 		return &ma.ca_discriminantTable, nil
 	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.UnionRepresentation_Envelope.Repr", Key: &_String{k}}
 	}
+	return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.UnionRepresentation_Envelope.Repr", Key: &_String{k}}
 }
 func (ma *_UnionRepresentation_Envelope__ReprAssembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -40981,6 +40691,7 @@ func (ka *_UnionRepresentation_Envelope__ReprKeyAssembler) AssignString(k string
 		ka.s += fieldBit__UnionRepresentation_Envelope_DiscriminantKey
 		ka.state = maState_expectValue
 		ka.f = 0
+		return nil
 	case "contentKey":
 		if ka.s&fieldBit__UnionRepresentation_Envelope_ContentKey != 0 {
 			return ipld.ErrRepeatedMapKey{&fieldName__UnionRepresentation_Envelope_ContentKey_serial}
@@ -40988,6 +40699,7 @@ func (ka *_UnionRepresentation_Envelope__ReprKeyAssembler) AssignString(k string
 		ka.s += fieldBit__UnionRepresentation_Envelope_ContentKey
 		ka.state = maState_expectValue
 		ka.f = 1
+		return nil
 	case "discriminantTable":
 		if ka.s&fieldBit__UnionRepresentation_Envelope_DiscriminantTable != 0 {
 			return ipld.ErrRepeatedMapKey{&fieldName__UnionRepresentation_Envelope_DiscriminantTable_serial}
@@ -40995,10 +40707,9 @@ func (ka *_UnionRepresentation_Envelope__ReprKeyAssembler) AssignString(k string
 		ka.s += fieldBit__UnionRepresentation_Envelope_DiscriminantTable
 		ka.state = maState_expectValue
 		ka.f = 2
-	default:
-		return ipld.ErrInvalidKey{TypeName: "schemadmt.UnionRepresentation_Envelope.Repr", Key: &_String{k}}
+		return nil
 	}
-	return nil
+	return ipld.ErrInvalidKey{TypeName: "schemadmt.UnionRepresentation_Envelope.Repr", Key: &_String{k}}
 }
 func (_UnionRepresentation_Envelope__ReprKeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{"schemadmt.UnionRepresentation_Envelope.Repr.KeyAssembler"}.AssignBytes(nil)
@@ -41355,9 +41066,8 @@ func (ma *_UnionRepresentation_Inline__Assembler) AssembleEntry(k string) (ipld.
 		ma.ca_discriminantTable.w = &ma.w.discriminantTable
 		ma.ca_discriminantTable.m = &ma.cm
 		return &ma.ca_discriminantTable, nil
-	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.UnionRepresentation_Inline", Key: &_String{k}}
 	}
+	return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.UnionRepresentation_Inline", Key: &_String{k}}
 }
 func (ma *_UnionRepresentation_Inline__Assembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -41797,8 +41507,8 @@ func (ma *_UnionRepresentation_Inline__ReprAssembler) AssembleEntry(k string) (i
 		ma.ca_discriminantTable.m = &ma.cm
 		return &ma.ca_discriminantTable, nil
 	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.UnionRepresentation_Inline.Repr", Key: &_String{k}}
 	}
+	return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.UnionRepresentation_Inline.Repr", Key: &_String{k}}
 }
 func (ma *_UnionRepresentation_Inline__ReprAssembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -41913,6 +41623,7 @@ func (ka *_UnionRepresentation_Inline__ReprKeyAssembler) AssignString(k string) 
 		ka.s += fieldBit__UnionRepresentation_Inline_DiscriminantKey
 		ka.state = maState_expectValue
 		ka.f = 0
+		return nil
 	case "discriminantTable":
 		if ka.s&fieldBit__UnionRepresentation_Inline_DiscriminantTable != 0 {
 			return ipld.ErrRepeatedMapKey{&fieldName__UnionRepresentation_Inline_DiscriminantTable_serial}
@@ -41920,10 +41631,9 @@ func (ka *_UnionRepresentation_Inline__ReprKeyAssembler) AssignString(k string) 
 		ka.s += fieldBit__UnionRepresentation_Inline_DiscriminantTable
 		ka.state = maState_expectValue
 		ka.f = 1
-	default:
-		return ipld.ErrInvalidKey{TypeName: "schemadmt.UnionRepresentation_Inline.Repr", Key: &_String{k}}
+		return nil
 	}
-	return nil
+	return ipld.ErrInvalidKey{TypeName: "schemadmt.UnionRepresentation_Inline.Repr", Key: &_String{k}}
 }
 func (_UnionRepresentation_Inline__ReprKeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{"schemadmt.UnionRepresentation_Inline.Repr.KeyAssembler"}.AssignBytes(nil)
@@ -43786,9 +43496,8 @@ func (ma *_UnionRepresentation_StringPrefix__Assembler) AssembleEntry(k string) 
 		ma.ca_discriminantTable.w = &ma.w.discriminantTable
 		ma.ca_discriminantTable.m = &ma.cm
 		return &ma.ca_discriminantTable, nil
-	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.UnionRepresentation_StringPrefix", Key: &_String{k}}
 	}
+	return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.UnionRepresentation_StringPrefix", Key: &_String{k}}
 }
 func (ma *_UnionRepresentation_StringPrefix__Assembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -44187,8 +43896,8 @@ func (ma *_UnionRepresentation_StringPrefix__ReprAssembler) AssembleEntry(k stri
 		ma.ca_discriminantTable.m = &ma.cm
 		return &ma.ca_discriminantTable, nil
 	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.UnionRepresentation_StringPrefix.Repr", Key: &_String{k}}
 	}
+	return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.UnionRepresentation_StringPrefix.Repr", Key: &_String{k}}
 }
 func (ma *_UnionRepresentation_StringPrefix__ReprAssembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -44296,10 +44005,9 @@ func (ka *_UnionRepresentation_StringPrefix__ReprKeyAssembler) AssignString(k st
 		ka.s += fieldBit__UnionRepresentation_StringPrefix_DiscriminantTable
 		ka.state = maState_expectValue
 		ka.f = 0
-	default:
-		return ipld.ErrInvalidKey{TypeName: "schemadmt.UnionRepresentation_StringPrefix.Repr", Key: &_String{k}}
+		return nil
 	}
-	return nil
+	return ipld.ErrInvalidKey{TypeName: "schemadmt.UnionRepresentation_StringPrefix.Repr", Key: &_String{k}}
 }
 func (_UnionRepresentation_StringPrefix__ReprKeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{"schemadmt.UnionRepresentation_StringPrefix.Repr.KeyAssembler"}.AssignBytes(nil)
@@ -44388,15 +44096,8 @@ type _Unit__MapItr struct {
 }
 
 func (itr *_Unit__MapItr) Next() (k ipld.Node, v ipld.Node, _ error) {
-	if itr.idx >= 0 {
-		return nil, nil, ipld.ErrIteratorOverread{}
-	}
-	switch itr.idx {
-	default:
-		panic("unreachable")
-	}
-	itr.idx++
-	return
+	return nil, nil, ipld.ErrIteratorOverread{}
+
 }
 func (itr *_Unit__MapItr) Done() bool {
 	return itr.idx >= 0
@@ -44589,10 +44290,7 @@ func (ma *_Unit__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, error) 
 	case maState_finished:
 		panic("invalid state: AssembleEntry cannot be called on an assembler that's already finished")
 	}
-	switch k {
-	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.Unit", Key: &_String{k}}
-	}
+	return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.Unit", Key: &_String{k}}
 }
 func (ma *_Unit__Assembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -44751,15 +44449,8 @@ type _Unit__ReprMapItr struct {
 }
 
 func (itr *_Unit__ReprMapItr) Next() (k ipld.Node, v ipld.Node, _ error) {
-	if itr.idx >= 0 {
-		return nil, nil, ipld.ErrIteratorOverread{}
-	}
-	switch itr.idx {
-	default:
-		panic("unreachable")
-	}
-	itr.idx++
-	return
+	return nil, nil, ipld.ErrIteratorOverread{}
+
 }
 func (itr *_Unit__ReprMapItr) Done() bool {
 	return itr.idx >= 0
@@ -44947,10 +44638,7 @@ func (ma *_Unit__ReprAssembler) AssembleEntry(k string) (ipld.NodeAssembler, err
 	case maState_finished:
 		panic("invalid state: AssembleEntry cannot be called on an assembler that's already finished")
 	}
-	switch k {
-	default:
-		return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.Unit.Repr", Key: &_String{k}}
-	}
+	return nil, ipld.ErrInvalidKey{TypeName: "schemadmt.Unit.Repr", Key: &_String{k}}
 }
 func (ma *_Unit__ReprAssembler) AssembleKey() ipld.NodeAssembler {
 	switch ma.state {
@@ -45043,11 +44731,7 @@ func (ka *_Unit__ReprKeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
 		panic("misuse: KeyAssembler held beyond its valid lifetime")
 	}
-	switch k {
-	default:
-		return ipld.ErrInvalidKey{TypeName: "schemadmt.Unit.Repr", Key: &_String{k}}
-	}
-	return nil
+	return ipld.ErrInvalidKey{TypeName: "schemadmt.Unit.Repr", Key: &_String{k}}
 }
 func (_Unit__ReprKeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{"schemadmt.Unit.Repr.KeyAssembler"}.AssignBytes(nil)
