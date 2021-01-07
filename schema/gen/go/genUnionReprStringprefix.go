@@ -12,14 +12,14 @@ var _ TypeGenerator = &unionReprStringprefixGenerator{}
 func NewUnionReprStringprefixGenerator(pkgName string, typ *schema.TypeUnion, adjCfg *AdjunctCfg) TypeGenerator {
 	return unionReprStringprefixGenerator{
 		unionGenerator{
-			adjCfg,
-			mixins.MapTraits{
+			AdjCfg: adjCfg,
+			MapTraits: mixins.MapTraits{
 				PkgName:    pkgName,
 				TypeName:   string(typ.Name()),
 				TypeSymbol: adjCfg.TypeSymbol(typ),
 			},
-			pkgName,
-			typ,
+			PkgName: pkgName,
+			Type:    typ,
 		},
 	}
 }
@@ -30,14 +30,14 @@ type unionReprStringprefixGenerator struct {
 
 func (g unionReprStringprefixGenerator) GetRepresentationNodeGen() NodeGenerator {
 	return unionReprStringprefixReprGenerator{
-		g.AdjCfg,
-		mixins.StringTraits{
+		AdjCfg: g.AdjCfg,
+		StringTraits: mixins.StringTraits{
 			PkgName:    g.PkgName,
 			TypeName:   string(g.Type.Name()) + ".Repr",
 			TypeSymbol: "_" + g.AdjCfg.TypeSymbol(g.Type) + "__Repr",
 		},
-		g.PkgName,
-		g.Type,
+		PkgName: g.PkgName,
+		Type:    g.Type,
 	}
 }
 
