@@ -165,10 +165,11 @@ type TypeUnion struct {
 
 type UnionRepresentation interface{ _UnionRepresentation() }
 
-func (UnionRepresentation_Keyed) _UnionRepresentation()    {}
-func (UnionRepresentation_Kinded) _UnionRepresentation()   {}
-func (UnionRepresentation_Envelope) _UnionRepresentation() {}
-func (UnionRepresentation_Inline) _UnionRepresentation()   {}
+func (UnionRepresentation_Keyed) _UnionRepresentation()        {}
+func (UnionRepresentation_Kinded) _UnionRepresentation()       {}
+func (UnionRepresentation_Envelope) _UnionRepresentation()     {}
+func (UnionRepresentation_Inline) _UnionRepresentation()       {}
+func (UnionRepresentation_Stringprefix) _UnionRepresentation() {}
 
 // A bunch of these tables in union representation might be easier to use if flipped;
 //  we almost always index into them by type (since that's what we have an ordered list of);
@@ -189,6 +190,10 @@ type UnionRepresentation_Envelope struct {
 type UnionRepresentation_Inline struct {
 	discriminantKey string
 	table           map[string]TypeName // key is user-defined freetext
+}
+type UnionRepresentation_Stringprefix struct {
+	delim string
+	table map[string]TypeName // key is user-defined freetext
 }
 
 type TypeStruct struct {

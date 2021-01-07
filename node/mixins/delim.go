@@ -31,3 +31,10 @@ func SplitExact(s string, sep string, count int) ([]string, error) {
 	}
 	return ss, nil
 }
+
+// SplitN is an alias of strings.SplitN, which is only present here to
+// make it usable in codegen packages without requiring conditional imports
+// in the generation process.
+func SplitN(s, sep string, n int) []string {
+	return strings.SplitN(s, sep, n)
+}

@@ -107,6 +107,9 @@ func SpawnUnionRepresentationKeyed(table map[string]TypeName) UnionRepresentatio
 func SpawnUnionRepresentationKinded(table map[ipld.Kind]TypeName) UnionRepresentation_Kinded {
 	return UnionRepresentation_Kinded{table}
 }
+func SpawnUnionRepresentationStringprefix(delim string, table map[string]TypeName) UnionRepresentation_Stringprefix {
+	return UnionRepresentation_Stringprefix{delim, table}
+}
 
 // The methods relating to TypeSystem are also mutation-heavy and placeholdery.
 
