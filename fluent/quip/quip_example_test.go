@@ -10,40 +10,26 @@ import (
 )
 
 func Example() {
-	nb := basicnode.Prototype.Any.NewBuilder()
 	var err error
-	quip.BuildMap(&err, nb, 4, func(ma ipld.MapAssembler) {
-		quip.MapEntry(&err, ma, "some key", func(va ipld.NodeAssembler) {
-			quip.AbsorbError(&err, va.AssignString("some value"))
-		})
-		quip.MapEntry(&err, ma, "another key", func(va ipld.NodeAssembler) {
-			quip.AbsorbError(&err, va.AssignString("another value"))
-		})
-		quip.MapEntry(&err, ma, "nested map", func(va ipld.NodeAssembler) {
-			quip.BuildMap(&err, va, 2, func(ma ipld.MapAssembler) {
-				quip.MapEntry(&err, ma, "deeper entries", func(va ipld.NodeAssembler) {
-					quip.AbsorbError(&err, va.AssignString("deeper values"))
-				})
-				quip.MapEntry(&err, ma, "more deeper entries", func(va ipld.NodeAssembler) {
-					quip.AbsorbError(&err, va.AssignString("more deeper values"))
-				})
+	n := quip.BuildMap(&err, basicnode.Prototype.Any, 4, func(ma ipld.MapAssembler) {
+		quip.AssignMapEntryString(&err, ma, "some key", "some value")
+		quip.AssignMapEntryString(&err, ma, "another key", "another value")
+		quip.AssembleMapEntry(&err, ma, "nested map", func(na ipld.NodeAssembler) {
+			quip.AssembleMap(&err, na, 2, func(ma ipld.MapAssembler) {
+				quip.AssignMapEntryString(&err, ma, "deeper entries", "deeper values")
+				quip.AssignMapEntryString(&err, ma, "more deeper entries", "more deeper values")
 			})
 		})
-		quip.MapEntry(&err, ma, "nested list", func(va ipld.NodeAssembler) {
-			quip.BuildList(&err, va, 2, func(la ipld.ListAssembler) {
-				quip.ListEntry(&err, la, func(va ipld.NodeAssembler) {
-					quip.AbsorbError(&err, va.AssignInt(1))
-				})
-				quip.ListEntry(&err, la, func(va ipld.NodeAssembler) {
-					quip.AbsorbError(&err, va.AssignInt(2))
-				})
+		quip.AssembleMapEntry(&err, ma, "nested list", func(na ipld.NodeAssembler) {
+			quip.AssembleList(&err, na, 2, func(la ipld.ListAssembler) {
+				quip.AssignListEntryInt(&err, la, 1)
+				quip.AssignListEntryInt(&err, la, 2)
 			})
 		})
 	})
 	if err != nil {
 		panic(err)
 	}
-	n := nb.Build()
 	dagjson.Encoder(n, os.Stdout)
 
 	// Output:

@@ -12,10 +12,84 @@ import (
 )
 
 func BenchmarkQuip(b *testing.B) {
+	f2 := func(na ipld.NodeAssembler, a string, b string, c string, d []string) (err error) {
+		quip.AssembleMap(&err, na, 4, func(ma ipld.MapAssembler) {
+			quip.AssignMapEntryString(&err, ma, "destination", a)
+			quip.AssignMapEntryString(&err, ma, "type", b)
+			quip.AssignMapEntryString(&err, ma, "source", c)
+			quip.AssembleMapEntry(&err, ma, "options", func(va ipld.NodeAssembler) {
+				quip.AssembleList(&err, va, int64(len(d)), func(la ipld.ListAssembler) {
+					for i := range d {
+						quip.AssignListEntryString(&err, la, d[i])
+					}
+				})
+			})
+		})
+		return
+	}
 	var n ipld.Node
 	var err error
 	for i := 0; i < b.N; i++ {
-		n, err = f1()
+		n = quip.BuildList(&err, basicnode.Prototype.Any, -1, func(la ipld.ListAssembler) {
+			f2(la.AssembleValue(),
+				"/",
+				"overlay",
+				"none",
+				[]string{
+					"lowerdir=" + "/",
+					"upperdir=" + "/tmp/overlay-root/upper",
+					"workdir=" + "/tmp/overlay-root/work",
+				},
+			)
+		})
+	}
+	_ = n
+	if err != nil {
+		b.Fatal(err)
+	}
+}
+
+func BenchmarkQuipWithoutScalarFuncs(b *testing.B) {
+	// This is simply a slightly longer way of writing the same thing.
+	// Just for curiosity and to track if there's any measureable performance difference.
+	f2 := func(na ipld.NodeAssembler, a string, b string, c string, d []string) (err error) {
+		quip.AssembleMap(&err, na, 4, func(ma ipld.MapAssembler) {
+			quip.AssembleMapEntry(&err, ma, "destination", func(va ipld.NodeAssembler) {
+				quip.AbsorbError(&err, va.AssignString(a))
+			})
+			quip.AssembleMapEntry(&err, ma, "type", func(va ipld.NodeAssembler) {
+				quip.AbsorbError(&err, va.AssignString(b))
+			})
+			quip.AssembleMapEntry(&err, ma, "source", func(va ipld.NodeAssembler) {
+				quip.AbsorbError(&err, va.AssignString(c))
+			})
+			quip.AssembleMapEntry(&err, ma, "options", func(va ipld.NodeAssembler) {
+				quip.AssembleList(&err, va, int64(len(d)), func(la ipld.ListAssembler) {
+					for i := range d {
+						quip.AssembleListEntry(&err, la, func(va ipld.NodeAssembler) {
+							quip.AbsorbError(&err, va.AssignString(d[i]))
+						})
+					}
+				})
+			})
+		})
+		return
+	}
+	var n ipld.Node
+	var err error
+	for i := 0; i < b.N; i++ {
+		n = quip.BuildList(&err, basicnode.Prototype.Any, -1, func(la ipld.ListAssembler) {
+			f2(la.AssembleValue(),
+				"/",
+				"overlay",
+				"none",
+				[]string{
+					"lowerdir=" + "/",
+					"upperdir=" + "/tmp/overlay-root/upper",
+					"workdir=" + "/tmp/overlay-root/work",
+				},
+			)
+		})
 	}
 	_ = n
 	if err != nil {
@@ -198,48 +272,4 @@ func fab() (ipld.Node, error) {
 		return nil, err
 	}
 	return nb.Build(), nil
-}
-
-func f1() (_ ipld.Node, err error) {
-	nb := basicnode.Prototype.Any.NewBuilder()
-	quip.BuildList(&err, nb, -1, func(la ipld.ListAssembler) {
-		f2(la.AssembleValue(),
-			"/",
-			"overlay",
-			"none",
-			[]string{
-				"lowerdir=" + "/",
-				"upperdir=" + "/tmp/overlay-root/upper",
-				"workdir=" + "/tmp/overlay-root/work",
-			},
-		)
-	})
-	if err != nil {
-		return nil, err
-	}
-	return nb.Build(), nil
-}
-
-func f2(na ipld.NodeAssembler, a string, b string, c string, d []string) (err error) {
-	quip.BuildMap(&err, na, 4, func(ma ipld.MapAssembler) {
-		quip.MapEntry(&err, ma, "destination", func(va ipld.NodeAssembler) {
-			quip.AbsorbError(&err, va.AssignString(a))
-		})
-		quip.MapEntry(&err, ma, "type", func(va ipld.NodeAssembler) {
-			quip.AbsorbError(&err, va.AssignString(b))
-		})
-		quip.MapEntry(&err, ma, "source", func(va ipld.NodeAssembler) {
-			quip.AbsorbError(&err, va.AssignString(c))
-		})
-		quip.MapEntry(&err, ma, "options", func(va ipld.NodeAssembler) {
-			quip.BuildList(&err, va, int64(len(d)), func(la ipld.ListAssembler) {
-				for i := range d {
-					quip.ListEntry(&err, la, func(va ipld.NodeAssembler) {
-						quip.AbsorbError(&err, va.AssignString(d[i]))
-					})
-				}
-			})
-		})
-	})
-	return
 }
