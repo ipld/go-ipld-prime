@@ -311,7 +311,7 @@ func (n Map__String__Msg3) LookupByString(k string) (ipld.Node, error) {
 	}
 	v, exists := n.m[k2]
 	if !exists {
-		return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(k)}
+		return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(k)}
 	}
 	return v, nil
 }
@@ -323,7 +323,7 @@ func (n Map__String__Msg3) LookupByNode(k ipld.Node) (ipld.Node, error) {
 	}
 	v, exists := n.m[*k2]
 	if !exists {
-		return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(k2.String())}
+		return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(k2.String())}
 	}
 	return v, nil
 }
@@ -572,7 +572,7 @@ func (ma *_Map__String__Msg3__Assembler) AssembleEntry(k string) (ipld.NodeAssem
 		return nil, err // TODO wrap in some kind of ErrInvalidKey
 	}
 	if _, exists := ma.w.m[k2]; exists {
-		return nil, ipld.ErrRepeatedMapKey{&k2}
+		return nil, ipld.ErrRepeatedMapKey{Key: &k2}
 	}
 	ma.w.t = append(ma.w.t, _Map__String__Msg3__entry{k: k2})
 	tz := &ma.w.t[len(ma.w.t)-1]
@@ -914,7 +914,7 @@ func (ma *_Map__String__Msg3__ReprAssembler) AssembleEntry(k string) (ipld.NodeA
 		return nil, err // TODO wrap in some kind of ErrInvalidKey
 	}
 	if _, exists := ma.w.m[k2]; exists {
-		return nil, ipld.ErrRepeatedMapKey{&k2}
+		return nil, ipld.ErrRepeatedMapKey{Key: &k2}
 	}
 	ma.w.t = append(ma.w.t, _Map__String__Msg3__entry{k: k2})
 	tz := &ma.w.t[len(ma.w.t)-1]
@@ -1332,7 +1332,7 @@ func (ma *_Msg3__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, error) 
 	switch k {
 	case "whee":
 		if ma.s&fieldBit__Msg3_Whee != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__Msg3_Whee}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__Msg3_Whee}
 		}
 		ma.s += fieldBit__Msg3_Whee
 		ma.state = maState_midValue
@@ -1342,7 +1342,7 @@ func (ma *_Msg3__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, error) 
 		return &ma.ca_whee, nil
 	case "woot":
 		if ma.s&fieldBit__Msg3_Woot != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__Msg3_Woot}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__Msg3_Woot}
 		}
 		ma.s += fieldBit__Msg3_Woot
 		ma.state = maState_midValue
@@ -1352,7 +1352,7 @@ func (ma *_Msg3__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, error) 
 		return &ma.ca_woot, nil
 	case "waga":
 		if ma.s&fieldBit__Msg3_Waga != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__Msg3_Waga}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__Msg3_Waga}
 		}
 		ma.s += fieldBit__Msg3_Waga
 		ma.state = maState_midValue
@@ -1478,21 +1478,21 @@ func (ka *_Msg3__KeyAssembler) AssignString(k string) error {
 	switch k {
 	case "whee":
 		if ka.s&fieldBit__Msg3_Whee != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__Msg3_Whee}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__Msg3_Whee}
 		}
 		ka.s += fieldBit__Msg3_Whee
 		ka.state = maState_expectValue
 		ka.f = 0
 	case "woot":
 		if ka.s&fieldBit__Msg3_Woot != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__Msg3_Woot}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__Msg3_Woot}
 		}
 		ka.s += fieldBit__Msg3_Woot
 		ka.state = maState_expectValue
 		ka.f = 1
 	case "waga":
 		if ka.s&fieldBit__Msg3_Waga != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__Msg3_Waga}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__Msg3_Waga}
 		}
 		ka.s += fieldBit__Msg3_Waga
 		ka.state = maState_expectValue
@@ -1813,7 +1813,7 @@ func (ma *_Msg3__ReprAssembler) AssembleEntry(k string) (ipld.NodeAssembler, err
 	switch k {
 	case "whee":
 		if ma.s&fieldBit__Msg3_Whee != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__Msg3_Whee_serial}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__Msg3_Whee_serial}
 		}
 		ma.s += fieldBit__Msg3_Whee
 		ma.state = maState_midValue
@@ -1823,7 +1823,7 @@ func (ma *_Msg3__ReprAssembler) AssembleEntry(k string) (ipld.NodeAssembler, err
 		return &ma.ca_whee, nil
 	case "woot":
 		if ma.s&fieldBit__Msg3_Woot != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__Msg3_Woot_serial}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__Msg3_Woot_serial}
 		}
 		ma.s += fieldBit__Msg3_Woot
 		ma.state = maState_midValue
@@ -1833,7 +1833,7 @@ func (ma *_Msg3__ReprAssembler) AssembleEntry(k string) (ipld.NodeAssembler, err
 		return &ma.ca_woot, nil
 	case "waga":
 		if ma.s&fieldBit__Msg3_Waga != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__Msg3_Waga_serial}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__Msg3_Waga_serial}
 		}
 		ma.s += fieldBit__Msg3_Waga
 		ma.state = maState_midValue
@@ -1960,7 +1960,7 @@ func (ka *_Msg3__ReprKeyAssembler) AssignString(k string) error {
 	switch k {
 	case "whee":
 		if ka.s&fieldBit__Msg3_Whee != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__Msg3_Whee_serial}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__Msg3_Whee_serial}
 		}
 		ka.s += fieldBit__Msg3_Whee
 		ka.state = maState_expectValue
@@ -1968,7 +1968,7 @@ func (ka *_Msg3__ReprKeyAssembler) AssignString(k string) error {
 		return nil
 	case "woot":
 		if ka.s&fieldBit__Msg3_Woot != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__Msg3_Woot_serial}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__Msg3_Woot_serial}
 		}
 		ka.s += fieldBit__Msg3_Woot
 		ka.state = maState_expectValue
@@ -1976,7 +1976,7 @@ func (ka *_Msg3__ReprKeyAssembler) AssignString(k string) error {
 		return nil
 	case "waga":
 		if ka.s&fieldBit__Msg3_Waga != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__Msg3_Waga_serial}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__Msg3_Waga_serial}
 		}
 		ka.s += fieldBit__Msg3_Waga
 		ka.state = maState_expectValue

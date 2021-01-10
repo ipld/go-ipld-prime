@@ -428,7 +428,7 @@ func (g structBuilderGenerator) emitMapAssemblerMethods(w io.Writer) {
 			{{- range $i, $field := .Type.Fields }}
 			case "{{ $field.Name }}":
 				if ma.s & fieldBit__{{ $type | TypeSymbol }}_{{ $field | FieldSymbolUpper }} != 0 {
-					return nil, ipld.ErrRepeatedMapKey{&fieldName__{{ $type | TypeSymbol }}_{{ $field | FieldSymbolUpper }}}
+					return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__{{ $type | TypeSymbol }}_{{ $field | FieldSymbolUpper }}}
 				}
 				ma.s += fieldBit__{{ $type | TypeSymbol }}_{{ $field | FieldSymbolUpper }}
 				ma.state = maState_midValue
@@ -565,7 +565,7 @@ func (g structBuilderGenerator) emitKeyAssembler(w io.Writer) {
 			{{- range $i, $field := .Type.Fields }}
 			case "{{ $field.Name }}":
 				if ka.s & fieldBit__{{ $type | TypeSymbol }}_{{ $field | FieldSymbolUpper }} != 0 {
-					return ipld.ErrRepeatedMapKey{&fieldName__{{ $type | TypeSymbol }}_{{ $field | FieldSymbolUpper }}}
+					return ipld.ErrRepeatedMapKey{Key: &fieldName__{{ $type | TypeSymbol }}_{{ $field | FieldSymbolUpper }}}
 				}
 				ka.s += fieldBit__{{ $type | TypeSymbol }}_{{ $field | FieldSymbolUpper }}
 				ka.state = maState_expectValue

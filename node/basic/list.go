@@ -32,7 +32,7 @@ func (plainList) LookupByNode(ipld.Node) (ipld.Node, error) {
 }
 func (n *plainList) LookupByIndex(idx int64) (ipld.Node, error) {
 	if n.Length() <= idx {
-		return nil, ipld.ErrNotExists{ipld.PathSegmentOfInt(idx)}
+		return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfInt(idx)}
 	}
 	return n.x[idx], nil
 }

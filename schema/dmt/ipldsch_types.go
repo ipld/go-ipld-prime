@@ -142,7 +142,8 @@ type typeSlab struct {
 
 // --- type definitions follow ---
 
-// AnyScalar matches the IPLD Schema type "AnyScalar".  It has Union type-kind, and may be interrogated like map kind.
+// AnyScalar matches the IPLD Schema type "AnyScalar".
+// AnyScalar has Union typekind, which means its data model behaviors are that of a map kind.
 type AnyScalar = *_AnyScalar
 type _AnyScalar struct {
 	tag uint
@@ -170,7 +171,8 @@ type _Bool struct{ x bool }
 type Bytes = *_Bytes
 type _Bytes struct{ x []byte }
 
-// EnumRepresentation matches the IPLD Schema type "EnumRepresentation".  It has Union type-kind, and may be interrogated like map kind.
+// EnumRepresentation matches the IPLD Schema type "EnumRepresentation".
+// EnumRepresentation has Union typekind, which means its data model behaviors are that of a map kind.
 type EnumRepresentation = *_EnumRepresentation
 type _EnumRepresentation struct {
 	tag uint
@@ -222,7 +224,8 @@ type _Float struct{ x float64 }
 type Int = *_Int
 type _Int struct{ x int64 }
 
-// ListRepresentation matches the IPLD Schema type "ListRepresentation".  It has Union type-kind, and may be interrogated like map kind.
+// ListRepresentation matches the IPLD Schema type "ListRepresentation".
+// ListRepresentation has Union typekind, which means its data model behaviors are that of a map kind.
 type ListRepresentation = *_ListRepresentation
 type _ListRepresentation struct {
 	tag uint
@@ -251,7 +254,8 @@ type _List__TypeName struct {
 	x []_TypeName
 }
 
-// MapRepresentation matches the IPLD Schema type "MapRepresentation".  It has Union type-kind, and may be interrogated like map kind.
+// MapRepresentation matches the IPLD Schema type "MapRepresentation".
+// MapRepresentation has Union typekind, which means its data model behaviors are that of a map kind.
 type MapRepresentation = *_MapRepresentation
 type _MapRepresentation struct {
 	tag uint
@@ -372,7 +376,8 @@ type _StructField struct {
 	nullable _Bool
 }
 
-// StructRepresentation matches the IPLD Schema type "StructRepresentation".  It has Union type-kind, and may be interrogated like map kind.
+// StructRepresentation matches the IPLD Schema type "StructRepresentation".
+// StructRepresentation has Union typekind, which means its data model behaviors are that of a map kind.
 type StructRepresentation = *_StructRepresentation
 type _StructRepresentation struct {
 	tag uint
@@ -446,7 +451,8 @@ type _TypeCopy struct {
 	fromType _TypeName
 }
 
-// TypeDefn matches the IPLD Schema type "TypeDefn".  It has Union type-kind, and may be interrogated like map kind.
+// TypeDefn matches the IPLD Schema type "TypeDefn".
+// TypeDefn has Union typekind, which means its data model behaviors are that of a map kind.
 type TypeDefn = *_TypeDefn
 type _TypeDefn struct {
 	tag uint
@@ -480,7 +486,8 @@ func (_TypeStruct) _TypeDefn__member() {}
 func (_TypeEnum) _TypeDefn__member()   {}
 func (_TypeCopy) _TypeDefn__member()   {}
 
-// TypeDefnInline matches the IPLD Schema type "TypeDefnInline".  It has Union type-kind, and may be interrogated like map kind.
+// TypeDefnInline matches the IPLD Schema type "TypeDefnInline".
+// TypeDefnInline has Union typekind, which means its data model behaviors are that of a map kind.
 type TypeDefnInline = *_TypeDefnInline
 type _TypeDefnInline struct {
 	x _TypeDefnInline__iface
@@ -536,7 +543,8 @@ type _TypeMap struct {
 type TypeName = *_TypeName
 type _TypeName struct{ x string }
 
-// TypeNameOrInlineDefn matches the IPLD Schema type "TypeNameOrInlineDefn".  It has Union type-kind, and may be interrogated like map kind.
+// TypeNameOrInlineDefn matches the IPLD Schema type "TypeNameOrInlineDefn".
+// TypeNameOrInlineDefn has Union typekind, which means its data model behaviors are that of a map kind.
 type TypeNameOrInlineDefn = *_TypeNameOrInlineDefn
 type _TypeNameOrInlineDefn struct {
 	tag uint
@@ -569,7 +577,8 @@ type _TypeUnion struct {
 	representation _UnionRepresentation
 }
 
-// UnionRepresentation matches the IPLD Schema type "UnionRepresentation".  It has Union type-kind, and may be interrogated like map kind.
+// UnionRepresentation matches the IPLD Schema type "UnionRepresentation".
+// UnionRepresentation has Union typekind, which means its data model behaviors are that of a map kind.
 type UnionRepresentation = *_UnionRepresentation
 type _UnionRepresentation struct {
 	tag uint

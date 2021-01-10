@@ -227,7 +227,7 @@ func emitNodeAssemblerHelper_mapoid_mapAssemblerMethods(w io.Writer, adjCfg *Adj
 			}
 			{{- end}}
 			if _, exists := ma.w.m[k2]; exists {
-				return nil, ipld.ErrRepeatedMapKey{&k2}
+				return nil, ipld.ErrRepeatedMapKey{Key: &k2}
 			}
 			ma.w.t = append(ma.w.t, _{{ .Type | TypeSymbol }}__entry{k: k2})
 			tz := &ma.w.t[len(ma.w.t)-1]

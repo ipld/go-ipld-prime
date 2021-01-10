@@ -76,27 +76,27 @@ func (n AnyScalar) LookupByString(key string) (ipld.Node, error) {
 	switch key {
 	case "Bool":
 		if n.tag != 1 {
-			return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return &n.x1, nil
 	case "String":
 		if n.tag != 2 {
-			return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return &n.x2, nil
 	case "Bytes":
 		if n.tag != 3 {
-			return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return &n.x3, nil
 	case "Int":
 		if n.tag != 4 {
-			return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return &n.x4, nil
 	case "Float":
 		if n.tag != 5 {
-			return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return &n.x5, nil
 	default:
@@ -1415,12 +1415,12 @@ func (n EnumRepresentation) LookupByString(key string) (ipld.Node, error) {
 	switch key {
 	case "EnumRepresentation_String":
 		if n.tag != 1 {
-			return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return &n.x1, nil
 	case "EnumRepresentation_Int":
 		if n.tag != 2 {
-			return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return &n.x2, nil
 	default:
@@ -1848,12 +1848,12 @@ func (n *_EnumRepresentation__Repr) LookupByString(key string) (ipld.Node, error
 	switch key {
 	case "string":
 		if n.tag != 1 {
-			return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return n.x1.Representation(), nil
 	case "int":
 		if n.tag != 2 {
-			return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return n.x2.Representation(), nil
 	default:
@@ -2350,7 +2350,7 @@ func (n EnumRepresentation_Int) LookupByString(k string) (ipld.Node, error) {
 	}
 	v, exists := n.m[k2]
 	if !exists {
-		return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(k)}
+		return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(k)}
 	}
 	return v, nil
 }
@@ -2362,7 +2362,7 @@ func (n EnumRepresentation_Int) LookupByNode(k ipld.Node) (ipld.Node, error) {
 	}
 	v, exists := n.m[*k2]
 	if !exists {
-		return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(k2.String())}
+		return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(k2.String())}
 	}
 	return v, nil
 }
@@ -2611,7 +2611,7 @@ func (ma *_EnumRepresentation_Int__Assembler) AssembleEntry(k string) (ipld.Node
 		return nil, err // TODO wrap in some kind of ErrInvalidKey
 	}
 	if _, exists := ma.w.m[k2]; exists {
-		return nil, ipld.ErrRepeatedMapKey{&k2}
+		return nil, ipld.ErrRepeatedMapKey{Key: &k2}
 	}
 	ma.w.t = append(ma.w.t, _EnumRepresentation_Int__entry{k: k2})
 	tz := &ma.w.t[len(ma.w.t)-1]
@@ -2953,7 +2953,7 @@ func (ma *_EnumRepresentation_Int__ReprAssembler) AssembleEntry(k string) (ipld.
 		return nil, err // TODO wrap in some kind of ErrInvalidKey
 	}
 	if _, exists := ma.w.m[k2]; exists {
-		return nil, ipld.ErrRepeatedMapKey{&k2}
+		return nil, ipld.ErrRepeatedMapKey{Key: &k2}
 	}
 	ma.w.t = append(ma.w.t, _EnumRepresentation_Int__entry{k: k2})
 	tz := &ma.w.t[len(ma.w.t)-1]
@@ -3119,7 +3119,7 @@ func (n EnumRepresentation_String) LookupByString(k string) (ipld.Node, error) {
 	}
 	v, exists := n.m[k2]
 	if !exists {
-		return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(k)}
+		return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(k)}
 	}
 	return v, nil
 }
@@ -3131,7 +3131,7 @@ func (n EnumRepresentation_String) LookupByNode(k ipld.Node) (ipld.Node, error) 
 	}
 	v, exists := n.m[*k2]
 	if !exists {
-		return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(k2.String())}
+		return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(k2.String())}
 	}
 	return v, nil
 }
@@ -3380,7 +3380,7 @@ func (ma *_EnumRepresentation_String__Assembler) AssembleEntry(k string) (ipld.N
 		return nil, err // TODO wrap in some kind of ErrInvalidKey
 	}
 	if _, exists := ma.w.m[k2]; exists {
-		return nil, ipld.ErrRepeatedMapKey{&k2}
+		return nil, ipld.ErrRepeatedMapKey{Key: &k2}
 	}
 	ma.w.t = append(ma.w.t, _EnumRepresentation_String__entry{k: k2})
 	tz := &ma.w.t[len(ma.w.t)-1]
@@ -3722,7 +3722,7 @@ func (ma *_EnumRepresentation_String__ReprAssembler) AssembleEntry(k string) (ip
 		return nil, err // TODO wrap in some kind of ErrInvalidKey
 	}
 	if _, exists := ma.w.m[k2]; exists {
-		return nil, ipld.ErrRepeatedMapKey{&k2}
+		return nil, ipld.ErrRepeatedMapKey{Key: &k2}
 	}
 	ma.w.t = append(ma.w.t, _EnumRepresentation_String__entry{k: k2})
 	tz := &ma.w.t[len(ma.w.t)-1]
@@ -4714,7 +4714,7 @@ func (n ListRepresentation) LookupByString(key string) (ipld.Node, error) {
 	switch key {
 	case "ListRepresentation_List":
 		if n.tag != 1 {
-			return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return &n.x1, nil
 	default:
@@ -5116,7 +5116,7 @@ func (n *_ListRepresentation__Repr) LookupByString(key string) (ipld.Node, error
 	switch key {
 	case "list":
 		if n.tag != 1 {
-			return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return n.x1.Representation(), nil
 	default:
@@ -6316,7 +6316,7 @@ func (n List__FieldName) LookupByNode(k ipld.Node) (ipld.Node, error) {
 }
 func (n List__FieldName) LookupByIndex(idx int64) (ipld.Node, error) {
 	if n.Length() <= idx {
-		return nil, ipld.ErrNotExists{ipld.PathSegmentOfInt(idx)}
+		return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfInt(idx)}
 	}
 	v := &n.x[idx]
 	return v, nil
@@ -6923,7 +6923,7 @@ func (n List__TypeName) LookupByNode(k ipld.Node) (ipld.Node, error) {
 }
 func (n List__TypeName) LookupByIndex(idx int64) (ipld.Node, error) {
 	if n.Length() <= idx {
-		return nil, ipld.ErrNotExists{ipld.PathSegmentOfInt(idx)}
+		return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfInt(idx)}
 	}
 	v := &n.x[idx]
 	return v, nil
@@ -7498,17 +7498,17 @@ func (n MapRepresentation) LookupByString(key string) (ipld.Node, error) {
 	switch key {
 	case "MapRepresentation_Map":
 		if n.tag != 1 {
-			return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return &n.x1, nil
 	case "MapRepresentation_Stringpairs":
 		if n.tag != 2 {
-			return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return &n.x2, nil
 	case "MapRepresentation_Listpairs":
 		if n.tag != 3 {
-			return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return &n.x3, nil
 	default:
@@ -7962,17 +7962,17 @@ func (n *_MapRepresentation__Repr) LookupByString(key string) (ipld.Node, error)
 	switch key {
 	case "map":
 		if n.tag != 1 {
-			return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return n.x1.Representation(), nil
 	case "stringpairs":
 		if n.tag != 2 {
-			return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return n.x2.Representation(), nil
 	case "listpairs":
 		if n.tag != 3 {
-			return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return n.x3.Representation(), nil
 	default:
@@ -10172,7 +10172,7 @@ func (ma *_MapRepresentation_Stringpairs__Assembler) AssembleEntry(k string) (ip
 	switch k {
 	case "innerDelim":
 		if ma.s&fieldBit__MapRepresentation_Stringpairs_InnerDelim != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__MapRepresentation_Stringpairs_InnerDelim}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__MapRepresentation_Stringpairs_InnerDelim}
 		}
 		ma.s += fieldBit__MapRepresentation_Stringpairs_InnerDelim
 		ma.state = maState_midValue
@@ -10182,7 +10182,7 @@ func (ma *_MapRepresentation_Stringpairs__Assembler) AssembleEntry(k string) (ip
 		return &ma.ca_innerDelim, nil
 	case "entryDelim":
 		if ma.s&fieldBit__MapRepresentation_Stringpairs_EntryDelim != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__MapRepresentation_Stringpairs_EntryDelim}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__MapRepresentation_Stringpairs_EntryDelim}
 		}
 		ma.s += fieldBit__MapRepresentation_Stringpairs_EntryDelim
 		ma.state = maState_midValue
@@ -10301,14 +10301,14 @@ func (ka *_MapRepresentation_Stringpairs__KeyAssembler) AssignString(k string) e
 	switch k {
 	case "innerDelim":
 		if ka.s&fieldBit__MapRepresentation_Stringpairs_InnerDelim != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__MapRepresentation_Stringpairs_InnerDelim}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__MapRepresentation_Stringpairs_InnerDelim}
 		}
 		ka.s += fieldBit__MapRepresentation_Stringpairs_InnerDelim
 		ka.state = maState_expectValue
 		ka.f = 0
 	case "entryDelim":
 		if ka.s&fieldBit__MapRepresentation_Stringpairs_EntryDelim != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__MapRepresentation_Stringpairs_EntryDelim}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__MapRepresentation_Stringpairs_EntryDelim}
 		}
 		ka.s += fieldBit__MapRepresentation_Stringpairs_EntryDelim
 		ka.state = maState_expectValue
@@ -10612,7 +10612,7 @@ func (ma *_MapRepresentation_Stringpairs__ReprAssembler) AssembleEntry(k string)
 	switch k {
 	case "innerDelim":
 		if ma.s&fieldBit__MapRepresentation_Stringpairs_InnerDelim != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__MapRepresentation_Stringpairs_InnerDelim_serial}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__MapRepresentation_Stringpairs_InnerDelim_serial}
 		}
 		ma.s += fieldBit__MapRepresentation_Stringpairs_InnerDelim
 		ma.state = maState_midValue
@@ -10622,7 +10622,7 @@ func (ma *_MapRepresentation_Stringpairs__ReprAssembler) AssembleEntry(k string)
 		return &ma.ca_innerDelim, nil
 	case "entryDelim":
 		if ma.s&fieldBit__MapRepresentation_Stringpairs_EntryDelim != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__MapRepresentation_Stringpairs_EntryDelim_serial}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__MapRepresentation_Stringpairs_EntryDelim_serial}
 		}
 		ma.s += fieldBit__MapRepresentation_Stringpairs_EntryDelim
 		ma.state = maState_midValue
@@ -10742,7 +10742,7 @@ func (ka *_MapRepresentation_Stringpairs__ReprKeyAssembler) AssignString(k strin
 	switch k {
 	case "innerDelim":
 		if ka.s&fieldBit__MapRepresentation_Stringpairs_InnerDelim != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__MapRepresentation_Stringpairs_InnerDelim_serial}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__MapRepresentation_Stringpairs_InnerDelim_serial}
 		}
 		ka.s += fieldBit__MapRepresentation_Stringpairs_InnerDelim
 		ka.state = maState_expectValue
@@ -10750,7 +10750,7 @@ func (ka *_MapRepresentation_Stringpairs__ReprKeyAssembler) AssignString(k strin
 		return nil
 	case "entryDelim":
 		if ka.s&fieldBit__MapRepresentation_Stringpairs_EntryDelim != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__MapRepresentation_Stringpairs_EntryDelim_serial}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__MapRepresentation_Stringpairs_EntryDelim_serial}
 		}
 		ka.s += fieldBit__MapRepresentation_Stringpairs_EntryDelim
 		ka.state = maState_expectValue
@@ -10866,7 +10866,7 @@ func (n Map__EnumValue__Unit) LookupByString(k string) (ipld.Node, error) {
 	}
 	v, exists := n.m[k2]
 	if !exists {
-		return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(k)}
+		return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(k)}
 	}
 	return v, nil
 }
@@ -10878,7 +10878,7 @@ func (n Map__EnumValue__Unit) LookupByNode(k ipld.Node) (ipld.Node, error) {
 	}
 	v, exists := n.m[*k2]
 	if !exists {
-		return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(k2.String())}
+		return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(k2.String())}
 	}
 	return v, nil
 }
@@ -11127,7 +11127,7 @@ func (ma *_Map__EnumValue__Unit__Assembler) AssembleEntry(k string) (ipld.NodeAs
 		return nil, err // TODO wrap in some kind of ErrInvalidKey
 	}
 	if _, exists := ma.w.m[k2]; exists {
-		return nil, ipld.ErrRepeatedMapKey{&k2}
+		return nil, ipld.ErrRepeatedMapKey{Key: &k2}
 	}
 	ma.w.t = append(ma.w.t, _Map__EnumValue__Unit__entry{k: k2})
 	tz := &ma.w.t[len(ma.w.t)-1]
@@ -11469,7 +11469,7 @@ func (ma *_Map__EnumValue__Unit__ReprAssembler) AssembleEntry(k string) (ipld.No
 		return nil, err // TODO wrap in some kind of ErrInvalidKey
 	}
 	if _, exists := ma.w.m[k2]; exists {
-		return nil, ipld.ErrRepeatedMapKey{&k2}
+		return nil, ipld.ErrRepeatedMapKey{Key: &k2}
 	}
 	ma.w.t = append(ma.w.t, _Map__EnumValue__Unit__entry{k: k2})
 	tz := &ma.w.t[len(ma.w.t)-1]
@@ -11635,7 +11635,7 @@ func (n Map__FieldName__StructField) LookupByString(k string) (ipld.Node, error)
 	}
 	v, exists := n.m[k2]
 	if !exists {
-		return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(k)}
+		return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(k)}
 	}
 	return v, nil
 }
@@ -11647,7 +11647,7 @@ func (n Map__FieldName__StructField) LookupByNode(k ipld.Node) (ipld.Node, error
 	}
 	v, exists := n.m[*k2]
 	if !exists {
-		return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(k2.String())}
+		return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(k2.String())}
 	}
 	return v, nil
 }
@@ -11896,7 +11896,7 @@ func (ma *_Map__FieldName__StructField__Assembler) AssembleEntry(k string) (ipld
 		return nil, err // TODO wrap in some kind of ErrInvalidKey
 	}
 	if _, exists := ma.w.m[k2]; exists {
-		return nil, ipld.ErrRepeatedMapKey{&k2}
+		return nil, ipld.ErrRepeatedMapKey{Key: &k2}
 	}
 	ma.w.t = append(ma.w.t, _Map__FieldName__StructField__entry{k: k2})
 	tz := &ma.w.t[len(ma.w.t)-1]
@@ -12238,7 +12238,7 @@ func (ma *_Map__FieldName__StructField__ReprAssembler) AssembleEntry(k string) (
 		return nil, err // TODO wrap in some kind of ErrInvalidKey
 	}
 	if _, exists := ma.w.m[k2]; exists {
-		return nil, ipld.ErrRepeatedMapKey{&k2}
+		return nil, ipld.ErrRepeatedMapKey{Key: &k2}
 	}
 	ma.w.t = append(ma.w.t, _Map__FieldName__StructField__entry{k: k2})
 	tz := &ma.w.t[len(ma.w.t)-1]
@@ -12404,7 +12404,7 @@ func (n Map__FieldName__StructRepresentation_Map_FieldDetails) LookupByString(k 
 	}
 	v, exists := n.m[k2]
 	if !exists {
-		return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(k)}
+		return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(k)}
 	}
 	return v, nil
 }
@@ -12416,7 +12416,7 @@ func (n Map__FieldName__StructRepresentation_Map_FieldDetails) LookupByNode(k ip
 	}
 	v, exists := n.m[*k2]
 	if !exists {
-		return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(k2.String())}
+		return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(k2.String())}
 	}
 	return v, nil
 }
@@ -12665,7 +12665,7 @@ func (ma *_Map__FieldName__StructRepresentation_Map_FieldDetails__Assembler) Ass
 		return nil, err // TODO wrap in some kind of ErrInvalidKey
 	}
 	if _, exists := ma.w.m[k2]; exists {
-		return nil, ipld.ErrRepeatedMapKey{&k2}
+		return nil, ipld.ErrRepeatedMapKey{Key: &k2}
 	}
 	ma.w.t = append(ma.w.t, _Map__FieldName__StructRepresentation_Map_FieldDetails__entry{k: k2})
 	tz := &ma.w.t[len(ma.w.t)-1]
@@ -13007,7 +13007,7 @@ func (ma *_Map__FieldName__StructRepresentation_Map_FieldDetails__ReprAssembler)
 		return nil, err // TODO wrap in some kind of ErrInvalidKey
 	}
 	if _, exists := ma.w.m[k2]; exists {
-		return nil, ipld.ErrRepeatedMapKey{&k2}
+		return nil, ipld.ErrRepeatedMapKey{Key: &k2}
 	}
 	ma.w.t = append(ma.w.t, _Map__FieldName__StructRepresentation_Map_FieldDetails__entry{k: k2})
 	tz := &ma.w.t[len(ma.w.t)-1]
@@ -13173,7 +13173,7 @@ func (n Map__String__TypeName) LookupByString(k string) (ipld.Node, error) {
 	}
 	v, exists := n.m[k2]
 	if !exists {
-		return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(k)}
+		return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(k)}
 	}
 	return v, nil
 }
@@ -13185,7 +13185,7 @@ func (n Map__String__TypeName) LookupByNode(k ipld.Node) (ipld.Node, error) {
 	}
 	v, exists := n.m[*k2]
 	if !exists {
-		return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(k2.String())}
+		return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(k2.String())}
 	}
 	return v, nil
 }
@@ -13434,7 +13434,7 @@ func (ma *_Map__String__TypeName__Assembler) AssembleEntry(k string) (ipld.NodeA
 		return nil, err // TODO wrap in some kind of ErrInvalidKey
 	}
 	if _, exists := ma.w.m[k2]; exists {
-		return nil, ipld.ErrRepeatedMapKey{&k2}
+		return nil, ipld.ErrRepeatedMapKey{Key: &k2}
 	}
 	ma.w.t = append(ma.w.t, _Map__String__TypeName__entry{k: k2})
 	tz := &ma.w.t[len(ma.w.t)-1]
@@ -13776,7 +13776,7 @@ func (ma *_Map__String__TypeName__ReprAssembler) AssembleEntry(k string) (ipld.N
 		return nil, err // TODO wrap in some kind of ErrInvalidKey
 	}
 	if _, exists := ma.w.m[k2]; exists {
-		return nil, ipld.ErrRepeatedMapKey{&k2}
+		return nil, ipld.ErrRepeatedMapKey{Key: &k2}
 	}
 	ma.w.t = append(ma.w.t, _Map__String__TypeName__entry{k: k2})
 	tz := &ma.w.t[len(ma.w.t)-1]
@@ -13942,7 +13942,7 @@ func (n Map__TypeName__Int) LookupByString(k string) (ipld.Node, error) {
 	}
 	v, exists := n.m[k2]
 	if !exists {
-		return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(k)}
+		return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(k)}
 	}
 	return v, nil
 }
@@ -13954,7 +13954,7 @@ func (n Map__TypeName__Int) LookupByNode(k ipld.Node) (ipld.Node, error) {
 	}
 	v, exists := n.m[*k2]
 	if !exists {
-		return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(k2.String())}
+		return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(k2.String())}
 	}
 	return v, nil
 }
@@ -14203,7 +14203,7 @@ func (ma *_Map__TypeName__Int__Assembler) AssembleEntry(k string) (ipld.NodeAsse
 		return nil, err // TODO wrap in some kind of ErrInvalidKey
 	}
 	if _, exists := ma.w.m[k2]; exists {
-		return nil, ipld.ErrRepeatedMapKey{&k2}
+		return nil, ipld.ErrRepeatedMapKey{Key: &k2}
 	}
 	ma.w.t = append(ma.w.t, _Map__TypeName__Int__entry{k: k2})
 	tz := &ma.w.t[len(ma.w.t)-1]
@@ -14545,7 +14545,7 @@ func (ma *_Map__TypeName__Int__ReprAssembler) AssembleEntry(k string) (ipld.Node
 		return nil, err // TODO wrap in some kind of ErrInvalidKey
 	}
 	if _, exists := ma.w.m[k2]; exists {
-		return nil, ipld.ErrRepeatedMapKey{&k2}
+		return nil, ipld.ErrRepeatedMapKey{Key: &k2}
 	}
 	ma.w.t = append(ma.w.t, _Map__TypeName__Int__entry{k: k2})
 	tz := &ma.w.t[len(ma.w.t)-1]
@@ -15136,7 +15136,7 @@ func (ma *_Schema__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, error
 	switch k {
 	case "types":
 		if ma.s&fieldBit__Schema_Types != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__Schema_Types}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__Schema_Types}
 		}
 		ma.s += fieldBit__Schema_Types
 		ma.state = maState_midValue
@@ -15248,7 +15248,7 @@ func (ka *_Schema__KeyAssembler) AssignString(k string) error {
 	switch k {
 	case "types":
 		if ka.s&fieldBit__Schema_Types != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__Schema_Types}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__Schema_Types}
 		}
 		ka.s += fieldBit__Schema_Types
 		ka.state = maState_expectValue
@@ -15535,7 +15535,7 @@ func (ma *_Schema__ReprAssembler) AssembleEntry(k string) (ipld.NodeAssembler, e
 	switch k {
 	case "types":
 		if ma.s&fieldBit__Schema_Types != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__Schema_Types_serial}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__Schema_Types_serial}
 		}
 		ma.s += fieldBit__Schema_Types
 		ma.state = maState_midValue
@@ -15648,7 +15648,7 @@ func (ka *_Schema__ReprKeyAssembler) AssignString(k string) error {
 	switch k {
 	case "types":
 		if ka.s&fieldBit__Schema_Types != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__Schema_Types_serial}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__Schema_Types_serial}
 		}
 		ka.s += fieldBit__Schema_Types
 		ka.state = maState_expectValue
@@ -15764,7 +15764,7 @@ func (n SchemaMap) LookupByString(k string) (ipld.Node, error) {
 	}
 	v, exists := n.m[k2]
 	if !exists {
-		return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(k)}
+		return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(k)}
 	}
 	return v, nil
 }
@@ -15776,7 +15776,7 @@ func (n SchemaMap) LookupByNode(k ipld.Node) (ipld.Node, error) {
 	}
 	v, exists := n.m[*k2]
 	if !exists {
-		return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(k2.String())}
+		return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(k2.String())}
 	}
 	return v, nil
 }
@@ -16025,7 +16025,7 @@ func (ma *_SchemaMap__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, er
 		return nil, err // TODO wrap in some kind of ErrInvalidKey
 	}
 	if _, exists := ma.w.m[k2]; exists {
-		return nil, ipld.ErrRepeatedMapKey{&k2}
+		return nil, ipld.ErrRepeatedMapKey{Key: &k2}
 	}
 	ma.w.t = append(ma.w.t, _SchemaMap__entry{k: k2})
 	tz := &ma.w.t[len(ma.w.t)-1]
@@ -16367,7 +16367,7 @@ func (ma *_SchemaMap__ReprAssembler) AssembleEntry(k string) (ipld.NodeAssembler
 		return nil, err // TODO wrap in some kind of ErrInvalidKey
 	}
 	if _, exists := ma.w.m[k2]; exists {
-		return nil, ipld.ErrRepeatedMapKey{&k2}
+		return nil, ipld.ErrRepeatedMapKey{Key: &k2}
 	}
 	ma.w.t = append(ma.w.t, _SchemaMap__entry{k: k2})
 	tz := &ma.w.t[len(ma.w.t)-1]
@@ -17002,7 +17002,7 @@ func (ma *_StructField__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, 
 	switch k {
 	case "type":
 		if ma.s&fieldBit__StructField_Type != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__StructField_Type}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__StructField_Type}
 		}
 		ma.s += fieldBit__StructField_Type
 		ma.state = maState_midValue
@@ -17012,7 +17012,7 @@ func (ma *_StructField__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, 
 		return &ma.ca_typ, nil
 	case "optional":
 		if ma.s&fieldBit__StructField_Optional != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__StructField_Optional}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__StructField_Optional}
 		}
 		ma.s += fieldBit__StructField_Optional
 		ma.state = maState_midValue
@@ -17022,7 +17022,7 @@ func (ma *_StructField__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, 
 		return &ma.ca_optional, nil
 	case "nullable":
 		if ma.s&fieldBit__StructField_Nullable != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__StructField_Nullable}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__StructField_Nullable}
 		}
 		ma.s += fieldBit__StructField_Nullable
 		ma.state = maState_midValue
@@ -17148,21 +17148,21 @@ func (ka *_StructField__KeyAssembler) AssignString(k string) error {
 	switch k {
 	case "type":
 		if ka.s&fieldBit__StructField_Type != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__StructField_Type}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__StructField_Type}
 		}
 		ka.s += fieldBit__StructField_Type
 		ka.state = maState_expectValue
 		ka.f = 0
 	case "optional":
 		if ka.s&fieldBit__StructField_Optional != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__StructField_Optional}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__StructField_Optional}
 		}
 		ka.s += fieldBit__StructField_Optional
 		ka.state = maState_expectValue
 		ka.f = 1
 	case "nullable":
 		if ka.s&fieldBit__StructField_Nullable != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__StructField_Nullable}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__StructField_Nullable}
 		}
 		ka.s += fieldBit__StructField_Nullable
 		ka.state = maState_expectValue
@@ -17483,7 +17483,7 @@ func (ma *_StructField__ReprAssembler) AssembleEntry(k string) (ipld.NodeAssembl
 	switch k {
 	case "type":
 		if ma.s&fieldBit__StructField_Type != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__StructField_Type_serial}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__StructField_Type_serial}
 		}
 		ma.s += fieldBit__StructField_Type
 		ma.state = maState_midValue
@@ -17493,7 +17493,7 @@ func (ma *_StructField__ReprAssembler) AssembleEntry(k string) (ipld.NodeAssembl
 		return &ma.ca_typ, nil
 	case "optional":
 		if ma.s&fieldBit__StructField_Optional != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__StructField_Optional_serial}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__StructField_Optional_serial}
 		}
 		ma.s += fieldBit__StructField_Optional
 		ma.state = maState_midValue
@@ -17503,7 +17503,7 @@ func (ma *_StructField__ReprAssembler) AssembleEntry(k string) (ipld.NodeAssembl
 		return &ma.ca_optional, nil
 	case "nullable":
 		if ma.s&fieldBit__StructField_Nullable != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__StructField_Nullable_serial}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__StructField_Nullable_serial}
 		}
 		ma.s += fieldBit__StructField_Nullable
 		ma.state = maState_midValue
@@ -17630,7 +17630,7 @@ func (ka *_StructField__ReprKeyAssembler) AssignString(k string) error {
 	switch k {
 	case "type":
 		if ka.s&fieldBit__StructField_Type != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__StructField_Type_serial}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__StructField_Type_serial}
 		}
 		ka.s += fieldBit__StructField_Type
 		ka.state = maState_expectValue
@@ -17638,7 +17638,7 @@ func (ka *_StructField__ReprKeyAssembler) AssignString(k string) error {
 		return nil
 	case "optional":
 		if ka.s&fieldBit__StructField_Optional != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__StructField_Optional_serial}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__StructField_Optional_serial}
 		}
 		ka.s += fieldBit__StructField_Optional
 		ka.state = maState_expectValue
@@ -17646,7 +17646,7 @@ func (ka *_StructField__ReprKeyAssembler) AssignString(k string) error {
 		return nil
 	case "nullable":
 		if ka.s&fieldBit__StructField_Nullable != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__StructField_Nullable_serial}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__StructField_Nullable_serial}
 		}
 		ka.s += fieldBit__StructField_Nullable
 		ka.state = maState_expectValue
@@ -17740,27 +17740,27 @@ func (n StructRepresentation) LookupByString(key string) (ipld.Node, error) {
 	switch key {
 	case "StructRepresentation_Map":
 		if n.tag != 1 {
-			return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return &n.x1, nil
 	case "StructRepresentation_Tuple":
 		if n.tag != 2 {
-			return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return &n.x2, nil
 	case "StructRepresentation_Stringpairs":
 		if n.tag != 3 {
-			return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return &n.x3, nil
 	case "StructRepresentation_Stringjoin":
 		if n.tag != 4 {
-			return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return &n.x4, nil
 	case "StructRepresentation_Listpairs":
 		if n.tag != 5 {
-			return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return &n.x5, nil
 	default:
@@ -18266,27 +18266,27 @@ func (n *_StructRepresentation__Repr) LookupByString(key string) (ipld.Node, err
 	switch key {
 	case "map":
 		if n.tag != 1 {
-			return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return n.x1.Representation(), nil
 	case "tuple":
 		if n.tag != 2 {
-			return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return n.x2.Representation(), nil
 	case "stringpairs":
 		if n.tag != 3 {
-			return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return n.x3.Representation(), nil
 	case "stringjoin":
 		if n.tag != 4 {
-			return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return n.x4.Representation(), nil
 	case "listpairs":
 		if n.tag != 5 {
-			return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return n.x5.Representation(), nil
 	default:
@@ -19796,7 +19796,7 @@ func (ma *_StructRepresentation_Map__Assembler) AssembleEntry(k string) (ipld.No
 	switch k {
 	case "fields":
 		if ma.s&fieldBit__StructRepresentation_Map_Fields != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__StructRepresentation_Map_Fields}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__StructRepresentation_Map_Fields}
 		}
 		ma.s += fieldBit__StructRepresentation_Map_Fields
 		ma.state = maState_midValue
@@ -19905,7 +19905,7 @@ func (ka *_StructRepresentation_Map__KeyAssembler) AssignString(k string) error 
 	switch k {
 	case "fields":
 		if ka.s&fieldBit__StructRepresentation_Map_Fields != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__StructRepresentation_Map_Fields}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__StructRepresentation_Map_Fields}
 		}
 		ka.s += fieldBit__StructRepresentation_Map_Fields
 		ka.state = maState_expectValue
@@ -19952,7 +19952,7 @@ func (n *_StructRepresentation_Map__Repr) LookupByString(key string) (ipld.Node,
 	switch key {
 	case "fields":
 		if n.fields.m == schema.Maybe_Absent {
-			return ipld.Absent, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return ipld.Absent, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return n.fields.v.Representation(), nil
 	default:
@@ -20211,7 +20211,7 @@ func (ma *_StructRepresentation_Map__ReprAssembler) AssembleEntry(k string) (ipl
 	switch k {
 	case "fields":
 		if ma.s&fieldBit__StructRepresentation_Map_Fields != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__StructRepresentation_Map_Fields_serial}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__StructRepresentation_Map_Fields_serial}
 		}
 		ma.s += fieldBit__StructRepresentation_Map_Fields
 		ma.state = maState_midValue
@@ -20323,7 +20323,7 @@ func (ka *_StructRepresentation_Map__ReprKeyAssembler) AssignString(k string) er
 	switch k {
 	case "fields":
 		if ka.s&fieldBit__StructRepresentation_Map_Fields != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__StructRepresentation_Map_Fields_serial}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__StructRepresentation_Map_Fields_serial}
 		}
 		ka.s += fieldBit__StructRepresentation_Map_Fields
 		ka.state = maState_expectValue
@@ -20681,7 +20681,7 @@ func (ma *_StructRepresentation_Map_FieldDetails__Assembler) AssembleEntry(k str
 	switch k {
 	case "rename":
 		if ma.s&fieldBit__StructRepresentation_Map_FieldDetails_Rename != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__StructRepresentation_Map_FieldDetails_Rename}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__StructRepresentation_Map_FieldDetails_Rename}
 		}
 		ma.s += fieldBit__StructRepresentation_Map_FieldDetails_Rename
 		ma.state = maState_midValue
@@ -20691,7 +20691,7 @@ func (ma *_StructRepresentation_Map_FieldDetails__Assembler) AssembleEntry(k str
 		return &ma.ca_rename, nil
 	case "implicit":
 		if ma.s&fieldBit__StructRepresentation_Map_FieldDetails_Implicit != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__StructRepresentation_Map_FieldDetails_Implicit}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__StructRepresentation_Map_FieldDetails_Implicit}
 		}
 		ma.s += fieldBit__StructRepresentation_Map_FieldDetails_Implicit
 		ma.state = maState_midValue
@@ -20804,14 +20804,14 @@ func (ka *_StructRepresentation_Map_FieldDetails__KeyAssembler) AssignString(k s
 	switch k {
 	case "rename":
 		if ka.s&fieldBit__StructRepresentation_Map_FieldDetails_Rename != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__StructRepresentation_Map_FieldDetails_Rename}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__StructRepresentation_Map_FieldDetails_Rename}
 		}
 		ka.s += fieldBit__StructRepresentation_Map_FieldDetails_Rename
 		ka.state = maState_expectValue
 		ka.f = 0
 	case "implicit":
 		if ka.s&fieldBit__StructRepresentation_Map_FieldDetails_Implicit != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__StructRepresentation_Map_FieldDetails_Implicit}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__StructRepresentation_Map_FieldDetails_Implicit}
 		}
 		ka.s += fieldBit__StructRepresentation_Map_FieldDetails_Implicit
 		ka.state = maState_expectValue
@@ -20859,12 +20859,12 @@ func (n *_StructRepresentation_Map_FieldDetails__Repr) LookupByString(key string
 	switch key {
 	case "rename":
 		if n.rename.m == schema.Maybe_Absent {
-			return ipld.Absent, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return ipld.Absent, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return n.rename.v.Representation(), nil
 	case "implicit":
 		if n.implicit.m == schema.Maybe_Absent {
-			return ipld.Absent, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return ipld.Absent, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return n.implicit.v.Representation(), nil
 	default:
@@ -21149,7 +21149,7 @@ func (ma *_StructRepresentation_Map_FieldDetails__ReprAssembler) AssembleEntry(k
 	switch k {
 	case "rename":
 		if ma.s&fieldBit__StructRepresentation_Map_FieldDetails_Rename != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__StructRepresentation_Map_FieldDetails_Rename_serial}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__StructRepresentation_Map_FieldDetails_Rename_serial}
 		}
 		ma.s += fieldBit__StructRepresentation_Map_FieldDetails_Rename
 		ma.state = maState_midValue
@@ -21160,7 +21160,7 @@ func (ma *_StructRepresentation_Map_FieldDetails__ReprAssembler) AssembleEntry(k
 		return &ma.ca_rename, nil
 	case "implicit":
 		if ma.s&fieldBit__StructRepresentation_Map_FieldDetails_Implicit != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__StructRepresentation_Map_FieldDetails_Implicit_serial}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__StructRepresentation_Map_FieldDetails_Implicit_serial}
 		}
 		ma.s += fieldBit__StructRepresentation_Map_FieldDetails_Implicit
 		ma.state = maState_midValue
@@ -21277,7 +21277,7 @@ func (ka *_StructRepresentation_Map_FieldDetails__ReprKeyAssembler) AssignString
 	switch k {
 	case "rename":
 		if ka.s&fieldBit__StructRepresentation_Map_FieldDetails_Rename != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__StructRepresentation_Map_FieldDetails_Rename_serial}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__StructRepresentation_Map_FieldDetails_Rename_serial}
 		}
 		ka.s += fieldBit__StructRepresentation_Map_FieldDetails_Rename
 		ka.state = maState_expectValue
@@ -21285,7 +21285,7 @@ func (ka *_StructRepresentation_Map_FieldDetails__ReprKeyAssembler) AssignString
 		return nil
 	case "implicit":
 		if ka.s&fieldBit__StructRepresentation_Map_FieldDetails_Implicit != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__StructRepresentation_Map_FieldDetails_Implicit_serial}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__StructRepresentation_Map_FieldDetails_Implicit_serial}
 		}
 		ka.s += fieldBit__StructRepresentation_Map_FieldDetails_Implicit
 		ka.state = maState_expectValue
@@ -21637,7 +21637,7 @@ func (ma *_StructRepresentation_Stringjoin__Assembler) AssembleEntry(k string) (
 	switch k {
 	case "join":
 		if ma.s&fieldBit__StructRepresentation_Stringjoin_Join != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__StructRepresentation_Stringjoin_Join}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__StructRepresentation_Stringjoin_Join}
 		}
 		ma.s += fieldBit__StructRepresentation_Stringjoin_Join
 		ma.state = maState_midValue
@@ -21647,7 +21647,7 @@ func (ma *_StructRepresentation_Stringjoin__Assembler) AssembleEntry(k string) (
 		return &ma.ca_join, nil
 	case "fieldOrder":
 		if ma.s&fieldBit__StructRepresentation_Stringjoin_FieldOrder != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__StructRepresentation_Stringjoin_FieldOrder}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__StructRepresentation_Stringjoin_FieldOrder}
 		}
 		ma.s += fieldBit__StructRepresentation_Stringjoin_FieldOrder
 		ma.state = maState_midValue
@@ -21763,14 +21763,14 @@ func (ka *_StructRepresentation_Stringjoin__KeyAssembler) AssignString(k string)
 	switch k {
 	case "join":
 		if ka.s&fieldBit__StructRepresentation_Stringjoin_Join != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__StructRepresentation_Stringjoin_Join}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__StructRepresentation_Stringjoin_Join}
 		}
 		ka.s += fieldBit__StructRepresentation_Stringjoin_Join
 		ka.state = maState_expectValue
 		ka.f = 0
 	case "fieldOrder":
 		if ka.s&fieldBit__StructRepresentation_Stringjoin_FieldOrder != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__StructRepresentation_Stringjoin_FieldOrder}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__StructRepresentation_Stringjoin_FieldOrder}
 		}
 		ka.s += fieldBit__StructRepresentation_Stringjoin_FieldOrder
 		ka.state = maState_expectValue
@@ -21820,7 +21820,7 @@ func (n *_StructRepresentation_Stringjoin__Repr) LookupByString(key string) (ipl
 		return n.join.Representation(), nil
 	case "fieldOrder":
 		if n.fieldOrder.m == schema.Maybe_Absent {
-			return ipld.Absent, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return ipld.Absent, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return n.fieldOrder.v.Representation(), nil
 	default:
@@ -22093,7 +22093,7 @@ func (ma *_StructRepresentation_Stringjoin__ReprAssembler) AssembleEntry(k strin
 	switch k {
 	case "join":
 		if ma.s&fieldBit__StructRepresentation_Stringjoin_Join != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__StructRepresentation_Stringjoin_Join_serial}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__StructRepresentation_Stringjoin_Join_serial}
 		}
 		ma.s += fieldBit__StructRepresentation_Stringjoin_Join
 		ma.state = maState_midValue
@@ -22103,7 +22103,7 @@ func (ma *_StructRepresentation_Stringjoin__ReprAssembler) AssembleEntry(k strin
 		return &ma.ca_join, nil
 	case "fieldOrder":
 		if ma.s&fieldBit__StructRepresentation_Stringjoin_FieldOrder != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__StructRepresentation_Stringjoin_FieldOrder_serial}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__StructRepresentation_Stringjoin_FieldOrder_serial}
 		}
 		ma.s += fieldBit__StructRepresentation_Stringjoin_FieldOrder
 		ma.state = maState_midValue
@@ -22222,7 +22222,7 @@ func (ka *_StructRepresentation_Stringjoin__ReprKeyAssembler) AssignString(k str
 	switch k {
 	case "join":
 		if ka.s&fieldBit__StructRepresentation_Stringjoin_Join != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__StructRepresentation_Stringjoin_Join_serial}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__StructRepresentation_Stringjoin_Join_serial}
 		}
 		ka.s += fieldBit__StructRepresentation_Stringjoin_Join
 		ka.state = maState_expectValue
@@ -22230,7 +22230,7 @@ func (ka *_StructRepresentation_Stringjoin__ReprKeyAssembler) AssignString(k str
 		return nil
 	case "fieldOrder":
 		if ka.s&fieldBit__StructRepresentation_Stringjoin_FieldOrder != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__StructRepresentation_Stringjoin_FieldOrder_serial}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__StructRepresentation_Stringjoin_FieldOrder_serial}
 		}
 		ka.s += fieldBit__StructRepresentation_Stringjoin_FieldOrder
 		ka.state = maState_expectValue
@@ -22576,7 +22576,7 @@ func (ma *_StructRepresentation_Stringpairs__Assembler) AssembleEntry(k string) 
 	switch k {
 	case "innerDelim":
 		if ma.s&fieldBit__StructRepresentation_Stringpairs_InnerDelim != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__StructRepresentation_Stringpairs_InnerDelim}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__StructRepresentation_Stringpairs_InnerDelim}
 		}
 		ma.s += fieldBit__StructRepresentation_Stringpairs_InnerDelim
 		ma.state = maState_midValue
@@ -22586,7 +22586,7 @@ func (ma *_StructRepresentation_Stringpairs__Assembler) AssembleEntry(k string) 
 		return &ma.ca_innerDelim, nil
 	case "entryDelim":
 		if ma.s&fieldBit__StructRepresentation_Stringpairs_EntryDelim != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__StructRepresentation_Stringpairs_EntryDelim}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__StructRepresentation_Stringpairs_EntryDelim}
 		}
 		ma.s += fieldBit__StructRepresentation_Stringpairs_EntryDelim
 		ma.state = maState_midValue
@@ -22705,14 +22705,14 @@ func (ka *_StructRepresentation_Stringpairs__KeyAssembler) AssignString(k string
 	switch k {
 	case "innerDelim":
 		if ka.s&fieldBit__StructRepresentation_Stringpairs_InnerDelim != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__StructRepresentation_Stringpairs_InnerDelim}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__StructRepresentation_Stringpairs_InnerDelim}
 		}
 		ka.s += fieldBit__StructRepresentation_Stringpairs_InnerDelim
 		ka.state = maState_expectValue
 		ka.f = 0
 	case "entryDelim":
 		if ka.s&fieldBit__StructRepresentation_Stringpairs_EntryDelim != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__StructRepresentation_Stringpairs_EntryDelim}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__StructRepresentation_Stringpairs_EntryDelim}
 		}
 		ka.s += fieldBit__StructRepresentation_Stringpairs_EntryDelim
 		ka.state = maState_expectValue
@@ -23016,7 +23016,7 @@ func (ma *_StructRepresentation_Stringpairs__ReprAssembler) AssembleEntry(k stri
 	switch k {
 	case "innerDelim":
 		if ma.s&fieldBit__StructRepresentation_Stringpairs_InnerDelim != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__StructRepresentation_Stringpairs_InnerDelim_serial}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__StructRepresentation_Stringpairs_InnerDelim_serial}
 		}
 		ma.s += fieldBit__StructRepresentation_Stringpairs_InnerDelim
 		ma.state = maState_midValue
@@ -23026,7 +23026,7 @@ func (ma *_StructRepresentation_Stringpairs__ReprAssembler) AssembleEntry(k stri
 		return &ma.ca_innerDelim, nil
 	case "entryDelim":
 		if ma.s&fieldBit__StructRepresentation_Stringpairs_EntryDelim != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__StructRepresentation_Stringpairs_EntryDelim_serial}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__StructRepresentation_Stringpairs_EntryDelim_serial}
 		}
 		ma.s += fieldBit__StructRepresentation_Stringpairs_EntryDelim
 		ma.state = maState_midValue
@@ -23146,7 +23146,7 @@ func (ka *_StructRepresentation_Stringpairs__ReprKeyAssembler) AssignString(k st
 	switch k {
 	case "innerDelim":
 		if ka.s&fieldBit__StructRepresentation_Stringpairs_InnerDelim != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__StructRepresentation_Stringpairs_InnerDelim_serial}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__StructRepresentation_Stringpairs_InnerDelim_serial}
 		}
 		ka.s += fieldBit__StructRepresentation_Stringpairs_InnerDelim
 		ka.state = maState_expectValue
@@ -23154,7 +23154,7 @@ func (ka *_StructRepresentation_Stringpairs__ReprKeyAssembler) AssignString(k st
 		return nil
 	case "entryDelim":
 		if ka.s&fieldBit__StructRepresentation_Stringpairs_EntryDelim != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__StructRepresentation_Stringpairs_EntryDelim_serial}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__StructRepresentation_Stringpairs_EntryDelim_serial}
 		}
 		ka.s += fieldBit__StructRepresentation_Stringpairs_EntryDelim
 		ka.state = maState_expectValue
@@ -23484,7 +23484,7 @@ func (ma *_StructRepresentation_Tuple__Assembler) AssembleEntry(k string) (ipld.
 	switch k {
 	case "fieldOrder":
 		if ma.s&fieldBit__StructRepresentation_Tuple_FieldOrder != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__StructRepresentation_Tuple_FieldOrder}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__StructRepresentation_Tuple_FieldOrder}
 		}
 		ma.s += fieldBit__StructRepresentation_Tuple_FieldOrder
 		ma.state = maState_midValue
@@ -23593,7 +23593,7 @@ func (ka *_StructRepresentation_Tuple__KeyAssembler) AssignString(k string) erro
 	switch k {
 	case "fieldOrder":
 		if ka.s&fieldBit__StructRepresentation_Tuple_FieldOrder != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__StructRepresentation_Tuple_FieldOrder}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__StructRepresentation_Tuple_FieldOrder}
 		}
 		ka.s += fieldBit__StructRepresentation_Tuple_FieldOrder
 		ka.state = maState_expectValue
@@ -23640,7 +23640,7 @@ func (n *_StructRepresentation_Tuple__Repr) LookupByString(key string) (ipld.Nod
 	switch key {
 	case "fieldOrder":
 		if n.fieldOrder.m == schema.Maybe_Absent {
-			return ipld.Absent, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return ipld.Absent, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return n.fieldOrder.v.Representation(), nil
 	default:
@@ -23899,7 +23899,7 @@ func (ma *_StructRepresentation_Tuple__ReprAssembler) AssembleEntry(k string) (i
 	switch k {
 	case "fieldOrder":
 		if ma.s&fieldBit__StructRepresentation_Tuple_FieldOrder != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__StructRepresentation_Tuple_FieldOrder_serial}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__StructRepresentation_Tuple_FieldOrder_serial}
 		}
 		ma.s += fieldBit__StructRepresentation_Tuple_FieldOrder
 		ma.state = maState_midValue
@@ -24011,7 +24011,7 @@ func (ka *_StructRepresentation_Tuple__ReprKeyAssembler) AssignString(k string) 
 	switch k {
 	case "fieldOrder":
 		if ka.s&fieldBit__StructRepresentation_Tuple_FieldOrder != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__StructRepresentation_Tuple_FieldOrder_serial}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__StructRepresentation_Tuple_FieldOrder_serial}
 		}
 		ka.s += fieldBit__StructRepresentation_Tuple_FieldOrder
 		ka.state = maState_expectValue
@@ -25783,7 +25783,7 @@ func (ma *_TypeCopy__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, err
 	switch k {
 	case "fromType":
 		if ma.s&fieldBit__TypeCopy_FromType != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__TypeCopy_FromType}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__TypeCopy_FromType}
 		}
 		ma.s += fieldBit__TypeCopy_FromType
 		ma.state = maState_midValue
@@ -25895,7 +25895,7 @@ func (ka *_TypeCopy__KeyAssembler) AssignString(k string) error {
 	switch k {
 	case "fromType":
 		if ka.s&fieldBit__TypeCopy_FromType != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__TypeCopy_FromType}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__TypeCopy_FromType}
 		}
 		ka.s += fieldBit__TypeCopy_FromType
 		ka.state = maState_expectValue
@@ -26182,7 +26182,7 @@ func (ma *_TypeCopy__ReprAssembler) AssembleEntry(k string) (ipld.NodeAssembler,
 	switch k {
 	case "fromType":
 		if ma.s&fieldBit__TypeCopy_FromType != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__TypeCopy_FromType_serial}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__TypeCopy_FromType_serial}
 		}
 		ma.s += fieldBit__TypeCopy_FromType
 		ma.state = maState_midValue
@@ -26295,7 +26295,7 @@ func (ka *_TypeCopy__ReprKeyAssembler) AssignString(k string) error {
 	switch k {
 	case "fromType":
 		if ka.s&fieldBit__TypeCopy_FromType != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__TypeCopy_FromType_serial}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__TypeCopy_FromType_serial}
 		}
 		ka.s += fieldBit__TypeCopy_FromType
 		ka.state = maState_expectValue
@@ -26410,62 +26410,62 @@ func (n TypeDefn) LookupByString(key string) (ipld.Node, error) {
 	switch key {
 	case "TypeBool":
 		if n.tag != 1 {
-			return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return &n.x1, nil
 	case "TypeString":
 		if n.tag != 2 {
-			return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return &n.x2, nil
 	case "TypeBytes":
 		if n.tag != 3 {
-			return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return &n.x3, nil
 	case "TypeInt":
 		if n.tag != 4 {
-			return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return &n.x4, nil
 	case "TypeFloat":
 		if n.tag != 5 {
-			return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return &n.x5, nil
 	case "TypeMap":
 		if n.tag != 6 {
-			return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return &n.x6, nil
 	case "TypeList":
 		if n.tag != 7 {
-			return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return &n.x7, nil
 	case "TypeLink":
 		if n.tag != 8 {
-			return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return &n.x8, nil
 	case "TypeUnion":
 		if n.tag != 9 {
-			return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return &n.x9, nil
 	case "TypeStruct":
 		if n.tag != 10 {
-			return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return &n.x10, nil
 	case "TypeEnum":
 		if n.tag != 11 {
-			return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return &n.x11, nil
 	case "TypeCopy":
 		if n.tag != 12 {
-			return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return &n.x12, nil
 	default:
@@ -27153,62 +27153,62 @@ func (n *_TypeDefn__Repr) LookupByString(key string) (ipld.Node, error) {
 	switch key {
 	case "bool":
 		if n.tag != 1 {
-			return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return n.x1.Representation(), nil
 	case "string":
 		if n.tag != 2 {
-			return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return n.x2.Representation(), nil
 	case "bytes":
 		if n.tag != 3 {
-			return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return n.x3.Representation(), nil
 	case "int":
 		if n.tag != 4 {
-			return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return n.x4.Representation(), nil
 	case "float":
 		if n.tag != 5 {
-			return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return n.x5.Representation(), nil
 	case "map":
 		if n.tag != 6 {
-			return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return n.x6.Representation(), nil
 	case "list":
 		if n.tag != 7 {
-			return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return n.x7.Representation(), nil
 	case "link":
 		if n.tag != 8 {
-			return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return n.x8.Representation(), nil
 	case "union":
 		if n.tag != 9 {
-			return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return n.x9.Representation(), nil
 	case "struct":
 		if n.tag != 10 {
-			return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return n.x10.Representation(), nil
 	case "enum":
 		if n.tag != 11 {
-			return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return n.x11.Representation(), nil
 	case "copy":
 		if n.tag != 12 {
-			return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return n.x12.Representation(), nil
 	default:
@@ -27919,13 +27919,13 @@ func (n TypeDefnInline) LookupByString(key string) (ipld.Node, error) {
 		if n2, ok := n.x.(TypeMap); ok {
 			return n2, nil
 		} else {
-			return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 	case "TypeList":
 		if n2, ok := n.x.(TypeList); ok {
 			return n2, nil
 		} else {
-			return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 	default:
 		return nil, schema.ErrNoSuchField{Type: nil /*TODO*/, Field: ipld.PathSegmentOfString(key)}
@@ -28370,13 +28370,13 @@ func (n *_TypeDefnInline__Repr) LookupByString(key string) (ipld.Node, error) {
 		if n2, ok := n.x.(TypeMap); ok {
 			return n2.Representation(), nil
 		} else {
-			return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 	case "list":
 		if n2, ok := n.x.(TypeList); ok {
 			return n2.Representation(), nil
 		} else {
-			return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 	default:
 		return nil, schema.ErrNoSuchField{Type: nil /*TODO*/, Field: ipld.PathSegmentOfString(key)}
@@ -29118,7 +29118,7 @@ func (ma *_TypeEnum__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, err
 	switch k {
 	case "members":
 		if ma.s&fieldBit__TypeEnum_Members != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__TypeEnum_Members}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__TypeEnum_Members}
 		}
 		ma.s += fieldBit__TypeEnum_Members
 		ma.state = maState_midValue
@@ -29128,7 +29128,7 @@ func (ma *_TypeEnum__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, err
 		return &ma.ca_members, nil
 	case "representation":
 		if ma.s&fieldBit__TypeEnum_Representation != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__TypeEnum_Representation}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__TypeEnum_Representation}
 		}
 		ma.s += fieldBit__TypeEnum_Representation
 		ma.state = maState_midValue
@@ -29247,14 +29247,14 @@ func (ka *_TypeEnum__KeyAssembler) AssignString(k string) error {
 	switch k {
 	case "members":
 		if ka.s&fieldBit__TypeEnum_Members != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__TypeEnum_Members}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__TypeEnum_Members}
 		}
 		ka.s += fieldBit__TypeEnum_Members
 		ka.state = maState_expectValue
 		ka.f = 0
 	case "representation":
 		if ka.s&fieldBit__TypeEnum_Representation != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__TypeEnum_Representation}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__TypeEnum_Representation}
 		}
 		ka.s += fieldBit__TypeEnum_Representation
 		ka.state = maState_expectValue
@@ -29558,7 +29558,7 @@ func (ma *_TypeEnum__ReprAssembler) AssembleEntry(k string) (ipld.NodeAssembler,
 	switch k {
 	case "members":
 		if ma.s&fieldBit__TypeEnum_Members != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__TypeEnum_Members_serial}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__TypeEnum_Members_serial}
 		}
 		ma.s += fieldBit__TypeEnum_Members
 		ma.state = maState_midValue
@@ -29568,7 +29568,7 @@ func (ma *_TypeEnum__ReprAssembler) AssembleEntry(k string) (ipld.NodeAssembler,
 		return &ma.ca_members, nil
 	case "representation":
 		if ma.s&fieldBit__TypeEnum_Representation != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__TypeEnum_Representation_serial}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__TypeEnum_Representation_serial}
 		}
 		ma.s += fieldBit__TypeEnum_Representation
 		ma.state = maState_midValue
@@ -29688,7 +29688,7 @@ func (ka *_TypeEnum__ReprKeyAssembler) AssignString(k string) error {
 	switch k {
 	case "members":
 		if ka.s&fieldBit__TypeEnum_Members != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__TypeEnum_Members_serial}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__TypeEnum_Members_serial}
 		}
 		ka.s += fieldBit__TypeEnum_Members
 		ka.state = maState_expectValue
@@ -29696,7 +29696,7 @@ func (ka *_TypeEnum__ReprKeyAssembler) AssignString(k string) error {
 		return nil
 	case "representation":
 		if ka.s&fieldBit__TypeEnum_Representation != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__TypeEnum_Representation_serial}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__TypeEnum_Representation_serial}
 		}
 		ka.s += fieldBit__TypeEnum_Representation
 		ka.state = maState_expectValue
@@ -31474,7 +31474,7 @@ func (ma *_TypeLink__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, err
 	switch k {
 	case "expectedType":
 		if ma.s&fieldBit__TypeLink_ExpectedType != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__TypeLink_ExpectedType}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__TypeLink_ExpectedType}
 		}
 		ma.s += fieldBit__TypeLink_ExpectedType
 		ma.state = maState_midValue
@@ -31583,7 +31583,7 @@ func (ka *_TypeLink__KeyAssembler) AssignString(k string) error {
 	switch k {
 	case "expectedType":
 		if ka.s&fieldBit__TypeLink_ExpectedType != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__TypeLink_ExpectedType}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__TypeLink_ExpectedType}
 		}
 		ka.s += fieldBit__TypeLink_ExpectedType
 		ka.state = maState_expectValue
@@ -31630,7 +31630,7 @@ func (n *_TypeLink__Repr) LookupByString(key string) (ipld.Node, error) {
 	switch key {
 	case "expectedType":
 		if n.expectedType.m == schema.Maybe_Absent {
-			return ipld.Absent, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return ipld.Absent, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return n.expectedType.v.Representation(), nil
 	default:
@@ -31889,7 +31889,7 @@ func (ma *_TypeLink__ReprAssembler) AssembleEntry(k string) (ipld.NodeAssembler,
 	switch k {
 	case "expectedType":
 		if ma.s&fieldBit__TypeLink_ExpectedType != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__TypeLink_ExpectedType_serial}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__TypeLink_ExpectedType_serial}
 		}
 		ma.s += fieldBit__TypeLink_ExpectedType
 		ma.state = maState_midValue
@@ -32001,7 +32001,7 @@ func (ka *_TypeLink__ReprKeyAssembler) AssignString(k string) error {
 	switch k {
 	case "expectedType":
 		if ka.s&fieldBit__TypeLink_ExpectedType != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__TypeLink_ExpectedType_serial}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__TypeLink_ExpectedType_serial}
 		}
 		ka.s += fieldBit__TypeLink_ExpectedType
 		ka.state = maState_expectValue
@@ -32369,7 +32369,7 @@ func (ma *_TypeList__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, err
 	switch k {
 	case "valueType":
 		if ma.s&fieldBit__TypeList_ValueType != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__TypeList_ValueType}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__TypeList_ValueType}
 		}
 		ma.s += fieldBit__TypeList_ValueType
 		ma.state = maState_midValue
@@ -32379,7 +32379,7 @@ func (ma *_TypeList__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, err
 		return &ma.ca_valueType, nil
 	case "valueNullable":
 		if ma.s&fieldBit__TypeList_ValueNullable != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__TypeList_ValueNullable}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__TypeList_ValueNullable}
 		}
 		ma.s += fieldBit__TypeList_ValueNullable
 		ma.state = maState_midValue
@@ -32389,7 +32389,7 @@ func (ma *_TypeList__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, err
 		return &ma.ca_valueNullable, nil
 	case "representation":
 		if ma.s&fieldBit__TypeList_Representation != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__TypeList_Representation}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__TypeList_Representation}
 		}
 		ma.s += fieldBit__TypeList_Representation
 		ma.state = maState_midValue
@@ -32515,21 +32515,21 @@ func (ka *_TypeList__KeyAssembler) AssignString(k string) error {
 	switch k {
 	case "valueType":
 		if ka.s&fieldBit__TypeList_ValueType != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__TypeList_ValueType}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__TypeList_ValueType}
 		}
 		ka.s += fieldBit__TypeList_ValueType
 		ka.state = maState_expectValue
 		ka.f = 0
 	case "valueNullable":
 		if ka.s&fieldBit__TypeList_ValueNullable != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__TypeList_ValueNullable}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__TypeList_ValueNullable}
 		}
 		ka.s += fieldBit__TypeList_ValueNullable
 		ka.state = maState_expectValue
 		ka.f = 1
 	case "representation":
 		if ka.s&fieldBit__TypeList_Representation != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__TypeList_Representation}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__TypeList_Representation}
 		}
 		ka.s += fieldBit__TypeList_Representation
 		ka.state = maState_expectValue
@@ -32850,7 +32850,7 @@ func (ma *_TypeList__ReprAssembler) AssembleEntry(k string) (ipld.NodeAssembler,
 	switch k {
 	case "valueType":
 		if ma.s&fieldBit__TypeList_ValueType != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__TypeList_ValueType_serial}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__TypeList_ValueType_serial}
 		}
 		ma.s += fieldBit__TypeList_ValueType
 		ma.state = maState_midValue
@@ -32860,7 +32860,7 @@ func (ma *_TypeList__ReprAssembler) AssembleEntry(k string) (ipld.NodeAssembler,
 		return &ma.ca_valueType, nil
 	case "valueNullable":
 		if ma.s&fieldBit__TypeList_ValueNullable != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__TypeList_ValueNullable_serial}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__TypeList_ValueNullable_serial}
 		}
 		ma.s += fieldBit__TypeList_ValueNullable
 		ma.state = maState_midValue
@@ -32870,7 +32870,7 @@ func (ma *_TypeList__ReprAssembler) AssembleEntry(k string) (ipld.NodeAssembler,
 		return &ma.ca_valueNullable, nil
 	case "representation":
 		if ma.s&fieldBit__TypeList_Representation != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__TypeList_Representation_serial}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__TypeList_Representation_serial}
 		}
 		ma.s += fieldBit__TypeList_Representation
 		ma.state = maState_midValue
@@ -32997,7 +32997,7 @@ func (ka *_TypeList__ReprKeyAssembler) AssignString(k string) error {
 	switch k {
 	case "valueType":
 		if ka.s&fieldBit__TypeList_ValueType != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__TypeList_ValueType_serial}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__TypeList_ValueType_serial}
 		}
 		ka.s += fieldBit__TypeList_ValueType
 		ka.state = maState_expectValue
@@ -33005,7 +33005,7 @@ func (ka *_TypeList__ReprKeyAssembler) AssignString(k string) error {
 		return nil
 	case "valueNullable":
 		if ka.s&fieldBit__TypeList_ValueNullable != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__TypeList_ValueNullable_serial}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__TypeList_ValueNullable_serial}
 		}
 		ka.s += fieldBit__TypeList_ValueNullable
 		ka.state = maState_expectValue
@@ -33013,7 +33013,7 @@ func (ka *_TypeList__ReprKeyAssembler) AssignString(k string) error {
 		return nil
 	case "representation":
 		if ka.s&fieldBit__TypeList_Representation != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__TypeList_Representation_serial}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__TypeList_Representation_serial}
 		}
 		ka.s += fieldBit__TypeList_Representation
 		ka.state = maState_expectValue
@@ -33403,7 +33403,7 @@ func (ma *_TypeMap__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, erro
 	switch k {
 	case "keyType":
 		if ma.s&fieldBit__TypeMap_KeyType != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__TypeMap_KeyType}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__TypeMap_KeyType}
 		}
 		ma.s += fieldBit__TypeMap_KeyType
 		ma.state = maState_midValue
@@ -33413,7 +33413,7 @@ func (ma *_TypeMap__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, erro
 		return &ma.ca_keyType, nil
 	case "valueType":
 		if ma.s&fieldBit__TypeMap_ValueType != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__TypeMap_ValueType}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__TypeMap_ValueType}
 		}
 		ma.s += fieldBit__TypeMap_ValueType
 		ma.state = maState_midValue
@@ -33423,7 +33423,7 @@ func (ma *_TypeMap__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, erro
 		return &ma.ca_valueType, nil
 	case "valueNullable":
 		if ma.s&fieldBit__TypeMap_ValueNullable != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__TypeMap_ValueNullable}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__TypeMap_ValueNullable}
 		}
 		ma.s += fieldBit__TypeMap_ValueNullable
 		ma.state = maState_midValue
@@ -33433,7 +33433,7 @@ func (ma *_TypeMap__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, erro
 		return &ma.ca_valueNullable, nil
 	case "representation":
 		if ma.s&fieldBit__TypeMap_Representation != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__TypeMap_Representation}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__TypeMap_Representation}
 		}
 		ma.s += fieldBit__TypeMap_Representation
 		ma.state = maState_midValue
@@ -33566,28 +33566,28 @@ func (ka *_TypeMap__KeyAssembler) AssignString(k string) error {
 	switch k {
 	case "keyType":
 		if ka.s&fieldBit__TypeMap_KeyType != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__TypeMap_KeyType}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__TypeMap_KeyType}
 		}
 		ka.s += fieldBit__TypeMap_KeyType
 		ka.state = maState_expectValue
 		ka.f = 0
 	case "valueType":
 		if ka.s&fieldBit__TypeMap_ValueType != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__TypeMap_ValueType}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__TypeMap_ValueType}
 		}
 		ka.s += fieldBit__TypeMap_ValueType
 		ka.state = maState_expectValue
 		ka.f = 1
 	case "valueNullable":
 		if ka.s&fieldBit__TypeMap_ValueNullable != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__TypeMap_ValueNullable}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__TypeMap_ValueNullable}
 		}
 		ka.s += fieldBit__TypeMap_ValueNullable
 		ka.state = maState_expectValue
 		ka.f = 2
 	case "representation":
 		if ka.s&fieldBit__TypeMap_Representation != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__TypeMap_Representation}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__TypeMap_Representation}
 		}
 		ka.s += fieldBit__TypeMap_Representation
 		ka.state = maState_expectValue
@@ -33925,7 +33925,7 @@ func (ma *_TypeMap__ReprAssembler) AssembleEntry(k string) (ipld.NodeAssembler, 
 	switch k {
 	case "keyType":
 		if ma.s&fieldBit__TypeMap_KeyType != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__TypeMap_KeyType_serial}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__TypeMap_KeyType_serial}
 		}
 		ma.s += fieldBit__TypeMap_KeyType
 		ma.state = maState_midValue
@@ -33935,7 +33935,7 @@ func (ma *_TypeMap__ReprAssembler) AssembleEntry(k string) (ipld.NodeAssembler, 
 		return &ma.ca_keyType, nil
 	case "valueType":
 		if ma.s&fieldBit__TypeMap_ValueType != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__TypeMap_ValueType_serial}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__TypeMap_ValueType_serial}
 		}
 		ma.s += fieldBit__TypeMap_ValueType
 		ma.state = maState_midValue
@@ -33945,7 +33945,7 @@ func (ma *_TypeMap__ReprAssembler) AssembleEntry(k string) (ipld.NodeAssembler, 
 		return &ma.ca_valueType, nil
 	case "valueNullable":
 		if ma.s&fieldBit__TypeMap_ValueNullable != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__TypeMap_ValueNullable_serial}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__TypeMap_ValueNullable_serial}
 		}
 		ma.s += fieldBit__TypeMap_ValueNullable
 		ma.state = maState_midValue
@@ -33955,7 +33955,7 @@ func (ma *_TypeMap__ReprAssembler) AssembleEntry(k string) (ipld.NodeAssembler, 
 		return &ma.ca_valueNullable, nil
 	case "representation":
 		if ma.s&fieldBit__TypeMap_Representation != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__TypeMap_Representation_serial}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__TypeMap_Representation_serial}
 		}
 		ma.s += fieldBit__TypeMap_Representation
 		ma.state = maState_midValue
@@ -34089,7 +34089,7 @@ func (ka *_TypeMap__ReprKeyAssembler) AssignString(k string) error {
 	switch k {
 	case "keyType":
 		if ka.s&fieldBit__TypeMap_KeyType != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__TypeMap_KeyType_serial}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__TypeMap_KeyType_serial}
 		}
 		ka.s += fieldBit__TypeMap_KeyType
 		ka.state = maState_expectValue
@@ -34097,7 +34097,7 @@ func (ka *_TypeMap__ReprKeyAssembler) AssignString(k string) error {
 		return nil
 	case "valueType":
 		if ka.s&fieldBit__TypeMap_ValueType != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__TypeMap_ValueType_serial}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__TypeMap_ValueType_serial}
 		}
 		ka.s += fieldBit__TypeMap_ValueType
 		ka.state = maState_expectValue
@@ -34105,7 +34105,7 @@ func (ka *_TypeMap__ReprKeyAssembler) AssignString(k string) error {
 		return nil
 	case "valueNullable":
 		if ka.s&fieldBit__TypeMap_ValueNullable != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__TypeMap_ValueNullable_serial}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__TypeMap_ValueNullable_serial}
 		}
 		ka.s += fieldBit__TypeMap_ValueNullable
 		ka.state = maState_expectValue
@@ -34113,7 +34113,7 @@ func (ka *_TypeMap__ReprKeyAssembler) AssignString(k string) error {
 		return nil
 	case "representation":
 		if ka.s&fieldBit__TypeMap_Representation != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__TypeMap_Representation_serial}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__TypeMap_Representation_serial}
 		}
 		ka.s += fieldBit__TypeMap_Representation
 		ka.state = maState_expectValue
@@ -34415,12 +34415,12 @@ func (n TypeNameOrInlineDefn) LookupByString(key string) (ipld.Node, error) {
 	switch key {
 	case "TypeName":
 		if n.tag != 1 {
-			return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return &n.x1, nil
 	case "TypeDefnInline":
 		if n.tag != 2 {
-			return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return &n.x2, nil
 	default:
@@ -36192,7 +36192,7 @@ func (ma *_TypeStruct__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, e
 	switch k {
 	case "fields":
 		if ma.s&fieldBit__TypeStruct_Fields != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__TypeStruct_Fields}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__TypeStruct_Fields}
 		}
 		ma.s += fieldBit__TypeStruct_Fields
 		ma.state = maState_midValue
@@ -36202,7 +36202,7 @@ func (ma *_TypeStruct__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, e
 		return &ma.ca_fields, nil
 	case "representation":
 		if ma.s&fieldBit__TypeStruct_Representation != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__TypeStruct_Representation}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__TypeStruct_Representation}
 		}
 		ma.s += fieldBit__TypeStruct_Representation
 		ma.state = maState_midValue
@@ -36321,14 +36321,14 @@ func (ka *_TypeStruct__KeyAssembler) AssignString(k string) error {
 	switch k {
 	case "fields":
 		if ka.s&fieldBit__TypeStruct_Fields != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__TypeStruct_Fields}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__TypeStruct_Fields}
 		}
 		ka.s += fieldBit__TypeStruct_Fields
 		ka.state = maState_expectValue
 		ka.f = 0
 	case "representation":
 		if ka.s&fieldBit__TypeStruct_Representation != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__TypeStruct_Representation}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__TypeStruct_Representation}
 		}
 		ka.s += fieldBit__TypeStruct_Representation
 		ka.state = maState_expectValue
@@ -36632,7 +36632,7 @@ func (ma *_TypeStruct__ReprAssembler) AssembleEntry(k string) (ipld.NodeAssemble
 	switch k {
 	case "fields":
 		if ma.s&fieldBit__TypeStruct_Fields != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__TypeStruct_Fields_serial}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__TypeStruct_Fields_serial}
 		}
 		ma.s += fieldBit__TypeStruct_Fields
 		ma.state = maState_midValue
@@ -36642,7 +36642,7 @@ func (ma *_TypeStruct__ReprAssembler) AssembleEntry(k string) (ipld.NodeAssemble
 		return &ma.ca_fields, nil
 	case "representation":
 		if ma.s&fieldBit__TypeStruct_Representation != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__TypeStruct_Representation_serial}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__TypeStruct_Representation_serial}
 		}
 		ma.s += fieldBit__TypeStruct_Representation
 		ma.state = maState_midValue
@@ -36762,7 +36762,7 @@ func (ka *_TypeStruct__ReprKeyAssembler) AssignString(k string) error {
 	switch k {
 	case "fields":
 		if ka.s&fieldBit__TypeStruct_Fields != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__TypeStruct_Fields_serial}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__TypeStruct_Fields_serial}
 		}
 		ka.s += fieldBit__TypeStruct_Fields
 		ka.state = maState_expectValue
@@ -36770,7 +36770,7 @@ func (ka *_TypeStruct__ReprKeyAssembler) AssignString(k string) error {
 		return nil
 	case "representation":
 		if ka.s&fieldBit__TypeStruct_Representation != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__TypeStruct_Representation_serial}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__TypeStruct_Representation_serial}
 		}
 		ka.s += fieldBit__TypeStruct_Representation
 		ka.state = maState_expectValue
@@ -37116,7 +37116,7 @@ func (ma *_TypeUnion__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, er
 	switch k {
 	case "members":
 		if ma.s&fieldBit__TypeUnion_Members != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__TypeUnion_Members}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__TypeUnion_Members}
 		}
 		ma.s += fieldBit__TypeUnion_Members
 		ma.state = maState_midValue
@@ -37126,7 +37126,7 @@ func (ma *_TypeUnion__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, er
 		return &ma.ca_members, nil
 	case "representation":
 		if ma.s&fieldBit__TypeUnion_Representation != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__TypeUnion_Representation}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__TypeUnion_Representation}
 		}
 		ma.s += fieldBit__TypeUnion_Representation
 		ma.state = maState_midValue
@@ -37245,14 +37245,14 @@ func (ka *_TypeUnion__KeyAssembler) AssignString(k string) error {
 	switch k {
 	case "members":
 		if ka.s&fieldBit__TypeUnion_Members != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__TypeUnion_Members}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__TypeUnion_Members}
 		}
 		ka.s += fieldBit__TypeUnion_Members
 		ka.state = maState_expectValue
 		ka.f = 0
 	case "representation":
 		if ka.s&fieldBit__TypeUnion_Representation != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__TypeUnion_Representation}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__TypeUnion_Representation}
 		}
 		ka.s += fieldBit__TypeUnion_Representation
 		ka.state = maState_expectValue
@@ -37556,7 +37556,7 @@ func (ma *_TypeUnion__ReprAssembler) AssembleEntry(k string) (ipld.NodeAssembler
 	switch k {
 	case "members":
 		if ma.s&fieldBit__TypeUnion_Members != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__TypeUnion_Members_serial}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__TypeUnion_Members_serial}
 		}
 		ma.s += fieldBit__TypeUnion_Members
 		ma.state = maState_midValue
@@ -37566,7 +37566,7 @@ func (ma *_TypeUnion__ReprAssembler) AssembleEntry(k string) (ipld.NodeAssembler
 		return &ma.ca_members, nil
 	case "representation":
 		if ma.s&fieldBit__TypeUnion_Representation != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__TypeUnion_Representation_serial}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__TypeUnion_Representation_serial}
 		}
 		ma.s += fieldBit__TypeUnion_Representation
 		ma.state = maState_midValue
@@ -37686,7 +37686,7 @@ func (ka *_TypeUnion__ReprKeyAssembler) AssignString(k string) error {
 	switch k {
 	case "members":
 		if ka.s&fieldBit__TypeUnion_Members != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__TypeUnion_Members_serial}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__TypeUnion_Members_serial}
 		}
 		ka.s += fieldBit__TypeUnion_Members
 		ka.state = maState_expectValue
@@ -37694,7 +37694,7 @@ func (ka *_TypeUnion__ReprKeyAssembler) AssignString(k string) error {
 		return nil
 	case "representation":
 		if ka.s&fieldBit__TypeUnion_Representation != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__TypeUnion_Representation_serial}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__TypeUnion_Representation_serial}
 		}
 		ka.s += fieldBit__TypeUnion_Representation
 		ka.state = maState_expectValue
@@ -37791,32 +37791,32 @@ func (n UnionRepresentation) LookupByString(key string) (ipld.Node, error) {
 	switch key {
 	case "UnionRepresentation_Kinded":
 		if n.tag != 1 {
-			return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return &n.x1, nil
 	case "UnionRepresentation_Keyed":
 		if n.tag != 2 {
-			return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return &n.x2, nil
 	case "UnionRepresentation_Envelope":
 		if n.tag != 3 {
-			return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return &n.x3, nil
 	case "UnionRepresentation_Inline":
 		if n.tag != 4 {
-			return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return &n.x4, nil
 	case "UnionRepresentation_StringPrefix":
 		if n.tag != 5 {
-			return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return &n.x5, nil
 	case "UnionRepresentation_BytePrefix":
 		if n.tag != 6 {
-			return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return &n.x6, nil
 	default:
@@ -38348,32 +38348,32 @@ func (n *_UnionRepresentation__Repr) LookupByString(key string) (ipld.Node, erro
 	switch key {
 	case "kinded":
 		if n.tag != 1 {
-			return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return n.x1.Representation(), nil
 	case "keyed":
 		if n.tag != 2 {
-			return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return n.x2.Representation(), nil
 	case "envelope":
 		if n.tag != 3 {
-			return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return n.x3.Representation(), nil
 	case "inline":
 		if n.tag != 4 {
-			return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return n.x4.Representation(), nil
 	case "stringprefix":
 		if n.tag != 5 {
-			return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return n.x5.Representation(), nil
 	case "byteprefix":
 		if n.tag != 6 {
-			return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		return n.x6.Representation(), nil
 	default:
@@ -39178,7 +39178,7 @@ func (ma *_UnionRepresentation_BytePrefix__Assembler) AssembleEntry(k string) (i
 	switch k {
 	case "discriminantTable":
 		if ma.s&fieldBit__UnionRepresentation_BytePrefix_DiscriminantTable != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__UnionRepresentation_BytePrefix_DiscriminantTable}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__UnionRepresentation_BytePrefix_DiscriminantTable}
 		}
 		ma.s += fieldBit__UnionRepresentation_BytePrefix_DiscriminantTable
 		ma.state = maState_midValue
@@ -39290,7 +39290,7 @@ func (ka *_UnionRepresentation_BytePrefix__KeyAssembler) AssignString(k string) 
 	switch k {
 	case "discriminantTable":
 		if ka.s&fieldBit__UnionRepresentation_BytePrefix_DiscriminantTable != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__UnionRepresentation_BytePrefix_DiscriminantTable}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__UnionRepresentation_BytePrefix_DiscriminantTable}
 		}
 		ka.s += fieldBit__UnionRepresentation_BytePrefix_DiscriminantTable
 		ka.state = maState_expectValue
@@ -39577,7 +39577,7 @@ func (ma *_UnionRepresentation_BytePrefix__ReprAssembler) AssembleEntry(k string
 	switch k {
 	case "discriminantTable":
 		if ma.s&fieldBit__UnionRepresentation_BytePrefix_DiscriminantTable != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__UnionRepresentation_BytePrefix_DiscriminantTable_serial}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__UnionRepresentation_BytePrefix_DiscriminantTable_serial}
 		}
 		ma.s += fieldBit__UnionRepresentation_BytePrefix_DiscriminantTable
 		ma.state = maState_midValue
@@ -39690,7 +39690,7 @@ func (ka *_UnionRepresentation_BytePrefix__ReprKeyAssembler) AssignString(k stri
 	switch k {
 	case "discriminantTable":
 		if ka.s&fieldBit__UnionRepresentation_BytePrefix_DiscriminantTable != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__UnionRepresentation_BytePrefix_DiscriminantTable_serial}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__UnionRepresentation_BytePrefix_DiscriminantTable_serial}
 		}
 		ka.s += fieldBit__UnionRepresentation_BytePrefix_DiscriminantTable
 		ka.state = maState_expectValue
@@ -40058,7 +40058,7 @@ func (ma *_UnionRepresentation_Envelope__Assembler) AssembleEntry(k string) (ipl
 	switch k {
 	case "discriminantKey":
 		if ma.s&fieldBit__UnionRepresentation_Envelope_DiscriminantKey != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__UnionRepresentation_Envelope_DiscriminantKey}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__UnionRepresentation_Envelope_DiscriminantKey}
 		}
 		ma.s += fieldBit__UnionRepresentation_Envelope_DiscriminantKey
 		ma.state = maState_midValue
@@ -40068,7 +40068,7 @@ func (ma *_UnionRepresentation_Envelope__Assembler) AssembleEntry(k string) (ipl
 		return &ma.ca_discriminantKey, nil
 	case "contentKey":
 		if ma.s&fieldBit__UnionRepresentation_Envelope_ContentKey != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__UnionRepresentation_Envelope_ContentKey}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__UnionRepresentation_Envelope_ContentKey}
 		}
 		ma.s += fieldBit__UnionRepresentation_Envelope_ContentKey
 		ma.state = maState_midValue
@@ -40078,7 +40078,7 @@ func (ma *_UnionRepresentation_Envelope__Assembler) AssembleEntry(k string) (ipl
 		return &ma.ca_contentKey, nil
 	case "discriminantTable":
 		if ma.s&fieldBit__UnionRepresentation_Envelope_DiscriminantTable != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__UnionRepresentation_Envelope_DiscriminantTable}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__UnionRepresentation_Envelope_DiscriminantTable}
 		}
 		ma.s += fieldBit__UnionRepresentation_Envelope_DiscriminantTable
 		ma.state = maState_midValue
@@ -40204,21 +40204,21 @@ func (ka *_UnionRepresentation_Envelope__KeyAssembler) AssignString(k string) er
 	switch k {
 	case "discriminantKey":
 		if ka.s&fieldBit__UnionRepresentation_Envelope_DiscriminantKey != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__UnionRepresentation_Envelope_DiscriminantKey}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__UnionRepresentation_Envelope_DiscriminantKey}
 		}
 		ka.s += fieldBit__UnionRepresentation_Envelope_DiscriminantKey
 		ka.state = maState_expectValue
 		ka.f = 0
 	case "contentKey":
 		if ka.s&fieldBit__UnionRepresentation_Envelope_ContentKey != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__UnionRepresentation_Envelope_ContentKey}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__UnionRepresentation_Envelope_ContentKey}
 		}
 		ka.s += fieldBit__UnionRepresentation_Envelope_ContentKey
 		ka.state = maState_expectValue
 		ka.f = 1
 	case "discriminantTable":
 		if ka.s&fieldBit__UnionRepresentation_Envelope_DiscriminantTable != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__UnionRepresentation_Envelope_DiscriminantTable}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__UnionRepresentation_Envelope_DiscriminantTable}
 		}
 		ka.s += fieldBit__UnionRepresentation_Envelope_DiscriminantTable
 		ka.state = maState_expectValue
@@ -40539,7 +40539,7 @@ func (ma *_UnionRepresentation_Envelope__ReprAssembler) AssembleEntry(k string) 
 	switch k {
 	case "discriminantKey":
 		if ma.s&fieldBit__UnionRepresentation_Envelope_DiscriminantKey != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__UnionRepresentation_Envelope_DiscriminantKey_serial}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__UnionRepresentation_Envelope_DiscriminantKey_serial}
 		}
 		ma.s += fieldBit__UnionRepresentation_Envelope_DiscriminantKey
 		ma.state = maState_midValue
@@ -40549,7 +40549,7 @@ func (ma *_UnionRepresentation_Envelope__ReprAssembler) AssembleEntry(k string) 
 		return &ma.ca_discriminantKey, nil
 	case "contentKey":
 		if ma.s&fieldBit__UnionRepresentation_Envelope_ContentKey != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__UnionRepresentation_Envelope_ContentKey_serial}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__UnionRepresentation_Envelope_ContentKey_serial}
 		}
 		ma.s += fieldBit__UnionRepresentation_Envelope_ContentKey
 		ma.state = maState_midValue
@@ -40559,7 +40559,7 @@ func (ma *_UnionRepresentation_Envelope__ReprAssembler) AssembleEntry(k string) 
 		return &ma.ca_contentKey, nil
 	case "discriminantTable":
 		if ma.s&fieldBit__UnionRepresentation_Envelope_DiscriminantTable != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__UnionRepresentation_Envelope_DiscriminantTable_serial}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__UnionRepresentation_Envelope_DiscriminantTable_serial}
 		}
 		ma.s += fieldBit__UnionRepresentation_Envelope_DiscriminantTable
 		ma.state = maState_midValue
@@ -40686,7 +40686,7 @@ func (ka *_UnionRepresentation_Envelope__ReprKeyAssembler) AssignString(k string
 	switch k {
 	case "discriminantKey":
 		if ka.s&fieldBit__UnionRepresentation_Envelope_DiscriminantKey != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__UnionRepresentation_Envelope_DiscriminantKey_serial}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__UnionRepresentation_Envelope_DiscriminantKey_serial}
 		}
 		ka.s += fieldBit__UnionRepresentation_Envelope_DiscriminantKey
 		ka.state = maState_expectValue
@@ -40694,7 +40694,7 @@ func (ka *_UnionRepresentation_Envelope__ReprKeyAssembler) AssignString(k string
 		return nil
 	case "contentKey":
 		if ka.s&fieldBit__UnionRepresentation_Envelope_ContentKey != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__UnionRepresentation_Envelope_ContentKey_serial}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__UnionRepresentation_Envelope_ContentKey_serial}
 		}
 		ka.s += fieldBit__UnionRepresentation_Envelope_ContentKey
 		ka.state = maState_expectValue
@@ -40702,7 +40702,7 @@ func (ka *_UnionRepresentation_Envelope__ReprKeyAssembler) AssignString(k string
 		return nil
 	case "discriminantTable":
 		if ka.s&fieldBit__UnionRepresentation_Envelope_DiscriminantTable != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__UnionRepresentation_Envelope_DiscriminantTable_serial}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__UnionRepresentation_Envelope_DiscriminantTable_serial}
 		}
 		ka.s += fieldBit__UnionRepresentation_Envelope_DiscriminantTable
 		ka.state = maState_expectValue
@@ -41048,7 +41048,7 @@ func (ma *_UnionRepresentation_Inline__Assembler) AssembleEntry(k string) (ipld.
 	switch k {
 	case "discriminantKey":
 		if ma.s&fieldBit__UnionRepresentation_Inline_DiscriminantKey != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__UnionRepresentation_Inline_DiscriminantKey}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__UnionRepresentation_Inline_DiscriminantKey}
 		}
 		ma.s += fieldBit__UnionRepresentation_Inline_DiscriminantKey
 		ma.state = maState_midValue
@@ -41058,7 +41058,7 @@ func (ma *_UnionRepresentation_Inline__Assembler) AssembleEntry(k string) (ipld.
 		return &ma.ca_discriminantKey, nil
 	case "discriminantTable":
 		if ma.s&fieldBit__UnionRepresentation_Inline_DiscriminantTable != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__UnionRepresentation_Inline_DiscriminantTable}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__UnionRepresentation_Inline_DiscriminantTable}
 		}
 		ma.s += fieldBit__UnionRepresentation_Inline_DiscriminantTable
 		ma.state = maState_midValue
@@ -41177,14 +41177,14 @@ func (ka *_UnionRepresentation_Inline__KeyAssembler) AssignString(k string) erro
 	switch k {
 	case "discriminantKey":
 		if ka.s&fieldBit__UnionRepresentation_Inline_DiscriminantKey != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__UnionRepresentation_Inline_DiscriminantKey}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__UnionRepresentation_Inline_DiscriminantKey}
 		}
 		ka.s += fieldBit__UnionRepresentation_Inline_DiscriminantKey
 		ka.state = maState_expectValue
 		ka.f = 0
 	case "discriminantTable":
 		if ka.s&fieldBit__UnionRepresentation_Inline_DiscriminantTable != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__UnionRepresentation_Inline_DiscriminantTable}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__UnionRepresentation_Inline_DiscriminantTable}
 		}
 		ka.s += fieldBit__UnionRepresentation_Inline_DiscriminantTable
 		ka.state = maState_expectValue
@@ -41488,7 +41488,7 @@ func (ma *_UnionRepresentation_Inline__ReprAssembler) AssembleEntry(k string) (i
 	switch k {
 	case "discriminantKey":
 		if ma.s&fieldBit__UnionRepresentation_Inline_DiscriminantKey != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__UnionRepresentation_Inline_DiscriminantKey_serial}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__UnionRepresentation_Inline_DiscriminantKey_serial}
 		}
 		ma.s += fieldBit__UnionRepresentation_Inline_DiscriminantKey
 		ma.state = maState_midValue
@@ -41498,7 +41498,7 @@ func (ma *_UnionRepresentation_Inline__ReprAssembler) AssembleEntry(k string) (i
 		return &ma.ca_discriminantKey, nil
 	case "discriminantTable":
 		if ma.s&fieldBit__UnionRepresentation_Inline_DiscriminantTable != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__UnionRepresentation_Inline_DiscriminantTable_serial}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__UnionRepresentation_Inline_DiscriminantTable_serial}
 		}
 		ma.s += fieldBit__UnionRepresentation_Inline_DiscriminantTable
 		ma.state = maState_midValue
@@ -41618,7 +41618,7 @@ func (ka *_UnionRepresentation_Inline__ReprKeyAssembler) AssignString(k string) 
 	switch k {
 	case "discriminantKey":
 		if ka.s&fieldBit__UnionRepresentation_Inline_DiscriminantKey != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__UnionRepresentation_Inline_DiscriminantKey_serial}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__UnionRepresentation_Inline_DiscriminantKey_serial}
 		}
 		ka.s += fieldBit__UnionRepresentation_Inline_DiscriminantKey
 		ka.state = maState_expectValue
@@ -41626,7 +41626,7 @@ func (ka *_UnionRepresentation_Inline__ReprKeyAssembler) AssignString(k string) 
 		return nil
 	case "discriminantTable":
 		if ka.s&fieldBit__UnionRepresentation_Inline_DiscriminantTable != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__UnionRepresentation_Inline_DiscriminantTable_serial}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__UnionRepresentation_Inline_DiscriminantTable_serial}
 		}
 		ka.s += fieldBit__UnionRepresentation_Inline_DiscriminantTable
 		ka.state = maState_expectValue
@@ -41742,7 +41742,7 @@ func (n UnionRepresentation_Keyed) LookupByString(k string) (ipld.Node, error) {
 	}
 	v, exists := n.m[k2]
 	if !exists {
-		return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(k)}
+		return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(k)}
 	}
 	return v, nil
 }
@@ -41754,7 +41754,7 @@ func (n UnionRepresentation_Keyed) LookupByNode(k ipld.Node) (ipld.Node, error) 
 	}
 	v, exists := n.m[*k2]
 	if !exists {
-		return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(k2.String())}
+		return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(k2.String())}
 	}
 	return v, nil
 }
@@ -42003,7 +42003,7 @@ func (ma *_UnionRepresentation_Keyed__Assembler) AssembleEntry(k string) (ipld.N
 		return nil, err // TODO wrap in some kind of ErrInvalidKey
 	}
 	if _, exists := ma.w.m[k2]; exists {
-		return nil, ipld.ErrRepeatedMapKey{&k2}
+		return nil, ipld.ErrRepeatedMapKey{Key: &k2}
 	}
 	ma.w.t = append(ma.w.t, _UnionRepresentation_Keyed__entry{k: k2})
 	tz := &ma.w.t[len(ma.w.t)-1]
@@ -42345,7 +42345,7 @@ func (ma *_UnionRepresentation_Keyed__ReprAssembler) AssembleEntry(k string) (ip
 		return nil, err // TODO wrap in some kind of ErrInvalidKey
 	}
 	if _, exists := ma.w.m[k2]; exists {
-		return nil, ipld.ErrRepeatedMapKey{&k2}
+		return nil, ipld.ErrRepeatedMapKey{Key: &k2}
 	}
 	ma.w.t = append(ma.w.t, _UnionRepresentation_Keyed__entry{k: k2})
 	tz := &ma.w.t[len(ma.w.t)-1]
@@ -42511,7 +42511,7 @@ func (n UnionRepresentation_Kinded) LookupByString(k string) (ipld.Node, error) 
 	}
 	v, exists := n.m[k2]
 	if !exists {
-		return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(k)}
+		return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(k)}
 	}
 	return v, nil
 }
@@ -42523,7 +42523,7 @@ func (n UnionRepresentation_Kinded) LookupByNode(k ipld.Node) (ipld.Node, error)
 	}
 	v, exists := n.m[*k2]
 	if !exists {
-		return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(k2.String())}
+		return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(k2.String())}
 	}
 	return v, nil
 }
@@ -42772,7 +42772,7 @@ func (ma *_UnionRepresentation_Kinded__Assembler) AssembleEntry(k string) (ipld.
 		return nil, err // TODO wrap in some kind of ErrInvalidKey
 	}
 	if _, exists := ma.w.m[k2]; exists {
-		return nil, ipld.ErrRepeatedMapKey{&k2}
+		return nil, ipld.ErrRepeatedMapKey{Key: &k2}
 	}
 	ma.w.t = append(ma.w.t, _UnionRepresentation_Kinded__entry{k: k2})
 	tz := &ma.w.t[len(ma.w.t)-1]
@@ -43114,7 +43114,7 @@ func (ma *_UnionRepresentation_Kinded__ReprAssembler) AssembleEntry(k string) (i
 		return nil, err // TODO wrap in some kind of ErrInvalidKey
 	}
 	if _, exists := ma.w.m[k2]; exists {
-		return nil, ipld.ErrRepeatedMapKey{&k2}
+		return nil, ipld.ErrRepeatedMapKey{Key: &k2}
 	}
 	ma.w.t = append(ma.w.t, _UnionRepresentation_Kinded__entry{k: k2})
 	tz := &ma.w.t[len(ma.w.t)-1]
@@ -43488,7 +43488,7 @@ func (ma *_UnionRepresentation_StringPrefix__Assembler) AssembleEntry(k string) 
 	switch k {
 	case "discriminantTable":
 		if ma.s&fieldBit__UnionRepresentation_StringPrefix_DiscriminantTable != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__UnionRepresentation_StringPrefix_DiscriminantTable}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__UnionRepresentation_StringPrefix_DiscriminantTable}
 		}
 		ma.s += fieldBit__UnionRepresentation_StringPrefix_DiscriminantTable
 		ma.state = maState_midValue
@@ -43600,7 +43600,7 @@ func (ka *_UnionRepresentation_StringPrefix__KeyAssembler) AssignString(k string
 	switch k {
 	case "discriminantTable":
 		if ka.s&fieldBit__UnionRepresentation_StringPrefix_DiscriminantTable != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__UnionRepresentation_StringPrefix_DiscriminantTable}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__UnionRepresentation_StringPrefix_DiscriminantTable}
 		}
 		ka.s += fieldBit__UnionRepresentation_StringPrefix_DiscriminantTable
 		ka.state = maState_expectValue
@@ -43887,7 +43887,7 @@ func (ma *_UnionRepresentation_StringPrefix__ReprAssembler) AssembleEntry(k stri
 	switch k {
 	case "discriminantTable":
 		if ma.s&fieldBit__UnionRepresentation_StringPrefix_DiscriminantTable != 0 {
-			return nil, ipld.ErrRepeatedMapKey{&fieldName__UnionRepresentation_StringPrefix_DiscriminantTable_serial}
+			return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__UnionRepresentation_StringPrefix_DiscriminantTable_serial}
 		}
 		ma.s += fieldBit__UnionRepresentation_StringPrefix_DiscriminantTable
 		ma.state = maState_midValue
@@ -44000,7 +44000,7 @@ func (ka *_UnionRepresentation_StringPrefix__ReprKeyAssembler) AssignString(k st
 	switch k {
 	case "discriminantTable":
 		if ka.s&fieldBit__UnionRepresentation_StringPrefix_DiscriminantTable != 0 {
-			return ipld.ErrRepeatedMapKey{&fieldName__UnionRepresentation_StringPrefix_DiscriminantTable_serial}
+			return ipld.ErrRepeatedMapKey{Key: &fieldName__UnionRepresentation_StringPrefix_DiscriminantTable_serial}
 		}
 		ka.s += fieldBit__UnionRepresentation_StringPrefix_DiscriminantTable
 		ka.state = maState_expectValue
