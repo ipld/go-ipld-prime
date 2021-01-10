@@ -36,7 +36,7 @@ func (plainMap) Kind() ipld.Kind {
 func (n *plainMap) LookupByString(key string) (ipld.Node, error) {
 	v, exists := n.m[key]
 	if !exists {
-		return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+		return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 	}
 	return v, nil
 }
@@ -249,7 +249,7 @@ func (ma *plainMap__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, erro
 	// Check for dup keys; error if so.
 	_, exists := ma.w.m[k]
 	if exists {
-		return nil, ipld.ErrRepeatedMapKey{plainString(k)}
+		return nil, ipld.ErrRepeatedMapKey{Key: plainString(k)}
 	}
 	ma.state = maState_midValue
 	ma.w.t = append(ma.w.t, plainMap__Entry{k: plainString(k)})
@@ -329,7 +329,7 @@ func (mka *plainMap__KeyAssembler) AssignString(v string) error {
 	if exists {
 		mka.ma.state = maState_initial
 		mka.ma = nil // invalidate self to prevent further incorrect use.
-		return ipld.ErrRepeatedMapKey{plainString(v)}
+		return ipld.ErrRepeatedMapKey{Key: plainString(v)}
 	}
 	// Assign the key into the end of the entry table;
 	//  we'll be doing map insertions after we get the value in hand.

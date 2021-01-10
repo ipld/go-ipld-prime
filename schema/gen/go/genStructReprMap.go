@@ -87,7 +87,7 @@ func (g structReprMapReprGenerator) EmitNodeMethodLookupByString(w io.Writer) {
 			case "{{ $field | $field.Parent.RepresentationStrategy.GetFieldKey }}":
 				{{- if $field.IsOptional }}
 				if n.{{ $field | FieldSymbolLower }}.m == schema.Maybe_Absent {
-					return ipld.Absent, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+					return ipld.Absent, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 				}
 				{{- end}}
 				{{- if $field.IsNullable }}
@@ -466,7 +466,7 @@ func (g structReprMapReprBuilderGenerator) emitMapAssemblerMethods(w io.Writer) 
 			{{- range $i, $field := .Type.Fields }}
 			case "{{ $field | $type.RepresentationStrategy.GetFieldKey }}":
 				if ma.s & fieldBit__{{ $type | TypeSymbol }}_{{ $field | FieldSymbolUpper }} != 0 {
-					return nil, ipld.ErrRepeatedMapKey{&fieldName__{{ $type | TypeSymbol }}_{{ $field | FieldSymbolUpper }}_serial}
+					return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__{{ $type | TypeSymbol }}_{{ $field | FieldSymbolUpper }}_serial}
 				}
 				ma.s += fieldBit__{{ $type | TypeSymbol }}_{{ $field | FieldSymbolUpper }}
 				ma.state = maState_midValue
@@ -605,7 +605,7 @@ func (g structReprMapReprBuilderGenerator) emitKeyAssembler(w io.Writer) {
 			{{- range $i, $field := .Type.Fields }}
 			case "{{ $field | $type.RepresentationStrategy.GetFieldKey }}":
 				if ka.s & fieldBit__{{ $type | TypeSymbol }}_{{ $field | FieldSymbolUpper }} != 0 {
-					return ipld.ErrRepeatedMapKey{&fieldName__{{ $type | TypeSymbol }}_{{ $field | FieldSymbolUpper }}_serial}
+					return ipld.ErrRepeatedMapKey{Key: &fieldName__{{ $type | TypeSymbol }}_{{ $field | FieldSymbolUpper }}_serial}
 				}
 				ka.s += fieldBit__{{ $type | TypeSymbol }}_{{ $field | FieldSymbolUpper }}
 				ka.state = maState_expectValue

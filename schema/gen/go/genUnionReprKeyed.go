@@ -86,14 +86,14 @@ func (g unionReprKeyedReprGenerator) EmitNodeMethodLookupByString(w io.Writer) {
 			case "{{ $member | dot.Type.RepresentationStrategy.GetDiscriminant }}":
 				{{- if (eq (dot.AdjCfg.UnionMemlayout dot.Type) "embedAll") }}
 				if n.tag != {{ add $i 1 }} {
-					return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+					return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 				}
 				return n.x{{ add $i 1 }}.Representation(), nil
 				{{- else if (eq (dot.AdjCfg.UnionMemlayout dot.Type) "interface") }}
 				if n2, ok := n.x.({{ $member | TypeSymbol }}); ok {
 					return n2.Representation(), nil
 				} else {
-					return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+					return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 				}
 				{{- end}}
 			{{- end}}

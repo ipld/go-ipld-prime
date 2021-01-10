@@ -157,14 +157,14 @@ func (g unionGenerator) EmitNodeMethodLookupByString(w io.Writer) {
 			case "{{ $member.Name }}":
 				{{- if (eq (dot.AdjCfg.UnionMemlayout dot.Type) "embedAll") }}
 				if n.tag != {{ add $i 1 }} {
-					return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+					return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 				}
 				return &n.x{{ add $i 1 }}, nil
 				{{- else if (eq (dot.AdjCfg.UnionMemlayout dot.Type) "interface") }}
 				if n2, ok := n.x.({{ $member | TypeSymbol }}); ok {
 					return n2, nil
 				} else {
-					return nil, ipld.ErrNotExists{ipld.PathSegmentOfString(key)}
+					return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 				}
 				{{- end}}
 			{{- end}}

@@ -146,7 +146,7 @@ func (g listGenerator) EmitNodeMethodLookupByIndex(w io.Writer) {
 	doTemplate(`
 		func (n {{ .Type | TypeSymbol }}) LookupByIndex(idx int64) (ipld.Node, error) {
 			if n.Length() <= idx {
-				return nil, ipld.ErrNotExists{ipld.PathSegmentOfInt(idx)}
+				return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfInt(idx)}
 			}
 			v := &n.x[idx]
 			{{- if .Type.ValueIsNullable }}

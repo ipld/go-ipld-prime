@@ -84,7 +84,7 @@ func (g structReprTupleReprGenerator) EmitNodeMethodLookupByIndex(w io.Writer) {
 			case {{ $i }}:
 				{{- if $field.IsOptional }}
 				if n.{{ $field | FieldSymbolLower }}.m == schema.Maybe_Absent {
-					return ipld.Absent, ipld.ErrNotExists{ipld.PathSegmentOfInt(idx)}
+					return ipld.Absent, ipld.ErrNotExists{Segment: ipld.PathSegmentOfInt(idx)}
 				}
 				{{- end}}
 				{{- if $field.IsNullable }}
