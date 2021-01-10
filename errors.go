@@ -68,7 +68,7 @@ type ErrRepeatedMapKey struct {
 }
 
 func (e ErrRepeatedMapKey) Error() string {
-	return fmt.Sprintf("cannot repeat map key (\"%s\")", e.Key)
+	return fmt.Sprintf("cannot repeat map key %q", e.Key)
 }
 
 // ErrInvalidKey indicates a key is invalid for some reason.
@@ -94,9 +94,9 @@ type ErrInvalidKey struct {
 
 func (e ErrInvalidKey) Error() string {
 	if e.Reason == nil {
-		return fmt.Sprintf("invalid key for map %s: \"%s\": no such field", e.TypeName, e.Key)
+		return fmt.Sprintf("invalid key for map %s: %q: no such field", e.TypeName, e.Key)
 	} else {
-		return fmt.Sprintf("invalid key for map %s: \"%s\": %s", e.TypeName, e.Key, e.Reason)
+		return fmt.Sprintf("invalid key for map %s: %q: %s", e.TypeName, e.Key, e.Reason)
 	}
 }
 
