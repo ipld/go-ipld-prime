@@ -1,4 +1,4 @@
-package quip_test
+package fluent_test
 
 import (
 	"strings"
@@ -7,11 +7,14 @@ import (
 	"github.com/ipld/go-ipld-prime"
 	"github.com/ipld/go-ipld-prime/codec/dagjson"
 	"github.com/ipld/go-ipld-prime/fluent"
+	"github.com/ipld/go-ipld-prime/fluent/qp"
 	"github.com/ipld/go-ipld-prime/fluent/quip"
 	basicnode "github.com/ipld/go-ipld-prime/node/basic"
 )
 
 func BenchmarkQuip(b *testing.B) {
+	b.ReportAllocs()
+
 	f2 := func(na ipld.NodeAssembler, a string, b string, c string, d []string) (err error) {
 		quip.AssembleMap(&err, na, 4, func(ma ipld.MapAssembler) {
 			quip.AssignMapEntryString(&err, ma, "destination", a)
@@ -50,6 +53,8 @@ func BenchmarkQuip(b *testing.B) {
 }
 
 func BenchmarkQuipWithoutScalarFuncs(b *testing.B) {
+	b.ReportAllocs()
+
 	// This is simply a slightly longer way of writing the same thing.
 	// Just for curiosity and to track if there's any measureable performance difference.
 	f2 := func(na ipld.NodeAssembler, a string, b string, c string, d []string) (err error) {
@@ -79,7 +84,7 @@ func BenchmarkQuipWithoutScalarFuncs(b *testing.B) {
 	var err error
 	for i := 0; i < b.N; i++ {
 		n = quip.BuildList(&err, basicnode.Prototype.Any, -1, func(la ipld.ListAssembler) {
-			f2(la.AssembleValue(),
+			f2(la.AssembleValue(), // TODO: forgot to check error?
 				"/",
 				"overlay",
 				"none",
@@ -97,7 +102,44 @@ func BenchmarkQuipWithoutScalarFuncs(b *testing.B) {
 	}
 }
 
+func BenchmarkQp(b *testing.B) {
+	b.ReportAllocs()
+
+	f2 := func(na ipld.NodeAssembler, a string, b string, c string, d []string) {
+		qp.Map(4, func(ma ipld.MapAssembler) {
+			qp.MapEntry(ma, "destination", qp.String(a))
+			qp.MapEntry(ma, "type", qp.String(b))
+			qp.MapEntry(ma, "source", qp.String(c))
+			qp.MapEntry(ma, "options", qp.List(int64(len(d)), func(la ipld.ListAssembler) {
+				for _, s := range d {
+					qp.ListEntry(la, qp.String(s))
+				}
+			}))
+		})(na)
+	}
+	for i := 0; i < b.N; i++ {
+		n, err := qp.BuildList(basicnode.Prototype.Any, -1, func(la ipld.ListAssembler) {
+			f2(la.AssembleValue(), // TODO: forgot to check error?
+				"/",
+				"overlay",
+				"none",
+				[]string{
+					"lowerdir=" + "/",
+					"upperdir=" + "/tmp/overlay-root/upper",
+					"workdir=" + "/tmp/overlay-root/work",
+				},
+			)
+		})
+		if err != nil {
+			b.Fatal(err)
+		}
+		_ = n
+	}
+}
+
 func BenchmarkUnmarshal(b *testing.B) {
+	b.ReportAllocs()
+
 	var n ipld.Node
 	var err error
 	serial := `[{
@@ -124,6 +166,8 @@ func BenchmarkUnmarshal(b *testing.B) {
 }
 
 func BenchmarkFluent(b *testing.B) {
+	b.ReportAllocs()
+
 	var n ipld.Node
 	var err error
 	for i := 0; i < b.N; i++ {
@@ -147,6 +191,8 @@ func BenchmarkFluent(b *testing.B) {
 }
 
 func BenchmarkReflect(b *testing.B) {
+	b.ReportAllocs()
+
 	var n ipld.Node
 	var err error
 	val := []interface{}{
@@ -171,6 +217,8 @@ func BenchmarkReflect(b *testing.B) {
 }
 
 func BenchmarkReflectIncludingInitialization(b *testing.B) {
+	b.ReportAllocs()
+
 	var n ipld.Node
 	var err error
 	for i := 0; i < b.N; i++ {
@@ -194,6 +242,8 @@ func BenchmarkReflectIncludingInitialization(b *testing.B) {
 }
 
 func BenchmarkAgonizinglyBare(b *testing.B) {
+	b.ReportAllocs()
+
 	var n ipld.Node
 	var err error
 	for i := 0; i < b.N; i++ {
