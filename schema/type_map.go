@@ -1,31 +1,30 @@
-package compiler
+package schema
 
 import (
 	"github.com/ipld/go-ipld-prime"
-	"github.com/ipld/go-ipld-prime/schema"
 )
 
 type TypeMap struct {
 	ts            *TypeSystem
-	name          schema.TypeName
-	keyTypeRef    schema.TypeName // is a TypeName and not a TypeReference because it can't be an anon.
-	valueTypeRef  schema.TypeReference
+	name          TypeName
+	keyTypeRef    TypeName // is a TypeName and not a TypeReference because it can't be an anon.
+	valueTypeRef  TypeReference
 	valueNullable bool
 }
 
-// -- schema.Type interface satisfaction -->
+// -- Type interface satisfaction -->
 
-var _ schema.Type = (*TypeMap)(nil)
+var _ Type = (*TypeMap)(nil)
 
-func (t *TypeMap) TypeSystem() schema.TypeSystem {
+func (t *TypeMap) TypeSystem() *TypeSystem {
 	return t.ts
 }
 
-func (TypeMap) TypeKind() schema.TypeKind {
-	return schema.TypeKind_Map
+func (TypeMap) TypeKind() TypeKind {
+	return TypeKind_Map
 }
 
-func (t *TypeMap) Name() schema.TypeName {
+func (t *TypeMap) Name() TypeName {
 	return t.name
 }
 
@@ -41,13 +40,13 @@ func (t TypeMap) RepresentationBehavior() ipld.Kind {
 // string in the IPLD Data Model (e.g. any string type is valid,
 // but something with enum typekind and a string representation is also valid,
 // and a struct typekind with a representation that has a string kind is also valid, etc).
-func (t *TypeMap) KeyType() schema.Type {
-	return t.ts.types[schema.TypeReference(t.keyTypeRef)]
+func (t *TypeMap) KeyType() Type {
+	return t.ts.types[TypeReference(t.keyTypeRef)]
 }
 
 // ValueType returns the Type of the map values.
-func (t *TypeMap) ValueType() schema.Type {
-	return t.ts.types[schema.TypeReference(t.valueTypeRef)]
+func (t *TypeMap) ValueType() Type {
+	return t.ts.types[TypeReference(t.valueTypeRef)]
 }
 
 // ValueIsNullable returns a bool describing if the map values are permitted to be null.

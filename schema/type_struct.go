@@ -1,13 +1,12 @@
-package compiler
+package schema
 
 import (
 	"github.com/ipld/go-ipld-prime"
-	"github.com/ipld/go-ipld-prime/schema"
 )
 
 type TypeStruct struct {
 	ts        *TypeSystem
-	name      schema.TypeName
+	name      TypeName
 	fields    []StructField
 	fieldsMap map[StructFieldName]*StructField // same content, indexed for lookup.
 	rstrat    StructRepresentation
@@ -16,7 +15,7 @@ type TypeStruct struct {
 type StructField struct {
 	parent   *TypeStruct // a pointer back up is used so we can provide the method that gives a reified type instead of just the TypeReference.
 	name     StructFieldName
-	typeRef  schema.TypeReference
+	typeRef  TypeReference
 	optional bool
 	nullable bool
 }
@@ -57,19 +56,19 @@ type StructRepresentation_Stringjoin struct {
 type StructRepresentation_Listpairs struct {
 }
 
-// -- schema.Type interface satisfaction -->
+// -- Type interface satisfaction -->
 
-var _ schema.Type = (*TypeStruct)(nil)
+var _ Type = (*TypeStruct)(nil)
 
-func (t *TypeStruct) TypeSystem() schema.TypeSystem {
+func (t *TypeStruct) TypeSystem() *TypeSystem {
 	return t.ts
 }
 
-func (TypeStruct) TypeKind() schema.TypeKind {
-	return schema.TypeKind_Struct
+func (TypeStruct) TypeKind() TypeKind {
+	return TypeKind_Struct
 }
 
-func (t *TypeStruct) Name() schema.TypeName {
+func (t *TypeStruct) Name() TypeName {
 	return t.name
 }
 
@@ -123,7 +122,7 @@ func (f *StructField) Name() StructFieldName { return f.name }
 
 // Type returns the Type of this field's value.  Note the field may
 // also be unset if it is either Optional or Nullable.
-func (f *StructField) Type() schema.Type { return f.parent.ts.types[f.typeRef] }
+func (f *StructField) Type() Type { return f.parent.ts.types[f.typeRef] }
 
 // IsOptional returns true if the field is allowed to be absent from the object.
 // If IsOptional is false, the field may be absent from the serial representation

@@ -1,14 +1,13 @@
-package compiler
+package schema
 
 import (
 	"github.com/ipld/go-ipld-prime"
-	"github.com/ipld/go-ipld-prime/schema"
 )
 
 type TypeUnion struct {
 	ts      *TypeSystem
-	name    schema.TypeName
-	members []schema.TypeName // all of these are TypeName because we ruled by fiat that unions are not allowed to use anon types (for sheer syntactic complexity boundary reasons).
+	name    TypeName
+	members []TypeName // all of these are TypeName because we ruled by fiat that unions are not allowed to use anon types (for sheer syntactic complexity boundary reasons).
 	rstrat  UnionRepresentation
 }
 
@@ -23,45 +22,45 @@ func (UnionRepresentation_BytePrefix) _UnionRepresentation()   {}
 
 type UnionRepresentation_Keyed struct {
 	ts                *TypeSystem
-	discriminantTable map[string]schema.TypeName
+	discriminantTable map[string]TypeName
 }
 type UnionRepresentation_Kinded struct {
 	ts                *TypeSystem
-	discriminantTable map[ipld.Kind]schema.TypeName
+	discriminantTable map[ipld.Kind]TypeName
 }
 type UnionRepresentation_Envelope struct {
 	ts                *TypeSystem
 	discriminantKey   string
 	contentKey        string
-	discriminantTable map[string]schema.TypeName
+	discriminantTable map[string]TypeName
 }
 type UnionRepresentation_Inline struct {
 	ts                *TypeSystem
 	discriminantKey   string
-	discriminantTable map[string]schema.TypeName
+	discriminantTable map[string]TypeName
 }
 type UnionRepresentation_StringPrefix struct {
 	ts                *TypeSystem
-	discriminantTable map[string]schema.TypeName
+	discriminantTable map[string]TypeName
 }
 type UnionRepresentation_BytePrefix struct {
 	ts                *TypeSystem
-	discriminantTable map[string]schema.TypeName
+	discriminantTable map[string]TypeName
 }
 
-// -- schema.Type interface satisfaction -->
+// -- Type interface satisfaction -->
 
-var _ schema.Type = (*TypeUnion)(nil)
+var _ Type = (*TypeUnion)(nil)
 
-func (t *TypeUnion) TypeSystem() schema.TypeSystem {
+func (t *TypeUnion) TypeSystem() *TypeSystem {
 	return t.ts
 }
 
-func (TypeUnion) TypeKind() schema.TypeKind {
-	return schema.TypeKind_Union
+func (TypeUnion) TypeKind() TypeKind {
+	return TypeKind_Union
 }
 
-func (t *TypeUnion) Name() schema.TypeName {
+func (t *TypeUnion) Name() TypeName {
 	return t.name
 }
 
@@ -92,7 +91,7 @@ func (t *TypeUnion) RepresentationStrategy() UnionRepresentation {
 
 // GetDiscriminantForType looks up the discriminant key for the given type.
 // It panics if the given type is not a member of this union.
-func (r UnionRepresentation_Keyed) GetDiscriminantForType(t schema.Type) string {
+func (r UnionRepresentation_Keyed) GetDiscriminantForType(t Type) string {
 	if t.TypeSystem() != r.ts {
 		panic("that type isn't even from the same universe!")
 	}
@@ -106,9 +105,9 @@ func (r UnionRepresentation_Keyed) GetDiscriminantForType(t schema.Type) string 
 
 // GetMember returns the type info for the member that would be indicated by the given kind,
 // or may return nil if that kind is not mapped to a member of this union.
-func (r UnionRepresentation_Kinded) GetMember(k ipld.Kind) schema.Type {
+func (r UnionRepresentation_Kinded) GetMember(k ipld.Kind) Type {
 	if tn, exists := r.discriminantTable[k]; exists {
-		return r.ts.types[schema.TypeReference(tn)]
+		return r.ts.types[TypeReference(tn)]
 	}
 	return nil
 }

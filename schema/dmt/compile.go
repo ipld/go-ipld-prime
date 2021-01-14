@@ -2,7 +2,6 @@ package schemadmt
 
 import (
 	"github.com/ipld/go-ipld-prime/schema"
-	"github.com/ipld/go-ipld-prime/schema/compiler"
 )
 
 // This code is broken up into a bunch of individual 'compile' methods,
@@ -12,7 +11,7 @@ import (
 //   creating a separate interface per result type seems just not super relevant.
 
 func (schdmt Schema) Compile() (schema.TypeSystem, error) {
-	c := &compiler.Compiler{}
+	c := &schema.Compiler{}
 	typesdmt := schdmt.FieldTypes()
 	for itr := typesdmt.Iterator(); !itr.Done(); {
 		tn, t := itr.Next()
@@ -52,11 +51,11 @@ func (schdmt Schema) Compile() (schema.TypeSystem, error) {
 			t2.FieldValueType().compile(c)
 		case TypeStruct:
 			// Flip fields info from DMT to compiler argument format.
-			fields := make([]compiler.StructField, t2.FieldFields().Length())
+			fields := make([]schema.StructField, t2.FieldFields().Length())
 			for itr := t2.FieldFields().Iterator(); !itr.Done(); {
 				fname, fdmt := itr.Next()
-				fields = append(fields, compiler.MakeStructField(
-					compiler.StructFieldName(fname.String()),
+				fields = append(fields, schema.Compiler{}.MakeStructField(
+					schema.StructFieldName(fname.String()),
 					fdmt.FieldType().TypeReference(),
 					fdmt.FieldOptional().Bool(),
 					fdmt.FieldNullable().Bool(),
@@ -65,7 +64,7 @@ func (schdmt Schema) Compile() (schema.TypeSystem, error) {
 				fdmt.FieldType().compile(c)
 			}
 			// Flip the representaton strategy DMT to compiler argument format.
-			rstrat := func() compiler.StructRepresentation {
+			rstrat := func() schema.StructRepresentation {
 				switch r := t2.FieldRepresentation().AsInterface().(type) {
 				case StructRepresentation_Map:
 					return r.compile()
@@ -84,7 +83,7 @@ func (schdmt Schema) Compile() (schema.TypeSystem, error) {
 			// Feed it all into the compiler.
 			c.TypeStruct(
 				schema.TypeName(tn.String()),
-				compiler.MakeStructFieldList(fields...),
+				schema.Compiler{}.MakeStructFieldList(fields...),
 				rstrat,
 			)
 		case TypeUnion:
@@ -96,7 +95,7 @@ func (schdmt Schema) Compile() (schema.TypeSystem, error) {
 				// n.b. no need to check for TypeDefnInline here, because schemas don't allow those in union defns.
 			}
 			// Flip the representaton strategy DMT to compiler argument format.
-			rstrat := func() compiler.UnionRepresentation {
+			rstrat := func() schema.UnionRepresentation {
 				switch r := t2.FieldRepresentation().AsInterface().(type) {
 				case UnionRepresentation_Keyed:
 					return r.compile()
@@ -117,7 +116,7 @@ func (schdmt Schema) Compile() (schema.TypeSystem, error) {
 			// Feed it all into the compiler.
 			c.TypeUnion(
 				schema.TypeName(tn.String()),
-				compiler.MakeUnionMemberList(members...),
+				schema.Compiler{}.MakeUnionMemberList(members...),
 				rstrat,
 			)
 		case TypeEnum:
@@ -133,23 +132,23 @@ func (schdmt Schema) Compile() (schema.TypeSystem, error) {
 
 // If the typeReference is TypeDefnInline, create the anonymous type and feed it to the compiler.
 // It's fine if anonymous type has been seen before; we let dedup of that be handled by the compiler.
-func (dmt TypeNameOrInlineDefn) compile(c *compiler.Compiler) {
+func (dmt TypeNameOrInlineDefn) compile(c *schema.Compiler) {
 	switch dmt.AsInterface().(type) {
 	case TypeDefnInline:
 		panic("nyi") // TODO this needs to engage in anonymous type spawning.
 	}
 }
 
-func (dmt StructRepresentation_Map) compile() compiler.StructRepresentation {
+func (dmt StructRepresentation_Map) compile() schema.StructRepresentation {
 	if !dmt.FieldFields().Exists() {
-		return compiler.MakeStructRepresentation_Map()
+		return schema.MakeStructRepresentation_Map()
 	}
-	fields := make([]compiler.StructRepresentation_Map_FieldDetailsEntry, dmt.FieldFields().Must().Length())
+	fields := make([]schema.StructRepresentation_Map_FieldDetailsEntry, dmt.FieldFields().Must().Length())
 	for itr := dmt.FieldFields().Must().Iterator(); !itr.Done(); {
 		fn, det := itr.Next()
-		fields = append(fields, compiler.StructRepresentation_Map_FieldDetailsEntry{
-			FieldName: compiler.StructFieldName(fn.String()),
-			Details: compiler.StructRepresentation_Map_FieldDetails{
+		fields = append(fields, schema.StructRepresentation_Map_FieldDetailsEntry{
+			FieldName: schema.StructFieldName(fn.String()),
+			Details: schema.StructRepresentation_Map_FieldDetails{
 				Rename: func() string {
 					if det.FieldRename().Exists() {
 						return det.FieldRename().Must().String()
@@ -160,50 +159,50 @@ func (dmt StructRepresentation_Map) compile() compiler.StructRepresentation {
 			},
 		})
 	}
-	return compiler.MakeStructRepresentation_Map(fields...)
+	return schema.MakeStructRepresentation_Map(fields...)
 }
 
-func (dmt StructRepresentation_Tuple) compile() compiler.StructRepresentation {
+func (dmt StructRepresentation_Tuple) compile() schema.StructRepresentation {
 	panic("TODO")
 }
 
-func (dmt StructRepresentation_Stringpairs) compile() compiler.StructRepresentation {
+func (dmt StructRepresentation_Stringpairs) compile() schema.StructRepresentation {
 	panic("TODO")
 }
 
-func (dmt StructRepresentation_Stringjoin) compile() compiler.StructRepresentation {
+func (dmt StructRepresentation_Stringjoin) compile() schema.StructRepresentation {
 	panic("TODO")
 }
 
-func (dmt StructRepresentation_Listpairs) compile() compiler.StructRepresentation {
+func (dmt StructRepresentation_Listpairs) compile() schema.StructRepresentation {
 	panic("TODO")
 }
 
-func (dmt UnionRepresentation_Keyed) compile() compiler.UnionRepresentation {
-	ents := make([]compiler.UnionDiscriminantStringEntry, 0, dmt.Length())
+func (dmt UnionRepresentation_Keyed) compile() schema.UnionRepresentation {
+	ents := make([]schema.UnionDiscriminantStringEntry, 0, dmt.Length())
 	for itr := dmt.Iterator(); !itr.Done(); {
 		k, v := itr.Next()
-		ents = append(ents, compiler.UnionDiscriminantStringEntry{k.String(), schema.TypeName(v.String())})
+		ents = append(ents, schema.UnionDiscriminantStringEntry{k.String(), schema.TypeName(v.String())})
 	}
-	return compiler.MakeUnionRepresentation_Keyed(compiler.MakeUnionDiscriminantStringTable(ents...))
+	return schema.Compiler{}.MakeUnionRepresentation_Keyed(schema.Compiler{}.MakeUnionDiscriminantStringTable(ents...))
 }
 
-func (dmt UnionRepresentation_Kinded) compile() compiler.UnionRepresentation {
+func (dmt UnionRepresentation_Kinded) compile() schema.UnionRepresentation {
 	panic("TODO")
 }
 
-func (dmt UnionRepresentation_Envelope) compile() compiler.UnionRepresentation {
+func (dmt UnionRepresentation_Envelope) compile() schema.UnionRepresentation {
 	panic("TODO")
 }
 
-func (dmt UnionRepresentation_Inline) compile() compiler.UnionRepresentation {
+func (dmt UnionRepresentation_Inline) compile() schema.UnionRepresentation {
 	panic("TODO")
 }
 
-func (dmt UnionRepresentation_StringPrefix) compile() compiler.UnionRepresentation {
+func (dmt UnionRepresentation_StringPrefix) compile() schema.UnionRepresentation {
 	panic("TODO")
 }
 
-func (dmt UnionRepresentation_BytePrefix) compile() compiler.UnionRepresentation {
+func (dmt UnionRepresentation_BytePrefix) compile() schema.UnionRepresentation {
 	panic("TODO")
 }

@@ -55,7 +55,7 @@ type TypeReference string
 // other kind of Type.)
 type Type interface {
 	// Returns a pointer to the TypeSystem this Type is a member of.
-	TypeSystem() TypeSystem
+	TypeSystem() *TypeSystem
 
 	// Returns the string name of the Type.  This name is unique within the
 	// universe this type is a member of, *unless* this type is Anonymous,

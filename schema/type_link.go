@@ -1,29 +1,28 @@
-package compiler
+package schema
 
 import (
 	"github.com/ipld/go-ipld-prime"
-	"github.com/ipld/go-ipld-prime/schema"
 )
 
 type TypeLink struct {
 	ts              *TypeSystem
-	name            schema.TypeName
-	expectedTypeRef schema.TypeName // can be empty
+	name            TypeName
+	expectedTypeRef TypeName // can be empty
 }
 
-// -- schema.Type interface satisfaction -->
+// -- Type interface satisfaction -->
 
-var _ schema.Type = (*TypeLink)(nil)
+var _ Type = (*TypeLink)(nil)
 
-func (t *TypeLink) TypeSystem() schema.TypeSystem {
+func (t *TypeLink) TypeSystem() *TypeSystem {
 	return t.ts
 }
 
-func (TypeLink) TypeKind() schema.TypeKind {
-	return schema.TypeKind_Link
+func (TypeLink) TypeKind() TypeKind {
+	return TypeKind_Link
 }
 
-func (t *TypeLink) Name() schema.TypeName {
+func (t *TypeLink) Name() TypeName {
 	return t.name
 }
 
@@ -41,9 +40,9 @@ func (t *TypeLink) HasExpectedType() bool {
 // ExpectedType returns the type which is expected for the node on the other side of the link.
 // Nil is returned if there is no information about the expected type
 // (which may be interpreted as "any").
-func (t *TypeLink) ExpectedType() schema.Type {
+func (t *TypeLink) ExpectedType() Type {
 	if !t.HasExpectedType() {
 		return nil
 	}
-	return t.ts.types[schema.TypeReference(t.expectedTypeRef)]
+	return t.ts.types[TypeReference(t.expectedTypeRef)]
 }

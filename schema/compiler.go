@@ -3,12 +3,10 @@
 	interfaces in the schema package which are used to describe IPLD Schemas,
 	and it also provides a Compiler type which is used to construct them.
 */
-package compiler
+package schema
 
 import (
 	"fmt"
-
-	"github.com/ipld/go-ipld-prime/schema"
 )
 
 // Compiler creates new TypeSystem instances.
@@ -40,23 +38,30 @@ import (
 // The TypeSystem returned by a successful Compile call will be immutable.
 // Many methods on the Compiler type are structured to accept data in a way that works towards this immutability.
 // In particular, many methods on Compiler take arguments which are "carrier types" for segments of immutable data,
-// which must be produced by constructor functions; for one example of this pattern, see the interplay of Compiler.TypeStruct() and MakeStructFieldList().
+// and these "carrier types" are produced by constructor functions.
+// For one example of this pattern, see the interplay of compiler.TypeStruct() and MakeStructFieldList().
+//
+// On code organization:
+// Several methods are attached to the Compiler type but don't actually take it as a parameter.
+// (All these methods have the name prefix "Make*".)
+// These methods are constructors for various intermediate values needed to feed information into the compiler.
+// These are attached to the Compiler type purely for organization of the godoc,
+// so that they don't clutter up the package with functions that users should never be expected to use.
 type Compiler struct {
 	// ... and if you're wondering why this type is exported at all?
 	//  Well, arguably, it's useful to be able to construct these values without going through the dmt.
 	//  At the end of the day, though?  Honestly, import cycle breaking.  This was not the first choice.
 	// An implementation which wraps the schemadmt package to make it fit the schema interfaces was the first choice
 	//  because it would've saved a *lot* of work (it would've removed the need for this compiler system entirely, among other things);
-	//  but that doesn't fly, because the dmt types have to implement schema.Type, and that interface refers to yet more schema.* types.
+	//  but that doesn't fly, because the dmt types have to implement Type, and that interface refers to yet more * types.
 	//  And that would make an import cycle if we tried to put types wrapping the dmt types into the schema package.  Whoops.
-	//  So, here we are.
-	//
-	// The decision to split out this Compiler type and all its other related Make* functions
-	//  from the schema package is largely cosmetic; it technically could've been placed in the schema package.
-	//  However, the result of splitting the readable and writable types into packages seemed more readable,
-	//   and gives us more elbow room in the godocs to suggest "you probably shouldn't use these directly".
-	//  Compared to the already-forced dmt package split, having the creation stuff in one package
-	//   and the read-only interfaces in another package just isn't much additional burden.
+	// A separation of this feature into its own "compiler" package was also attempted; this too did not work out well.
+	//  We want immutability in almost all of these values, and in golang, the only way to approach immutability is with unexported symbols and package boundaries;
+	//  there aren't many practical approaches which would allow separating the reading and the creating parts of handling the same structure into two different packages.
+	//  One approach is to simply define all reading via interfaces.  This works and is not wildly unusual in golang.
+	//   However, to apply this in practice in this case would result in many interfaces which are just shells around exactly one implementation;
+	//   and it would also suggest various implementations are expected, which... is simply not the case.
+	// So, here we are.
 
 	// ts gathers all the in-progress types (including anonymous ones),
 	// and is eventually the value we return (if Compile is ultimately successful).
@@ -69,55 +74,55 @@ type Compiler struct {
 
 func (c *Compiler) Init() {
 	c.ts = &TypeSystem{
-		map[schema.TypeReference]schema.Type{},
+		map[TypeReference]Type{},
 		nil,
 	}
 }
 
-func (c *Compiler) Compile() (schema.TypeSystem, error) {
+func (c *Compiler) Compile() (TypeSystem, error) {
 	panic("TODO")
 }
 
-func (c *Compiler) addType(t schema.Type) {
+func (c *Compiler) addType(t Type) {
 	c.mustHaveNameFree(t.Name())
-	c.ts.types[schema.TypeReference(t.Name())] = t
+	c.ts.types[TypeReference(t.Name())] = t
 	c.ts.list = append(c.ts.list, t)
 }
-func (c *Compiler) addAnonType(t schema.Type) {
-	c.ts.types[schema.TypeReference(t.Name())] = t // FIXME it's... probably a bug that the schema.Type.Name() method doesn't return a TypeReference.  Yeah, it definitely is.  TypeMap and TypeList should have their own name field internally be TypeReference, too, because it's true.  wonder if we should have separate methods on the schema.Type interface for this.  would probably be a usability trap to do so, though (too many user printfs would use the Name function and get blanks and be surprised).
+func (c *Compiler) addAnonType(t Type) {
+	c.ts.types[TypeReference(t.Name())] = t // FIXME it's... probably a bug that the Type.Name() method doesn't return a TypeReference.  Yeah, it definitely is.  TypeMap and TypeList should have their own name field internally be TypeReference, too, because it's true.  wonder if we should have separate methods on the Type interface for this.  would probably be a usability trap to do so, though (too many user printfs would use the Name function and get blanks and be surprised).
 }
 
-func (c *Compiler) mustHaveNameFree(name schema.TypeName) {
-	if _, exists := c.ts.types[schema.TypeReference(name)]; exists {
+func (c *Compiler) mustHaveNameFree(name TypeName) {
+	if _, exists := c.ts.types[TypeReference(name)]; exists {
 		panic(fmt.Errorf("type name %q already used", name))
 	}
 }
 
-func (c *Compiler) TypeBool(name schema.TypeName) {
+func (c *Compiler) TypeBool(name TypeName) {
 	c.addType(&TypeBool{c.ts, name})
 }
 
-func (c *Compiler) TypeString(name schema.TypeName) {
+func (c *Compiler) TypeString(name TypeName) {
 	c.addType(&TypeString{c.ts, name})
 }
 
-func (c *Compiler) TypeBytes(name schema.TypeName) {
+func (c *Compiler) TypeBytes(name TypeName) {
 	c.addType(&TypeBytes{c.ts, name})
 }
 
-func (c *Compiler) TypeInt(name schema.TypeName) {
+func (c *Compiler) TypeInt(name TypeName) {
 	c.addType(&TypeInt{c.ts, name})
 }
 
-func (c *Compiler) TypeFloat(name schema.TypeName) {
+func (c *Compiler) TypeFloat(name TypeName) {
 	c.addType(&TypeFloat{c.ts, name})
 }
 
-func (c *Compiler) TypeLink(name schema.TypeName, expectedTypeRef schema.TypeName) {
+func (c *Compiler) TypeLink(name TypeName, expectedTypeRef TypeName) {
 	c.addType(&TypeLink{c.ts, name, expectedTypeRef})
 }
 
-func (c *Compiler) TypeStruct(name schema.TypeName, fields structFieldList, rstrat StructRepresentation) {
+func (c *Compiler) TypeStruct(name TypeName, fields structFieldList, rstrat StructRepresentation) {
 	t := TypeStruct{
 		ts:        c.ts,
 		name:      name,
@@ -142,10 +147,10 @@ type structFieldList struct {
 	x []StructField
 }
 
-func MakeStructFieldList(fields ...StructField) structFieldList {
+func (Compiler) MakeStructFieldList(fields ...StructField) structFieldList {
 	return structFieldList{fields}
 }
-func MakeStructField(name StructFieldName, typ schema.TypeReference, optional, nullable bool) StructField {
+func (Compiler) MakeStructField(name StructFieldName, typ TypeReference, optional, nullable bool) StructField {
 	return StructField{nil, name, typ, optional, nullable}
 }
 
@@ -169,15 +174,15 @@ type StructRepresentation_Map_FieldDetailsEntry struct {
 	Details   StructRepresentation_Map_FieldDetails
 }
 
-func (c *Compiler) TypeMap(name schema.TypeName, keyTypeRef schema.TypeName, valueTypeRef schema.TypeReference, valueNullable bool) {
+func (c *Compiler) TypeMap(name TypeName, keyTypeRef TypeName, valueTypeRef TypeReference, valueNullable bool) {
 	c.addType(&TypeMap{c.ts, name, keyTypeRef, valueTypeRef, valueNullable})
 }
 
-func (c *Compiler) TypeList(name schema.TypeName, valueTypeRef schema.TypeReference, valueNullable bool) {
+func (c *Compiler) TypeList(name TypeName, valueTypeRef TypeReference, valueNullable bool) {
 	c.addType(&TypeList{c.ts, name, valueTypeRef, valueNullable})
 }
 
-func (c *Compiler) TypeUnion(name schema.TypeName, members unionMemberList, rstrat UnionRepresentation) {
+func (c *Compiler) TypeUnion(name TypeName, members unionMemberList, rstrat UnionRepresentation) {
 	t := TypeUnion{
 		ts:      c.ts,
 		name:    name,
@@ -193,25 +198,25 @@ func (c *Compiler) TypeUnion(name schema.TypeName, members unionMemberList, rstr
 // unionMemberList is a carrier type that just wraps a slice reference.
 // It is used so we can let code outside this package hold a value of this type without letting the slice become mutable.
 type unionMemberList struct {
-	x []schema.TypeName
+	x []TypeName
 }
 
-func MakeUnionMemberList(members ...schema.TypeName) unionMemberList {
+func (Compiler) MakeUnionMemberList(members ...TypeName) unionMemberList {
 	return unionMemberList{members}
 }
 
-func MakeUnionRepresentation_Keyed(discriminantTable unionDiscriminantStringTable) UnionRepresentation {
+func (Compiler) MakeUnionRepresentation_Keyed(discriminantTable unionDiscriminantStringTable) UnionRepresentation {
 	return &UnionRepresentation_Keyed{nil, discriminantTable.x}
 }
 
 // unionMemberList is a carrier type that just wraps a map reference.
 // It is used so we can let code outside this package hold a value of this type without letting the map become mutable.
 type unionDiscriminantStringTable struct {
-	x map[string]schema.TypeName
+	x map[string]TypeName
 }
 
-func MakeUnionDiscriminantStringTable(entries ...UnionDiscriminantStringEntry) unionDiscriminantStringTable {
-	x := make(map[string]schema.TypeName, len(entries))
+func (Compiler) MakeUnionDiscriminantStringTable(entries ...UnionDiscriminantStringEntry) unionDiscriminantStringTable {
+	x := make(map[string]TypeName, len(entries))
 	for _, y := range entries {
 		if _, exists := x[y.Discriminant]; exists {
 			panic(fmt.Errorf("discriminant string %q duplicated", y.Discriminant))
@@ -226,5 +231,5 @@ func MakeUnionDiscriminantStringTable(entries ...UnionDiscriminantStringEntry) u
 // can build their results without exposing a reference to a map in a way that would make that map mutable.
 type UnionDiscriminantStringEntry struct {
 	Discriminant string
-	Member       schema.TypeName
+	Member       TypeName
 }
