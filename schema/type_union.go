@@ -17,8 +17,8 @@ func (UnionRepresentation_Keyed) _UnionRepresentation()        {}
 func (UnionRepresentation_Kinded) _UnionRepresentation()       {}
 func (UnionRepresentation_Envelope) _UnionRepresentation()     {}
 func (UnionRepresentation_Inline) _UnionRepresentation()       {}
-func (UnionRepresentation_StringPrefix) _UnionRepresentation() {}
-func (UnionRepresentation_BytePrefix) _UnionRepresentation()   {}
+func (UnionRepresentation_Stringprefix) _UnionRepresentation() {}
+func (UnionRepresentation_Byteprefix) _UnionRepresentation()   {}
 
 type UnionRepresentation_Keyed struct {
 	ts                *TypeSystem
@@ -39,11 +39,11 @@ type UnionRepresentation_Inline struct {
 	discriminantKey   string
 	discriminantTable map[string]TypeName
 }
-type UnionRepresentation_StringPrefix struct {
+type UnionRepresentation_Stringprefix struct {
 	ts                *TypeSystem
 	discriminantTable map[string]TypeName
 }
-type UnionRepresentation_BytePrefix struct {
+type UnionRepresentation_Byteprefix struct {
 	ts                *TypeSystem
 	discriminantTable map[string]TypeName
 }
@@ -74,9 +74,9 @@ func (t *TypeUnion) RepresentationBehavior() ipld.Kind {
 		return ipld.Kind_Map
 	case UnionRepresentation_Inline:
 		return ipld.Kind_Map
-	case UnionRepresentation_StringPrefix:
+	case UnionRepresentation_Stringprefix:
 		return ipld.Kind_String
-	case UnionRepresentation_BytePrefix:
+	case UnionRepresentation_Byteprefix:
 		return ipld.Kind_Bytes
 	default:
 		panic("unreachable")

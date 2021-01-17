@@ -177,5 +177,5 @@ func EmitTypeTable(pkgName string, ts schema.TypeSystem, adjCfg *AdjunctCfg, w i
 			{{ .Name }}__Repr _{{ . | TypeSymbol }}__ReprPrototype
 			{{- end}}
 		}
-	`, w, adjCfg, ts.GetTypes())
+	`, w, adjCfg, ts.AllTypes())
 }

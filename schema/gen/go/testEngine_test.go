@@ -69,7 +69,7 @@ func genAndCompileAndTest(
 					return nil
 				}
 			}
-		`, w, adjCfg, ts.GetTypes())
+		`, w, adjCfg, ts.AllTypes())
 	})
 
 	// Build the genned code.

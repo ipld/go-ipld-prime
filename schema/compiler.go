@@ -53,15 +53,19 @@ type Compiler struct {
 	//  At the end of the day, though?  Honestly, import cycle breaking.  This was not the first choice.
 	// An implementation which wraps the schemadmt package to make it fit the schema interfaces was the first choice
 	//  because it would've saved a *lot* of work (it would've removed the need for this compiler system entirely, among other things);
-	//  but that doesn't fly, because the dmt types have to implement Type, and that interface refers to yet more * types.
+	//  but that doesn't fly, because the generated nodes have to implement schema.TypedNode, and that interface refers to other types like schema.Type
+	//   (and even if all of those are interfaces, you still can't have conformational-equality span multiple interface types in golang).
 	//  And that would make an import cycle if we tried to put types wrapping the dmt types into the schema package.  Whoops.
 	// A separation of this feature into its own "compiler" package was also attempted; this too did not work out well.
+	//  (The main reason to desire this would be clarity and grouping.  The reading interfaces and the creation stuff are for different audiences.)
 	//  We want immutability in almost all of these values, and in golang, the only way to approach immutability is with unexported symbols and package boundaries;
 	//  there aren't many practical approaches which would allow separating the reading and the creating parts of handling the same structure into two different packages.
-	//  One approach is to simply define all reading via interfaces.  This works and is not wildly unusual in golang.
+	//  One approach that does allow such a split is to simply define all reading via interfaces.  This works and is not wildly unusual in golang.
 	//   However, to apply this in practice in this case would result in many interfaces which are just shells around exactly one implementation;
 	//   and it would also suggest various implementations are expected, which... is simply not the case.
+	//   This would still overall be viable, but the result would be pushing a bit into "strange".
 	// So, here we are.
+	//  Compiler is a type in the schema package.  And we've attempted to attach *all* operations relating to creating schema data to it for purposes of grouping and clarity.
 
 	// ts gathers all the in-progress types (including anonymous ones),
 	// and is eventually the value we return (if Compile is ultimately successful).
@@ -75,6 +79,7 @@ type Compiler struct {
 func (c *Compiler) Init() {
 	c.ts = &TypeSystem{
 		map[TypeReference]Type{},
+		nil,
 		nil,
 	}
 }
@@ -97,6 +102,8 @@ func (c *Compiler) mustHaveNameFree(name TypeName) {
 		panic(fmt.Errorf("type name %q already used", name))
 	}
 }
+
+//go:generate sed -i /---/q compiler_carriers.go
 
 func (c *Compiler) TypeBool(name TypeName) {
 	c.addType(&TypeBool{c.ts, name})
@@ -141,38 +148,17 @@ func (c *Compiler) TypeStruct(name TypeName, fields structFieldList, rstrat Stru
 	}
 }
 
-// structFieldList is a carrier type that just wraps a slice reference.
-// It is used so we can let code outside this package hold a value of this type without letting the slice become mutable.
-type structFieldList struct {
-	x []StructField
-}
+//go:generate quickimmut -output=compiler_carriers.go -attach=Compiler list StructField
 
-func (Compiler) MakeStructFieldList(fields ...StructField) structFieldList {
-	return structFieldList{fields}
-}
 func (Compiler) MakeStructField(name StructFieldName, typ TypeReference, optional, nullable bool) StructField {
 	return StructField{nil, name, typ, optional, nullable}
 }
 
-func MakeStructRepresentation_Map(fieldDetails ...StructRepresentation_Map_FieldDetailsEntry) StructRepresentation {
-	rstrat := StructRepresentation_Map{nil, make(map[StructFieldName]StructRepresentation_Map_FieldDetails, len(fieldDetails))}
-	for _, fd := range fieldDetails {
-		if _, exists := rstrat.fieldDetails[fd.FieldName]; exists {
-			panic(fmt.Errorf("field name %q duplicated", fd.FieldName))
-		}
-		rstrat.fieldDetails[fd.FieldName] = fd.Details
-	}
-	return rstrat
+func (Compiler) MakeStructRepresentation_Map(fieldDetails structFieldNameStructRepresentation_Map_FieldDetailsMap) StructRepresentation {
+	return StructRepresentation_Map{nil, fieldDetails.x}
 }
 
-// StructRepresentation_Map_FieldDetailsEntry is a carrier type that associates a field name
-// with field detail information that's appropriate to a map representation strategy for a struct.
-// It is used to feed data to MakeStructRepresentation_Map in so that that method can build a map
-// without exposing a reference to it in a way that would make that map mutable.
-type StructRepresentation_Map_FieldDetailsEntry struct {
-	FieldName StructFieldName
-	Details   StructRepresentation_Map_FieldDetails
-}
+//go:generate quickimmut -output=compiler_carriers.go -attach=Compiler map StructFieldName StructRepresentation_Map_FieldDetails
 
 func (c *Compiler) TypeMap(name TypeName, keyTypeRef TypeName, valueTypeRef TypeReference, valueNullable bool) {
 	c.addType(&TypeMap{c.ts, name, keyTypeRef, valueTypeRef, valueNullable})
@@ -182,7 +168,7 @@ func (c *Compiler) TypeList(name TypeName, valueTypeRef TypeReference, valueNull
 	c.addType(&TypeList{c.ts, name, valueTypeRef, valueNullable})
 }
 
-func (c *Compiler) TypeUnion(name TypeName, members unionMemberList, rstrat UnionRepresentation) {
+func (c *Compiler) TypeUnion(name TypeName, members typeNameList, rstrat UnionRepresentation) {
 	t := TypeUnion{
 		ts:      c.ts,
 		name:    name,
@@ -191,45 +177,14 @@ func (c *Compiler) TypeUnion(name TypeName, members unionMemberList, rstrat Unio
 	}
 	c.addType(&t)
 	// note! duplicate member names *not* rejected at this moment -- that's a job for the validation phase.
-	//  this is an interesting contrast to how when buildings struct, dupe field names may be rejected proactively:
+	//  this is an interesting contrast to how when building structs, dupe field names may be rejected proactively:
 	//   the difference is, member names were a list in the dmt form too, so it's important we format a nice error rather than panic if there was invalid data there.
 }
 
-// unionMemberList is a carrier type that just wraps a slice reference.
-// It is used so we can let code outside this package hold a value of this type without letting the slice become mutable.
-type unionMemberList struct {
-	x []TypeName
-}
+//go:generate quickimmut -output=compiler_carriers.go -attach=Compiler list TypeName
 
-func (Compiler) MakeUnionMemberList(members ...TypeName) unionMemberList {
-	return unionMemberList{members}
-}
-
-func (Compiler) MakeUnionRepresentation_Keyed(discriminantTable unionDiscriminantStringTable) UnionRepresentation {
+func (Compiler) MakeUnionRepresentation_Keyed(discriminantTable stringTypeNameMap) UnionRepresentation {
 	return &UnionRepresentation_Keyed{nil, discriminantTable.x}
 }
 
-// unionMemberList is a carrier type that just wraps a map reference.
-// It is used so we can let code outside this package hold a value of this type without letting the map become mutable.
-type unionDiscriminantStringTable struct {
-	x map[string]TypeName
-}
-
-func (Compiler) MakeUnionDiscriminantStringTable(entries ...UnionDiscriminantStringEntry) unionDiscriminantStringTable {
-	x := make(map[string]TypeName, len(entries))
-	for _, y := range entries {
-		if _, exists := x[y.Discriminant]; exists {
-			panic(fmt.Errorf("discriminant string %q duplicated", y.Discriminant))
-		}
-		x[y.Discriminant] = y.Member
-	}
-	return unionDiscriminantStringTable{x}
-}
-
-// UnionRepresentation_DiscriminantStringEntry is a carrier type that associates a string with a TypeName.
-// It is used to feed data to several of the union representation constructors so that those functions
-// can build their results without exposing a reference to a map in a way that would make that map mutable.
-type UnionDiscriminantStringEntry struct {
-	Discriminant string
-	Member       TypeName
-}
+//go:generate quickimmut -output=compiler_carriers.go -attach=Compiler map string TypeName

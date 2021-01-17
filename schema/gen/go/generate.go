@@ -5,7 +5,6 @@ import (
 	"io"
 	"os"
 	"path/filepath"
-	"sort"
 
 	"github.com/ipld/go-ipld-prime/schema"
 )
@@ -29,18 +28,12 @@ func Generate(pth string, pkgName string, ts schema.TypeSystem, adjCfg *AdjunctC
 	// Local helper function for applying generation logic to each type.
 	//  We will end up doing this more than once because in this layout, more than one file contains part of the story for each type.
 	applyToEachType := func(fn func(tg TypeGenerator, w io.Writer), f io.Writer) {
-		// Sort the type names so we have a determinisic order; this affects output consistency.
-		//  Any stable order would do, but we don't presently have one, so a sort is necessary.
-		types := ts.GetTypes()
-		keys := make(sortableTypeNames, 0, len(types))
-		for tn := range types {
-			if _, exists := externs[tn.String()]; !exists {
-				keys = append(keys, tn)
+		types := ts.AllTypes()
+		for _, typ := range types {
+			if _, exists := externs[string(typ.Name())]; exists {
+				continue
 			}
-		}
-		sort.Sort(keys)
-		for _, tn := range keys {
-			switch t2 := types[tn].(type) {
+			switch t2 := typ.(type) {
 			case *schema.TypeBool:
 				fn(NewBoolReprBoolGenerator(pkgName, t2, adjCfg), f)
 			case *schema.TypeInt:

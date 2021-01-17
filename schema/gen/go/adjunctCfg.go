@@ -15,7 +15,7 @@ import (
 
 type FieldTuple struct {
 	TypeName  schema.TypeName
-	FieldName string
+	FieldName schema.StructFieldName
 }
 
 type AdjunctCfg struct {
@@ -55,14 +55,14 @@ func (cfg *AdjunctCfg) FieldSymbolLower(f schema.StructField) string {
 	if x, ok := cfg.FieldSymbolLowerOverrides[FieldTuple{f.Parent().Name(), f.Name()}]; ok {
 		return x
 	}
-	return f.Name() // presumed already lower
+	return string(f.Name()) // presumed already lower
 }
 
 func (cfg *AdjunctCfg) FieldSymbolUpper(f schema.StructField) string {
 	if x, ok := cfg.fieldSymbolUpperOverrides[FieldTuple{f.Type().Name(), f.Name()}]; ok {
 		return x
 	}
-	return strings.Title(f.Name())
+	return strings.Title(string(f.Name()))
 }
 
 // Comments returns a bool for whether comments should be included in gen output or not.

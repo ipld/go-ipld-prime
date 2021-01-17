@@ -33,15 +33,15 @@ func (t TypeLink) RepresentationBehavior() ipld.Kind {
 // -- specific to TypeLink -->
 
 // HasExpectedType returns true if the link has a hint about the type it references.
-func (t *TypeLink) HasExpectedType() bool {
+func (t *TypeLink) HasReferencedType() bool {
 	return t.expectedTypeRef != ""
 }
 
 // ExpectedType returns the type which is expected for the node on the other side of the link.
 // Nil is returned if there is no information about the expected type
 // (which may be interpreted as "any").
-func (t *TypeLink) ExpectedType() Type {
-	if !t.HasExpectedType() {
+func (t *TypeLink) ReferencedType() Type {
+	if !t.HasReferencedType() {
 		return nil
 	}
 	return t.ts.types[TypeReference(t.expectedTypeRef)]

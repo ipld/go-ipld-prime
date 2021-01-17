@@ -116,7 +116,7 @@ func (schdmt Schema) Compile() (schema.TypeSystem, error) {
 			// Feed it all into the compiler.
 			c.TypeUnion(
 				schema.TypeName(tn.String()),
-				schema.Compiler{}.MakeUnionMemberList(members...),
+				schema.Compiler{}.MakeTypeNameList(members...),
 				rstrat,
 			)
 		case TypeEnum:
@@ -141,14 +141,14 @@ func (dmt TypeNameOrInlineDefn) compile(c *schema.Compiler) {
 
 func (dmt StructRepresentation_Map) compile() schema.StructRepresentation {
 	if !dmt.FieldFields().Exists() {
-		return schema.MakeStructRepresentation_Map()
+		return schema.Compiler{}.MakeStructRepresentation_Map(schema.Compiler{}.MakeStructFieldNameStructRepresentation_Map_FieldDetailsMap())
 	}
-	fields := make([]schema.StructRepresentation_Map_FieldDetailsEntry, dmt.FieldFields().Must().Length())
+	fields := schema.Compiler{}.StartStructFieldNameStructRepresentation_Map_FieldDetailsMap(int(dmt.FieldFields().Must().Length()))
 	for itr := dmt.FieldFields().Must().Iterator(); !itr.Done(); {
 		fn, det := itr.Next()
-		fields = append(fields, schema.StructRepresentation_Map_FieldDetailsEntry{
-			FieldName: schema.StructFieldName(fn.String()),
-			Details: schema.StructRepresentation_Map_FieldDetails{
+		fields.Append(
+			schema.StructFieldName(fn.String()),
+			schema.StructRepresentation_Map_FieldDetails{
 				Rename: func() string {
 					if det.FieldRename().Exists() {
 						return det.FieldRename().Must().String()
@@ -157,9 +157,9 @@ func (dmt StructRepresentation_Map) compile() schema.StructRepresentation {
 				}(),
 				Implicit: nil, // TODO
 			},
-		})
+		)
 	}
-	return schema.MakeStructRepresentation_Map(fields...)
+	return schema.Compiler{}.MakeStructRepresentation_Map(fields.Finish())
 }
 
 func (dmt StructRepresentation_Tuple) compile() schema.StructRepresentation {
@@ -179,12 +179,12 @@ func (dmt StructRepresentation_Listpairs) compile() schema.StructRepresentation 
 }
 
 func (dmt UnionRepresentation_Keyed) compile() schema.UnionRepresentation {
-	ents := make([]schema.UnionDiscriminantStringEntry, 0, dmt.Length())
+	ents := schema.Compiler{}.StartStringTypeNameMap(int(dmt.Length()))
 	for itr := dmt.Iterator(); !itr.Done(); {
 		k, v := itr.Next()
-		ents = append(ents, schema.UnionDiscriminantStringEntry{k.String(), schema.TypeName(v.String())})
+		ents.Append(k.String(), schema.TypeName(v.String()))
 	}
-	return schema.Compiler{}.MakeUnionRepresentation_Keyed(schema.Compiler{}.MakeUnionDiscriminantStringTable(ents...))
+	return schema.Compiler{}.MakeUnionRepresentation_Keyed(ents.Finish())
 }
 
 func (dmt UnionRepresentation_Kinded) compile() schema.UnionRepresentation {
