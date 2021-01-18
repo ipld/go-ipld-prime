@@ -17,14 +17,20 @@ func buildGennedCode(t *testing.T, prefix string, pkgName string) {
 	//    so 'pkgName' in practice is almost always "main").
 	//  I dunno, friend.  I didn't write the rules.
 	if pkgName == "main" {
-		withFile("./_test/"+prefix+"/main.go", func(w io.Writer) {
+		withFile(filepath.Join(tmpGenBuildDir, prefix, "main.go"), func(w io.Writer) {
 			fmt.Fprintf(w, "package %s\n\n", pkgName)
 			fmt.Fprintf(w, "func main() {}\n")
 		})
 	}
 
 	// Invoke 'go build' -- nothing fancy.
-	cmd := exec.Command("go", "build", "./_test/"+prefix)
+	files, err := filepath.Glob(filepath.Join(tmpGenBuildDir, prefix, "*.go"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	args := []string{"build"}
+	args = append(args, files...)
+	cmd := exec.Command("go", args...)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	err := cmd.Run()

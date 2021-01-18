@@ -3,6 +3,7 @@ package gengo
 import (
 	"io"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/ipld/go-ipld-prime"
@@ -21,6 +22,8 @@ import (
 // their representation prototypes can be obtained by appending ".Repr".
 type behavioralTests func(t *testing.T, getPrototypeByName func(string) ipld.NodePrototype)
 
+var tmpGenBuildDir = filepath.Join(os.TempDir(), "go-ipld-prime-gengo")
+
 func genAndCompileAndTest(
 	t *testing.T,
 	prefix string,
@@ -30,23 +33,25 @@ func genAndCompileAndTest(
 	testsFn behavioralTests,
 ) {
 	// Make directories for the package we're about to generate.
-	//  Everything will be prefixed with "./_test".
-	// You can rm-rf the whole "./_test" dir at your leisure.
-	//  We don't by default because it's nicer to let go's builds of things cache.
-	//  If you change the names of types, though, you'll have garbage files leftover,
-	//   and that's currently a manual cleanup problem.  Sorry.
-	os.Mkdir("./_test/", 0755)
-	os.Mkdir("./_test/"+prefix, 0755)
+	// They will live in a temporary directory, usually
+	// /tmp/go-ipld-prime-gengo on Linux. It can be removed at any time.
+	// We don't by default because it's nicer to let go's builds of things cache.
+	// If you change the names of types, though, you'll have garbage files leftover,
+	// and that's currently a manual cleanup problem.  Sorry.
+	dir := filepath.Join(tmpGenBuildDir, prefix)
+	if err := os.MkdirAll(dir, 0755); err != nil {
+		t.Fatal(err)
+	}
 
 	// Generate... everything, really.
-	Generate("./_test/"+prefix, pkgName, ts, adjCfg)
+	Generate(dir, pkgName, ts, adjCfg)
 
 	// Emit an exported top level function for getting NodePrototype.
 	//  This part isn't necessary except for a special need we have with this plugin trick;
 	//   normally, user code uses the `{pkgname}.Prototype.{TypeName}` constant (so-to-speak, anyway) to get a hold of NodePrototypes...
 	//   but for plugins, we need a top-level exported symbol to grab ahold of, and we can't easily look through the `Prototype` value
 	//    without an interface... so we generate this function to fit the bill instead.
-	withFile("./_test/"+prefix+"/prototypeGetter.go", func(w io.Writer) {
+	withFile(filepath.Join(dir, "prototypeGetter.go"), func(w io.Writer) {
 		doTemplate(`
 			package `+pkgName+`
 
