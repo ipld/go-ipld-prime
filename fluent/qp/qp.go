@@ -81,16 +81,28 @@ func ListEntry(la ipld.ListAssembler, fn Assemble) {
 	fn(la.AssembleValue())
 }
 
-type stringParam string
+type nullParam struct{}
 
-func (s stringParam) Assemble(na ipld.NodeAssembler) {
-	if err := na.AssignString(string(s)); err != nil {
+func (s nullParam) Assemble(na ipld.NodeAssembler) {
+	if err := na.AssignNull(); err != nil {
 		panic(err)
 	}
 }
 
-func String(s string) Assemble {
-	return stringParam(s).Assemble
+func Null() Assemble {
+	return nullParam{}.Assemble
+}
+
+type boolParam bool
+
+func (s boolParam) Assemble(na ipld.NodeAssembler) {
+	if err := na.AssignBool(bool(s)); err != nil {
+		panic(err)
+	}
+}
+
+func Bool(b bool) Assemble {
+	return boolParam(b).Assemble
 }
 
 type intParam int64
@@ -103,4 +115,68 @@ func (i intParam) Assemble(na ipld.NodeAssembler) {
 
 func Int(i int64) Assemble {
 	return intParam(i).Assemble
+}
+
+type floatParam float64
+
+func (f floatParam) Assemble(na ipld.NodeAssembler) {
+	if err := na.AssignFloat(float64(f)); err != nil {
+		panic(err)
+	}
+}
+
+func Float(f float64) Assemble {
+	return intParam(f).Assemble
+}
+
+type stringParam string
+
+func (s stringParam) Assemble(na ipld.NodeAssembler) {
+	if err := na.AssignString(string(s)); err != nil {
+		panic(err)
+	}
+}
+
+func String(s string) Assemble {
+	return stringParam(s).Assemble
+}
+
+type bytesParam []byte
+
+func (p bytesParam) Assemble(na ipld.NodeAssembler) {
+	if err := na.AssignBytes([]byte(p)); err != nil {
+		panic(err)
+	}
+}
+
+func Bytes(p []byte) Assemble {
+	return bytesParam(p).Assemble
+}
+
+type linkParam struct {
+	x ipld.Link
+}
+
+func (l linkParam) Assemble(na ipld.NodeAssembler) {
+	if err := na.AssignLink(ipld.Link(l.x)); err != nil {
+		panic(err)
+	}
+}
+
+func Link(l ipld.Link) Assemble {
+	return linkParam{l}.Assemble
+}
+
+type nodeParam struct {
+	x ipld.Node
+}
+
+func (n nodeParam) Assemble(na ipld.NodeAssembler) {
+	if err := na.AssignNode(ipld.Node(n.x)); err != nil {
+		panic(err)
+	}
+}
+
+func Node(n ipld.Node) Assemble {
+	return nodeParam{n}.Assemble
 }
