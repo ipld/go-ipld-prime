@@ -10,7 +10,7 @@ import (
 //  and so we've just chained it all together with switch statements;
 //   creating a separate interface per result type seems just not super relevant.
 
-func (schdmt Schema) Compile() (*schema.TypeSystem, error) {
+func (schdmt Schema) Compile() (*schema.TypeSystem, []error) {
 	c := &schema.Compiler{}
 	typesdmt := schdmt.FieldTypes()
 	for itr := typesdmt.Iterator(); !itr.Done(); {

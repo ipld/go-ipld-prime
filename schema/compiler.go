@@ -66,8 +66,21 @@ func (c *Compiler) Init() {
 	}
 }
 
-func (c *Compiler) Compile() (*TypeSystem, error) {
-	panic("TODO")
+func (c *Compiler) Compile() (*TypeSystem, []error) {
+	var errs []error
+	for _, typ := range c.ts.list {
+		validate(c.ts, typ, &errs)
+	}
+	// TODO sort ts.anonTypes
+	for _, typ := range c.ts.anonTypes {
+		validate(c.ts, typ, &errs)
+	}
+	if errs != nil {
+		return nil, errs
+	}
+	result := c.ts
+	c.ts = nil // result shall now be immutable
+	return result, nil
 }
 
 func (c *Compiler) MustCompile() *TypeSystem {
