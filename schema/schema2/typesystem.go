@@ -51,81 +51,10 @@ func BuildTypeSystem(schdmt schemadmt.Schema) (*TypeSystem, []error) {
 			// - for stringprefix unions: that's sufficient (discriminant uniqueness already enforced by map).
 			// - for byteprefix unions: ... we'll come back to this later.
 
-			// Check for member type reference existence first.
-			//  Build up a spare list of those type names in the process; we'll scratch stuff back off of it in a moment.
-			members := make([]schemadmt.TypeName, 0, t2.FieldMembers().Length())
-			missingTypes := false
-			for itr := t2.FieldMembers().Iterator(); !itr.Done(); {
-				_, tndmt := itr.Next()
-				mtdmt := typesdmt.Lookup(tndmt)
-				if mtdmt == nil {
-					missingTypes = true
-					ee = append(ee, fmt.Errorf("type %s refers to missing type %s as a member", tn, tndmt))
-				}
-				members = append(members, tndmt)
-			}
-			// Skip the rest of the checks if there were any missing type references.
-			//  We'll be inspecting the value types more deeply and it's simpler to do that work while presuming everything is at least defined.
-			if missingTypes {
-				continue
-			}
-
 			// Do the per-representation-strategy checks.
 			//  Every representation strategy a check that there's a discriminant for every member (though they require slightly different setup).
 			//  Some representation strategies also include quite a few more checks.
 			switch r := t2.FieldRepresentation().AsInterface().(type) {
-			case schemadmt.UnionRepresentation_Keyed:
-				checkUnionDiscriminantInfo(tn, members, r, &ee)
-			case schemadmt.UnionRepresentation_Kinded:
-				checkUnionDiscriminantInfo(tn, members, r, &ee)
-				for itr := r.Iterator(); !itr.Done(); {
-					k, v := itr.Next()
-					// In the switch ahead, we briefly create the reified type for each member, just so we can use that to ask it its representation.
-					//  We then let that data fall right back into the abyss.  The compiler should inline and optimize all this reasonably well.
-					//  We create these temporary things rather than looking in the typesystem map we're accumulating because it makes the process work correctly regardless of order.
-					//  For some of the kinds, this is fairly overkill (we know that the representation behavior of a bool type is bool because it doesn't have any other representation strategies!)
-					//   but I've ground the whole thing out in a consistent way anyway.
-					var mkind ipld.Kind
-					switch t3 := typesdmt.Lookup(v).AsInterface().(type) {
-					case schemadmt.TypeBool:
-						mkind = TypeBool{dmt: t3}.RepresentationBehavior()
-					case schemadmt.TypeString:
-						mkind = TypeString{dmt: t3}.RepresentationBehavior()
-					case schemadmt.TypeBytes:
-						mkind = TypeBytes{dmt: t3}.RepresentationBehavior()
-					case schemadmt.TypeInt:
-						mkind = TypeInt{dmt: t3}.RepresentationBehavior()
-					case schemadmt.TypeFloat:
-						mkind = TypeFloat{dmt: t3}.RepresentationBehavior()
-					case schemadmt.TypeMap:
-						mkind = TypeMap{dmt: t3}.RepresentationBehavior()
-					case schemadmt.TypeList:
-						mkind = TypeList{dmt: t3}.RepresentationBehavior()
-					case schemadmt.TypeLink:
-						mkind = TypeLink{dmt: t3}.RepresentationBehavior()
-					case schemadmt.TypeUnion:
-						mkind = TypeUnion{dmt: t3}.RepresentationBehavior() // this actually flies!  it will yield Kind_Invalid for a kinded union, though, which we'll treat with a special error message.
-					case schemadmt.TypeStruct:
-						mkind = TypeStruct{dmt: t3}.RepresentationBehavior()
-					case schemadmt.TypeEnum:
-						mkind = TypeEnum{dmt: t3}.RepresentationBehavior()
-					case schemadmt.TypeCopy:
-						panic("no support for 'copy' types.  I might want to reneg on whether these are even part of the schema dmt.")
-					default:
-						panic("unreachable")
-					}
-					// TODO RepresentationKind is supposed to be an enum, but is not presently generated as such.  This block's use of `k` as a string should turn into something cleaner when enum gen is implemented and used for RepresentationKind.
-					if mkind == ipld.Kind_Invalid {
-						ee = append(ee, fmt.Errorf("kinded union %s declares a %s kind should be received as type %s, which is not sensible because that type is also a kinded union", tn, k, v))
-					} else if k.String() != mkind.String() {
-						ee = append(ee, fmt.Errorf("kinded union %s declares a %s kind should be received as type %s, but that type's representation kind is %s", tn, k, v, mkind))
-					}
-				}
-			case schemadmt.UnionRepresentation_Envelope:
-				checkUnionDiscriminantInfo(tn, members, r.FieldDiscriminantTable(), &ee)
-				if r.FieldContentKey().String() == r.FieldDiscriminantKey().String() {
-					ee = append(ee, fmt.Errorf("union %s has representation strategy envelope with conflicting content key and discriminant key", tn))
-				}
 			case schemadmt.UnionRepresentation_Inline:
 				checkUnionDiscriminantInfo(tn, members, r.FieldDiscriminantTable(), &ee)
 				for itr := r.FieldDiscriminantTable().Iterator(); !itr.Done(); {
@@ -196,10 +125,6 @@ func BuildTypeSystem(schdmt schemadmt.Schema) (*TypeSystem, []error) {
 						ee = append(ee, fmt.Errorf("union %s has representation strategy inline, which requires all members have map representations, so %s (which has representation kind %s) is not a valid member", tn, v, mkind))
 					}
 				}
-			case schemadmt.UnionRepresentation_StringPrefix:
-				checkUnionDiscriminantInfo(tn, members, r, &ee)
-			case schemadmt.UnionRepresentation_BytePrefix:
-				panic("nyi") // TODO byteprefix needs spec work.
 			}
 		case schemadmt.TypeEnum:
 			// Verify that:
@@ -248,37 +173,4 @@ func BuildTypeSystem(schdmt schemadmt.Schema) (*TypeSystem, []error) {
 		return ts, nil
 	}
 	return nil, ee
-}
-
-// checkUnionDiscriminantInfo verifies that every member in the list
-// appears exactly once as a value in the discriminants map, and nothing else appears in the map.
-// Errors are appended to ee.
-// The members slice is destructively mutated.
-// The typename parameter is purely for the use in error messages.
-//
-// The discriminantsMap is an untyped Node because it turns out convenient to do that way:
-// we happen to know all the different union representations have a map *somewhere* for this,
-// but its position and key types vary.  Untyped access lets us write more reusable code in this case.
-func checkUnionDiscriminantInfo(tn TypeName, members []schemadmt.TypeName, discriminantsMap ipld.Node, ee *[]error) {
-	for itr := discriminantsMap.MapIterator(); !itr.Done(); {
-		_, v, _ := itr.Next()
-		found := false
-		for i, v2 := range members {
-			if v == v2 {
-				if found {
-					*ee = append(*ee, fmt.Errorf("type %s representation details has more than one discriminant pointing to member type %s", tn, v2))
-				}
-				found = true
-				members[i] = nil
-			}
-		}
-		if !found {
-			*ee = append(*ee, fmt.Errorf("type %s representation details include a discriminant refering to a non-member type %s", tn, v))
-		}
-	}
-	for _, m := range members {
-		if m != nil {
-			*ee = append(*ee, fmt.Errorf("type %s representation details is missing discriminant info for member type %s", tn, m))
-		}
-	}
 }

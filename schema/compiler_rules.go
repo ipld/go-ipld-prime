@@ -1,6 +1,10 @@
 package schema
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/ipld/go-ipld-prime"
+)
 
 type rule struct {
 	// text is the name of the rule and the start of the error message body if the rule is flunked.
@@ -67,6 +71,9 @@ func validate(ts *TypeSystem, typ Type, errs *[]error) {
 //
 // The short circuiting logic between subsequent rules means that
 // later rules are allowed to make presumptions of things checked by earlier rules.
+//
+// The table-like design here hopefully will make the semantics defined within
+// easier to port to other implementations in other languages.
 var rules = map[TypeKind][]rule{
 	TypeKind_Map: []rule{
 		{"map declaration's key type must be defined",
@@ -154,16 +161,66 @@ var rules = map[TypeKind][]rule{
 				return nil
 			},
 		},
-		// TODO continue with more union rules... but... they're starting to get conditional on the passage of prior rules.
-		//   Unsure how much effort it's worth to represent this in detail.
-		//     - Should we have flunk of one rule cause subsequent rules to be skipped on that type?
-		//     - Should we just re-do all the prerequisite checks, but return nil if those fail (since another rule should've already reported those)?
-		//     - Should we re-do all the prerequisite checks, and return a special 'inapplicable' error code if those fail?
-		//     - Should we build a terribly complicated prerequisite tracking system?
-		//       - (Okay, maybe it's not that complicated; a tree would probably suffice?)
-		//   My original aim with this design was to get as close as possible to something table-driven,
-		//    in the hope this would make it easier to port the semantics to other languages.
-		//     As this code gets fancier, that goal fades fast, so a solution that's KISS is probably preferrable.
+		{"union's representation must specify exactly one discriminant for each member",
+			alwaysApplies,
+			func(ts *TypeSystem, t Type) (errs []error) {
+				t2 := t.(*TypeUnion)
+				// All of these are very similar, but they store the info in technically distinct places, so we have to destructure to get at it.
+				switch r := t2.rstrat.(type) {
+				case UnionRepresentation_Keyed:
+					checkUnionDiscriminantInfo(t2.members, r.discriminantTable, &errs)
+				case UnionRepresentation_Kinded:
+					checkUnionDiscriminantInfo2(t2.members, r.discriminantTable, &errs)
+				case UnionRepresentation_Envelope:
+					checkUnionDiscriminantInfo(t2.members, r.discriminantTable, &errs)
+				case UnionRepresentation_Inline:
+					checkUnionDiscriminantInfo(t2.members, r.discriminantTable, &errs)
+				case UnionRepresentation_Stringprefix:
+					checkUnionDiscriminantInfo(t2.members, r.discriminantTable, &errs)
+				case UnionRepresentation_Byteprefix:
+					checkUnionDiscriminantInfo(t2.members, r.discriminantTable, &errs)
+				}
+				return nil
+			},
+		},
+		{"kinded union's discriminants must match the member's kinds",
+			func(t Type) bool { _, ok := t.(*TypeUnion).rstrat.(UnionRepresentation_Kinded); return ok },
+			func(ts *TypeSystem, t Type) (errs []error) {
+				r := t.(*TypeUnion).rstrat.(UnionRepresentation_Kinded)
+				for k, v := range r.discriminantTable {
+					vrb := ts.types[TypeReference(v)].RepresentationBehavior()
+					if vrb == ipld.Kind_Invalid { // this indicates a kinded union (the only thing that can't statically state its representation behavior), which deserves a special error message.
+						errs = append(errs, fmt.Errorf("kinded unions cannot be nested and member type %s is also a kinded union", v))
+					} else if vrb != k {
+						errs = append(errs, fmt.Errorf("kind %s is declared to be received as type %s, but that type's representation kind is %s", k, v, vrb))
+					}
+				}
+				return
+			},
+		},
+		{"envelope union's magic keys must be distinct",
+			func(t Type) bool { _, ok := t.(*TypeUnion).rstrat.(UnionRepresentation_Envelope); return ok },
+			func(ts *TypeSystem, t Type) []error {
+				r := t.(*TypeUnion).rstrat.(UnionRepresentation_Envelope)
+				if r.discriminantKey == r.contentKey {
+					return []error{fmt.Errorf("content key and discriminant key are the same")}
+				}
+				return nil
+			},
+		},
+		{"inline union's members must all have map representations and not collide with the union's discriminant key",
+			func(t Type) bool { _, ok := t.(*TypeUnion).rstrat.(UnionRepresentation_Inline); return ok },
+			func(ts *TypeSystem, t Type) (errs []error) {
+				r := t.(*TypeUnion).rstrat.(UnionRepresentation_Inline)
+				for k, v := range r.discriminantTable {
+					// TODO: port the UnionRepresentation_Inline rules
+				}
+				return
+			},
+		},
+		// FUTURE: UnionRepresentation_Stringprefix will probably have additional rules too
+		// FUTURE: UnionRepresentation_Bytesprefix will probably have additional rules too
+		// TODO: port the enum rules
 	},
 }
 
@@ -245,5 +302,53 @@ func hasStringRepresentation(t Type) bool {
 		}
 	default:
 		panic("unreachable")
+	}
+}
+
+func checkUnionDiscriminantInfo(members []TypeName, discriminantsMap map[string]TypeName, ee *[]error) {
+	covered := make([]bool, len(members))
+	for _, v := range discriminantsMap {
+		found := false
+		for i, v2 := range members {
+			if v == v2 {
+				if found {
+					*ee = append(*ee, fmt.Errorf("more than one discriminant pointing to member type %s", v2))
+				}
+				found = true
+				covered[i] = true
+			}
+		}
+		if !found {
+			*ee = append(*ee, fmt.Errorf("discriminant refers to a non-member type %s", v))
+		}
+	}
+	for i, m := range members {
+		if !covered[i] {
+			*ee = append(*ee, fmt.Errorf("missing discriminant info for member type %s", m))
+		}
+	}
+}
+
+func checkUnionDiscriminantInfo2(members []TypeName, discriminantsMap map[ipld.Kind]TypeName, ee *[]error) {
+	covered := make([]bool, len(members))
+	for _, v := range discriminantsMap {
+		found := false
+		for i, v2 := range members {
+			if v == v2 {
+				if found {
+					*ee = append(*ee, fmt.Errorf("more than one discriminant pointing to member type %s", v2))
+				}
+				found = true
+				covered[i] = true
+			}
+		}
+		if !found {
+			*ee = append(*ee, fmt.Errorf("discriminant refers to a non-member type %s", v))
+		}
+	}
+	for i, m := range members {
+		if !covered[i] {
+			*ee = append(*ee, fmt.Errorf("missing discriminant info for member type %s", m))
+		}
 	}
 }

@@ -106,6 +106,12 @@ just slightly flipped about.  (See `schema.TypeStruct` and `dmt.TypeStruct`, for
 Re-building the immutability guarantees that we get for free from the codegen'd `dmt.*` types also
 took a rather staggering amount of highly redundant code.
 
+Since we were unable to used the codegen'd types, and we use golang native maps instead in some places,
+this tends to make our logic less deterministic in its evaluation order.
+We've mostly ignored this, but you may notice it in situations such as validation of a schema
+that has more than one thing wrong within the same union representation specification, for example,
+since those happen to use golang maps in the (mostly redundant) golang structures.
+
 Our validation logic ended up written against the `schema.Type*` types rather than the `dmt.*` types.
 It was necessary to do it this way because now we have the possibility of compiling schema types without going through `dmt.*` at all.
 Since there's still a path from the `dmt.*` types to here, we didn't _lose_ any important features
@@ -118,6 +124,9 @@ And we can't *get* `dmt.*` information trivially from `schema.Type*` values.
 Maybe this isn't all that important.  But it seems unfortunate.
 
 But for all those drawbacks: it works.
+
+(This whole section has a double duty: it also serves as a nice list
+of cool features you get for free when using our codegen.)
 
 ### two packages, compiler is with dmt
 
