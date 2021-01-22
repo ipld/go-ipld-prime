@@ -18,12 +18,19 @@ type rule struct {
 	// therefore it's often necessary to access the raw fields directly.
 	predicate func(Type) bool
 
-	// rule is the actual rule body.  If it's a non-nil return, the rule is flunked.
-	// The error is for freetext detail formatting; it will be wrapped by another error
-	// which is based on the rule's Text.
+	// rule is the actual rule body.  If it encounters errors, it appends them to the list.
+	//
+	// The errors may do freetext details; the rule evaluator will wrap them with
+	// another error which is based on the rule's Text.
 	//
 	// Same caveats about the Type's validity apply as they did for the predicate func.
-	rule func(*TypeSystem, Type) error
+	//
+	// (Design note: considered taking an error slice as a param and accumulating it,
+	// but this would've required pushing more error formatting down,
+	// and while speed is nice, there's no alloc costs if you don't have errors,
+	// so the speed really isn't a concern (e.g. when we're initializing a type system
+	// that provides the selfdescription for codegen'd types, there's no error allocs).)
+	rule func(*TypeSystem, Type) []error
 }
 
 type ErrInvalidTypeSpec struct {
@@ -32,40 +39,62 @@ type ErrInvalidTypeSpec struct {
 	Detail error
 }
 
+func (e ErrInvalidTypeSpec) Error() string {
+	return fmt.Sprintf("type %s is invalid: %s: %s", e.Type, e.Rule, e.Detail)
+}
+
+func validate(ts *TypeSystem, typ Type, errs *[]error) {
+	rules := rules[typ.TypeKind()]
+	for _, rule := range rules {
+		if rule.predicate(typ) {
+			newErrors := rule.rule(ts, typ)
+			if len(newErrors) > 0 {
+				for _, err := range newErrors {
+					*errs = append(*errs, ErrInvalidTypeSpec{rule.text, TypeReference(typ.Name()), err})
+				}
+				break
+			}
+		}
+	}
+}
+
 // To validate a type:
-//  - first get the slice fo rules that apply to its typekind
+//  - first get the slice of rules that apply to its typekind
 //  - then, for each rule:
 //    - check if it applies (by virtue of the predicate); skip if not
-//    - evaluate the rule and check if it errors
-//    - errors accumulate and do not cause halts
+//    - evaluate the rule; doing so may accumulate errors
+//    - if any errors accumulated, skip all further rules for this type; it already flunked.
+//
+// The short circuiting logic between subsequent rules means that
+// later rules are allowed to make presumptions of things checked by earlier rules.
 var rules = map[TypeKind][]rule{
 	TypeKind_Map: []rule{
 		{"map declaration's key type must be defined",
 			alwaysApplies,
-			func(ts *TypeSystem, t Type) error {
+			func(ts *TypeSystem, t Type) []error {
 				tRef := TypeReference(t.(*TypeMap).keyTypeRef)
 				if _, exists := ts.types[tRef]; !exists {
-					return fmt.Errorf("missing type %q", tRef)
+					return []error{fmt.Errorf("missing type %q", tRef)}
 				}
 				return nil
 			},
 		},
 		{"map declaration's key type must be stringable",
 			alwaysApplies,
-			func(ts *TypeSystem, t Type) error {
+			func(ts *TypeSystem, t Type) []error {
 				tRef := TypeReference(t.(*TypeMap).keyTypeRef)
 				if hasStringRepresentation(ts.types[tRef]) {
-					return fmt.Errorf("type %q is not a string typekind nor representation with string kind", tRef)
+					return []error{fmt.Errorf("type %q is not a string typekind nor representation with string kind", tRef)}
 				}
 				return nil
 			},
 		},
 		{"map declaration's value type must be defined",
 			alwaysApplies,
-			func(ts *TypeSystem, t Type) error {
+			func(ts *TypeSystem, t Type) []error {
 				tRef := TypeReference(t.(*TypeMap).valueTypeRef)
 				if _, exists := ts.types[tRef]; !exists {
-					return fmt.Errorf("missing type %q", tRef)
+					return []error{fmt.Errorf("missing type %q", tRef)}
 				}
 				return nil
 			},
@@ -74,10 +103,10 @@ var rules = map[TypeKind][]rule{
 	TypeKind_List: []rule{
 		{"list declaration's value type must be defined",
 			alwaysApplies,
-			func(ts *TypeSystem, t Type) error {
+			func(ts *TypeSystem, t Type) []error {
 				tRef := TypeReference(t.(*TypeList).valueTypeRef)
 				if _, exists := ts.types[tRef]; !exists {
-					return fmt.Errorf("missing type %q", tRef)
+					return []error{fmt.Errorf("missing type %q", tRef)}
 				}
 				return nil
 			},
@@ -86,10 +115,10 @@ var rules = map[TypeKind][]rule{
 	TypeKind_Link: []rule{
 		{"link declaration's expected target type must be defined",
 			alwaysApplies,
-			func(ts *TypeSystem, t Type) error {
+			func(ts *TypeSystem, t Type) []error {
 				tRef := TypeReference(t.(*TypeLink).expectedTypeRef)
 				if _, exists := ts.types[tRef]; !exists {
-					return fmt.Errorf("missing type %q", tRef)
+					return []error{fmt.Errorf("missing type %q", tRef)}
 				}
 				return nil
 			},
@@ -98,25 +127,25 @@ var rules = map[TypeKind][]rule{
 	TypeKind_Struct: []rule{
 		{"struct declaration's field type must be defined",
 			alwaysApplies,
-			func(ts *TypeSystem, t Type) error {
+			func(ts *TypeSystem, t Type) (errs []error) {
 				for _, field := range t.(*TypeStruct).fields {
 					tRef := TypeReference(field.typeRef)
 					if _, exists := ts.types[tRef]; !exists {
-						return fmt.Errorf("missing type %q", tRef) // TODO: want this to return multiple errors.  time for another `*[]error` accumulator?  sigh.
+						errs = append(errs, fmt.Errorf("missing type %q", tRef))
 					}
 				}
-				return nil
+				return
 			},
 		},
 	},
 	TypeKind_Union: []rule{
 		{"union declaration's potential members must all be defined",
 			alwaysApplies,
-			func(ts *TypeSystem, t Type) error {
+			func(ts *TypeSystem, t Type) (errs []error) {
 				for _, member := range t.(*TypeUnion).members {
 					tRef := TypeReference(member)
 					if _, exists := ts.types[tRef]; !exists {
-						return fmt.Errorf("missing type %q", tRef) // TODO: want this to return multiple errors.
+						errs = append(errs, fmt.Errorf("missing type %q", tRef))
 					}
 				}
 				return nil
