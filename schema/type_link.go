@@ -6,8 +6,9 @@ import (
 
 type TypeLink struct {
 	ts              *TypeSystem
-	name            TypeName
-	expectedTypeRef TypeName // can be empty
+	name            TypeName      // may be empty if this is an anon type
+	ref             TypeReference // may be dup of name, if this is a named type
+	expectedTypeRef TypeName      // can be empty
 }
 
 // -- Type interface satisfaction -->
@@ -24,6 +25,10 @@ func (TypeLink) TypeKind() TypeKind {
 
 func (t *TypeLink) Name() TypeName {
 	return t.name
+}
+
+func (t *TypeLink) Reference() TypeReference {
+	return t.ref
 }
 
 func (t TypeLink) RepresentationBehavior() ipld.Kind {

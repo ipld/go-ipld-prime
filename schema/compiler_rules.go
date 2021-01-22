@@ -50,7 +50,7 @@ func validate(ts *TypeSystem, typ Type, errs *[]error) {
 			newErrors := rule.rule(ts, typ)
 			if len(newErrors) > 0 {
 				for _, err := range newErrors {
-					*errs = append(*errs, ErrInvalidTypeSpec{rule.text, TypeReference(typ.Name()), err})
+					*errs = append(*errs, ErrInvalidTypeSpec{rule.text, typ.Reference(), err})
 				}
 				break
 			}
@@ -92,7 +92,7 @@ var rules = map[TypeKind][]rule{
 		{"map declaration's value type must be defined",
 			alwaysApplies,
 			func(ts *TypeSystem, t Type) []error {
-				tRef := TypeReference(t.(*TypeMap).valueTypeRef)
+				tRef := t.(*TypeMap).valueTypeRef
 				if _, exists := ts.types[tRef]; !exists {
 					return []error{fmt.Errorf("missing type %q", tRef)}
 				}
@@ -104,7 +104,7 @@ var rules = map[TypeKind][]rule{
 		{"list declaration's value type must be defined",
 			alwaysApplies,
 			func(ts *TypeSystem, t Type) []error {
-				tRef := TypeReference(t.(*TypeList).valueTypeRef)
+				tRef := t.(*TypeList).valueTypeRef
 				if _, exists := ts.types[tRef]; !exists {
 					return []error{fmt.Errorf("missing type %q", tRef)}
 				}
@@ -117,6 +117,9 @@ var rules = map[TypeKind][]rule{
 			alwaysApplies,
 			func(ts *TypeSystem, t Type) []error {
 				tRef := TypeReference(t.(*TypeLink).expectedTypeRef)
+				if tRef == "" {
+					return nil
+				}
 				if _, exists := ts.types[tRef]; !exists {
 					return []error{fmt.Errorf("missing type %q", tRef)}
 				}
@@ -129,7 +132,7 @@ var rules = map[TypeKind][]rule{
 			alwaysApplies,
 			func(ts *TypeSystem, t Type) (errs []error) {
 				for _, field := range t.(*TypeStruct).fields {
-					tRef := TypeReference(field.typeRef)
+					tRef := field.typeRef
 					if _, exists := ts.types[tRef]; !exists {
 						errs = append(errs, fmt.Errorf("missing type %q", tRef))
 					}

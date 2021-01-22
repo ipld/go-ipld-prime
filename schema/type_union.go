@@ -68,6 +68,10 @@ func (t *TypeUnion) Name() TypeName {
 	return t.name
 }
 
+func (t *TypeUnion) Reference() TypeReference {
+	return TypeReference(t.name)
+}
+
 func (t *TypeUnion) RepresentationBehavior() ipld.Kind {
 	switch t.rstrat.(type) {
 	case UnionRepresentation_Keyed:

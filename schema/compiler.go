@@ -80,11 +80,12 @@ func (c *Compiler) MustCompile() *TypeSystem {
 
 func (c *Compiler) addType(t Type) {
 	c.mustHaveNameFree(t.Name())
-	c.ts.types[TypeReference(t.Name())] = t
+	c.ts.types[t.Reference()] = t
 	c.ts.list = append(c.ts.list, t)
 }
 func (c *Compiler) addAnonType(t Type) {
-	c.ts.types[TypeReference(t.Name())] = t // FIXME it's... probably a bug that the Type.Name() method doesn't return a TypeReference.  Yeah, it definitely is.  TypeMap and TypeList should have their own name field internally be TypeReference, too, because it's true.  wonder if we should have separate methods on the Type interface for this.  would probably be a usability trap to do so, though (too many user printfs would use the Name function and get blanks and be surprised).
+	c.ts.types[t.Reference()] = t
+	c.ts.anonTypes = append(c.ts.anonTypes, t)
 }
 
 func (c *Compiler) mustHaveNameFree(name TypeName) {
@@ -116,7 +117,7 @@ func (c *Compiler) TypeFloat(name TypeName) {
 }
 
 func (c *Compiler) TypeLink(name TypeName, expectedTypeRef TypeName) {
-	c.addType(&TypeLink{c.ts, name, expectedTypeRef})
+	c.addType(&TypeLink{c.ts, name, TypeReference(name), expectedTypeRef})
 }
 
 func (c *Compiler) TypeStruct(name TypeName, fields structFieldList, rstrat StructRepresentation) {
@@ -151,7 +152,7 @@ func (Compiler) MakeStructRepresentation_Map(fieldDetails structFieldNameStructR
 //go:generate quickimmut -output=compiler_carriers.go -attach=Compiler map StructFieldName StructRepresentation_Map_FieldDetails
 
 func (c *Compiler) TypeMap(name TypeName, keyTypeRef TypeName, valueTypeRef TypeReference, valueNullable bool, rstrat MapRepresentation) {
-	c.addType(&TypeMap{c.ts, name, keyTypeRef, valueTypeRef, valueNullable, rstrat})
+	c.addType(&TypeMap{c.ts, name, TypeReference(name), keyTypeRef, valueTypeRef, valueNullable, rstrat})
 }
 
 func (Compiler) MakeMapRepresentation_Stringpairs(innerDelim string, entryDelim string) MapRepresentation {
@@ -159,7 +160,7 @@ func (Compiler) MakeMapRepresentation_Stringpairs(innerDelim string, entryDelim 
 }
 
 func (c *Compiler) TypeList(name TypeName, valueTypeRef TypeReference, valueNullable bool) {
-	c.addType(&TypeList{c.ts, name, valueTypeRef, valueNullable})
+	c.addType(&TypeList{c.ts, name, TypeReference(name), valueTypeRef, valueNullable})
 }
 
 func (c *Compiler) TypeUnion(name TypeName, members typeNameList, rstrat UnionRepresentation) {

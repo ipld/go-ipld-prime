@@ -25,6 +25,10 @@ func (t *TypeBytes) Name() TypeName {
 	return t.name
 }
 
+func (t *TypeBytes) Reference() TypeReference {
+	return TypeReference(t.name)
+}
+
 func (t TypeBytes) RepresentationBehavior() ipld.Kind {
 	return ipld.Kind_Bytes
 }

@@ -6,8 +6,9 @@ import (
 
 type TypeMap struct {
 	ts            *TypeSystem
-	name          TypeName
-	keyTypeRef    TypeName // is a TypeName and not a TypeReference because it can't be an anon.
+	name          TypeName      // may be empty if this is an anon type
+	ref           TypeReference // may be dup of name, if this is a named type
+	keyTypeRef    TypeName      // is a TypeName and not a TypeReference because it can't be an anon.
 	valueTypeRef  TypeReference
 	valueNullable bool
 	rstrat        MapRepresentation
@@ -46,6 +47,10 @@ func (t *TypeMap) Name() TypeName {
 	return t.name
 }
 
+func (t *TypeMap) Reference() TypeReference {
+	return t.ref
+}
+
 func (t TypeMap) RepresentationBehavior() ipld.Kind {
 	return ipld.Kind_Map
 }
@@ -64,7 +69,7 @@ func (t *TypeMap) KeyType() Type {
 
 // ValueType returns the Type of the map values.
 func (t *TypeMap) ValueType() Type {
-	return t.ts.types[TypeReference(t.valueTypeRef)]
+	return t.ts.types[t.valueTypeRef]
 }
 
 // ValueIsNullable returns a bool describing if the map values are permitted to be null.

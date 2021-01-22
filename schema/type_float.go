@@ -25,6 +25,10 @@ func (t *TypeFloat) Name() TypeName {
 	return t.name
 }
 
+func (t *TypeFloat) Reference() TypeReference {
+	return TypeReference(t.name)
+}
+
 func (t TypeFloat) RepresentationBehavior() ipld.Kind {
 	return ipld.Kind_Float
 }

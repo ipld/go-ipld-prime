@@ -25,6 +25,10 @@ func (t *TypeString) Name() TypeName {
 	return t.name
 }
 
+func (t *TypeString) Reference() TypeReference {
+	return TypeReference(t.name)
+}
+
 func (t TypeString) RepresentationBehavior() ipld.Kind {
 	return ipld.Kind_String
 }

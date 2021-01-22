@@ -57,11 +57,15 @@ type Type interface {
 	// Returns a pointer to the TypeSystem this Type is a member of.
 	TypeSystem() *TypeSystem
 
-	// Returns the string name of the Type.  This name is unique within the
-	// universe this type is a member of, *unless* this type is Anonymous,
-	// in which case a string describing the type will still be returned, but
-	// that string will not be required to be unique.
+	// Returns the name of the Type, or, an empty string if this is an anonymous type.
+	// Use Reference instead if you always want a result, even for anonymous types.
 	Name() TypeName
+
+	// Reference returns a string reference for this Type, which is either the
+	// the type's name (if it has one) or a string that uniquely describes it
+	// if it's an anonymous type (this may be something like e.g. "[Foo]"
+	// or "{Foo:Bar}" or "&Foo").
+	Reference() TypeReference
 
 	// Returns the TypeKind of this Type.
 	//

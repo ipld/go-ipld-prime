@@ -25,6 +25,10 @@ func (t *TypeInt) Name() TypeName {
 	return t.name
 }
 
+func (t *TypeInt) Reference() TypeReference {
+	return TypeReference(t.name)
+}
+
 func (t TypeInt) RepresentationBehavior() ipld.Kind {
 	return ipld.Kind_Int
 }

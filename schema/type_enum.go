@@ -45,6 +45,10 @@ func (t *TypeEnum) Name() TypeName {
 	return t.name
 }
 
+func (t *TypeEnum) Reference() TypeReference {
+	return TypeReference(t.name)
+}
+
 func (t TypeEnum) RepresentationBehavior() ipld.Kind {
 	switch t.rstrat.(type) {
 	case EnumRepresentation_String:

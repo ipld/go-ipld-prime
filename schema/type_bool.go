@@ -25,6 +25,10 @@ func (t *TypeBool) Name() TypeName {
 	return t.name
 }
 
+func (t *TypeBool) Reference() TypeReference {
+	return TypeReference(t.name)
+}
+
 func (t TypeBool) RepresentationBehavior() ipld.Kind {
 	return ipld.Kind_Bool
 }

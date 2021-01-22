@@ -6,7 +6,8 @@ import (
 
 type TypeList struct {
 	ts            *TypeSystem
-	name          TypeName
+	name          TypeName      // may be empty if this is an anon type
+	ref           TypeReference // may be dup of name, if this is a named type
 	valueTypeRef  TypeReference
 	valueNullable bool
 }
@@ -25,6 +26,10 @@ func (TypeList) TypeKind() TypeKind {
 
 func (t *TypeList) Name() TypeName {
 	return t.name
+}
+
+func (t *TypeList) Reference() TypeReference {
+	return t.ref
 }
 
 func (t TypeList) RepresentationBehavior() ipld.Kind {

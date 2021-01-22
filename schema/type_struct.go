@@ -76,6 +76,10 @@ func (t *TypeStruct) Name() TypeName {
 	return t.name
 }
 
+func (t *TypeStruct) Reference() TypeReference {
+	return TypeReference(t.name)
+}
+
 func (t TypeStruct) RepresentationBehavior() ipld.Kind {
 	switch t.rstrat.(type) {
 	case StructRepresentation_Map:
