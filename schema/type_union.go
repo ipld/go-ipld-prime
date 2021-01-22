@@ -11,6 +11,10 @@ type TypeUnion struct {
 	rstrat  UnionRepresentation
 }
 
+func (t *TypeUnion) Representation() UnionRepresentation {
+	return t.rstrat
+}
+
 type UnionRepresentation interface{ _UnionRepresentation() }
 
 func (UnionRepresentation_Keyed) _UnionRepresentation()        {}

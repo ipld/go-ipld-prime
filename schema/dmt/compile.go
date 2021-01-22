@@ -10,7 +10,7 @@ import (
 //  and so we've just chained it all together with switch statements;
 //   creating a separate interface per result type seems just not super relevant.
 
-func (schdmt Schema) Compile() (schema.TypeSystem, error) {
+func (schdmt Schema) Compile() (*schema.TypeSystem, error) {
 	c := &schema.Compiler{}
 	typesdmt := schdmt.FieldTypes()
 	for itr := typesdmt.Iterator(); !itr.Done(); {
@@ -38,6 +38,7 @@ func (schdmt Schema) Compile() (schema.TypeSystem, error) {
 				schema.TypeName(t2.FieldKeyType().String()),
 				t2.FieldValueType().TypeReference(),
 				t2.FieldValueNullable().Bool(),
+				t2.FieldRepresentation().compile(c),
 			)
 			// If the field typeReference is TypeDefnInline, that needs a chance to take additional action.
 			t2.FieldValueType().compile(c)
@@ -136,6 +137,19 @@ func (dmt TypeNameOrInlineDefn) compile(c *schema.Compiler) {
 	switch dmt.AsInterface().(type) {
 	case TypeDefnInline:
 		panic("nyi") // TODO this needs to engage in anonymous type spawning.
+	}
+}
+
+func (dmt MapRepresentation) compile(c *schema.Compiler) schema.MapRepresentation {
+	switch rdmt := dmt.AsInterface().(type) {
+	case MapRepresentation_Map:
+		return schema.MapRepresentation_Map{}
+	case MapRepresentation_Listpairs:
+		return schema.MapRepresentation_Listpairs{}
+	case MapRepresentation_Stringpairs:
+		return c.MakeMapRepresentation_Stringpairs(rdmt.FieldInnerDelim().String(), rdmt.FieldEntryDelim().String())
+	default:
+		panic("unreachable")
 	}
 }
 

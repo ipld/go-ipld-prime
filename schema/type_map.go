@@ -10,6 +10,24 @@ type TypeMap struct {
 	keyTypeRef    TypeName // is a TypeName and not a TypeReference because it can't be an anon.
 	valueTypeRef  TypeReference
 	valueNullable bool
+	rstrat        MapRepresentation
+}
+
+func (t *TypeMap) Representation() MapRepresentation {
+	return t.rstrat
+}
+
+type MapRepresentation interface{ _MapRepresentation() }
+
+func (MapRepresentation_Map) _MapRepresentation()         {}
+func (MapRepresentation_Listpairs) _MapRepresentation()   {}
+func (MapRepresentation_Stringpairs) _MapRepresentation() {}
+
+type MapRepresentation_Map struct{}
+type MapRepresentation_Listpairs struct{}
+type MapRepresentation_Stringpairs struct {
+	innerDelim string
+	entryDelim string
 }
 
 // -- Type interface satisfaction -->

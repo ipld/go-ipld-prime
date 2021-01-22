@@ -84,8 +84,16 @@ func (c *Compiler) Init() {
 	}
 }
 
-func (c *Compiler) Compile() (TypeSystem, error) {
+func (c *Compiler) Compile() (*TypeSystem, error) {
 	panic("TODO")
+}
+
+func (c *Compiler) MustCompile() *TypeSystem {
+	ts, err := c.Compile()
+	if err != nil {
+		panic(err)
+	}
+	return ts
 }
 
 func (c *Compiler) addType(t Type) {
@@ -160,8 +168,12 @@ func (Compiler) MakeStructRepresentation_Map(fieldDetails structFieldNameStructR
 
 //go:generate quickimmut -output=compiler_carriers.go -attach=Compiler map StructFieldName StructRepresentation_Map_FieldDetails
 
-func (c *Compiler) TypeMap(name TypeName, keyTypeRef TypeName, valueTypeRef TypeReference, valueNullable bool) {
-	c.addType(&TypeMap{c.ts, name, keyTypeRef, valueTypeRef, valueNullable})
+func (c *Compiler) TypeMap(name TypeName, keyTypeRef TypeName, valueTypeRef TypeReference, valueNullable bool, rstrat MapRepresentation) {
+	c.addType(&TypeMap{c.ts, name, keyTypeRef, valueTypeRef, valueNullable, rstrat})
+}
+
+func (Compiler) MakeMapRepresentation_Stringpairs(innerDelim string, entryDelim string) MapRepresentation {
+	return MapRepresentation_Stringpairs{innerDelim, entryDelim}
 }
 
 func (c *Compiler) TypeList(name TypeName, valueTypeRef TypeReference, valueNullable bool) {

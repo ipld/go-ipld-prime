@@ -22,6 +22,10 @@ type StructField struct {
 
 type StructFieldName string
 
+func (t *TypeStruct) Representation() StructRepresentation {
+	return t.rstrat
+}
+
 type StructRepresentation interface{ _StructRepresentation() }
 
 func (StructRepresentation_Map) _StructRepresentation()         {}
