@@ -47,26 +47,8 @@ import (
 // These methods are constructors for various intermediate values needed to feed information into the compiler.
 // These are attached to the Compiler type purely for organization of the godoc,
 // so that they don't clutter up the package with functions that users should never be expected to use.
+// Refer to the "HACKME_compiler.md" file for more discussion of this overall design.
 type Compiler struct {
-	// ... and if you're wondering why this type is exported at all?
-	//  Well, arguably, it's useful to be able to construct these values without going through the dmt.
-	//  At the end of the day, though?  Honestly, import cycle breaking.  This was not the first choice.
-	// An implementation which wraps the schemadmt package to make it fit the schema interfaces was the first choice
-	//  because it would've saved a *lot* of work (it would've removed the need for this compiler system entirely, among other things);
-	//  but that doesn't fly, because the generated nodes have to implement schema.TypedNode, and that interface refers to other types like schema.Type
-	//   (and even if all of those are interfaces, you still can't have conformational-equality span multiple interface types in golang).
-	//  And that would make an import cycle if we tried to put types wrapping the dmt types into the schema package.  Whoops.
-	// A separation of this feature into its own "compiler" package was also attempted; this too did not work out well.
-	//  (The main reason to desire this would be clarity and grouping.  The reading interfaces and the creation stuff are for different audiences.)
-	//  We want immutability in almost all of these values, and in golang, the only way to approach immutability is with unexported symbols and package boundaries;
-	//  there aren't many practical approaches which would allow separating the reading and the creating parts of handling the same structure into two different packages.
-	//  One approach that does allow such a split is to simply define all reading via interfaces.  This works and is not wildly unusual in golang.
-	//   However, to apply this in practice in this case would result in many interfaces which are just shells around exactly one implementation;
-	//   and it would also suggest various implementations are expected, which... is simply not the case.
-	//   This would still overall be viable, but the result would be pushing a bit into "strange".
-	// So, here we are.
-	//  Compiler is a type in the schema package.  And we've attempted to attach *all* operations relating to creating schema data to it for purposes of grouping and clarity.
-
 	// ts gathers all the in-progress types (including anonymous ones),
 	// and is eventually the value we return (if Compile is ultimately successful).
 	// We insert into this blindly as we go, and check everything for consistency at the end;
