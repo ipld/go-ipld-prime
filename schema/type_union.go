@@ -119,3 +119,7 @@ func (r UnionRepresentation_Kinded) GetMember(k ipld.Kind) Type {
 	}
 	return nil
 }
+
+func (r UnionRepresentation_Inline) DiscriminantKey() string {
+	return r.discriminantKey
+}

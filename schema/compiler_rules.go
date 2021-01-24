@@ -190,9 +190,9 @@ var rules = map[TypeKind][]rule{
 				for k, v := range r.discriminantTable {
 					vrb := ts.types[TypeReference(v)].RepresentationBehavior()
 					if vrb == ipld.Kind_Invalid { // this indicates a kinded union (the only thing that can't statically state its representation behavior), which deserves a special error message.
-						errs = append(errs, fmt.Errorf("kinded unions cannot be nested and member type %s is also a kinded union", v))
+						errs = append(errs, fmt.Errorf("%s is not a valid member: kinded unions cannot be nested and %s is also a kinded union", v, v))
 					} else if vrb != k {
-						errs = append(errs, fmt.Errorf("kind %s is declared to be received as type %s, but that type's representation kind is %s", k, v, vrb))
+						errs = append(errs, fmt.Errorf("kind mismatch: %s is declared to be received as type %s, but that type's representation's kind is %s", k, v, vrb))
 					}
 				}
 				return
@@ -212,8 +212,31 @@ var rules = map[TypeKind][]rule{
 			func(t Type) bool { _, ok := t.(*TypeUnion).rstrat.(UnionRepresentation_Inline); return ok },
 			func(ts *TypeSystem, t Type) (errs []error) {
 				r := t.(*TypeUnion).rstrat.(UnionRepresentation_Inline)
-				for k, v := range r.discriminantTable {
-					// TODO: port the UnionRepresentation_Inline rules
+				// This is one of the more complicated rules.
+				// - many typekinds can be rejected as members outright, because they don't have any map representations.
+				// - maps themselves are acceptable, if they still have a map representation (although this is a janky thing to do in a protocol design, because it means there's at least one key that's now illeagal in that map, and we can't help you with that).
+				// - structs are acceptable if they have map representation... but we also validate in advance that the discriminant key doesn't collide with any field names in any of the structs.
+				// - other unions aren't ever valid members, even if their representation has a map kind, because the logical rules don't fit together.  So we give distinct error messages for this.
+				for _, v := range r.discriminantTable {
+					switch vt := ts.types[TypeReference(v)].(type) {
+					case *TypeBool, *TypeString, *TypeBytes, *TypeInt, *TypeFloat, *TypeList, *TypeLink, *TypeEnum:
+						errs = append(errs, fmt.Errorf("%s is not a valid member: has representation kind %s", v, vt.RepresentationBehavior()))
+					case *TypeMap:
+						if vt.RepresentationBehavior() != ipld.Kind_Map {
+							errs = append(errs, fmt.Errorf("%s is not a valid member: has representation kind %s", v, vt.RepresentationBehavior()))
+						}
+					case *TypeUnion:
+						errs = append(errs, fmt.Errorf("%s is not a valid member: inline unions cannot directly contain other unions, because their representation rules would conflict", v))
+					case *TypeStruct:
+						if vt.RepresentationBehavior() != ipld.Kind_Map {
+							errs = append(errs, fmt.Errorf("%s is not a valid member: has representation kind %s", v, vt.RepresentationBehavior()))
+						}
+						for _, f := range vt.Fields() {
+							if r.DiscriminantKey() == vt.Representation().(StructRepresentation_Map).GetFieldKey(f) {
+								errs = append(errs, fmt.Errorf("%s is not a valid member: key collision: %s has a field that collides with %s's discriminant key when represented", v, v, t.Name()))
+							}
+						}
+					}
 				}
 				return
 			},
