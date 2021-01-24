@@ -59,3 +59,9 @@ func (t TypeEnum) RepresentationBehavior() ipld.Kind {
 		panic("unreachable")
 	}
 }
+
+// -- specific to TypeEnum -->
+
+func (t *TypeEnum) RepresentationStrategy() EnumRepresentation {
+	return t.rstrat
+}

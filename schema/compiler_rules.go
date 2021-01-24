@@ -243,7 +243,55 @@ var rules = map[TypeKind][]rule{
 		},
 		// FUTURE: UnionRepresentation_Stringprefix will probably have additional rules too
 		// FUTURE: UnionRepresentation_Bytesprefix will probably have additional rules too
-		// TODO: port the enum rules
+	},
+	TypeKind_Enum: []rule{
+		{"enums's representation must specify exactly one discriminant for each member",
+			alwaysApplies,
+			func(ts *TypeSystem, t Type) (errs []error) {
+				t2 := t.(*TypeEnum)
+				covered := make([]bool, len(t2.members))
+				switch r := t2.RepresentationStrategy().(type) {
+				case EnumRepresentation_String:
+					for k, v := range r.labels {
+						found := false
+						for i, m := range t2.members {
+							if k == m {
+								if found {
+									errs = append(errs, fmt.Errorf("more than one discriminant pointing to member %q", m))
+								}
+								found = true
+								covered[i] = true
+							}
+						}
+						if !found {
+							errs = append(errs, fmt.Errorf("discriminant %q refers to a non-member %q", v, k))
+						}
+					}
+				case EnumRepresentation_Int:
+					for k, v := range r.labels {
+						found := false
+						for i, m := range t2.members {
+							if k == m {
+								if found {
+									errs = append(errs, fmt.Errorf("more than one discriminant pointing to member %q", m))
+								}
+								found = true
+								covered[i] = true
+							}
+						}
+						if !found {
+							errs = append(errs, fmt.Errorf("discriminant \"%d\" refers to a non-member %q", v, k))
+						}
+					}
+				}
+				for i, m := range t2.members {
+					if !covered[i] {
+						errs = append(errs, fmt.Errorf("missing discriminant for member %q", m))
+					}
+				}
+				return
+			},
+		},
 	},
 }
 

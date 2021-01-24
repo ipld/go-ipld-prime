@@ -33,50 +33,6 @@ func BuildTypeSystem(schdmt schemadmt.Schema) (*TypeSystem, []error) {
 	//   such as maps verifying that their keys are stringable (which is a rule we enforce for reasons relating to pathing),
 	//   and unions verifying that all their discriminant tables are complete (which is a rule that's necessary for sanity!),
 	//   and etc.
-	typesdmt := schdmt.FieldTypes()
-	for itr := typesdmt.Iterator(); !itr.Done(); {
-		tn, t := itr.Next()
-		switch t2 := t.AsInterface().(type) {
-		case schemadmt.TypeEnum:
-			// Verify that:
-			// - each value in the enumeration has an entry in its representation table.
-			// - each of the representation values is distinct.  Enum representation tables are keyed by the enum value, so we have to check value uniqueness.
-			if t2.FieldRepresentation().Length() != t2.FieldMembers().Length() {
-				ee = append(ee, fmt.Errorf("type %s representation details must contain exactly one discriminant for each member value", tn))
-				continue
-			}
-			switch r := t2.FieldRepresentation().AsInterface().(type) {
-			case schemadmt.EnumRepresentation_String:
-				vs := map[string]struct{}{}
-				for itr := r.Iterator(); !itr.Done(); {
-					k, v := itr.Next()
-					if t2.FieldMembers().Lookup(k) == nil {
-						ee = append(ee, fmt.Errorf("type %s representation contains info talking about a %q member value but there's no such member", tn, k))
-					}
-					if _, exists := vs[v.String()]; exists {
-						ee = append(ee, fmt.Errorf("type %s representation contains a discriminant (%q) more than once", tn, v.String()))
-					}
-					vs[v.String()] = struct{}{}
-				}
-			case schemadmt.EnumRepresentation_Int:
-				vs := map[int64]struct{}{}
-				for itr := r.Iterator(); !itr.Done(); {
-					k, v := itr.Next()
-					if t2.FieldMembers().Lookup(k) == nil {
-						ee = append(ee, fmt.Errorf("type %s representation contains info talking about a %q member value but there's no such member", tn, k))
-					}
-					if _, exists := vs[v.Int()]; exists {
-						ee = append(ee, fmt.Errorf("type %s representation contains a discriminant (%q) more than once", tn, v.Int()))
-					}
-					vs[v.Int()] = struct{}{}
-				}
-			}
-		case schemadmt.TypeCopy:
-			panic("no support for 'copy' types.  I might want to reneg on whether these are even part of the schema dmt.")
-		default:
-			panic("unreachable")
-		}
-	}
 
 	// Only return the assembled TypeSystem value if we encountered no errors.
 	//  If we encountered errors, the TypeSystem is partially constructed and many of its contents cannot uphold their contracts, so it's better not to expose it.
