@@ -1,4 +1,4 @@
-package schema
+package schemadmt
 
 import (
 	"fmt"
@@ -9,10 +9,10 @@ import (
 	. "github.com/warpfork/go-wish"
 
 	"github.com/ipld/go-ipld-prime/codec/dagjson"
-	schemadmt "github.com/ipld/go-ipld-prime/schema/dmt"
+	"github.com/ipld/go-ipld-prime/schema"
 )
 
-func TestBuildTypeSystem(t *testing.T) {
+func TestCompile(t *testing.T) {
 	// NOTE: several of these fixtures will need updating when support for implicits is completed.
 	t.Run("SimpleHappyPath", func(t *testing.T) {
 		ts := testParse(t,
@@ -26,8 +26,8 @@ func TestBuildTypeSystem(t *testing.T) {
 			nil,
 			nil,
 		)
-		Wish(t, ts.types["Woop"], ShouldBeSameTypeAs, &TypeString{})
-		Wish(t, ts.types["Woop"].TypeKind(), ShouldEqual, TypeKind_String)
+		Wish(t, ts.GetType("Woop"), ShouldBeSameTypeAs, &schema.TypeString{})
+		Wish(t, ts.GetType("Woop").TypeKind(), ShouldEqual, schema.TypeKind_String)
 	})
 	t.Run("MissingTypeInList", func(t *testing.T) {
 		testParse(t,
@@ -46,7 +46,7 @@ func TestBuildTypeSystem(t *testing.T) {
 			}`,
 			nil,
 			[]error{
-				fmt.Errorf("type SomeList refers to missing type Bork as value type"),
+				fmt.Errorf(`type SomeList is invalid: list declaration's value type must be defined: missing type "Bork"`),
 			},
 		)
 	})
@@ -68,8 +68,9 @@ func TestBuildTypeSystem(t *testing.T) {
 			}`,
 			nil,
 			[]error{
-				fmt.Errorf("type SomeMap refers to missing type Bork as key type"),
-				fmt.Errorf("type SomeMap refers to missing type Spork as value type"),
+				fmt.Errorf(`type SomeMap is invalid: map declaration's key type must be defined: missing type "Bork"`),
+				// REVIEW: this is a case where the short-circuit exiting during rule evaluation blocks an easy win:
+				//fmt.Errorf(`type SomeMap is invalid: map declaration's value type must be defined: missing type "Spork"`),
 			},
 		)
 	})
@@ -95,9 +96,9 @@ func TestBuildTypeSystem(t *testing.T) {
 			nil,
 			nil,
 		)
-		Wish(t, ts.types["SomeMap"], ShouldBeSameTypeAs, &TypeMap{})
-		Wish(t, ts.types["SomeMap"].TypeKind(), ShouldEqual, TypeKind_Map)
-		Wish(t, ts.types["SomeMap"].(*TypeMap).KeyType().Name().String(), ShouldEqual, "String")
+		Wish(t, ts.GetType("SomeMap"), ShouldBeSameTypeAs, &schema.TypeMap{})
+		Wish(t, ts.GetType("SomeMap").TypeKind(), ShouldEqual, schema.TypeKind_Map)
+		Wish(t, ts.GetType("SomeMap").(*schema.TypeMap).KeyType().Name().String(), ShouldEqual, "String")
 	})
 	t.Run("ComplexValidMapKeyType", func(t *testing.T) {
 		ts := testParse(t,
@@ -142,9 +143,9 @@ func TestBuildTypeSystem(t *testing.T) {
 			nil,
 			nil,
 		)
-		Wish(t, ts.types["SomeMap"], ShouldBeSameTypeAs, &TypeMap{})
-		Wish(t, ts.types["SomeMap"].TypeKind(), ShouldEqual, TypeKind_Map)
-		Wish(t, ts.types["SomeMap"].(*TypeMap).KeyType().Name().String(), ShouldEqual, "StringyStruct")
+		Wish(t, ts.GetType("SomeMap"), ShouldBeSameTypeAs, &schema.TypeMap{})
+		Wish(t, ts.GetType("SomeMap").TypeKind(), ShouldEqual, schema.TypeKind_Map)
+		Wish(t, ts.GetType("SomeMap").(*schema.TypeMap).KeyType().Name().String(), ShouldEqual, "StringyStruct")
 	})
 	t.Run("InvalidMapKeyType", func(t *testing.T) {
 		testParse(t,
@@ -192,22 +193,22 @@ func TestBuildTypeSystem(t *testing.T) {
 	})
 }
 
-func testParse(t *testing.T, schemajson string, expectParseErr error, expectTypesystemError []error) *TypeSystem {
+func testParse(t *testing.T, schemajson string, expectParseErr error, expectTypesystemError []error) *schema.TypeSystem {
 	t.Helper()
 	dmt, parseErr := parseSchema(schemajson)
 	Wish(t, parseErr, ShouldEqual, expectParseErr)
 	if parseErr != nil {
 		return nil
 	}
-	ts, typesystemErr := BuildTypeSystem(dmt)
-	Wish(t, typesystemErr, ShouldEqual, expectTypesystemError)
+	ts, typesystemErrs := dmt.Compile()
+	Require(t, typesystemErrs, ShouldEqual, expectTypesystemError)
 	return ts
 }
 
-func parseSchema(schemajson string) (schemadmt.Schema, error) {
-	nb := schemadmt.Type.Schema__Repr.NewBuilder()
+func parseSchema(schemajson string) (Schema, error) {
+	nb := Type.Schema__Repr.NewBuilder()
 	if err := dagjson.Unmarshal(nb, json.NewDecoder(strings.NewReader(schemajson))); err != nil {
 		return nil, err
 	}
-	return nb.Build().(schemadmt.Schema), nil
+	return nb.Build().(Schema), nil
 }

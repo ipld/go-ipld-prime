@@ -128,6 +128,12 @@ But for all those drawbacks: it works.
 (This whole section has a double duty: it also serves as a nice list
 of cool features you get for free when using our codegen.)
 
+There is one nice bonus to this approach
+(which is shared with any of the others that involve a compiler indirection):
+downstream users of the library can depend on the `schema` package
+without necessarily gaining a transitive dependency on the `schema/dmt` package
+(which may be desirable to avoid because it's a rather large package, due to its codegen'd contents).
+
 ### two packages, compiler is with dmt
 
 Doesn't really fly for the same reasons as three packages.

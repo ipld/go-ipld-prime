@@ -62,6 +62,16 @@ func validate(ts *TypeSystem, typ Type, errs *[]error) {
 	}
 }
 
+// The rules table contains all the logical validations that apply to a schema during compilation.
+//  Some forms of validation of the data are already done by nature of the schema-schema; others will require more work here.
+//   In general: rules which stretch across multiple types (especially, if they're graph properties) can't be implemented in schemas alone, and so end up here.
+//  The most common example is that any type that has some kind of recursion (maps, lists, structs, unions, links with target type info)
+//   will need to do a lookup to see if the referenced types were defined elsewhere in the schema document.
+//  Some kinds of types involve other more specific checks,
+//   such as maps verifying that their keys are stringable (which is a rule we enforce for reasons relating to pathing),
+//   and unions verifying that all their discriminant tables are complete (which is a rule that's necessary for sanity!),
+//   and etc.
+//
 // To validate a type:
 //  - first get the slice of rules that apply to its typekind
 //  - then, for each rule:
@@ -75,6 +85,7 @@ func validate(ts *TypeSystem, typ Type, errs *[]error) {
 // The table-like design here hopefully will make the semantics defined within
 // easier to port to other implementations in other languages.
 var rules = map[TypeKind][]rule{
+	// FUTURE: after adding unit types, we'll need most recursives to additionally do some checks for correct composition of nullability.
 	TypeKind_Map: []rule{
 		{"map declaration's key type must be defined",
 			alwaysApplies,

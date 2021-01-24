@@ -12,6 +12,7 @@ import (
 
 func (schdmt Schema) Compile() (*schema.TypeSystem, []error) {
 	c := &schema.Compiler{}
+	c.Init()
 	typesdmt := schdmt.FieldTypes()
 	for itr := typesdmt.Iterator(); !itr.Done(); {
 		tn, t := itr.Next()
