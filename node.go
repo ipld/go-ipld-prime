@@ -162,6 +162,19 @@ type Node interface {
 	Prototype() NodePrototype
 }
 
+// ADL represents an Advanced Data Layout, a special kind of Node which
+// implements custom logic while still behaving like an IPLD node.
+//
+// For more details, see the docs at
+// https://github.com/ipld/specs/blob/master/schemas/authoring-guide.md.
+type ADL interface {
+	Node
+
+	// Substrate returns the underlying Data Model node, which can be used
+	// to encode an ADL's raw layout.
+	Substrate() Node
+}
+
 // NodePrototype describes a node implementation (all Node have a NodePrototype),
 // and a NodePrototype can always be used to get a NodeBuilder.
 //
