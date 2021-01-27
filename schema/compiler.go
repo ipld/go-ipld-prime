@@ -133,7 +133,7 @@ func (c *Compiler) TypeLink(name TypeName, expectedTypeRef TypeName) {
 	c.addType(&TypeLink{c.ts, name, TypeReference(name), expectedTypeRef})
 }
 
-func (c *Compiler) TypeStruct(name TypeName, fields structFieldList, rstrat StructRepresentation) {
+func (c *Compiler) TypeStruct(name TypeName, fields list__StructField, rstrat StructRepresentation) {
 	t := TypeStruct{
 		ts:        c.ts,
 		name:      name,
@@ -158,7 +158,7 @@ func (Compiler) MakeStructField(name StructFieldName, typ TypeReference, optiona
 	return StructField{nil, name, typ, optional, nullable}
 }
 
-func (Compiler) MakeStructRepresentation_Map(fieldDetails structFieldNameStructRepresentation_Map_FieldDetailsMap) StructRepresentation {
+func (Compiler) MakeStructRepresentation_Map(fieldDetails map__StructFieldName__StructRepresentation_Map_FieldDetails) StructRepresentation {
 	return StructRepresentation_Map{nil, fieldDetails.x}
 }
 
@@ -176,7 +176,7 @@ func (c *Compiler) TypeList(name TypeName, valueTypeRef TypeReference, valueNull
 	c.addType(&TypeList{c.ts, name, TypeReference(name), valueTypeRef, valueNullable})
 }
 
-func (c *Compiler) TypeUnion(name TypeName, members typeNameList, rstrat UnionRepresentation) {
+func (c *Compiler) TypeUnion(name TypeName, members list__TypeName, rstrat UnionRepresentation) {
 	t := TypeUnion{
 		ts:      c.ts,
 		name:    name,
@@ -191,7 +191,7 @@ func (c *Compiler) TypeUnion(name TypeName, members typeNameList, rstrat UnionRe
 
 //go:generate quickimmut -output=compiler_carriers.go -attach=Compiler list TypeName
 
-func (Compiler) MakeUnionRepresentation_Keyed(discriminantTable stringTypeNameMap) UnionRepresentation {
+func (Compiler) MakeUnionRepresentation_Keyed(discriminantTable map__String__TypeName) UnionRepresentation {
 	return &UnionRepresentation_Keyed{nil, discriminantTable.x}
 }
 

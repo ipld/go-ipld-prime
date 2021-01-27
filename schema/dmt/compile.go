@@ -85,7 +85,7 @@ func (schdmt Schema) Compile() (*schema.TypeSystem, []error) {
 			// Feed it all into the compiler.
 			c.TypeStruct(
 				schema.TypeName(tn.String()),
-				schema.Compiler{}.MakeStructFieldList(fields...),
+				schema.Compiler{}.MakeList__StructField(fields...),
 				rstrat,
 			)
 		case TypeUnion:
@@ -118,7 +118,7 @@ func (schdmt Schema) Compile() (*schema.TypeSystem, []error) {
 			// Feed it all into the compiler.
 			c.TypeUnion(
 				schema.TypeName(tn.String()),
-				schema.Compiler{}.MakeTypeNameList(members...),
+				schema.Compiler{}.MakeList__TypeName(members...),
 				rstrat,
 			)
 		case TypeEnum:
@@ -156,9 +156,9 @@ func (dmt MapRepresentation) compile(c *schema.Compiler) schema.MapRepresentatio
 
 func (dmt StructRepresentation_Map) compile() schema.StructRepresentation {
 	if !dmt.FieldFields().Exists() {
-		return schema.Compiler{}.MakeStructRepresentation_Map(schema.Compiler{}.MakeStructFieldNameStructRepresentation_Map_FieldDetailsMap())
+		return schema.Compiler{}.MakeStructRepresentation_Map(schema.Compiler{}.MakeMap__StructFieldName__StructRepresentation_Map_FieldDetails())
 	}
-	fields := schema.Compiler{}.StartStructFieldNameStructRepresentation_Map_FieldDetailsMap(int(dmt.FieldFields().Must().Length()))
+	fields := schema.Compiler{}.StartMap__StructFieldName__StructRepresentation_Map_FieldDetails(int(dmt.FieldFields().Must().Length()))
 	for itr := dmt.FieldFields().Must().Iterator(); !itr.Done(); {
 		fn, det := itr.Next()
 		fields.Append(
@@ -194,7 +194,7 @@ func (dmt StructRepresentation_Listpairs) compile() schema.StructRepresentation 
 }
 
 func (dmt UnionRepresentation_Keyed) compile() schema.UnionRepresentation {
-	ents := schema.Compiler{}.StartStringTypeNameMap(int(dmt.Length()))
+	ents := schema.Compiler{}.StartMap__String__TypeName(int(dmt.Length()))
 	for itr := dmt.Iterator(); !itr.Done(); {
 		k, v := itr.Next()
 		ents.Append(k.String(), schema.TypeName(v.String()))
