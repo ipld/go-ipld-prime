@@ -123,6 +123,18 @@ func (e ErrInvalidSegmentForList) Error() string {
 	return v + fmt.Sprintf(": %q: %s", e.TroubleSegment.s, e.Reason)
 }
 
+// ErrHashMismatch is the error returned when loading data and verifying its hash
+// and finding that the loaded data doesn't re-hash to the expected value.
+// It is typically seen returned by functions like LinkSystem.Load or LinkSystem.Fill.
+type ErrHashMismatch struct {
+	Actual   Link
+	Expected Link
+}
+
+func (e ErrHashMismatch) Error() string {
+	return fmt.Sprintf("hash mismatch!  %v (actual) != %v (expected)", e.Actual, e.Expected)
+}
+
 // ErrUnmatchable is the error raised when processing data with IPLD Schemas and
 // finding data which cannot be matched into the schema.
 // It will be returned by NodeAssemblers and NodeBuilders when they are fed unmatchable data.

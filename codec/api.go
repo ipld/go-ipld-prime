@@ -1,13 +1,10 @@
 package codec
 
 import (
-	"io"
-
 	"github.com/ipld/go-ipld-prime"
 )
 
-// Encoder is the essential definition of a function that takes IPLD Data Model data in memory and serializes it.
-// IPLD Codecs are written by implementing this function interface (as well as (typically) a matched Decoder).
+// Encoder is defined in the root ipld package; this alias is just for documentation and discoverability.
 //
 // Encoder functions can be composed into an ipld.LinkSystem to provide
 // a "one stop shop" API for handling content addressable storage.
@@ -33,15 +30,12 @@ import (
 // in all scenarios that use codecs indirectly.
 // There is also no standard interface for such configurations: by nature,
 // if they exist at all, they vary per codec.
-type Encoder func(data ipld.Node, output io.Writer) error
+type Encoder = ipld.Encoder
 
-// Decoder is the essential definiton of a function that consumes serial data and unfurls it into IPLD Data Model-compatible in-memory representations.
-// IPLD Codecs are written by implementing this function interface (as well as (typically) a matched Encoder).
+// Decoder is defined in the root ipld package; this alias is just for documentation and discoverability.
 //
-// Decoder is the dual of Encoder.
-// Most of the documentation for the Encoder function interface
-// also applies wholesale to the Decoder interface.
-type Decoder func(into ipld.NodeAssembler, input io.Reader) error
+// Most of the documentation for Encoder also applies wholesale to the Decoder interface.
+type Decoder = ipld.Decoder
 
 type ErrBudgetExhausted struct{}
 

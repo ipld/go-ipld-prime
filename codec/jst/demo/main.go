@@ -23,7 +23,7 @@ func main() {
 		  ]}
 	]`
 	nb := basicnode.Prototype.Any.NewBuilder()
-	if err := dagjson.Decoder(nb, strings.NewReader(fixture)); err != nil {
+	if err := dagjson.Decode(nb, strings.NewReader(fixture)); err != nil {
 		panic(err)
 	}
 	n := nb.Build()

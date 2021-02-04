@@ -1,31 +1,26 @@
 package traversal_test
 
 import (
-	"bytes"
-	"context"
 	"fmt"
-	"io"
-	"strings"
 	"testing"
-	"unicode"
 
 	. "github.com/warpfork/go-wish"
 
-	cid "github.com/ipfs/go-cid"
-	ipld "github.com/ipld/go-ipld-prime"
-	"github.com/ipld/go-ipld-prime/must"
-
+	"github.com/ipfs/go-cid"
+	"github.com/ipld/go-ipld-prime"
 	_ "github.com/ipld/go-ipld-prime/codec/dagjson"
 	"github.com/ipld/go-ipld-prime/fluent"
 	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
+	"github.com/ipld/go-ipld-prime/must"
 	basicnode "github.com/ipld/go-ipld-prime/node/basic"
+	"github.com/ipld/go-ipld-prime/storage"
 	"github.com/ipld/go-ipld-prime/traversal"
 )
 
 // Do some fixture fabrication.
 // We assume all the builders and serialization must Just Work here.
 
-var storage = make(map[ipld.Link][]byte)
+var store = storage.Memory{}
 var (
 	leafAlpha, leafAlphaLnk         = encode(basicnode.NewString("alpha"))
 	leafBeta, leafBetaLnk           = encode(basicnode.NewString("beta"))
@@ -55,45 +50,20 @@ var (
 // just gimme a link and stuff the bytes in a map.
 // (also return the node again for convenient assignment.)
 func encode(n ipld.Node) (ipld.Node, ipld.Link) {
-	lb := cidlink.LinkBuilder{cid.Prefix{
+	lp := cidlink.LinkPrototype{cid.Prefix{
 		Version:  1,
 		Codec:    0x0129,
 		MhType:   0x17,
 		MhLength: 4,
 	}}
-	lnk, err := lb.Build(context.Background(), ipld.LinkContext{}, n,
-		func(ipld.LinkContext) (io.Writer, ipld.StoreCommitter, error) {
-			buf := bytes.Buffer{}
-			return &buf, func(lnk ipld.Link) error {
-				storage[lnk] = buf.Bytes()
-				return nil
-			}, nil
-		},
-	)
+	lsys := cidlink.DefaultLinkSystem()
+	lsys.StorageWriteOpener = (&store).OpenWrite
+
+	lnk, err := lsys.Store(ipld.LinkContext{}, lp, n)
 	if err != nil {
 		panic(err)
 	}
 	return n, lnk
-}
-
-// Print a quick little table of our fixtures for sanity check purposes.
-func init() {
-	withoutWhitespace := func(s string) string {
-		return strings.Map(func(r rune) rune {
-			if !unicode.IsPrint(r) {
-				return -1
-			} else {
-				return r
-			}
-		}, s)
-	}
-	fmt.Printf("fixtures:\n"+strings.Repeat("\t%v\t%v\n", 5),
-		leafAlphaLnk, withoutWhitespace(string(storage[leafAlphaLnk])),
-		leafBetaLnk, withoutWhitespace(string(storage[leafBetaLnk])),
-		middleMapNodeLnk, withoutWhitespace(string(storage[middleMapNodeLnk])),
-		middleListNodeLnk, withoutWhitespace(string(storage[middleListNodeLnk])),
-		rootNodeLnk, withoutWhitespace(string(storage[rootNodeLnk])),
-	)
 }
 
 // covers Focus used on one already-loaded Node; no link-loading exercised.
@@ -162,11 +132,11 @@ func TestFocusWithLinkLoading(t *testing.T) {
 		})
 	})
 	t.Run("link traversal with loader should work", func(t *testing.T) {
+		lsys := cidlink.DefaultLinkSystem()
+		lsys.StorageReadOpener = (&store).OpenRead
 		err := traversal.Progress{
 			Cfg: &traversal.Config{
-				LinkLoader: func(lnk ipld.Link, _ ipld.LinkContext) (io.Reader, error) {
-					return bytes.NewReader(storage[lnk]), nil
-				},
+				LinkSystem: lsys,
 				LinkTargetNodePrototypeChooser: func(_ ipld.Link, _ ipld.LinkContext) (ipld.NodePrototype, error) {
 					return basicnode.Prototype__Any{}, nil
 				},
@@ -194,11 +164,11 @@ func TestGetWithLinkLoading(t *testing.T) {
 		})
 	})
 	t.Run("link traversal with loader should work", func(t *testing.T) {
+		lsys := cidlink.DefaultLinkSystem()
+		lsys.StorageReadOpener = (&store).OpenRead
 		n, err := traversal.Progress{
 			Cfg: &traversal.Config{
-				LinkLoader: func(lnk ipld.Link, _ ipld.LinkContext) (io.Reader, error) {
-					return bytes.NewReader(storage[lnk]), nil
-				},
+				LinkSystem: lsys,
 				LinkTargetNodePrototypeChooser: func(_ ipld.Link, _ ipld.LinkContext) (ipld.NodePrototype, error) {
 					return basicnode.Prototype__Any{}, nil
 				},
@@ -337,20 +307,14 @@ func TestFocusedTransform(t *testing.T) {
 }
 
 func TestFocusedTransformWithLinks(t *testing.T) {
-	var storage2 = make(map[ipld.Link][]byte)
+	var store2 = storage.Memory{}
+	lsys := cidlink.DefaultLinkSystem()
+	lsys.StorageReadOpener = (&store).OpenRead
+	lsys.StorageWriteOpener = (&store2).OpenWrite
 	cfg := traversal.Config{
-		LinkLoader: func(lnk ipld.Link, _ ipld.LinkContext) (io.Reader, error) {
-			return bytes.NewReader(storage[lnk]), nil
-		},
+		LinkSystem: lsys,
 		LinkTargetNodePrototypeChooser: func(_ ipld.Link, _ ipld.LinkContext) (ipld.NodePrototype, error) {
 			return basicnode.Prototype.Any, nil
-		},
-		LinkStorer: func(lnkCtx ipld.LinkContext) (io.Writer, ipld.StoreCommitter, error) {
-			wr := bytes.Buffer{}
-			return &wr, func(link ipld.Link) error {
-				storage2[link] = wr.Bytes()
-				return nil
-			}, nil
 		},
 	}
 	t.Run("UpdateMapBeyondLink", func(t *testing.T) {
@@ -368,9 +332,9 @@ func TestFocusedTransformWithLinks(t *testing.T) {
 		Wish(t, err, ShouldEqual, nil)
 		Wish(t, n.Kind(), ShouldEqual, ipld.Kind_Map)
 		// there should be a new object in our new storage!
-		Wish(t, len(storage2), ShouldEqual, 1)
+		Wish(t, len(store2.Bag), ShouldEqual, 1)
 		// cleanup for next test
-		storage2 = make(map[ipld.Link][]byte)
+		store2 = storage.Memory{}
 	})
 	t.Run("UpdateNotBeyondLink", func(t *testing.T) {
 		// This is replacing a link with a non-link.  Doing so shouldn't hit storage.
@@ -385,9 +349,9 @@ func TestFocusedTransformWithLinks(t *testing.T) {
 		Wish(t, err, ShouldEqual, nil)
 		Wish(t, n.Kind(), ShouldEqual, ipld.Kind_Map)
 		// there should be no new objects in our new storage!
-		Wish(t, len(storage2), ShouldEqual, 0)
+		Wish(t, len(store2.Bag), ShouldEqual, 0)
 		// cleanup for next test
-		storage2 = make(map[ipld.Link][]byte)
+		store2 = storage.Memory{}
 	})
 
 	// link traverse to scalar // this is unspecifiable using the current path syntax!  you'll just end up replacing the link with the scalar!

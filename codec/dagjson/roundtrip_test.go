@@ -48,14 +48,14 @@ var serial = `{
 func TestRoundtrip(t *testing.T) {
 	t.Run("encoding", func(t *testing.T) {
 		var buf bytes.Buffer
-		err := Encoder(n, &buf)
+		err := Encode(n, &buf)
 		Require(t, err, ShouldEqual, nil)
 		Wish(t, buf.String(), ShouldEqual, serial)
 	})
 	t.Run("decoding", func(t *testing.T) {
 		buf := strings.NewReader(serial)
 		nb := basicnode.Prototype__Map{}.NewBuilder()
-		err := Decoder(nb, buf)
+		err := Decode(nb, buf)
 		Require(t, err, ShouldEqual, nil)
 		Wish(t, nb.Build(), ShouldEqual, n)
 	})
@@ -67,14 +67,14 @@ func TestRoundtripScalar(t *testing.T) {
 	simple := nb.Build()
 	t.Run("encoding", func(t *testing.T) {
 		var buf bytes.Buffer
-		err := Encoder(simple, &buf)
+		err := Encode(simple, &buf)
 		Require(t, err, ShouldEqual, nil)
 		Wish(t, buf.String(), ShouldEqual, `"applesauce"`)
 	})
 	t.Run("decoding", func(t *testing.T) {
 		buf := strings.NewReader(`"applesauce"`)
 		nb := basicnode.Prototype__String{}.NewBuilder()
-		err := Decoder(nb, buf)
+		err := Decode(nb, buf)
 		Require(t, err, ShouldEqual, nil)
 		Wish(t, nb.Build(), ShouldEqual, simple)
 	})

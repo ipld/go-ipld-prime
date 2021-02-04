@@ -112,8 +112,8 @@ func (prog *Progress) get(n ipld.Node, p ipld.Path, trackProgress bool) (ipld.No
 		// Dereference any links.
 		for n.Kind() == ipld.Kind_Link {
 			lnk, _ := n.AsLink()
-			// Assemble the LinkContext in case the Loader or NBChooser want it.
 			lnkCtx := ipld.LinkContext{
+				Ctx:        prog.Cfg.Ctx,
 				LinkPath:   p.Truncate(i),
 				LinkNode:   n,
 				ParentNode: prev,
@@ -123,14 +123,9 @@ func (prog *Progress) get(n ipld.Node, p ipld.Path, trackProgress bool) (ipld.No
 			if err != nil {
 				return nil, fmt.Errorf("error traversing node at %q: could not load link %q: %s", p.Truncate(i+1), lnk, err)
 			}
-			nb := np.NewBuilder()
 			// Load link!
-			err = lnk.Load(
-				prog.Cfg.Ctx,
-				lnkCtx,
-				nb,
-				prog.Cfg.LinkLoader,
-			)
+			prev = n
+			n, err = prog.Cfg.LinkSystem.Load(lnkCtx, lnk, np)
 			if err != nil {
 				return nil, fmt.Errorf("error traversing node at %q: could not load link %q: %s", p.Truncate(i+1), lnk, err)
 			}
@@ -138,7 +133,6 @@ func (prog *Progress) get(n ipld.Node, p ipld.Path, trackProgress bool) (ipld.No
 				prog.LastBlock.Path = p.Truncate(i + 1)
 				prog.LastBlock.Link = lnk
 			}
-			prev, n = n, nb.Build()
 		}
 	}
 	if trackProgress {
@@ -325,6 +319,7 @@ func (prog Progress) focusedTransform(n ipld.Node, na ipld.NodeAssembler, p ipld
 		return la.Finish()
 	case ipld.Kind_Link:
 		lnkCtx := ipld.LinkContext{
+			Ctx:        prog.Cfg.Ctx,
 			LinkPath:   prog.Path,
 			LinkNode:   n,
 			ParentNode: nil, // TODO inconvenient that we don't have this.  maybe this whole case should be a helper function.
@@ -335,14 +330,11 @@ func (prog Progress) focusedTransform(n ipld.Node, na ipld.NodeAssembler, p ipld
 		if err != nil {
 			return fmt.Errorf("transform: error traversing node at %q: could not load link %q: %s", prog.Path, lnk, err)
 		}
-		nb := np.NewBuilder()
 		// Load link!
-		err = lnk.Load(
-			prog.Cfg.Ctx,
-			lnkCtx,
-			nb,
-			prog.Cfg.LinkLoader,
-		)
+		//  We'll use LinkSystem.Fill here rather than Load,
+		//   because there's a nice opportunity to reuse the builder shortly.
+		nb := np.NewBuilder()
+		err = prog.Cfg.LinkSystem.Fill(lnkCtx, lnk, nb)
 		if err != nil {
 			return fmt.Errorf("transform: error traversing node at %q: could not load link %q: %s", prog.Path, lnk, err)
 		}
@@ -359,7 +351,7 @@ func (prog Progress) focusedTransform(n ipld.Node, na ipld.NodeAssembler, p ipld
 			return err
 		}
 		n = nb.Build()
-		lnk, err = lnk.LinkBuilder().Build(prog.Cfg.Ctx, lnkCtx, n, prog.Cfg.LinkStorer)
+		lnk, err = prog.Cfg.LinkSystem.Store(lnkCtx, lnk.Prototype(), n)
 		if err != nil {
 			return fmt.Errorf("transform: error storing transformed node at %q: %s", prog.Path, err)
 		}

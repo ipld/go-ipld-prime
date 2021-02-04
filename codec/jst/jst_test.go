@@ -19,7 +19,7 @@ func TestSimple(t *testing.T) {
 		  {"path": "./quxx", "moduleName": "example.net/quxx",     "status": "lit"}
 		]`)
 	nb := basicnode.Prototype.Any.NewBuilder()
-	Require(t, dagjson.Decoder(nb, strings.NewReader(fixture)), ShouldEqual, nil)
+	Require(t, dagjson.Decode(nb, strings.NewReader(fixture)), ShouldEqual, nil)
 	n := nb.Build()
 
 	st := state{}
@@ -48,7 +48,7 @@ func TestAbsentColumn(t *testing.T) {
 		  {"path": "./quxx", "optionalColumn": "wicked", "status": "lit"}
 		]`)
 		nb := basicnode.Prototype.Any.NewBuilder()
-		Require(t, dagjson.Decoder(nb, strings.NewReader(fixture)), ShouldEqual, nil)
+		Require(t, dagjson.Decode(nb, strings.NewReader(fixture)), ShouldEqual, nil)
 		n := nb.Build()
 
 		var buf bytes.Buffer
@@ -63,7 +63,7 @@ func TestAbsentColumn(t *testing.T) {
 		  {"path": "./quxx", "status": "lit",     "optionalColumn": "wicked"}
 		]`)
 		nb := basicnode.Prototype.Any.NewBuilder()
-		Require(t, dagjson.Decoder(nb, strings.NewReader(fixture)), ShouldEqual, nil)
+		Require(t, dagjson.Decode(nb, strings.NewReader(fixture)), ShouldEqual, nil)
 		n := nb.Build()
 
 		var buf bytes.Buffer
@@ -88,7 +88,7 @@ func TestSubTables(t *testing.T) {
 		  {"path": "./quxx", "moduleName": "example.net/quxx",     "status": "lit"}
 		]`)
 	nb := basicnode.Prototype.Any.NewBuilder()
-	Require(t, dagjson.Decoder(nb, strings.NewReader(fixture)), ShouldEqual, nil)
+	Require(t, dagjson.Decode(nb, strings.NewReader(fixture)), ShouldEqual, nil)
 	n := nb.Build()
 
 	var buf bytes.Buffer
@@ -112,7 +112,7 @@ func TestSubTablesCorrelated(t *testing.T) {
 		    ]}
 		]`)
 	nb := basicnode.Prototype.Any.NewBuilder()
-	Require(t, dagjson.Decoder(nb, strings.NewReader(fixture)), ShouldEqual, nil)
+	Require(t, dagjson.Decode(nb, strings.NewReader(fixture)), ShouldEqual, nil)
 	n := nb.Build()
 
 	var buf bytes.Buffer
@@ -144,7 +144,7 @@ func TestSubSubTables(t *testing.T) {
 		    ]}
 		]`)
 	nb := basicnode.Prototype.Any.NewBuilder()
-	Require(t, dagjson.Decoder(nb, strings.NewReader(fixture)), ShouldEqual, nil)
+	Require(t, dagjson.Decode(nb, strings.NewReader(fixture)), ShouldEqual, nil)
 	n := nb.Build()
 
 	var buf bytes.Buffer

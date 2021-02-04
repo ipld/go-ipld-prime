@@ -39,9 +39,8 @@ type Progress struct {
 
 type Config struct {
 	Ctx                            context.Context                // Context carried through a traversal.  Optional; use it if you need cancellation.
-	LinkLoader                     ipld.Loader                    // Loader used for automatic link traversal.
+	LinkSystem                     ipld.LinkSystem                // LinkSystem used for automatic link loading, and also any storing if mutation features (e.g. traversal.Transform) are used.
 	LinkTargetNodePrototypeChooser LinkTargetNodePrototypeChooser // Chooser for Node implementations to produce during automatic link traversal.
-	LinkStorer                     ipld.Storer                    // Storer used if any mutation features (e.g. traversal.Transform) are used.
 }
 
 // LinkTargetNodePrototypeChooser is a function that returns a NodePrototype based on

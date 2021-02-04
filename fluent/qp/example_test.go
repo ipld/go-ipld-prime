@@ -27,7 +27,7 @@ func Example() {
 	if err != nil {
 		panic(err)
 	}
-	dagjson.Encoder(n, os.Stdout)
+	dagjson.Encode(n, os.Stdout)
 
 	// Output:
 	// {

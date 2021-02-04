@@ -35,7 +35,7 @@ import (
 //
 func TestSchemaSchemaParse(t *testing.T) {
 	nb := schemadmt.Type.Schema__Repr.NewBuilder()
-	if err := dagjson.Decoder(nb, strings.NewReader(`
+	if err := dagjson.Decode(nb, strings.NewReader(`
 {
 	"types": {
 		"TypeName": {

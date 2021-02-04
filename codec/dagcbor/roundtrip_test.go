@@ -2,16 +2,13 @@ package dagcbor
 
 import (
 	"bytes"
-	"context"
 	"crypto/rand"
-	"io"
 	"strings"
 	"testing"
 
 	cid "github.com/ipfs/go-cid"
 	. "github.com/warpfork/go-wish"
 
-	ipld "github.com/ipld/go-ipld-prime"
 	"github.com/ipld/go-ipld-prime/fluent"
 	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
 	basicnode "github.com/ipld/go-ipld-prime/node/basic"
@@ -38,14 +35,14 @@ var serial = "\xa4eplainkolde stringcmap\xa2cone\x01ctwo\x02dlist\x82ethreedfour
 func TestRoundtrip(t *testing.T) {
 	t.Run("encoding", func(t *testing.T) {
 		var buf bytes.Buffer
-		err := Encoder(n, &buf)
+		err := Encode(n, &buf)
 		Require(t, err, ShouldEqual, nil)
 		Wish(t, buf.String(), ShouldEqual, serial)
 	})
 	t.Run("decoding", func(t *testing.T) {
 		buf := strings.NewReader(serial)
 		nb := basicnode.Prototype__Map{}.NewBuilder()
-		err := Decoder(nb, buf)
+		err := Decode(nb, buf)
 		Require(t, err, ShouldEqual, nil)
 		Wish(t, nb.Build(), ShouldEqual, n)
 	})
@@ -57,33 +54,26 @@ func TestRoundtripScalar(t *testing.T) {
 	simple := nb.Build()
 	t.Run("encoding", func(t *testing.T) {
 		var buf bytes.Buffer
-		err := Encoder(simple, &buf)
+		err := Encode(simple, &buf)
 		Require(t, err, ShouldEqual, nil)
 		Wish(t, buf.String(), ShouldEqual, `japplesauce`)
 	})
 	t.Run("decoding", func(t *testing.T) {
 		buf := strings.NewReader(`japplesauce`)
 		nb := basicnode.Prototype__String{}.NewBuilder()
-		err := Decoder(nb, buf)
+		err := Decode(nb, buf)
 		Require(t, err, ShouldEqual, nil)
 		Wish(t, nb.Build(), ShouldEqual, simple)
 	})
 }
 
 func TestRoundtripLinksAndBytes(t *testing.T) {
-	lb := cidlink.LinkBuilder{cid.Prefix{
+	lnk := cidlink.LinkPrototype{cid.Prefix{
 		Version:  1,
 		Codec:    0x71,
 		MhType:   0x17,
 		MhLength: 4,
-	}}
-	buf := bytes.Buffer{}
-	lnk, err := lb.Build(context.Background(), ipld.LinkContext{}, n,
-		func(ipld.LinkContext) (io.Writer, ipld.StoreCommitter, error) {
-			return &buf, func(lnk ipld.Link) error { return nil }, nil
-		},
-	)
-	Require(t, err, ShouldEqual, nil)
+	}}.BuildLink([]byte{1, 2, 3, 4}) // dummy value, content does not matter to this test.
 
 	var linkByteNode = fluent.MustBuildMap(basicnode.Prototype__Map{}, 4, func(na fluent.MapAssembler) {
 		nva := na.AssembleEntry("Link")
@@ -94,11 +84,11 @@ func TestRoundtripLinksAndBytes(t *testing.T) {
 		nva.AssignBytes(bytes)
 	})
 
-	buf.Reset()
-	err = Encoder(linkByteNode, &buf)
+	buf := bytes.Buffer{}
+	err := Encode(linkByteNode, &buf)
 	Require(t, err, ShouldEqual, nil)
 	nb := basicnode.Prototype__Map{}.NewBuilder()
-	err = Decoder(nb, &buf)
+	err = Decode(nb, &buf)
 	Require(t, err, ShouldEqual, nil)
 	reconstructed := nb.Build()
 	Wish(t, reconstructed, ShouldEqual, linkByteNode)

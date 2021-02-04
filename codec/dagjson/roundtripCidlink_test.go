@@ -2,9 +2,7 @@ package dagjson
 
 import (
 	"bytes"
-	"context"
 	"io"
-	"io/ioutil"
 	"strings"
 	"testing"
 
@@ -17,29 +15,28 @@ import (
 )
 
 func TestRoundtripCidlink(t *testing.T) {
-	lb := cidlink.LinkBuilder{cid.Prefix{
+	lp := cidlink.LinkPrototype{cid.Prefix{
 		Version:  1,
 		Codec:    0x0129,
 		MhType:   0x17,
 		MhLength: 4,
 	}}
+	lsys := cidlink.DefaultLinkSystem()
 
 	buf := bytes.Buffer{}
-	lnk, err := lb.Build(context.Background(), ipld.LinkContext{}, n,
-		func(ipld.LinkContext) (io.Writer, ipld.StoreCommitter, error) {
-			return &buf, func(lnk ipld.Link) error { return nil }, nil
-		},
-	)
+	lsys.StorageWriteOpener = func(lnkCtx ipld.LinkContext) (io.Writer, ipld.BlockWriteCommitter, error) {
+		return &buf, func(lnk ipld.Link) error { return nil }, nil
+	}
+	lsys.StorageReadOpener = func(lnkCtx ipld.LinkContext, lnk ipld.Link) (io.Reader, error) {
+		return bytes.NewReader(buf.Bytes()), nil
+	}
+
+	lnk, err := lsys.Store(ipld.LinkContext{}, lp, n)
 	Require(t, err, ShouldEqual, nil)
 
-	nb := basicnode.Prototype__Any{}.NewBuilder()
-	err = lnk.Load(context.Background(), ipld.LinkContext{}, nb,
-		func(lnk ipld.Link, _ ipld.LinkContext) (io.Reader, error) {
-			return bytes.NewReader(buf.Bytes()), nil
-		},
-	)
+	n2, err := lsys.Load(ipld.LinkContext{}, lnk, basicnode.Prototype.Any)
 	Require(t, err, ShouldEqual, nil)
-	Wish(t, nb.Build(), ShouldEqual, n)
+	Wish(t, n2, ShouldEqual, n)
 }
 
 // Make sure that a map that *almost* looks like a link is handled safely.
@@ -48,24 +45,19 @@ func TestRoundtripCidlink(t *testing.T) {
 // tokens have to be reprocessed before a recursion that find a real link appears.
 func TestUnmarshalTrickyMapContainingLink(t *testing.T) {
 	// Create a link; don't particularly care about its contents.
-	lnk, err := cidlink.LinkBuilder{cid.Prefix{
+	lnk := cidlink.LinkPrototype{cid.Prefix{
 		Version:  1,
-		Codec:    0x0129,
+		Codec:    0x71,
 		MhType:   0x17,
 		MhLength: 4,
-	}}.Build(context.Background(), ipld.LinkContext{}, n,
-		func(ipld.LinkContext) (io.Writer, ipld.StoreCommitter, error) {
-			return ioutil.Discard, func(lnk ipld.Link) error { return nil }, nil
-		},
-	)
-	Require(t, err, ShouldEqual, nil)
+	}}.BuildLink([]byte{1, 2, 3, 4}) // dummy value, content does not matter to this test.
 
 	// Compose the tricky corpus.  (lnk.String "happens" to work here, although this isn't recommended or correct in general.)
 	tricky := `{"/":{"/":"` + lnk.String() + `"}}`
 
 	// Unmarshal.  Hopefully we get a map with a link in it.
 	nb := basicnode.Prototype__Any{}.NewBuilder()
-	err = Decoder(nb, strings.NewReader(tricky))
+	err := Decode(nb, strings.NewReader(tricky))
 	Require(t, err, ShouldEqual, nil)
 	n := nb.Build()
 	Wish(t, n.Kind(), ShouldEqual, ipld.Kind_Map)
