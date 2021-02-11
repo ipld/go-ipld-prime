@@ -3,6 +3,8 @@ module github.com/ipld/go-ipld-prime
 go 1.14
 
 require (
+	github.com/frankban/quicktest v1.11.3
+	github.com/google/go-cmp v0.5.4
 	github.com/ipfs/go-cid v0.0.4
 	github.com/minio/sha256-simd v0.1.1 // indirect
 	github.com/mr-tron/base58 v1.1.3 // indirect

@@ -101,7 +101,7 @@ var rules = map[TypeKind][]rule{
 			alwaysApplies,
 			func(ts *TypeSystem, t Type) []error {
 				tRef := TypeReference(t.(*TypeMap).keyTypeRef)
-				if hasStringRepresentation(ts.types[tRef]) {
+				if !hasStringRepresentation(ts.types[tRef]) {
 					return []error{fmt.Errorf("type %q is not a string typekind nor representation with string kind", tRef)}
 				}
 				return nil

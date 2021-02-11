@@ -5,6 +5,8 @@ import (
 	"strings"
 	"testing"
 
+	qt "github.com/frankban/quicktest"
+	"github.com/google/go-cmp/cmp"
 	"github.com/polydawn/refmt/json"
 	. "github.com/warpfork/go-wish"
 
@@ -201,7 +203,7 @@ func testParse(t *testing.T, schemajson string, expectParseErr error, expectType
 		return nil
 	}
 	ts, typesystemErrs := dmt.Compile()
-	Require(t, typesystemErrs, ShouldEqual, expectTypesystemError)
+	qt.Assert(t, typesystemErrs, qt.CmpEquals(cmp.Transformer("asdf", func(e error) string { return e.Error() })), expectTypesystemError)
 	return ts
 }
 

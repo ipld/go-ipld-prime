@@ -37,3 +37,18 @@
 [submodule ".gopath/src/github.com/warpfork/go-wish"]
 	path = .gopath/src/github.com/warpfork/go-wish
 	url = https://github.com/warpfork/go-wish
+[submodule ".gopath/src/github.com/rogpeppe/go-internal"]
+	path = .gopath/src/github.com/rogpeppe/go-internal
+	url = https://github.com/rogpeppe/go-internal
+[submodule ".gopath/src/github.com/frankban/quicktest"]
+	path = .gopath/src/github.com/frankban/quicktest
+	url = https://github.com/frankban/quicktest
+[submodule ".gopath/src/github.com/kr/pretty"]
+	path = .gopath/src/github.com/kr/pretty
+	url = https://github.com/kr/pretty
+[submodule ".gopath/src/github.com/kr/text"]
+	path = .gopath/src/github.com/kr/text
+	url = https://github.com/kr/text
+[submodule ".gopath/src/github.com/google/go-cmp"]
+	path = .gopath/src/github.com/google/go-cmp
+	url = https://github.com/google/go-cmp
