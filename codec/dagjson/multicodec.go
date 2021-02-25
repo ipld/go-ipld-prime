@@ -7,7 +7,7 @@ import (
 	"github.com/polydawn/refmt/json"
 
 	"github.com/ipld/go-ipld-prime"
-	"github.com/ipld/go-ipld-prime/codec"
+	"github.com/ipld/go-ipld-prime/multicodec"
 )
 
 var (
@@ -16,8 +16,8 @@ var (
 )
 
 func init() {
-	codec.MulticodecEncoderRegistry[0x0129] = Encode
-	codec.MulticodecDecoderRegistry[0x0129] = Decode
+	multicodec.EncoderRegistry[0x0129] = Encode
+	multicodec.DecoderRegistry[0x0129] = Decode
 }
 
 func Decode(na ipld.NodeAssembler, r io.Reader) error {

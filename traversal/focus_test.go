@@ -53,7 +53,7 @@ func encode(n ipld.Node) (ipld.Node, ipld.Link) {
 	lp := cidlink.LinkPrototype{cid.Prefix{
 		Version:  1,
 		Codec:    0x0129,
-		MhType:   0x17,
+		MhType:   0x13,
 		MhLength: 4,
 	}}
 	lsys := cidlink.DefaultLinkSystem()
@@ -324,7 +324,7 @@ func TestFocusedTransformWithLinks(t *testing.T) {
 			Wish(t, progress.Path.String(), ShouldEqual, "linkedMap/nested/nonlink")
 			Wish(t, must.String(prev), ShouldEqual, "zoo")
 			Wish(t, progress.LastBlock.Path.String(), ShouldEqual, "linkedMap")
-			Wish(t, progress.LastBlock.Link.String(), ShouldEqual, "baguqefye7xlxqda")
+			Wish(t, progress.LastBlock.Link.String(), ShouldEqual, "baguqeeyevmbz3ga")
 			nb := prev.Prototype().NewBuilder()
 			nb.AssignString("new string!")
 			return nb.Build(), nil

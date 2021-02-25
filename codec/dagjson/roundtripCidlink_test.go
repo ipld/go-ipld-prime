@@ -18,7 +18,7 @@ func TestRoundtripCidlink(t *testing.T) {
 	lp := cidlink.LinkPrototype{cid.Prefix{
 		Version:  1,
 		Codec:    0x0129,
-		MhType:   0x17,
+		MhType:   0x13,
 		MhLength: 4,
 	}}
 	lsys := cidlink.DefaultLinkSystem()
@@ -48,7 +48,7 @@ func TestUnmarshalTrickyMapContainingLink(t *testing.T) {
 	lnk := cidlink.LinkPrototype{cid.Prefix{
 		Version:  1,
 		Codec:    0x71,
-		MhType:   0x17,
+		MhType:   0x13,
 		MhLength: 4,
 	}}.BuildLink([]byte{1, 2, 3, 4}) // dummy value, content does not matter to this test.
 

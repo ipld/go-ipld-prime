@@ -46,8 +46,8 @@ func ExampleStoringLink() {
 	lp := cidlink.LinkPrototype{cid.Prefix{
 		Version:  1,    // Usually '1'.
 		Codec:    0x71, // 0x71 means "dag-cbor" -- See the multicodecs table: https://github.com/multiformats/multicodec/
-		MhType:   0x15, // 0x15 means "sha3-384" -- See the multicodecs table: https://github.com/multiformats/multicodec/
-		MhLength: 48,   // sha3-384 hash has a 48-byte sum.
+		MhType:   0x13, // 0x20 means "sha2-512" -- See the multicodecs table: https://github.com/multiformats/multicodec/
+		MhLength: 64,   // sha2-512 hash has a 64-byte sum.
 	}}
 
 	// And we need some data to link to!  Here's a quick piece of example data:
@@ -85,13 +85,13 @@ func ExampleStoringLink() {
 	//  We'll pick this data back up again in the example for loading.
 
 	// Output:
-	// link: bafyrkmbukvrgzcs6qlsh4wvkvbe5wp7sclcblfnapnb2xfznisbykpbnlocet2qzley3cpxofoxqrnqgm3ta
+	// link: bafyrgqhai26anf3i7pips7q22coa4sz2fr4gk4q4sqdtymvvjyginfzaqewveaeqdh524nsktaq43j65v22xxrybrtertmcfxufdam3da3hbk
 	// concrete type: `cidlink.Link`
 }
 
 func ExampleLoadingLink() {
 	// Let's say we want to load this link (it's the same one we just created in the example above).
-	cid, _ := cid.Decode("bafyrkmbukvrgzcs6qlsh4wvkvbe5wp7sclcblfnapnb2xfznisbykpbnlocet2qzley3cpxofoxqrnqgm3ta")
+	cid, _ := cid.Decode("bafyrgqhai26anf3i7pips7q22coa4sz2fr4gk4q4sqdtymvvjyginfzaqewveaeqdh524nsktaq43j65v22xxrybrtertmcfxufdam3da3hbk")
 	lnk := cidlink.Link{cid}
 
 	// Let's get a LinkSystem.  We're going to be working with CID links,
