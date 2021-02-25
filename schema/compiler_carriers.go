@@ -37,6 +37,28 @@ func (b *list__StructField__Builder) Finish() list__StructField {
 	return list__StructField(v)
 }
 
+type list__StructFieldName struct {
+	x []StructFieldName
+}
+type list__StructFieldName__Builder list__StructFieldName
+
+func (Compiler) MakeList__StructFieldName(ents ...StructFieldName) list__StructFieldName {
+	x := make([]StructFieldName, len(ents))
+	copy(x, ents)
+	return list__StructFieldName{x}
+}
+func (Compiler) StartList__StructFieldName(sizeHint int) list__StructFieldName__Builder {
+	return list__StructFieldName__Builder{make([]StructFieldName, 0, sizeHint)}
+}
+func (b *list__StructFieldName__Builder) Append(v StructFieldName) {
+	b.x = append(b.x, v)
+}
+func (b *list__StructFieldName__Builder) Finish() list__StructFieldName {
+	v := *b
+	b.x = nil
+	return list__StructFieldName(v)
+}
+
 type map__StructFieldName__StructRepresentation_Map_FieldDetails struct {
 	x map[StructFieldName]StructRepresentation_Map_FieldDetails
 }

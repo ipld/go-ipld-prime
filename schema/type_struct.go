@@ -44,7 +44,8 @@ type StructRepresentation_Map_FieldDetails struct {
 }
 
 type StructRepresentation_Tuple struct {
-	fieldOrder []StructFieldName
+	parent     *TypeStruct       // this one needs a pointer back up to figure out its defaults.
+	fieldOrder []StructFieldName // may be nil, which means "use default"
 }
 
 type StructRepresentation_Stringpairs struct {
@@ -53,8 +54,9 @@ type StructRepresentation_Stringpairs struct {
 }
 
 type StructRepresentation_Stringjoin struct {
+	parent     *TypeStruct // this one needs a pointer back up to figure out its defaults.
 	delim      string
-	fieldOrder []StructFieldName
+	fieldOrder []StructFieldName // may be nil, which means "use default"
 }
 
 type StructRepresentation_Listpairs struct {

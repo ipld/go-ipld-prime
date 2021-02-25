@@ -153,6 +153,7 @@ func (c *Compiler) TypeStruct(name TypeName, fields list__StructField, rstrat St
 }
 
 //go:generate quickimmut -output=compiler_carriers.go -attach=Compiler list StructField
+//go:generate quickimmut -output=compiler_carriers.go -attach=Compiler list StructFieldName
 
 func (Compiler) MakeStructField(name StructFieldName, typ TypeReference, optional, nullable bool) StructField {
 	return StructField{nil, name, typ, optional, nullable}
@@ -160,6 +161,28 @@ func (Compiler) MakeStructField(name StructFieldName, typ TypeReference, optiona
 
 func (Compiler) MakeStructRepresentation_Map(fieldDetails map__StructFieldName__StructRepresentation_Map_FieldDetails) StructRepresentation {
 	return StructRepresentation_Map{nil, fieldDetails.x}
+}
+
+func (Compiler) MakeStructRepresentation_Tuple(fieldOrder *list__StructFieldName) StructRepresentation {
+	if fieldOrder == nil {
+		return StructRepresentation_Tuple{nil, nil}
+	}
+	return StructRepresentation_Tuple{nil, fieldOrder.x}
+}
+
+func (Compiler) MakeStructRepresentation_Stringpairs(innerDelim string, entryDelim string) StructRepresentation {
+	return StructRepresentation_Stringpairs{innerDelim, entryDelim}
+}
+
+func (Compiler) MakeStructRepresentation_Stringjoin(delim string, fieldOrder *list__StructFieldName) StructRepresentation {
+	if fieldOrder == nil {
+		return StructRepresentation_Stringjoin{nil, delim, nil}
+	}
+	return StructRepresentation_Stringjoin{nil, delim, fieldOrder.x}
+}
+
+func (Compiler) MakeStructRepresentation_Listpairs() StructRepresentation {
+	return StructRepresentation_Listpairs{}
 }
 
 //go:generate quickimmut -output=compiler_carriers.go -attach=Compiler map StructFieldName StructRepresentation_Map_FieldDetails
