@@ -14,16 +14,17 @@ import (
 func TestListsContainingMaybe(t *testing.T) {
 	t.Parallel()
 
-	ts := schema.TypeSystem{}
-	ts.Init()
+	tsc := schema.Compiler{}
+	tsc.Init()
 	adjCfg := &AdjunctCfg{
 		maybeUsesPtr: map[schema.TypeName]bool{},
 	}
-	ts.Accumulate(schema.SpawnString("String"))
-	ts.Accumulate(schema.SpawnList("List__String",
-		"String", false))
-	ts.Accumulate(schema.SpawnList("List__nullableString",
-		"String", true))
+	tsc.TypeString("String")
+	tsc.TypeList("List__String",
+		"String", false)
+	tsc.TypeList("List__nullableString",
+		"String", true)
+	ts := tsc.MustCompile()
 
 	test := func(t *testing.T, getPrototypeByName func(string) ipld.NodePrototype) {
 		t.Run("non-nullable", func(t *testing.T) {
