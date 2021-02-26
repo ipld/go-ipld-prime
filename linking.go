@@ -35,6 +35,11 @@ func (lsys *LinkSystem) MustLoad(lnkCtx LinkContext, lnk Link, np NodePrototype)
 	}
 }
 
+// byteAccessor is a reader interface that can access underlying bytes
+type byteAccesor interface {
+	Bytes() []byte
+}
+
 func (lsys *LinkSystem) Fill(lnkCtx LinkContext, lnk Link, na NodeAssembler) error {
 	if lnkCtx.Ctx == nil {
 		lnkCtx.Ctx = context.Background()
@@ -56,16 +61,24 @@ func (lsys *LinkSystem) Fill(lnkCtx LinkContext, lnk Link, na NodeAssembler) err
 	if err != nil {
 		return err
 	}
-	tee := io.TeeReader(reader, hasher)
-	decodeErr := decoder(na, tee)
-	if decodeErr != nil { // It is important to security to check the hash before returning any other observation about the content.
-		// This copy is for data remaining the block that wasn't already pulled through the TeeReader by the decoder.
-		_, err := io.Copy(hasher, reader)
-		if err != nil {
-			return err
+	var hasherRemainingBytes []byte
+	var decodeErr error
+	byteBuf, ok := reader.(byteAccesor)
+	if ok {
+		hasherRemainingBytes = byteBuf.Bytes()
+		decodeErr = decoder(na, reader)
+	} else {
+		tee := io.TeeReader(reader, hasher)
+		decodeErr = decoder(na, tee)
+		if decodeErr != nil { // It is important to security to check the hash before returning any other observation about the content.
+			// This copy is for data remaining the block that wasn't already pulled through the TeeReader by the decoder.
+			_, err := io.Copy(hasher, reader)
+			if err != nil {
+				return err
+			}
 		}
 	}
-	hash := hasher.Sum(nil)
+	hash := hasher.Sum(hasherRemainingBytes)
 	// Bit of a jig to get something we can do the hash equality check on.
 	lnk2 := lnk.Prototype().BuildLink(hash)
 	if lnk2 != lnk {

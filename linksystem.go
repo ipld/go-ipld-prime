@@ -2,7 +2,6 @@ package ipld
 
 import (
 	"fmt"
-	"hash"
 	"io"
 )
 
@@ -29,9 +28,16 @@ import (
 type LinkSystem struct {
 	EncoderChooser     func(LinkPrototype) (Encoder, error)
 	DecoderChooser     func(Link) (Decoder, error)
-	HasherChooser      func(LinkPrototype) (hash.Hash, error)
+	HasherChooser      func(LinkPrototype) (Hasher, error)
 	StorageWriteOpener BlockWriteOpener
 	StorageReadOpener  BlockReadOpener
+}
+
+// Hasher is a more limited version of the golang hash.Hash interface that can
+// support various other formats
+type Hasher interface {
+	io.Writer
+	Sum([]byte) []byte
 }
 
 // The following two types define the two directions of transform that a codec can be expected to perform:
