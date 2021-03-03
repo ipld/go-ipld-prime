@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"hash"
 
+	cid "github.com/ipfs/go-cid"
 	"github.com/ipld/go-ipld-prime"
 	"github.com/ipld/go-ipld-prime/multicodec"
 	"github.com/ipld/go-ipld-prime/multihash"
@@ -23,8 +24,7 @@ func DefaultLinkSystem() ipld.LinkSystem {
 				return nil, fmt.Errorf("this encoderChooser can only handle cidlink.LinkPrototype; got %T", lp)
 			}
 		},
-		DecoderChooser: func(lnk ipld.Link) (ipld.Decoder, error) {
-			lp := lnk.Prototype()
+		DecoderChooser: func(lp ipld.LinkPrototype) (ipld.Decoder, error) {
 			switch lp2 := lp.(type) {
 			case LinkPrototype:
 				fn, ok := multicodec.DecoderRegistry[lp2.GetCodec()]
@@ -47,6 +47,13 @@ func DefaultLinkSystem() ipld.LinkSystem {
 			default:
 				return nil, fmt.Errorf("this decoderChooser can only handle cidlink.LinkPrototype; got %T", lp)
 			}
+		},
+		Prototype: func(lnk ipld.Link) ipld.LinkPrototype {
+			c, ok := lnk.(cid.Cid)
+			if ok {
+				return LinkPrototype{c.Prefix()}
+			}
+			return nil
 		},
 	}
 }

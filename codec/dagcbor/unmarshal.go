@@ -10,7 +10,6 @@ import (
 	"github.com/polydawn/refmt/tok"
 
 	ipld "github.com/ipld/go-ipld-prime"
-	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
 )
 
 var (
@@ -173,7 +172,7 @@ func unmarshal2(na ipld.NodeAssembler, tokSrc shared.TokenSource, tk *tok.Token,
 			if err != nil {
 				return err
 			}
-			return na.AssignLink(cidlink.Link{elCid})
+			return na.AssignLink(elCid)
 		default:
 			return fmt.Errorf("unhandled cbor tag %d", tk.Tag)
 		}

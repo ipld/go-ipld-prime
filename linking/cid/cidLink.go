@@ -9,27 +9,8 @@ import (
 )
 
 var (
-	_ ipld.Link          = Link{}
 	_ ipld.LinkPrototype = LinkPrototype{}
 )
-
-// Link implements the ipld.Link interface using a CID.
-// See https://github.com/ipfs/go-cid for more information about CIDs.
-//
-// When using this value, typically you'll use it as `Link`, and not `*Link`.
-// This includes when handling the value as an `ipld.Link` interface -- the non-pointer form is typically preferable.
-// This is because the ipld.Link inteface is often desirable to be able to use as a golang map key,
-// and in that context, pointers would not result in the desired behavior.
-type Link struct {
-	cid.Cid
-}
-
-func (lnk Link) Prototype() ipld.LinkPrototype {
-	return LinkPrototype{lnk.Cid.Prefix()}
-}
-func (lnk Link) String() string {
-	return lnk.Cid.String()
-}
 
 type LinkPrototype struct {
 	cid.Prefix
@@ -65,9 +46,9 @@ func (lp LinkPrototype) BuildLink(hashsum []byte) ipld.Link {
 
 	switch lp.Prefix.Version {
 	case 0:
-		return Link{cid.NewCidV0(mh)}
+		return cid.NewCidV0(mh)
 	case 1:
-		return Link{cid.NewCidV1(p.Codec, mh)}
+		return cid.NewCidV1(p.Codec, mh)
 	default:
 		panic(fmt.Errorf("invalid cid version"))
 	}

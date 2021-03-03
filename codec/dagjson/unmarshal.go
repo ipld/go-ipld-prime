@@ -8,7 +8,6 @@ import (
 	"github.com/polydawn/refmt/tok"
 
 	ipld "github.com/ipld/go-ipld-prime"
-	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
 )
 
 // This drifts pretty far from the general unmarshal in the parent package:
@@ -120,7 +119,7 @@ func (st *unmarshalState) linkLookahead(na ipld.NodeAssembler, tokSrc shared.Tok
 	if err != nil {
 		return false, err
 	}
-	if err := na.AssignLink(cidlink.Link{elCid}); err != nil {
+	if err := na.AssignLink(elCid); err != nil {
 		return false, err
 	}
 	return true, nil

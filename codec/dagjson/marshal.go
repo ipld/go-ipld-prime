@@ -3,11 +3,11 @@ package dagjson
 import (
 	"fmt"
 
+	"github.com/ipfs/go-cid"
 	"github.com/polydawn/refmt/shared"
 	"github.com/polydawn/refmt/tok"
 
 	ipld "github.com/ipld/go-ipld-prime"
-	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
 )
 
 // This should be identical to the general feature in the parent package,
@@ -125,7 +125,7 @@ func Marshal(n ipld.Node, sink shared.TokenSink) error {
 			return err
 		}
 		switch lnk := v.(type) {
-		case cidlink.Link:
+		case cid.Cid:
 			// Precisely four tokens to emit:
 			tk.Type = tok.TMapOpen
 			tk.Length = 1
@@ -137,7 +137,7 @@ func Marshal(n ipld.Node, sink shared.TokenSink) error {
 			if _, err = sink.Step(&tk); err != nil {
 				return err
 			}
-			tk.Str = lnk.Cid.String()
+			tk.Str = lnk.String()
 			if _, err = sink.Step(&tk); err != nil {
 				return err
 			}

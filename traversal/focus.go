@@ -351,7 +351,7 @@ func (prog Progress) focusedTransform(n ipld.Node, na ipld.NodeAssembler, p ipld
 			return err
 		}
 		n = nb.Build()
-		lnk, err = prog.Cfg.LinkSystem.Store(lnkCtx, lnk.Prototype(), n)
+		lnk, err = prog.Cfg.LinkSystem.Store(lnkCtx, prog.Cfg.LinkSystem.Prototype(lnk), n)
 		if err != nil {
 			return fmt.Errorf("transform: error storing transformed node at %q: %s", prog.Path, err)
 		}

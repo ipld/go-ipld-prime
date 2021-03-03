@@ -86,13 +86,13 @@ func ExampleStoringLink() {
 
 	// Output:
 	// link: bafyrgqhai26anf3i7pips7q22coa4sz2fr4gk4q4sqdtymvvjyginfzaqewveaeqdh524nsktaq43j65v22xxrybrtertmcfxufdam3da3hbk
-	// concrete type: `cidlink.Link`
+	// concrete type: `cid.Cid`
 }
 
 func ExampleLoadingLink() {
 	// Let's say we want to load this link (it's the same one we just created in the example above).
 	cid, _ := cid.Decode("bafyrgqhai26anf3i7pips7q22coa4sz2fr4gk4q4sqdtymvvjyginfzaqewveaeqdh524nsktaq43j65v22xxrybrtertmcfxufdam3da3hbk")
-	lnk := cidlink.Link{cid}
+	lnk := cid
 
 	// Let's get a LinkSystem.  We're going to be working with CID links,
 	//  so let's get the default LinkSystem that's ready to work with those.

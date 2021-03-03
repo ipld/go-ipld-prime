@@ -3,11 +3,11 @@ package dagcbor
 import (
 	"fmt"
 
+	cid "github.com/ipfs/go-cid"
 	"github.com/polydawn/refmt/shared"
 	"github.com/polydawn/refmt/tok"
 
 	ipld "github.com/ipld/go-ipld-prime"
-	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
 )
 
 // This should be identical to the general feature in the parent package,
@@ -128,7 +128,7 @@ func marshal(n ipld.Node, tk *tok.Token, sink shared.TokenSink) error {
 			return err
 		}
 		switch lnk := v.(type) {
-		case cidlink.Link:
+		case cid.Cid:
 			tk.Type = tok.TBytes
 			tk.Bytes = append([]byte{0}, lnk.Bytes()...)
 			tk.Tagged = true

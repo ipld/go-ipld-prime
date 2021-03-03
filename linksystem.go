@@ -28,10 +28,11 @@ import (
 // and may be reasonable if one wants to build application features that are block-aware.
 type LinkSystem struct {
 	EncoderChooser     func(LinkPrototype) (Encoder, error)
-	DecoderChooser     func(Link) (Decoder, error)
+	DecoderChooser     func(LinkPrototype) (Decoder, error)
 	HasherChooser      func(LinkPrototype) (hash.Hash, error)
 	StorageWriteOpener BlockWriteOpener
 	StorageReadOpener  BlockReadOpener
+	Prototype          func(Link) LinkPrototype
 }
 
 // The following two types define the two directions of transform that a codec can be expected to perform:

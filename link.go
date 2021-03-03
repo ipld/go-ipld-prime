@@ -30,9 +30,6 @@ import (
 // This is because Link is often desirable to be able to use as a golang map key,
 // and in that context, pointers would not result in the desired behavior.
 type Link interface {
-	// Prototype should return a LinkPrototype which carries the information
-	// to make more Link values similar to this one (but with different hashes).
-	Prototype() LinkPrototype
 
 	// String should return a reasonably human-readable debug-friendly representation the Link.
 	// There is no contract that requires that the string be able to be parsed back into a Link value,

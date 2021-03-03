@@ -40,11 +40,11 @@ func (lsys *LinkSystem) Fill(lnkCtx LinkContext, lnk Link, na NodeAssembler) err
 		lnkCtx.Ctx = context.Background()
 	}
 	// Choose all the parts.
-	decoder, err := lsys.DecoderChooser(lnk)
+	decoder, err := lsys.DecoderChooser(lsys.Prototype(lnk))
 	if err != nil {
 		return ErrLinkingSetup{"could not choose a decoder", err}
 	}
-	hasher, err := lsys.HasherChooser(lnk.Prototype())
+	hasher, err := lsys.HasherChooser(lsys.Prototype(lnk))
 	if err != nil {
 		return ErrLinkingSetup{"could not choose a hasher", err}
 	}
@@ -67,7 +67,7 @@ func (lsys *LinkSystem) Fill(lnkCtx LinkContext, lnk Link, na NodeAssembler) err
 	}
 	hash := hasher.Sum(nil)
 	// Bit of a jig to get something we can do the hash equality check on.
-	lnk2 := lnk.Prototype().BuildLink(hash)
+	lnk2 := lsys.Prototype(lnk).BuildLink(hash)
 	if lnk2 != lnk {
 		return ErrHashMismatch{Actual: lnk2, Expected: lnk}
 	}
