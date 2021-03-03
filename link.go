@@ -47,12 +47,6 @@ type Link interface {
 // like multihashType, multicodecType, and cidVersion, for example.
 // (LinkPrototype is analogous to cid.Prefix.)
 type LinkPrototype interface {
-	// BuildLink should return a new Link value based on the given hashsum.
-	// The hashsum argument should typically be a value returned from a
-	// https://golang.org/pkg/hash/#Hash.Sum call.
-	//
-	// The hashsum reference must not be retained (the caller is free to reuse it).
-	BuildLink(hashsum []byte) Link
 }
 
 // LinkContext is a structure carrying ancilary information that may be used

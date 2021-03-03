@@ -68,12 +68,13 @@ func TestRoundtripScalar(t *testing.T) {
 }
 
 func TestRoundtripLinksAndBytes(t *testing.T) {
-	lnk := cidlink.LinkPrototype{cid.Prefix{
+	lsys := cidlink.DefaultLinkSystem()
+	lnk := lsys.BuildLink(cid.Prefix{
 		Version:  1,
 		Codec:    0x71,
 		MhType:   0x13,
 		MhLength: 4,
-	}}.BuildLink([]byte{1, 2, 3, 4}) // dummy value, content does not matter to this test.
+	}, []byte{1, 2, 3, 4}) // dummy value, content does not matter to this test.
 
 	var linkByteNode = fluent.MustBuildMap(basicnode.Prototype__Map{}, 4, func(na fluent.MapAssembler) {
 		nva := na.AssembleEntry("Link")

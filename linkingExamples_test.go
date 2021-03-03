@@ -43,12 +43,12 @@ func ExampleStoringLink() {
 	// This gathers together any parameters that might be needed when making a link.
 	// (For CIDs, the version, the codec, and the multihash type are all parameters we'll need.)
 	// Often, you can probably make this a constant for your whole application.
-	lp := cidlink.LinkPrototype{cid.Prefix{
+	lp := cid.Prefix{
 		Version:  1,    // Usually '1'.
 		Codec:    0x71, // 0x71 means "dag-cbor" -- See the multicodecs table: https://github.com/multiformats/multicodec/
 		MhType:   0x13, // 0x20 means "sha2-512" -- See the multicodecs table: https://github.com/multiformats/multicodec/
 		MhLength: 64,   // sha2-512 hash has a 64-byte sum.
-	}}
+	}
 
 	// And we need some data to link to!  Here's a quick piece of example data:
 	n := fluent.MustBuildMap(basicnode.Prototype.Map, 1, func(na fluent.MapAssembler) {

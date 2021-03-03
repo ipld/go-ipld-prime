@@ -33,6 +33,7 @@ type LinkSystem struct {
 	StorageWriteOpener BlockWriteOpener
 	StorageReadOpener  BlockReadOpener
 	Prototype          func(Link) LinkPrototype
+	BuildLink          func(pt LinkPrototype, hashsum []byte) Link
 }
 
 // The following two types define the two directions of transform that a codec can be expected to perform:

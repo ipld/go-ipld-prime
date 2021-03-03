@@ -67,7 +67,7 @@ func (lsys *LinkSystem) Fill(lnkCtx LinkContext, lnk Link, na NodeAssembler) err
 	}
 	hash := hasher.Sum(nil)
 	// Bit of a jig to get something we can do the hash equality check on.
-	lnk2 := lsys.Prototype(lnk).BuildLink(hash)
+	lnk2 := lsys.BuildLink(lsys.Prototype(lnk), hash)
 	if lnk2 != lnk {
 		return ErrHashMismatch{Actual: lnk2, Expected: lnk}
 	}
@@ -109,7 +109,7 @@ func (lsys *LinkSystem) Store(lnkCtx LinkContext, lp LinkPrototype, n Node) (Lin
 	if err != nil {
 		return nil, err
 	}
-	lnk := lp.BuildLink(hasher.Sum(nil))
+	lnk := lsys.BuildLink(lp, hasher.Sum(nil))
 	return lnk, commitFn(lnk)
 }
 
@@ -136,7 +136,7 @@ func (lsys *LinkSystem) ComputeLink(lp LinkPrototype, n Node) (Link, error) {
 	if err != nil {
 		return nil, err
 	}
-	return lp.BuildLink(hasher.Sum(nil)), nil
+	return lsys.BuildLink(lp, hasher.Sum(nil)), nil
 }
 
 func (lsys *LinkSystem) MustComputeLink(lp LinkPrototype, n Node) Link {

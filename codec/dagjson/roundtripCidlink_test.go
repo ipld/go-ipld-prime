@@ -15,12 +15,12 @@ import (
 )
 
 func TestRoundtripCidlink(t *testing.T) {
-	lp := cidlink.LinkPrototype{cid.Prefix{
+	lp := cid.Prefix{
 		Version:  1,
 		Codec:    0x0129,
 		MhType:   0x13,
 		MhLength: 4,
-	}}
+	}
 	lsys := cidlink.DefaultLinkSystem()
 
 	buf := bytes.Buffer{}
@@ -45,12 +45,13 @@ func TestRoundtripCidlink(t *testing.T) {
 // tokens have to be reprocessed before a recursion that find a real link appears.
 func TestUnmarshalTrickyMapContainingLink(t *testing.T) {
 	// Create a link; don't particularly care about its contents.
-	lnk := cidlink.LinkPrototype{cid.Prefix{
+	lsys := cidlink.DefaultLinkSystem()
+	lnk := lsys.BuildLink(cid.Prefix{
 		Version:  1,
 		Codec:    0x71,
 		MhType:   0x13,
 		MhLength: 4,
-	}}.BuildLink([]byte{1, 2, 3, 4}) // dummy value, content does not matter to this test.
+	}, []byte{1, 2, 3, 4}) // dummy value, content does not matter to this test.
 
 	// Compose the tricky corpus.  (lnk.String "happens" to work here, although this isn't recommended or correct in general.)
 	tricky := `{"/":{"/":"` + lnk.String() + `"}}`

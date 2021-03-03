@@ -14,12 +14,12 @@ import (
 )
 
 func TestRoundtripCidlink(t *testing.T) {
-	lp := cidlink.LinkPrototype{cid.Prefix{
+	lp := cid.Prefix{
 		Version:  1,
 		Codec:    0x71,
 		MhType:   0x13,
 		MhLength: 4,
-	}}
+	}
 	lsys := cidlink.DefaultLinkSystem()
 
 	buf := bytes.Buffer{}
