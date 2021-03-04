@@ -42,11 +42,9 @@ func (lnk Link) Load(ctx context.Context, lnkCtx ipld.LinkContext, na ipld.NodeA
 	if !exists {
 		return fmt.Errorf("no decoder registered for multicodec %d", lnk.Prefix().Codec)
 	}
-	var hasherBytes []byte
 	var decodeErr error
-	byteBuf, ok := r.(byteAccesor)
+	_, ok := r.(byteAccesor)
 	if ok {
-		hasherBytes = byteBuf.Bytes()
 		decodeErr = mcDecoder(na, r)
 	} else {
 		var hasher bytes.Buffer // multihash only exports bulk use, which is... really inefficient and should be fixed.
@@ -62,16 +60,8 @@ func (lnk Link) Load(ctx context.Context, lnkCtx ipld.LinkContext, na ipld.NodeA
 				return err
 			}
 		}
-		hasherBytes = hasher.Bytes()
 	}
 
-	cid, err := lnk.Prefix().Sum(hasherBytes)
-	if err != nil {
-		return err
-	}
-	if cid != lnk.Cid {
-		return fmt.Errorf("hash mismatch!  %q (actual) != %q (expected)", cid, lnk.Cid)
-	}
 	if decodeErr != nil {
 		return decodeErr
 	}
