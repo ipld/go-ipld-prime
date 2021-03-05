@@ -56,6 +56,9 @@ func (lsys *LinkSystem) Fill(lnkCtx LinkContext, lnk Link, na NodeAssembler) err
 	if err != nil {
 		return err
 	}
+	if lsys.TrustedStorage {
+		return decoder(na, reader)
+	}
 	tee := io.TeeReader(reader, hasher)
 	decodeErr := decoder(na, tee)
 	if decodeErr != nil { // It is important to security to check the hash before returning any other observation about the content.
