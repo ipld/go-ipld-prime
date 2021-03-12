@@ -15,8 +15,8 @@ var (
 )
 
 func init() {
-	multicodec.EncoderRegistry[0x71] = Encode
-	multicodec.DecoderRegistry[0x71] = Decode
+	multicodec.RegisterEncoder(0x71, Encode)
+	multicodec.RegisterDecoder(0x71, Decode)
 }
 
 func Decode(na ipld.NodeAssembler, r io.Reader) error {

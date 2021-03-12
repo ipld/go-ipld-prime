@@ -15,9 +15,9 @@ func DefaultLinkSystem() ipld.LinkSystem {
 		EncoderChooser: func(lp ipld.LinkPrototype) (ipld.Encoder, error) {
 			switch lp2 := lp.(type) {
 			case LinkPrototype:
-				fn, ok := multicodec.EncoderRegistry[lp2.GetCodec()]
-				if !ok {
-					return nil, fmt.Errorf("no encoder registered for multicodec indicator 0x%x", lp2.GetCodec())
+				fn, err := multicodec.LookupEncoder(lp2.GetCodec())
+				if err != nil {
+					return nil, err
 				}
 				return fn, nil
 			default:
@@ -28,9 +28,9 @@ func DefaultLinkSystem() ipld.LinkSystem {
 			lp := lnk.Prototype()
 			switch lp2 := lp.(type) {
 			case LinkPrototype:
-				fn, ok := multicodec.DecoderRegistry[lp2.GetCodec()]
-				if !ok {
-					return nil, fmt.Errorf("no decoder registered for multicodec indicator 0x%x", lp2.GetCodec())
+				fn, err := multicodec.LookupDecoder(lp2.GetCodec())
+				if err != nil {
+					return nil, err
 				}
 				return fn, nil
 			default:
