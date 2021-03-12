@@ -52,29 +52,45 @@ func (lsys *LinkSystem) Fill(lnkCtx LinkContext, lnk Link, na NodeAssembler) err
 		return ErrLinkingSetup{"no storage configured for reading", io.ErrClosedPipe} // REVIEW: better cause?
 	}
 	// Open storage, read it, verify it, and feed the codec to assemble the nodes.
+	//  We have two paths through this: if a `Bytes() []byte` method is handy, we'll assume it's faster than going through reader.
+	//   These diverge significantly, because if we give up on streaming, it makes sense to do the full hash check first before decoding at all.
 	reader, err := lsys.StorageReadOpener(lnkCtx, lnk)
 	if err != nil {
 		return err
 	}
-	tee := io.TeeReader(reader, hasher)
-	decodeErr := decoder(na, tee)
-	if decodeErr != nil { // It is important to security to check the hash before returning any other observation about the content.
-		// This copy is for data remaining the block that wasn't already pulled through the TeeReader by the decoder.
-		_, err := io.Copy(hasher, reader)
-		if err != nil {
-			return err
+	if buf, ok := reader.(interface{ Bytes() []byte }); ok {
+		// Flush everything to the hasher in one big slice.
+		hasher.Write(buf.Bytes())
+		hash := hasher.Sum(nil)
+		// Bit of a jig to get something we can do the hash equality check on.
+		lnk2 := lnk.Prototype().BuildLink(hash)
+		if lnk2 != lnk {
+			return ErrHashMismatch{Actual: lnk2, Expected: lnk}
 		}
+		// Perform decoding (knowing the hash is already verified).
+		return decoder(na, reader)
+	} else {
+		// Tee the stream so that the hasher is fed as the unmarshal progresses through the stream.
+		tee := io.TeeReader(reader, hasher)
+		decodeErr := decoder(na, tee)
+		if decodeErr != nil { // It is important to security to check the hash before returning any other observation about the content.
+			// This copy is for data remaining the block that wasn't already pulled through the TeeReader by the decoder.
+			_, err := io.Copy(hasher, reader)
+			if err != nil {
+				return err
+			}
+		}
+		hash := hasher.Sum(nil)
+		// Bit of a jig to get something we can do the hash equality check on.
+		lnk2 := lnk.Prototype().BuildLink(hash)
+		if lnk2 != lnk {
+			return ErrHashMismatch{Actual: lnk2, Expected: lnk}
+		}
+		if decodeErr != nil {
+			return decodeErr
+		}
+		return nil
 	}
-	hash := hasher.Sum(nil)
-	// Bit of a jig to get something we can do the hash equality check on.
-	lnk2 := lnk.Prototype().BuildLink(hash)
-	if lnk2 != lnk {
-		return ErrHashMismatch{Actual: lnk2, Expected: lnk}
-	}
-	if decodeErr != nil {
-		return decodeErr
-	}
-	return nil
 }
 
 func (lsys *LinkSystem) MustFill(lnkCtx LinkContext, lnk Link, na NodeAssembler) {
