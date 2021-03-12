@@ -41,7 +41,6 @@ func (lp LinkPrototype) BuildLink(hashsum []byte) ipld.Link {
 	//  No, `cid.Prefix.Sum` is not the method you are looking for: that expects the whole data body.
 	//  Most of the logic here is the same as the body of `cid.Prefix.Sum`; we just couldn't get at the relevant parts without copypasta.
 	//  There is also some logic that's sort of folded in from the go-multihash module.  This is really a mess.
-	//  Note that there are also several things that error, hard, even though that may not be reasonable.  For example, multihash.Encode rejects multihash indicator numbers it doesn't explicitly know about, which is not great for forward compatibility.
 	//  The go-cid package needs review.  So does go-multihash.  Their responsibilies are not well compartmentalized and they don't play well with other stdlib golang interfaces.
 	p := lp.Prefix
 
@@ -60,7 +59,7 @@ func (lp LinkPrototype) BuildLink(hashsum []byte) ipld.Link {
 
 	mh, err := multihash.Encode(hashsum, p.MhType)
 	if err != nil {
-		panic(err)
+		panic(err) // No longer possible, but multihash still returns an error for legacy reasons.
 	}
 
 	switch lp.Prefix.Version {
