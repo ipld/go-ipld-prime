@@ -53,29 +53,47 @@ For overall behaviors and specifications, refer to the specs repo:
 ### distinctions from go-ipld-interface&go-ipld-cbor
 
 This library ("go ipld prime") is the current head of development for golang IPLD,
-but several other libraries exist which are widely deployed.
+and we recommend new developments in golang be done using this library as the basis.
 
-This library is a clean take on the IPLD interfaces and addresses several design decisions very differently than existing libraries:
+However, several other libraries exist in golang for working with IPLD data.
+Most of these predate go-ipld-prime and no longer receive active development,
+but since they do support a lot of other software, you may continue to seem them around for a while.
+go-ipld-prime is generally **serially compatible** with these -- just like it is with IPLD libraries in other languages.
 
-- The Node interfaces are minimal (and match cleanly to the IPLD Data Model);
+In terms of programmatic API and features, go-ipld-prime is a clean take on the IPLD interfaces,
+and chose to address several design decisions very differently than older generation of libraries:
+
+- **The Node interfaces map cleanly to the IPLD Data Model**;
 - Many features known to be legacy are dropped;
-- The Link implementations are purely CIDs;
+- The Link implementations are purely CIDs (no "name" nor "size" properties);
 - The Path implementations are provided in the same box;
 - The JSON and CBOR implementations are provided in the same box;
-- And several odd dependencies on blockstore and other interfaces from the rest of the IPFS ecosystem are removed.
+- Several odd dependencies on blockstore and other interfaces that were closely coupled with IPFS are replaced by simpler, less-coupled interfaces;
+- New features like IPLD Selectors are only available from go-ipld-prime;
+- New features like ADLs (Advanced Data Layouts), which provide features like transparent sharding and indexing for large data, are only available from go-ipld-prime;
+- Declarative transformations can be applied to IPLD data (defined in terms of the IPLD Data Model) using go-ipld-prime;
+- and many other small refinements.
+
+In particular, the clean and direct mapping of "Node" to concepts in the IPLD Data Model
+ensures a much more consistent set of rules when working with go-ipld-prime data, regardless of which codecs are involved.
+(Codec-specific embellishments and edge-cases were common in the previous generation of libraries.)
+This clarity is also what provides the basis for features like Selectors, ADLs, and operations such as declarative transformations.
 
 Many of these changes had been discussed for the other IPLD codebases as well,
 but we chose clean break v2 as a more viable project-management path.
-Both the existing IPLD libraries and go-ipld-prime can co-exist on the same import path, and refer to the same kinds of serial data.
+Both go-ipld-prime and these legacy libraries can co-exist on the same import path, and both refer to the same kinds of serial data.
 Projects wishing to migrate can do so smoothly and at their leisure.
 
-There is no explicit deprecation timeline for the earlier golang IPLD libraries,
-but you should expect new features *here*, rather than in those libraries.
+We now consider many of the earlier golang IPLD libraries to be defacto deprecated,
+and you should expect new features *here*, rather than in those libraries.
+(Those libraries still won't be going away anytime soon, but we really don't recomend new construction on them.)
+
+### unixfsv1
 
 Be advised that faculties for dealing with unixfsv1 data are still limited.
-You can find some tools in the [go-ipld-prime-proto](https://github.com/ipld/go-ipld-prime-proto/) repo,
-but be sure to read the caveats and limitations in that project's readme.
-We're happy to accept major PRs on this topic, though, if you who is reading this wants to fix this faster than wait for us :)
+You can find some tools for dealing with dag-pb (the underlying codec) in the [ipld/go-codec-dagpb](https://github.com/ipld/go-codec-dagpb) repo,
+and there are also some tools retrofitting some of unixfsv1's other features to be perceivable using an ADL in the [ipfs/go-unixfsnode](https://github.com/ipfs/go-unixfsnode) repo...
+however, a "some assembly required" advisory may still be in effect; check the readmes in those repos for details on what they support.
 
 
 
@@ -86,7 +104,7 @@ The go-ipld-prime library is already usable.  We are also still in development, 
 
 A changelog can be found at [CHANGELOG.md](CHANGELOG.md).
 
-Using a commit hash when depending on this library is advisable (as it is with any other).
+Using a commit hash to pin versions precisely when depending on this library is advisable (as it is with any other).
 
 We may sometimes tag releases, but it's just as acceptable to track commits on master without the indirection.
 
@@ -109,3 +127,30 @@ None of this is to say we'll go breaking things willy-nilly for fun; but it *is*
 
 - Staying close to master is always better than not staying close to master;
 - and trust your compiler and your tests rather than tea-leaf patterns in a tag string.
+
+
+### Version Names
+
+When a tag is made, version number steps in go-ipld-prime advance as follows:
+
+1. the number bumps when the lead maintainer says it does.
+2. even numbers should be easy upgrades; odd numbers may change things.
+3. the version will start with `v0.` until further notice.
+
+[This is WarpVer](https://gist.github.com/warpfork/98d2f4060c68a565e8ad18ea4814c25f).
+
+These version numbers are provided as hints about what to expect,
+but ultimately, you should always invoke your compiler and your tests to tell you about compatibility.
+
+
+### Updating
+
+**Read the [CHANGELOG](CHANGELOG.md).**
+
+Really, read it.  We put exact migration instructions in there, as much as possible.  Even outright scripts, when feasible.
+
+An even-number release tag is usually made very shortly before an odd number tag,
+so if you're cautious about absorbing changes, you should update to the even number first,
+run all your tests, and *then* upgrade to the odd number.
+Usually the step to the even number should go off without a hitch, but if you *do* get problems from advancing to an even number tag,
+A) you can be pretty sure it's a bug, and B) you didn't have to edit a bunch of code before finding that out.
