@@ -68,9 +68,14 @@ func (lsys *LinkSystem) Fill(lnkCtx LinkContext, lnk Link, na NodeAssembler) err
 			return ErrHashMismatch{Actual: lnk2, Expected: lnk}
 		}
 		// Perform decoding (knowing the hash is already verified).
+		//  Note that the decoder recieves the same reader as we started with,
+		//   and as a result, is also free to detect a `Bytes() []byte` accessor and do any optimizations it wishes to based on that.
 		return decoder(na, reader)
 	} else {
 		// Tee the stream so that the hasher is fed as the unmarshal progresses through the stream.
+		//  Note: the tee means *the decoder doesn't get to see the original reader type*.
+		//   This is part of why the `Bytes() []byte` branch above is useful; the decoder loses any ability to do a similar check
+		//    and optimization when the tee is in the middle.
 		tee := io.TeeReader(reader, hasher)
 		decodeErr := decoder(na, tee)
 		if decodeErr != nil { // It is important to security to check the hash before returning any other observation about the content.
