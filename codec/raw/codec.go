@@ -12,15 +12,20 @@ import (
 	"io/ioutil"
 
 	ipld "github.com/ipld/go-ipld-prime"
-	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
+	"github.com/ipld/go-ipld-prime/multicodec"
 )
 
 // TODO(mvdan): make go-ipld-prime use go-multicodec soon
 const rawMulticodec = 0x55
 
+var (
+	_ ipld.Decoder = Decode
+	_ ipld.Encoder = Encode
+)
+
 func init() {
-	cidlink.RegisterMulticodecDecoder(rawMulticodec, Decode)
-	cidlink.RegisterMulticodecEncoder(rawMulticodec, Encode)
+	multicodec.EncoderRegistry[rawMulticodec] = Encode
+	multicodec.DecoderRegistry[rawMulticodec] = Decode
 }
 
 // Decode implements decoding of a node with the raw codec.
