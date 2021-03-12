@@ -4,9 +4,10 @@ import (
 	"fmt"
 	"hash"
 
+	"github.com/multiformats/go-multihash/core"
+
 	"github.com/ipld/go-ipld-prime"
 	"github.com/ipld/go-ipld-prime/multicodec"
-	"github.com/ipld/go-ipld-prime/multihash"
 )
 
 func DefaultLinkSystem() ipld.LinkSystem {
@@ -39,13 +40,13 @@ func DefaultLinkSystem() ipld.LinkSystem {
 		HasherChooser: func(lp ipld.LinkPrototype) (hash.Hash, error) {
 			switch lp2 := lp.(type) {
 			case LinkPrototype:
-				fn, ok := multihash.Registry[lp2.MhType]
-				if !ok {
-					return nil, fmt.Errorf("no hasher registered for multihash indicator 0x%x", lp2.MhType)
+				h, err := multihash.GetHasher(lp2.MhType)
+				if err != nil {
+					return nil, fmt.Errorf("no hasher registered for multihash indicator 0x%x: %w", lp2.MhType, err)
 				}
-				return fn(), nil
+				return h, nil
 			default:
-				return nil, fmt.Errorf("this decoderChooser can only handle cidlink.LinkPrototype; got %T", lp)
+				return nil, fmt.Errorf("this hasherChooser can only handle cidlink.LinkPrototype; got %T", lp)
 			}
 		},
 	}
