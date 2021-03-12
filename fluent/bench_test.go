@@ -155,7 +155,7 @@ func BenchmarkUnmarshal(b *testing.B) {
 	r := strings.NewReader(serial)
 	for i := 0; i < b.N; i++ {
 		nb := basicnode.Prototype.Any.NewBuilder()
-		err = dagjson.Decoder(nb, r)
+		err = dagjson.Decode(nb, r)
 		n = nb.Build()
 		r.Reset(serial)
 	}

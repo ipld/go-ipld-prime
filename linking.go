@@ -5,144 +5,165 @@ import (
 	"io"
 )
 
-// Link is a special kind of value in IPLD which can be "loaded" to access
-// more nodes.
-//
-// Nodes can return a Link; this can be loaded manually, or,
-// the traversal package contains powerful features for automatically
-// traversing links through large trees of nodes.
-//
-// Links straddle somewhat awkwardly across the IPLD Layer Model:
-// clearly not at the Schema layer (though schemas can define their parameters),
-// partially at the Data Model layer (as they're recognizably in the Node interface),
-// and also involved at some serial layer that we don't often talk about:
-// linking -- since we're a content-addressed system at heart -- necessarily
-// involves understanding of concrete serialization details:
-// which encoding mechanisms to use, what string escaping, what hashing, etc,
-// and indeed what concrete serial link representation itself to use.
-//
-// Link is an abstract interface so that we can describe Nodes without
-// getting stuck on specific details of any link representation.
-// In practice, you'll almost certainly use CIDs for linking.
-// However, it's possible to bring your own Link implementations
-// (though this'll almost certainly involve also bringing your own encoding
-// systems; it's a lot of work).
-// It's even possible to use IPLD *entirely without* any linking implementation,
-// using it purely for json/cbor via the encoding packages and
-// foregoing the advanced traversal features around transparent link loading.
-//
-// Link interfaces are usually inhabited by a struct or string or etc, and not a pointer.
-// This is because Link is often desirable to be able to use as a golang map key,
-// and in that context, pointers would not result in the desired behavior.
-type Link interface {
-	// Load consumes serial data from a Loader and funnels the parsed
-	// data into a NodeAssembler.
-	//
-	// The provided Loader function is used to get a reader for the raw
-	// serialized content; the Link contains an understanding of how to
-	// select a decoder (and hasher for verification, etc); and the
-	// NodeAssembler accumulates the final results (which you can
-	// presumably access from elsewhere; Load is designed not to know
-	// about this).
-	Load(context.Context, LinkContext, NodeAssembler, Loader) error
+// This file contains all the functions on LinkSystem.
+// These are the helpful, user-facing functions we expect folks to use "most of the time" when loading and storing data.
 
-	// LinkBuilder returns a handle to any parameters of the Link which
-	// are needed to create a new Link of the same style but with new content.
-	// (It's much like the relationship of Node/NodeBuilder.)
-	//
-	// (If you're familiar with CIDs, you can think of this method as
-	// corresponding closely to `cid.Prefix()`, just more abstractly.)
-	LinkBuilder() LinkBuilder
+// Varations:
+// - Load vs Store vs ComputeLink
+// - With or without LinkContext?
+//   - Brevity would be nice but I can't think of what to name the functions, so: everything takes LinkContext.  Zero value is fine though.
+// - [for load direction only]: Prototype (and return Node|error) or Assembler (and just return error)?
+//   - naming: Load vs Fill.
+// - 'Must' variants.
 
-	// String should return a reasonably human-readable debug-friendly
-	// representation of a Link.  It should only be used for debug and
-	// log message purposes; there is no contract that requires that the
-	// string be able to be parsed back into a reified Link.
-	String() string
+// Can we get as far as a `QuickLoad(lnk Link) (Node, error)` function, which doesn't even ask you for a NodePrototype?
+//  No, not quite.  (Alas.)  If we tried to do so, and make it use `basicnode.Prototype`, we'd have import cycles; ded.
+
+func (lsys *LinkSystem) Load(lnkCtx LinkContext, lnk Link, np NodePrototype) (Node, error) {
+	nb := np.NewBuilder()
+	if err := lsys.Fill(lnkCtx, lnk, nb); err != nil {
+		return nil, err
+	}
+	return nb.Build(), nil
 }
 
-// LinkBuilder encapsulates any implementation details and parameters
-// necessary for taking a Node and converting it to a serial representation
-// and returning a Link to that data.
-//
-// The serialized bytes will be routed through the provided Storer system,
-// which is expected to store them in some way such that a related Loader
-// system can later use the Link and an associated Loader to load nodes
-// of identical content.
-//
-// LinkBuilder, like Link, is an abstract interface.
-// If using CIDs as an implementation, LinkBuilder will encapsulate things
-// like multihashType, multicodecType, and cidVersion, for example.
-type LinkBuilder interface {
-	Build(context.Context, LinkContext, Node, Storer) (Link, error)
+func (lsys *LinkSystem) MustLoad(lnkCtx LinkContext, lnk Link, np NodePrototype) Node {
+	if n, err := lsys.Load(lnkCtx, lnk, np); err != nil {
+		panic(err)
+	} else {
+		return n
+	}
 }
 
-// Loader functions are used to get a reader for raw serialized content
-// based on the lookup information in a Link.
-// A loader function is used by providing it to a Link.Load() call.
-//
-// Loaders typically have some filesystem or database handle contained
-// within their closure which is used to satisfy read operations.
-//
-// LinkContext objects can be provided to give additional information
-// to the loader, and will be automatically filled out when a Loader
-// is used by systems in the traversal package; most Loader implementations
-// should also work fine when given the zero value of LinkContext.
-//
-// Loaders are implicitly coupled to a Link implementation and have some
-// "extra" knowledge of the concrete Link type.  This necessary since there is
-// no mandated standard for how to serially represent Link itself, and such
-// a representation is typically needed by a Storer implementation.
-type Loader func(lnk Link, lnkCtx LinkContext) (io.Reader, error)
-
-// Storer functions are used to a get a writer for raw serialized content,
-// which will be committed to storage indexed by Link.
-// A stoerer function is used by providing it to a LinkBuilder.Build() call.
-//
-// The storer system comes in two parts: the Storer itself *starts* a storage
-// operation (presumably to some e.g. tempfile) and returns a writer; the
-// StoreCommitter returned with the writer is used to *commit* the final storage
-// (much like a 'Close' operation for the writer).
-//
-// Storers typically have some filesystem or database handle contained
-// within their closure which is used to satisfy read operations.
-//
-// LinkContext objects can be provided to give additional information
-// to the storer, and will be automatically filled out when a Storer
-// is used by systems in the traversal package; most Storer implementations
-// should also work fine when given the zero value of LinkContext.
-//
-// Storers are implicitly coupled to a Link implementation and have some
-// "extra" knowledge of the concrete Link type.  This necessary since there is
-// no mandated standard for how to serially represent Link itself, and such
-// a representation is typically needed by a Storer implementation.
-type Storer func(lnkCtx LinkContext) (io.Writer, StoreCommitter, error)
-
-// StoreCommitter is a thunk returned by a Storer which is used to "commit"
-// the storage operation.  It should be called after the associated writer
-// is finished, similar to a 'Close' method, but further takes a Link parameter,
-// which is the identity of the content.  Typically, this will cause an atomic
-// operation in the storage system to move the already-written content into
-// a final place (e.g. rename a tempfile) determined by the Link.
-// (The Link parameter is necessarily only given at the end of the process
-// rather than the beginning to so that we can have content-addressible
-// semantics while also supporting streaming writes.)
-type StoreCommitter func(Link) error
-
-// LinkContext is a parameter to Storer and Loader functions.
-//
-// An example use of LinkContext might be inspecting the LinkNode, and if
-// it's a typed node, inspecting its Type property; then, a Loader might
-// deciding on whether or not we want to load objects of that Type.
-// This might be used to do a traversal which looks at all directory objects,
-// but not file contents, for example.
-type LinkContext struct {
-	LinkPath   Path
-	LinkNode   Node // has the Link again, but also might have type info // always zero for writing new nodes, for obvi reasons.
-	ParentNode Node
+func (lsys *LinkSystem) Fill(lnkCtx LinkContext, lnk Link, na NodeAssembler) error {
+	if lnkCtx.Ctx == nil {
+		lnkCtx.Ctx = context.Background()
+	}
+	// Choose all the parts.
+	decoder, err := lsys.DecoderChooser(lnk)
+	if err != nil {
+		return ErrLinkingSetup{"could not choose a decoder", err}
+	}
+	hasher, err := lsys.HasherChooser(lnk.Prototype())
+	if err != nil {
+		return ErrLinkingSetup{"could not choose a hasher", err}
+	}
+	if lsys.StorageReadOpener == nil {
+		return ErrLinkingSetup{"no storage configured for reading", io.ErrClosedPipe} // REVIEW: better cause?
+	}
+	// Open storage, read it, verify it, and feed the codec to assemble the nodes.
+	//  We have two paths through this: if a `Bytes() []byte` method is handy, we'll assume it's faster than going through reader.
+	//   These diverge significantly, because if we give up on streaming, it makes sense to do the full hash check first before decoding at all.
+	reader, err := lsys.StorageReadOpener(lnkCtx, lnk)
+	if err != nil {
+		return err
+	}
+	if buf, ok := reader.(interface{ Bytes() []byte }); ok {
+		// Flush everything to the hasher in one big slice.
+		hasher.Write(buf.Bytes())
+		hash := hasher.Sum(nil)
+		// Bit of a jig to get something we can do the hash equality check on.
+		lnk2 := lnk.Prototype().BuildLink(hash)
+		if lnk2 != lnk {
+			return ErrHashMismatch{Actual: lnk2, Expected: lnk}
+		}
+		// Perform decoding (knowing the hash is already verified).
+		//  Note that the decoder recieves the same reader as we started with,
+		//   and as a result, is also free to detect a `Bytes() []byte` accessor and do any optimizations it wishes to based on that.
+		return decoder(na, reader)
+	} else {
+		// Tee the stream so that the hasher is fed as the unmarshal progresses through the stream.
+		//  Note: the tee means *the decoder doesn't get to see the original reader type*.
+		//   This is part of why the `Bytes() []byte` branch above is useful; the decoder loses any ability to do a similar check
+		//    and optimization when the tee is in the middle.
+		tee := io.TeeReader(reader, hasher)
+		decodeErr := decoder(na, tee)
+		if decodeErr != nil { // It is important to security to check the hash before returning any other observation about the content.
+			// This copy is for data remaining the block that wasn't already pulled through the TeeReader by the decoder.
+			_, err := io.Copy(hasher, reader)
+			if err != nil {
+				return err
+			}
+		}
+		hash := hasher.Sum(nil)
+		// Bit of a jig to get something we can do the hash equality check on.
+		lnk2 := lnk.Prototype().BuildLink(hash)
+		if lnk2 != lnk {
+			return ErrHashMismatch{Actual: lnk2, Expected: lnk}
+		}
+		if decodeErr != nil {
+			return decodeErr
+		}
+		return nil
+	}
 }
 
-// n.b. if I had java, this would all indeed be generic:
-// `Link<$T>`, `LinkBuilder<$T>`, `Storer<$T>`, etc would be an explicit family.
-// ... Then again, in java, that'd prevent composition of a Storer or Loader
-// which could support more than one concrete type, so.  ¯\_(ツ)_/¯
+func (lsys *LinkSystem) MustFill(lnkCtx LinkContext, lnk Link, na NodeAssembler) {
+	if err := lsys.Fill(lnkCtx, lnk, na); err != nil {
+		panic(err)
+	}
+}
+
+func (lsys *LinkSystem) Store(lnkCtx LinkContext, lp LinkPrototype, n Node) (Link, error) {
+	if lnkCtx.Ctx == nil {
+		lnkCtx.Ctx = context.Background()
+	}
+	// Choose all the parts.
+	encoder, err := lsys.EncoderChooser(lp)
+	if err != nil {
+		return nil, ErrLinkingSetup{"could not choose an encoder", err}
+	}
+	hasher, err := lsys.HasherChooser(lp)
+	if err != nil {
+		return nil, ErrLinkingSetup{"could not choose a hasher", err}
+	}
+	if lsys.StorageWriteOpener == nil {
+		return nil, ErrLinkingSetup{"no storage configured for writing", io.ErrClosedPipe} // REVIEW: better cause?
+	}
+	// Open storage write stream, feed serial data to the storage and the hasher, and funnel the codec output into both.
+	writer, commitFn, err := lsys.StorageWriteOpener(lnkCtx)
+	if err != nil {
+		return nil, err
+	}
+	tee := io.MultiWriter(writer, hasher)
+	err = encoder(n, tee)
+	if err != nil {
+		return nil, err
+	}
+	lnk := lp.BuildLink(hasher.Sum(nil))
+	return lnk, commitFn(lnk)
+}
+
+func (lsys *LinkSystem) MustStore(lnkCtx LinkContext, lp LinkPrototype, n Node) Link {
+	if lnk, err := lsys.Store(lnkCtx, lp, n); err != nil {
+		panic(err)
+	} else {
+		return lnk
+	}
+}
+
+// ComputeLink returns a Link for the given data, but doesn't do anything else
+// (e.g. it doesn't try to store any of the serial-form data anywhere else).
+func (lsys *LinkSystem) ComputeLink(lp LinkPrototype, n Node) (Link, error) {
+	encoder, err := lsys.EncoderChooser(lp)
+	if err != nil {
+		return nil, ErrLinkingSetup{"could not choose an encoder", err}
+	}
+	hasher, err := lsys.HasherChooser(lp)
+	if err != nil {
+		return nil, ErrLinkingSetup{"could not choose a hasher", err}
+	}
+	err = encoder(n, hasher)
+	if err != nil {
+		return nil, err
+	}
+	return lp.BuildLink(hasher.Sum(nil)), nil
+}
+
+func (lsys *LinkSystem) MustComputeLink(lp LinkPrototype, n Node) Link {
+	if lnk, err := lsys.ComputeLink(lp, n); err != nil {
+		panic(err)
+	} else {
+		return lnk
+	}
+}

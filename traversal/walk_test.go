@@ -1,15 +1,14 @@
 package traversal_test
 
 import (
-	"bytes"
-	"io"
 	"testing"
 
 	. "github.com/warpfork/go-wish"
 
-	ipld "github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime"
 	_ "github.com/ipld/go-ipld-prime/codec/dagjson"
 	"github.com/ipld/go-ipld-prime/fluent"
+	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
 	basicnode "github.com/ipld/go-ipld-prime/node/basic"
 	"github.com/ipld/go-ipld-prime/traversal"
 	"github.com/ipld/go-ipld-prime/traversal/selector"
@@ -119,11 +118,11 @@ func TestWalkMatching(t *testing.T) {
 		))
 		s, err := ss.Selector()
 		var order int
+		lsys := cidlink.DefaultLinkSystem()
+		lsys.StorageReadOpener = (&store).OpenRead
 		err = traversal.Progress{
 			Cfg: &traversal.Config{
-				LinkLoader: func(lnk ipld.Link, _ ipld.LinkContext) (io.Reader, error) {
-					return bytes.NewReader(storage[lnk]), nil
-				},
+				LinkSystem: lsys,
 				LinkTargetNodePrototypeChooser: func(_ ipld.Link, _ ipld.LinkContext) (ipld.NodePrototype, error) {
 					return basicnode.Prototype__Any{}, nil
 				},
@@ -165,11 +164,11 @@ func TestWalkMatching(t *testing.T) {
 		ss := ssb.ExploreRange(0, 3, ssb.Matcher())
 		s, err := ss.Selector()
 		var order int
+		lsys := cidlink.DefaultLinkSystem()
+		lsys.StorageReadOpener = (&store).OpenRead
 		err = traversal.Progress{
 			Cfg: &traversal.Config{
-				LinkLoader: func(lnk ipld.Link, _ ipld.LinkContext) (io.Reader, error) {
-					return bytes.NewReader(storage[lnk]), nil
-				},
+				LinkSystem: lsys,
 				LinkTargetNodePrototypeChooser: func(_ ipld.Link, _ ipld.LinkContext) (ipld.NodePrototype, error) {
 					return basicnode.Prototype__Any{}, nil
 				},
@@ -210,11 +209,11 @@ func TestWalkMatching(t *testing.T) {
 		})
 		s, err := ss.Selector()
 		var order int
+		lsys := cidlink.DefaultLinkSystem()
+		lsys.StorageReadOpener = (&store).OpenRead
 		err = traversal.Progress{
 			Cfg: &traversal.Config{
-				LinkLoader: func(lnk ipld.Link, _ ipld.LinkContext) (io.Reader, error) {
-					return bytes.NewReader(storage[lnk]), nil
-				},
+				LinkSystem: lsys,
 				LinkTargetNodePrototypeChooser: func(_ ipld.Link, _ ipld.LinkContext) (ipld.NodePrototype, error) {
 					return basicnode.Prototype__Any{}, nil
 				},

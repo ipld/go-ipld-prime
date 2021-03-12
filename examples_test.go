@@ -21,7 +21,7 @@ func ExampleCreateDataAndMarshal() {
 	ma.Finish()     // Call 'Finish' on the map assembly to let it know no more data is coming.
 	n := nb.Build() // Call 'Build' to get the resulting Node.  (It's immutable!)
 
-	dagjson.Encoder(n, os.Stdout)
+	dagjson.Encode(n, os.Stdout)
 
 	// Output:
 	// {
@@ -35,7 +35,7 @@ func ExampleUnmarshalData() {
 
 	np := basicnode.Prototype.Any // Pick a stle for the in-memory data.
 	nb := np.NewBuilder()         // Create a builder.
-	dagjson.Decoder(nb, serial)   // Hand the builder to decoding -- decoding will fill it in!
+	dagjson.Decode(nb, serial)    // Hand the builder to decoding -- decoding will fill it in!
 	n := nb.Build()               // Call 'Build' to get the resulting Node.  (It's immutable!)
 
 	fmt.Printf("the data decoded was a %s kind\n", n.Kind())

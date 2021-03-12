@@ -199,7 +199,7 @@ func TestExploreRecursiveExplore(t *testing.T) {
 		}
 		`
 		nb := basicnode.Prototype__Any{}.NewBuilder()
-		err := dagjson.Decoder(nb, strings.NewReader(nodeString))
+		err := dagjson.Decode(nb, strings.NewReader(nodeString))
 		Wish(t, err, ShouldEqual, nil)
 		rn := nb.Build()
 		rs = rs.Explore(rn, ipld.PathSegmentOfString("Parents"))
@@ -250,7 +250,7 @@ func TestExploreRecursiveExplore(t *testing.T) {
 		}
 		`
 		nb := basicnode.Prototype__Any{}.NewBuilder()
-		err := dagjson.Decoder(nb, strings.NewReader(nodeString))
+		err := dagjson.Decode(nb, strings.NewReader(nodeString))
 		Wish(t, err, ShouldEqual, nil)
 		rn := nb.Build()
 		rs = rs.Explore(rn, ipld.PathSegmentOfString("Parents"))
@@ -293,7 +293,7 @@ func TestExploreRecursiveExplore(t *testing.T) {
 		}
 		`
 		nb := basicnode.Prototype__Any{}.NewBuilder()
-		err := dagjson.Decoder(nb, strings.NewReader(nodeString))
+		err := dagjson.Decode(nb, strings.NewReader(nodeString))
 		Wish(t, err, ShouldEqual, nil)
 		rn := nb.Build()
 		rs = rs.Explore(rn, ipld.PathSegmentOfString("Parents"))
@@ -338,7 +338,7 @@ func TestExploreRecursiveExplore(t *testing.T) {
 		}
 		`
 		nb := basicnode.Prototype__Any{}.NewBuilder()
-		err := dagjson.Decoder(nb, strings.NewReader(nodeString))
+		err := dagjson.Decode(nb, strings.NewReader(nodeString))
 		Wish(t, err, ShouldEqual, nil)
 		n := nb.Build()
 
@@ -423,7 +423,7 @@ func TestExploreRecursiveExplore(t *testing.T) {
 		}
 		`
 		nb := basicnode.Prototype__Any{}.NewBuilder()
-		err := dagjson.Decoder(nb, strings.NewReader(nodeString))
+		err := dagjson.Decode(nb, strings.NewReader(nodeString))
 		Wish(t, err, ShouldEqual, nil)
 		rn := nb.Build()
 		rs = rs.Explore(rn, ipld.PathSegmentOfString("Parents"))

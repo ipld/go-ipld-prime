@@ -39,7 +39,29 @@ Unreleased on master
 Changes here are on the master branch, but not in any tagged release yet.
 When a release tag is made, this block of bullet points will just slide down to the [Released Changes](#released-changes) section.
 
-- _nothing yet :)_
+- Change: linking has been significantly reworked, and now primarily works through the `ipld.LinkSystem` type.
+	- This is cool, because it makes a lot of things less circuitous.  Previously, working with links was a complicated combination of Loader and Storer functions, the Link interface contained the Load method, it was just... complicated to figure out where to start.  Now, the answer is simple and constant: "Start with LinkSystem".  Clearer to use; clearer to document; and also coincidentally a lot clearer to develop for, internally.
+	- `Link.Load` -> `LinkSystem.Load` (or, new: `LinkSystem.Fill`, which lets you control memory allocation more explicitly).
+	- `LinkBuilder.Build` -> `LinkSystem.Store`.
+	- `LinkSystem.ComputeLink` is a new feature that prodices a Link without needing to store the data anywhere.
+	- The `ipld.Loader` function is now most analogous to `ipld.BlockReadOpener`.  You now put it into use by assigning it to a `LinkLoader`'s `StorageReadOpener` field.
+	- The `ipld.Storer` function is now most analogous to `ipld.BlockWriteOpener`.  You now put it into use by assigning it to a `LinkLoader`'s `StorageWriteOpener` field.
+	- 99% of the time, you'll probably start with `linking/cid.DefaultLinkSystem()`.  You can assign to fields of this to customize it further, but it'll get you started with multihashes and multicodecs and all the behavior you expect when working with CIDs.
+		- (So, no -- the `cidlink` package hasn't gone anywhere.  Hopefully it's a bit less obtrusive now, but it's still here.)
+	- The `traversal` package's `Config` struct now uses a `LinkSystem` instead of a `Loader` and `Storer` pair, as you would now probably expect.
+		- If you had code that was also previously passing around `Loader` and `Storer`, it's likely a similar pattern of change will be the right direction for that code.
+- Change: multicodec registration is now in the `go-ipld-prime/multicodec` package.
+	- Previously, this registry was in the `linking/cid` package.  These things are now better decoupled.
+	- This wil require packages which register codecs to make some very small updates: e.g. `s/cidlink.RegisterMulticodecDecoder/multicodec.RegisterDecoder/`, and correspondingly, update the package imports at the top of the file.
+- New: some pre-made storage options (e.g. satisfying the `ipld.StorageReadOpener` and `ipld.StorageWriteOpener` function interfaces) have appeared!  Find these in the `go-ipld-prime/storage` package.
+	- Currently this only includes a simple in-memory storage option.  This may be useful for testing and examples, but probably not much else :)
+	- These are mostly intended to be illustrative.  You should still expect to find better storage mechanisms in other repos.
+- Change: some function names in codec packages are ever-so-slightly updated.  (They're verbs now, instead of nouns, which makes sense because they're functions.  I have no idea what I was thinking with the previous naming.  Sorry.)
+	- `s/dagjson.Decoder/dagjson.Decode/g`
+	- `s/dagjson.Decoder/dagjson.Encode/g`
+	- `s/dagcbor.Decoder/dagcbor.Decode/g`
+	- `s/dagcbor.Encoder/dagcbor.Encode/g`
+	- If you've only been using these indirectly, via their multicodec indicators, you won't have to update anything at all to account for this change.
 
 
 Released Changes

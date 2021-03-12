@@ -2,7 +2,6 @@ package dagcbor
 
 import (
 	"bytes"
-	"context"
 	"io"
 	"testing"
 
@@ -15,27 +14,26 @@ import (
 )
 
 func TestRoundtripCidlink(t *testing.T) {
-	lb := cidlink.LinkBuilder{cid.Prefix{
+	lp := cidlink.LinkPrototype{cid.Prefix{
 		Version:  1,
 		Codec:    0x71,
-		MhType:   0x17,
+		MhType:   0x13,
 		MhLength: 4,
 	}}
+	lsys := cidlink.DefaultLinkSystem()
 
 	buf := bytes.Buffer{}
-	lnk, err := lb.Build(context.Background(), ipld.LinkContext{}, n,
-		func(ipld.LinkContext) (io.Writer, ipld.StoreCommitter, error) {
-			return &buf, func(lnk ipld.Link) error { return nil }, nil
-		},
-	)
+	lsys.StorageWriteOpener = func(lnkCtx ipld.LinkContext) (io.Writer, ipld.BlockWriteCommitter, error) {
+		return &buf, func(lnk ipld.Link) error { return nil }, nil
+	}
+	lsys.StorageReadOpener = func(lnkCtx ipld.LinkContext, lnk ipld.Link) (io.Reader, error) {
+		return bytes.NewReader(buf.Bytes()), nil
+	}
+
+	lnk, err := lsys.Store(ipld.LinkContext{}, lp, n)
 	Require(t, err, ShouldEqual, nil)
 
-	nb := basicnode.Prototype__Any{}.NewBuilder()
-	err = lnk.Load(context.Background(), ipld.LinkContext{}, nb,
-		func(lnk ipld.Link, _ ipld.LinkContext) (io.Reader, error) {
-			return bytes.NewReader(buf.Bytes()), nil
-		},
-	)
+	n2, err := lsys.Load(ipld.LinkContext{}, lnk, basicnode.Prototype.Any)
 	Require(t, err, ShouldEqual, nil)
-	Wish(t, nb.Build(), ShouldEqual, n)
+	Wish(t, n2, ShouldEqual, n)
 }

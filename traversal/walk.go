@@ -177,8 +177,8 @@ func (prog Progress) loadLink(v ipld.Node, parent ipld.Node) (ipld.Node, error) 
 	if err != nil {
 		return nil, err
 	}
-	// Assemble the LinkContext in case the Loader or NBChooser want it.
 	lnkCtx := ipld.LinkContext{
+		Ctx:        prog.Cfg.Ctx,
 		LinkPath:   prog.Path,
 		LinkNode:   v,
 		ParentNode: parent,
@@ -188,21 +188,15 @@ func (prog Progress) loadLink(v ipld.Node, parent ipld.Node) (ipld.Node, error) 
 	if err != nil {
 		return nil, fmt.Errorf("error traversing node at %q: could not load link %q: %s", prog.Path, lnk, err)
 	}
-	nb := np.NewBuilder()
 	// Load link!
-	err = lnk.Load(
-		prog.Cfg.Ctx,
-		lnkCtx,
-		nb,
-		prog.Cfg.LinkLoader,
-	)
+	n, err := prog.Cfg.LinkSystem.Load(lnkCtx, lnk, np)
 	if err != nil {
 		if _, ok := err.(SkipMe); ok {
 			return nil, err
 		}
 		return nil, fmt.Errorf("error traversing node at %q: could not load link %q: %s", prog.Path, lnk, err)
 	}
-	return nb.Build(), nil
+	return n, nil
 }
 
 // WalkTransforming walks a graph of Nodes, deciding which to alter by applying a Selector,

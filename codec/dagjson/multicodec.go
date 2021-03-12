@@ -6,21 +6,21 @@ import (
 
 	"github.com/polydawn/refmt/json"
 
-	ipld "github.com/ipld/go-ipld-prime"
-	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
+	"github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/multicodec"
 )
 
 var (
-	_ cidlink.MulticodecDecoder = Decoder
-	_ cidlink.MulticodecEncoder = Encoder
+	_ ipld.Decoder = Decode
+	_ ipld.Encoder = Encode
 )
 
 func init() {
-	cidlink.RegisterMulticodecDecoder(0x0129, Decoder)
-	cidlink.RegisterMulticodecEncoder(0x0129, Encoder)
+	multicodec.RegisterEncoder(0x0129, Encode)
+	multicodec.RegisterDecoder(0x0129, Decode)
 }
 
-func Decoder(na ipld.NodeAssembler, r io.Reader) error {
+func Decode(na ipld.NodeAssembler, r io.Reader) error {
 	// Shell out directly to generic builder path.
 	//  (There's not really any fastpaths of note for json.)
 	err := Unmarshal(na, json.NewDecoder(r))
@@ -52,7 +52,7 @@ func Decoder(na ipld.NodeAssembler, r io.Reader) error {
 	return err
 }
 
-func Encoder(n ipld.Node, w io.Writer) error {
+func Encode(n ipld.Node, w io.Writer) error {
 	// Shell out directly to generic inspection path.
 	//  (There's not really any fastpaths of note for json.)
 	// Write another function if you need to tune encoding options about whitespace.

@@ -5,23 +5,22 @@ import (
 
 	"github.com/polydawn/refmt/cbor"
 
-	ipld "github.com/ipld/go-ipld-prime"
-	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
+	"github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/multicodec"
 )
 
 var (
-	_ cidlink.MulticodecDecoder = Decoder
-	_ cidlink.MulticodecEncoder = Encoder
+	_ ipld.Decoder = Decode
+	_ ipld.Encoder = Encode
 )
 
 func init() {
-	cidlink.RegisterMulticodecDecoder(0x71, Decoder)
-	cidlink.RegisterMulticodecEncoder(0x71, Encoder)
+	multicodec.RegisterEncoder(0x71, Encode)
+	multicodec.RegisterDecoder(0x71, Decode)
 }
 
-func Decoder(na ipld.NodeAssembler, r io.Reader) error {
+func Decode(na ipld.NodeAssembler, r io.Reader) error {
 	// Probe for a builtin fast path.  Shortcut to that if possible.
-	//  (ipldcbor.NodeBuilder supports this, for example.)
 	type detectFastPath interface {
 		DecodeDagCbor(io.Reader) error
 	}
@@ -32,9 +31,8 @@ func Decoder(na ipld.NodeAssembler, r io.Reader) error {
 	return Unmarshal(na, cbor.NewDecoder(cbor.DecodeOptions{}, r))
 }
 
-func Encoder(n ipld.Node, w io.Writer) error {
+func Encode(n ipld.Node, w io.Writer) error {
 	// Probe for a builtin fast path.  Shortcut to that if possible.
-	//  (ipldcbor.Node supports this, for example.)
 	type detectFastPath interface {
 		EncodeDagCbor(io.Writer) error
 	}

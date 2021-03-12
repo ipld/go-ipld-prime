@@ -2,7 +2,6 @@ package raw
 
 import (
 	"bytes"
-	"context"
 	"fmt"
 	"io"
 	"testing"
@@ -48,30 +47,30 @@ func TestRoundtrip(t *testing.T) {
 func TestRoundtripCidlink(t *testing.T) {
 	t.Parallel()
 
-	lb := cidlink.LinkBuilder{Prefix: cid.Prefix{
+	lp := cidlink.LinkPrototype{Prefix: cid.Prefix{
 		Version:  1,
 		Codec:    rawMulticodec,
-		MhType:   0x17,
+		MhType:   0x13,
 		MhLength: 4,
 	}}
 	node := basicnode.NewBytes([]byte("hello there"))
 
+	lsys := cidlink.DefaultLinkSystem()
+
 	buf := bytes.Buffer{}
-	lnk, err := lb.Build(context.Background(), ipld.LinkContext{}, node,
-		func(ipld.LinkContext) (io.Writer, ipld.StoreCommitter, error) {
-			return &buf, func(lnk ipld.Link) error { return nil }, nil
-		},
-	)
+	lsys.StorageWriteOpener = func(lnkCtx ipld.LinkContext) (io.Writer, ipld.BlockWriteCommitter, error) {
+		return &buf, func(lnk ipld.Link) error { return nil }, nil
+	}
+	lsys.StorageReadOpener = func(lnkCtx ipld.LinkContext, lnk ipld.Link) (io.Reader, error) {
+		return bytes.NewReader(buf.Bytes()), nil
+	}
+	lnk, err := lsys.Store(ipld.LinkContext{}, lp, node)
+
 	qt.Assert(t, err, qt.IsNil)
 
-	nb := basicnode.Prototype__Any{}.NewBuilder()
-	err = lnk.Load(context.Background(), ipld.LinkContext{}, nb,
-		func(lnk ipld.Link, _ ipld.LinkContext) (io.Reader, error) {
-			return bytes.NewReader(buf.Bytes()), nil
-		},
-	)
+	newNode, err := lsys.Load(ipld.LinkContext{}, lnk, basicnode.Prototype__Any{})
 	qt.Assert(t, err, qt.IsNil)
-	qt.Assert(t, nb.Build(), qt.DeepEquals, node)
+	qt.Assert(t, newNode, qt.DeepEquals, node)
 }
 
 // mustOnlyUseRead only exposes Read, hiding Bytes.
