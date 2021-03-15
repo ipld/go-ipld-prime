@@ -47,7 +47,7 @@ Released Changes
 
 _2021 March 15_
 
-v0.9.0 is a pretty significant release, including several neat new convenience features, but most noticiably, significantly reworking how linking works.
+v0.9.0 is a pretty significant release, including several neat new convenience features, but most noticeably, significantly reworking how linking works.
 
 Almost any code that deals with storing and linking data will need some adaptation to handle this release.
 We're sorry about the effort this may require, but it should be worth it.
@@ -65,7 +65,7 @@ in this case there simply weren't enough interesting points in between to be wor
 	- The PR can be found here: https://github.com/ipld/go-ipld-prime/pull/143
 	- `Link.Load` -> `LinkSystem.Load` (or, new: `LinkSystem.Fill`, which lets you control memory allocation more explicitly).
 	- `LinkBuilder.Build` -> `LinkSystem.Store`.
-	- `LinkSystem.ComputeLink` is a new feature that prodices a Link without needing to store the data anywhere.
+	- `LinkSystem.ComputeLink` is a new feature that produces a Link without needing to store the data anywhere.
 	- The `ipld.Loader` function is now most analogous to `ipld.BlockReadOpener`.  You now put it into use by assigning it to a `LinkLoader`'s `StorageReadOpener` field.
 	- The `ipld.Storer` function is now most analogous to `ipld.BlockWriteOpener`.  You now put it into use by assigning it to a `LinkLoader`'s `StorageWriteOpener` field.
 	- 99% of the time, you'll probably start with `linking/cid.DefaultLinkSystem()`.  You can assign to fields of this to customize it further, but it'll get you started with multihashes and multicodecs and all the behavior you expect when working with CIDs.
@@ -75,7 +75,7 @@ in this case there simply weren't enough interesting points in between to be wor
 	- In the _future_, further improvements will come from this: we're now much, much closer to making a bunch of transitive dependencies become optional (especially, various hashers, which currently, whenever you pull in the `linking/cid` package, come due to `go-cid`, and are quite large).  When these improvements land (again, they're not in this release), you'll need to update your applications to import hashers you need if they're not in the golang standard library.  For now: there's no change.
 - Change: multicodec registration is now in the `go-ipld-prime/multicodec` package.
 	- Previously, this registry was in the `linking/cid` package.  These things are now better decoupled.
-	- This wil require packages which register codecs to make some very small updates: e.g. `s/cidlink.RegisterMulticodecDecoder/multicodec.RegisterDecoder/`, and correspondingly, update the package imports at the top of the file.
+	- This will require packages which register codecs to make some very small updates: e.g. `s/cidlink.RegisterMulticodecDecoder/multicodec.RegisterDecoder/`, and correspondingly, update the package imports at the top of the file.
 - New: some pre-made storage options (e.g. satisfying the `ipld.StorageReadOpener` and `ipld.StorageWriteOpener` function interfaces) have appeared!  Find these in the `go-ipld-prime/storage` package.
 	- Currently this only includes a simple in-memory storage option.  This may be useful for testing and examples, but probably not much else :)
 	- These are mostly intended to be illustrative.  You should still expect to find better storage mechanisms in other repos.
