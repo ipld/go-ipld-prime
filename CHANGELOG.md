@@ -20,9 +20,7 @@ Planned/Upcoming Changes
 
 Here are some outlines of changes we intend to make that affect the public API:
 
-- Linking and LinkLoaders will be streamlined; and Codecs will gain more friendly APIs.
-	- See https://github.com/ipld/go-ipld-prime/issues/55 for discussion and drafts.
-	- This will probably be scheduled for around v0.9, which is anticipated to be somewhere in early 2021.
+- ... the critical list is empty, for now :)
 
 This is not an exhaustive list of planned changes, and does not include any internal changes, new features, performance improvements, and so forth.
 It's purely a list of things you might want to know about as a downstream consumer planning your update cycles.
@@ -39,6 +37,29 @@ Unreleased on master
 Changes here are on the master branch, but not in any tagged release yet.
 When a release tag is made, this block of bullet points will just slide down to the [Released Changes](#released-changes) section.
 
+- _nothing yet :)_
+
+
+Released Changes
+----------------
+
+### v0.9.0
+
+_2021 March 15_
+
+v0.9.0 is a pretty significant release, including several neat new convenience features, but most noticiably, significantly reworking how linking works.
+
+Almost any code that deals with storing and linking data will need some adaptation to handle this release.
+We're sorry about the effort this may require, but it should be worth it.
+The new LinkSystem API should let us introduce a lot more convenience features in the future, and do so *without* pushing additional breakage out to downstream users; this is an investment in the future.
+
+The bullet points below contain all the fun details.
+
+Note that a v0.8.0 release version has been skipped.
+We use odd numbers to indicate the existence of significant changes;
+and while usually we try to tag an even-number release between each odd number release so that migrations can be smoothed out,
+in this case there simply weren't enough interesting points in between to be worth doing so.
+
 - Change: linking has been significantly reworked, and now primarily works through the `ipld.LinkSystem` type.
 	- This is cool, because it makes a lot of things less circuitous.  Previously, working with links was a complicated combination of Loader and Storer functions, the Link interface contained the Load method, it was just... complicated to figure out where to start.  Now, the answer is simple and constant: "Start with LinkSystem".  Clearer to use; clearer to document; and also coincidentally a lot clearer to develop for, internally.
 	- The PR can be found here: https://github.com/ipld/go-ipld-prime/pull/143
@@ -51,6 +72,7 @@ When a release tag is made, this block of bullet points will just slide down to 
 		- (So, no -- the `cidlink` package hasn't gone anywhere.  Hopefully it's a bit less obtrusive now, but it's still here.)
 	- The `traversal` package's `Config` struct now uses a `LinkSystem` instead of a `Loader` and `Storer` pair, as you would now probably expect.
 		- If you had code that was also previously passing around `Loader` and `Storer`, it's likely a similar pattern of change will be the right direction for that code.
+	- In the _future_, further improvements will come from this: we're now much, much closer to making a bunch of transitive dependencies become optional (especially, various hashers, which currently, whenever you pull in the `linking/cid` package, come due to `go-cid`, and are quite large).  When these improvements land (again, they're not in this release), you'll need to update your applications to import hashers you need if they're not in the golang standard library.  For now: there's no change.
 - Change: multicodec registration is now in the `go-ipld-prime/multicodec` package.
 	- Previously, this registry was in the `linking/cid` package.  These things are now better decoupled.
 	- This wil require packages which register codecs to make some very small updates: e.g. `s/cidlink.RegisterMulticodecDecoder/multicodec.RegisterDecoder/`, and correspondingly, update the package imports at the top of the file.
@@ -74,8 +96,6 @@ When a release tag is made, this block of bullet points will just slide down to 
 	- The one key trait we've found all ADLs tend to share right now is that they have a "synthesized" view and "substrate" view of their data.  So: the `ipld.ADL` interface states that a thing is an `ipld.Node` (for the synthesized view), and from it you should be able to access a `Substrate() ipld.Node`, and that's about it.
 
 
-Released Changes
-----------------
 
 ### v0.7.0
 
