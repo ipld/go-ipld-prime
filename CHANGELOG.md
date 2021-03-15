@@ -41,6 +41,7 @@ When a release tag is made, this block of bullet points will just slide down to 
 
 - Change: linking has been significantly reworked, and now primarily works through the `ipld.LinkSystem` type.
 	- This is cool, because it makes a lot of things less circuitous.  Previously, working with links was a complicated combination of Loader and Storer functions, the Link interface contained the Load method, it was just... complicated to figure out where to start.  Now, the answer is simple and constant: "Start with LinkSystem".  Clearer to use; clearer to document; and also coincidentally a lot clearer to develop for, internally.
+	- The PR can be found here: https://github.com/ipld/go-ipld-prime/pull/143
 	- `Link.Load` -> `LinkSystem.Load` (or, new: `LinkSystem.Fill`, which lets you control memory allocation more explicitly).
 	- `LinkBuilder.Build` -> `LinkSystem.Store`.
 	- `LinkSystem.ComputeLink` is a new feature that prodices a Link without needing to store the data anywhere.
@@ -62,6 +63,15 @@ When a release tag is made, this block of bullet points will just slide down to 
 	- `s/dagcbor.Decoder/dagcbor.Decode/g`
 	- `s/dagcbor.Encoder/dagcbor.Encode/g`
 	- If you've only been using these indirectly, via their multicodec indicators, you won't have to update anything at all to account for this change.
+- New: several new forms of helpers to make it syntactically easy to create new IPLD data trees with golang code!
+	- Check out the `go-ipld-prime/fluent/quip` package!  See https://github.com/ipld/go-ipld-prime/pull/134, where it was introduced, for more details.
+	- Check out the `go-ipld-prime/fluent/qp` package!  See https://github.com/ipld/go-ipld-prime/pull/138, where it was introduced, for more details.
+	- Both of these offer variations on `fluent` which have much lower costs to use.  (`fluent` incurs allocations during operation, which has a noticable impact on performance if used in a "hot" code path.  Neither of these two new solutions do!)
+	- For now, both `quip` and `qp` will be maintained.  They have similar goals, but different syntaxes.  If one is shown drastically more popular over time, we might begin to consider deprecating one in favor of the other, but we'll need lots of data before considering that.
+	- We won't be removing the `fluent` package anytime soon, but we probably wouldn't recommend building new stuff on it.  `qp` and `quip` are both drastically preferable for performance reasons.
+- New: there is now an interface called `ipld.ADL` which can be used for a certain kind of feature detection.
+	- This is an experimental new concept and likely subject to change.
+	- The one key trait we've found all ADLs tend to share right now is that they have a "synthesized" view and "substrate" view of their data.  So: the `ipld.ADL` interface states that a thing is an `ipld.Node` (for the synthesized view), and from it you should be able to access a `Substrate() ipld.Node`, and that's about it.
 
 
 Released Changes
