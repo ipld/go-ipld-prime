@@ -17,13 +17,23 @@ var (
 
 func init() {
 	multicodec.RegisterEncoder(0x0129, Encode)
+	multicodec.RegisterEncoder(0x0200, Encode)
 	multicodec.RegisterDecoder(0x0129, Decode)
+	multicodec.RegisterDecoder(0x0200, decodeNonDagJSON)
 }
 
 func Decode(na ipld.NodeAssembler, r io.Reader) error {
+	return decode(na, r, true)
+}
+
+func decodeNonDagJSON(na ipld.NodeAssembler, r io.Reader) error {
+	return decode(na, r, false)
+}
+
+func decode(na ipld.NodeAssembler, r io.Reader, parseLinks bool) error {
 	// Shell out directly to generic builder path.
 	//  (There's not really any fastpaths of note for json.)
-	err := Unmarshal(na, json.NewDecoder(r))
+	err := unmarshal(na, json.NewDecoder(r), parseLinks)
 	if err != nil {
 		return err
 	}
@@ -49,7 +59,6 @@ func Decode(na ipld.NodeAssembler, r io.Reader) error {
 			return err
 		}
 	}
-	return err
 }
 
 func Encode(n ipld.Node, w io.Writer) error {
