@@ -190,7 +190,7 @@ func (tcase testcase) Test(t *testing.T, np, npr ipld.NodePrototype) {
 func testUnmarshal(t *testing.T, np ipld.NodePrototype, data string, expectFail error) ipld.Node {
 	t.Helper()
 	nb := np.NewBuilder()
-	err := dagjson.Unmarshal(nb, json.NewDecoder(strings.NewReader(data)))
+	err := dagjson.Unmarshal(nb, json.NewDecoder(strings.NewReader(data)), true)
 	switch {
 	case expectFail == nil && err != nil:
 		t.Fatalf("fixture parse failed: %s", err)

@@ -20,7 +20,7 @@ func ExampleUnmarshallingToADL() {
 	nb := rot13adl.Prototype.SubstrateRoot.NewBuilder()
 
 	// Unmarshal -- using the substrate's nodebuilder just like you'd unmarshal with any other nodebuilder.
-	err := dagjson.Unmarshal(nb, json.NewDecoder(strings.NewReader(`"n pbby fgevat"`)))
+	err := dagjson.Unmarshal(nb, json.NewDecoder(strings.NewReader(`"n pbby fgevat"`)), true)
 	fmt.Printf("unmarshal error: %v\n", err)
 
 	// Use `Reify` to get the synthetic high-level view of the ADL data.

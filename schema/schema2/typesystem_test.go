@@ -206,7 +206,7 @@ func testParse(t *testing.T, schemajson string, expectParseErr error, expectType
 
 func parseSchema(schemajson string) (schemadmt.Schema, error) {
 	nb := schemadmt.Type.Schema__Repr.NewBuilder()
-	if err := dagjson.Unmarshal(nb, json.NewDecoder(strings.NewReader(schemajson))); err != nil {
+	if err := dagjson.Unmarshal(nb, json.NewDecoder(strings.NewReader(schemajson)), true); err != nil {
 		return nil, err
 	}
 	return nb.Build().(schemadmt.Schema), nil

@@ -19,11 +19,7 @@ import (
 //       several steps of handling maps, because it necessitates peeking several
 //        tokens before deciding what kind of value to create).
 
-func Unmarshal(na ipld.NodeAssembler, tokSrc shared.TokenSource) error {
-	return unmarshal(na, tokSrc, true)
-}
-
-func unmarshal(na ipld.NodeAssembler, tokSrc shared.TokenSource, parseLinks bool) error {
+func Unmarshal(na ipld.NodeAssembler, tokSrc shared.TokenSource, parseLinks bool) error {
 	var st unmarshalState
 	st.parseLinks = parseLinks
 	done, err := tokSrc.Step(&st.tk[0])
