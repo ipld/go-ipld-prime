@@ -59,5 +59,5 @@ func Encoder(n ipld.Node, w io.Writer) error {
 	return Marshal(n, json.NewEncoder(w, json.EncodeOptions{
 		Line:   []byte{'\n'},
 		Indent: []byte{'\t'},
-	}))
+	}), true)
 }

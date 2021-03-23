@@ -15,7 +15,7 @@ import (
 // except for the `case ipld.Kind_Link` block,
 // which is dag-json's special sauce for schemafree links.
 
-func Marshal(n ipld.Node, sink shared.TokenSink) error {
+func Marshal(n ipld.Node, sink shared.TokenSink, allowLinks bool) error {
 	var tk tok.Token
 	switch n.Kind() {
 	case ipld.Kind_Invalid:
@@ -45,7 +45,7 @@ func Marshal(n ipld.Node, sink shared.TokenSink) error {
 			if _, err := sink.Step(&tk); err != nil {
 				return err
 			}
-			if err := Marshal(v, sink); err != nil {
+			if err := Marshal(v, sink, allowLinks); err != nil {
 				return err
 			}
 		}
@@ -67,7 +67,7 @@ func Marshal(n ipld.Node, sink shared.TokenSink) error {
 			if err != nil {
 				return err
 			}
-			if err := Marshal(v, sink); err != nil {
+			if err := Marshal(v, sink, allowLinks); err != nil {
 				return err
 			}
 		}
@@ -158,6 +158,9 @@ func Marshal(n ipld.Node, sink shared.TokenSink) error {
 			return err
 		}
 	case ipld.Kind_Link:
+		if !allowLinks {
+			return fmt.Errorf("cannot Marshal ipld links to JSON")
+		}
 		v, err := n.AsLink()
 		if err != nil {
 			return err

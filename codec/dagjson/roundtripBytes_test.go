@@ -28,14 +28,14 @@ var byteSerial = `{
 func TestRoundtripBytes(t *testing.T) {
 	t.Run("encoding", func(t *testing.T) {
 		var buf bytes.Buffer
-		err := Encode(byteNode, &buf)
+		err := Encoder(byteNode, &buf)
 		Require(t, err, ShouldEqual, nil)
 		Wish(t, buf.String(), ShouldEqual, byteSerial)
 	})
 	t.Run("decoding", func(t *testing.T) {
 		buf := strings.NewReader(byteSerial)
 		nb := basicnode.Prototype__Map{}.NewBuilder()
-		err := Decode(nb, buf)
+		err := Decoder(nb, buf)
 		Require(t, err, ShouldEqual, nil)
 		Wish(t, nb.Build(), ShouldEqual, byteNode)
 	})

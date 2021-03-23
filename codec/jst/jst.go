@@ -168,8 +168,8 @@ func (tab *table) Finalize() {
 	var buf bytes.Buffer
 	for _, cn := range cols {
 		buf.Reset()
-		dagjson.Marshal(basicnode.NewString(string(cn)), json.NewEncoder(&buf, json.EncodeOptions{})) // FIXME this would be a lot less irritating if we had more plumbing access to the json encoding -- we want to encode exactly one string into a buffer, it literally can't error.
-		tab.keySize[cn] = buf.Len()                                                                   // FIXME this is ignoring charsets, renderable glyphs, etc at present.
+		dagjson.Marshal(basicnode.NewString(string(cn)), json.NewEncoder(&buf, json.EncodeOptions{}), false) // FIXME this would be a lot less irritating if we had more plumbing access to the json encoding -- we want to encode exactly one string into a buffer, it literally can't error.
+		tab.keySize[cn] = buf.Len()                                                                          // FIXME this is ignoring charsets, renderable glyphs, etc at present.
 	}
 }
 
@@ -299,7 +299,7 @@ func marshal(ctx *state, n ipld.Node, w io.Writer) error {
 func marshalPlain(ctx *state, n ipld.Node, w io.Writer) error {
 	err := dagjson.Marshal(n, json.NewEncoder(w, json.EncodeOptions{
 		// never indent here: these values will always end up being emitted mid-line.
-	}))
+	}), true)
 	if err != nil {
 		return recordErrorPosition(ctx, err)
 	}
@@ -470,7 +470,7 @@ func emitKey(ctx *state, k ipld.Node, w io.Writer) error {
 	if ctx.cfg.Color.Enabled {
 		w.Write(ctx.cfg.Color.KeyHighlight)
 	}
-	if err := dagjson.Marshal(k, json.NewEncoder(w, json.EncodeOptions{})); err != nil {
+	if err := dagjson.Marshal(k, json.NewEncoder(w, json.EncodeOptions{}), true); err != nil {
 		return recordErrorPosition(ctx, err)
 	}
 	if ctx.cfg.Color.Enabled {
