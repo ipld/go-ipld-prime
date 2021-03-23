@@ -27,16 +27,16 @@ const (
 // except for the `case tok.TBytes` block,
 // which has dag-cbor's special sauce for detecting schemafree links.
 
-func Unmarshal(na ipld.NodeAssembler, tokSrc shared.TokenSource) error {
+func Unmarshal(na ipld.NodeAssembler, tokSrc shared.TokenSource, allowLinks bool) error {
 	// Have a gas budget, which will be decremented as we allocate memory, and an error returned when execeeded (or about to be exceeded).
 	//  This is a DoS defense mechanism.
 	//  It's *roughly* in units of bytes (but only very, VERY roughly) -- it also treats words as 1 in many cases.
 	// FUTURE: this ought be configurable somehow.  (How, and at what granularity though?)
 	var gas int = 1048576 * 10
-	return unmarshal1(na, tokSrc, &gas)
+	return unmarshal1(na, tokSrc, &gas, allowLinks)
 }
 
-func unmarshal1(na ipld.NodeAssembler, tokSrc shared.TokenSource, gas *int) error {
+func unmarshal1(na ipld.NodeAssembler, tokSrc shared.TokenSource, gas *int, allowLinks bool) error {
 	var tk tok.Token
 	done, err := tokSrc.Step(&tk)
 	if err != nil {
@@ -45,12 +45,12 @@ func unmarshal1(na ipld.NodeAssembler, tokSrc shared.TokenSource, gas *int) erro
 	if done && !tk.Type.IsValue() {
 		return fmt.Errorf("unexpected eof")
 	}
-	return unmarshal2(na, tokSrc, &tk, gas)
+	return unmarshal2(na, tokSrc, &tk, gas, allowLinks)
 }
 
 // starts with the first token already primed.  Necessary to get recursion
 //  to flow right without a peek+unpeek system.
-func unmarshal2(na ipld.NodeAssembler, tokSrc shared.TokenSource, tk *tok.Token, gas *int) error {
+func unmarshal2(na ipld.NodeAssembler, tokSrc shared.TokenSource, tk *tok.Token, gas *int, allowLinks bool) error {
 	// FUTURE: check for schema.TypedNodeBuilder that's going to parse a Link (they can slurp any token kind they want).
 	switch tk.Type {
 	case tok.TMapOpen:
@@ -97,7 +97,7 @@ func unmarshal2(na ipld.NodeAssembler, tokSrc shared.TokenSource, tk *tok.Token,
 			if err != nil { // return in error if the key was rejected
 				return err
 			}
-			err = unmarshal1(mva, tokSrc, gas)
+			err = unmarshal1(mva, tokSrc, gas, allowLinks)
 			if err != nil { // return in error if some part of the recursion errored
 				return err
 			}
@@ -140,7 +140,7 @@ func unmarshal2(na ipld.NodeAssembler, tokSrc shared.TokenSource, tk *tok.Token,
 				if observedLen > expectLen {
 					return fmt.Errorf("unexpected continuation of array elements beyond declared length")
 				}
-				err := unmarshal2(la.AssembleValue(), tokSrc, tk, gas)
+				err := unmarshal2(la.AssembleValue(), tokSrc, tk, gas, allowLinks)
 				if err != nil { // return in error if some part of the recursion errored
 					return err
 				}
@@ -166,6 +166,9 @@ func unmarshal2(na ipld.NodeAssembler, tokSrc shared.TokenSource, tk *tok.Token,
 		}
 		switch tk.Tag {
 		case linkTag:
+			if !allowLinks {
+				return fmt.Errorf("unhandled cbor tag %d", tk.Tag)
+			}
 			if len(tk.Bytes) < 1 || tk.Bytes[0] != 0 {
 				return ErrInvalidMultibase
 			}
@@ -173,7 +176,7 @@ func unmarshal2(na ipld.NodeAssembler, tokSrc shared.TokenSource, tk *tok.Token,
 			if err != nil {
 				return err
 			}
-			return na.AssignLink(cidlink.Link{elCid})
+			return na.AssignLink(cidlink.Link{Cid: elCid})
 		default:
 			return fmt.Errorf("unhandled cbor tag %d", tk.Tag)
 		}

@@ -13,12 +13,12 @@ import (
 // This should be identical to the general feature in the parent package,
 // except for the `case ipld.Kind_Link` block,
 // which is dag-cbor's special sauce for schemafree links.
-func Marshal(n ipld.Node, sink shared.TokenSink) error {
+func Marshal(n ipld.Node, sink shared.TokenSink, allowLinks bool) error {
 	var tk tok.Token
-	return marshal(n, &tk, sink)
+	return marshal(n, &tk, sink, allowLinks)
 }
 
-func marshal(n ipld.Node, tk *tok.Token, sink shared.TokenSink) error {
+func marshal(n ipld.Node, tk *tok.Token, sink shared.TokenSink, allowLinks bool) error {
 	switch n.Kind() {
 	case ipld.Kind_Invalid:
 		return fmt.Errorf("cannot traverse a node that is absent")
@@ -47,7 +47,7 @@ func marshal(n ipld.Node, tk *tok.Token, sink shared.TokenSink) error {
 			if _, err := sink.Step(tk); err != nil {
 				return err
 			}
-			if err := marshal(v, tk, sink); err != nil {
+			if err := marshal(v, tk, sink, allowLinks); err != nil {
 				return err
 			}
 		}
@@ -69,7 +69,7 @@ func marshal(n ipld.Node, tk *tok.Token, sink shared.TokenSink) error {
 			if err != nil {
 				return err
 			}
-			if err := marshal(v, tk, sink); err != nil {
+			if err := marshal(v, tk, sink, allowLinks); err != nil {
 				return err
 			}
 		}
@@ -123,6 +123,9 @@ func marshal(n ipld.Node, tk *tok.Token, sink shared.TokenSink) error {
 		_, err = sink.Step(tk)
 		return err
 	case ipld.Kind_Link:
+		if !allowLinks {
+			return fmt.Errorf("cannot Marshal ipld links to CBOR")
+		}
 		v, err := n.AsLink()
 		if err != nil {
 			return err
