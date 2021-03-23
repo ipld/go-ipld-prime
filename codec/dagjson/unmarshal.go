@@ -19,8 +19,9 @@ import (
 //       several steps of handling maps, because it necessitates peeking several
 //        tokens before deciding what kind of value to create).
 
-func Unmarshal(na ipld.NodeAssembler, tokSrc shared.TokenSource) error {
+func Unmarshal(na ipld.NodeAssembler, tokSrc shared.TokenSource, parseLinks bool) error {
 	var st unmarshalState
+	st.parseLinks = parseLinks
 	done, err := tokSrc.Step(&st.tk[0])
 	if err != nil {
 		return err
@@ -32,8 +33,9 @@ func Unmarshal(na ipld.NodeAssembler, tokSrc shared.TokenSource) error {
 }
 
 type unmarshalState struct {
-	tk    [4]tok.Token // mostly, only 0'th is used... but [1:4] are used during lookahead for links.
-	shift int          // how many times to slide something out of tk[1:4] instead of getting a new token.
+	tk         [4]tok.Token // mostly, only 0'th is used... but [1:4] are used during lookahead for links.
+	shift      int          // how many times to slide something out of tk[1:4] instead of getting a new token.
+	parseLinks bool
 }
 
 // step leaves a "new" token in tk[0],
@@ -120,7 +122,7 @@ func (st *unmarshalState) linkLookahead(na ipld.NodeAssembler, tokSrc shared.Tok
 	if err != nil {
 		return false, err
 	}
-	if err := na.AssignLink(cidlink.Link{elCid}); err != nil {
+	if err := na.AssignLink(cidlink.Link{Cid: elCid}); err != nil {
 		return false, err
 	}
 	return true, nil
@@ -135,12 +137,14 @@ func (st *unmarshalState) unmarshal(na ipld.NodeAssembler, tokSrc shared.TokenSo
 	case tok.TMapOpen:
 		// dag-json has special needs: we pump a few tokens ahead to look for dag-json's "link" pattern.
 		//  We can't actually call BeginMap until we're sure it's not gonna turn out to be a link.
-		gotLink, err := st.linkLookahead(na, tokSrc)
-		if err != nil { // return in error if any token peeks failed or if structure looked like a link but failed to parse as CID.
-			return err
-		}
-		if gotLink {
-			return nil
+		if st.parseLinks {
+			gotLink, err := st.linkLookahead(na, tokSrc)
+			if err != nil { // return in error if any token peeks failed or if structure looked like a link but failed to parse as CID.
+				return err
+			}
+			if gotLink {
+				return nil
+			}
 		}
 
 		// Okay, now back to regularly scheduled map logic.

@@ -1,12 +1,13 @@
-package dagjson
+package json
 
 import (
 	"fmt"
 	"io"
 
-	"github.com/polydawn/refmt/json"
+	rfmtjson "github.com/polydawn/refmt/json"
 
 	"github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/codec/dagjson"
 	"github.com/ipld/go-ipld-prime/multicodec"
 )
 
@@ -16,12 +17,14 @@ var (
 )
 
 func init() {
-	multicodec.RegisterEncoder(0x0129, Encode)
-	multicodec.RegisterDecoder(0x0129, Decode)
+	multicodec.RegisterEncoder(0x0200, Encode)
+	multicodec.RegisterDecoder(0x0200, Decode)
 }
 
 func Decode(na ipld.NodeAssembler, r io.Reader) error {
-	err := Unmarshal(na, json.NewDecoder(r), true)
+	// Shell out directly to generic builder path.
+	//  (There's not really any fastpaths of note for json.)
+	err := dagjson.Unmarshal(na, rfmtjson.NewDecoder(r), false)
 	if err != nil {
 		return err
 	}
@@ -53,8 +56,8 @@ func Encode(n ipld.Node, w io.Writer) error {
 	// Shell out directly to generic inspection path.
 	//  (There's not really any fastpaths of note for json.)
 	// Write another function if you need to tune encoding options about whitespace.
-	return Marshal(n, json.NewEncoder(w, json.EncodeOptions{
+	return dagjson.Marshal(n, rfmtjson.NewEncoder(w, rfmtjson.EncodeOptions{
 		Line:   []byte{'\n'},
 		Indent: []byte{'\t'},
-	}), true)
+	}), false)
 }

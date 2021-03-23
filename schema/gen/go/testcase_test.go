@@ -190,7 +190,7 @@ func (tcase testcase) Test(t *testing.T, np, npr ipld.NodePrototype) {
 func testUnmarshal(t *testing.T, np ipld.NodePrototype, data string, expectFail error) ipld.Node {
 	t.Helper()
 	nb := np.NewBuilder()
-	err := dagjson.Unmarshal(nb, json.NewDecoder(strings.NewReader(data)))
+	err := dagjson.Unmarshal(nb, json.NewDecoder(strings.NewReader(data)), true)
 	switch {
 	case expectFail == nil && err != nil:
 		t.Fatalf("fixture parse failed: %s", err)
@@ -209,7 +209,7 @@ func testMarshal(t *testing.T, n ipld.Node, data string) {
 	// We'll marshal with "pretty" linebreaks and indents (and re-format the fixture to the same) for better diffing.
 	prettyprint := json.EncodeOptions{Line: []byte{'\n'}, Indent: []byte{'\t'}}
 	var buf bytes.Buffer
-	err := dagjson.Marshal(n, json.NewEncoder(&buf, prettyprint))
+	err := dagjson.Marshal(n, json.NewEncoder(&buf, prettyprint), true)
 	if err != nil {
 		t.Errorf("marshal failed: %s", err)
 	}

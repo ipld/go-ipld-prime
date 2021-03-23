@@ -20,7 +20,7 @@ func ExampleUnmarshallingToADL() {
 	nb := rot13adl.Prototype.SubstrateRoot.NewBuilder()
 
 	// Unmarshal -- using the substrate's nodebuilder just like you'd unmarshal with any other nodebuilder.
-	err := dagjson.Unmarshal(nb, json.NewDecoder(strings.NewReader(`"n pbby fgevat"`)))
+	err := dagjson.Unmarshal(nb, json.NewDecoder(strings.NewReader(`"n pbby fgevat"`)), true)
 	fmt.Printf("unmarshal error: %v\n", err)
 
 	// Use `Reify` to get the synthetic high-level view of the ADL data.
@@ -59,7 +59,7 @@ func ExampleCreatingViaADL() {
 
 	// To marshal the ADL, just use marshal methods on its substrate as normal:
 	var marshalBuffer bytes.Buffer
-	err := dagjson.Marshal(substrateNode, json.NewEncoder(&marshalBuffer, json.EncodeOptions{}))
+	err := dagjson.Marshal(substrateNode, json.NewEncoder(&marshalBuffer, json.EncodeOptions{}), true)
 	fmt.Printf("marshalled: %v\n", marshalBuffer.String())
 	fmt.Printf("marshal error: %v\n", err)
 
