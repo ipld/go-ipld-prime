@@ -209,7 +209,7 @@ func testMarshal(t *testing.T, n ipld.Node, data string) {
 	// We'll marshal with "pretty" linebreaks and indents (and re-format the fixture to the same) for better diffing.
 	prettyprint := json.EncodeOptions{Line: []byte{'\n'}, Indent: []byte{'\t'}}
 	var buf bytes.Buffer
-	err := dagjson.Marshal(n, json.NewEncoder(&buf, prettyprint))
+	err := dagjson.Marshal(n, json.NewEncoder(&buf, prettyprint), true)
 	if err != nil {
 		t.Errorf("marshal failed: %s", err)
 	}

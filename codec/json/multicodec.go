@@ -59,5 +59,5 @@ func Encode(n ipld.Node, w io.Writer) error {
 	return dagjson.Marshal(n, rfmtjson.NewEncoder(w, rfmtjson.EncodeOptions{
 		Line:   []byte{'\n'},
 		Indent: []byte{'\t'},
-	}))
+	}), false)
 }
