@@ -32,6 +32,7 @@ type LinkSystem struct {
 	HasherChooser      func(LinkPrototype) (hash.Hash, error)
 	StorageWriteOpener BlockWriteOpener
 	StorageReadOpener  BlockReadOpener
+	TrustedStorage     bool
 }
 
 // The following two types define the two directions of transform that a codec can be expected to perform:
