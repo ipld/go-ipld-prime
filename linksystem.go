@@ -33,6 +33,7 @@ type LinkSystem struct {
 	StorageWriteOpener BlockWriteOpener
 	StorageReadOpener  BlockReadOpener
 	TrustedStorage     bool
+	NodeReifier        NodeReifier
 }
 
 // The following two types define the two directions of transform that a codec can be expected to perform:
@@ -206,6 +207,21 @@ type (
 	// See the documentation of BlockWriteOpener for more description of this
 	// and an example of how this is likely to be reduced to practice.
 	BlockWriteCommitter func(Link) error
+
+	// NodeReifier defines the shape of a function that given a node with no schema
+	// or a basic schema, constructs Advanced Data Layout node
+	//
+	// The LinkSystem itself is passed to the NodeReifier along with a link context
+	// because Node interface methods on an ADL may actually traverse links to other
+	// pieces of context addressed data that need to be loaded with the Link system
+	//
+	// A NodeReifier return one of three things:
+	// - original node, no error = no reification occurred, just use original node
+	// - reified node, no error = the simple node was converted to an ADL
+	// - nil, error = the simple node should have been converted to an ADL but something
+	// went wrong when we tried to do so
+	//
+	NodeReifier func(LinkContext, Node, *LinkSystem) (Node, error)
 )
 
 // ErrLinkingSetup is returned by methods on LinkSystem when some part of the system is not set up correctly,
