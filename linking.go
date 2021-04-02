@@ -24,7 +24,11 @@ func (lsys *LinkSystem) Load(lnkCtx LinkContext, lnk Link, np NodePrototype) (No
 	if err := lsys.Fill(lnkCtx, lnk, nb); err != nil {
 		return nil, err
 	}
-	return nb.Build(), nil
+	nd := nb.Build()
+	if lsys.NodeReifier == nil {
+		return nd, nil
+	}
+	return lsys.NodeReifier(lnkCtx, nd, lsys)
 }
 
 func (lsys *LinkSystem) MustLoad(lnkCtx LinkContext, lnk Link, np NodePrototype) Node {

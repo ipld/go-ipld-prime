@@ -2,14 +2,19 @@ package rot13adl_test
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"strings"
 
+	"github.com/ipfs/go-cid"
 	"github.com/polydawn/refmt/json"
 
+	"github.com/ipld/go-ipld-prime"
 	"github.com/ipld/go-ipld-prime/adl/rot13adl"
 	"github.com/ipld/go-ipld-prime/codec/dagjson"
+	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
 	"github.com/ipld/go-ipld-prime/must"
+	"github.com/ipld/go-ipld-prime/storage"
 )
 
 func ExampleUnmarshallingToADL() {
@@ -38,7 +43,51 @@ func ExampleUnmarshallingToADL() {
 	// adl node kind: string
 	// adl view value: "a cool string"
 }
+func ExampleLoadingToADL() {
 
+	// Create a NodeBuilder for the ADL's substrate.
+	//  Unmarshalling into this memory structure is optimal,
+	//   because it immediately puts data into the right memory layout for the ADL code to work on,
+	//  but you could use any other kind of NodeBuilder just as well and still get correct results.
+	nb := rot13adl.Prototype.SubstrateRoot.NewBuilder()
+
+	// Unmarshal -- using the substrate's nodebuilder just like you'd unmarshal with any other nodebuilder.
+	err := dagjson.Unmarshal(nb, json.NewDecoder(strings.NewReader(`"n pbby fgevat"`)), true)
+	fmt.Printf("unmarshal error: %v\n", err)
+
+	substrateNode := nb.Build()
+	// now save the node to storage
+	lp := cidlink.LinkPrototype{cid.Prefix{
+		Version:  1,
+		Codec:    0x129,
+		MhType:   0x13,
+		MhLength: 4,
+	}}
+	linkSystem := cidlink.DefaultLinkSystem()
+	storage := &storage.Memory{}
+	linkSystem.StorageReadOpener = storage.OpenRead
+	linkSystem.StorageWriteOpener = storage.OpenWrite
+	linkSystem.NodeReifier = func(_ ipld.LinkContext, nd ipld.Node, _ *ipld.LinkSystem) (ipld.Node, error) {
+		return rot13adl.Reify(nd)
+	}
+	lnk, err := linkSystem.Store(ipld.LinkContext{Ctx: context.Background()}, lp, substrateNode)
+	fmt.Printf("storage error: %v\n", err)
+
+	// reload from storage, but this time the NodeReifier function should give us the ADL
+	syntheticView, err := linkSystem.Load(ipld.LinkContext{Ctx: context.Background()}, lnk, rot13adl.Prototype.SubstrateRoot)
+	fmt.Printf("load error: %v\n", err)
+
+	// We can inspect the synthetic ADL node like any other node!
+	fmt.Printf("adl node kind: %v\n", syntheticView.Kind())
+	fmt.Printf("adl view value: %q\n", must.String(syntheticView))
+
+	// Output:
+	// unmarshal error: <nil>
+	// storage error: <nil>
+	// load error: <nil>
+	// adl node kind: string
+	// adl view value: "a cool string"
+}
 func ExampleCreatingViaADL() {
 	// Create a NodeBuilder for the ADL -- the high-level synthesized thing (not the substrate).
 	nb := rot13adl.Prototype.Node.NewBuilder()
