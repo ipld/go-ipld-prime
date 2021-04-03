@@ -31,7 +31,7 @@ or new codecs, or new higher-order order functions!)
 - `github.com/ipld/go-ipld-prime/node/basic` -- imported as `basicnode` -- provides concrete implementations of `Node` and `NodeBuilder` which work for any kind of data.
 - `github.com/ipld/go-ipld-prime/traversal` -- contains higher-order functions for traversing graphs of data easily.
 - `github.com/ipld/go-ipld-prime/traversal/selector` -- contains selectors, which are sort of like regexps, but for trees and graphs of IPLD data!
-- `github.com/ipld/go-ipld-prime/codec -- parent package of all the codec implementations!
+- `github.com/ipld/go-ipld-prime/codec` -- parent package of all the codec implementations!
 - `github.com/ipld/go-ipld-prime/codec/dagcbor` -- implementations of marshalling and unmarshalling as CBOR (a fast, binary serialization format).
 - `github.com/ipld/go-ipld-prime/codec/dagjson` -- implementations of marshalling and unmarshalling as JSON (a popular human readable format).
 - `github.com/ipld/go-ipld-prime/linking/cid` -- imported as `cidlink` -- provides concrete implementations of `Link` as a CID.  Also, the multicodec registry.
