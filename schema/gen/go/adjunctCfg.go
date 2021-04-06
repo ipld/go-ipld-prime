@@ -2,8 +2,11 @@ package gengo
 
 import (
 	"fmt"
+	"reflect"
 	"strings"
 
+	ipld "github.com/ipld/go-ipld-prime"
+	basicnode "github.com/ipld/go-ipld-prime/node/basic"
 	"github.com/ipld/go-ipld-prime/schema"
 )
 
@@ -22,7 +25,7 @@ type AdjunctCfg struct {
 	typeSymbolOverrides       map[schema.TypeName]string
 	FieldSymbolLowerOverrides map[FieldTuple]string
 	fieldSymbolUpperOverrides map[FieldTuple]string
-	maybeUsesPtr              map[schema.TypeName]bool   // treat absent as true
+	maybeUsesPtr              map[schema.TypeName]bool   // absent uses a heuristic
 	CfgUnionMemlayout         map[schema.TypeName]string // "embedAll"|"interface"; maybe more options later, unclear for now.
 
 	// ... some of these fields have sprouted messy name prefixes so they don't collide with their matching method names.
@@ -74,13 +77,91 @@ func (cfg *AdjunctCfg) MaybeUsesPtr(t schema.Type) bool {
 	if x, ok := cfg.maybeUsesPtr[t.Name()]; ok {
 		return x
 	}
-	// FUTURE: we could make this default vary based on sizeof the type.
-	//  It's generally true that for scalars it should be false by default; and that's easy to do.
-	//   It would actually *remove* special cases from the prelude, which would be a win.
-	//  Maps and lists should also probably default off...?
-	//   (I have a feeling something might get touchy there.  Review when implementing those.)
-	//  Perhaps structs and unions are the only things likely to benefit from pointers.
-	return true
+
+	// As a simple heuristic,
+	// check how large the Go representation of this type will be.
+	// If it weighs little, we estimate that a pointer is not worthwhile,
+	// as storing the data directly will barely take more memory.
+	// Plus, the resulting code will be shorter and have fewer branches.
+	return sizeOfSchemaType(t) > sizeSmallEnoughForInlining
+}
+
+var (
+	// The cutoff for "weighs little" is any size up to this number.
+	// It's hasn't been measured with any benchmarks or stats just yet.
+	// It's possible that, with those, it might increase in the future.
+	// Intuitively, any type 4x the size of a pointer is fine to inline.
+	// Adding a pointer will already add 1x overhead, anyway.
+	sizeSmallEnoughForInlining = 4 * reflect.TypeOf(new(int)).Size()
+
+	sizeOfTypeKind [128]uintptr
+)
+
+func init() {
+	// Uncomment for debugging.
+	// fmt.Fprintf(os.Stderr, "sizeOf(small): %d (4x pointer size)\n", sizeSmallEnoughForInlining)
+
+	// Get the basic node sizes via basicnode.
+	for _, tk := range []struct {
+		typeKind  schema.TypeKind
+		prototype ipld.NodePrototype
+	}{
+		{schema.TypeKind_Bool, basicnode.Prototype.Bool},
+		{schema.TypeKind_Int, basicnode.Prototype.Int},
+		{schema.TypeKind_Float, basicnode.Prototype.Float},
+		{schema.TypeKind_String, basicnode.Prototype.String},
+		{schema.TypeKind_Bytes, basicnode.Prototype.Bytes},
+		{schema.TypeKind_List, basicnode.Prototype.List},
+		{schema.TypeKind_Map, basicnode.Prototype.Map},
+		{schema.TypeKind_Link, basicnode.Prototype.Link},
+	} {
+		nb := tk.prototype.NewBuilder()
+		switch tk.typeKind {
+		case schema.TypeKind_List:
+			am, err := nb.BeginList(0)
+			if err != nil {
+				panic(err)
+			}
+			if err := am.Finish(); err != nil {
+				panic(err)
+			}
+		case schema.TypeKind_Map:
+			am, err := nb.BeginMap(0)
+			if err != nil {
+				panic(err)
+			}
+			if err := am.Finish(); err != nil {
+				panic(err)
+			}
+		}
+		// Note that the Node interface has a pointer underneath,
+		// so we use Elem to reach the underlying type.
+		size := reflect.TypeOf(nb.Build()).Elem().Size()
+		sizeOfTypeKind[tk.typeKind] = size
+
+		// Uncomment for debugging.
+		// fmt.Fprintf(os.Stderr, "sizeOf(%s): %d\n", tk.typeKind, size)
+	}
+}
+
+// sizeOfSchemaType returns the size of a schema type,
+// relative to the size of a pointer in native Go.
+//
+// For example, TypeInt and TypeMap returns 1, but TypeList returns 3, as a
+// slice in Go has a pointer and two integers for length and capacity.
+// Any basic type smaller than a pointer, such as TypeBool, returns 1.
+func sizeOfSchemaType(t schema.Type) uintptr {
+	kind := t.TypeKind()
+
+	// If this TypeKind is represented by the basicnode package,
+	// we statically know its size and we can return here.
+	if size := sizeOfTypeKind[kind]; size > 0 {
+		return size
+	}
+
+	// TODO: handle typekinds like structs, unions, etc.
+	// For now, return a large size to fall back to using a pointer.
+	return 100 * sizeSmallEnoughForInlining
 }
 
 // UnionMemlayout returns a plain string at present;

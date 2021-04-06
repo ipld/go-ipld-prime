@@ -940,7 +940,7 @@ func (_Bool__Prototype) FromBool(v bool) (Bool, error) {
 
 type _Bool__Maybe struct {
 	m schema.Maybe
-	v Bool
+	v _Bool
 }
 type MaybeBool = *_Bool__Maybe
 
@@ -960,7 +960,7 @@ func (m MaybeBool) AsNode() ipld.Node {
 	case schema.Maybe_Null:
 		return ipld.Null
 	case schema.Maybe_Value:
-		return m.v
+		return &m.v
 	default:
 		panic("unreachable")
 	}
@@ -969,7 +969,7 @@ func (m MaybeBool) Must() Bool {
 	if !m.Exists() {
 		panic("unbox of a maybe rejected")
 	}
-	return m.v
+	return &m.v
 }
 
 var _ ipld.Node = (Bool)(&_Bool{})
@@ -1080,9 +1080,6 @@ func (na *_Bool__Assembler) AssignBool(v bool) error {
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	}
-	if na.w == nil {
-		na.w = &_Bool{}
-	}
 	na.w.x = v
 	*na.m = schema.Maybe_Value
 	return nil
@@ -1110,11 +1107,6 @@ func (na *_Bool__Assembler) AssignNode(v ipld.Node) error {
 		switch *na.m {
 		case schema.Maybe_Value, schema.Maybe_Null:
 			panic("invalid state: cannot assign into assembler that's already finished")
-		}
-		if na.w == nil {
-			na.w = v2
-			*na.m = schema.Maybe_Value
-			return nil
 		}
 		*na.w = *v2
 		*na.m = schema.Maybe_Value
@@ -1153,7 +1145,7 @@ func (_Bytes__Prototype) FromBytes(v []byte) (Bytes, error) {
 
 type _Bytes__Maybe struct {
 	m schema.Maybe
-	v Bytes
+	v _Bytes
 }
 type MaybeBytes = *_Bytes__Maybe
 
@@ -1173,7 +1165,7 @@ func (m MaybeBytes) AsNode() ipld.Node {
 	case schema.Maybe_Null:
 		return ipld.Null
 	case schema.Maybe_Value:
-		return m.v
+		return &m.v
 	default:
 		panic("unreachable")
 	}
@@ -1182,7 +1174,7 @@ func (m MaybeBytes) Must() Bytes {
 	if !m.Exists() {
 		panic("unbox of a maybe rejected")
 	}
-	return m.v
+	return &m.v
 }
 
 var _ ipld.Node = (Bytes)(&_Bytes{})
@@ -1305,9 +1297,6 @@ func (na *_Bytes__Assembler) AssignBytes(v []byte) error {
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	}
-	if na.w == nil {
-		na.w = &_Bytes{}
-	}
 	na.w.x = v
 	*na.m = schema.Maybe_Value
 	return nil
@@ -1323,11 +1312,6 @@ func (na *_Bytes__Assembler) AssignNode(v ipld.Node) error {
 		switch *na.m {
 		case schema.Maybe_Value, schema.Maybe_Null:
 			panic("invalid state: cannot assign into assembler that's already finished")
-		}
-		if na.w == nil {
-			na.w = v2
-			*na.m = schema.Maybe_Value
-			return nil
 		}
 		*na.w = *v2
 		*na.m = schema.Maybe_Value
@@ -2274,7 +2258,7 @@ func (n *_EnumRepresentation_Int) LookupMaybe(k EnumValue) MaybeInt {
 	}
 	return &_Int__Maybe{
 		m: schema.Maybe_Value,
-		v: v,
+		v: *v,
 	}
 }
 
@@ -2305,7 +2289,7 @@ func (itr *EnumRepresentation_Int__Itr) Done() bool {
 
 type _EnumRepresentation_Int__Maybe struct {
 	m schema.Maybe
-	v EnumRepresentation_Int
+	v _EnumRepresentation_Int
 }
 type MaybeEnumRepresentation_Int = *_EnumRepresentation_Int__Maybe
 
@@ -2325,7 +2309,7 @@ func (m MaybeEnumRepresentation_Int) AsNode() ipld.Node {
 	case schema.Maybe_Null:
 		return ipld.Null
 	case schema.Maybe_Value:
-		return m.v
+		return &m.v
 	default:
 		panic("unreachable")
 	}
@@ -2334,7 +2318,7 @@ func (m MaybeEnumRepresentation_Int) Must() EnumRepresentation_Int {
 	if !m.Exists() {
 		panic("unbox of a maybe rejected")
 	}
-	return m.v
+	return &m.v
 }
 
 var _ ipld.Node = (EnumRepresentation_Int)(&_EnumRepresentation_Int{})
@@ -2479,9 +2463,6 @@ func (na *_EnumRepresentation_Int__Assembler) BeginMap(sizeHint int64) (ipld.Map
 	if sizeHint < 0 {
 		sizeHint = 0
 	}
-	if na.w == nil {
-		na.w = &_EnumRepresentation_Int{}
-	}
 	na.w.m = make(map[_EnumValue]*_Int, sizeHint)
 	na.w.t = make([]_EnumRepresentation_Int__entry, 0, sizeHint)
 	return na, nil
@@ -2531,11 +2512,6 @@ func (na *_EnumRepresentation_Int__Assembler) AssignNode(v ipld.Node) error {
 			panic("invalid state: cannot assign into assembler that's already finished")
 		case midvalue:
 			panic("invalid state: cannot assign null into an assembler that's already begun working on recursive structures!")
-		}
-		if na.w == nil {
-			na.w = v2
-			*na.m = schema.Maybe_Value
-			return nil
 		}
 		*na.w = *v2
 		*na.m = schema.Maybe_Value
@@ -2821,9 +2797,6 @@ func (na *_EnumRepresentation_Int__ReprAssembler) BeginMap(sizeHint int64) (ipld
 	if sizeHint < 0 {
 		sizeHint = 0
 	}
-	if na.w == nil {
-		na.w = &_EnumRepresentation_Int{}
-	}
 	na.w.m = make(map[_EnumValue]*_Int, sizeHint)
 	na.w.t = make([]_EnumRepresentation_Int__entry, 0, sizeHint)
 	return na, nil
@@ -2873,11 +2846,6 @@ func (na *_EnumRepresentation_Int__ReprAssembler) AssignNode(v ipld.Node) error 
 			panic("invalid state: cannot assign into assembler that's already finished")
 		case midvalue:
 			panic("invalid state: cannot assign null into an assembler that's already begun working on recursive structures!")
-		}
-		if na.w == nil {
-			na.w = v2
-			*na.m = schema.Maybe_Value
-			return nil
 		}
 		*na.w = *v2
 		*na.m = schema.Maybe_Value
@@ -3043,7 +3011,7 @@ func (n *_EnumRepresentation_String) LookupMaybe(k EnumValue) MaybeString {
 	}
 	return &_String__Maybe{
 		m: schema.Maybe_Value,
-		v: v,
+		v: *v,
 	}
 }
 
@@ -3074,7 +3042,7 @@ func (itr *EnumRepresentation_String__Itr) Done() bool {
 
 type _EnumRepresentation_String__Maybe struct {
 	m schema.Maybe
-	v EnumRepresentation_String
+	v _EnumRepresentation_String
 }
 type MaybeEnumRepresentation_String = *_EnumRepresentation_String__Maybe
 
@@ -3094,7 +3062,7 @@ func (m MaybeEnumRepresentation_String) AsNode() ipld.Node {
 	case schema.Maybe_Null:
 		return ipld.Null
 	case schema.Maybe_Value:
-		return m.v
+		return &m.v
 	default:
 		panic("unreachable")
 	}
@@ -3103,7 +3071,7 @@ func (m MaybeEnumRepresentation_String) Must() EnumRepresentation_String {
 	if !m.Exists() {
 		panic("unbox of a maybe rejected")
 	}
-	return m.v
+	return &m.v
 }
 
 var _ ipld.Node = (EnumRepresentation_String)(&_EnumRepresentation_String{})
@@ -3248,9 +3216,6 @@ func (na *_EnumRepresentation_String__Assembler) BeginMap(sizeHint int64) (ipld.
 	if sizeHint < 0 {
 		sizeHint = 0
 	}
-	if na.w == nil {
-		na.w = &_EnumRepresentation_String{}
-	}
 	na.w.m = make(map[_EnumValue]*_String, sizeHint)
 	na.w.t = make([]_EnumRepresentation_String__entry, 0, sizeHint)
 	return na, nil
@@ -3300,11 +3265,6 @@ func (na *_EnumRepresentation_String__Assembler) AssignNode(v ipld.Node) error {
 			panic("invalid state: cannot assign into assembler that's already finished")
 		case midvalue:
 			panic("invalid state: cannot assign null into an assembler that's already begun working on recursive structures!")
-		}
-		if na.w == nil {
-			na.w = v2
-			*na.m = schema.Maybe_Value
-			return nil
 		}
 		*na.w = *v2
 		*na.m = schema.Maybe_Value
@@ -3590,9 +3550,6 @@ func (na *_EnumRepresentation_String__ReprAssembler) BeginMap(sizeHint int64) (i
 	if sizeHint < 0 {
 		sizeHint = 0
 	}
-	if na.w == nil {
-		na.w = &_EnumRepresentation_String{}
-	}
 	na.w.m = make(map[_EnumValue]*_String, sizeHint)
 	na.w.t = make([]_EnumRepresentation_String__entry, 0, sizeHint)
 	return na, nil
@@ -3642,11 +3599,6 @@ func (na *_EnumRepresentation_String__ReprAssembler) AssignNode(v ipld.Node) err
 			panic("invalid state: cannot assign into assembler that's already finished")
 		case midvalue:
 			panic("invalid state: cannot assign null into an assembler that's already begun working on recursive structures!")
-		}
-		if na.w == nil {
-			na.w = v2
-			*na.m = schema.Maybe_Value
-			return nil
 		}
 		*na.w = *v2
 		*na.m = schema.Maybe_Value
@@ -3812,7 +3764,7 @@ func (_EnumValue__Prototype) FromString(v string) (EnumValue, error) {
 
 type _EnumValue__Maybe struct {
 	m schema.Maybe
-	v EnumValue
+	v _EnumValue
 }
 type MaybeEnumValue = *_EnumValue__Maybe
 
@@ -3832,7 +3784,7 @@ func (m MaybeEnumValue) AsNode() ipld.Node {
 	case schema.Maybe_Null:
 		return ipld.Null
 	case schema.Maybe_Value:
-		return m.v
+		return &m.v
 	default:
 		panic("unreachable")
 	}
@@ -3841,7 +3793,7 @@ func (m MaybeEnumValue) Must() EnumValue {
 	if !m.Exists() {
 		panic("unbox of a maybe rejected")
 	}
-	return m.v
+	return &m.v
 }
 
 var _ ipld.Node = (EnumValue)(&_EnumValue{})
@@ -3961,9 +3913,6 @@ func (na *_EnumValue__Assembler) AssignString(v string) error {
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	}
-	if na.w == nil {
-		na.w = &_EnumValue{}
-	}
 	na.w.x = v
 	*na.m = schema.Maybe_Value
 	return nil
@@ -3982,11 +3931,6 @@ func (na *_EnumValue__Assembler) AssignNode(v ipld.Node) error {
 		switch *na.m {
 		case schema.Maybe_Value, schema.Maybe_Null:
 			panic("invalid state: cannot assign into assembler that's already finished")
-		}
-		if na.w == nil {
-			na.w = v2
-			*na.m = schema.Maybe_Value
-			return nil
 		}
 		*na.w = *v2
 		*na.m = schema.Maybe_Value
@@ -4029,7 +3973,7 @@ func (_FieldName__Prototype) FromString(v string) (FieldName, error) {
 
 type _FieldName__Maybe struct {
 	m schema.Maybe
-	v FieldName
+	v _FieldName
 }
 type MaybeFieldName = *_FieldName__Maybe
 
@@ -4049,7 +3993,7 @@ func (m MaybeFieldName) AsNode() ipld.Node {
 	case schema.Maybe_Null:
 		return ipld.Null
 	case schema.Maybe_Value:
-		return m.v
+		return &m.v
 	default:
 		panic("unreachable")
 	}
@@ -4058,7 +4002,7 @@ func (m MaybeFieldName) Must() FieldName {
 	if !m.Exists() {
 		panic("unbox of a maybe rejected")
 	}
-	return m.v
+	return &m.v
 }
 
 var _ ipld.Node = (FieldName)(&_FieldName{})
@@ -4178,9 +4122,6 @@ func (na *_FieldName__Assembler) AssignString(v string) error {
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	}
-	if na.w == nil {
-		na.w = &_FieldName{}
-	}
 	na.w.x = v
 	*na.m = schema.Maybe_Value
 	return nil
@@ -4199,11 +4140,6 @@ func (na *_FieldName__Assembler) AssignNode(v ipld.Node) error {
 		switch *na.m {
 		case schema.Maybe_Value, schema.Maybe_Null:
 			panic("invalid state: cannot assign into assembler that's already finished")
-		}
-		if na.w == nil {
-			na.w = v2
-			*na.m = schema.Maybe_Value
-			return nil
 		}
 		*na.w = *v2
 		*na.m = schema.Maybe_Value
@@ -4242,7 +4178,7 @@ func (_Float__Prototype) FromFloat(v float64) (Float, error) {
 
 type _Float__Maybe struct {
 	m schema.Maybe
-	v Float
+	v _Float
 }
 type MaybeFloat = *_Float__Maybe
 
@@ -4262,7 +4198,7 @@ func (m MaybeFloat) AsNode() ipld.Node {
 	case schema.Maybe_Null:
 		return ipld.Null
 	case schema.Maybe_Value:
-		return m.v
+		return &m.v
 	default:
 		panic("unreachable")
 	}
@@ -4271,7 +4207,7 @@ func (m MaybeFloat) Must() Float {
 	if !m.Exists() {
 		panic("unbox of a maybe rejected")
 	}
-	return m.v
+	return &m.v
 }
 
 var _ ipld.Node = (Float)(&_Float{})
@@ -4388,9 +4324,6 @@ func (na *_Float__Assembler) AssignFloat(v float64) error {
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	}
-	if na.w == nil {
-		na.w = &_Float{}
-	}
 	na.w.x = v
 	*na.m = schema.Maybe_Value
 	return nil
@@ -4412,11 +4345,6 @@ func (na *_Float__Assembler) AssignNode(v ipld.Node) error {
 		switch *na.m {
 		case schema.Maybe_Value, schema.Maybe_Null:
 			panic("invalid state: cannot assign into assembler that's already finished")
-		}
-		if na.w == nil {
-			na.w = v2
-			*na.m = schema.Maybe_Value
-			return nil
 		}
 		*na.w = *v2
 		*na.m = schema.Maybe_Value
@@ -4455,7 +4383,7 @@ func (_Int__Prototype) FromInt(v int64) (Int, error) {
 
 type _Int__Maybe struct {
 	m schema.Maybe
-	v Int
+	v _Int
 }
 type MaybeInt = *_Int__Maybe
 
@@ -4475,7 +4403,7 @@ func (m MaybeInt) AsNode() ipld.Node {
 	case schema.Maybe_Null:
 		return ipld.Null
 	case schema.Maybe_Value:
-		return m.v
+		return &m.v
 	default:
 		panic("unreachable")
 	}
@@ -4484,7 +4412,7 @@ func (m MaybeInt) Must() Int {
 	if !m.Exists() {
 		panic("unbox of a maybe rejected")
 	}
-	return m.v
+	return &m.v
 }
 
 var _ ipld.Node = (Int)(&_Int{})
@@ -4598,9 +4526,6 @@ func (na *_Int__Assembler) AssignInt(v int64) error {
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	}
-	if na.w == nil {
-		na.w = &_Int{}
-	}
 	na.w.x = v
 	*na.m = schema.Maybe_Value
 	return nil
@@ -4625,11 +4550,6 @@ func (na *_Int__Assembler) AssignNode(v ipld.Node) error {
 		switch *na.m {
 		case schema.Maybe_Value, schema.Maybe_Null:
 			panic("invalid state: cannot assign into assembler that's already finished")
-		}
-		if na.w == nil {
-			na.w = v2
-			*na.m = schema.Maybe_Value
-			return nil
 		}
 		*na.w = *v2
 		*na.m = schema.Maybe_Value
@@ -6236,7 +6156,7 @@ func (n *_List__FieldName) LookupMaybe(idx int64) MaybeFieldName {
 	v := &n.x[idx]
 	return &_FieldName__Maybe{
 		m: schema.Maybe_Value,
-		v: v,
+		v: *v,
 	}
 }
 
@@ -6266,7 +6186,7 @@ func (itr *List__FieldName__Itr) Done() bool {
 
 type _List__FieldName__Maybe struct {
 	m schema.Maybe
-	v List__FieldName
+	v _List__FieldName
 }
 type MaybeList__FieldName = *_List__FieldName__Maybe
 
@@ -6286,7 +6206,7 @@ func (m MaybeList__FieldName) AsNode() ipld.Node {
 	case schema.Maybe_Null:
 		return ipld.Null
 	case schema.Maybe_Value:
-		return m.v
+		return &m.v
 	default:
 		panic("unreachable")
 	}
@@ -6295,7 +6215,7 @@ func (m MaybeList__FieldName) Must() List__FieldName {
 	if !m.Exists() {
 		panic("unbox of a maybe rejected")
 	}
-	return m.v
+	return &m.v
 }
 
 var _ ipld.Node = (List__FieldName)(&_List__FieldName{})
@@ -6436,9 +6356,6 @@ func (na *_List__FieldName__Assembler) BeginList(sizeHint int64) (ipld.ListAssem
 	if sizeHint < 0 {
 		sizeHint = 0
 	}
-	if na.w == nil {
-		na.w = &_List__FieldName{}
-	}
 	if sizeHint > 0 {
 		na.w.x = make([]_FieldName, 0, sizeHint)
 	}
@@ -6486,11 +6403,6 @@ func (na *_List__FieldName__Assembler) AssignNode(v ipld.Node) error {
 			panic("invalid state: cannot assign into assembler that's already finished")
 		case midvalue:
 			panic("invalid state: cannot assign null into an assembler that's already begun working on recursive structures!")
-		}
-		if na.w == nil {
-			na.w = v2
-			*na.m = schema.Maybe_Value
-			return nil
 		}
 		*na.w = *v2
 		*na.m = schema.Maybe_Value
@@ -6702,9 +6614,6 @@ func (na *_List__FieldName__ReprAssembler) BeginList(sizeHint int64) (ipld.ListA
 	if sizeHint < 0 {
 		sizeHint = 0
 	}
-	if na.w == nil {
-		na.w = &_List__FieldName{}
-	}
 	if sizeHint > 0 {
 		na.w.x = make([]_FieldName, 0, sizeHint)
 	}
@@ -6752,11 +6661,6 @@ func (na *_List__FieldName__ReprAssembler) AssignNode(v ipld.Node) error {
 			panic("invalid state: cannot assign into assembler that's already finished")
 		case midvalue:
 			panic("invalid state: cannot assign null into an assembler that's already begun working on recursive structures!")
-		}
-		if na.w == nil {
-			na.w = v2
-			*na.m = schema.Maybe_Value
-			return nil
 		}
 		*na.w = *v2
 		*na.m = schema.Maybe_Value
@@ -6843,7 +6747,7 @@ func (n *_List__TypeName) LookupMaybe(idx int64) MaybeTypeName {
 	v := &n.x[idx]
 	return &_TypeName__Maybe{
 		m: schema.Maybe_Value,
-		v: v,
+		v: *v,
 	}
 }
 
@@ -6873,7 +6777,7 @@ func (itr *List__TypeName__Itr) Done() bool {
 
 type _List__TypeName__Maybe struct {
 	m schema.Maybe
-	v List__TypeName
+	v _List__TypeName
 }
 type MaybeList__TypeName = *_List__TypeName__Maybe
 
@@ -6893,7 +6797,7 @@ func (m MaybeList__TypeName) AsNode() ipld.Node {
 	case schema.Maybe_Null:
 		return ipld.Null
 	case schema.Maybe_Value:
-		return m.v
+		return &m.v
 	default:
 		panic("unreachable")
 	}
@@ -6902,7 +6806,7 @@ func (m MaybeList__TypeName) Must() List__TypeName {
 	if !m.Exists() {
 		panic("unbox of a maybe rejected")
 	}
-	return m.v
+	return &m.v
 }
 
 var _ ipld.Node = (List__TypeName)(&_List__TypeName{})
@@ -7043,9 +6947,6 @@ func (na *_List__TypeName__Assembler) BeginList(sizeHint int64) (ipld.ListAssemb
 	if sizeHint < 0 {
 		sizeHint = 0
 	}
-	if na.w == nil {
-		na.w = &_List__TypeName{}
-	}
 	if sizeHint > 0 {
 		na.w.x = make([]_TypeName, 0, sizeHint)
 	}
@@ -7093,11 +6994,6 @@ func (na *_List__TypeName__Assembler) AssignNode(v ipld.Node) error {
 			panic("invalid state: cannot assign into assembler that's already finished")
 		case midvalue:
 			panic("invalid state: cannot assign null into an assembler that's already begun working on recursive structures!")
-		}
-		if na.w == nil {
-			na.w = v2
-			*na.m = schema.Maybe_Value
-			return nil
 		}
 		*na.w = *v2
 		*na.m = schema.Maybe_Value
@@ -7309,9 +7205,6 @@ func (na *_List__TypeName__ReprAssembler) BeginList(sizeHint int64) (ipld.ListAs
 	if sizeHint < 0 {
 		sizeHint = 0
 	}
-	if na.w == nil {
-		na.w = &_List__TypeName{}
-	}
 	if sizeHint > 0 {
 		na.w.x = make([]_TypeName, 0, sizeHint)
 	}
@@ -7359,11 +7252,6 @@ func (na *_List__TypeName__ReprAssembler) AssignNode(v ipld.Node) error {
 			panic("invalid state: cannot assign into assembler that's already finished")
 		case midvalue:
 			panic("invalid state: cannot assign null into an assembler that's already begun working on recursive structures!")
-		}
-		if na.w == nil {
-			na.w = v2
-			*na.m = schema.Maybe_Value
-			return nil
 		}
 		*na.w = *v2
 		*na.m = schema.Maybe_Value
@@ -10821,7 +10709,7 @@ func (itr *Map__EnumValue__Unit__Itr) Done() bool {
 
 type _Map__EnumValue__Unit__Maybe struct {
 	m schema.Maybe
-	v Map__EnumValue__Unit
+	v _Map__EnumValue__Unit
 }
 type MaybeMap__EnumValue__Unit = *_Map__EnumValue__Unit__Maybe
 
@@ -10841,7 +10729,7 @@ func (m MaybeMap__EnumValue__Unit) AsNode() ipld.Node {
 	case schema.Maybe_Null:
 		return ipld.Null
 	case schema.Maybe_Value:
-		return m.v
+		return &m.v
 	default:
 		panic("unreachable")
 	}
@@ -10850,7 +10738,7 @@ func (m MaybeMap__EnumValue__Unit) Must() Map__EnumValue__Unit {
 	if !m.Exists() {
 		panic("unbox of a maybe rejected")
 	}
-	return m.v
+	return &m.v
 }
 
 var _ ipld.Node = (Map__EnumValue__Unit)(&_Map__EnumValue__Unit{})
@@ -10995,9 +10883,6 @@ func (na *_Map__EnumValue__Unit__Assembler) BeginMap(sizeHint int64) (ipld.MapAs
 	if sizeHint < 0 {
 		sizeHint = 0
 	}
-	if na.w == nil {
-		na.w = &_Map__EnumValue__Unit{}
-	}
 	na.w.m = make(map[_EnumValue]*_Unit, sizeHint)
 	na.w.t = make([]_Map__EnumValue__Unit__entry, 0, sizeHint)
 	return na, nil
@@ -11047,11 +10932,6 @@ func (na *_Map__EnumValue__Unit__Assembler) AssignNode(v ipld.Node) error {
 			panic("invalid state: cannot assign into assembler that's already finished")
 		case midvalue:
 			panic("invalid state: cannot assign null into an assembler that's already begun working on recursive structures!")
-		}
-		if na.w == nil {
-			na.w = v2
-			*na.m = schema.Maybe_Value
-			return nil
 		}
 		*na.w = *v2
 		*na.m = schema.Maybe_Value
@@ -11337,9 +11217,6 @@ func (na *_Map__EnumValue__Unit__ReprAssembler) BeginMap(sizeHint int64) (ipld.M
 	if sizeHint < 0 {
 		sizeHint = 0
 	}
-	if na.w == nil {
-		na.w = &_Map__EnumValue__Unit{}
-	}
 	na.w.m = make(map[_EnumValue]*_Unit, sizeHint)
 	na.w.t = make([]_Map__EnumValue__Unit__entry, 0, sizeHint)
 	return na, nil
@@ -11389,11 +11266,6 @@ func (na *_Map__EnumValue__Unit__ReprAssembler) AssignNode(v ipld.Node) error {
 			panic("invalid state: cannot assign into assembler that's already finished")
 		case midvalue:
 			panic("invalid state: cannot assign null into an assembler that's already begun working on recursive structures!")
-		}
-		if na.w == nil {
-			na.w = v2
-			*na.m = schema.Maybe_Value
-			return nil
 		}
 		*na.w = *v2
 		*na.m = schema.Maybe_Value
@@ -11590,7 +11462,7 @@ func (itr *Map__FieldName__StructField__Itr) Done() bool {
 
 type _Map__FieldName__StructField__Maybe struct {
 	m schema.Maybe
-	v Map__FieldName__StructField
+	v _Map__FieldName__StructField
 }
 type MaybeMap__FieldName__StructField = *_Map__FieldName__StructField__Maybe
 
@@ -11610,7 +11482,7 @@ func (m MaybeMap__FieldName__StructField) AsNode() ipld.Node {
 	case schema.Maybe_Null:
 		return ipld.Null
 	case schema.Maybe_Value:
-		return m.v
+		return &m.v
 	default:
 		panic("unreachable")
 	}
@@ -11619,7 +11491,7 @@ func (m MaybeMap__FieldName__StructField) Must() Map__FieldName__StructField {
 	if !m.Exists() {
 		panic("unbox of a maybe rejected")
 	}
-	return m.v
+	return &m.v
 }
 
 var _ ipld.Node = (Map__FieldName__StructField)(&_Map__FieldName__StructField{})
@@ -11764,9 +11636,6 @@ func (na *_Map__FieldName__StructField__Assembler) BeginMap(sizeHint int64) (ipl
 	if sizeHint < 0 {
 		sizeHint = 0
 	}
-	if na.w == nil {
-		na.w = &_Map__FieldName__StructField{}
-	}
 	na.w.m = make(map[_FieldName]*_StructField, sizeHint)
 	na.w.t = make([]_Map__FieldName__StructField__entry, 0, sizeHint)
 	return na, nil
@@ -11816,11 +11685,6 @@ func (na *_Map__FieldName__StructField__Assembler) AssignNode(v ipld.Node) error
 			panic("invalid state: cannot assign into assembler that's already finished")
 		case midvalue:
 			panic("invalid state: cannot assign null into an assembler that's already begun working on recursive structures!")
-		}
-		if na.w == nil {
-			na.w = v2
-			*na.m = schema.Maybe_Value
-			return nil
 		}
 		*na.w = *v2
 		*na.m = schema.Maybe_Value
@@ -12106,9 +11970,6 @@ func (na *_Map__FieldName__StructField__ReprAssembler) BeginMap(sizeHint int64) 
 	if sizeHint < 0 {
 		sizeHint = 0
 	}
-	if na.w == nil {
-		na.w = &_Map__FieldName__StructField{}
-	}
 	na.w.m = make(map[_FieldName]*_StructField, sizeHint)
 	na.w.t = make([]_Map__FieldName__StructField__entry, 0, sizeHint)
 	return na, nil
@@ -12158,11 +12019,6 @@ func (na *_Map__FieldName__StructField__ReprAssembler) AssignNode(v ipld.Node) e
 			panic("invalid state: cannot assign into assembler that's already finished")
 		case midvalue:
 			panic("invalid state: cannot assign null into an assembler that's already begun working on recursive structures!")
-		}
-		if na.w == nil {
-			na.w = v2
-			*na.m = schema.Maybe_Value
-			return nil
 		}
 		*na.w = *v2
 		*na.m = schema.Maybe_Value
@@ -12359,7 +12215,7 @@ func (itr *Map__FieldName__StructRepresentation_Map_FieldDetails__Itr) Done() bo
 
 type _Map__FieldName__StructRepresentation_Map_FieldDetails__Maybe struct {
 	m schema.Maybe
-	v Map__FieldName__StructRepresentation_Map_FieldDetails
+	v _Map__FieldName__StructRepresentation_Map_FieldDetails
 }
 type MaybeMap__FieldName__StructRepresentation_Map_FieldDetails = *_Map__FieldName__StructRepresentation_Map_FieldDetails__Maybe
 
@@ -12379,7 +12235,7 @@ func (m MaybeMap__FieldName__StructRepresentation_Map_FieldDetails) AsNode() ipl
 	case schema.Maybe_Null:
 		return ipld.Null
 	case schema.Maybe_Value:
-		return m.v
+		return &m.v
 	default:
 		panic("unreachable")
 	}
@@ -12388,7 +12244,7 @@ func (m MaybeMap__FieldName__StructRepresentation_Map_FieldDetails) Must() Map__
 	if !m.Exists() {
 		panic("unbox of a maybe rejected")
 	}
-	return m.v
+	return &m.v
 }
 
 var _ ipld.Node = (Map__FieldName__StructRepresentation_Map_FieldDetails)(&_Map__FieldName__StructRepresentation_Map_FieldDetails{})
@@ -12533,9 +12389,6 @@ func (na *_Map__FieldName__StructRepresentation_Map_FieldDetails__Assembler) Beg
 	if sizeHint < 0 {
 		sizeHint = 0
 	}
-	if na.w == nil {
-		na.w = &_Map__FieldName__StructRepresentation_Map_FieldDetails{}
-	}
 	na.w.m = make(map[_FieldName]*_StructRepresentation_Map_FieldDetails, sizeHint)
 	na.w.t = make([]_Map__FieldName__StructRepresentation_Map_FieldDetails__entry, 0, sizeHint)
 	return na, nil
@@ -12585,11 +12438,6 @@ func (na *_Map__FieldName__StructRepresentation_Map_FieldDetails__Assembler) Ass
 			panic("invalid state: cannot assign into assembler that's already finished")
 		case midvalue:
 			panic("invalid state: cannot assign null into an assembler that's already begun working on recursive structures!")
-		}
-		if na.w == nil {
-			na.w = v2
-			*na.m = schema.Maybe_Value
-			return nil
 		}
 		*na.w = *v2
 		*na.m = schema.Maybe_Value
@@ -12875,9 +12723,6 @@ func (na *_Map__FieldName__StructRepresentation_Map_FieldDetails__ReprAssembler)
 	if sizeHint < 0 {
 		sizeHint = 0
 	}
-	if na.w == nil {
-		na.w = &_Map__FieldName__StructRepresentation_Map_FieldDetails{}
-	}
 	na.w.m = make(map[_FieldName]*_StructRepresentation_Map_FieldDetails, sizeHint)
 	na.w.t = make([]_Map__FieldName__StructRepresentation_Map_FieldDetails__entry, 0, sizeHint)
 	return na, nil
@@ -12927,11 +12772,6 @@ func (na *_Map__FieldName__StructRepresentation_Map_FieldDetails__ReprAssembler)
 			panic("invalid state: cannot assign into assembler that's already finished")
 		case midvalue:
 			panic("invalid state: cannot assign null into an assembler that's already begun working on recursive structures!")
-		}
-		if na.w == nil {
-			na.w = v2
-			*na.m = schema.Maybe_Value
-			return nil
 		}
 		*na.w = *v2
 		*na.m = schema.Maybe_Value
@@ -13097,7 +12937,7 @@ func (n *_Map__String__TypeName) LookupMaybe(k String) MaybeTypeName {
 	}
 	return &_TypeName__Maybe{
 		m: schema.Maybe_Value,
-		v: v,
+		v: *v,
 	}
 }
 
@@ -13128,7 +12968,7 @@ func (itr *Map__String__TypeName__Itr) Done() bool {
 
 type _Map__String__TypeName__Maybe struct {
 	m schema.Maybe
-	v Map__String__TypeName
+	v _Map__String__TypeName
 }
 type MaybeMap__String__TypeName = *_Map__String__TypeName__Maybe
 
@@ -13148,7 +12988,7 @@ func (m MaybeMap__String__TypeName) AsNode() ipld.Node {
 	case schema.Maybe_Null:
 		return ipld.Null
 	case schema.Maybe_Value:
-		return m.v
+		return &m.v
 	default:
 		panic("unreachable")
 	}
@@ -13157,7 +12997,7 @@ func (m MaybeMap__String__TypeName) Must() Map__String__TypeName {
 	if !m.Exists() {
 		panic("unbox of a maybe rejected")
 	}
-	return m.v
+	return &m.v
 }
 
 var _ ipld.Node = (Map__String__TypeName)(&_Map__String__TypeName{})
@@ -13302,9 +13142,6 @@ func (na *_Map__String__TypeName__Assembler) BeginMap(sizeHint int64) (ipld.MapA
 	if sizeHint < 0 {
 		sizeHint = 0
 	}
-	if na.w == nil {
-		na.w = &_Map__String__TypeName{}
-	}
 	na.w.m = make(map[_String]*_TypeName, sizeHint)
 	na.w.t = make([]_Map__String__TypeName__entry, 0, sizeHint)
 	return na, nil
@@ -13354,11 +13191,6 @@ func (na *_Map__String__TypeName__Assembler) AssignNode(v ipld.Node) error {
 			panic("invalid state: cannot assign into assembler that's already finished")
 		case midvalue:
 			panic("invalid state: cannot assign null into an assembler that's already begun working on recursive structures!")
-		}
-		if na.w == nil {
-			na.w = v2
-			*na.m = schema.Maybe_Value
-			return nil
 		}
 		*na.w = *v2
 		*na.m = schema.Maybe_Value
@@ -13644,9 +13476,6 @@ func (na *_Map__String__TypeName__ReprAssembler) BeginMap(sizeHint int64) (ipld.
 	if sizeHint < 0 {
 		sizeHint = 0
 	}
-	if na.w == nil {
-		na.w = &_Map__String__TypeName{}
-	}
 	na.w.m = make(map[_String]*_TypeName, sizeHint)
 	na.w.t = make([]_Map__String__TypeName__entry, 0, sizeHint)
 	return na, nil
@@ -13696,11 +13525,6 @@ func (na *_Map__String__TypeName__ReprAssembler) AssignNode(v ipld.Node) error {
 			panic("invalid state: cannot assign into assembler that's already finished")
 		case midvalue:
 			panic("invalid state: cannot assign null into an assembler that's already begun working on recursive structures!")
-		}
-		if na.w == nil {
-			na.w = v2
-			*na.m = schema.Maybe_Value
-			return nil
 		}
 		*na.w = *v2
 		*na.m = schema.Maybe_Value
@@ -13866,7 +13690,7 @@ func (n *_Map__TypeName__Int) LookupMaybe(k String) MaybeInt {
 	}
 	return &_Int__Maybe{
 		m: schema.Maybe_Value,
-		v: v,
+		v: *v,
 	}
 }
 
@@ -13897,7 +13721,7 @@ func (itr *Map__TypeName__Int__Itr) Done() bool {
 
 type _Map__TypeName__Int__Maybe struct {
 	m schema.Maybe
-	v Map__TypeName__Int
+	v _Map__TypeName__Int
 }
 type MaybeMap__TypeName__Int = *_Map__TypeName__Int__Maybe
 
@@ -13917,7 +13741,7 @@ func (m MaybeMap__TypeName__Int) AsNode() ipld.Node {
 	case schema.Maybe_Null:
 		return ipld.Null
 	case schema.Maybe_Value:
-		return m.v
+		return &m.v
 	default:
 		panic("unreachable")
 	}
@@ -13926,7 +13750,7 @@ func (m MaybeMap__TypeName__Int) Must() Map__TypeName__Int {
 	if !m.Exists() {
 		panic("unbox of a maybe rejected")
 	}
-	return m.v
+	return &m.v
 }
 
 var _ ipld.Node = (Map__TypeName__Int)(&_Map__TypeName__Int{})
@@ -14071,9 +13895,6 @@ func (na *_Map__TypeName__Int__Assembler) BeginMap(sizeHint int64) (ipld.MapAsse
 	if sizeHint < 0 {
 		sizeHint = 0
 	}
-	if na.w == nil {
-		na.w = &_Map__TypeName__Int{}
-	}
 	na.w.m = make(map[_String]*_Int, sizeHint)
 	na.w.t = make([]_Map__TypeName__Int__entry, 0, sizeHint)
 	return na, nil
@@ -14123,11 +13944,6 @@ func (na *_Map__TypeName__Int__Assembler) AssignNode(v ipld.Node) error {
 			panic("invalid state: cannot assign into assembler that's already finished")
 		case midvalue:
 			panic("invalid state: cannot assign null into an assembler that's already begun working on recursive structures!")
-		}
-		if na.w == nil {
-			na.w = v2
-			*na.m = schema.Maybe_Value
-			return nil
 		}
 		*na.w = *v2
 		*na.m = schema.Maybe_Value
@@ -14413,9 +14229,6 @@ func (na *_Map__TypeName__Int__ReprAssembler) BeginMap(sizeHint int64) (ipld.Map
 	if sizeHint < 0 {
 		sizeHint = 0
 	}
-	if na.w == nil {
-		na.w = &_Map__TypeName__Int{}
-	}
 	na.w.m = make(map[_String]*_Int, sizeHint)
 	na.w.t = make([]_Map__TypeName__Int__entry, 0, sizeHint)
 	return na, nil
@@ -14465,11 +14278,6 @@ func (na *_Map__TypeName__Int__ReprAssembler) AssignNode(v ipld.Node) error {
 			panic("invalid state: cannot assign into assembler that's already finished")
 		case midvalue:
 			panic("invalid state: cannot assign null into an assembler that's already begun working on recursive structures!")
-		}
-		if na.w == nil {
-			na.w = v2
-			*na.m = schema.Maybe_Value
-			return nil
 		}
 		*na.w = *v2
 		*na.m = schema.Maybe_Value
@@ -14635,7 +14443,7 @@ func (_RepresentationKind__Prototype) FromString(v string) (RepresentationKind, 
 
 type _RepresentationKind__Maybe struct {
 	m schema.Maybe
-	v RepresentationKind
+	v _RepresentationKind
 }
 type MaybeRepresentationKind = *_RepresentationKind__Maybe
 
@@ -14655,7 +14463,7 @@ func (m MaybeRepresentationKind) AsNode() ipld.Node {
 	case schema.Maybe_Null:
 		return ipld.Null
 	case schema.Maybe_Value:
-		return m.v
+		return &m.v
 	default:
 		panic("unreachable")
 	}
@@ -14664,7 +14472,7 @@ func (m MaybeRepresentationKind) Must() RepresentationKind {
 	if !m.Exists() {
 		panic("unbox of a maybe rejected")
 	}
-	return m.v
+	return &m.v
 }
 
 var _ ipld.Node = (RepresentationKind)(&_RepresentationKind{})
@@ -14784,9 +14592,6 @@ func (na *_RepresentationKind__Assembler) AssignString(v string) error {
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	}
-	if na.w == nil {
-		na.w = &_RepresentationKind{}
-	}
 	na.w.x = v
 	*na.m = schema.Maybe_Value
 	return nil
@@ -14805,11 +14610,6 @@ func (na *_RepresentationKind__Assembler) AssignNode(v ipld.Node) error {
 		switch *na.m {
 		case schema.Maybe_Value, schema.Maybe_Null:
 			panic("invalid state: cannot assign into assembler that's already finished")
-		}
-		if na.w == nil {
-			na.w = v2
-			*na.m = schema.Maybe_Value
-			return nil
 		}
 		*na.w = *v2
 		*na.m = schema.Maybe_Value
@@ -15719,7 +15519,7 @@ func (itr *SchemaMap__Itr) Done() bool {
 
 type _SchemaMap__Maybe struct {
 	m schema.Maybe
-	v SchemaMap
+	v _SchemaMap
 }
 type MaybeSchemaMap = *_SchemaMap__Maybe
 
@@ -15739,7 +15539,7 @@ func (m MaybeSchemaMap) AsNode() ipld.Node {
 	case schema.Maybe_Null:
 		return ipld.Null
 	case schema.Maybe_Value:
-		return m.v
+		return &m.v
 	default:
 		panic("unreachable")
 	}
@@ -15748,7 +15548,7 @@ func (m MaybeSchemaMap) Must() SchemaMap {
 	if !m.Exists() {
 		panic("unbox of a maybe rejected")
 	}
-	return m.v
+	return &m.v
 }
 
 var _ ipld.Node = (SchemaMap)(&_SchemaMap{})
@@ -15893,9 +15693,6 @@ func (na *_SchemaMap__Assembler) BeginMap(sizeHint int64) (ipld.MapAssembler, er
 	if sizeHint < 0 {
 		sizeHint = 0
 	}
-	if na.w == nil {
-		na.w = &_SchemaMap{}
-	}
 	na.w.m = make(map[_TypeName]*_TypeDefn, sizeHint)
 	na.w.t = make([]_SchemaMap__entry, 0, sizeHint)
 	return na, nil
@@ -15945,11 +15742,6 @@ func (na *_SchemaMap__Assembler) AssignNode(v ipld.Node) error {
 			panic("invalid state: cannot assign into assembler that's already finished")
 		case midvalue:
 			panic("invalid state: cannot assign null into an assembler that's already begun working on recursive structures!")
-		}
-		if na.w == nil {
-			na.w = v2
-			*na.m = schema.Maybe_Value
-			return nil
 		}
 		*na.w = *v2
 		*na.m = schema.Maybe_Value
@@ -16235,9 +16027,6 @@ func (na *_SchemaMap__ReprAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler
 	if sizeHint < 0 {
 		sizeHint = 0
 	}
-	if na.w == nil {
-		na.w = &_SchemaMap{}
-	}
 	na.w.m = make(map[_TypeName]*_TypeDefn, sizeHint)
 	na.w.t = make([]_SchemaMap__entry, 0, sizeHint)
 	return na, nil
@@ -16287,11 +16076,6 @@ func (na *_SchemaMap__ReprAssembler) AssignNode(v ipld.Node) error {
 			panic("invalid state: cannot assign into assembler that's already finished")
 		case midvalue:
 			panic("invalid state: cannot assign null into an assembler that's already begun working on recursive structures!")
-		}
-		if na.w == nil {
-			na.w = v2
-			*na.m = schema.Maybe_Value
-			return nil
 		}
 		*na.w = *v2
 		*na.m = schema.Maybe_Value
@@ -16457,7 +16241,7 @@ func (_String__Prototype) FromString(v string) (String, error) {
 
 type _String__Maybe struct {
 	m schema.Maybe
-	v String
+	v _String
 }
 type MaybeString = *_String__Maybe
 
@@ -16477,7 +16261,7 @@ func (m MaybeString) AsNode() ipld.Node {
 	case schema.Maybe_Null:
 		return ipld.Null
 	case schema.Maybe_Value:
-		return m.v
+		return &m.v
 	default:
 		panic("unreachable")
 	}
@@ -16486,7 +16270,7 @@ func (m MaybeString) Must() String {
 	if !m.Exists() {
 		panic("unbox of a maybe rejected")
 	}
-	return m.v
+	return &m.v
 }
 
 var _ ipld.Node = (String)(&_String{})
@@ -16606,9 +16390,6 @@ func (na *_String__Assembler) AssignString(v string) error {
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	}
-	if na.w == nil {
-		na.w = &_String{}
-	}
 	na.w.x = v
 	*na.m = schema.Maybe_Value
 	return nil
@@ -16627,11 +16408,6 @@ func (na *_String__Assembler) AssignNode(v ipld.Node) error {
 		switch *na.m {
 		case schema.Maybe_Value, schema.Maybe_Null:
 			panic("invalid state: cannot assign into assembler that's already finished")
-		}
-		if na.w == nil {
-			na.w = v2
-			*na.m = schema.Maybe_Value
-			return nil
 		}
 		*na.w = *v2
 		*na.m = schema.Maybe_Value
@@ -19545,7 +19321,7 @@ func (n StructRepresentation_Map) LookupByString(key string) (ipld.Node, error) 
 		if n.fields.m == schema.Maybe_Absent {
 			return ipld.Absent, nil
 		}
-		return n.fields.v, nil
+		return &n.fields.v, nil
 	default:
 		return nil, schema.ErrNoSuchField{Type: nil /*TODO*/, Field: ipld.PathSegmentOfString(key)}
 	}
@@ -19583,7 +19359,7 @@ func (itr *_StructRepresentation_Map__MapItr) Next() (k ipld.Node, v ipld.Node, 
 			v = ipld.Absent
 			break
 		}
-		v = itr.n.fields.v
+		v = &itr.n.fields.v
 	default:
 		panic("unreachable")
 	}
@@ -19768,7 +19544,6 @@ func (ma *_StructRepresentation_Map__Assembler) valueFinishTidy() bool {
 	case 0:
 		switch ma.w.fields.m {
 		case schema.Maybe_Value:
-			ma.w.fields.v = ma.ca_fields.w
 			ma.state = maState_initial
 			return true
 		default:
@@ -19801,7 +19576,7 @@ func (ma *_StructRepresentation_Map__Assembler) AssembleEntry(k string) (ipld.No
 		ma.s += fieldBit__StructRepresentation_Map_Fields
 		ma.state = maState_midValue
 		ma.f = 0
-		ma.ca_fields.w = ma.w.fields.v
+		ma.ca_fields.w = &ma.w.fields.v
 		ma.ca_fields.m = &ma.w.fields.m
 		return &ma.ca_fields, nil
 	}
@@ -19841,7 +19616,7 @@ func (ma *_StructRepresentation_Map__Assembler) AssembleValue() ipld.NodeAssembl
 	ma.state = maState_midValue
 	switch ma.f {
 	case 0:
-		ma.ca_fields.w = ma.w.fields.v
+		ma.ca_fields.w = &ma.w.fields.v
 		ma.ca_fields.m = &ma.w.fields.m
 		return &ma.ca_fields
 	default:
@@ -20183,7 +19958,6 @@ func (ma *_StructRepresentation_Map__ReprAssembler) valueFinishTidy() bool {
 	case 0:
 		switch ma.w.fields.m {
 		case schema.Maybe_Value:
-			ma.w.fields.v = ma.ca_fields.w
 			ma.state = maState_initial
 			return true
 		default:
@@ -20216,7 +19990,7 @@ func (ma *_StructRepresentation_Map__ReprAssembler) AssembleEntry(k string) (ipl
 		ma.s += fieldBit__StructRepresentation_Map_Fields
 		ma.state = maState_midValue
 		ma.f = 0
-		ma.ca_fields.w = ma.w.fields.v
+		ma.ca_fields.w = &ma.w.fields.v
 		ma.ca_fields.m = &ma.w.fields.m
 
 		return &ma.ca_fields, nil
@@ -20258,7 +20032,7 @@ func (ma *_StructRepresentation_Map__ReprAssembler) AssembleValue() ipld.NodeAss
 	ma.state = maState_midValue
 	switch ma.f {
 	case 0:
-		ma.ca_fields.w = ma.w.fields.v
+		ma.ca_fields.w = &ma.w.fields.v
 		ma.ca_fields.m = &ma.w.fields.m
 
 		return &ma.ca_fields
@@ -20406,7 +20180,7 @@ func (n StructRepresentation_Map_FieldDetails) LookupByString(key string) (ipld.
 		if n.rename.m == schema.Maybe_Absent {
 			return ipld.Absent, nil
 		}
-		return n.rename.v, nil
+		return &n.rename.v, nil
 	case "implicit":
 		if n.implicit.m == schema.Maybe_Absent {
 			return ipld.Absent, nil
@@ -20449,7 +20223,7 @@ func (itr *_StructRepresentation_Map_FieldDetails__MapItr) Next() (k ipld.Node, 
 			v = ipld.Absent
 			break
 		}
-		v = itr.n.rename.v
+		v = &itr.n.rename.v
 	case 1:
 		k = &fieldName__StructRepresentation_Map_FieldDetails_Implicit
 		if itr.n.implicit.m == schema.Maybe_Absent {
@@ -20644,7 +20418,6 @@ func (ma *_StructRepresentation_Map_FieldDetails__Assembler) valueFinishTidy() b
 	case 0:
 		switch ma.w.rename.m {
 		case schema.Maybe_Value:
-			ma.w.rename.v = ma.ca_rename.w
 			ma.state = maState_initial
 			return true
 		default:
@@ -20686,7 +20459,7 @@ func (ma *_StructRepresentation_Map_FieldDetails__Assembler) AssembleEntry(k str
 		ma.s += fieldBit__StructRepresentation_Map_FieldDetails_Rename
 		ma.state = maState_midValue
 		ma.f = 0
-		ma.ca_rename.w = ma.w.rename.v
+		ma.ca_rename.w = &ma.w.rename.v
 		ma.ca_rename.m = &ma.w.rename.m
 		return &ma.ca_rename, nil
 	case "implicit":
@@ -20736,7 +20509,7 @@ func (ma *_StructRepresentation_Map_FieldDetails__Assembler) AssembleValue() ipl
 	ma.state = maState_midValue
 	switch ma.f {
 	case 0:
-		ma.ca_rename.w = ma.w.rename.v
+		ma.ca_rename.w = &ma.w.rename.v
 		ma.ca_rename.m = &ma.w.rename.m
 		return &ma.ca_rename
 	case 1:
@@ -21112,7 +20885,6 @@ func (ma *_StructRepresentation_Map_FieldDetails__ReprAssembler) valueFinishTidy
 	case 0:
 		switch ma.w.rename.m {
 		case schema.Maybe_Value:
-			ma.w.rename.v = ma.ca_rename.w
 			ma.state = maState_initial
 			return true
 		default:
@@ -21154,7 +20926,7 @@ func (ma *_StructRepresentation_Map_FieldDetails__ReprAssembler) AssembleEntry(k
 		ma.s += fieldBit__StructRepresentation_Map_FieldDetails_Rename
 		ma.state = maState_midValue
 		ma.f = 0
-		ma.ca_rename.w = ma.w.rename.v
+		ma.ca_rename.w = &ma.w.rename.v
 		ma.ca_rename.m = &ma.w.rename.m
 
 		return &ma.ca_rename, nil
@@ -21207,7 +20979,7 @@ func (ma *_StructRepresentation_Map_FieldDetails__ReprAssembler) AssembleValue()
 	ma.state = maState_midValue
 	switch ma.f {
 	case 0:
-		ma.ca_rename.w = ma.w.rename.v
+		ma.ca_rename.w = &ma.w.rename.v
 		ma.ca_rename.m = &ma.w.rename.m
 
 		return &ma.ca_rename
@@ -21370,7 +21142,7 @@ func (n StructRepresentation_Stringjoin) LookupByString(key string) (ipld.Node, 
 		if n.fieldOrder.m == schema.Maybe_Absent {
 			return ipld.Absent, nil
 		}
-		return n.fieldOrder.v, nil
+		return &n.fieldOrder.v, nil
 	default:
 		return nil, schema.ErrNoSuchField{Type: nil /*TODO*/, Field: ipld.PathSegmentOfString(key)}
 	}
@@ -21411,7 +21183,7 @@ func (itr *_StructRepresentation_Stringjoin__MapItr) Next() (k ipld.Node, v ipld
 			v = ipld.Absent
 			break
 		}
-		v = itr.n.fieldOrder.v
+		v = &itr.n.fieldOrder.v
 	default:
 		panic("unreachable")
 	}
@@ -21609,7 +21381,6 @@ func (ma *_StructRepresentation_Stringjoin__Assembler) valueFinishTidy() bool {
 	case 1:
 		switch ma.w.fieldOrder.m {
 		case schema.Maybe_Value:
-			ma.w.fieldOrder.v = ma.ca_fieldOrder.w
 			ma.state = maState_initial
 			return true
 		default:
@@ -21652,7 +21423,7 @@ func (ma *_StructRepresentation_Stringjoin__Assembler) AssembleEntry(k string) (
 		ma.s += fieldBit__StructRepresentation_Stringjoin_FieldOrder
 		ma.state = maState_midValue
 		ma.f = 1
-		ma.ca_fieldOrder.w = ma.w.fieldOrder.v
+		ma.ca_fieldOrder.w = &ma.w.fieldOrder.v
 		ma.ca_fieldOrder.m = &ma.w.fieldOrder.m
 		return &ma.ca_fieldOrder, nil
 	}
@@ -21696,7 +21467,7 @@ func (ma *_StructRepresentation_Stringjoin__Assembler) AssembleValue() ipld.Node
 		ma.ca_join.m = &ma.cm
 		return &ma.ca_join
 	case 1:
-		ma.ca_fieldOrder.w = ma.w.fieldOrder.v
+		ma.ca_fieldOrder.w = &ma.w.fieldOrder.v
 		ma.ca_fieldOrder.m = &ma.w.fieldOrder.m
 		return &ma.ca_fieldOrder
 	default:
@@ -22065,7 +21836,6 @@ func (ma *_StructRepresentation_Stringjoin__ReprAssembler) valueFinishTidy() boo
 	case 1:
 		switch ma.w.fieldOrder.m {
 		case schema.Maybe_Value:
-			ma.w.fieldOrder.v = ma.ca_fieldOrder.w
 			ma.state = maState_initial
 			return true
 		default:
@@ -22108,7 +21878,7 @@ func (ma *_StructRepresentation_Stringjoin__ReprAssembler) AssembleEntry(k strin
 		ma.s += fieldBit__StructRepresentation_Stringjoin_FieldOrder
 		ma.state = maState_midValue
 		ma.f = 1
-		ma.ca_fieldOrder.w = ma.w.fieldOrder.v
+		ma.ca_fieldOrder.w = &ma.w.fieldOrder.v
 		ma.ca_fieldOrder.m = &ma.w.fieldOrder.m
 
 		return &ma.ca_fieldOrder, nil
@@ -22154,7 +21924,7 @@ func (ma *_StructRepresentation_Stringjoin__ReprAssembler) AssembleValue() ipld.
 		ma.ca_join.m = &ma.cm
 		return &ma.ca_join
 	case 1:
-		ma.ca_fieldOrder.w = ma.w.fieldOrder.v
+		ma.ca_fieldOrder.w = &ma.w.fieldOrder.v
 		ma.ca_fieldOrder.m = &ma.w.fieldOrder.m
 
 		return &ma.ca_fieldOrder
@@ -23233,7 +23003,7 @@ func (n StructRepresentation_Tuple) LookupByString(key string) (ipld.Node, error
 		if n.fieldOrder.m == schema.Maybe_Absent {
 			return ipld.Absent, nil
 		}
-		return n.fieldOrder.v, nil
+		return &n.fieldOrder.v, nil
 	default:
 		return nil, schema.ErrNoSuchField{Type: nil /*TODO*/, Field: ipld.PathSegmentOfString(key)}
 	}
@@ -23271,7 +23041,7 @@ func (itr *_StructRepresentation_Tuple__MapItr) Next() (k ipld.Node, v ipld.Node
 			v = ipld.Absent
 			break
 		}
-		v = itr.n.fieldOrder.v
+		v = &itr.n.fieldOrder.v
 	default:
 		panic("unreachable")
 	}
@@ -23456,7 +23226,6 @@ func (ma *_StructRepresentation_Tuple__Assembler) valueFinishTidy() bool {
 	case 0:
 		switch ma.w.fieldOrder.m {
 		case schema.Maybe_Value:
-			ma.w.fieldOrder.v = ma.ca_fieldOrder.w
 			ma.state = maState_initial
 			return true
 		default:
@@ -23489,7 +23258,7 @@ func (ma *_StructRepresentation_Tuple__Assembler) AssembleEntry(k string) (ipld.
 		ma.s += fieldBit__StructRepresentation_Tuple_FieldOrder
 		ma.state = maState_midValue
 		ma.f = 0
-		ma.ca_fieldOrder.w = ma.w.fieldOrder.v
+		ma.ca_fieldOrder.w = &ma.w.fieldOrder.v
 		ma.ca_fieldOrder.m = &ma.w.fieldOrder.m
 		return &ma.ca_fieldOrder, nil
 	}
@@ -23529,7 +23298,7 @@ func (ma *_StructRepresentation_Tuple__Assembler) AssembleValue() ipld.NodeAssem
 	ma.state = maState_midValue
 	switch ma.f {
 	case 0:
-		ma.ca_fieldOrder.w = ma.w.fieldOrder.v
+		ma.ca_fieldOrder.w = &ma.w.fieldOrder.v
 		ma.ca_fieldOrder.m = &ma.w.fieldOrder.m
 		return &ma.ca_fieldOrder
 	default:
@@ -23871,7 +23640,6 @@ func (ma *_StructRepresentation_Tuple__ReprAssembler) valueFinishTidy() bool {
 	case 0:
 		switch ma.w.fieldOrder.m {
 		case schema.Maybe_Value:
-			ma.w.fieldOrder.v = ma.ca_fieldOrder.w
 			ma.state = maState_initial
 			return true
 		default:
@@ -23904,7 +23672,7 @@ func (ma *_StructRepresentation_Tuple__ReprAssembler) AssembleEntry(k string) (i
 		ma.s += fieldBit__StructRepresentation_Tuple_FieldOrder
 		ma.state = maState_midValue
 		ma.f = 0
-		ma.ca_fieldOrder.w = ma.w.fieldOrder.v
+		ma.ca_fieldOrder.w = &ma.w.fieldOrder.v
 		ma.ca_fieldOrder.m = &ma.w.fieldOrder.m
 
 		return &ma.ca_fieldOrder, nil
@@ -23946,7 +23714,7 @@ func (ma *_StructRepresentation_Tuple__ReprAssembler) AssembleValue() ipld.NodeA
 	ma.state = maState_midValue
 	switch ma.f {
 	case 0:
-		ma.ca_fieldOrder.w = ma.w.fieldOrder.v
+		ma.ca_fieldOrder.w = &ma.w.fieldOrder.v
 		ma.ca_fieldOrder.m = &ma.w.fieldOrder.m
 
 		return &ma.ca_fieldOrder
@@ -31223,7 +30991,7 @@ func (n TypeLink) LookupByString(key string) (ipld.Node, error) {
 		if n.expectedType.m == schema.Maybe_Absent {
 			return ipld.Absent, nil
 		}
-		return n.expectedType.v, nil
+		return &n.expectedType.v, nil
 	default:
 		return nil, schema.ErrNoSuchField{Type: nil /*TODO*/, Field: ipld.PathSegmentOfString(key)}
 	}
@@ -31261,7 +31029,7 @@ func (itr *_TypeLink__MapItr) Next() (k ipld.Node, v ipld.Node, _ error) {
 			v = ipld.Absent
 			break
 		}
-		v = itr.n.expectedType.v
+		v = &itr.n.expectedType.v
 	default:
 		panic("unreachable")
 	}
@@ -31446,7 +31214,6 @@ func (ma *_TypeLink__Assembler) valueFinishTidy() bool {
 	case 0:
 		switch ma.w.expectedType.m {
 		case schema.Maybe_Value:
-			ma.w.expectedType.v = ma.ca_expectedType.w
 			ma.state = maState_initial
 			return true
 		default:
@@ -31479,7 +31246,7 @@ func (ma *_TypeLink__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, err
 		ma.s += fieldBit__TypeLink_ExpectedType
 		ma.state = maState_midValue
 		ma.f = 0
-		ma.ca_expectedType.w = ma.w.expectedType.v
+		ma.ca_expectedType.w = &ma.w.expectedType.v
 		ma.ca_expectedType.m = &ma.w.expectedType.m
 		return &ma.ca_expectedType, nil
 	}
@@ -31519,7 +31286,7 @@ func (ma *_TypeLink__Assembler) AssembleValue() ipld.NodeAssembler {
 	ma.state = maState_midValue
 	switch ma.f {
 	case 0:
-		ma.ca_expectedType.w = ma.w.expectedType.v
+		ma.ca_expectedType.w = &ma.w.expectedType.v
 		ma.ca_expectedType.m = &ma.w.expectedType.m
 		return &ma.ca_expectedType
 	default:
@@ -31861,7 +31628,6 @@ func (ma *_TypeLink__ReprAssembler) valueFinishTidy() bool {
 	case 0:
 		switch ma.w.expectedType.m {
 		case schema.Maybe_Value:
-			ma.w.expectedType.v = ma.ca_expectedType.w
 			ma.state = maState_initial
 			return true
 		default:
@@ -31894,7 +31660,7 @@ func (ma *_TypeLink__ReprAssembler) AssembleEntry(k string) (ipld.NodeAssembler,
 		ma.s += fieldBit__TypeLink_ExpectedType
 		ma.state = maState_midValue
 		ma.f = 0
-		ma.ca_expectedType.w = ma.w.expectedType.v
+		ma.ca_expectedType.w = &ma.w.expectedType.v
 		ma.ca_expectedType.m = &ma.w.expectedType.m
 
 		return &ma.ca_expectedType, nil
@@ -31936,7 +31702,7 @@ func (ma *_TypeLink__ReprAssembler) AssembleValue() ipld.NodeAssembler {
 	ma.state = maState_midValue
 	switch ma.f {
 	case 0:
-		ma.ca_expectedType.w = ma.w.expectedType.v
+		ma.ca_expectedType.w = &ma.w.expectedType.v
 		ma.ca_expectedType.m = &ma.w.expectedType.m
 
 		return &ma.ca_expectedType
@@ -34153,7 +33919,7 @@ func (_TypeName__Prototype) FromString(v string) (TypeName, error) {
 
 type _TypeName__Maybe struct {
 	m schema.Maybe
-	v TypeName
+	v _TypeName
 }
 type MaybeTypeName = *_TypeName__Maybe
 
@@ -34173,7 +33939,7 @@ func (m MaybeTypeName) AsNode() ipld.Node {
 	case schema.Maybe_Null:
 		return ipld.Null
 	case schema.Maybe_Value:
-		return m.v
+		return &m.v
 	default:
 		panic("unreachable")
 	}
@@ -34182,7 +33948,7 @@ func (m MaybeTypeName) Must() TypeName {
 	if !m.Exists() {
 		panic("unbox of a maybe rejected")
 	}
-	return m.v
+	return &m.v
 }
 
 var _ ipld.Node = (TypeName)(&_TypeName{})
@@ -34302,9 +34068,6 @@ func (na *_TypeName__Assembler) AssignString(v string) error {
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	}
-	if na.w == nil {
-		na.w = &_TypeName{}
-	}
 	na.w.x = v
 	*na.m = schema.Maybe_Value
 	return nil
@@ -34323,11 +34086,6 @@ func (na *_TypeName__Assembler) AssignNode(v ipld.Node) error {
 		switch *na.m {
 		case schema.Maybe_Value, schema.Maybe_Null:
 			panic("invalid state: cannot assign into assembler that's already finished")
-		}
-		if na.w == nil {
-			na.w = v2
-			*na.m = schema.Maybe_Value
-			return nil
 		}
 		*na.w = *v2
 		*na.m = schema.Maybe_Value
@@ -41666,7 +41424,7 @@ func (n *_UnionRepresentation_Keyed) LookupMaybe(k String) MaybeTypeName {
 	}
 	return &_TypeName__Maybe{
 		m: schema.Maybe_Value,
-		v: v,
+		v: *v,
 	}
 }
 
@@ -41697,7 +41455,7 @@ func (itr *UnionRepresentation_Keyed__Itr) Done() bool {
 
 type _UnionRepresentation_Keyed__Maybe struct {
 	m schema.Maybe
-	v UnionRepresentation_Keyed
+	v _UnionRepresentation_Keyed
 }
 type MaybeUnionRepresentation_Keyed = *_UnionRepresentation_Keyed__Maybe
 
@@ -41717,7 +41475,7 @@ func (m MaybeUnionRepresentation_Keyed) AsNode() ipld.Node {
 	case schema.Maybe_Null:
 		return ipld.Null
 	case schema.Maybe_Value:
-		return m.v
+		return &m.v
 	default:
 		panic("unreachable")
 	}
@@ -41726,7 +41484,7 @@ func (m MaybeUnionRepresentation_Keyed) Must() UnionRepresentation_Keyed {
 	if !m.Exists() {
 		panic("unbox of a maybe rejected")
 	}
-	return m.v
+	return &m.v
 }
 
 var _ ipld.Node = (UnionRepresentation_Keyed)(&_UnionRepresentation_Keyed{})
@@ -41871,9 +41629,6 @@ func (na *_UnionRepresentation_Keyed__Assembler) BeginMap(sizeHint int64) (ipld.
 	if sizeHint < 0 {
 		sizeHint = 0
 	}
-	if na.w == nil {
-		na.w = &_UnionRepresentation_Keyed{}
-	}
 	na.w.m = make(map[_String]*_TypeName, sizeHint)
 	na.w.t = make([]_UnionRepresentation_Keyed__entry, 0, sizeHint)
 	return na, nil
@@ -41923,11 +41678,6 @@ func (na *_UnionRepresentation_Keyed__Assembler) AssignNode(v ipld.Node) error {
 			panic("invalid state: cannot assign into assembler that's already finished")
 		case midvalue:
 			panic("invalid state: cannot assign null into an assembler that's already begun working on recursive structures!")
-		}
-		if na.w == nil {
-			na.w = v2
-			*na.m = schema.Maybe_Value
-			return nil
 		}
 		*na.w = *v2
 		*na.m = schema.Maybe_Value
@@ -42213,9 +41963,6 @@ func (na *_UnionRepresentation_Keyed__ReprAssembler) BeginMap(sizeHint int64) (i
 	if sizeHint < 0 {
 		sizeHint = 0
 	}
-	if na.w == nil {
-		na.w = &_UnionRepresentation_Keyed{}
-	}
 	na.w.m = make(map[_String]*_TypeName, sizeHint)
 	na.w.t = make([]_UnionRepresentation_Keyed__entry, 0, sizeHint)
 	return na, nil
@@ -42265,11 +42012,6 @@ func (na *_UnionRepresentation_Keyed__ReprAssembler) AssignNode(v ipld.Node) err
 			panic("invalid state: cannot assign into assembler that's already finished")
 		case midvalue:
 			panic("invalid state: cannot assign null into an assembler that's already begun working on recursive structures!")
-		}
-		if na.w == nil {
-			na.w = v2
-			*na.m = schema.Maybe_Value
-			return nil
 		}
 		*na.w = *v2
 		*na.m = schema.Maybe_Value
@@ -42435,7 +42177,7 @@ func (n *_UnionRepresentation_Kinded) LookupMaybe(k RepresentationKind) MaybeTyp
 	}
 	return &_TypeName__Maybe{
 		m: schema.Maybe_Value,
-		v: v,
+		v: *v,
 	}
 }
 
@@ -42466,7 +42208,7 @@ func (itr *UnionRepresentation_Kinded__Itr) Done() bool {
 
 type _UnionRepresentation_Kinded__Maybe struct {
 	m schema.Maybe
-	v UnionRepresentation_Kinded
+	v _UnionRepresentation_Kinded
 }
 type MaybeUnionRepresentation_Kinded = *_UnionRepresentation_Kinded__Maybe
 
@@ -42486,7 +42228,7 @@ func (m MaybeUnionRepresentation_Kinded) AsNode() ipld.Node {
 	case schema.Maybe_Null:
 		return ipld.Null
 	case schema.Maybe_Value:
-		return m.v
+		return &m.v
 	default:
 		panic("unreachable")
 	}
@@ -42495,7 +42237,7 @@ func (m MaybeUnionRepresentation_Kinded) Must() UnionRepresentation_Kinded {
 	if !m.Exists() {
 		panic("unbox of a maybe rejected")
 	}
-	return m.v
+	return &m.v
 }
 
 var _ ipld.Node = (UnionRepresentation_Kinded)(&_UnionRepresentation_Kinded{})
@@ -42640,9 +42382,6 @@ func (na *_UnionRepresentation_Kinded__Assembler) BeginMap(sizeHint int64) (ipld
 	if sizeHint < 0 {
 		sizeHint = 0
 	}
-	if na.w == nil {
-		na.w = &_UnionRepresentation_Kinded{}
-	}
 	na.w.m = make(map[_RepresentationKind]*_TypeName, sizeHint)
 	na.w.t = make([]_UnionRepresentation_Kinded__entry, 0, sizeHint)
 	return na, nil
@@ -42692,11 +42431,6 @@ func (na *_UnionRepresentation_Kinded__Assembler) AssignNode(v ipld.Node) error 
 			panic("invalid state: cannot assign into assembler that's already finished")
 		case midvalue:
 			panic("invalid state: cannot assign null into an assembler that's already begun working on recursive structures!")
-		}
-		if na.w == nil {
-			na.w = v2
-			*na.m = schema.Maybe_Value
-			return nil
 		}
 		*na.w = *v2
 		*na.m = schema.Maybe_Value
@@ -42982,9 +42716,6 @@ func (na *_UnionRepresentation_Kinded__ReprAssembler) BeginMap(sizeHint int64) (
 	if sizeHint < 0 {
 		sizeHint = 0
 	}
-	if na.w == nil {
-		na.w = &_UnionRepresentation_Kinded{}
-	}
 	na.w.m = make(map[_RepresentationKind]*_TypeName, sizeHint)
 	na.w.t = make([]_UnionRepresentation_Kinded__entry, 0, sizeHint)
 	return na, nil
@@ -43034,11 +42765,6 @@ func (na *_UnionRepresentation_Kinded__ReprAssembler) AssignNode(v ipld.Node) er
 			panic("invalid state: cannot assign into assembler that's already finished")
 		case midvalue:
 			panic("invalid state: cannot assign null into an assembler that's already begun working on recursive structures!")
-		}
-		if na.w == nil {
-			na.w = v2
-			*na.m = schema.Maybe_Value
-			return nil
 		}
 		*na.w = *v2
 		*na.m = schema.Maybe_Value
