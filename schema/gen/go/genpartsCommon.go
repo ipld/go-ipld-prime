@@ -197,7 +197,7 @@ func emitNodeAssemblerMethodAssignNull_scalar(w io.Writer, adjCfg *AdjunctCfg, d
 				*na.m = schema.Maybe_Null
 				return nil
 			case schema.Maybe_Absent:
-				return mixins.{{ .Kind.String | title }}Assembler{"{{ .PkgName }}.{{ .TypeName }}{{ if .IsRepr }}.Repr{{end}}"}.AssignNull()
+				return mixins.{{ .Kind.String | title }}Assembler{TypeName: "{{ .PkgName }}.{{ .TypeName }}{{ if .IsRepr }}.Repr{{end}}"}.AssignNull()
 			case schema.Maybe_Value, schema.Maybe_Null:
 				panic("invalid state: cannot assign into assembler that's already finished")
 			}
@@ -215,7 +215,7 @@ func emitNodeAssemblerMethodAssignNull_recursive(w io.Writer, adjCfg *AdjunctCfg
 				*na.m = schema.Maybe_Null
 				return nil
 			case schema.Maybe_Absent:
-				return mixins.{{ .Kind.String | title }}Assembler{"{{ .PkgName }}.{{ .TypeName }}{{ if .IsRepr }}.Repr{{end}}"}.AssignNull()
+				return mixins.{{ .Kind.String | title }}Assembler{TypeName: "{{ .PkgName }}.{{ .TypeName }}{{ if .IsRepr }}.Repr{{end}}"}.AssignNull()
 			case schema.Maybe_Value, schema.Maybe_Null:
 				panic("invalid state: cannot assign into assembler that's already finished")
 			case midvalue:
