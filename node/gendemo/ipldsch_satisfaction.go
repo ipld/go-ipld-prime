@@ -57,16 +57,16 @@ func (Int) Kind() ipld.Kind {
 	return ipld.Kind_Int
 }
 func (Int) LookupByString(string) (ipld.Node, error) {
-	return mixins.Int{"gendemo.Int"}.LookupByString("")
+	return mixins.Int{TypeName: "gendemo.Int"}.LookupByString("")
 }
 func (Int) LookupByNode(ipld.Node) (ipld.Node, error) {
-	return mixins.Int{"gendemo.Int"}.LookupByNode(nil)
+	return mixins.Int{TypeName: "gendemo.Int"}.LookupByNode(nil)
 }
 func (Int) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Int{"gendemo.Int"}.LookupByIndex(0)
+	return mixins.Int{TypeName: "gendemo.Int"}.LookupByIndex(0)
 }
 func (Int) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
-	return mixins.Int{"gendemo.Int"}.LookupBySegment(seg)
+	return mixins.Int{TypeName: "gendemo.Int"}.LookupBySegment(seg)
 }
 func (Int) MapIterator() ipld.MapIterator {
 	return nil
@@ -84,22 +84,22 @@ func (Int) IsNull() bool {
 	return false
 }
 func (Int) AsBool() (bool, error) {
-	return mixins.Int{"gendemo.Int"}.AsBool()
+	return mixins.Int{TypeName: "gendemo.Int"}.AsBool()
 }
 func (n Int) AsInt() (int64, error) {
 	return n.x, nil
 }
 func (Int) AsFloat() (float64, error) {
-	return mixins.Int{"gendemo.Int"}.AsFloat()
+	return mixins.Int{TypeName: "gendemo.Int"}.AsFloat()
 }
 func (Int) AsString() (string, error) {
-	return mixins.Int{"gendemo.Int"}.AsString()
+	return mixins.Int{TypeName: "gendemo.Int"}.AsString()
 }
 func (Int) AsBytes() ([]byte, error) {
-	return mixins.Int{"gendemo.Int"}.AsBytes()
+	return mixins.Int{TypeName: "gendemo.Int"}.AsBytes()
 }
 func (Int) AsLink() (ipld.Link, error) {
-	return mixins.Int{"gendemo.Int"}.AsLink()
+	return mixins.Int{TypeName: "gendemo.Int"}.AsLink()
 }
 func (Int) Prototype() ipld.NodePrototype {
 	return _Int__Prototype{}
@@ -136,10 +136,10 @@ type _Int__Assembler struct {
 
 func (na *_Int__Assembler) reset() {}
 func (_Int__Assembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.IntAssembler{"gendemo.Int"}.BeginMap(0)
+	return mixins.IntAssembler{TypeName: "gendemo.Int"}.BeginMap(0)
 }
 func (_Int__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.IntAssembler{"gendemo.Int"}.BeginList(0)
+	return mixins.IntAssembler{TypeName: "gendemo.Int"}.BeginList(0)
 }
 func (na *_Int__Assembler) AssignNull() error {
 	switch *na.m {
@@ -147,14 +147,14 @@ func (na *_Int__Assembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.IntAssembler{"gendemo.Int"}.AssignNull()
+		return mixins.IntAssembler{TypeName: "gendemo.Int"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	}
 	panic("unreachable")
 }
 func (_Int__Assembler) AssignBool(bool) error {
-	return mixins.IntAssembler{"gendemo.Int"}.AssignBool(false)
+	return mixins.IntAssembler{TypeName: "gendemo.Int"}.AssignBool(false)
 }
 func (na *_Int__Assembler) AssignInt(v int64) error {
 	switch *na.m {
@@ -166,16 +166,16 @@ func (na *_Int__Assembler) AssignInt(v int64) error {
 	return nil
 }
 func (_Int__Assembler) AssignFloat(float64) error {
-	return mixins.IntAssembler{"gendemo.Int"}.AssignFloat(0)
+	return mixins.IntAssembler{TypeName: "gendemo.Int"}.AssignFloat(0)
 }
 func (_Int__Assembler) AssignString(string) error {
-	return mixins.IntAssembler{"gendemo.Int"}.AssignString("")
+	return mixins.IntAssembler{TypeName: "gendemo.Int"}.AssignString("")
 }
 func (_Int__Assembler) AssignBytes([]byte) error {
-	return mixins.IntAssembler{"gendemo.Int"}.AssignBytes(nil)
+	return mixins.IntAssembler{TypeName: "gendemo.Int"}.AssignBytes(nil)
 }
 func (_Int__Assembler) AssignLink(ipld.Link) error {
-	return mixins.IntAssembler{"gendemo.Int"}.AssignLink(nil)
+	return mixins.IntAssembler{TypeName: "gendemo.Int"}.AssignLink(nil)
 }
 func (na *_Int__Assembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -320,7 +320,7 @@ func (n Map__String__Msg3) LookupByNode(k ipld.Node) (ipld.Node, error) {
 	return v, nil
 }
 func (Map__String__Msg3) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"gendemo.Map__String__Msg3"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "gendemo.Map__String__Msg3"}.LookupByIndex(0)
 }
 func (n Map__String__Msg3) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -361,22 +361,22 @@ func (Map__String__Msg3) IsNull() bool {
 	return false
 }
 func (Map__String__Msg3) AsBool() (bool, error) {
-	return mixins.Map{"gendemo.Map__String__Msg3"}.AsBool()
+	return mixins.Map{TypeName: "gendemo.Map__String__Msg3"}.AsBool()
 }
 func (Map__String__Msg3) AsInt() (int64, error) {
-	return mixins.Map{"gendemo.Map__String__Msg3"}.AsInt()
+	return mixins.Map{TypeName: "gendemo.Map__String__Msg3"}.AsInt()
 }
 func (Map__String__Msg3) AsFloat() (float64, error) {
-	return mixins.Map{"gendemo.Map__String__Msg3"}.AsFloat()
+	return mixins.Map{TypeName: "gendemo.Map__String__Msg3"}.AsFloat()
 }
 func (Map__String__Msg3) AsString() (string, error) {
-	return mixins.Map{"gendemo.Map__String__Msg3"}.AsString()
+	return mixins.Map{TypeName: "gendemo.Map__String__Msg3"}.AsString()
 }
 func (Map__String__Msg3) AsBytes() ([]byte, error) {
-	return mixins.Map{"gendemo.Map__String__Msg3"}.AsBytes()
+	return mixins.Map{TypeName: "gendemo.Map__String__Msg3"}.AsBytes()
 }
 func (Map__String__Msg3) AsLink() (ipld.Link, error) {
-	return mixins.Map{"gendemo.Map__String__Msg3"}.AsLink()
+	return mixins.Map{TypeName: "gendemo.Map__String__Msg3"}.AsLink()
 }
 func (Map__String__Msg3) Prototype() ipld.NodePrototype {
 	return _Map__String__Msg3__Prototype{}
@@ -437,7 +437,7 @@ func (na *_Map__String__Msg3__Assembler) BeginMap(sizeHint int64) (ipld.MapAssem
 	return na, nil
 }
 func (_Map__String__Msg3__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"gendemo.Map__String__Msg3"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "gendemo.Map__String__Msg3"}.BeginList(0)
 }
 func (na *_Map__String__Msg3__Assembler) AssignNull() error {
 	switch *na.m {
@@ -445,7 +445,7 @@ func (na *_Map__String__Msg3__Assembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"gendemo.Map__String__Msg3"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "gendemo.Map__String__Msg3"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -454,22 +454,22 @@ func (na *_Map__String__Msg3__Assembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_Map__String__Msg3__Assembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"gendemo.Map__String__Msg3"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "gendemo.Map__String__Msg3"}.AssignBool(false)
 }
 func (_Map__String__Msg3__Assembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"gendemo.Map__String__Msg3"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "gendemo.Map__String__Msg3"}.AssignInt(0)
 }
 func (_Map__String__Msg3__Assembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"gendemo.Map__String__Msg3"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "gendemo.Map__String__Msg3"}.AssignFloat(0)
 }
 func (_Map__String__Msg3__Assembler) AssignString(string) error {
-	return mixins.MapAssembler{"gendemo.Map__String__Msg3"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "gendemo.Map__String__Msg3"}.AssignString("")
 }
 func (_Map__String__Msg3__Assembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"gendemo.Map__String__Msg3"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "gendemo.Map__String__Msg3"}.AssignBytes(nil)
 }
 func (_Map__String__Msg3__Assembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"gendemo.Map__String__Msg3"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "gendemo.Map__String__Msg3"}.AssignLink(nil)
 }
 func (na *_Map__String__Msg3__Assembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -660,7 +660,7 @@ func (nr *_Map__String__Msg3__Repr) LookupByNode(k ipld.Node) (ipld.Node, error)
 	return v.(Msg3).Representation(), nil
 }
 func (_Map__String__Msg3__Repr) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"gendemo.Map__String__Msg3.Repr"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "gendemo.Map__String__Msg3.Repr"}.LookupByIndex(0)
 }
 func (n _Map__String__Msg3__Repr) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -695,22 +695,22 @@ func (_Map__String__Msg3__Repr) IsNull() bool {
 	return false
 }
 func (_Map__String__Msg3__Repr) AsBool() (bool, error) {
-	return mixins.Map{"gendemo.Map__String__Msg3.Repr"}.AsBool()
+	return mixins.Map{TypeName: "gendemo.Map__String__Msg3.Repr"}.AsBool()
 }
 func (_Map__String__Msg3__Repr) AsInt() (int64, error) {
-	return mixins.Map{"gendemo.Map__String__Msg3.Repr"}.AsInt()
+	return mixins.Map{TypeName: "gendemo.Map__String__Msg3.Repr"}.AsInt()
 }
 func (_Map__String__Msg3__Repr) AsFloat() (float64, error) {
-	return mixins.Map{"gendemo.Map__String__Msg3.Repr"}.AsFloat()
+	return mixins.Map{TypeName: "gendemo.Map__String__Msg3.Repr"}.AsFloat()
 }
 func (_Map__String__Msg3__Repr) AsString() (string, error) {
-	return mixins.Map{"gendemo.Map__String__Msg3.Repr"}.AsString()
+	return mixins.Map{TypeName: "gendemo.Map__String__Msg3.Repr"}.AsString()
 }
 func (_Map__String__Msg3__Repr) AsBytes() ([]byte, error) {
-	return mixins.Map{"gendemo.Map__String__Msg3.Repr"}.AsBytes()
+	return mixins.Map{TypeName: "gendemo.Map__String__Msg3.Repr"}.AsBytes()
 }
 func (_Map__String__Msg3__Repr) AsLink() (ipld.Link, error) {
-	return mixins.Map{"gendemo.Map__String__Msg3.Repr"}.AsLink()
+	return mixins.Map{TypeName: "gendemo.Map__String__Msg3.Repr"}.AsLink()
 }
 func (_Map__String__Msg3__Repr) Prototype() ipld.NodePrototype {
 	return _Map__String__Msg3__ReprPrototype{}
@@ -771,7 +771,7 @@ func (na *_Map__String__Msg3__ReprAssembler) BeginMap(sizeHint int64) (ipld.MapA
 	return na, nil
 }
 func (_Map__String__Msg3__ReprAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"gendemo.Map__String__Msg3.Repr"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "gendemo.Map__String__Msg3.Repr"}.BeginList(0)
 }
 func (na *_Map__String__Msg3__ReprAssembler) AssignNull() error {
 	switch *na.m {
@@ -779,7 +779,7 @@ func (na *_Map__String__Msg3__ReprAssembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"gendemo.Map__String__Msg3.Repr.Repr"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "gendemo.Map__String__Msg3.Repr.Repr"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -788,22 +788,22 @@ func (na *_Map__String__Msg3__ReprAssembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_Map__String__Msg3__ReprAssembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"gendemo.Map__String__Msg3.Repr"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "gendemo.Map__String__Msg3.Repr"}.AssignBool(false)
 }
 func (_Map__String__Msg3__ReprAssembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"gendemo.Map__String__Msg3.Repr"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "gendemo.Map__String__Msg3.Repr"}.AssignInt(0)
 }
 func (_Map__String__Msg3__ReprAssembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"gendemo.Map__String__Msg3.Repr"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "gendemo.Map__String__Msg3.Repr"}.AssignFloat(0)
 }
 func (_Map__String__Msg3__ReprAssembler) AssignString(string) error {
-	return mixins.MapAssembler{"gendemo.Map__String__Msg3.Repr"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "gendemo.Map__String__Msg3.Repr"}.AssignString("")
 }
 func (_Map__String__Msg3__ReprAssembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"gendemo.Map__String__Msg3.Repr"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "gendemo.Map__String__Msg3.Repr"}.AssignBytes(nil)
 }
 func (_Map__String__Msg3__ReprAssembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"gendemo.Map__String__Msg3.Repr"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "gendemo.Map__String__Msg3.Repr"}.AssignLink(nil)
 }
 func (na *_Map__String__Msg3__ReprAssembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -1041,7 +1041,7 @@ func (n Msg3) LookupByNode(key ipld.Node) (ipld.Node, error) {
 	return n.LookupByString(ks)
 }
 func (Msg3) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"gendemo.Msg3"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "gendemo.Msg3"}.LookupByIndex(0)
 }
 func (n Msg3) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -1092,22 +1092,22 @@ func (Msg3) IsNull() bool {
 	return false
 }
 func (Msg3) AsBool() (bool, error) {
-	return mixins.Map{"gendemo.Msg3"}.AsBool()
+	return mixins.Map{TypeName: "gendemo.Msg3"}.AsBool()
 }
 func (Msg3) AsInt() (int64, error) {
-	return mixins.Map{"gendemo.Msg3"}.AsInt()
+	return mixins.Map{TypeName: "gendemo.Msg3"}.AsInt()
 }
 func (Msg3) AsFloat() (float64, error) {
-	return mixins.Map{"gendemo.Msg3"}.AsFloat()
+	return mixins.Map{TypeName: "gendemo.Msg3"}.AsFloat()
 }
 func (Msg3) AsString() (string, error) {
-	return mixins.Map{"gendemo.Msg3"}.AsString()
+	return mixins.Map{TypeName: "gendemo.Msg3"}.AsString()
 }
 func (Msg3) AsBytes() ([]byte, error) {
-	return mixins.Map{"gendemo.Msg3"}.AsBytes()
+	return mixins.Map{TypeName: "gendemo.Msg3"}.AsBytes()
 }
 func (Msg3) AsLink() (ipld.Link, error) {
-	return mixins.Map{"gendemo.Msg3"}.AsLink()
+	return mixins.Map{TypeName: "gendemo.Msg3"}.AsLink()
 }
 func (Msg3) Prototype() ipld.NodePrototype {
 	return _Msg3__Prototype{}
@@ -1179,7 +1179,7 @@ func (na *_Msg3__Assembler) BeginMap(int64) (ipld.MapAssembler, error) {
 	return na, nil
 }
 func (_Msg3__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"gendemo.Msg3"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "gendemo.Msg3"}.BeginList(0)
 }
 func (na *_Msg3__Assembler) AssignNull() error {
 	switch *na.m {
@@ -1187,7 +1187,7 @@ func (na *_Msg3__Assembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"gendemo.Msg3"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "gendemo.Msg3"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -1196,22 +1196,22 @@ func (na *_Msg3__Assembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_Msg3__Assembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"gendemo.Msg3"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "gendemo.Msg3"}.AssignBool(false)
 }
 func (_Msg3__Assembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"gendemo.Msg3"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "gendemo.Msg3"}.AssignInt(0)
 }
 func (_Msg3__Assembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"gendemo.Msg3"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "gendemo.Msg3"}.AssignFloat(0)
 }
 func (_Msg3__Assembler) AssignString(string) error {
-	return mixins.MapAssembler{"gendemo.Msg3"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "gendemo.Msg3"}.AssignString("")
 }
 func (_Msg3__Assembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"gendemo.Msg3"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "gendemo.Msg3"}.AssignBytes(nil)
 }
 func (_Msg3__Assembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"gendemo.Msg3"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "gendemo.Msg3"}.AssignLink(nil)
 }
 func (na *_Msg3__Assembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -1430,22 +1430,22 @@ func (ma *_Msg3__Assembler) ValuePrototype(k string) ipld.NodePrototype {
 type _Msg3__KeyAssembler _Msg3__Assembler
 
 func (_Msg3__KeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"gendemo.Msg3.KeyAssembler"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "gendemo.Msg3.KeyAssembler"}.BeginMap(0)
 }
 func (_Msg3__KeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"gendemo.Msg3.KeyAssembler"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "gendemo.Msg3.KeyAssembler"}.BeginList(0)
 }
 func (na *_Msg3__KeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"gendemo.Msg3.KeyAssembler"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "gendemo.Msg3.KeyAssembler"}.AssignNull()
 }
 func (_Msg3__KeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"gendemo.Msg3.KeyAssembler"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "gendemo.Msg3.KeyAssembler"}.AssignBool(false)
 }
 func (_Msg3__KeyAssembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"gendemo.Msg3.KeyAssembler"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "gendemo.Msg3.KeyAssembler"}.AssignInt(0)
 }
 func (_Msg3__KeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"gendemo.Msg3.KeyAssembler"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "gendemo.Msg3.KeyAssembler"}.AssignFloat(0)
 }
 func (ka *_Msg3__KeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
@@ -1479,10 +1479,10 @@ func (ka *_Msg3__KeyAssembler) AssignString(k string) error {
 	return nil
 }
 func (_Msg3__KeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"gendemo.Msg3.KeyAssembler"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "gendemo.Msg3.KeyAssembler"}.AssignBytes(nil)
 }
 func (_Msg3__KeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"gendemo.Msg3.KeyAssembler"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "gendemo.Msg3.KeyAssembler"}.AssignLink(nil)
 }
 func (ka *_Msg3__KeyAssembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
@@ -1533,7 +1533,7 @@ func (n *_Msg3__Repr) LookupByNode(key ipld.Node) (ipld.Node, error) {
 	return n.LookupByString(ks)
 }
 func (_Msg3__Repr) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"gendemo.Msg3.Repr"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "gendemo.Msg3.Repr"}.LookupByIndex(0)
 }
 func (n _Msg3__Repr) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -1584,22 +1584,22 @@ func (_Msg3__Repr) IsNull() bool {
 	return false
 }
 func (_Msg3__Repr) AsBool() (bool, error) {
-	return mixins.Map{"gendemo.Msg3.Repr"}.AsBool()
+	return mixins.Map{TypeName: "gendemo.Msg3.Repr"}.AsBool()
 }
 func (_Msg3__Repr) AsInt() (int64, error) {
-	return mixins.Map{"gendemo.Msg3.Repr"}.AsInt()
+	return mixins.Map{TypeName: "gendemo.Msg3.Repr"}.AsInt()
 }
 func (_Msg3__Repr) AsFloat() (float64, error) {
-	return mixins.Map{"gendemo.Msg3.Repr"}.AsFloat()
+	return mixins.Map{TypeName: "gendemo.Msg3.Repr"}.AsFloat()
 }
 func (_Msg3__Repr) AsString() (string, error) {
-	return mixins.Map{"gendemo.Msg3.Repr"}.AsString()
+	return mixins.Map{TypeName: "gendemo.Msg3.Repr"}.AsString()
 }
 func (_Msg3__Repr) AsBytes() ([]byte, error) {
-	return mixins.Map{"gendemo.Msg3.Repr"}.AsBytes()
+	return mixins.Map{TypeName: "gendemo.Msg3.Repr"}.AsBytes()
 }
 func (_Msg3__Repr) AsLink() (ipld.Link, error) {
-	return mixins.Map{"gendemo.Msg3.Repr"}.AsLink()
+	return mixins.Map{TypeName: "gendemo.Msg3.Repr"}.AsLink()
 }
 func (_Msg3__Repr) Prototype() ipld.NodePrototype {
 	return _Msg3__ReprPrototype{}
@@ -1663,7 +1663,7 @@ func (na *_Msg3__ReprAssembler) BeginMap(int64) (ipld.MapAssembler, error) {
 	return na, nil
 }
 func (_Msg3__ReprAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"gendemo.Msg3.Repr"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "gendemo.Msg3.Repr"}.BeginList(0)
 }
 func (na *_Msg3__ReprAssembler) AssignNull() error {
 	switch *na.m {
@@ -1671,7 +1671,7 @@ func (na *_Msg3__ReprAssembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"gendemo.Msg3.Repr.Repr"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "gendemo.Msg3.Repr.Repr"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -1680,22 +1680,22 @@ func (na *_Msg3__ReprAssembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_Msg3__ReprAssembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"gendemo.Msg3.Repr"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "gendemo.Msg3.Repr"}.AssignBool(false)
 }
 func (_Msg3__ReprAssembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"gendemo.Msg3.Repr"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "gendemo.Msg3.Repr"}.AssignInt(0)
 }
 func (_Msg3__ReprAssembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"gendemo.Msg3.Repr"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "gendemo.Msg3.Repr"}.AssignFloat(0)
 }
 func (_Msg3__ReprAssembler) AssignString(string) error {
-	return mixins.MapAssembler{"gendemo.Msg3.Repr"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "gendemo.Msg3.Repr"}.AssignString("")
 }
 func (_Msg3__ReprAssembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"gendemo.Msg3.Repr"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "gendemo.Msg3.Repr"}.AssignBytes(nil)
 }
 func (_Msg3__ReprAssembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"gendemo.Msg3.Repr"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "gendemo.Msg3.Repr"}.AssignLink(nil)
 }
 func (na *_Msg3__ReprAssembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -1912,22 +1912,22 @@ func (ma *_Msg3__ReprAssembler) ValuePrototype(k string) ipld.NodePrototype {
 type _Msg3__ReprKeyAssembler _Msg3__ReprAssembler
 
 func (_Msg3__ReprKeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"gendemo.Msg3.Repr.KeyAssembler"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "gendemo.Msg3.Repr.KeyAssembler"}.BeginMap(0)
 }
 func (_Msg3__ReprKeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"gendemo.Msg3.Repr.KeyAssembler"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "gendemo.Msg3.Repr.KeyAssembler"}.BeginList(0)
 }
 func (na *_Msg3__ReprKeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"gendemo.Msg3.Repr.KeyAssembler"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "gendemo.Msg3.Repr.KeyAssembler"}.AssignNull()
 }
 func (_Msg3__ReprKeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"gendemo.Msg3.Repr.KeyAssembler"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "gendemo.Msg3.Repr.KeyAssembler"}.AssignBool(false)
 }
 func (_Msg3__ReprKeyAssembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"gendemo.Msg3.Repr.KeyAssembler"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "gendemo.Msg3.Repr.KeyAssembler"}.AssignInt(0)
 }
 func (_Msg3__ReprKeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"gendemo.Msg3.Repr.KeyAssembler"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "gendemo.Msg3.Repr.KeyAssembler"}.AssignFloat(0)
 }
 func (ka *_Msg3__ReprKeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
@@ -1962,10 +1962,10 @@ func (ka *_Msg3__ReprKeyAssembler) AssignString(k string) error {
 	return ipld.ErrInvalidKey{TypeName: "gendemo.Msg3.Repr", Key: &_String{k}}
 }
 func (_Msg3__ReprKeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"gendemo.Msg3.Repr.KeyAssembler"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "gendemo.Msg3.Repr.KeyAssembler"}.AssignBytes(nil)
 }
 func (_Msg3__ReprKeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"gendemo.Msg3.Repr.KeyAssembler"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "gendemo.Msg3.Repr.KeyAssembler"}.AssignLink(nil)
 }
 func (ka *_Msg3__ReprKeyAssembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
@@ -2031,16 +2031,16 @@ func (String) Kind() ipld.Kind {
 	return ipld.Kind_String
 }
 func (String) LookupByString(string) (ipld.Node, error) {
-	return mixins.String{"gendemo.String"}.LookupByString("")
+	return mixins.String{TypeName: "gendemo.String"}.LookupByString("")
 }
 func (String) LookupByNode(ipld.Node) (ipld.Node, error) {
-	return mixins.String{"gendemo.String"}.LookupByNode(nil)
+	return mixins.String{TypeName: "gendemo.String"}.LookupByNode(nil)
 }
 func (String) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.String{"gendemo.String"}.LookupByIndex(0)
+	return mixins.String{TypeName: "gendemo.String"}.LookupByIndex(0)
 }
 func (String) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
-	return mixins.String{"gendemo.String"}.LookupBySegment(seg)
+	return mixins.String{TypeName: "gendemo.String"}.LookupBySegment(seg)
 }
 func (String) MapIterator() ipld.MapIterator {
 	return nil
@@ -2058,22 +2058,22 @@ func (String) IsNull() bool {
 	return false
 }
 func (String) AsBool() (bool, error) {
-	return mixins.String{"gendemo.String"}.AsBool()
+	return mixins.String{TypeName: "gendemo.String"}.AsBool()
 }
 func (String) AsInt() (int64, error) {
-	return mixins.String{"gendemo.String"}.AsInt()
+	return mixins.String{TypeName: "gendemo.String"}.AsInt()
 }
 func (String) AsFloat() (float64, error) {
-	return mixins.String{"gendemo.String"}.AsFloat()
+	return mixins.String{TypeName: "gendemo.String"}.AsFloat()
 }
 func (n String) AsString() (string, error) {
 	return n.x, nil
 }
 func (String) AsBytes() ([]byte, error) {
-	return mixins.String{"gendemo.String"}.AsBytes()
+	return mixins.String{TypeName: "gendemo.String"}.AsBytes()
 }
 func (String) AsLink() (ipld.Link, error) {
-	return mixins.String{"gendemo.String"}.AsLink()
+	return mixins.String{TypeName: "gendemo.String"}.AsLink()
 }
 func (String) Prototype() ipld.NodePrototype {
 	return _String__Prototype{}
@@ -2110,10 +2110,10 @@ type _String__Assembler struct {
 
 func (na *_String__Assembler) reset() {}
 func (_String__Assembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"gendemo.String"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "gendemo.String"}.BeginMap(0)
 }
 func (_String__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"gendemo.String"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "gendemo.String"}.BeginList(0)
 }
 func (na *_String__Assembler) AssignNull() error {
 	switch *na.m {
@@ -2121,20 +2121,20 @@ func (na *_String__Assembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.StringAssembler{"gendemo.String"}.AssignNull()
+		return mixins.StringAssembler{TypeName: "gendemo.String"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	}
 	panic("unreachable")
 }
 func (_String__Assembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"gendemo.String"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "gendemo.String"}.AssignBool(false)
 }
 func (_String__Assembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"gendemo.String"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "gendemo.String"}.AssignInt(0)
 }
 func (_String__Assembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"gendemo.String"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "gendemo.String"}.AssignFloat(0)
 }
 func (na *_String__Assembler) AssignString(v string) error {
 	switch *na.m {
@@ -2146,10 +2146,10 @@ func (na *_String__Assembler) AssignString(v string) error {
 	return nil
 }
 func (_String__Assembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"gendemo.String"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "gendemo.String"}.AssignBytes(nil)
 }
 func (_String__Assembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"gendemo.String"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "gendemo.String"}.AssignLink(nil)
 }
 func (na *_String__Assembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {

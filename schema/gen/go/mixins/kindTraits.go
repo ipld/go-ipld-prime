@@ -37,7 +37,7 @@ func (g kindTraitsGenerator) emitNodeMethodLookupByString(w io.Writer) {
 	}
 	doTemplate(`
 		func ({{ .TypeSymbol }}) LookupByString(string) (ipld.Node, error) {
-			return mixins.{{ .Kind.String | title }}{"{{ .PkgName }}.{{ .TypeName }}"}.LookupByString("")
+			return mixins.{{ .Kind.String | title }}{TypeName: "{{ .PkgName }}.{{ .TypeName }}"}.LookupByString("")
 		}
 	`, w, g)
 }
@@ -48,7 +48,7 @@ func (g kindTraitsGenerator) emitNodeMethodLookupByNode(w io.Writer) {
 	}
 	doTemplate(`
 		func ({{ .TypeSymbol }}) LookupByNode(ipld.Node) (ipld.Node, error) {
-			return mixins.{{ .Kind.String | title }}{"{{ .PkgName }}.{{ .TypeName }}"}.LookupByNode(nil)
+			return mixins.{{ .Kind.String | title }}{TypeName: "{{ .PkgName }}.{{ .TypeName }}"}.LookupByNode(nil)
 		}
 	`, w, g)
 }
@@ -59,7 +59,7 @@ func (g kindTraitsGenerator) emitNodeMethodLookupByIndex(w io.Writer) {
 	}
 	doTemplate(`
 		func ({{ .TypeSymbol }}) LookupByIndex(idx int64) (ipld.Node, error) {
-			return mixins.{{ .Kind.String | title }}{"{{ .PkgName }}.{{ .TypeName }}"}.LookupByIndex(0)
+			return mixins.{{ .Kind.String | title }}{TypeName: "{{ .PkgName }}.{{ .TypeName }}"}.LookupByIndex(0)
 		}
 	`, w, g)
 }
@@ -70,7 +70,7 @@ func (g kindTraitsGenerator) emitNodeMethodLookupBySegment(w io.Writer) {
 	}
 	doTemplate(`
 		func ({{ .TypeSymbol }}) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
-			return mixins.{{ .Kind.String | title }}{"{{ .PkgName }}.{{ .TypeName }}"}.LookupBySegment(seg)
+			return mixins.{{ .Kind.String | title }}{TypeName: "{{ .PkgName }}.{{ .TypeName }}"}.LookupBySegment(seg)
 		}
 	`, w, g)
 }
@@ -130,7 +130,7 @@ func (g kindTraitsGenerator) emitNodeMethodAsBool(w io.Writer) {
 	}
 	doTemplate(`
 		func ({{ .TypeSymbol }}) AsBool() (bool, error) {
-			return mixins.{{ .Kind.String | title }}{"{{ .PkgName }}.{{ .TypeName }}"}.AsBool()
+			return mixins.{{ .Kind.String | title }}{TypeName: "{{ .PkgName }}.{{ .TypeName }}"}.AsBool()
 		}
 	`, w, g)
 }
@@ -141,7 +141,7 @@ func (g kindTraitsGenerator) emitNodeMethodAsInt(w io.Writer) {
 	}
 	doTemplate(`
 		func ({{ .TypeSymbol }}) AsInt() (int64, error) {
-			return mixins.{{ .Kind.String | title }}{"{{ .PkgName }}.{{ .TypeName }}"}.AsInt()
+			return mixins.{{ .Kind.String | title }}{TypeName: "{{ .PkgName }}.{{ .TypeName }}"}.AsInt()
 		}
 	`, w, g)
 }
@@ -152,7 +152,7 @@ func (g kindTraitsGenerator) emitNodeMethodAsFloat(w io.Writer) {
 	}
 	doTemplate(`
 		func ({{ .TypeSymbol }}) AsFloat() (float64, error) {
-			return mixins.{{ .Kind.String | title }}{"{{ .PkgName }}.{{ .TypeName }}"}.AsFloat()
+			return mixins.{{ .Kind.String | title }}{TypeName: "{{ .PkgName }}.{{ .TypeName }}"}.AsFloat()
 		}
 	`, w, g)
 }
@@ -163,7 +163,7 @@ func (g kindTraitsGenerator) emitNodeMethodAsString(w io.Writer) {
 	}
 	doTemplate(`
 		func ({{ .TypeSymbol }}) AsString() (string, error) {
-			return mixins.{{ .Kind.String | title }}{"{{ .PkgName }}.{{ .TypeName }}"}.AsString()
+			return mixins.{{ .Kind.String | title }}{TypeName: "{{ .PkgName }}.{{ .TypeName }}"}.AsString()
 		}
 	`, w, g)
 }
@@ -174,7 +174,7 @@ func (g kindTraitsGenerator) emitNodeMethodAsBytes(w io.Writer) {
 	}
 	doTemplate(`
 		func ({{ .TypeSymbol }}) AsBytes() ([]byte, error) {
-			return mixins.{{ .Kind.String | title }}{"{{ .PkgName }}.{{ .TypeName }}"}.AsBytes()
+			return mixins.{{ .Kind.String | title }}{TypeName: "{{ .PkgName }}.{{ .TypeName }}"}.AsBytes()
 		}
 	`, w, g)
 }
@@ -185,7 +185,7 @@ func (g kindTraitsGenerator) emitNodeMethodAsLink(w io.Writer) {
 	}
 	doTemplate(`
 		func ({{ .TypeSymbol }}) AsLink() (ipld.Link, error) {
-			return mixins.{{ .Kind.String | title }}{"{{ .PkgName }}.{{ .TypeName }}"}.AsLink()
+			return mixins.{{ .Kind.String | title }}{TypeName: "{{ .PkgName }}.{{ .TypeName }}"}.AsLink()
 		}
 	`, w, g)
 }
@@ -213,7 +213,7 @@ func (g kindAssemblerTraitsGenerator) emitNodeAssemblerMethodBeginMap(w io.Write
 	}
 	doTemplate(`
 		func ({{ .AppliedPrefix }}Assembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-			return mixins.{{ .Kind.String | title }}Assembler{"{{ .PkgName }}.{{ .TypeName }}"}.BeginMap(0)
+			return mixins.{{ .Kind.String | title }}Assembler{TypeName: "{{ .PkgName }}.{{ .TypeName }}"}.BeginMap(0)
 		}
 	`, w, g)
 }
@@ -224,7 +224,7 @@ func (g kindAssemblerTraitsGenerator) emitNodeAssemblerMethodBeginList(w io.Writ
 	}
 	doTemplate(`
 		func ({{ .AppliedPrefix }}Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-			return mixins.{{ .Kind.String | title }}Assembler{"{{ .PkgName }}.{{ .TypeName }}"}.BeginList(0)
+			return mixins.{{ .Kind.String | title }}Assembler{TypeName: "{{ .PkgName }}.{{ .TypeName }}"}.BeginList(0)
 		}
 	`, w, g)
 }
@@ -235,7 +235,7 @@ func (g kindAssemblerTraitsGenerator) emitNodeAssemblerMethodAssignNull(w io.Wri
 	}
 	doTemplate(`
 		func (na *{{ .AppliedPrefix }}Assembler) AssignNull() error {
-			return mixins.{{ .Kind.String | title }}Assembler{"{{ .PkgName }}.{{ .TypeName }}"}.AssignNull()
+			return mixins.{{ .Kind.String | title }}Assembler{TypeName: "{{ .PkgName }}.{{ .TypeName }}"}.AssignNull()
 		}
 	`, w, g)
 }
@@ -246,7 +246,7 @@ func (g kindAssemblerTraitsGenerator) emitNodeAssemblerMethodAssignBool(w io.Wri
 	}
 	doTemplate(`
 		func ({{ .AppliedPrefix }}Assembler) AssignBool(bool) error {
-			return mixins.{{ .Kind.String | title }}Assembler{"{{ .PkgName }}.{{ .TypeName }}"}.AssignBool(false)
+			return mixins.{{ .Kind.String | title }}Assembler{TypeName: "{{ .PkgName }}.{{ .TypeName }}"}.AssignBool(false)
 		}
 	`, w, g)
 }
@@ -257,7 +257,7 @@ func (g kindAssemblerTraitsGenerator) emitNodeAssemblerMethodAssignInt(w io.Writ
 	}
 	doTemplate(`
 		func ({{ .AppliedPrefix }}Assembler) AssignInt(int64) error {
-			return mixins.{{ .Kind.String | title }}Assembler{"{{ .PkgName }}.{{ .TypeName }}"}.AssignInt(0)
+			return mixins.{{ .Kind.String | title }}Assembler{TypeName: "{{ .PkgName }}.{{ .TypeName }}"}.AssignInt(0)
 		}
 	`, w, g)
 }
@@ -268,7 +268,7 @@ func (g kindAssemblerTraitsGenerator) emitNodeAssemblerMethodAssignFloat(w io.Wr
 	}
 	doTemplate(`
 		func ({{ .AppliedPrefix }}Assembler) AssignFloat(float64) error {
-			return mixins.{{ .Kind.String | title }}Assembler{"{{ .PkgName }}.{{ .TypeName }}"}.AssignFloat(0)
+			return mixins.{{ .Kind.String | title }}Assembler{TypeName: "{{ .PkgName }}.{{ .TypeName }}"}.AssignFloat(0)
 		}
 	`, w, g)
 }
@@ -279,7 +279,7 @@ func (g kindAssemblerTraitsGenerator) emitNodeAssemblerMethodAssignString(w io.W
 	}
 	doTemplate(`
 		func ({{ .AppliedPrefix }}Assembler) AssignString(string) error {
-			return mixins.{{ .Kind.String | title }}Assembler{"{{ .PkgName }}.{{ .TypeName }}"}.AssignString("")
+			return mixins.{{ .Kind.String | title }}Assembler{TypeName: "{{ .PkgName }}.{{ .TypeName }}"}.AssignString("")
 		}
 	`, w, g)
 }
@@ -290,7 +290,7 @@ func (g kindAssemblerTraitsGenerator) emitNodeAssemblerMethodAssignBytes(w io.Wr
 	}
 	doTemplate(`
 		func ({{ .AppliedPrefix }}Assembler) AssignBytes([]byte) error {
-			return mixins.{{ .Kind.String | title }}Assembler{"{{ .PkgName }}.{{ .TypeName }}"}.AssignBytes(nil)
+			return mixins.{{ .Kind.String | title }}Assembler{TypeName: "{{ .PkgName }}.{{ .TypeName }}"}.AssignBytes(nil)
 		}
 	`, w, g)
 }
@@ -301,7 +301,7 @@ func (g kindAssemblerTraitsGenerator) emitNodeAssemblerMethodAssignLink(w io.Wri
 	}
 	doTemplate(`
 		func ({{ .AppliedPrefix }}Assembler) AssignLink(ipld.Link) error {
-			return mixins.{{ .Kind.String | title }}Assembler{"{{ .PkgName }}.{{ .TypeName }}"}.AssignLink(nil)
+			return mixins.{{ .Kind.String | title }}Assembler{TypeName: "{{ .PkgName }}.{{ .TypeName }}"}.AssignLink(nil)
 		}
 	`, w, g)
 }

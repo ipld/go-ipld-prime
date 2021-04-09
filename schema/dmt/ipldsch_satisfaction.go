@@ -111,7 +111,7 @@ func (n AnyScalar) LookupByNode(key ipld.Node) (ipld.Node, error) {
 	return n.LookupByString(ks)
 }
 func (AnyScalar) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.AnyScalar"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.AnyScalar"}.LookupByIndex(0)
 }
 func (n AnyScalar) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -163,22 +163,22 @@ func (AnyScalar) IsNull() bool {
 	return false
 }
 func (AnyScalar) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.AnyScalar"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.AnyScalar"}.AsBool()
 }
 func (AnyScalar) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.AnyScalar"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.AnyScalar"}.AsInt()
 }
 func (AnyScalar) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.AnyScalar"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.AnyScalar"}.AsFloat()
 }
 func (AnyScalar) AsString() (string, error) {
-	return mixins.Map{"schemadmt.AnyScalar"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.AnyScalar"}.AsString()
 }
 func (AnyScalar) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.AnyScalar"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.AnyScalar"}.AsBytes()
 }
 func (AnyScalar) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.AnyScalar"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.AnyScalar"}.AsLink()
 }
 func (AnyScalar) Prototype() ipld.NodePrototype {
 	return _AnyScalar__Prototype{}
@@ -265,7 +265,7 @@ func (na *_AnyScalar__Assembler) BeginMap(int64) (ipld.MapAssembler, error) {
 	return na, nil
 }
 func (_AnyScalar__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.AnyScalar"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.AnyScalar"}.BeginList(0)
 }
 func (na *_AnyScalar__Assembler) AssignNull() error {
 	switch *na.m {
@@ -273,7 +273,7 @@ func (na *_AnyScalar__Assembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.AnyScalar"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.AnyScalar"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -282,22 +282,22 @@ func (na *_AnyScalar__Assembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_AnyScalar__Assembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.AnyScalar"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.AnyScalar"}.AssignBool(false)
 }
 func (_AnyScalar__Assembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.AnyScalar"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.AnyScalar"}.AssignInt(0)
 }
 func (_AnyScalar__Assembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.AnyScalar"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.AnyScalar"}.AssignFloat(0)
 }
 func (_AnyScalar__Assembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.AnyScalar"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.AnyScalar"}.AssignString("")
 }
 func (_AnyScalar__Assembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.AnyScalar"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.AnyScalar"}.AssignBytes(nil)
 }
 func (_AnyScalar__Assembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.AnyScalar"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.AnyScalar"}.AssignLink(nil)
 }
 func (na *_AnyScalar__Assembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -508,22 +508,22 @@ func (ma *_AnyScalar__Assembler) ValuePrototype(k string) ipld.NodePrototype {
 type _AnyScalar__KeyAssembler _AnyScalar__Assembler
 
 func (_AnyScalar__KeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.AnyScalar.KeyAssembler"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.AnyScalar.KeyAssembler"}.BeginMap(0)
 }
 func (_AnyScalar__KeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.AnyScalar.KeyAssembler"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.AnyScalar.KeyAssembler"}.BeginList(0)
 }
 func (na *_AnyScalar__KeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"schemadmt.AnyScalar.KeyAssembler"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "schemadmt.AnyScalar.KeyAssembler"}.AssignNull()
 }
 func (_AnyScalar__KeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.AnyScalar.KeyAssembler"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.AnyScalar.KeyAssembler"}.AssignBool(false)
 }
 func (_AnyScalar__KeyAssembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.AnyScalar.KeyAssembler"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.AnyScalar.KeyAssembler"}.AssignInt(0)
 }
 func (_AnyScalar__KeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.AnyScalar.KeyAssembler"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.AnyScalar.KeyAssembler"}.AssignFloat(0)
 }
 func (ka *_AnyScalar__KeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
@@ -562,10 +562,10 @@ func (ka *_AnyScalar__KeyAssembler) AssignString(k string) error {
 	return ipld.ErrInvalidKey{TypeName: "schemadmt.AnyScalar", Key: &_String{k}} // TODO: error quality: ErrInvalidUnionDiscriminant ?
 }
 func (_AnyScalar__KeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.AnyScalar.KeyAssembler"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.AnyScalar.KeyAssembler"}.AssignBytes(nil)
 }
 func (_AnyScalar__KeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.AnyScalar.KeyAssembler"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.AnyScalar.KeyAssembler"}.AssignLink(nil)
 }
 func (ka *_AnyScalar__KeyAssembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
@@ -979,16 +979,16 @@ func (Bool) Kind() ipld.Kind {
 	return ipld.Kind_Bool
 }
 func (Bool) LookupByString(string) (ipld.Node, error) {
-	return mixins.Bool{"schemadmt.Bool"}.LookupByString("")
+	return mixins.Bool{TypeName: "schemadmt.Bool"}.LookupByString("")
 }
 func (Bool) LookupByNode(ipld.Node) (ipld.Node, error) {
-	return mixins.Bool{"schemadmt.Bool"}.LookupByNode(nil)
+	return mixins.Bool{TypeName: "schemadmt.Bool"}.LookupByNode(nil)
 }
 func (Bool) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Bool{"schemadmt.Bool"}.LookupByIndex(0)
+	return mixins.Bool{TypeName: "schemadmt.Bool"}.LookupByIndex(0)
 }
 func (Bool) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
-	return mixins.Bool{"schemadmt.Bool"}.LookupBySegment(seg)
+	return mixins.Bool{TypeName: "schemadmt.Bool"}.LookupBySegment(seg)
 }
 func (Bool) MapIterator() ipld.MapIterator {
 	return nil
@@ -1009,19 +1009,19 @@ func (n Bool) AsBool() (bool, error) {
 	return n.x, nil
 }
 func (Bool) AsInt() (int64, error) {
-	return mixins.Bool{"schemadmt.Bool"}.AsInt()
+	return mixins.Bool{TypeName: "schemadmt.Bool"}.AsInt()
 }
 func (Bool) AsFloat() (float64, error) {
-	return mixins.Bool{"schemadmt.Bool"}.AsFloat()
+	return mixins.Bool{TypeName: "schemadmt.Bool"}.AsFloat()
 }
 func (Bool) AsString() (string, error) {
-	return mixins.Bool{"schemadmt.Bool"}.AsString()
+	return mixins.Bool{TypeName: "schemadmt.Bool"}.AsString()
 }
 func (Bool) AsBytes() ([]byte, error) {
-	return mixins.Bool{"schemadmt.Bool"}.AsBytes()
+	return mixins.Bool{TypeName: "schemadmt.Bool"}.AsBytes()
 }
 func (Bool) AsLink() (ipld.Link, error) {
-	return mixins.Bool{"schemadmt.Bool"}.AsLink()
+	return mixins.Bool{TypeName: "schemadmt.Bool"}.AsLink()
 }
 func (Bool) Prototype() ipld.NodePrototype {
 	return _Bool__Prototype{}
@@ -1058,10 +1058,10 @@ type _Bool__Assembler struct {
 
 func (na *_Bool__Assembler) reset() {}
 func (_Bool__Assembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.BoolAssembler{"schemadmt.Bool"}.BeginMap(0)
+	return mixins.BoolAssembler{TypeName: "schemadmt.Bool"}.BeginMap(0)
 }
 func (_Bool__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.BoolAssembler{"schemadmt.Bool"}.BeginList(0)
+	return mixins.BoolAssembler{TypeName: "schemadmt.Bool"}.BeginList(0)
 }
 func (na *_Bool__Assembler) AssignNull() error {
 	switch *na.m {
@@ -1069,7 +1069,7 @@ func (na *_Bool__Assembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.BoolAssembler{"schemadmt.Bool"}.AssignNull()
+		return mixins.BoolAssembler{TypeName: "schemadmt.Bool"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	}
@@ -1085,19 +1085,19 @@ func (na *_Bool__Assembler) AssignBool(v bool) error {
 	return nil
 }
 func (_Bool__Assembler) AssignInt(int64) error {
-	return mixins.BoolAssembler{"schemadmt.Bool"}.AssignInt(0)
+	return mixins.BoolAssembler{TypeName: "schemadmt.Bool"}.AssignInt(0)
 }
 func (_Bool__Assembler) AssignFloat(float64) error {
-	return mixins.BoolAssembler{"schemadmt.Bool"}.AssignFloat(0)
+	return mixins.BoolAssembler{TypeName: "schemadmt.Bool"}.AssignFloat(0)
 }
 func (_Bool__Assembler) AssignString(string) error {
-	return mixins.BoolAssembler{"schemadmt.Bool"}.AssignString("")
+	return mixins.BoolAssembler{TypeName: "schemadmt.Bool"}.AssignString("")
 }
 func (_Bool__Assembler) AssignBytes([]byte) error {
-	return mixins.BoolAssembler{"schemadmt.Bool"}.AssignBytes(nil)
+	return mixins.BoolAssembler{TypeName: "schemadmt.Bool"}.AssignBytes(nil)
 }
 func (_Bool__Assembler) AssignLink(ipld.Link) error {
-	return mixins.BoolAssembler{"schemadmt.Bool"}.AssignLink(nil)
+	return mixins.BoolAssembler{TypeName: "schemadmt.Bool"}.AssignLink(nil)
 }
 func (na *_Bool__Assembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -1184,16 +1184,16 @@ func (Bytes) Kind() ipld.Kind {
 	return ipld.Kind_Bytes
 }
 func (Bytes) LookupByString(string) (ipld.Node, error) {
-	return mixins.Bytes{"schemadmt.Bytes"}.LookupByString("")
+	return mixins.Bytes{TypeName: "schemadmt.Bytes"}.LookupByString("")
 }
 func (Bytes) LookupByNode(ipld.Node) (ipld.Node, error) {
-	return mixins.Bytes{"schemadmt.Bytes"}.LookupByNode(nil)
+	return mixins.Bytes{TypeName: "schemadmt.Bytes"}.LookupByNode(nil)
 }
 func (Bytes) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Bytes{"schemadmt.Bytes"}.LookupByIndex(0)
+	return mixins.Bytes{TypeName: "schemadmt.Bytes"}.LookupByIndex(0)
 }
 func (Bytes) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
-	return mixins.Bytes{"schemadmt.Bytes"}.LookupBySegment(seg)
+	return mixins.Bytes{TypeName: "schemadmt.Bytes"}.LookupBySegment(seg)
 }
 func (Bytes) MapIterator() ipld.MapIterator {
 	return nil
@@ -1211,22 +1211,22 @@ func (Bytes) IsNull() bool {
 	return false
 }
 func (Bytes) AsBool() (bool, error) {
-	return mixins.Bytes{"schemadmt.Bytes"}.AsBool()
+	return mixins.Bytes{TypeName: "schemadmt.Bytes"}.AsBool()
 }
 func (Bytes) AsInt() (int64, error) {
-	return mixins.Bytes{"schemadmt.Bytes"}.AsInt()
+	return mixins.Bytes{TypeName: "schemadmt.Bytes"}.AsInt()
 }
 func (Bytes) AsFloat() (float64, error) {
-	return mixins.Bytes{"schemadmt.Bytes"}.AsFloat()
+	return mixins.Bytes{TypeName: "schemadmt.Bytes"}.AsFloat()
 }
 func (Bytes) AsString() (string, error) {
-	return mixins.Bytes{"schemadmt.Bytes"}.AsString()
+	return mixins.Bytes{TypeName: "schemadmt.Bytes"}.AsString()
 }
 func (n Bytes) AsBytes() ([]byte, error) {
 	return n.x, nil
 }
 func (Bytes) AsLink() (ipld.Link, error) {
-	return mixins.Bytes{"schemadmt.Bytes"}.AsLink()
+	return mixins.Bytes{TypeName: "schemadmt.Bytes"}.AsLink()
 }
 func (Bytes) Prototype() ipld.NodePrototype {
 	return _Bytes__Prototype{}
@@ -1263,10 +1263,10 @@ type _Bytes__Assembler struct {
 
 func (na *_Bytes__Assembler) reset() {}
 func (_Bytes__Assembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.BytesAssembler{"schemadmt.Bytes"}.BeginMap(0)
+	return mixins.BytesAssembler{TypeName: "schemadmt.Bytes"}.BeginMap(0)
 }
 func (_Bytes__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.BytesAssembler{"schemadmt.Bytes"}.BeginList(0)
+	return mixins.BytesAssembler{TypeName: "schemadmt.Bytes"}.BeginList(0)
 }
 func (na *_Bytes__Assembler) AssignNull() error {
 	switch *na.m {
@@ -1274,23 +1274,23 @@ func (na *_Bytes__Assembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.BytesAssembler{"schemadmt.Bytes"}.AssignNull()
+		return mixins.BytesAssembler{TypeName: "schemadmt.Bytes"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	}
 	panic("unreachable")
 }
 func (_Bytes__Assembler) AssignBool(bool) error {
-	return mixins.BytesAssembler{"schemadmt.Bytes"}.AssignBool(false)
+	return mixins.BytesAssembler{TypeName: "schemadmt.Bytes"}.AssignBool(false)
 }
 func (_Bytes__Assembler) AssignInt(int64) error {
-	return mixins.BytesAssembler{"schemadmt.Bytes"}.AssignInt(0)
+	return mixins.BytesAssembler{TypeName: "schemadmt.Bytes"}.AssignInt(0)
 }
 func (_Bytes__Assembler) AssignFloat(float64) error {
-	return mixins.BytesAssembler{"schemadmt.Bytes"}.AssignFloat(0)
+	return mixins.BytesAssembler{TypeName: "schemadmt.Bytes"}.AssignFloat(0)
 }
 func (_Bytes__Assembler) AssignString(string) error {
-	return mixins.BytesAssembler{"schemadmt.Bytes"}.AssignString("")
+	return mixins.BytesAssembler{TypeName: "schemadmt.Bytes"}.AssignString("")
 }
 func (na *_Bytes__Assembler) AssignBytes(v []byte) error {
 	switch *na.m {
@@ -1302,7 +1302,7 @@ func (na *_Bytes__Assembler) AssignBytes(v []byte) error {
 	return nil
 }
 func (_Bytes__Assembler) AssignLink(ipld.Link) error {
-	return mixins.BytesAssembler{"schemadmt.Bytes"}.AssignLink(nil)
+	return mixins.BytesAssembler{TypeName: "schemadmt.Bytes"}.AssignLink(nil)
 }
 func (na *_Bytes__Assembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -1419,7 +1419,7 @@ func (n EnumRepresentation) LookupByNode(key ipld.Node) (ipld.Node, error) {
 	return n.LookupByString(ks)
 }
 func (EnumRepresentation) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.EnumRepresentation"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.EnumRepresentation"}.LookupByIndex(0)
 }
 func (n EnumRepresentation) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -1465,22 +1465,22 @@ func (EnumRepresentation) IsNull() bool {
 	return false
 }
 func (EnumRepresentation) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.EnumRepresentation"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.EnumRepresentation"}.AsBool()
 }
 func (EnumRepresentation) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.EnumRepresentation"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.EnumRepresentation"}.AsInt()
 }
 func (EnumRepresentation) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.EnumRepresentation"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.EnumRepresentation"}.AsFloat()
 }
 func (EnumRepresentation) AsString() (string, error) {
-	return mixins.Map{"schemadmt.EnumRepresentation"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.EnumRepresentation"}.AsString()
 }
 func (EnumRepresentation) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.EnumRepresentation"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.EnumRepresentation"}.AsBytes()
 }
 func (EnumRepresentation) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.EnumRepresentation"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.EnumRepresentation"}.AsLink()
 }
 func (EnumRepresentation) Prototype() ipld.NodePrototype {
 	return _EnumRepresentation__Prototype{}
@@ -1552,7 +1552,7 @@ func (na *_EnumRepresentation__Assembler) BeginMap(int64) (ipld.MapAssembler, er
 	return na, nil
 }
 func (_EnumRepresentation__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.EnumRepresentation"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.EnumRepresentation"}.BeginList(0)
 }
 func (na *_EnumRepresentation__Assembler) AssignNull() error {
 	switch *na.m {
@@ -1560,7 +1560,7 @@ func (na *_EnumRepresentation__Assembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.EnumRepresentation"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.EnumRepresentation"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -1569,22 +1569,22 @@ func (na *_EnumRepresentation__Assembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_EnumRepresentation__Assembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.EnumRepresentation"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.EnumRepresentation"}.AssignBool(false)
 }
 func (_EnumRepresentation__Assembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.EnumRepresentation"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.EnumRepresentation"}.AssignInt(0)
 }
 func (_EnumRepresentation__Assembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.EnumRepresentation"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.EnumRepresentation"}.AssignFloat(0)
 }
 func (_EnumRepresentation__Assembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.EnumRepresentation"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.EnumRepresentation"}.AssignString("")
 }
 func (_EnumRepresentation__Assembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.EnumRepresentation"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.EnumRepresentation"}.AssignBytes(nil)
 }
 func (_EnumRepresentation__Assembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.EnumRepresentation"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.EnumRepresentation"}.AssignLink(nil)
 }
 func (na *_EnumRepresentation__Assembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -1756,22 +1756,22 @@ func (ma *_EnumRepresentation__Assembler) ValuePrototype(k string) ipld.NodeProt
 type _EnumRepresentation__KeyAssembler _EnumRepresentation__Assembler
 
 func (_EnumRepresentation__KeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.EnumRepresentation.KeyAssembler"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.EnumRepresentation.KeyAssembler"}.BeginMap(0)
 }
 func (_EnumRepresentation__KeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.EnumRepresentation.KeyAssembler"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.EnumRepresentation.KeyAssembler"}.BeginList(0)
 }
 func (na *_EnumRepresentation__KeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"schemadmt.EnumRepresentation.KeyAssembler"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "schemadmt.EnumRepresentation.KeyAssembler"}.AssignNull()
 }
 func (_EnumRepresentation__KeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.EnumRepresentation.KeyAssembler"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.EnumRepresentation.KeyAssembler"}.AssignBool(false)
 }
 func (_EnumRepresentation__KeyAssembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.EnumRepresentation.KeyAssembler"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.EnumRepresentation.KeyAssembler"}.AssignInt(0)
 }
 func (_EnumRepresentation__KeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.EnumRepresentation.KeyAssembler"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.EnumRepresentation.KeyAssembler"}.AssignFloat(0)
 }
 func (ka *_EnumRepresentation__KeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
@@ -1795,10 +1795,10 @@ func (ka *_EnumRepresentation__KeyAssembler) AssignString(k string) error {
 	return ipld.ErrInvalidKey{TypeName: "schemadmt.EnumRepresentation", Key: &_String{k}} // TODO: error quality: ErrInvalidUnionDiscriminant ?
 }
 func (_EnumRepresentation__KeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.EnumRepresentation.KeyAssembler"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.EnumRepresentation.KeyAssembler"}.AssignBytes(nil)
 }
 func (_EnumRepresentation__KeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.EnumRepresentation.KeyAssembler"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.EnumRepresentation.KeyAssembler"}.AssignLink(nil)
 }
 func (ka *_EnumRepresentation__KeyAssembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
@@ -1852,7 +1852,7 @@ func (n *_EnumRepresentation__Repr) LookupByNode(key ipld.Node) (ipld.Node, erro
 	return n.LookupByString(ks)
 }
 func (_EnumRepresentation__Repr) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.EnumRepresentation.Repr"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.EnumRepresentation.Repr"}.LookupByIndex(0)
 }
 func (n _EnumRepresentation__Repr) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -1898,22 +1898,22 @@ func (_EnumRepresentation__Repr) IsNull() bool {
 	return false
 }
 func (_EnumRepresentation__Repr) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.EnumRepresentation.Repr"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.EnumRepresentation.Repr"}.AsBool()
 }
 func (_EnumRepresentation__Repr) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.EnumRepresentation.Repr"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.EnumRepresentation.Repr"}.AsInt()
 }
 func (_EnumRepresentation__Repr) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.EnumRepresentation.Repr"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.EnumRepresentation.Repr"}.AsFloat()
 }
 func (_EnumRepresentation__Repr) AsString() (string, error) {
-	return mixins.Map{"schemadmt.EnumRepresentation.Repr"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.EnumRepresentation.Repr"}.AsString()
 }
 func (_EnumRepresentation__Repr) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.EnumRepresentation.Repr"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.EnumRepresentation.Repr"}.AsBytes()
 }
 func (_EnumRepresentation__Repr) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.EnumRepresentation.Repr"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.EnumRepresentation.Repr"}.AsLink()
 }
 func (_EnumRepresentation__Repr) Prototype() ipld.NodePrototype {
 	return _EnumRepresentation__ReprPrototype{}
@@ -1985,7 +1985,7 @@ func (na *_EnumRepresentation__ReprAssembler) BeginMap(int64) (ipld.MapAssembler
 	return na, nil
 }
 func (_EnumRepresentation__ReprAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.EnumRepresentation.Repr"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.EnumRepresentation.Repr"}.BeginList(0)
 }
 func (na *_EnumRepresentation__ReprAssembler) AssignNull() error {
 	switch *na.m {
@@ -1993,7 +1993,7 @@ func (na *_EnumRepresentation__ReprAssembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.EnumRepresentation.Repr.Repr"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.EnumRepresentation.Repr.Repr"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -2002,22 +2002,22 @@ func (na *_EnumRepresentation__ReprAssembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_EnumRepresentation__ReprAssembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.EnumRepresentation.Repr"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.EnumRepresentation.Repr"}.AssignBool(false)
 }
 func (_EnumRepresentation__ReprAssembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.EnumRepresentation.Repr"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.EnumRepresentation.Repr"}.AssignInt(0)
 }
 func (_EnumRepresentation__ReprAssembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.EnumRepresentation.Repr"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.EnumRepresentation.Repr"}.AssignFloat(0)
 }
 func (_EnumRepresentation__ReprAssembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.EnumRepresentation.Repr"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.EnumRepresentation.Repr"}.AssignString("")
 }
 func (_EnumRepresentation__ReprAssembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.EnumRepresentation.Repr"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.EnumRepresentation.Repr"}.AssignBytes(nil)
 }
 func (_EnumRepresentation__ReprAssembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.EnumRepresentation.Repr"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.EnumRepresentation.Repr"}.AssignLink(nil)
 }
 func (na *_EnumRepresentation__ReprAssembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -2189,22 +2189,22 @@ func (ma *_EnumRepresentation__ReprAssembler) ValuePrototype(k string) ipld.Node
 type _EnumRepresentation__ReprKeyAssembler _EnumRepresentation__ReprAssembler
 
 func (_EnumRepresentation__ReprKeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.EnumRepresentation.Repr.KeyAssembler"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.EnumRepresentation.Repr.KeyAssembler"}.BeginMap(0)
 }
 func (_EnumRepresentation__ReprKeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.EnumRepresentation.Repr.KeyAssembler"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.EnumRepresentation.Repr.KeyAssembler"}.BeginList(0)
 }
 func (na *_EnumRepresentation__ReprKeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"schemadmt.EnumRepresentation.Repr.KeyAssembler"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "schemadmt.EnumRepresentation.Repr.KeyAssembler"}.AssignNull()
 }
 func (_EnumRepresentation__ReprKeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.EnumRepresentation.Repr.KeyAssembler"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.EnumRepresentation.Repr.KeyAssembler"}.AssignBool(false)
 }
 func (_EnumRepresentation__ReprKeyAssembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.EnumRepresentation.Repr.KeyAssembler"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.EnumRepresentation.Repr.KeyAssembler"}.AssignInt(0)
 }
 func (_EnumRepresentation__ReprKeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.EnumRepresentation.Repr.KeyAssembler"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.EnumRepresentation.Repr.KeyAssembler"}.AssignFloat(0)
 }
 func (ka *_EnumRepresentation__ReprKeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
@@ -2228,10 +2228,10 @@ func (ka *_EnumRepresentation__ReprKeyAssembler) AssignString(k string) error {
 	return ipld.ErrInvalidKey{TypeName: "schemadmt.EnumRepresentation.Repr", Key: &_String{k}} // TODO: error quality: ErrInvalidUnionDiscriminant ?
 }
 func (_EnumRepresentation__ReprKeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.EnumRepresentation.Repr.KeyAssembler"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.EnumRepresentation.Repr.KeyAssembler"}.AssignBytes(nil)
 }
 func (_EnumRepresentation__ReprKeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.EnumRepresentation.Repr.KeyAssembler"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.EnumRepresentation.Repr.KeyAssembler"}.AssignLink(nil)
 }
 func (ka *_EnumRepresentation__ReprKeyAssembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
@@ -2351,7 +2351,7 @@ func (n EnumRepresentation_Int) LookupByNode(k ipld.Node) (ipld.Node, error) {
 	return v, nil
 }
 func (EnumRepresentation_Int) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.EnumRepresentation_Int"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.EnumRepresentation_Int"}.LookupByIndex(0)
 }
 func (n EnumRepresentation_Int) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -2392,22 +2392,22 @@ func (EnumRepresentation_Int) IsNull() bool {
 	return false
 }
 func (EnumRepresentation_Int) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.EnumRepresentation_Int"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.EnumRepresentation_Int"}.AsBool()
 }
 func (EnumRepresentation_Int) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.EnumRepresentation_Int"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.EnumRepresentation_Int"}.AsInt()
 }
 func (EnumRepresentation_Int) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.EnumRepresentation_Int"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.EnumRepresentation_Int"}.AsFloat()
 }
 func (EnumRepresentation_Int) AsString() (string, error) {
-	return mixins.Map{"schemadmt.EnumRepresentation_Int"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.EnumRepresentation_Int"}.AsString()
 }
 func (EnumRepresentation_Int) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.EnumRepresentation_Int"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.EnumRepresentation_Int"}.AsBytes()
 }
 func (EnumRepresentation_Int) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.EnumRepresentation_Int"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.EnumRepresentation_Int"}.AsLink()
 }
 func (EnumRepresentation_Int) Prototype() ipld.NodePrototype {
 	return _EnumRepresentation_Int__Prototype{}
@@ -2468,7 +2468,7 @@ func (na *_EnumRepresentation_Int__Assembler) BeginMap(sizeHint int64) (ipld.Map
 	return na, nil
 }
 func (_EnumRepresentation_Int__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.EnumRepresentation_Int"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.EnumRepresentation_Int"}.BeginList(0)
 }
 func (na *_EnumRepresentation_Int__Assembler) AssignNull() error {
 	switch *na.m {
@@ -2476,7 +2476,7 @@ func (na *_EnumRepresentation_Int__Assembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.EnumRepresentation_Int"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.EnumRepresentation_Int"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -2485,22 +2485,22 @@ func (na *_EnumRepresentation_Int__Assembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_EnumRepresentation_Int__Assembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.EnumRepresentation_Int"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.EnumRepresentation_Int"}.AssignBool(false)
 }
 func (_EnumRepresentation_Int__Assembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.EnumRepresentation_Int"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.EnumRepresentation_Int"}.AssignInt(0)
 }
 func (_EnumRepresentation_Int__Assembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.EnumRepresentation_Int"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.EnumRepresentation_Int"}.AssignFloat(0)
 }
 func (_EnumRepresentation_Int__Assembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.EnumRepresentation_Int"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.EnumRepresentation_Int"}.AssignString("")
 }
 func (_EnumRepresentation_Int__Assembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.EnumRepresentation_Int"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.EnumRepresentation_Int"}.AssignBytes(nil)
 }
 func (_EnumRepresentation_Int__Assembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.EnumRepresentation_Int"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.EnumRepresentation_Int"}.AssignLink(nil)
 }
 func (na *_EnumRepresentation_Int__Assembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -2691,7 +2691,7 @@ func (nr *_EnumRepresentation_Int__Repr) LookupByNode(k ipld.Node) (ipld.Node, e
 	return v.(Int).Representation(), nil
 }
 func (_EnumRepresentation_Int__Repr) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.EnumRepresentation_Int.Repr"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.EnumRepresentation_Int.Repr"}.LookupByIndex(0)
 }
 func (n _EnumRepresentation_Int__Repr) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -2726,22 +2726,22 @@ func (_EnumRepresentation_Int__Repr) IsNull() bool {
 	return false
 }
 func (_EnumRepresentation_Int__Repr) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.EnumRepresentation_Int.Repr"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.EnumRepresentation_Int.Repr"}.AsBool()
 }
 func (_EnumRepresentation_Int__Repr) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.EnumRepresentation_Int.Repr"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.EnumRepresentation_Int.Repr"}.AsInt()
 }
 func (_EnumRepresentation_Int__Repr) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.EnumRepresentation_Int.Repr"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.EnumRepresentation_Int.Repr"}.AsFloat()
 }
 func (_EnumRepresentation_Int__Repr) AsString() (string, error) {
-	return mixins.Map{"schemadmt.EnumRepresentation_Int.Repr"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.EnumRepresentation_Int.Repr"}.AsString()
 }
 func (_EnumRepresentation_Int__Repr) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.EnumRepresentation_Int.Repr"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.EnumRepresentation_Int.Repr"}.AsBytes()
 }
 func (_EnumRepresentation_Int__Repr) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.EnumRepresentation_Int.Repr"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.EnumRepresentation_Int.Repr"}.AsLink()
 }
 func (_EnumRepresentation_Int__Repr) Prototype() ipld.NodePrototype {
 	return _EnumRepresentation_Int__ReprPrototype{}
@@ -2802,7 +2802,7 @@ func (na *_EnumRepresentation_Int__ReprAssembler) BeginMap(sizeHint int64) (ipld
 	return na, nil
 }
 func (_EnumRepresentation_Int__ReprAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.EnumRepresentation_Int.Repr"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.EnumRepresentation_Int.Repr"}.BeginList(0)
 }
 func (na *_EnumRepresentation_Int__ReprAssembler) AssignNull() error {
 	switch *na.m {
@@ -2810,7 +2810,7 @@ func (na *_EnumRepresentation_Int__ReprAssembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.EnumRepresentation_Int.Repr.Repr"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.EnumRepresentation_Int.Repr.Repr"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -2819,22 +2819,22 @@ func (na *_EnumRepresentation_Int__ReprAssembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_EnumRepresentation_Int__ReprAssembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.EnumRepresentation_Int.Repr"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.EnumRepresentation_Int.Repr"}.AssignBool(false)
 }
 func (_EnumRepresentation_Int__ReprAssembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.EnumRepresentation_Int.Repr"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.EnumRepresentation_Int.Repr"}.AssignInt(0)
 }
 func (_EnumRepresentation_Int__ReprAssembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.EnumRepresentation_Int.Repr"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.EnumRepresentation_Int.Repr"}.AssignFloat(0)
 }
 func (_EnumRepresentation_Int__ReprAssembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.EnumRepresentation_Int.Repr"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.EnumRepresentation_Int.Repr"}.AssignString("")
 }
 func (_EnumRepresentation_Int__ReprAssembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.EnumRepresentation_Int.Repr"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.EnumRepresentation_Int.Repr"}.AssignBytes(nil)
 }
 func (_EnumRepresentation_Int__ReprAssembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.EnumRepresentation_Int.Repr"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.EnumRepresentation_Int.Repr"}.AssignLink(nil)
 }
 func (na *_EnumRepresentation_Int__ReprAssembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -3104,7 +3104,7 @@ func (n EnumRepresentation_String) LookupByNode(k ipld.Node) (ipld.Node, error) 
 	return v, nil
 }
 func (EnumRepresentation_String) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.EnumRepresentation_String"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.EnumRepresentation_String"}.LookupByIndex(0)
 }
 func (n EnumRepresentation_String) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -3145,22 +3145,22 @@ func (EnumRepresentation_String) IsNull() bool {
 	return false
 }
 func (EnumRepresentation_String) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.EnumRepresentation_String"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.EnumRepresentation_String"}.AsBool()
 }
 func (EnumRepresentation_String) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.EnumRepresentation_String"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.EnumRepresentation_String"}.AsInt()
 }
 func (EnumRepresentation_String) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.EnumRepresentation_String"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.EnumRepresentation_String"}.AsFloat()
 }
 func (EnumRepresentation_String) AsString() (string, error) {
-	return mixins.Map{"schemadmt.EnumRepresentation_String"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.EnumRepresentation_String"}.AsString()
 }
 func (EnumRepresentation_String) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.EnumRepresentation_String"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.EnumRepresentation_String"}.AsBytes()
 }
 func (EnumRepresentation_String) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.EnumRepresentation_String"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.EnumRepresentation_String"}.AsLink()
 }
 func (EnumRepresentation_String) Prototype() ipld.NodePrototype {
 	return _EnumRepresentation_String__Prototype{}
@@ -3221,7 +3221,7 @@ func (na *_EnumRepresentation_String__Assembler) BeginMap(sizeHint int64) (ipld.
 	return na, nil
 }
 func (_EnumRepresentation_String__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.EnumRepresentation_String"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.EnumRepresentation_String"}.BeginList(0)
 }
 func (na *_EnumRepresentation_String__Assembler) AssignNull() error {
 	switch *na.m {
@@ -3229,7 +3229,7 @@ func (na *_EnumRepresentation_String__Assembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.EnumRepresentation_String"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.EnumRepresentation_String"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -3238,22 +3238,22 @@ func (na *_EnumRepresentation_String__Assembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_EnumRepresentation_String__Assembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.EnumRepresentation_String"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.EnumRepresentation_String"}.AssignBool(false)
 }
 func (_EnumRepresentation_String__Assembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.EnumRepresentation_String"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.EnumRepresentation_String"}.AssignInt(0)
 }
 func (_EnumRepresentation_String__Assembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.EnumRepresentation_String"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.EnumRepresentation_String"}.AssignFloat(0)
 }
 func (_EnumRepresentation_String__Assembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.EnumRepresentation_String"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.EnumRepresentation_String"}.AssignString("")
 }
 func (_EnumRepresentation_String__Assembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.EnumRepresentation_String"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.EnumRepresentation_String"}.AssignBytes(nil)
 }
 func (_EnumRepresentation_String__Assembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.EnumRepresentation_String"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.EnumRepresentation_String"}.AssignLink(nil)
 }
 func (na *_EnumRepresentation_String__Assembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -3444,7 +3444,7 @@ func (nr *_EnumRepresentation_String__Repr) LookupByNode(k ipld.Node) (ipld.Node
 	return v.(String).Representation(), nil
 }
 func (_EnumRepresentation_String__Repr) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.EnumRepresentation_String.Repr"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.EnumRepresentation_String.Repr"}.LookupByIndex(0)
 }
 func (n _EnumRepresentation_String__Repr) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -3479,22 +3479,22 @@ func (_EnumRepresentation_String__Repr) IsNull() bool {
 	return false
 }
 func (_EnumRepresentation_String__Repr) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.EnumRepresentation_String.Repr"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.EnumRepresentation_String.Repr"}.AsBool()
 }
 func (_EnumRepresentation_String__Repr) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.EnumRepresentation_String.Repr"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.EnumRepresentation_String.Repr"}.AsInt()
 }
 func (_EnumRepresentation_String__Repr) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.EnumRepresentation_String.Repr"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.EnumRepresentation_String.Repr"}.AsFloat()
 }
 func (_EnumRepresentation_String__Repr) AsString() (string, error) {
-	return mixins.Map{"schemadmt.EnumRepresentation_String.Repr"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.EnumRepresentation_String.Repr"}.AsString()
 }
 func (_EnumRepresentation_String__Repr) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.EnumRepresentation_String.Repr"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.EnumRepresentation_String.Repr"}.AsBytes()
 }
 func (_EnumRepresentation_String__Repr) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.EnumRepresentation_String.Repr"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.EnumRepresentation_String.Repr"}.AsLink()
 }
 func (_EnumRepresentation_String__Repr) Prototype() ipld.NodePrototype {
 	return _EnumRepresentation_String__ReprPrototype{}
@@ -3555,7 +3555,7 @@ func (na *_EnumRepresentation_String__ReprAssembler) BeginMap(sizeHint int64) (i
 	return na, nil
 }
 func (_EnumRepresentation_String__ReprAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.EnumRepresentation_String.Repr"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.EnumRepresentation_String.Repr"}.BeginList(0)
 }
 func (na *_EnumRepresentation_String__ReprAssembler) AssignNull() error {
 	switch *na.m {
@@ -3563,7 +3563,7 @@ func (na *_EnumRepresentation_String__ReprAssembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.EnumRepresentation_String.Repr.Repr"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.EnumRepresentation_String.Repr.Repr"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -3572,22 +3572,22 @@ func (na *_EnumRepresentation_String__ReprAssembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_EnumRepresentation_String__ReprAssembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.EnumRepresentation_String.Repr"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.EnumRepresentation_String.Repr"}.AssignBool(false)
 }
 func (_EnumRepresentation_String__ReprAssembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.EnumRepresentation_String.Repr"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.EnumRepresentation_String.Repr"}.AssignInt(0)
 }
 func (_EnumRepresentation_String__ReprAssembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.EnumRepresentation_String.Repr"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.EnumRepresentation_String.Repr"}.AssignFloat(0)
 }
 func (_EnumRepresentation_String__ReprAssembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.EnumRepresentation_String.Repr"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.EnumRepresentation_String.Repr"}.AssignString("")
 }
 func (_EnumRepresentation_String__ReprAssembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.EnumRepresentation_String.Repr"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.EnumRepresentation_String.Repr"}.AssignBytes(nil)
 }
 func (_EnumRepresentation_String__ReprAssembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.EnumRepresentation_String.Repr"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.EnumRepresentation_String.Repr"}.AssignLink(nil)
 }
 func (na *_EnumRepresentation_String__ReprAssembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -3803,16 +3803,16 @@ func (EnumValue) Kind() ipld.Kind {
 	return ipld.Kind_String
 }
 func (EnumValue) LookupByString(string) (ipld.Node, error) {
-	return mixins.String{"schemadmt.EnumValue"}.LookupByString("")
+	return mixins.String{TypeName: "schemadmt.EnumValue"}.LookupByString("")
 }
 func (EnumValue) LookupByNode(ipld.Node) (ipld.Node, error) {
-	return mixins.String{"schemadmt.EnumValue"}.LookupByNode(nil)
+	return mixins.String{TypeName: "schemadmt.EnumValue"}.LookupByNode(nil)
 }
 func (EnumValue) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.String{"schemadmt.EnumValue"}.LookupByIndex(0)
+	return mixins.String{TypeName: "schemadmt.EnumValue"}.LookupByIndex(0)
 }
 func (EnumValue) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
-	return mixins.String{"schemadmt.EnumValue"}.LookupBySegment(seg)
+	return mixins.String{TypeName: "schemadmt.EnumValue"}.LookupBySegment(seg)
 }
 func (EnumValue) MapIterator() ipld.MapIterator {
 	return nil
@@ -3830,22 +3830,22 @@ func (EnumValue) IsNull() bool {
 	return false
 }
 func (EnumValue) AsBool() (bool, error) {
-	return mixins.String{"schemadmt.EnumValue"}.AsBool()
+	return mixins.String{TypeName: "schemadmt.EnumValue"}.AsBool()
 }
 func (EnumValue) AsInt() (int64, error) {
-	return mixins.String{"schemadmt.EnumValue"}.AsInt()
+	return mixins.String{TypeName: "schemadmt.EnumValue"}.AsInt()
 }
 func (EnumValue) AsFloat() (float64, error) {
-	return mixins.String{"schemadmt.EnumValue"}.AsFloat()
+	return mixins.String{TypeName: "schemadmt.EnumValue"}.AsFloat()
 }
 func (n EnumValue) AsString() (string, error) {
 	return n.x, nil
 }
 func (EnumValue) AsBytes() ([]byte, error) {
-	return mixins.String{"schemadmt.EnumValue"}.AsBytes()
+	return mixins.String{TypeName: "schemadmt.EnumValue"}.AsBytes()
 }
 func (EnumValue) AsLink() (ipld.Link, error) {
-	return mixins.String{"schemadmt.EnumValue"}.AsLink()
+	return mixins.String{TypeName: "schemadmt.EnumValue"}.AsLink()
 }
 func (EnumValue) Prototype() ipld.NodePrototype {
 	return _EnumValue__Prototype{}
@@ -3882,10 +3882,10 @@ type _EnumValue__Assembler struct {
 
 func (na *_EnumValue__Assembler) reset() {}
 func (_EnumValue__Assembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.EnumValue"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.EnumValue"}.BeginMap(0)
 }
 func (_EnumValue__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.EnumValue"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.EnumValue"}.BeginList(0)
 }
 func (na *_EnumValue__Assembler) AssignNull() error {
 	switch *na.m {
@@ -3893,20 +3893,20 @@ func (na *_EnumValue__Assembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.StringAssembler{"schemadmt.EnumValue"}.AssignNull()
+		return mixins.StringAssembler{TypeName: "schemadmt.EnumValue"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	}
 	panic("unreachable")
 }
 func (_EnumValue__Assembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.EnumValue"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.EnumValue"}.AssignBool(false)
 }
 func (_EnumValue__Assembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.EnumValue"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.EnumValue"}.AssignInt(0)
 }
 func (_EnumValue__Assembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.EnumValue"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.EnumValue"}.AssignFloat(0)
 }
 func (na *_EnumValue__Assembler) AssignString(v string) error {
 	switch *na.m {
@@ -3918,10 +3918,10 @@ func (na *_EnumValue__Assembler) AssignString(v string) error {
 	return nil
 }
 func (_EnumValue__Assembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.EnumValue"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.EnumValue"}.AssignBytes(nil)
 }
 func (_EnumValue__Assembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.EnumValue"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.EnumValue"}.AssignLink(nil)
 }
 func (na *_EnumValue__Assembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -4012,16 +4012,16 @@ func (FieldName) Kind() ipld.Kind {
 	return ipld.Kind_String
 }
 func (FieldName) LookupByString(string) (ipld.Node, error) {
-	return mixins.String{"schemadmt.FieldName"}.LookupByString("")
+	return mixins.String{TypeName: "schemadmt.FieldName"}.LookupByString("")
 }
 func (FieldName) LookupByNode(ipld.Node) (ipld.Node, error) {
-	return mixins.String{"schemadmt.FieldName"}.LookupByNode(nil)
+	return mixins.String{TypeName: "schemadmt.FieldName"}.LookupByNode(nil)
 }
 func (FieldName) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.String{"schemadmt.FieldName"}.LookupByIndex(0)
+	return mixins.String{TypeName: "schemadmt.FieldName"}.LookupByIndex(0)
 }
 func (FieldName) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
-	return mixins.String{"schemadmt.FieldName"}.LookupBySegment(seg)
+	return mixins.String{TypeName: "schemadmt.FieldName"}.LookupBySegment(seg)
 }
 func (FieldName) MapIterator() ipld.MapIterator {
 	return nil
@@ -4039,22 +4039,22 @@ func (FieldName) IsNull() bool {
 	return false
 }
 func (FieldName) AsBool() (bool, error) {
-	return mixins.String{"schemadmt.FieldName"}.AsBool()
+	return mixins.String{TypeName: "schemadmt.FieldName"}.AsBool()
 }
 func (FieldName) AsInt() (int64, error) {
-	return mixins.String{"schemadmt.FieldName"}.AsInt()
+	return mixins.String{TypeName: "schemadmt.FieldName"}.AsInt()
 }
 func (FieldName) AsFloat() (float64, error) {
-	return mixins.String{"schemadmt.FieldName"}.AsFloat()
+	return mixins.String{TypeName: "schemadmt.FieldName"}.AsFloat()
 }
 func (n FieldName) AsString() (string, error) {
 	return n.x, nil
 }
 func (FieldName) AsBytes() ([]byte, error) {
-	return mixins.String{"schemadmt.FieldName"}.AsBytes()
+	return mixins.String{TypeName: "schemadmt.FieldName"}.AsBytes()
 }
 func (FieldName) AsLink() (ipld.Link, error) {
-	return mixins.String{"schemadmt.FieldName"}.AsLink()
+	return mixins.String{TypeName: "schemadmt.FieldName"}.AsLink()
 }
 func (FieldName) Prototype() ipld.NodePrototype {
 	return _FieldName__Prototype{}
@@ -4091,10 +4091,10 @@ type _FieldName__Assembler struct {
 
 func (na *_FieldName__Assembler) reset() {}
 func (_FieldName__Assembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.FieldName"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.FieldName"}.BeginMap(0)
 }
 func (_FieldName__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.FieldName"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.FieldName"}.BeginList(0)
 }
 func (na *_FieldName__Assembler) AssignNull() error {
 	switch *na.m {
@@ -4102,20 +4102,20 @@ func (na *_FieldName__Assembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.StringAssembler{"schemadmt.FieldName"}.AssignNull()
+		return mixins.StringAssembler{TypeName: "schemadmt.FieldName"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	}
 	panic("unreachable")
 }
 func (_FieldName__Assembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.FieldName"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.FieldName"}.AssignBool(false)
 }
 func (_FieldName__Assembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.FieldName"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.FieldName"}.AssignInt(0)
 }
 func (_FieldName__Assembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.FieldName"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.FieldName"}.AssignFloat(0)
 }
 func (na *_FieldName__Assembler) AssignString(v string) error {
 	switch *na.m {
@@ -4127,10 +4127,10 @@ func (na *_FieldName__Assembler) AssignString(v string) error {
 	return nil
 }
 func (_FieldName__Assembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.FieldName"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.FieldName"}.AssignBytes(nil)
 }
 func (_FieldName__Assembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.FieldName"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.FieldName"}.AssignLink(nil)
 }
 func (na *_FieldName__Assembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -4217,16 +4217,16 @@ func (Float) Kind() ipld.Kind {
 	return ipld.Kind_Float
 }
 func (Float) LookupByString(string) (ipld.Node, error) {
-	return mixins.Float{"schemadmt.Float"}.LookupByString("")
+	return mixins.Float{TypeName: "schemadmt.Float"}.LookupByString("")
 }
 func (Float) LookupByNode(ipld.Node) (ipld.Node, error) {
-	return mixins.Float{"schemadmt.Float"}.LookupByNode(nil)
+	return mixins.Float{TypeName: "schemadmt.Float"}.LookupByNode(nil)
 }
 func (Float) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Float{"schemadmt.Float"}.LookupByIndex(0)
+	return mixins.Float{TypeName: "schemadmt.Float"}.LookupByIndex(0)
 }
 func (Float) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
-	return mixins.Float{"schemadmt.Float"}.LookupBySegment(seg)
+	return mixins.Float{TypeName: "schemadmt.Float"}.LookupBySegment(seg)
 }
 func (Float) MapIterator() ipld.MapIterator {
 	return nil
@@ -4244,22 +4244,22 @@ func (Float) IsNull() bool {
 	return false
 }
 func (Float) AsBool() (bool, error) {
-	return mixins.Float{"schemadmt.Float"}.AsBool()
+	return mixins.Float{TypeName: "schemadmt.Float"}.AsBool()
 }
 func (Float) AsInt() (int64, error) {
-	return mixins.Float{"schemadmt.Float"}.AsInt()
+	return mixins.Float{TypeName: "schemadmt.Float"}.AsInt()
 }
 func (n Float) AsFloat() (float64, error) {
 	return n.x, nil
 }
 func (Float) AsString() (string, error) {
-	return mixins.Float{"schemadmt.Float"}.AsString()
+	return mixins.Float{TypeName: "schemadmt.Float"}.AsString()
 }
 func (Float) AsBytes() ([]byte, error) {
-	return mixins.Float{"schemadmt.Float"}.AsBytes()
+	return mixins.Float{TypeName: "schemadmt.Float"}.AsBytes()
 }
 func (Float) AsLink() (ipld.Link, error) {
-	return mixins.Float{"schemadmt.Float"}.AsLink()
+	return mixins.Float{TypeName: "schemadmt.Float"}.AsLink()
 }
 func (Float) Prototype() ipld.NodePrototype {
 	return _Float__Prototype{}
@@ -4296,10 +4296,10 @@ type _Float__Assembler struct {
 
 func (na *_Float__Assembler) reset() {}
 func (_Float__Assembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.FloatAssembler{"schemadmt.Float"}.BeginMap(0)
+	return mixins.FloatAssembler{TypeName: "schemadmt.Float"}.BeginMap(0)
 }
 func (_Float__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.FloatAssembler{"schemadmt.Float"}.BeginList(0)
+	return mixins.FloatAssembler{TypeName: "schemadmt.Float"}.BeginList(0)
 }
 func (na *_Float__Assembler) AssignNull() error {
 	switch *na.m {
@@ -4307,17 +4307,17 @@ func (na *_Float__Assembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.FloatAssembler{"schemadmt.Float"}.AssignNull()
+		return mixins.FloatAssembler{TypeName: "schemadmt.Float"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	}
 	panic("unreachable")
 }
 func (_Float__Assembler) AssignBool(bool) error {
-	return mixins.FloatAssembler{"schemadmt.Float"}.AssignBool(false)
+	return mixins.FloatAssembler{TypeName: "schemadmt.Float"}.AssignBool(false)
 }
 func (_Float__Assembler) AssignInt(int64) error {
-	return mixins.FloatAssembler{"schemadmt.Float"}.AssignInt(0)
+	return mixins.FloatAssembler{TypeName: "schemadmt.Float"}.AssignInt(0)
 }
 func (na *_Float__Assembler) AssignFloat(v float64) error {
 	switch *na.m {
@@ -4329,13 +4329,13 @@ func (na *_Float__Assembler) AssignFloat(v float64) error {
 	return nil
 }
 func (_Float__Assembler) AssignString(string) error {
-	return mixins.FloatAssembler{"schemadmt.Float"}.AssignString("")
+	return mixins.FloatAssembler{TypeName: "schemadmt.Float"}.AssignString("")
 }
 func (_Float__Assembler) AssignBytes([]byte) error {
-	return mixins.FloatAssembler{"schemadmt.Float"}.AssignBytes(nil)
+	return mixins.FloatAssembler{TypeName: "schemadmt.Float"}.AssignBytes(nil)
 }
 func (_Float__Assembler) AssignLink(ipld.Link) error {
-	return mixins.FloatAssembler{"schemadmt.Float"}.AssignLink(nil)
+	return mixins.FloatAssembler{TypeName: "schemadmt.Float"}.AssignLink(nil)
 }
 func (na *_Float__Assembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -4422,16 +4422,16 @@ func (Int) Kind() ipld.Kind {
 	return ipld.Kind_Int
 }
 func (Int) LookupByString(string) (ipld.Node, error) {
-	return mixins.Int{"schemadmt.Int"}.LookupByString("")
+	return mixins.Int{TypeName: "schemadmt.Int"}.LookupByString("")
 }
 func (Int) LookupByNode(ipld.Node) (ipld.Node, error) {
-	return mixins.Int{"schemadmt.Int"}.LookupByNode(nil)
+	return mixins.Int{TypeName: "schemadmt.Int"}.LookupByNode(nil)
 }
 func (Int) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Int{"schemadmt.Int"}.LookupByIndex(0)
+	return mixins.Int{TypeName: "schemadmt.Int"}.LookupByIndex(0)
 }
 func (Int) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
-	return mixins.Int{"schemadmt.Int"}.LookupBySegment(seg)
+	return mixins.Int{TypeName: "schemadmt.Int"}.LookupBySegment(seg)
 }
 func (Int) MapIterator() ipld.MapIterator {
 	return nil
@@ -4449,22 +4449,22 @@ func (Int) IsNull() bool {
 	return false
 }
 func (Int) AsBool() (bool, error) {
-	return mixins.Int{"schemadmt.Int"}.AsBool()
+	return mixins.Int{TypeName: "schemadmt.Int"}.AsBool()
 }
 func (n Int) AsInt() (int64, error) {
 	return n.x, nil
 }
 func (Int) AsFloat() (float64, error) {
-	return mixins.Int{"schemadmt.Int"}.AsFloat()
+	return mixins.Int{TypeName: "schemadmt.Int"}.AsFloat()
 }
 func (Int) AsString() (string, error) {
-	return mixins.Int{"schemadmt.Int"}.AsString()
+	return mixins.Int{TypeName: "schemadmt.Int"}.AsString()
 }
 func (Int) AsBytes() ([]byte, error) {
-	return mixins.Int{"schemadmt.Int"}.AsBytes()
+	return mixins.Int{TypeName: "schemadmt.Int"}.AsBytes()
 }
 func (Int) AsLink() (ipld.Link, error) {
-	return mixins.Int{"schemadmt.Int"}.AsLink()
+	return mixins.Int{TypeName: "schemadmt.Int"}.AsLink()
 }
 func (Int) Prototype() ipld.NodePrototype {
 	return _Int__Prototype{}
@@ -4501,10 +4501,10 @@ type _Int__Assembler struct {
 
 func (na *_Int__Assembler) reset() {}
 func (_Int__Assembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.IntAssembler{"schemadmt.Int"}.BeginMap(0)
+	return mixins.IntAssembler{TypeName: "schemadmt.Int"}.BeginMap(0)
 }
 func (_Int__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.IntAssembler{"schemadmt.Int"}.BeginList(0)
+	return mixins.IntAssembler{TypeName: "schemadmt.Int"}.BeginList(0)
 }
 func (na *_Int__Assembler) AssignNull() error {
 	switch *na.m {
@@ -4512,14 +4512,14 @@ func (na *_Int__Assembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.IntAssembler{"schemadmt.Int"}.AssignNull()
+		return mixins.IntAssembler{TypeName: "schemadmt.Int"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	}
 	panic("unreachable")
 }
 func (_Int__Assembler) AssignBool(bool) error {
-	return mixins.IntAssembler{"schemadmt.Int"}.AssignBool(false)
+	return mixins.IntAssembler{TypeName: "schemadmt.Int"}.AssignBool(false)
 }
 func (na *_Int__Assembler) AssignInt(v int64) error {
 	switch *na.m {
@@ -4531,16 +4531,16 @@ func (na *_Int__Assembler) AssignInt(v int64) error {
 	return nil
 }
 func (_Int__Assembler) AssignFloat(float64) error {
-	return mixins.IntAssembler{"schemadmt.Int"}.AssignFloat(0)
+	return mixins.IntAssembler{TypeName: "schemadmt.Int"}.AssignFloat(0)
 }
 func (_Int__Assembler) AssignString(string) error {
-	return mixins.IntAssembler{"schemadmt.Int"}.AssignString("")
+	return mixins.IntAssembler{TypeName: "schemadmt.Int"}.AssignString("")
 }
 func (_Int__Assembler) AssignBytes([]byte) error {
-	return mixins.IntAssembler{"schemadmt.Int"}.AssignBytes(nil)
+	return mixins.IntAssembler{TypeName: "schemadmt.Int"}.AssignBytes(nil)
 }
 func (_Int__Assembler) AssignLink(ipld.Link) error {
-	return mixins.IntAssembler{"schemadmt.Int"}.AssignLink(nil)
+	return mixins.IntAssembler{TypeName: "schemadmt.Int"}.AssignLink(nil)
 }
 func (na *_Int__Assembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -4649,7 +4649,7 @@ func (n ListRepresentation) LookupByNode(key ipld.Node) (ipld.Node, error) {
 	return n.LookupByString(ks)
 }
 func (ListRepresentation) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.ListRepresentation"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.ListRepresentation"}.LookupByIndex(0)
 }
 func (n ListRepresentation) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -4693,22 +4693,22 @@ func (ListRepresentation) IsNull() bool {
 	return false
 }
 func (ListRepresentation) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.ListRepresentation"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.ListRepresentation"}.AsBool()
 }
 func (ListRepresentation) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.ListRepresentation"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.ListRepresentation"}.AsInt()
 }
 func (ListRepresentation) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.ListRepresentation"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.ListRepresentation"}.AsFloat()
 }
 func (ListRepresentation) AsString() (string, error) {
-	return mixins.Map{"schemadmt.ListRepresentation"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.ListRepresentation"}.AsString()
 }
 func (ListRepresentation) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.ListRepresentation"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.ListRepresentation"}.AsBytes()
 }
 func (ListRepresentation) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.ListRepresentation"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.ListRepresentation"}.AsLink()
 }
 func (ListRepresentation) Prototype() ipld.NodePrototype {
 	return _ListRepresentation__Prototype{}
@@ -4775,7 +4775,7 @@ func (na *_ListRepresentation__Assembler) BeginMap(int64) (ipld.MapAssembler, er
 	return na, nil
 }
 func (_ListRepresentation__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.ListRepresentation"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.ListRepresentation"}.BeginList(0)
 }
 func (na *_ListRepresentation__Assembler) AssignNull() error {
 	switch *na.m {
@@ -4783,7 +4783,7 @@ func (na *_ListRepresentation__Assembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.ListRepresentation"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.ListRepresentation"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -4792,22 +4792,22 @@ func (na *_ListRepresentation__Assembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_ListRepresentation__Assembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.ListRepresentation"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.ListRepresentation"}.AssignBool(false)
 }
 func (_ListRepresentation__Assembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.ListRepresentation"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.ListRepresentation"}.AssignInt(0)
 }
 func (_ListRepresentation__Assembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.ListRepresentation"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.ListRepresentation"}.AssignFloat(0)
 }
 func (_ListRepresentation__Assembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.ListRepresentation"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.ListRepresentation"}.AssignString("")
 }
 func (_ListRepresentation__Assembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.ListRepresentation"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.ListRepresentation"}.AssignBytes(nil)
 }
 func (_ListRepresentation__Assembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.ListRepresentation"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.ListRepresentation"}.AssignLink(nil)
 }
 func (na *_ListRepresentation__Assembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -4966,22 +4966,22 @@ func (ma *_ListRepresentation__Assembler) ValuePrototype(k string) ipld.NodeProt
 type _ListRepresentation__KeyAssembler _ListRepresentation__Assembler
 
 func (_ListRepresentation__KeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.ListRepresentation.KeyAssembler"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.ListRepresentation.KeyAssembler"}.BeginMap(0)
 }
 func (_ListRepresentation__KeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.ListRepresentation.KeyAssembler"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.ListRepresentation.KeyAssembler"}.BeginList(0)
 }
 func (na *_ListRepresentation__KeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"schemadmt.ListRepresentation.KeyAssembler"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "schemadmt.ListRepresentation.KeyAssembler"}.AssignNull()
 }
 func (_ListRepresentation__KeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.ListRepresentation.KeyAssembler"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.ListRepresentation.KeyAssembler"}.AssignBool(false)
 }
 func (_ListRepresentation__KeyAssembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.ListRepresentation.KeyAssembler"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.ListRepresentation.KeyAssembler"}.AssignInt(0)
 }
 func (_ListRepresentation__KeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.ListRepresentation.KeyAssembler"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.ListRepresentation.KeyAssembler"}.AssignFloat(0)
 }
 func (ka *_ListRepresentation__KeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
@@ -5000,10 +5000,10 @@ func (ka *_ListRepresentation__KeyAssembler) AssignString(k string) error {
 	return ipld.ErrInvalidKey{TypeName: "schemadmt.ListRepresentation", Key: &_String{k}} // TODO: error quality: ErrInvalidUnionDiscriminant ?
 }
 func (_ListRepresentation__KeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.ListRepresentation.KeyAssembler"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.ListRepresentation.KeyAssembler"}.AssignBytes(nil)
 }
 func (_ListRepresentation__KeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.ListRepresentation.KeyAssembler"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.ListRepresentation.KeyAssembler"}.AssignLink(nil)
 }
 func (ka *_ListRepresentation__KeyAssembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
@@ -5051,7 +5051,7 @@ func (n *_ListRepresentation__Repr) LookupByNode(key ipld.Node) (ipld.Node, erro
 	return n.LookupByString(ks)
 }
 func (_ListRepresentation__Repr) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.ListRepresentation.Repr"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.ListRepresentation.Repr"}.LookupByIndex(0)
 }
 func (n _ListRepresentation__Repr) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -5095,22 +5095,22 @@ func (_ListRepresentation__Repr) IsNull() bool {
 	return false
 }
 func (_ListRepresentation__Repr) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.ListRepresentation.Repr"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.ListRepresentation.Repr"}.AsBool()
 }
 func (_ListRepresentation__Repr) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.ListRepresentation.Repr"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.ListRepresentation.Repr"}.AsInt()
 }
 func (_ListRepresentation__Repr) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.ListRepresentation.Repr"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.ListRepresentation.Repr"}.AsFloat()
 }
 func (_ListRepresentation__Repr) AsString() (string, error) {
-	return mixins.Map{"schemadmt.ListRepresentation.Repr"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.ListRepresentation.Repr"}.AsString()
 }
 func (_ListRepresentation__Repr) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.ListRepresentation.Repr"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.ListRepresentation.Repr"}.AsBytes()
 }
 func (_ListRepresentation__Repr) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.ListRepresentation.Repr"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.ListRepresentation.Repr"}.AsLink()
 }
 func (_ListRepresentation__Repr) Prototype() ipld.NodePrototype {
 	return _ListRepresentation__ReprPrototype{}
@@ -5177,7 +5177,7 @@ func (na *_ListRepresentation__ReprAssembler) BeginMap(int64) (ipld.MapAssembler
 	return na, nil
 }
 func (_ListRepresentation__ReprAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.ListRepresentation.Repr"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.ListRepresentation.Repr"}.BeginList(0)
 }
 func (na *_ListRepresentation__ReprAssembler) AssignNull() error {
 	switch *na.m {
@@ -5185,7 +5185,7 @@ func (na *_ListRepresentation__ReprAssembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.ListRepresentation.Repr.Repr"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.ListRepresentation.Repr.Repr"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -5194,22 +5194,22 @@ func (na *_ListRepresentation__ReprAssembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_ListRepresentation__ReprAssembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.ListRepresentation.Repr"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.ListRepresentation.Repr"}.AssignBool(false)
 }
 func (_ListRepresentation__ReprAssembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.ListRepresentation.Repr"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.ListRepresentation.Repr"}.AssignInt(0)
 }
 func (_ListRepresentation__ReprAssembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.ListRepresentation.Repr"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.ListRepresentation.Repr"}.AssignFloat(0)
 }
 func (_ListRepresentation__ReprAssembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.ListRepresentation.Repr"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.ListRepresentation.Repr"}.AssignString("")
 }
 func (_ListRepresentation__ReprAssembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.ListRepresentation.Repr"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.ListRepresentation.Repr"}.AssignBytes(nil)
 }
 func (_ListRepresentation__ReprAssembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.ListRepresentation.Repr"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.ListRepresentation.Repr"}.AssignLink(nil)
 }
 func (na *_ListRepresentation__ReprAssembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -5368,22 +5368,22 @@ func (ma *_ListRepresentation__ReprAssembler) ValuePrototype(k string) ipld.Node
 type _ListRepresentation__ReprKeyAssembler _ListRepresentation__ReprAssembler
 
 func (_ListRepresentation__ReprKeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.ListRepresentation.Repr.KeyAssembler"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.ListRepresentation.Repr.KeyAssembler"}.BeginMap(0)
 }
 func (_ListRepresentation__ReprKeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.ListRepresentation.Repr.KeyAssembler"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.ListRepresentation.Repr.KeyAssembler"}.BeginList(0)
 }
 func (na *_ListRepresentation__ReprKeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"schemadmt.ListRepresentation.Repr.KeyAssembler"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "schemadmt.ListRepresentation.Repr.KeyAssembler"}.AssignNull()
 }
 func (_ListRepresentation__ReprKeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.ListRepresentation.Repr.KeyAssembler"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.ListRepresentation.Repr.KeyAssembler"}.AssignBool(false)
 }
 func (_ListRepresentation__ReprKeyAssembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.ListRepresentation.Repr.KeyAssembler"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.ListRepresentation.Repr.KeyAssembler"}.AssignInt(0)
 }
 func (_ListRepresentation__ReprKeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.ListRepresentation.Repr.KeyAssembler"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.ListRepresentation.Repr.KeyAssembler"}.AssignFloat(0)
 }
 func (ka *_ListRepresentation__ReprKeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
@@ -5402,10 +5402,10 @@ func (ka *_ListRepresentation__ReprKeyAssembler) AssignString(k string) error {
 	return ipld.ErrInvalidKey{TypeName: "schemadmt.ListRepresentation.Repr", Key: &_String{k}} // TODO: error quality: ErrInvalidUnionDiscriminant ?
 }
 func (_ListRepresentation__ReprKeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.ListRepresentation.Repr.KeyAssembler"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.ListRepresentation.Repr.KeyAssembler"}.AssignBytes(nil)
 }
 func (_ListRepresentation__ReprKeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.ListRepresentation.Repr.KeyAssembler"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.ListRepresentation.Repr.KeyAssembler"}.AssignLink(nil)
 }
 func (ka *_ListRepresentation__ReprKeyAssembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
@@ -5473,7 +5473,7 @@ func (n ListRepresentation_List) LookupByNode(key ipld.Node) (ipld.Node, error) 
 	return n.LookupByString(ks)
 }
 func (ListRepresentation_List) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.ListRepresentation_List"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.ListRepresentation_List"}.LookupByIndex(0)
 }
 func (n ListRepresentation_List) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -5508,22 +5508,22 @@ func (ListRepresentation_List) IsNull() bool {
 	return false
 }
 func (ListRepresentation_List) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.ListRepresentation_List"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.ListRepresentation_List"}.AsBool()
 }
 func (ListRepresentation_List) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.ListRepresentation_List"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.ListRepresentation_List"}.AsInt()
 }
 func (ListRepresentation_List) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.ListRepresentation_List"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.ListRepresentation_List"}.AsFloat()
 }
 func (ListRepresentation_List) AsString() (string, error) {
-	return mixins.Map{"schemadmt.ListRepresentation_List"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.ListRepresentation_List"}.AsString()
 }
 func (ListRepresentation_List) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.ListRepresentation_List"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.ListRepresentation_List"}.AsBytes()
 }
 func (ListRepresentation_List) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.ListRepresentation_List"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.ListRepresentation_List"}.AsLink()
 }
 func (ListRepresentation_List) Prototype() ipld.NodePrototype {
 	return _ListRepresentation_List__Prototype{}
@@ -5586,7 +5586,7 @@ func (na *_ListRepresentation_List__Assembler) BeginMap(int64) (ipld.MapAssemble
 	return na, nil
 }
 func (_ListRepresentation_List__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.ListRepresentation_List"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.ListRepresentation_List"}.BeginList(0)
 }
 func (na *_ListRepresentation_List__Assembler) AssignNull() error {
 	switch *na.m {
@@ -5594,7 +5594,7 @@ func (na *_ListRepresentation_List__Assembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.ListRepresentation_List"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.ListRepresentation_List"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -5603,22 +5603,22 @@ func (na *_ListRepresentation_List__Assembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_ListRepresentation_List__Assembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.ListRepresentation_List"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.ListRepresentation_List"}.AssignBool(false)
 }
 func (_ListRepresentation_List__Assembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.ListRepresentation_List"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.ListRepresentation_List"}.AssignInt(0)
 }
 func (_ListRepresentation_List__Assembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.ListRepresentation_List"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.ListRepresentation_List"}.AssignFloat(0)
 }
 func (_ListRepresentation_List__Assembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.ListRepresentation_List"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.ListRepresentation_List"}.AssignString("")
 }
 func (_ListRepresentation_List__Assembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.ListRepresentation_List"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.ListRepresentation_List"}.AssignBytes(nil)
 }
 func (_ListRepresentation_List__Assembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.ListRepresentation_List"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.ListRepresentation_List"}.AssignLink(nil)
 }
 func (na *_ListRepresentation_List__Assembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -5754,22 +5754,22 @@ func (ma *_ListRepresentation_List__Assembler) ValuePrototype(k string) ipld.Nod
 type _ListRepresentation_List__KeyAssembler _ListRepresentation_List__Assembler
 
 func (_ListRepresentation_List__KeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.ListRepresentation_List.KeyAssembler"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.ListRepresentation_List.KeyAssembler"}.BeginMap(0)
 }
 func (_ListRepresentation_List__KeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.ListRepresentation_List.KeyAssembler"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.ListRepresentation_List.KeyAssembler"}.BeginList(0)
 }
 func (na *_ListRepresentation_List__KeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"schemadmt.ListRepresentation_List.KeyAssembler"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "schemadmt.ListRepresentation_List.KeyAssembler"}.AssignNull()
 }
 func (_ListRepresentation_List__KeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.ListRepresentation_List.KeyAssembler"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.ListRepresentation_List.KeyAssembler"}.AssignBool(false)
 }
 func (_ListRepresentation_List__KeyAssembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.ListRepresentation_List.KeyAssembler"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.ListRepresentation_List.KeyAssembler"}.AssignInt(0)
 }
 func (_ListRepresentation_List__KeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.ListRepresentation_List.KeyAssembler"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.ListRepresentation_List.KeyAssembler"}.AssignFloat(0)
 }
 func (ka *_ListRepresentation_List__KeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
@@ -5782,10 +5782,10 @@ func (ka *_ListRepresentation_List__KeyAssembler) AssignString(k string) error {
 	return nil
 }
 func (_ListRepresentation_List__KeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.ListRepresentation_List.KeyAssembler"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.ListRepresentation_List.KeyAssembler"}.AssignBytes(nil)
 }
 func (_ListRepresentation_List__KeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.ListRepresentation_List.KeyAssembler"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.ListRepresentation_List.KeyAssembler"}.AssignLink(nil)
 }
 func (ka *_ListRepresentation_List__KeyAssembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
@@ -5826,7 +5826,7 @@ func (n *_ListRepresentation_List__Repr) LookupByNode(key ipld.Node) (ipld.Node,
 	return n.LookupByString(ks)
 }
 func (_ListRepresentation_List__Repr) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.ListRepresentation_List.Repr"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.ListRepresentation_List.Repr"}.LookupByIndex(0)
 }
 func (n _ListRepresentation_List__Repr) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -5861,22 +5861,22 @@ func (_ListRepresentation_List__Repr) IsNull() bool {
 	return false
 }
 func (_ListRepresentation_List__Repr) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.ListRepresentation_List.Repr"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.ListRepresentation_List.Repr"}.AsBool()
 }
 func (_ListRepresentation_List__Repr) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.ListRepresentation_List.Repr"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.ListRepresentation_List.Repr"}.AsInt()
 }
 func (_ListRepresentation_List__Repr) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.ListRepresentation_List.Repr"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.ListRepresentation_List.Repr"}.AsFloat()
 }
 func (_ListRepresentation_List__Repr) AsString() (string, error) {
-	return mixins.Map{"schemadmt.ListRepresentation_List.Repr"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.ListRepresentation_List.Repr"}.AsString()
 }
 func (_ListRepresentation_List__Repr) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.ListRepresentation_List.Repr"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.ListRepresentation_List.Repr"}.AsBytes()
 }
 func (_ListRepresentation_List__Repr) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.ListRepresentation_List.Repr"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.ListRepresentation_List.Repr"}.AsLink()
 }
 func (_ListRepresentation_List__Repr) Prototype() ipld.NodePrototype {
 	return _ListRepresentation_List__ReprPrototype{}
@@ -5934,7 +5934,7 @@ func (na *_ListRepresentation_List__ReprAssembler) BeginMap(int64) (ipld.MapAsse
 	return na, nil
 }
 func (_ListRepresentation_List__ReprAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.ListRepresentation_List.Repr"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.ListRepresentation_List.Repr"}.BeginList(0)
 }
 func (na *_ListRepresentation_List__ReprAssembler) AssignNull() error {
 	switch *na.m {
@@ -5942,7 +5942,7 @@ func (na *_ListRepresentation_List__ReprAssembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.ListRepresentation_List.Repr.Repr"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.ListRepresentation_List.Repr.Repr"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -5951,22 +5951,22 @@ func (na *_ListRepresentation_List__ReprAssembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_ListRepresentation_List__ReprAssembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.ListRepresentation_List.Repr"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.ListRepresentation_List.Repr"}.AssignBool(false)
 }
 func (_ListRepresentation_List__ReprAssembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.ListRepresentation_List.Repr"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.ListRepresentation_List.Repr"}.AssignInt(0)
 }
 func (_ListRepresentation_List__ReprAssembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.ListRepresentation_List.Repr"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.ListRepresentation_List.Repr"}.AssignFloat(0)
 }
 func (_ListRepresentation_List__ReprAssembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.ListRepresentation_List.Repr"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.ListRepresentation_List.Repr"}.AssignString("")
 }
 func (_ListRepresentation_List__ReprAssembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.ListRepresentation_List.Repr"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.ListRepresentation_List.Repr"}.AssignBytes(nil)
 }
 func (_ListRepresentation_List__ReprAssembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.ListRepresentation_List.Repr"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.ListRepresentation_List.Repr"}.AssignLink(nil)
 }
 func (na *_ListRepresentation_List__ReprAssembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -6102,22 +6102,22 @@ func (ma *_ListRepresentation_List__ReprAssembler) ValuePrototype(k string) ipld
 type _ListRepresentation_List__ReprKeyAssembler _ListRepresentation_List__ReprAssembler
 
 func (_ListRepresentation_List__ReprKeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.ListRepresentation_List.Repr.KeyAssembler"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.ListRepresentation_List.Repr.KeyAssembler"}.BeginMap(0)
 }
 func (_ListRepresentation_List__ReprKeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.ListRepresentation_List.Repr.KeyAssembler"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.ListRepresentation_List.Repr.KeyAssembler"}.BeginList(0)
 }
 func (na *_ListRepresentation_List__ReprKeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"schemadmt.ListRepresentation_List.Repr.KeyAssembler"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "schemadmt.ListRepresentation_List.Repr.KeyAssembler"}.AssignNull()
 }
 func (_ListRepresentation_List__ReprKeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.ListRepresentation_List.Repr.KeyAssembler"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.ListRepresentation_List.Repr.KeyAssembler"}.AssignBool(false)
 }
 func (_ListRepresentation_List__ReprKeyAssembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.ListRepresentation_List.Repr.KeyAssembler"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.ListRepresentation_List.Repr.KeyAssembler"}.AssignInt(0)
 }
 func (_ListRepresentation_List__ReprKeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.ListRepresentation_List.Repr.KeyAssembler"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.ListRepresentation_List.Repr.KeyAssembler"}.AssignFloat(0)
 }
 func (ka *_ListRepresentation_List__ReprKeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
@@ -6126,10 +6126,10 @@ func (ka *_ListRepresentation_List__ReprKeyAssembler) AssignString(k string) err
 	return ipld.ErrInvalidKey{TypeName: "schemadmt.ListRepresentation_List.Repr", Key: &_String{k}}
 }
 func (_ListRepresentation_List__ReprKeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.ListRepresentation_List.Repr.KeyAssembler"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.ListRepresentation_List.Repr.KeyAssembler"}.AssignBytes(nil)
 }
 func (_ListRepresentation_List__ReprKeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.ListRepresentation_List.Repr.KeyAssembler"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.ListRepresentation_List.Repr.KeyAssembler"}.AssignLink(nil)
 }
 func (ka *_ListRepresentation_List__ReprKeyAssembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
@@ -6225,7 +6225,7 @@ func (List__FieldName) Kind() ipld.Kind {
 	return ipld.Kind_List
 }
 func (List__FieldName) LookupByString(string) (ipld.Node, error) {
-	return mixins.List{"schemadmt.List__FieldName"}.LookupByString("")
+	return mixins.List{TypeName: "schemadmt.List__FieldName"}.LookupByString("")
 }
 func (n List__FieldName) LookupByNode(k ipld.Node) (ipld.Node, error) {
 	idx, err := k.AsInt()
@@ -6284,22 +6284,22 @@ func (List__FieldName) IsNull() bool {
 	return false
 }
 func (List__FieldName) AsBool() (bool, error) {
-	return mixins.List{"schemadmt.List__FieldName"}.AsBool()
+	return mixins.List{TypeName: "schemadmt.List__FieldName"}.AsBool()
 }
 func (List__FieldName) AsInt() (int64, error) {
-	return mixins.List{"schemadmt.List__FieldName"}.AsInt()
+	return mixins.List{TypeName: "schemadmt.List__FieldName"}.AsInt()
 }
 func (List__FieldName) AsFloat() (float64, error) {
-	return mixins.List{"schemadmt.List__FieldName"}.AsFloat()
+	return mixins.List{TypeName: "schemadmt.List__FieldName"}.AsFloat()
 }
 func (List__FieldName) AsString() (string, error) {
-	return mixins.List{"schemadmt.List__FieldName"}.AsString()
+	return mixins.List{TypeName: "schemadmt.List__FieldName"}.AsString()
 }
 func (List__FieldName) AsBytes() ([]byte, error) {
-	return mixins.List{"schemadmt.List__FieldName"}.AsBytes()
+	return mixins.List{TypeName: "schemadmt.List__FieldName"}.AsBytes()
 }
 func (List__FieldName) AsLink() (ipld.Link, error) {
-	return mixins.List{"schemadmt.List__FieldName"}.AsLink()
+	return mixins.List{TypeName: "schemadmt.List__FieldName"}.AsLink()
 }
 func (List__FieldName) Prototype() ipld.NodePrototype {
 	return _List__FieldName__Prototype{}
@@ -6343,7 +6343,7 @@ func (na *_List__FieldName__Assembler) reset() {
 	na.va.reset()
 }
 func (_List__FieldName__Assembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.ListAssembler{"schemadmt.List__FieldName"}.BeginMap(0)
+	return mixins.ListAssembler{TypeName: "schemadmt.List__FieldName"}.BeginMap(0)
 }
 func (na *_List__FieldName__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
 	switch *na.m {
@@ -6367,7 +6367,7 @@ func (na *_List__FieldName__Assembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.ListAssembler{"schemadmt.List__FieldName"}.AssignNull()
+		return mixins.ListAssembler{TypeName: "schemadmt.List__FieldName"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -6376,22 +6376,22 @@ func (na *_List__FieldName__Assembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_List__FieldName__Assembler) AssignBool(bool) error {
-	return mixins.ListAssembler{"schemadmt.List__FieldName"}.AssignBool(false)
+	return mixins.ListAssembler{TypeName: "schemadmt.List__FieldName"}.AssignBool(false)
 }
 func (_List__FieldName__Assembler) AssignInt(int64) error {
-	return mixins.ListAssembler{"schemadmt.List__FieldName"}.AssignInt(0)
+	return mixins.ListAssembler{TypeName: "schemadmt.List__FieldName"}.AssignInt(0)
 }
 func (_List__FieldName__Assembler) AssignFloat(float64) error {
-	return mixins.ListAssembler{"schemadmt.List__FieldName"}.AssignFloat(0)
+	return mixins.ListAssembler{TypeName: "schemadmt.List__FieldName"}.AssignFloat(0)
 }
 func (_List__FieldName__Assembler) AssignString(string) error {
-	return mixins.ListAssembler{"schemadmt.List__FieldName"}.AssignString("")
+	return mixins.ListAssembler{TypeName: "schemadmt.List__FieldName"}.AssignString("")
 }
 func (_List__FieldName__Assembler) AssignBytes([]byte) error {
-	return mixins.ListAssembler{"schemadmt.List__FieldName"}.AssignBytes(nil)
+	return mixins.ListAssembler{TypeName: "schemadmt.List__FieldName"}.AssignBytes(nil)
 }
 func (_List__FieldName__Assembler) AssignLink(ipld.Link) error {
-	return mixins.ListAssembler{"schemadmt.List__FieldName"}.AssignLink(nil)
+	return mixins.ListAssembler{TypeName: "schemadmt.List__FieldName"}.AssignLink(nil)
 }
 func (na *_List__FieldName__Assembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -6489,7 +6489,7 @@ func (_List__FieldName__Repr) Kind() ipld.Kind {
 	return ipld.Kind_List
 }
 func (_List__FieldName__Repr) LookupByString(string) (ipld.Node, error) {
-	return mixins.List{"schemadmt.List__FieldName.Repr"}.LookupByString("")
+	return mixins.List{TypeName: "schemadmt.List__FieldName.Repr"}.LookupByString("")
 }
 func (nr *_List__FieldName__Repr) LookupByNode(k ipld.Node) (ipld.Node, error) {
 	v, err := (List__FieldName)(nr).LookupByNode(k)
@@ -6542,22 +6542,22 @@ func (_List__FieldName__Repr) IsNull() bool {
 	return false
 }
 func (_List__FieldName__Repr) AsBool() (bool, error) {
-	return mixins.List{"schemadmt.List__FieldName.Repr"}.AsBool()
+	return mixins.List{TypeName: "schemadmt.List__FieldName.Repr"}.AsBool()
 }
 func (_List__FieldName__Repr) AsInt() (int64, error) {
-	return mixins.List{"schemadmt.List__FieldName.Repr"}.AsInt()
+	return mixins.List{TypeName: "schemadmt.List__FieldName.Repr"}.AsInt()
 }
 func (_List__FieldName__Repr) AsFloat() (float64, error) {
-	return mixins.List{"schemadmt.List__FieldName.Repr"}.AsFloat()
+	return mixins.List{TypeName: "schemadmt.List__FieldName.Repr"}.AsFloat()
 }
 func (_List__FieldName__Repr) AsString() (string, error) {
-	return mixins.List{"schemadmt.List__FieldName.Repr"}.AsString()
+	return mixins.List{TypeName: "schemadmt.List__FieldName.Repr"}.AsString()
 }
 func (_List__FieldName__Repr) AsBytes() ([]byte, error) {
-	return mixins.List{"schemadmt.List__FieldName.Repr"}.AsBytes()
+	return mixins.List{TypeName: "schemadmt.List__FieldName.Repr"}.AsBytes()
 }
 func (_List__FieldName__Repr) AsLink() (ipld.Link, error) {
-	return mixins.List{"schemadmt.List__FieldName.Repr"}.AsLink()
+	return mixins.List{TypeName: "schemadmt.List__FieldName.Repr"}.AsLink()
 }
 func (_List__FieldName__Repr) Prototype() ipld.NodePrototype {
 	return _List__FieldName__ReprPrototype{}
@@ -6601,7 +6601,7 @@ func (na *_List__FieldName__ReprAssembler) reset() {
 	na.va.reset()
 }
 func (_List__FieldName__ReprAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.ListAssembler{"schemadmt.List__FieldName.Repr"}.BeginMap(0)
+	return mixins.ListAssembler{TypeName: "schemadmt.List__FieldName.Repr"}.BeginMap(0)
 }
 func (na *_List__FieldName__ReprAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
 	switch *na.m {
@@ -6625,7 +6625,7 @@ func (na *_List__FieldName__ReprAssembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.ListAssembler{"schemadmt.List__FieldName.Repr.Repr"}.AssignNull()
+		return mixins.ListAssembler{TypeName: "schemadmt.List__FieldName.Repr.Repr"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -6634,22 +6634,22 @@ func (na *_List__FieldName__ReprAssembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_List__FieldName__ReprAssembler) AssignBool(bool) error {
-	return mixins.ListAssembler{"schemadmt.List__FieldName.Repr"}.AssignBool(false)
+	return mixins.ListAssembler{TypeName: "schemadmt.List__FieldName.Repr"}.AssignBool(false)
 }
 func (_List__FieldName__ReprAssembler) AssignInt(int64) error {
-	return mixins.ListAssembler{"schemadmt.List__FieldName.Repr"}.AssignInt(0)
+	return mixins.ListAssembler{TypeName: "schemadmt.List__FieldName.Repr"}.AssignInt(0)
 }
 func (_List__FieldName__ReprAssembler) AssignFloat(float64) error {
-	return mixins.ListAssembler{"schemadmt.List__FieldName.Repr"}.AssignFloat(0)
+	return mixins.ListAssembler{TypeName: "schemadmt.List__FieldName.Repr"}.AssignFloat(0)
 }
 func (_List__FieldName__ReprAssembler) AssignString(string) error {
-	return mixins.ListAssembler{"schemadmt.List__FieldName.Repr"}.AssignString("")
+	return mixins.ListAssembler{TypeName: "schemadmt.List__FieldName.Repr"}.AssignString("")
 }
 func (_List__FieldName__ReprAssembler) AssignBytes([]byte) error {
-	return mixins.ListAssembler{"schemadmt.List__FieldName.Repr"}.AssignBytes(nil)
+	return mixins.ListAssembler{TypeName: "schemadmt.List__FieldName.Repr"}.AssignBytes(nil)
 }
 func (_List__FieldName__ReprAssembler) AssignLink(ipld.Link) error {
-	return mixins.ListAssembler{"schemadmt.List__FieldName.Repr"}.AssignLink(nil)
+	return mixins.ListAssembler{TypeName: "schemadmt.List__FieldName.Repr"}.AssignLink(nil)
 }
 func (na *_List__FieldName__ReprAssembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -6816,7 +6816,7 @@ func (List__TypeName) Kind() ipld.Kind {
 	return ipld.Kind_List
 }
 func (List__TypeName) LookupByString(string) (ipld.Node, error) {
-	return mixins.List{"schemadmt.List__TypeName"}.LookupByString("")
+	return mixins.List{TypeName: "schemadmt.List__TypeName"}.LookupByString("")
 }
 func (n List__TypeName) LookupByNode(k ipld.Node) (ipld.Node, error) {
 	idx, err := k.AsInt()
@@ -6875,22 +6875,22 @@ func (List__TypeName) IsNull() bool {
 	return false
 }
 func (List__TypeName) AsBool() (bool, error) {
-	return mixins.List{"schemadmt.List__TypeName"}.AsBool()
+	return mixins.List{TypeName: "schemadmt.List__TypeName"}.AsBool()
 }
 func (List__TypeName) AsInt() (int64, error) {
-	return mixins.List{"schemadmt.List__TypeName"}.AsInt()
+	return mixins.List{TypeName: "schemadmt.List__TypeName"}.AsInt()
 }
 func (List__TypeName) AsFloat() (float64, error) {
-	return mixins.List{"schemadmt.List__TypeName"}.AsFloat()
+	return mixins.List{TypeName: "schemadmt.List__TypeName"}.AsFloat()
 }
 func (List__TypeName) AsString() (string, error) {
-	return mixins.List{"schemadmt.List__TypeName"}.AsString()
+	return mixins.List{TypeName: "schemadmt.List__TypeName"}.AsString()
 }
 func (List__TypeName) AsBytes() ([]byte, error) {
-	return mixins.List{"schemadmt.List__TypeName"}.AsBytes()
+	return mixins.List{TypeName: "schemadmt.List__TypeName"}.AsBytes()
 }
 func (List__TypeName) AsLink() (ipld.Link, error) {
-	return mixins.List{"schemadmt.List__TypeName"}.AsLink()
+	return mixins.List{TypeName: "schemadmt.List__TypeName"}.AsLink()
 }
 func (List__TypeName) Prototype() ipld.NodePrototype {
 	return _List__TypeName__Prototype{}
@@ -6934,7 +6934,7 @@ func (na *_List__TypeName__Assembler) reset() {
 	na.va.reset()
 }
 func (_List__TypeName__Assembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.ListAssembler{"schemadmt.List__TypeName"}.BeginMap(0)
+	return mixins.ListAssembler{TypeName: "schemadmt.List__TypeName"}.BeginMap(0)
 }
 func (na *_List__TypeName__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
 	switch *na.m {
@@ -6958,7 +6958,7 @@ func (na *_List__TypeName__Assembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.ListAssembler{"schemadmt.List__TypeName"}.AssignNull()
+		return mixins.ListAssembler{TypeName: "schemadmt.List__TypeName"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -6967,22 +6967,22 @@ func (na *_List__TypeName__Assembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_List__TypeName__Assembler) AssignBool(bool) error {
-	return mixins.ListAssembler{"schemadmt.List__TypeName"}.AssignBool(false)
+	return mixins.ListAssembler{TypeName: "schemadmt.List__TypeName"}.AssignBool(false)
 }
 func (_List__TypeName__Assembler) AssignInt(int64) error {
-	return mixins.ListAssembler{"schemadmt.List__TypeName"}.AssignInt(0)
+	return mixins.ListAssembler{TypeName: "schemadmt.List__TypeName"}.AssignInt(0)
 }
 func (_List__TypeName__Assembler) AssignFloat(float64) error {
-	return mixins.ListAssembler{"schemadmt.List__TypeName"}.AssignFloat(0)
+	return mixins.ListAssembler{TypeName: "schemadmt.List__TypeName"}.AssignFloat(0)
 }
 func (_List__TypeName__Assembler) AssignString(string) error {
-	return mixins.ListAssembler{"schemadmt.List__TypeName"}.AssignString("")
+	return mixins.ListAssembler{TypeName: "schemadmt.List__TypeName"}.AssignString("")
 }
 func (_List__TypeName__Assembler) AssignBytes([]byte) error {
-	return mixins.ListAssembler{"schemadmt.List__TypeName"}.AssignBytes(nil)
+	return mixins.ListAssembler{TypeName: "schemadmt.List__TypeName"}.AssignBytes(nil)
 }
 func (_List__TypeName__Assembler) AssignLink(ipld.Link) error {
-	return mixins.ListAssembler{"schemadmt.List__TypeName"}.AssignLink(nil)
+	return mixins.ListAssembler{TypeName: "schemadmt.List__TypeName"}.AssignLink(nil)
 }
 func (na *_List__TypeName__Assembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -7080,7 +7080,7 @@ func (_List__TypeName__Repr) Kind() ipld.Kind {
 	return ipld.Kind_List
 }
 func (_List__TypeName__Repr) LookupByString(string) (ipld.Node, error) {
-	return mixins.List{"schemadmt.List__TypeName.Repr"}.LookupByString("")
+	return mixins.List{TypeName: "schemadmt.List__TypeName.Repr"}.LookupByString("")
 }
 func (nr *_List__TypeName__Repr) LookupByNode(k ipld.Node) (ipld.Node, error) {
 	v, err := (List__TypeName)(nr).LookupByNode(k)
@@ -7133,22 +7133,22 @@ func (_List__TypeName__Repr) IsNull() bool {
 	return false
 }
 func (_List__TypeName__Repr) AsBool() (bool, error) {
-	return mixins.List{"schemadmt.List__TypeName.Repr"}.AsBool()
+	return mixins.List{TypeName: "schemadmt.List__TypeName.Repr"}.AsBool()
 }
 func (_List__TypeName__Repr) AsInt() (int64, error) {
-	return mixins.List{"schemadmt.List__TypeName.Repr"}.AsInt()
+	return mixins.List{TypeName: "schemadmt.List__TypeName.Repr"}.AsInt()
 }
 func (_List__TypeName__Repr) AsFloat() (float64, error) {
-	return mixins.List{"schemadmt.List__TypeName.Repr"}.AsFloat()
+	return mixins.List{TypeName: "schemadmt.List__TypeName.Repr"}.AsFloat()
 }
 func (_List__TypeName__Repr) AsString() (string, error) {
-	return mixins.List{"schemadmt.List__TypeName.Repr"}.AsString()
+	return mixins.List{TypeName: "schemadmt.List__TypeName.Repr"}.AsString()
 }
 func (_List__TypeName__Repr) AsBytes() ([]byte, error) {
-	return mixins.List{"schemadmt.List__TypeName.Repr"}.AsBytes()
+	return mixins.List{TypeName: "schemadmt.List__TypeName.Repr"}.AsBytes()
 }
 func (_List__TypeName__Repr) AsLink() (ipld.Link, error) {
-	return mixins.List{"schemadmt.List__TypeName.Repr"}.AsLink()
+	return mixins.List{TypeName: "schemadmt.List__TypeName.Repr"}.AsLink()
 }
 func (_List__TypeName__Repr) Prototype() ipld.NodePrototype {
 	return _List__TypeName__ReprPrototype{}
@@ -7192,7 +7192,7 @@ func (na *_List__TypeName__ReprAssembler) reset() {
 	na.va.reset()
 }
 func (_List__TypeName__ReprAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.ListAssembler{"schemadmt.List__TypeName.Repr"}.BeginMap(0)
+	return mixins.ListAssembler{TypeName: "schemadmt.List__TypeName.Repr"}.BeginMap(0)
 }
 func (na *_List__TypeName__ReprAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
 	switch *na.m {
@@ -7216,7 +7216,7 @@ func (na *_List__TypeName__ReprAssembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.ListAssembler{"schemadmt.List__TypeName.Repr.Repr"}.AssignNull()
+		return mixins.ListAssembler{TypeName: "schemadmt.List__TypeName.Repr.Repr"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -7225,22 +7225,22 @@ func (na *_List__TypeName__ReprAssembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_List__TypeName__ReprAssembler) AssignBool(bool) error {
-	return mixins.ListAssembler{"schemadmt.List__TypeName.Repr"}.AssignBool(false)
+	return mixins.ListAssembler{TypeName: "schemadmt.List__TypeName.Repr"}.AssignBool(false)
 }
 func (_List__TypeName__ReprAssembler) AssignInt(int64) error {
-	return mixins.ListAssembler{"schemadmt.List__TypeName.Repr"}.AssignInt(0)
+	return mixins.ListAssembler{TypeName: "schemadmt.List__TypeName.Repr"}.AssignInt(0)
 }
 func (_List__TypeName__ReprAssembler) AssignFloat(float64) error {
-	return mixins.ListAssembler{"schemadmt.List__TypeName.Repr"}.AssignFloat(0)
+	return mixins.ListAssembler{TypeName: "schemadmt.List__TypeName.Repr"}.AssignFloat(0)
 }
 func (_List__TypeName__ReprAssembler) AssignString(string) error {
-	return mixins.ListAssembler{"schemadmt.List__TypeName.Repr"}.AssignString("")
+	return mixins.ListAssembler{TypeName: "schemadmt.List__TypeName.Repr"}.AssignString("")
 }
 func (_List__TypeName__ReprAssembler) AssignBytes([]byte) error {
-	return mixins.ListAssembler{"schemadmt.List__TypeName.Repr"}.AssignBytes(nil)
+	return mixins.ListAssembler{TypeName: "schemadmt.List__TypeName.Repr"}.AssignBytes(nil)
 }
 func (_List__TypeName__ReprAssembler) AssignLink(ipld.Link) error {
-	return mixins.ListAssembler{"schemadmt.List__TypeName.Repr"}.AssignLink(nil)
+	return mixins.ListAssembler{TypeName: "schemadmt.List__TypeName.Repr"}.AssignLink(nil)
 }
 func (na *_List__TypeName__ReprAssembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -7411,7 +7411,7 @@ func (n MapRepresentation) LookupByNode(key ipld.Node) (ipld.Node, error) {
 	return n.LookupByString(ks)
 }
 func (MapRepresentation) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.MapRepresentation"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.MapRepresentation"}.LookupByIndex(0)
 }
 func (n MapRepresentation) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -7459,22 +7459,22 @@ func (MapRepresentation) IsNull() bool {
 	return false
 }
 func (MapRepresentation) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.MapRepresentation"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.MapRepresentation"}.AsBool()
 }
 func (MapRepresentation) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.MapRepresentation"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.MapRepresentation"}.AsInt()
 }
 func (MapRepresentation) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.MapRepresentation"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.MapRepresentation"}.AsFloat()
 }
 func (MapRepresentation) AsString() (string, error) {
-	return mixins.Map{"schemadmt.MapRepresentation"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.MapRepresentation"}.AsString()
 }
 func (MapRepresentation) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.MapRepresentation"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.MapRepresentation"}.AsBytes()
 }
 func (MapRepresentation) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.MapRepresentation"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.MapRepresentation"}.AsLink()
 }
 func (MapRepresentation) Prototype() ipld.NodePrototype {
 	return _MapRepresentation__Prototype{}
@@ -7551,7 +7551,7 @@ func (na *_MapRepresentation__Assembler) BeginMap(int64) (ipld.MapAssembler, err
 	return na, nil
 }
 func (_MapRepresentation__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.MapRepresentation"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.MapRepresentation"}.BeginList(0)
 }
 func (na *_MapRepresentation__Assembler) AssignNull() error {
 	switch *na.m {
@@ -7559,7 +7559,7 @@ func (na *_MapRepresentation__Assembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.MapRepresentation"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.MapRepresentation"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -7568,22 +7568,22 @@ func (na *_MapRepresentation__Assembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_MapRepresentation__Assembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.MapRepresentation"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.MapRepresentation"}.AssignBool(false)
 }
 func (_MapRepresentation__Assembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.MapRepresentation"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.MapRepresentation"}.AssignInt(0)
 }
 func (_MapRepresentation__Assembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.MapRepresentation"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.MapRepresentation"}.AssignFloat(0)
 }
 func (_MapRepresentation__Assembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.MapRepresentation"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.MapRepresentation"}.AssignString("")
 }
 func (_MapRepresentation__Assembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.MapRepresentation"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.MapRepresentation"}.AssignBytes(nil)
 }
 func (_MapRepresentation__Assembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.MapRepresentation"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.MapRepresentation"}.AssignLink(nil)
 }
 func (na *_MapRepresentation__Assembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -7768,22 +7768,22 @@ func (ma *_MapRepresentation__Assembler) ValuePrototype(k string) ipld.NodeProto
 type _MapRepresentation__KeyAssembler _MapRepresentation__Assembler
 
 func (_MapRepresentation__KeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.MapRepresentation.KeyAssembler"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.MapRepresentation.KeyAssembler"}.BeginMap(0)
 }
 func (_MapRepresentation__KeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.MapRepresentation.KeyAssembler"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.MapRepresentation.KeyAssembler"}.BeginList(0)
 }
 func (na *_MapRepresentation__KeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"schemadmt.MapRepresentation.KeyAssembler"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "schemadmt.MapRepresentation.KeyAssembler"}.AssignNull()
 }
 func (_MapRepresentation__KeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.MapRepresentation.KeyAssembler"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.MapRepresentation.KeyAssembler"}.AssignBool(false)
 }
 func (_MapRepresentation__KeyAssembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.MapRepresentation.KeyAssembler"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.MapRepresentation.KeyAssembler"}.AssignInt(0)
 }
 func (_MapRepresentation__KeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.MapRepresentation.KeyAssembler"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.MapRepresentation.KeyAssembler"}.AssignFloat(0)
 }
 func (ka *_MapRepresentation__KeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
@@ -7812,10 +7812,10 @@ func (ka *_MapRepresentation__KeyAssembler) AssignString(k string) error {
 	return ipld.ErrInvalidKey{TypeName: "schemadmt.MapRepresentation", Key: &_String{k}} // TODO: error quality: ErrInvalidUnionDiscriminant ?
 }
 func (_MapRepresentation__KeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.MapRepresentation.KeyAssembler"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.MapRepresentation.KeyAssembler"}.AssignBytes(nil)
 }
 func (_MapRepresentation__KeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.MapRepresentation.KeyAssembler"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.MapRepresentation.KeyAssembler"}.AssignLink(nil)
 }
 func (ka *_MapRepresentation__KeyAssembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
@@ -7875,7 +7875,7 @@ func (n *_MapRepresentation__Repr) LookupByNode(key ipld.Node) (ipld.Node, error
 	return n.LookupByString(ks)
 }
 func (_MapRepresentation__Repr) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.MapRepresentation.Repr"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.MapRepresentation.Repr"}.LookupByIndex(0)
 }
 func (n _MapRepresentation__Repr) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -7923,22 +7923,22 @@ func (_MapRepresentation__Repr) IsNull() bool {
 	return false
 }
 func (_MapRepresentation__Repr) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.MapRepresentation.Repr"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.MapRepresentation.Repr"}.AsBool()
 }
 func (_MapRepresentation__Repr) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.MapRepresentation.Repr"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.MapRepresentation.Repr"}.AsInt()
 }
 func (_MapRepresentation__Repr) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.MapRepresentation.Repr"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.MapRepresentation.Repr"}.AsFloat()
 }
 func (_MapRepresentation__Repr) AsString() (string, error) {
-	return mixins.Map{"schemadmt.MapRepresentation.Repr"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.MapRepresentation.Repr"}.AsString()
 }
 func (_MapRepresentation__Repr) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.MapRepresentation.Repr"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.MapRepresentation.Repr"}.AsBytes()
 }
 func (_MapRepresentation__Repr) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.MapRepresentation.Repr"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.MapRepresentation.Repr"}.AsLink()
 }
 func (_MapRepresentation__Repr) Prototype() ipld.NodePrototype {
 	return _MapRepresentation__ReprPrototype{}
@@ -8015,7 +8015,7 @@ func (na *_MapRepresentation__ReprAssembler) BeginMap(int64) (ipld.MapAssembler,
 	return na, nil
 }
 func (_MapRepresentation__ReprAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.MapRepresentation.Repr"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.MapRepresentation.Repr"}.BeginList(0)
 }
 func (na *_MapRepresentation__ReprAssembler) AssignNull() error {
 	switch *na.m {
@@ -8023,7 +8023,7 @@ func (na *_MapRepresentation__ReprAssembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.MapRepresentation.Repr.Repr"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.MapRepresentation.Repr.Repr"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -8032,22 +8032,22 @@ func (na *_MapRepresentation__ReprAssembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_MapRepresentation__ReprAssembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.MapRepresentation.Repr"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.MapRepresentation.Repr"}.AssignBool(false)
 }
 func (_MapRepresentation__ReprAssembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.MapRepresentation.Repr"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.MapRepresentation.Repr"}.AssignInt(0)
 }
 func (_MapRepresentation__ReprAssembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.MapRepresentation.Repr"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.MapRepresentation.Repr"}.AssignFloat(0)
 }
 func (_MapRepresentation__ReprAssembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.MapRepresentation.Repr"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.MapRepresentation.Repr"}.AssignString("")
 }
 func (_MapRepresentation__ReprAssembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.MapRepresentation.Repr"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.MapRepresentation.Repr"}.AssignBytes(nil)
 }
 func (_MapRepresentation__ReprAssembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.MapRepresentation.Repr"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.MapRepresentation.Repr"}.AssignLink(nil)
 }
 func (na *_MapRepresentation__ReprAssembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -8232,22 +8232,22 @@ func (ma *_MapRepresentation__ReprAssembler) ValuePrototype(k string) ipld.NodeP
 type _MapRepresentation__ReprKeyAssembler _MapRepresentation__ReprAssembler
 
 func (_MapRepresentation__ReprKeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.MapRepresentation.Repr.KeyAssembler"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.MapRepresentation.Repr.KeyAssembler"}.BeginMap(0)
 }
 func (_MapRepresentation__ReprKeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.MapRepresentation.Repr.KeyAssembler"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.MapRepresentation.Repr.KeyAssembler"}.BeginList(0)
 }
 func (na *_MapRepresentation__ReprKeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"schemadmt.MapRepresentation.Repr.KeyAssembler"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "schemadmt.MapRepresentation.Repr.KeyAssembler"}.AssignNull()
 }
 func (_MapRepresentation__ReprKeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.MapRepresentation.Repr.KeyAssembler"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.MapRepresentation.Repr.KeyAssembler"}.AssignBool(false)
 }
 func (_MapRepresentation__ReprKeyAssembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.MapRepresentation.Repr.KeyAssembler"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.MapRepresentation.Repr.KeyAssembler"}.AssignInt(0)
 }
 func (_MapRepresentation__ReprKeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.MapRepresentation.Repr.KeyAssembler"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.MapRepresentation.Repr.KeyAssembler"}.AssignFloat(0)
 }
 func (ka *_MapRepresentation__ReprKeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
@@ -8276,10 +8276,10 @@ func (ka *_MapRepresentation__ReprKeyAssembler) AssignString(k string) error {
 	return ipld.ErrInvalidKey{TypeName: "schemadmt.MapRepresentation.Repr", Key: &_String{k}} // TODO: error quality: ErrInvalidUnionDiscriminant ?
 }
 func (_MapRepresentation__ReprKeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.MapRepresentation.Repr.KeyAssembler"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.MapRepresentation.Repr.KeyAssembler"}.AssignBytes(nil)
 }
 func (_MapRepresentation__ReprKeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.MapRepresentation.Repr.KeyAssembler"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.MapRepresentation.Repr.KeyAssembler"}.AssignLink(nil)
 }
 func (ka *_MapRepresentation__ReprKeyAssembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
@@ -8347,7 +8347,7 @@ func (n MapRepresentation_Listpairs) LookupByNode(key ipld.Node) (ipld.Node, err
 	return n.LookupByString(ks)
 }
 func (MapRepresentation_Listpairs) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.MapRepresentation_Listpairs"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.MapRepresentation_Listpairs"}.LookupByIndex(0)
 }
 func (n MapRepresentation_Listpairs) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -8382,22 +8382,22 @@ func (MapRepresentation_Listpairs) IsNull() bool {
 	return false
 }
 func (MapRepresentation_Listpairs) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.MapRepresentation_Listpairs"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.MapRepresentation_Listpairs"}.AsBool()
 }
 func (MapRepresentation_Listpairs) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.MapRepresentation_Listpairs"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.MapRepresentation_Listpairs"}.AsInt()
 }
 func (MapRepresentation_Listpairs) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.MapRepresentation_Listpairs"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.MapRepresentation_Listpairs"}.AsFloat()
 }
 func (MapRepresentation_Listpairs) AsString() (string, error) {
-	return mixins.Map{"schemadmt.MapRepresentation_Listpairs"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.MapRepresentation_Listpairs"}.AsString()
 }
 func (MapRepresentation_Listpairs) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.MapRepresentation_Listpairs"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.MapRepresentation_Listpairs"}.AsBytes()
 }
 func (MapRepresentation_Listpairs) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.MapRepresentation_Listpairs"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.MapRepresentation_Listpairs"}.AsLink()
 }
 func (MapRepresentation_Listpairs) Prototype() ipld.NodePrototype {
 	return _MapRepresentation_Listpairs__Prototype{}
@@ -8460,7 +8460,7 @@ func (na *_MapRepresentation_Listpairs__Assembler) BeginMap(int64) (ipld.MapAsse
 	return na, nil
 }
 func (_MapRepresentation_Listpairs__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.MapRepresentation_Listpairs"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.MapRepresentation_Listpairs"}.BeginList(0)
 }
 func (na *_MapRepresentation_Listpairs__Assembler) AssignNull() error {
 	switch *na.m {
@@ -8468,7 +8468,7 @@ func (na *_MapRepresentation_Listpairs__Assembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.MapRepresentation_Listpairs"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.MapRepresentation_Listpairs"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -8477,22 +8477,22 @@ func (na *_MapRepresentation_Listpairs__Assembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_MapRepresentation_Listpairs__Assembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.MapRepresentation_Listpairs"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.MapRepresentation_Listpairs"}.AssignBool(false)
 }
 func (_MapRepresentation_Listpairs__Assembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.MapRepresentation_Listpairs"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.MapRepresentation_Listpairs"}.AssignInt(0)
 }
 func (_MapRepresentation_Listpairs__Assembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.MapRepresentation_Listpairs"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.MapRepresentation_Listpairs"}.AssignFloat(0)
 }
 func (_MapRepresentation_Listpairs__Assembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.MapRepresentation_Listpairs"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.MapRepresentation_Listpairs"}.AssignString("")
 }
 func (_MapRepresentation_Listpairs__Assembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.MapRepresentation_Listpairs"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.MapRepresentation_Listpairs"}.AssignBytes(nil)
 }
 func (_MapRepresentation_Listpairs__Assembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.MapRepresentation_Listpairs"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.MapRepresentation_Listpairs"}.AssignLink(nil)
 }
 func (na *_MapRepresentation_Listpairs__Assembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -8628,22 +8628,22 @@ func (ma *_MapRepresentation_Listpairs__Assembler) ValuePrototype(k string) ipld
 type _MapRepresentation_Listpairs__KeyAssembler _MapRepresentation_Listpairs__Assembler
 
 func (_MapRepresentation_Listpairs__KeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.MapRepresentation_Listpairs.KeyAssembler"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.MapRepresentation_Listpairs.KeyAssembler"}.BeginMap(0)
 }
 func (_MapRepresentation_Listpairs__KeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.MapRepresentation_Listpairs.KeyAssembler"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.MapRepresentation_Listpairs.KeyAssembler"}.BeginList(0)
 }
 func (na *_MapRepresentation_Listpairs__KeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"schemadmt.MapRepresentation_Listpairs.KeyAssembler"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "schemadmt.MapRepresentation_Listpairs.KeyAssembler"}.AssignNull()
 }
 func (_MapRepresentation_Listpairs__KeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.MapRepresentation_Listpairs.KeyAssembler"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.MapRepresentation_Listpairs.KeyAssembler"}.AssignBool(false)
 }
 func (_MapRepresentation_Listpairs__KeyAssembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.MapRepresentation_Listpairs.KeyAssembler"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.MapRepresentation_Listpairs.KeyAssembler"}.AssignInt(0)
 }
 func (_MapRepresentation_Listpairs__KeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.MapRepresentation_Listpairs.KeyAssembler"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.MapRepresentation_Listpairs.KeyAssembler"}.AssignFloat(0)
 }
 func (ka *_MapRepresentation_Listpairs__KeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
@@ -8656,10 +8656,10 @@ func (ka *_MapRepresentation_Listpairs__KeyAssembler) AssignString(k string) err
 	return nil
 }
 func (_MapRepresentation_Listpairs__KeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.MapRepresentation_Listpairs.KeyAssembler"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.MapRepresentation_Listpairs.KeyAssembler"}.AssignBytes(nil)
 }
 func (_MapRepresentation_Listpairs__KeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.MapRepresentation_Listpairs.KeyAssembler"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.MapRepresentation_Listpairs.KeyAssembler"}.AssignLink(nil)
 }
 func (ka *_MapRepresentation_Listpairs__KeyAssembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
@@ -8700,7 +8700,7 @@ func (n *_MapRepresentation_Listpairs__Repr) LookupByNode(key ipld.Node) (ipld.N
 	return n.LookupByString(ks)
 }
 func (_MapRepresentation_Listpairs__Repr) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.MapRepresentation_Listpairs.Repr"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.MapRepresentation_Listpairs.Repr"}.LookupByIndex(0)
 }
 func (n _MapRepresentation_Listpairs__Repr) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -8735,22 +8735,22 @@ func (_MapRepresentation_Listpairs__Repr) IsNull() bool {
 	return false
 }
 func (_MapRepresentation_Listpairs__Repr) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.MapRepresentation_Listpairs.Repr"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.MapRepresentation_Listpairs.Repr"}.AsBool()
 }
 func (_MapRepresentation_Listpairs__Repr) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.MapRepresentation_Listpairs.Repr"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.MapRepresentation_Listpairs.Repr"}.AsInt()
 }
 func (_MapRepresentation_Listpairs__Repr) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.MapRepresentation_Listpairs.Repr"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.MapRepresentation_Listpairs.Repr"}.AsFloat()
 }
 func (_MapRepresentation_Listpairs__Repr) AsString() (string, error) {
-	return mixins.Map{"schemadmt.MapRepresentation_Listpairs.Repr"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.MapRepresentation_Listpairs.Repr"}.AsString()
 }
 func (_MapRepresentation_Listpairs__Repr) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.MapRepresentation_Listpairs.Repr"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.MapRepresentation_Listpairs.Repr"}.AsBytes()
 }
 func (_MapRepresentation_Listpairs__Repr) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.MapRepresentation_Listpairs.Repr"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.MapRepresentation_Listpairs.Repr"}.AsLink()
 }
 func (_MapRepresentation_Listpairs__Repr) Prototype() ipld.NodePrototype {
 	return _MapRepresentation_Listpairs__ReprPrototype{}
@@ -8808,7 +8808,7 @@ func (na *_MapRepresentation_Listpairs__ReprAssembler) BeginMap(int64) (ipld.Map
 	return na, nil
 }
 func (_MapRepresentation_Listpairs__ReprAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.MapRepresentation_Listpairs.Repr"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.MapRepresentation_Listpairs.Repr"}.BeginList(0)
 }
 func (na *_MapRepresentation_Listpairs__ReprAssembler) AssignNull() error {
 	switch *na.m {
@@ -8816,7 +8816,7 @@ func (na *_MapRepresentation_Listpairs__ReprAssembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.MapRepresentation_Listpairs.Repr.Repr"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.MapRepresentation_Listpairs.Repr.Repr"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -8825,22 +8825,22 @@ func (na *_MapRepresentation_Listpairs__ReprAssembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_MapRepresentation_Listpairs__ReprAssembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.MapRepresentation_Listpairs.Repr"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.MapRepresentation_Listpairs.Repr"}.AssignBool(false)
 }
 func (_MapRepresentation_Listpairs__ReprAssembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.MapRepresentation_Listpairs.Repr"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.MapRepresentation_Listpairs.Repr"}.AssignInt(0)
 }
 func (_MapRepresentation_Listpairs__ReprAssembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.MapRepresentation_Listpairs.Repr"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.MapRepresentation_Listpairs.Repr"}.AssignFloat(0)
 }
 func (_MapRepresentation_Listpairs__ReprAssembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.MapRepresentation_Listpairs.Repr"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.MapRepresentation_Listpairs.Repr"}.AssignString("")
 }
 func (_MapRepresentation_Listpairs__ReprAssembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.MapRepresentation_Listpairs.Repr"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.MapRepresentation_Listpairs.Repr"}.AssignBytes(nil)
 }
 func (_MapRepresentation_Listpairs__ReprAssembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.MapRepresentation_Listpairs.Repr"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.MapRepresentation_Listpairs.Repr"}.AssignLink(nil)
 }
 func (na *_MapRepresentation_Listpairs__ReprAssembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -8976,22 +8976,22 @@ func (ma *_MapRepresentation_Listpairs__ReprAssembler) ValuePrototype(k string) 
 type _MapRepresentation_Listpairs__ReprKeyAssembler _MapRepresentation_Listpairs__ReprAssembler
 
 func (_MapRepresentation_Listpairs__ReprKeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.MapRepresentation_Listpairs.Repr.KeyAssembler"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.MapRepresentation_Listpairs.Repr.KeyAssembler"}.BeginMap(0)
 }
 func (_MapRepresentation_Listpairs__ReprKeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.MapRepresentation_Listpairs.Repr.KeyAssembler"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.MapRepresentation_Listpairs.Repr.KeyAssembler"}.BeginList(0)
 }
 func (na *_MapRepresentation_Listpairs__ReprKeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"schemadmt.MapRepresentation_Listpairs.Repr.KeyAssembler"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "schemadmt.MapRepresentation_Listpairs.Repr.KeyAssembler"}.AssignNull()
 }
 func (_MapRepresentation_Listpairs__ReprKeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.MapRepresentation_Listpairs.Repr.KeyAssembler"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.MapRepresentation_Listpairs.Repr.KeyAssembler"}.AssignBool(false)
 }
 func (_MapRepresentation_Listpairs__ReprKeyAssembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.MapRepresentation_Listpairs.Repr.KeyAssembler"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.MapRepresentation_Listpairs.Repr.KeyAssembler"}.AssignInt(0)
 }
 func (_MapRepresentation_Listpairs__ReprKeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.MapRepresentation_Listpairs.Repr.KeyAssembler"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.MapRepresentation_Listpairs.Repr.KeyAssembler"}.AssignFloat(0)
 }
 func (ka *_MapRepresentation_Listpairs__ReprKeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
@@ -9000,10 +9000,10 @@ func (ka *_MapRepresentation_Listpairs__ReprKeyAssembler) AssignString(k string)
 	return ipld.ErrInvalidKey{TypeName: "schemadmt.MapRepresentation_Listpairs.Repr", Key: &_String{k}}
 }
 func (_MapRepresentation_Listpairs__ReprKeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.MapRepresentation_Listpairs.Repr.KeyAssembler"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.MapRepresentation_Listpairs.Repr.KeyAssembler"}.AssignBytes(nil)
 }
 func (_MapRepresentation_Listpairs__ReprKeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.MapRepresentation_Listpairs.Repr.KeyAssembler"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.MapRepresentation_Listpairs.Repr.KeyAssembler"}.AssignLink(nil)
 }
 func (ka *_MapRepresentation_Listpairs__ReprKeyAssembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
@@ -9071,7 +9071,7 @@ func (n MapRepresentation_Map) LookupByNode(key ipld.Node) (ipld.Node, error) {
 	return n.LookupByString(ks)
 }
 func (MapRepresentation_Map) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.MapRepresentation_Map"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.MapRepresentation_Map"}.LookupByIndex(0)
 }
 func (n MapRepresentation_Map) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -9106,22 +9106,22 @@ func (MapRepresentation_Map) IsNull() bool {
 	return false
 }
 func (MapRepresentation_Map) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.MapRepresentation_Map"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.MapRepresentation_Map"}.AsBool()
 }
 func (MapRepresentation_Map) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.MapRepresentation_Map"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.MapRepresentation_Map"}.AsInt()
 }
 func (MapRepresentation_Map) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.MapRepresentation_Map"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.MapRepresentation_Map"}.AsFloat()
 }
 func (MapRepresentation_Map) AsString() (string, error) {
-	return mixins.Map{"schemadmt.MapRepresentation_Map"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.MapRepresentation_Map"}.AsString()
 }
 func (MapRepresentation_Map) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.MapRepresentation_Map"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.MapRepresentation_Map"}.AsBytes()
 }
 func (MapRepresentation_Map) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.MapRepresentation_Map"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.MapRepresentation_Map"}.AsLink()
 }
 func (MapRepresentation_Map) Prototype() ipld.NodePrototype {
 	return _MapRepresentation_Map__Prototype{}
@@ -9184,7 +9184,7 @@ func (na *_MapRepresentation_Map__Assembler) BeginMap(int64) (ipld.MapAssembler,
 	return na, nil
 }
 func (_MapRepresentation_Map__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.MapRepresentation_Map"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.MapRepresentation_Map"}.BeginList(0)
 }
 func (na *_MapRepresentation_Map__Assembler) AssignNull() error {
 	switch *na.m {
@@ -9192,7 +9192,7 @@ func (na *_MapRepresentation_Map__Assembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.MapRepresentation_Map"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.MapRepresentation_Map"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -9201,22 +9201,22 @@ func (na *_MapRepresentation_Map__Assembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_MapRepresentation_Map__Assembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.MapRepresentation_Map"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.MapRepresentation_Map"}.AssignBool(false)
 }
 func (_MapRepresentation_Map__Assembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.MapRepresentation_Map"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.MapRepresentation_Map"}.AssignInt(0)
 }
 func (_MapRepresentation_Map__Assembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.MapRepresentation_Map"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.MapRepresentation_Map"}.AssignFloat(0)
 }
 func (_MapRepresentation_Map__Assembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.MapRepresentation_Map"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.MapRepresentation_Map"}.AssignString("")
 }
 func (_MapRepresentation_Map__Assembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.MapRepresentation_Map"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.MapRepresentation_Map"}.AssignBytes(nil)
 }
 func (_MapRepresentation_Map__Assembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.MapRepresentation_Map"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.MapRepresentation_Map"}.AssignLink(nil)
 }
 func (na *_MapRepresentation_Map__Assembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -9352,22 +9352,22 @@ func (ma *_MapRepresentation_Map__Assembler) ValuePrototype(k string) ipld.NodeP
 type _MapRepresentation_Map__KeyAssembler _MapRepresentation_Map__Assembler
 
 func (_MapRepresentation_Map__KeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.MapRepresentation_Map.KeyAssembler"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.MapRepresentation_Map.KeyAssembler"}.BeginMap(0)
 }
 func (_MapRepresentation_Map__KeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.MapRepresentation_Map.KeyAssembler"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.MapRepresentation_Map.KeyAssembler"}.BeginList(0)
 }
 func (na *_MapRepresentation_Map__KeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"schemadmt.MapRepresentation_Map.KeyAssembler"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "schemadmt.MapRepresentation_Map.KeyAssembler"}.AssignNull()
 }
 func (_MapRepresentation_Map__KeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.MapRepresentation_Map.KeyAssembler"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.MapRepresentation_Map.KeyAssembler"}.AssignBool(false)
 }
 func (_MapRepresentation_Map__KeyAssembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.MapRepresentation_Map.KeyAssembler"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.MapRepresentation_Map.KeyAssembler"}.AssignInt(0)
 }
 func (_MapRepresentation_Map__KeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.MapRepresentation_Map.KeyAssembler"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.MapRepresentation_Map.KeyAssembler"}.AssignFloat(0)
 }
 func (ka *_MapRepresentation_Map__KeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
@@ -9380,10 +9380,10 @@ func (ka *_MapRepresentation_Map__KeyAssembler) AssignString(k string) error {
 	return nil
 }
 func (_MapRepresentation_Map__KeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.MapRepresentation_Map.KeyAssembler"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.MapRepresentation_Map.KeyAssembler"}.AssignBytes(nil)
 }
 func (_MapRepresentation_Map__KeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.MapRepresentation_Map.KeyAssembler"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.MapRepresentation_Map.KeyAssembler"}.AssignLink(nil)
 }
 func (ka *_MapRepresentation_Map__KeyAssembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
@@ -9424,7 +9424,7 @@ func (n *_MapRepresentation_Map__Repr) LookupByNode(key ipld.Node) (ipld.Node, e
 	return n.LookupByString(ks)
 }
 func (_MapRepresentation_Map__Repr) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.MapRepresentation_Map.Repr"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.MapRepresentation_Map.Repr"}.LookupByIndex(0)
 }
 func (n _MapRepresentation_Map__Repr) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -9459,22 +9459,22 @@ func (_MapRepresentation_Map__Repr) IsNull() bool {
 	return false
 }
 func (_MapRepresentation_Map__Repr) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.MapRepresentation_Map.Repr"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.MapRepresentation_Map.Repr"}.AsBool()
 }
 func (_MapRepresentation_Map__Repr) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.MapRepresentation_Map.Repr"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.MapRepresentation_Map.Repr"}.AsInt()
 }
 func (_MapRepresentation_Map__Repr) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.MapRepresentation_Map.Repr"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.MapRepresentation_Map.Repr"}.AsFloat()
 }
 func (_MapRepresentation_Map__Repr) AsString() (string, error) {
-	return mixins.Map{"schemadmt.MapRepresentation_Map.Repr"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.MapRepresentation_Map.Repr"}.AsString()
 }
 func (_MapRepresentation_Map__Repr) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.MapRepresentation_Map.Repr"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.MapRepresentation_Map.Repr"}.AsBytes()
 }
 func (_MapRepresentation_Map__Repr) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.MapRepresentation_Map.Repr"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.MapRepresentation_Map.Repr"}.AsLink()
 }
 func (_MapRepresentation_Map__Repr) Prototype() ipld.NodePrototype {
 	return _MapRepresentation_Map__ReprPrototype{}
@@ -9532,7 +9532,7 @@ func (na *_MapRepresentation_Map__ReprAssembler) BeginMap(int64) (ipld.MapAssemb
 	return na, nil
 }
 func (_MapRepresentation_Map__ReprAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.MapRepresentation_Map.Repr"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.MapRepresentation_Map.Repr"}.BeginList(0)
 }
 func (na *_MapRepresentation_Map__ReprAssembler) AssignNull() error {
 	switch *na.m {
@@ -9540,7 +9540,7 @@ func (na *_MapRepresentation_Map__ReprAssembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.MapRepresentation_Map.Repr.Repr"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.MapRepresentation_Map.Repr.Repr"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -9549,22 +9549,22 @@ func (na *_MapRepresentation_Map__ReprAssembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_MapRepresentation_Map__ReprAssembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.MapRepresentation_Map.Repr"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.MapRepresentation_Map.Repr"}.AssignBool(false)
 }
 func (_MapRepresentation_Map__ReprAssembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.MapRepresentation_Map.Repr"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.MapRepresentation_Map.Repr"}.AssignInt(0)
 }
 func (_MapRepresentation_Map__ReprAssembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.MapRepresentation_Map.Repr"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.MapRepresentation_Map.Repr"}.AssignFloat(0)
 }
 func (_MapRepresentation_Map__ReprAssembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.MapRepresentation_Map.Repr"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.MapRepresentation_Map.Repr"}.AssignString("")
 }
 func (_MapRepresentation_Map__ReprAssembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.MapRepresentation_Map.Repr"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.MapRepresentation_Map.Repr"}.AssignBytes(nil)
 }
 func (_MapRepresentation_Map__ReprAssembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.MapRepresentation_Map.Repr"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.MapRepresentation_Map.Repr"}.AssignLink(nil)
 }
 func (na *_MapRepresentation_Map__ReprAssembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -9700,22 +9700,22 @@ func (ma *_MapRepresentation_Map__ReprAssembler) ValuePrototype(k string) ipld.N
 type _MapRepresentation_Map__ReprKeyAssembler _MapRepresentation_Map__ReprAssembler
 
 func (_MapRepresentation_Map__ReprKeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.MapRepresentation_Map.Repr.KeyAssembler"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.MapRepresentation_Map.Repr.KeyAssembler"}.BeginMap(0)
 }
 func (_MapRepresentation_Map__ReprKeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.MapRepresentation_Map.Repr.KeyAssembler"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.MapRepresentation_Map.Repr.KeyAssembler"}.BeginList(0)
 }
 func (na *_MapRepresentation_Map__ReprKeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"schemadmt.MapRepresentation_Map.Repr.KeyAssembler"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "schemadmt.MapRepresentation_Map.Repr.KeyAssembler"}.AssignNull()
 }
 func (_MapRepresentation_Map__ReprKeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.MapRepresentation_Map.Repr.KeyAssembler"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.MapRepresentation_Map.Repr.KeyAssembler"}.AssignBool(false)
 }
 func (_MapRepresentation_Map__ReprKeyAssembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.MapRepresentation_Map.Repr.KeyAssembler"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.MapRepresentation_Map.Repr.KeyAssembler"}.AssignInt(0)
 }
 func (_MapRepresentation_Map__ReprKeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.MapRepresentation_Map.Repr.KeyAssembler"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.MapRepresentation_Map.Repr.KeyAssembler"}.AssignFloat(0)
 }
 func (ka *_MapRepresentation_Map__ReprKeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
@@ -9724,10 +9724,10 @@ func (ka *_MapRepresentation_Map__ReprKeyAssembler) AssignString(k string) error
 	return ipld.ErrInvalidKey{TypeName: "schemadmt.MapRepresentation_Map.Repr", Key: &_String{k}}
 }
 func (_MapRepresentation_Map__ReprKeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.MapRepresentation_Map.Repr.KeyAssembler"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.MapRepresentation_Map.Repr.KeyAssembler"}.AssignBytes(nil)
 }
 func (_MapRepresentation_Map__ReprKeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.MapRepresentation_Map.Repr.KeyAssembler"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.MapRepresentation_Map.Repr.KeyAssembler"}.AssignLink(nil)
 }
 func (ka *_MapRepresentation_Map__ReprKeyAssembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
@@ -9809,7 +9809,7 @@ func (n MapRepresentation_Stringpairs) LookupByNode(key ipld.Node) (ipld.Node, e
 	return n.LookupByString(ks)
 }
 func (MapRepresentation_Stringpairs) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.MapRepresentation_Stringpairs"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.MapRepresentation_Stringpairs"}.LookupByIndex(0)
 }
 func (n MapRepresentation_Stringpairs) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -9857,22 +9857,22 @@ func (MapRepresentation_Stringpairs) IsNull() bool {
 	return false
 }
 func (MapRepresentation_Stringpairs) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.MapRepresentation_Stringpairs"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.MapRepresentation_Stringpairs"}.AsBool()
 }
 func (MapRepresentation_Stringpairs) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.MapRepresentation_Stringpairs"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.MapRepresentation_Stringpairs"}.AsInt()
 }
 func (MapRepresentation_Stringpairs) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.MapRepresentation_Stringpairs"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.MapRepresentation_Stringpairs"}.AsFloat()
 }
 func (MapRepresentation_Stringpairs) AsString() (string, error) {
-	return mixins.Map{"schemadmt.MapRepresentation_Stringpairs"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.MapRepresentation_Stringpairs"}.AsString()
 }
 func (MapRepresentation_Stringpairs) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.MapRepresentation_Stringpairs"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.MapRepresentation_Stringpairs"}.AsBytes()
 }
 func (MapRepresentation_Stringpairs) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.MapRepresentation_Stringpairs"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.MapRepresentation_Stringpairs"}.AsLink()
 }
 func (MapRepresentation_Stringpairs) Prototype() ipld.NodePrototype {
 	return _MapRepresentation_Stringpairs__Prototype{}
@@ -9941,7 +9941,7 @@ func (na *_MapRepresentation_Stringpairs__Assembler) BeginMap(int64) (ipld.MapAs
 	return na, nil
 }
 func (_MapRepresentation_Stringpairs__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.MapRepresentation_Stringpairs"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.MapRepresentation_Stringpairs"}.BeginList(0)
 }
 func (na *_MapRepresentation_Stringpairs__Assembler) AssignNull() error {
 	switch *na.m {
@@ -9949,7 +9949,7 @@ func (na *_MapRepresentation_Stringpairs__Assembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.MapRepresentation_Stringpairs"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.MapRepresentation_Stringpairs"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -9958,22 +9958,22 @@ func (na *_MapRepresentation_Stringpairs__Assembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_MapRepresentation_Stringpairs__Assembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.MapRepresentation_Stringpairs"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.MapRepresentation_Stringpairs"}.AssignBool(false)
 }
 func (_MapRepresentation_Stringpairs__Assembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.MapRepresentation_Stringpairs"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.MapRepresentation_Stringpairs"}.AssignInt(0)
 }
 func (_MapRepresentation_Stringpairs__Assembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.MapRepresentation_Stringpairs"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.MapRepresentation_Stringpairs"}.AssignFloat(0)
 }
 func (_MapRepresentation_Stringpairs__Assembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.MapRepresentation_Stringpairs"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.MapRepresentation_Stringpairs"}.AssignString("")
 }
 func (_MapRepresentation_Stringpairs__Assembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.MapRepresentation_Stringpairs"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.MapRepresentation_Stringpairs"}.AssignBytes(nil)
 }
 func (_MapRepresentation_Stringpairs__Assembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.MapRepresentation_Stringpairs"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.MapRepresentation_Stringpairs"}.AssignLink(nil)
 }
 func (na *_MapRepresentation_Stringpairs__Assembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -10165,22 +10165,22 @@ func (ma *_MapRepresentation_Stringpairs__Assembler) ValuePrototype(k string) ip
 type _MapRepresentation_Stringpairs__KeyAssembler _MapRepresentation_Stringpairs__Assembler
 
 func (_MapRepresentation_Stringpairs__KeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.MapRepresentation_Stringpairs.KeyAssembler"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.MapRepresentation_Stringpairs.KeyAssembler"}.BeginMap(0)
 }
 func (_MapRepresentation_Stringpairs__KeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.MapRepresentation_Stringpairs.KeyAssembler"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.MapRepresentation_Stringpairs.KeyAssembler"}.BeginList(0)
 }
 func (na *_MapRepresentation_Stringpairs__KeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"schemadmt.MapRepresentation_Stringpairs.KeyAssembler"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "schemadmt.MapRepresentation_Stringpairs.KeyAssembler"}.AssignNull()
 }
 func (_MapRepresentation_Stringpairs__KeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.MapRepresentation_Stringpairs.KeyAssembler"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.MapRepresentation_Stringpairs.KeyAssembler"}.AssignBool(false)
 }
 func (_MapRepresentation_Stringpairs__KeyAssembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.MapRepresentation_Stringpairs.KeyAssembler"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.MapRepresentation_Stringpairs.KeyAssembler"}.AssignInt(0)
 }
 func (_MapRepresentation_Stringpairs__KeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.MapRepresentation_Stringpairs.KeyAssembler"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.MapRepresentation_Stringpairs.KeyAssembler"}.AssignFloat(0)
 }
 func (ka *_MapRepresentation_Stringpairs__KeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
@@ -10207,10 +10207,10 @@ func (ka *_MapRepresentation_Stringpairs__KeyAssembler) AssignString(k string) e
 	return nil
 }
 func (_MapRepresentation_Stringpairs__KeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.MapRepresentation_Stringpairs.KeyAssembler"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.MapRepresentation_Stringpairs.KeyAssembler"}.AssignBytes(nil)
 }
 func (_MapRepresentation_Stringpairs__KeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.MapRepresentation_Stringpairs.KeyAssembler"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.MapRepresentation_Stringpairs.KeyAssembler"}.AssignLink(nil)
 }
 func (ka *_MapRepresentation_Stringpairs__KeyAssembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
@@ -10258,7 +10258,7 @@ func (n *_MapRepresentation_Stringpairs__Repr) LookupByNode(key ipld.Node) (ipld
 	return n.LookupByString(ks)
 }
 func (_MapRepresentation_Stringpairs__Repr) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.MapRepresentation_Stringpairs.Repr"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.MapRepresentation_Stringpairs.Repr"}.LookupByIndex(0)
 }
 func (n _MapRepresentation_Stringpairs__Repr) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -10306,22 +10306,22 @@ func (_MapRepresentation_Stringpairs__Repr) IsNull() bool {
 	return false
 }
 func (_MapRepresentation_Stringpairs__Repr) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.MapRepresentation_Stringpairs.Repr"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.MapRepresentation_Stringpairs.Repr"}.AsBool()
 }
 func (_MapRepresentation_Stringpairs__Repr) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.MapRepresentation_Stringpairs.Repr"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.MapRepresentation_Stringpairs.Repr"}.AsInt()
 }
 func (_MapRepresentation_Stringpairs__Repr) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.MapRepresentation_Stringpairs.Repr"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.MapRepresentation_Stringpairs.Repr"}.AsFloat()
 }
 func (_MapRepresentation_Stringpairs__Repr) AsString() (string, error) {
-	return mixins.Map{"schemadmt.MapRepresentation_Stringpairs.Repr"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.MapRepresentation_Stringpairs.Repr"}.AsString()
 }
 func (_MapRepresentation_Stringpairs__Repr) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.MapRepresentation_Stringpairs.Repr"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.MapRepresentation_Stringpairs.Repr"}.AsBytes()
 }
 func (_MapRepresentation_Stringpairs__Repr) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.MapRepresentation_Stringpairs.Repr"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.MapRepresentation_Stringpairs.Repr"}.AsLink()
 }
 func (_MapRepresentation_Stringpairs__Repr) Prototype() ipld.NodePrototype {
 	return _MapRepresentation_Stringpairs__ReprPrototype{}
@@ -10383,7 +10383,7 @@ func (na *_MapRepresentation_Stringpairs__ReprAssembler) BeginMap(int64) (ipld.M
 	return na, nil
 }
 func (_MapRepresentation_Stringpairs__ReprAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.MapRepresentation_Stringpairs.Repr"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.MapRepresentation_Stringpairs.Repr"}.BeginList(0)
 }
 func (na *_MapRepresentation_Stringpairs__ReprAssembler) AssignNull() error {
 	switch *na.m {
@@ -10391,7 +10391,7 @@ func (na *_MapRepresentation_Stringpairs__ReprAssembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.MapRepresentation_Stringpairs.Repr.Repr"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.MapRepresentation_Stringpairs.Repr.Repr"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -10400,22 +10400,22 @@ func (na *_MapRepresentation_Stringpairs__ReprAssembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_MapRepresentation_Stringpairs__ReprAssembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.MapRepresentation_Stringpairs.Repr"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.MapRepresentation_Stringpairs.Repr"}.AssignBool(false)
 }
 func (_MapRepresentation_Stringpairs__ReprAssembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.MapRepresentation_Stringpairs.Repr"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.MapRepresentation_Stringpairs.Repr"}.AssignInt(0)
 }
 func (_MapRepresentation_Stringpairs__ReprAssembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.MapRepresentation_Stringpairs.Repr"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.MapRepresentation_Stringpairs.Repr"}.AssignFloat(0)
 }
 func (_MapRepresentation_Stringpairs__ReprAssembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.MapRepresentation_Stringpairs.Repr"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.MapRepresentation_Stringpairs.Repr"}.AssignString("")
 }
 func (_MapRepresentation_Stringpairs__ReprAssembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.MapRepresentation_Stringpairs.Repr"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.MapRepresentation_Stringpairs.Repr"}.AssignBytes(nil)
 }
 func (_MapRepresentation_Stringpairs__ReprAssembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.MapRepresentation_Stringpairs.Repr"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.MapRepresentation_Stringpairs.Repr"}.AssignLink(nil)
 }
 func (na *_MapRepresentation_Stringpairs__ReprAssembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -10606,22 +10606,22 @@ func (ma *_MapRepresentation_Stringpairs__ReprAssembler) ValuePrototype(k string
 type _MapRepresentation_Stringpairs__ReprKeyAssembler _MapRepresentation_Stringpairs__ReprAssembler
 
 func (_MapRepresentation_Stringpairs__ReprKeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.MapRepresentation_Stringpairs.Repr.KeyAssembler"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.MapRepresentation_Stringpairs.Repr.KeyAssembler"}.BeginMap(0)
 }
 func (_MapRepresentation_Stringpairs__ReprKeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.MapRepresentation_Stringpairs.Repr.KeyAssembler"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.MapRepresentation_Stringpairs.Repr.KeyAssembler"}.BeginList(0)
 }
 func (na *_MapRepresentation_Stringpairs__ReprKeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"schemadmt.MapRepresentation_Stringpairs.Repr.KeyAssembler"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "schemadmt.MapRepresentation_Stringpairs.Repr.KeyAssembler"}.AssignNull()
 }
 func (_MapRepresentation_Stringpairs__ReprKeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.MapRepresentation_Stringpairs.Repr.KeyAssembler"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.MapRepresentation_Stringpairs.Repr.KeyAssembler"}.AssignBool(false)
 }
 func (_MapRepresentation_Stringpairs__ReprKeyAssembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.MapRepresentation_Stringpairs.Repr.KeyAssembler"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.MapRepresentation_Stringpairs.Repr.KeyAssembler"}.AssignInt(0)
 }
 func (_MapRepresentation_Stringpairs__ReprKeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.MapRepresentation_Stringpairs.Repr.KeyAssembler"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.MapRepresentation_Stringpairs.Repr.KeyAssembler"}.AssignFloat(0)
 }
 func (ka *_MapRepresentation_Stringpairs__ReprKeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
@@ -10648,10 +10648,10 @@ func (ka *_MapRepresentation_Stringpairs__ReprKeyAssembler) AssignString(k strin
 	return ipld.ErrInvalidKey{TypeName: "schemadmt.MapRepresentation_Stringpairs.Repr", Key: &_String{k}}
 }
 func (_MapRepresentation_Stringpairs__ReprKeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.MapRepresentation_Stringpairs.Repr.KeyAssembler"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.MapRepresentation_Stringpairs.Repr.KeyAssembler"}.AssignBytes(nil)
 }
 func (_MapRepresentation_Stringpairs__ReprKeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.MapRepresentation_Stringpairs.Repr.KeyAssembler"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.MapRepresentation_Stringpairs.Repr.KeyAssembler"}.AssignLink(nil)
 }
 func (ka *_MapRepresentation_Stringpairs__ReprKeyAssembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
@@ -10771,7 +10771,7 @@ func (n Map__EnumValue__Unit) LookupByNode(k ipld.Node) (ipld.Node, error) {
 	return v, nil
 }
 func (Map__EnumValue__Unit) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.Map__EnumValue__Unit"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.Map__EnumValue__Unit"}.LookupByIndex(0)
 }
 func (n Map__EnumValue__Unit) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -10812,22 +10812,22 @@ func (Map__EnumValue__Unit) IsNull() bool {
 	return false
 }
 func (Map__EnumValue__Unit) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.Map__EnumValue__Unit"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.Map__EnumValue__Unit"}.AsBool()
 }
 func (Map__EnumValue__Unit) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.Map__EnumValue__Unit"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.Map__EnumValue__Unit"}.AsInt()
 }
 func (Map__EnumValue__Unit) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.Map__EnumValue__Unit"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.Map__EnumValue__Unit"}.AsFloat()
 }
 func (Map__EnumValue__Unit) AsString() (string, error) {
-	return mixins.Map{"schemadmt.Map__EnumValue__Unit"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.Map__EnumValue__Unit"}.AsString()
 }
 func (Map__EnumValue__Unit) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.Map__EnumValue__Unit"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.Map__EnumValue__Unit"}.AsBytes()
 }
 func (Map__EnumValue__Unit) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.Map__EnumValue__Unit"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.Map__EnumValue__Unit"}.AsLink()
 }
 func (Map__EnumValue__Unit) Prototype() ipld.NodePrototype {
 	return _Map__EnumValue__Unit__Prototype{}
@@ -10888,7 +10888,7 @@ func (na *_Map__EnumValue__Unit__Assembler) BeginMap(sizeHint int64) (ipld.MapAs
 	return na, nil
 }
 func (_Map__EnumValue__Unit__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.Map__EnumValue__Unit"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.Map__EnumValue__Unit"}.BeginList(0)
 }
 func (na *_Map__EnumValue__Unit__Assembler) AssignNull() error {
 	switch *na.m {
@@ -10896,7 +10896,7 @@ func (na *_Map__EnumValue__Unit__Assembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.Map__EnumValue__Unit"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.Map__EnumValue__Unit"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -10905,22 +10905,22 @@ func (na *_Map__EnumValue__Unit__Assembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_Map__EnumValue__Unit__Assembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.Map__EnumValue__Unit"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.Map__EnumValue__Unit"}.AssignBool(false)
 }
 func (_Map__EnumValue__Unit__Assembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.Map__EnumValue__Unit"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.Map__EnumValue__Unit"}.AssignInt(0)
 }
 func (_Map__EnumValue__Unit__Assembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.Map__EnumValue__Unit"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.Map__EnumValue__Unit"}.AssignFloat(0)
 }
 func (_Map__EnumValue__Unit__Assembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.Map__EnumValue__Unit"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.Map__EnumValue__Unit"}.AssignString("")
 }
 func (_Map__EnumValue__Unit__Assembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.Map__EnumValue__Unit"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.Map__EnumValue__Unit"}.AssignBytes(nil)
 }
 func (_Map__EnumValue__Unit__Assembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.Map__EnumValue__Unit"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.Map__EnumValue__Unit"}.AssignLink(nil)
 }
 func (na *_Map__EnumValue__Unit__Assembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -11111,7 +11111,7 @@ func (nr *_Map__EnumValue__Unit__Repr) LookupByNode(k ipld.Node) (ipld.Node, err
 	return v.(Unit).Representation(), nil
 }
 func (_Map__EnumValue__Unit__Repr) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.Map__EnumValue__Unit.Repr"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.Map__EnumValue__Unit.Repr"}.LookupByIndex(0)
 }
 func (n _Map__EnumValue__Unit__Repr) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -11146,22 +11146,22 @@ func (_Map__EnumValue__Unit__Repr) IsNull() bool {
 	return false
 }
 func (_Map__EnumValue__Unit__Repr) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.Map__EnumValue__Unit.Repr"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.Map__EnumValue__Unit.Repr"}.AsBool()
 }
 func (_Map__EnumValue__Unit__Repr) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.Map__EnumValue__Unit.Repr"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.Map__EnumValue__Unit.Repr"}.AsInt()
 }
 func (_Map__EnumValue__Unit__Repr) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.Map__EnumValue__Unit.Repr"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.Map__EnumValue__Unit.Repr"}.AsFloat()
 }
 func (_Map__EnumValue__Unit__Repr) AsString() (string, error) {
-	return mixins.Map{"schemadmt.Map__EnumValue__Unit.Repr"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.Map__EnumValue__Unit.Repr"}.AsString()
 }
 func (_Map__EnumValue__Unit__Repr) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.Map__EnumValue__Unit.Repr"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.Map__EnumValue__Unit.Repr"}.AsBytes()
 }
 func (_Map__EnumValue__Unit__Repr) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.Map__EnumValue__Unit.Repr"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.Map__EnumValue__Unit.Repr"}.AsLink()
 }
 func (_Map__EnumValue__Unit__Repr) Prototype() ipld.NodePrototype {
 	return _Map__EnumValue__Unit__ReprPrototype{}
@@ -11222,7 +11222,7 @@ func (na *_Map__EnumValue__Unit__ReprAssembler) BeginMap(sizeHint int64) (ipld.M
 	return na, nil
 }
 func (_Map__EnumValue__Unit__ReprAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.Map__EnumValue__Unit.Repr"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.Map__EnumValue__Unit.Repr"}.BeginList(0)
 }
 func (na *_Map__EnumValue__Unit__ReprAssembler) AssignNull() error {
 	switch *na.m {
@@ -11230,7 +11230,7 @@ func (na *_Map__EnumValue__Unit__ReprAssembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.Map__EnumValue__Unit.Repr.Repr"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.Map__EnumValue__Unit.Repr.Repr"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -11239,22 +11239,22 @@ func (na *_Map__EnumValue__Unit__ReprAssembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_Map__EnumValue__Unit__ReprAssembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.Map__EnumValue__Unit.Repr"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.Map__EnumValue__Unit.Repr"}.AssignBool(false)
 }
 func (_Map__EnumValue__Unit__ReprAssembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.Map__EnumValue__Unit.Repr"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.Map__EnumValue__Unit.Repr"}.AssignInt(0)
 }
 func (_Map__EnumValue__Unit__ReprAssembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.Map__EnumValue__Unit.Repr"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.Map__EnumValue__Unit.Repr"}.AssignFloat(0)
 }
 func (_Map__EnumValue__Unit__ReprAssembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.Map__EnumValue__Unit.Repr"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.Map__EnumValue__Unit.Repr"}.AssignString("")
 }
 func (_Map__EnumValue__Unit__ReprAssembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.Map__EnumValue__Unit.Repr"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.Map__EnumValue__Unit.Repr"}.AssignBytes(nil)
 }
 func (_Map__EnumValue__Unit__ReprAssembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.Map__EnumValue__Unit.Repr"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.Map__EnumValue__Unit.Repr"}.AssignLink(nil)
 }
 func (na *_Map__EnumValue__Unit__ReprAssembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -11524,7 +11524,7 @@ func (n Map__FieldName__StructField) LookupByNode(k ipld.Node) (ipld.Node, error
 	return v, nil
 }
 func (Map__FieldName__StructField) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.Map__FieldName__StructField"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.Map__FieldName__StructField"}.LookupByIndex(0)
 }
 func (n Map__FieldName__StructField) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -11565,22 +11565,22 @@ func (Map__FieldName__StructField) IsNull() bool {
 	return false
 }
 func (Map__FieldName__StructField) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.Map__FieldName__StructField"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.Map__FieldName__StructField"}.AsBool()
 }
 func (Map__FieldName__StructField) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.Map__FieldName__StructField"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.Map__FieldName__StructField"}.AsInt()
 }
 func (Map__FieldName__StructField) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.Map__FieldName__StructField"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.Map__FieldName__StructField"}.AsFloat()
 }
 func (Map__FieldName__StructField) AsString() (string, error) {
-	return mixins.Map{"schemadmt.Map__FieldName__StructField"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.Map__FieldName__StructField"}.AsString()
 }
 func (Map__FieldName__StructField) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.Map__FieldName__StructField"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.Map__FieldName__StructField"}.AsBytes()
 }
 func (Map__FieldName__StructField) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.Map__FieldName__StructField"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.Map__FieldName__StructField"}.AsLink()
 }
 func (Map__FieldName__StructField) Prototype() ipld.NodePrototype {
 	return _Map__FieldName__StructField__Prototype{}
@@ -11641,7 +11641,7 @@ func (na *_Map__FieldName__StructField__Assembler) BeginMap(sizeHint int64) (ipl
 	return na, nil
 }
 func (_Map__FieldName__StructField__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.Map__FieldName__StructField"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.Map__FieldName__StructField"}.BeginList(0)
 }
 func (na *_Map__FieldName__StructField__Assembler) AssignNull() error {
 	switch *na.m {
@@ -11649,7 +11649,7 @@ func (na *_Map__FieldName__StructField__Assembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.Map__FieldName__StructField"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.Map__FieldName__StructField"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -11658,22 +11658,22 @@ func (na *_Map__FieldName__StructField__Assembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_Map__FieldName__StructField__Assembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.Map__FieldName__StructField"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.Map__FieldName__StructField"}.AssignBool(false)
 }
 func (_Map__FieldName__StructField__Assembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.Map__FieldName__StructField"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.Map__FieldName__StructField"}.AssignInt(0)
 }
 func (_Map__FieldName__StructField__Assembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.Map__FieldName__StructField"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.Map__FieldName__StructField"}.AssignFloat(0)
 }
 func (_Map__FieldName__StructField__Assembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.Map__FieldName__StructField"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.Map__FieldName__StructField"}.AssignString("")
 }
 func (_Map__FieldName__StructField__Assembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.Map__FieldName__StructField"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.Map__FieldName__StructField"}.AssignBytes(nil)
 }
 func (_Map__FieldName__StructField__Assembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.Map__FieldName__StructField"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.Map__FieldName__StructField"}.AssignLink(nil)
 }
 func (na *_Map__FieldName__StructField__Assembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -11864,7 +11864,7 @@ func (nr *_Map__FieldName__StructField__Repr) LookupByNode(k ipld.Node) (ipld.No
 	return v.(StructField).Representation(), nil
 }
 func (_Map__FieldName__StructField__Repr) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.Map__FieldName__StructField.Repr"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.Map__FieldName__StructField.Repr"}.LookupByIndex(0)
 }
 func (n _Map__FieldName__StructField__Repr) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -11899,22 +11899,22 @@ func (_Map__FieldName__StructField__Repr) IsNull() bool {
 	return false
 }
 func (_Map__FieldName__StructField__Repr) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.Map__FieldName__StructField.Repr"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.Map__FieldName__StructField.Repr"}.AsBool()
 }
 func (_Map__FieldName__StructField__Repr) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.Map__FieldName__StructField.Repr"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.Map__FieldName__StructField.Repr"}.AsInt()
 }
 func (_Map__FieldName__StructField__Repr) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.Map__FieldName__StructField.Repr"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.Map__FieldName__StructField.Repr"}.AsFloat()
 }
 func (_Map__FieldName__StructField__Repr) AsString() (string, error) {
-	return mixins.Map{"schemadmt.Map__FieldName__StructField.Repr"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.Map__FieldName__StructField.Repr"}.AsString()
 }
 func (_Map__FieldName__StructField__Repr) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.Map__FieldName__StructField.Repr"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.Map__FieldName__StructField.Repr"}.AsBytes()
 }
 func (_Map__FieldName__StructField__Repr) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.Map__FieldName__StructField.Repr"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.Map__FieldName__StructField.Repr"}.AsLink()
 }
 func (_Map__FieldName__StructField__Repr) Prototype() ipld.NodePrototype {
 	return _Map__FieldName__StructField__ReprPrototype{}
@@ -11975,7 +11975,7 @@ func (na *_Map__FieldName__StructField__ReprAssembler) BeginMap(sizeHint int64) 
 	return na, nil
 }
 func (_Map__FieldName__StructField__ReprAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.Map__FieldName__StructField.Repr"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.Map__FieldName__StructField.Repr"}.BeginList(0)
 }
 func (na *_Map__FieldName__StructField__ReprAssembler) AssignNull() error {
 	switch *na.m {
@@ -11983,7 +11983,7 @@ func (na *_Map__FieldName__StructField__ReprAssembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.Map__FieldName__StructField.Repr.Repr"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.Map__FieldName__StructField.Repr.Repr"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -11992,22 +11992,22 @@ func (na *_Map__FieldName__StructField__ReprAssembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_Map__FieldName__StructField__ReprAssembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.Map__FieldName__StructField.Repr"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.Map__FieldName__StructField.Repr"}.AssignBool(false)
 }
 func (_Map__FieldName__StructField__ReprAssembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.Map__FieldName__StructField.Repr"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.Map__FieldName__StructField.Repr"}.AssignInt(0)
 }
 func (_Map__FieldName__StructField__ReprAssembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.Map__FieldName__StructField.Repr"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.Map__FieldName__StructField.Repr"}.AssignFloat(0)
 }
 func (_Map__FieldName__StructField__ReprAssembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.Map__FieldName__StructField.Repr"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.Map__FieldName__StructField.Repr"}.AssignString("")
 }
 func (_Map__FieldName__StructField__ReprAssembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.Map__FieldName__StructField.Repr"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.Map__FieldName__StructField.Repr"}.AssignBytes(nil)
 }
 func (_Map__FieldName__StructField__ReprAssembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.Map__FieldName__StructField.Repr"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.Map__FieldName__StructField.Repr"}.AssignLink(nil)
 }
 func (na *_Map__FieldName__StructField__ReprAssembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -12277,7 +12277,7 @@ func (n Map__FieldName__StructRepresentation_Map_FieldDetails) LookupByNode(k ip
 	return v, nil
 }
 func (Map__FieldName__StructRepresentation_Map_FieldDetails) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.Map__FieldName__StructRepresentation_Map_FieldDetails"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.Map__FieldName__StructRepresentation_Map_FieldDetails"}.LookupByIndex(0)
 }
 func (n Map__FieldName__StructRepresentation_Map_FieldDetails) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -12318,22 +12318,22 @@ func (Map__FieldName__StructRepresentation_Map_FieldDetails) IsNull() bool {
 	return false
 }
 func (Map__FieldName__StructRepresentation_Map_FieldDetails) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.Map__FieldName__StructRepresentation_Map_FieldDetails"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.Map__FieldName__StructRepresentation_Map_FieldDetails"}.AsBool()
 }
 func (Map__FieldName__StructRepresentation_Map_FieldDetails) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.Map__FieldName__StructRepresentation_Map_FieldDetails"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.Map__FieldName__StructRepresentation_Map_FieldDetails"}.AsInt()
 }
 func (Map__FieldName__StructRepresentation_Map_FieldDetails) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.Map__FieldName__StructRepresentation_Map_FieldDetails"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.Map__FieldName__StructRepresentation_Map_FieldDetails"}.AsFloat()
 }
 func (Map__FieldName__StructRepresentation_Map_FieldDetails) AsString() (string, error) {
-	return mixins.Map{"schemadmt.Map__FieldName__StructRepresentation_Map_FieldDetails"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.Map__FieldName__StructRepresentation_Map_FieldDetails"}.AsString()
 }
 func (Map__FieldName__StructRepresentation_Map_FieldDetails) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.Map__FieldName__StructRepresentation_Map_FieldDetails"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.Map__FieldName__StructRepresentation_Map_FieldDetails"}.AsBytes()
 }
 func (Map__FieldName__StructRepresentation_Map_FieldDetails) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.Map__FieldName__StructRepresentation_Map_FieldDetails"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.Map__FieldName__StructRepresentation_Map_FieldDetails"}.AsLink()
 }
 func (Map__FieldName__StructRepresentation_Map_FieldDetails) Prototype() ipld.NodePrototype {
 	return _Map__FieldName__StructRepresentation_Map_FieldDetails__Prototype{}
@@ -12394,7 +12394,7 @@ func (na *_Map__FieldName__StructRepresentation_Map_FieldDetails__Assembler) Beg
 	return na, nil
 }
 func (_Map__FieldName__StructRepresentation_Map_FieldDetails__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.Map__FieldName__StructRepresentation_Map_FieldDetails"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.Map__FieldName__StructRepresentation_Map_FieldDetails"}.BeginList(0)
 }
 func (na *_Map__FieldName__StructRepresentation_Map_FieldDetails__Assembler) AssignNull() error {
 	switch *na.m {
@@ -12402,7 +12402,7 @@ func (na *_Map__FieldName__StructRepresentation_Map_FieldDetails__Assembler) Ass
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.Map__FieldName__StructRepresentation_Map_FieldDetails"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.Map__FieldName__StructRepresentation_Map_FieldDetails"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -12411,22 +12411,22 @@ func (na *_Map__FieldName__StructRepresentation_Map_FieldDetails__Assembler) Ass
 	panic("unreachable")
 }
 func (_Map__FieldName__StructRepresentation_Map_FieldDetails__Assembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.Map__FieldName__StructRepresentation_Map_FieldDetails"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.Map__FieldName__StructRepresentation_Map_FieldDetails"}.AssignBool(false)
 }
 func (_Map__FieldName__StructRepresentation_Map_FieldDetails__Assembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.Map__FieldName__StructRepresentation_Map_FieldDetails"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.Map__FieldName__StructRepresentation_Map_FieldDetails"}.AssignInt(0)
 }
 func (_Map__FieldName__StructRepresentation_Map_FieldDetails__Assembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.Map__FieldName__StructRepresentation_Map_FieldDetails"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.Map__FieldName__StructRepresentation_Map_FieldDetails"}.AssignFloat(0)
 }
 func (_Map__FieldName__StructRepresentation_Map_FieldDetails__Assembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.Map__FieldName__StructRepresentation_Map_FieldDetails"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.Map__FieldName__StructRepresentation_Map_FieldDetails"}.AssignString("")
 }
 func (_Map__FieldName__StructRepresentation_Map_FieldDetails__Assembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.Map__FieldName__StructRepresentation_Map_FieldDetails"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.Map__FieldName__StructRepresentation_Map_FieldDetails"}.AssignBytes(nil)
 }
 func (_Map__FieldName__StructRepresentation_Map_FieldDetails__Assembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.Map__FieldName__StructRepresentation_Map_FieldDetails"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.Map__FieldName__StructRepresentation_Map_FieldDetails"}.AssignLink(nil)
 }
 func (na *_Map__FieldName__StructRepresentation_Map_FieldDetails__Assembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -12617,7 +12617,7 @@ func (nr *_Map__FieldName__StructRepresentation_Map_FieldDetails__Repr) LookupBy
 	return v.(StructRepresentation_Map_FieldDetails).Representation(), nil
 }
 func (_Map__FieldName__StructRepresentation_Map_FieldDetails__Repr) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.Map__FieldName__StructRepresentation_Map_FieldDetails.Repr"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.Map__FieldName__StructRepresentation_Map_FieldDetails.Repr"}.LookupByIndex(0)
 }
 func (n _Map__FieldName__StructRepresentation_Map_FieldDetails__Repr) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -12652,22 +12652,22 @@ func (_Map__FieldName__StructRepresentation_Map_FieldDetails__Repr) IsNull() boo
 	return false
 }
 func (_Map__FieldName__StructRepresentation_Map_FieldDetails__Repr) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.Map__FieldName__StructRepresentation_Map_FieldDetails.Repr"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.Map__FieldName__StructRepresentation_Map_FieldDetails.Repr"}.AsBool()
 }
 func (_Map__FieldName__StructRepresentation_Map_FieldDetails__Repr) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.Map__FieldName__StructRepresentation_Map_FieldDetails.Repr"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.Map__FieldName__StructRepresentation_Map_FieldDetails.Repr"}.AsInt()
 }
 func (_Map__FieldName__StructRepresentation_Map_FieldDetails__Repr) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.Map__FieldName__StructRepresentation_Map_FieldDetails.Repr"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.Map__FieldName__StructRepresentation_Map_FieldDetails.Repr"}.AsFloat()
 }
 func (_Map__FieldName__StructRepresentation_Map_FieldDetails__Repr) AsString() (string, error) {
-	return mixins.Map{"schemadmt.Map__FieldName__StructRepresentation_Map_FieldDetails.Repr"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.Map__FieldName__StructRepresentation_Map_FieldDetails.Repr"}.AsString()
 }
 func (_Map__FieldName__StructRepresentation_Map_FieldDetails__Repr) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.Map__FieldName__StructRepresentation_Map_FieldDetails.Repr"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.Map__FieldName__StructRepresentation_Map_FieldDetails.Repr"}.AsBytes()
 }
 func (_Map__FieldName__StructRepresentation_Map_FieldDetails__Repr) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.Map__FieldName__StructRepresentation_Map_FieldDetails.Repr"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.Map__FieldName__StructRepresentation_Map_FieldDetails.Repr"}.AsLink()
 }
 func (_Map__FieldName__StructRepresentation_Map_FieldDetails__Repr) Prototype() ipld.NodePrototype {
 	return _Map__FieldName__StructRepresentation_Map_FieldDetails__ReprPrototype{}
@@ -12728,7 +12728,7 @@ func (na *_Map__FieldName__StructRepresentation_Map_FieldDetails__ReprAssembler)
 	return na, nil
 }
 func (_Map__FieldName__StructRepresentation_Map_FieldDetails__ReprAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.Map__FieldName__StructRepresentation_Map_FieldDetails.Repr"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.Map__FieldName__StructRepresentation_Map_FieldDetails.Repr"}.BeginList(0)
 }
 func (na *_Map__FieldName__StructRepresentation_Map_FieldDetails__ReprAssembler) AssignNull() error {
 	switch *na.m {
@@ -12736,7 +12736,7 @@ func (na *_Map__FieldName__StructRepresentation_Map_FieldDetails__ReprAssembler)
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.Map__FieldName__StructRepresentation_Map_FieldDetails.Repr.Repr"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.Map__FieldName__StructRepresentation_Map_FieldDetails.Repr.Repr"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -12745,22 +12745,22 @@ func (na *_Map__FieldName__StructRepresentation_Map_FieldDetails__ReprAssembler)
 	panic("unreachable")
 }
 func (_Map__FieldName__StructRepresentation_Map_FieldDetails__ReprAssembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.Map__FieldName__StructRepresentation_Map_FieldDetails.Repr"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.Map__FieldName__StructRepresentation_Map_FieldDetails.Repr"}.AssignBool(false)
 }
 func (_Map__FieldName__StructRepresentation_Map_FieldDetails__ReprAssembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.Map__FieldName__StructRepresentation_Map_FieldDetails.Repr"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.Map__FieldName__StructRepresentation_Map_FieldDetails.Repr"}.AssignInt(0)
 }
 func (_Map__FieldName__StructRepresentation_Map_FieldDetails__ReprAssembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.Map__FieldName__StructRepresentation_Map_FieldDetails.Repr"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.Map__FieldName__StructRepresentation_Map_FieldDetails.Repr"}.AssignFloat(0)
 }
 func (_Map__FieldName__StructRepresentation_Map_FieldDetails__ReprAssembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.Map__FieldName__StructRepresentation_Map_FieldDetails.Repr"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.Map__FieldName__StructRepresentation_Map_FieldDetails.Repr"}.AssignString("")
 }
 func (_Map__FieldName__StructRepresentation_Map_FieldDetails__ReprAssembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.Map__FieldName__StructRepresentation_Map_FieldDetails.Repr"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.Map__FieldName__StructRepresentation_Map_FieldDetails.Repr"}.AssignBytes(nil)
 }
 func (_Map__FieldName__StructRepresentation_Map_FieldDetails__ReprAssembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.Map__FieldName__StructRepresentation_Map_FieldDetails.Repr"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.Map__FieldName__StructRepresentation_Map_FieldDetails.Repr"}.AssignLink(nil)
 }
 func (na *_Map__FieldName__StructRepresentation_Map_FieldDetails__ReprAssembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -13030,7 +13030,7 @@ func (n Map__String__TypeName) LookupByNode(k ipld.Node) (ipld.Node, error) {
 	return v, nil
 }
 func (Map__String__TypeName) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.Map__String__TypeName"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.Map__String__TypeName"}.LookupByIndex(0)
 }
 func (n Map__String__TypeName) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -13071,22 +13071,22 @@ func (Map__String__TypeName) IsNull() bool {
 	return false
 }
 func (Map__String__TypeName) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.Map__String__TypeName"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.Map__String__TypeName"}.AsBool()
 }
 func (Map__String__TypeName) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.Map__String__TypeName"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.Map__String__TypeName"}.AsInt()
 }
 func (Map__String__TypeName) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.Map__String__TypeName"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.Map__String__TypeName"}.AsFloat()
 }
 func (Map__String__TypeName) AsString() (string, error) {
-	return mixins.Map{"schemadmt.Map__String__TypeName"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.Map__String__TypeName"}.AsString()
 }
 func (Map__String__TypeName) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.Map__String__TypeName"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.Map__String__TypeName"}.AsBytes()
 }
 func (Map__String__TypeName) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.Map__String__TypeName"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.Map__String__TypeName"}.AsLink()
 }
 func (Map__String__TypeName) Prototype() ipld.NodePrototype {
 	return _Map__String__TypeName__Prototype{}
@@ -13147,7 +13147,7 @@ func (na *_Map__String__TypeName__Assembler) BeginMap(sizeHint int64) (ipld.MapA
 	return na, nil
 }
 func (_Map__String__TypeName__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.Map__String__TypeName"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.Map__String__TypeName"}.BeginList(0)
 }
 func (na *_Map__String__TypeName__Assembler) AssignNull() error {
 	switch *na.m {
@@ -13155,7 +13155,7 @@ func (na *_Map__String__TypeName__Assembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.Map__String__TypeName"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.Map__String__TypeName"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -13164,22 +13164,22 @@ func (na *_Map__String__TypeName__Assembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_Map__String__TypeName__Assembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.Map__String__TypeName"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.Map__String__TypeName"}.AssignBool(false)
 }
 func (_Map__String__TypeName__Assembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.Map__String__TypeName"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.Map__String__TypeName"}.AssignInt(0)
 }
 func (_Map__String__TypeName__Assembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.Map__String__TypeName"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.Map__String__TypeName"}.AssignFloat(0)
 }
 func (_Map__String__TypeName__Assembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.Map__String__TypeName"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.Map__String__TypeName"}.AssignString("")
 }
 func (_Map__String__TypeName__Assembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.Map__String__TypeName"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.Map__String__TypeName"}.AssignBytes(nil)
 }
 func (_Map__String__TypeName__Assembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.Map__String__TypeName"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.Map__String__TypeName"}.AssignLink(nil)
 }
 func (na *_Map__String__TypeName__Assembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -13370,7 +13370,7 @@ func (nr *_Map__String__TypeName__Repr) LookupByNode(k ipld.Node) (ipld.Node, er
 	return v.(TypeName).Representation(), nil
 }
 func (_Map__String__TypeName__Repr) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.Map__String__TypeName.Repr"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.Map__String__TypeName.Repr"}.LookupByIndex(0)
 }
 func (n _Map__String__TypeName__Repr) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -13405,22 +13405,22 @@ func (_Map__String__TypeName__Repr) IsNull() bool {
 	return false
 }
 func (_Map__String__TypeName__Repr) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.Map__String__TypeName.Repr"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.Map__String__TypeName.Repr"}.AsBool()
 }
 func (_Map__String__TypeName__Repr) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.Map__String__TypeName.Repr"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.Map__String__TypeName.Repr"}.AsInt()
 }
 func (_Map__String__TypeName__Repr) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.Map__String__TypeName.Repr"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.Map__String__TypeName.Repr"}.AsFloat()
 }
 func (_Map__String__TypeName__Repr) AsString() (string, error) {
-	return mixins.Map{"schemadmt.Map__String__TypeName.Repr"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.Map__String__TypeName.Repr"}.AsString()
 }
 func (_Map__String__TypeName__Repr) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.Map__String__TypeName.Repr"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.Map__String__TypeName.Repr"}.AsBytes()
 }
 func (_Map__String__TypeName__Repr) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.Map__String__TypeName.Repr"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.Map__String__TypeName.Repr"}.AsLink()
 }
 func (_Map__String__TypeName__Repr) Prototype() ipld.NodePrototype {
 	return _Map__String__TypeName__ReprPrototype{}
@@ -13481,7 +13481,7 @@ func (na *_Map__String__TypeName__ReprAssembler) BeginMap(sizeHint int64) (ipld.
 	return na, nil
 }
 func (_Map__String__TypeName__ReprAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.Map__String__TypeName.Repr"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.Map__String__TypeName.Repr"}.BeginList(0)
 }
 func (na *_Map__String__TypeName__ReprAssembler) AssignNull() error {
 	switch *na.m {
@@ -13489,7 +13489,7 @@ func (na *_Map__String__TypeName__ReprAssembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.Map__String__TypeName.Repr.Repr"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.Map__String__TypeName.Repr.Repr"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -13498,22 +13498,22 @@ func (na *_Map__String__TypeName__ReprAssembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_Map__String__TypeName__ReprAssembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.Map__String__TypeName.Repr"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.Map__String__TypeName.Repr"}.AssignBool(false)
 }
 func (_Map__String__TypeName__ReprAssembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.Map__String__TypeName.Repr"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.Map__String__TypeName.Repr"}.AssignInt(0)
 }
 func (_Map__String__TypeName__ReprAssembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.Map__String__TypeName.Repr"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.Map__String__TypeName.Repr"}.AssignFloat(0)
 }
 func (_Map__String__TypeName__ReprAssembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.Map__String__TypeName.Repr"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.Map__String__TypeName.Repr"}.AssignString("")
 }
 func (_Map__String__TypeName__ReprAssembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.Map__String__TypeName.Repr"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.Map__String__TypeName.Repr"}.AssignBytes(nil)
 }
 func (_Map__String__TypeName__ReprAssembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.Map__String__TypeName.Repr"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.Map__String__TypeName.Repr"}.AssignLink(nil)
 }
 func (na *_Map__String__TypeName__ReprAssembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -13783,7 +13783,7 @@ func (n Map__TypeName__Int) LookupByNode(k ipld.Node) (ipld.Node, error) {
 	return v, nil
 }
 func (Map__TypeName__Int) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.Map__TypeName__Int"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.Map__TypeName__Int"}.LookupByIndex(0)
 }
 func (n Map__TypeName__Int) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -13824,22 +13824,22 @@ func (Map__TypeName__Int) IsNull() bool {
 	return false
 }
 func (Map__TypeName__Int) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.Map__TypeName__Int"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.Map__TypeName__Int"}.AsBool()
 }
 func (Map__TypeName__Int) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.Map__TypeName__Int"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.Map__TypeName__Int"}.AsInt()
 }
 func (Map__TypeName__Int) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.Map__TypeName__Int"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.Map__TypeName__Int"}.AsFloat()
 }
 func (Map__TypeName__Int) AsString() (string, error) {
-	return mixins.Map{"schemadmt.Map__TypeName__Int"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.Map__TypeName__Int"}.AsString()
 }
 func (Map__TypeName__Int) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.Map__TypeName__Int"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.Map__TypeName__Int"}.AsBytes()
 }
 func (Map__TypeName__Int) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.Map__TypeName__Int"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.Map__TypeName__Int"}.AsLink()
 }
 func (Map__TypeName__Int) Prototype() ipld.NodePrototype {
 	return _Map__TypeName__Int__Prototype{}
@@ -13900,7 +13900,7 @@ func (na *_Map__TypeName__Int__Assembler) BeginMap(sizeHint int64) (ipld.MapAsse
 	return na, nil
 }
 func (_Map__TypeName__Int__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.Map__TypeName__Int"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.Map__TypeName__Int"}.BeginList(0)
 }
 func (na *_Map__TypeName__Int__Assembler) AssignNull() error {
 	switch *na.m {
@@ -13908,7 +13908,7 @@ func (na *_Map__TypeName__Int__Assembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.Map__TypeName__Int"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.Map__TypeName__Int"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -13917,22 +13917,22 @@ func (na *_Map__TypeName__Int__Assembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_Map__TypeName__Int__Assembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.Map__TypeName__Int"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.Map__TypeName__Int"}.AssignBool(false)
 }
 func (_Map__TypeName__Int__Assembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.Map__TypeName__Int"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.Map__TypeName__Int"}.AssignInt(0)
 }
 func (_Map__TypeName__Int__Assembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.Map__TypeName__Int"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.Map__TypeName__Int"}.AssignFloat(0)
 }
 func (_Map__TypeName__Int__Assembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.Map__TypeName__Int"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.Map__TypeName__Int"}.AssignString("")
 }
 func (_Map__TypeName__Int__Assembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.Map__TypeName__Int"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.Map__TypeName__Int"}.AssignBytes(nil)
 }
 func (_Map__TypeName__Int__Assembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.Map__TypeName__Int"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.Map__TypeName__Int"}.AssignLink(nil)
 }
 func (na *_Map__TypeName__Int__Assembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -14123,7 +14123,7 @@ func (nr *_Map__TypeName__Int__Repr) LookupByNode(k ipld.Node) (ipld.Node, error
 	return v.(Int).Representation(), nil
 }
 func (_Map__TypeName__Int__Repr) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.Map__TypeName__Int.Repr"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.Map__TypeName__Int.Repr"}.LookupByIndex(0)
 }
 func (n _Map__TypeName__Int__Repr) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -14158,22 +14158,22 @@ func (_Map__TypeName__Int__Repr) IsNull() bool {
 	return false
 }
 func (_Map__TypeName__Int__Repr) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.Map__TypeName__Int.Repr"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.Map__TypeName__Int.Repr"}.AsBool()
 }
 func (_Map__TypeName__Int__Repr) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.Map__TypeName__Int.Repr"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.Map__TypeName__Int.Repr"}.AsInt()
 }
 func (_Map__TypeName__Int__Repr) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.Map__TypeName__Int.Repr"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.Map__TypeName__Int.Repr"}.AsFloat()
 }
 func (_Map__TypeName__Int__Repr) AsString() (string, error) {
-	return mixins.Map{"schemadmt.Map__TypeName__Int.Repr"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.Map__TypeName__Int.Repr"}.AsString()
 }
 func (_Map__TypeName__Int__Repr) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.Map__TypeName__Int.Repr"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.Map__TypeName__Int.Repr"}.AsBytes()
 }
 func (_Map__TypeName__Int__Repr) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.Map__TypeName__Int.Repr"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.Map__TypeName__Int.Repr"}.AsLink()
 }
 func (_Map__TypeName__Int__Repr) Prototype() ipld.NodePrototype {
 	return _Map__TypeName__Int__ReprPrototype{}
@@ -14234,7 +14234,7 @@ func (na *_Map__TypeName__Int__ReprAssembler) BeginMap(sizeHint int64) (ipld.Map
 	return na, nil
 }
 func (_Map__TypeName__Int__ReprAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.Map__TypeName__Int.Repr"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.Map__TypeName__Int.Repr"}.BeginList(0)
 }
 func (na *_Map__TypeName__Int__ReprAssembler) AssignNull() error {
 	switch *na.m {
@@ -14242,7 +14242,7 @@ func (na *_Map__TypeName__Int__ReprAssembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.Map__TypeName__Int.Repr.Repr"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.Map__TypeName__Int.Repr.Repr"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -14251,22 +14251,22 @@ func (na *_Map__TypeName__Int__ReprAssembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_Map__TypeName__Int__ReprAssembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.Map__TypeName__Int.Repr"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.Map__TypeName__Int.Repr"}.AssignBool(false)
 }
 func (_Map__TypeName__Int__ReprAssembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.Map__TypeName__Int.Repr"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.Map__TypeName__Int.Repr"}.AssignInt(0)
 }
 func (_Map__TypeName__Int__ReprAssembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.Map__TypeName__Int.Repr"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.Map__TypeName__Int.Repr"}.AssignFloat(0)
 }
 func (_Map__TypeName__Int__ReprAssembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.Map__TypeName__Int.Repr"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.Map__TypeName__Int.Repr"}.AssignString("")
 }
 func (_Map__TypeName__Int__ReprAssembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.Map__TypeName__Int.Repr"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.Map__TypeName__Int.Repr"}.AssignBytes(nil)
 }
 func (_Map__TypeName__Int__ReprAssembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.Map__TypeName__Int.Repr"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.Map__TypeName__Int.Repr"}.AssignLink(nil)
 }
 func (na *_Map__TypeName__Int__ReprAssembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -14482,16 +14482,16 @@ func (RepresentationKind) Kind() ipld.Kind {
 	return ipld.Kind_String
 }
 func (RepresentationKind) LookupByString(string) (ipld.Node, error) {
-	return mixins.String{"schemadmt.RepresentationKind"}.LookupByString("")
+	return mixins.String{TypeName: "schemadmt.RepresentationKind"}.LookupByString("")
 }
 func (RepresentationKind) LookupByNode(ipld.Node) (ipld.Node, error) {
-	return mixins.String{"schemadmt.RepresentationKind"}.LookupByNode(nil)
+	return mixins.String{TypeName: "schemadmt.RepresentationKind"}.LookupByNode(nil)
 }
 func (RepresentationKind) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.String{"schemadmt.RepresentationKind"}.LookupByIndex(0)
+	return mixins.String{TypeName: "schemadmt.RepresentationKind"}.LookupByIndex(0)
 }
 func (RepresentationKind) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
-	return mixins.String{"schemadmt.RepresentationKind"}.LookupBySegment(seg)
+	return mixins.String{TypeName: "schemadmt.RepresentationKind"}.LookupBySegment(seg)
 }
 func (RepresentationKind) MapIterator() ipld.MapIterator {
 	return nil
@@ -14509,22 +14509,22 @@ func (RepresentationKind) IsNull() bool {
 	return false
 }
 func (RepresentationKind) AsBool() (bool, error) {
-	return mixins.String{"schemadmt.RepresentationKind"}.AsBool()
+	return mixins.String{TypeName: "schemadmt.RepresentationKind"}.AsBool()
 }
 func (RepresentationKind) AsInt() (int64, error) {
-	return mixins.String{"schemadmt.RepresentationKind"}.AsInt()
+	return mixins.String{TypeName: "schemadmt.RepresentationKind"}.AsInt()
 }
 func (RepresentationKind) AsFloat() (float64, error) {
-	return mixins.String{"schemadmt.RepresentationKind"}.AsFloat()
+	return mixins.String{TypeName: "schemadmt.RepresentationKind"}.AsFloat()
 }
 func (n RepresentationKind) AsString() (string, error) {
 	return n.x, nil
 }
 func (RepresentationKind) AsBytes() ([]byte, error) {
-	return mixins.String{"schemadmt.RepresentationKind"}.AsBytes()
+	return mixins.String{TypeName: "schemadmt.RepresentationKind"}.AsBytes()
 }
 func (RepresentationKind) AsLink() (ipld.Link, error) {
-	return mixins.String{"schemadmt.RepresentationKind"}.AsLink()
+	return mixins.String{TypeName: "schemadmt.RepresentationKind"}.AsLink()
 }
 func (RepresentationKind) Prototype() ipld.NodePrototype {
 	return _RepresentationKind__Prototype{}
@@ -14561,10 +14561,10 @@ type _RepresentationKind__Assembler struct {
 
 func (na *_RepresentationKind__Assembler) reset() {}
 func (_RepresentationKind__Assembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.RepresentationKind"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.RepresentationKind"}.BeginMap(0)
 }
 func (_RepresentationKind__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.RepresentationKind"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.RepresentationKind"}.BeginList(0)
 }
 func (na *_RepresentationKind__Assembler) AssignNull() error {
 	switch *na.m {
@@ -14572,20 +14572,20 @@ func (na *_RepresentationKind__Assembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.StringAssembler{"schemadmt.RepresentationKind"}.AssignNull()
+		return mixins.StringAssembler{TypeName: "schemadmt.RepresentationKind"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	}
 	panic("unreachable")
 }
 func (_RepresentationKind__Assembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.RepresentationKind"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.RepresentationKind"}.AssignBool(false)
 }
 func (_RepresentationKind__Assembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.RepresentationKind"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.RepresentationKind"}.AssignInt(0)
 }
 func (_RepresentationKind__Assembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.RepresentationKind"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.RepresentationKind"}.AssignFloat(0)
 }
 func (na *_RepresentationKind__Assembler) AssignString(v string) error {
 	switch *na.m {
@@ -14597,10 +14597,10 @@ func (na *_RepresentationKind__Assembler) AssignString(v string) error {
 	return nil
 }
 func (_RepresentationKind__Assembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.RepresentationKind"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.RepresentationKind"}.AssignBytes(nil)
 }
 func (_RepresentationKind__Assembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.RepresentationKind"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.RepresentationKind"}.AssignLink(nil)
 }
 func (na *_RepresentationKind__Assembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -14701,7 +14701,7 @@ func (n Schema) LookupByNode(key ipld.Node) (ipld.Node, error) {
 	return n.LookupByString(ks)
 }
 func (Schema) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.Schema"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.Schema"}.LookupByIndex(0)
 }
 func (n Schema) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -14746,22 +14746,22 @@ func (Schema) IsNull() bool {
 	return false
 }
 func (Schema) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.Schema"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.Schema"}.AsBool()
 }
 func (Schema) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.Schema"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.Schema"}.AsInt()
 }
 func (Schema) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.Schema"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.Schema"}.AsFloat()
 }
 func (Schema) AsString() (string, error) {
-	return mixins.Map{"schemadmt.Schema"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.Schema"}.AsString()
 }
 func (Schema) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.Schema"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.Schema"}.AsBytes()
 }
 func (Schema) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.Schema"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.Schema"}.AsLink()
 }
 func (Schema) Prototype() ipld.NodePrototype {
 	return _Schema__Prototype{}
@@ -14827,7 +14827,7 @@ func (na *_Schema__Assembler) BeginMap(int64) (ipld.MapAssembler, error) {
 	return na, nil
 }
 func (_Schema__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.Schema"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.Schema"}.BeginList(0)
 }
 func (na *_Schema__Assembler) AssignNull() error {
 	switch *na.m {
@@ -14835,7 +14835,7 @@ func (na *_Schema__Assembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.Schema"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.Schema"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -14844,22 +14844,22 @@ func (na *_Schema__Assembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_Schema__Assembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.Schema"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.Schema"}.AssignBool(false)
 }
 func (_Schema__Assembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.Schema"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.Schema"}.AssignInt(0)
 }
 func (_Schema__Assembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.Schema"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.Schema"}.AssignFloat(0)
 }
 func (_Schema__Assembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.Schema"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.Schema"}.AssignString("")
 }
 func (_Schema__Assembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.Schema"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.Schema"}.AssignBytes(nil)
 }
 func (_Schema__Assembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.Schema"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.Schema"}.AssignLink(nil)
 }
 func (na *_Schema__Assembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -15024,22 +15024,22 @@ func (ma *_Schema__Assembler) ValuePrototype(k string) ipld.NodePrototype {
 type _Schema__KeyAssembler _Schema__Assembler
 
 func (_Schema__KeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.Schema.KeyAssembler"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.Schema.KeyAssembler"}.BeginMap(0)
 }
 func (_Schema__KeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.Schema.KeyAssembler"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.Schema.KeyAssembler"}.BeginList(0)
 }
 func (na *_Schema__KeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"schemadmt.Schema.KeyAssembler"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "schemadmt.Schema.KeyAssembler"}.AssignNull()
 }
 func (_Schema__KeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.Schema.KeyAssembler"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.Schema.KeyAssembler"}.AssignBool(false)
 }
 func (_Schema__KeyAssembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.Schema.KeyAssembler"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.Schema.KeyAssembler"}.AssignInt(0)
 }
 func (_Schema__KeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.Schema.KeyAssembler"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.Schema.KeyAssembler"}.AssignFloat(0)
 }
 func (ka *_Schema__KeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
@@ -15059,10 +15059,10 @@ func (ka *_Schema__KeyAssembler) AssignString(k string) error {
 	return nil
 }
 func (_Schema__KeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.Schema.KeyAssembler"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.Schema.KeyAssembler"}.AssignBytes(nil)
 }
 func (_Schema__KeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.Schema.KeyAssembler"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.Schema.KeyAssembler"}.AssignLink(nil)
 }
 func (ka *_Schema__KeyAssembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
@@ -15107,7 +15107,7 @@ func (n *_Schema__Repr) LookupByNode(key ipld.Node) (ipld.Node, error) {
 	return n.LookupByString(ks)
 }
 func (_Schema__Repr) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.Schema.Repr"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.Schema.Repr"}.LookupByIndex(0)
 }
 func (n _Schema__Repr) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -15152,22 +15152,22 @@ func (_Schema__Repr) IsNull() bool {
 	return false
 }
 func (_Schema__Repr) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.Schema.Repr"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.Schema.Repr"}.AsBool()
 }
 func (_Schema__Repr) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.Schema.Repr"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.Schema.Repr"}.AsInt()
 }
 func (_Schema__Repr) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.Schema.Repr"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.Schema.Repr"}.AsFloat()
 }
 func (_Schema__Repr) AsString() (string, error) {
-	return mixins.Map{"schemadmt.Schema.Repr"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.Schema.Repr"}.AsString()
 }
 func (_Schema__Repr) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.Schema.Repr"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.Schema.Repr"}.AsBytes()
 }
 func (_Schema__Repr) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.Schema.Repr"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.Schema.Repr"}.AsLink()
 }
 func (_Schema__Repr) Prototype() ipld.NodePrototype {
 	return _Schema__ReprPrototype{}
@@ -15227,7 +15227,7 @@ func (na *_Schema__ReprAssembler) BeginMap(int64) (ipld.MapAssembler, error) {
 	return na, nil
 }
 func (_Schema__ReprAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.Schema.Repr"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.Schema.Repr"}.BeginList(0)
 }
 func (na *_Schema__ReprAssembler) AssignNull() error {
 	switch *na.m {
@@ -15235,7 +15235,7 @@ func (na *_Schema__ReprAssembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.Schema.Repr.Repr"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.Schema.Repr.Repr"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -15244,22 +15244,22 @@ func (na *_Schema__ReprAssembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_Schema__ReprAssembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.Schema.Repr"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.Schema.Repr"}.AssignBool(false)
 }
 func (_Schema__ReprAssembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.Schema.Repr"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.Schema.Repr"}.AssignInt(0)
 }
 func (_Schema__ReprAssembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.Schema.Repr"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.Schema.Repr"}.AssignFloat(0)
 }
 func (_Schema__ReprAssembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.Schema.Repr"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.Schema.Repr"}.AssignString("")
 }
 func (_Schema__ReprAssembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.Schema.Repr"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.Schema.Repr"}.AssignBytes(nil)
 }
 func (_Schema__ReprAssembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.Schema.Repr"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.Schema.Repr"}.AssignLink(nil)
 }
 func (na *_Schema__ReprAssembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -15424,22 +15424,22 @@ func (ma *_Schema__ReprAssembler) ValuePrototype(k string) ipld.NodePrototype {
 type _Schema__ReprKeyAssembler _Schema__ReprAssembler
 
 func (_Schema__ReprKeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.Schema.Repr.KeyAssembler"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.Schema.Repr.KeyAssembler"}.BeginMap(0)
 }
 func (_Schema__ReprKeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.Schema.Repr.KeyAssembler"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.Schema.Repr.KeyAssembler"}.BeginList(0)
 }
 func (na *_Schema__ReprKeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"schemadmt.Schema.Repr.KeyAssembler"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "schemadmt.Schema.Repr.KeyAssembler"}.AssignNull()
 }
 func (_Schema__ReprKeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.Schema.Repr.KeyAssembler"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.Schema.Repr.KeyAssembler"}.AssignBool(false)
 }
 func (_Schema__ReprKeyAssembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.Schema.Repr.KeyAssembler"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.Schema.Repr.KeyAssembler"}.AssignInt(0)
 }
 func (_Schema__ReprKeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.Schema.Repr.KeyAssembler"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.Schema.Repr.KeyAssembler"}.AssignFloat(0)
 }
 func (ka *_Schema__ReprKeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
@@ -15458,10 +15458,10 @@ func (ka *_Schema__ReprKeyAssembler) AssignString(k string) error {
 	return ipld.ErrInvalidKey{TypeName: "schemadmt.Schema.Repr", Key: &_String{k}}
 }
 func (_Schema__ReprKeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.Schema.Repr.KeyAssembler"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.Schema.Repr.KeyAssembler"}.AssignBytes(nil)
 }
 func (_Schema__ReprKeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.Schema.Repr.KeyAssembler"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.Schema.Repr.KeyAssembler"}.AssignLink(nil)
 }
 func (ka *_Schema__ReprKeyAssembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
@@ -15581,7 +15581,7 @@ func (n SchemaMap) LookupByNode(k ipld.Node) (ipld.Node, error) {
 	return v, nil
 }
 func (SchemaMap) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.SchemaMap"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.SchemaMap"}.LookupByIndex(0)
 }
 func (n SchemaMap) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -15622,22 +15622,22 @@ func (SchemaMap) IsNull() bool {
 	return false
 }
 func (SchemaMap) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.SchemaMap"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.SchemaMap"}.AsBool()
 }
 func (SchemaMap) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.SchemaMap"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.SchemaMap"}.AsInt()
 }
 func (SchemaMap) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.SchemaMap"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.SchemaMap"}.AsFloat()
 }
 func (SchemaMap) AsString() (string, error) {
-	return mixins.Map{"schemadmt.SchemaMap"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.SchemaMap"}.AsString()
 }
 func (SchemaMap) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.SchemaMap"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.SchemaMap"}.AsBytes()
 }
 func (SchemaMap) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.SchemaMap"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.SchemaMap"}.AsLink()
 }
 func (SchemaMap) Prototype() ipld.NodePrototype {
 	return _SchemaMap__Prototype{}
@@ -15698,7 +15698,7 @@ func (na *_SchemaMap__Assembler) BeginMap(sizeHint int64) (ipld.MapAssembler, er
 	return na, nil
 }
 func (_SchemaMap__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.SchemaMap"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.SchemaMap"}.BeginList(0)
 }
 func (na *_SchemaMap__Assembler) AssignNull() error {
 	switch *na.m {
@@ -15706,7 +15706,7 @@ func (na *_SchemaMap__Assembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.SchemaMap"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.SchemaMap"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -15715,22 +15715,22 @@ func (na *_SchemaMap__Assembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_SchemaMap__Assembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.SchemaMap"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.SchemaMap"}.AssignBool(false)
 }
 func (_SchemaMap__Assembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.SchemaMap"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.SchemaMap"}.AssignInt(0)
 }
 func (_SchemaMap__Assembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.SchemaMap"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.SchemaMap"}.AssignFloat(0)
 }
 func (_SchemaMap__Assembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.SchemaMap"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.SchemaMap"}.AssignString("")
 }
 func (_SchemaMap__Assembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.SchemaMap"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.SchemaMap"}.AssignBytes(nil)
 }
 func (_SchemaMap__Assembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.SchemaMap"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.SchemaMap"}.AssignLink(nil)
 }
 func (na *_SchemaMap__Assembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -15921,7 +15921,7 @@ func (nr *_SchemaMap__Repr) LookupByNode(k ipld.Node) (ipld.Node, error) {
 	return v.(TypeDefn).Representation(), nil
 }
 func (_SchemaMap__Repr) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.SchemaMap.Repr"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.SchemaMap.Repr"}.LookupByIndex(0)
 }
 func (n _SchemaMap__Repr) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -15956,22 +15956,22 @@ func (_SchemaMap__Repr) IsNull() bool {
 	return false
 }
 func (_SchemaMap__Repr) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.SchemaMap.Repr"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.SchemaMap.Repr"}.AsBool()
 }
 func (_SchemaMap__Repr) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.SchemaMap.Repr"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.SchemaMap.Repr"}.AsInt()
 }
 func (_SchemaMap__Repr) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.SchemaMap.Repr"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.SchemaMap.Repr"}.AsFloat()
 }
 func (_SchemaMap__Repr) AsString() (string, error) {
-	return mixins.Map{"schemadmt.SchemaMap.Repr"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.SchemaMap.Repr"}.AsString()
 }
 func (_SchemaMap__Repr) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.SchemaMap.Repr"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.SchemaMap.Repr"}.AsBytes()
 }
 func (_SchemaMap__Repr) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.SchemaMap.Repr"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.SchemaMap.Repr"}.AsLink()
 }
 func (_SchemaMap__Repr) Prototype() ipld.NodePrototype {
 	return _SchemaMap__ReprPrototype{}
@@ -16032,7 +16032,7 @@ func (na *_SchemaMap__ReprAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler
 	return na, nil
 }
 func (_SchemaMap__ReprAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.SchemaMap.Repr"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.SchemaMap.Repr"}.BeginList(0)
 }
 func (na *_SchemaMap__ReprAssembler) AssignNull() error {
 	switch *na.m {
@@ -16040,7 +16040,7 @@ func (na *_SchemaMap__ReprAssembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.SchemaMap.Repr.Repr"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.SchemaMap.Repr.Repr"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -16049,22 +16049,22 @@ func (na *_SchemaMap__ReprAssembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_SchemaMap__ReprAssembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.SchemaMap.Repr"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.SchemaMap.Repr"}.AssignBool(false)
 }
 func (_SchemaMap__ReprAssembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.SchemaMap.Repr"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.SchemaMap.Repr"}.AssignInt(0)
 }
 func (_SchemaMap__ReprAssembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.SchemaMap.Repr"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.SchemaMap.Repr"}.AssignFloat(0)
 }
 func (_SchemaMap__ReprAssembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.SchemaMap.Repr"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.SchemaMap.Repr"}.AssignString("")
 }
 func (_SchemaMap__ReprAssembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.SchemaMap.Repr"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.SchemaMap.Repr"}.AssignBytes(nil)
 }
 func (_SchemaMap__ReprAssembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.SchemaMap.Repr"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.SchemaMap.Repr"}.AssignLink(nil)
 }
 func (na *_SchemaMap__ReprAssembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -16280,16 +16280,16 @@ func (String) Kind() ipld.Kind {
 	return ipld.Kind_String
 }
 func (String) LookupByString(string) (ipld.Node, error) {
-	return mixins.String{"schemadmt.String"}.LookupByString("")
+	return mixins.String{TypeName: "schemadmt.String"}.LookupByString("")
 }
 func (String) LookupByNode(ipld.Node) (ipld.Node, error) {
-	return mixins.String{"schemadmt.String"}.LookupByNode(nil)
+	return mixins.String{TypeName: "schemadmt.String"}.LookupByNode(nil)
 }
 func (String) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.String{"schemadmt.String"}.LookupByIndex(0)
+	return mixins.String{TypeName: "schemadmt.String"}.LookupByIndex(0)
 }
 func (String) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
-	return mixins.String{"schemadmt.String"}.LookupBySegment(seg)
+	return mixins.String{TypeName: "schemadmt.String"}.LookupBySegment(seg)
 }
 func (String) MapIterator() ipld.MapIterator {
 	return nil
@@ -16307,22 +16307,22 @@ func (String) IsNull() bool {
 	return false
 }
 func (String) AsBool() (bool, error) {
-	return mixins.String{"schemadmt.String"}.AsBool()
+	return mixins.String{TypeName: "schemadmt.String"}.AsBool()
 }
 func (String) AsInt() (int64, error) {
-	return mixins.String{"schemadmt.String"}.AsInt()
+	return mixins.String{TypeName: "schemadmt.String"}.AsInt()
 }
 func (String) AsFloat() (float64, error) {
-	return mixins.String{"schemadmt.String"}.AsFloat()
+	return mixins.String{TypeName: "schemadmt.String"}.AsFloat()
 }
 func (n String) AsString() (string, error) {
 	return n.x, nil
 }
 func (String) AsBytes() ([]byte, error) {
-	return mixins.String{"schemadmt.String"}.AsBytes()
+	return mixins.String{TypeName: "schemadmt.String"}.AsBytes()
 }
 func (String) AsLink() (ipld.Link, error) {
-	return mixins.String{"schemadmt.String"}.AsLink()
+	return mixins.String{TypeName: "schemadmt.String"}.AsLink()
 }
 func (String) Prototype() ipld.NodePrototype {
 	return _String__Prototype{}
@@ -16359,10 +16359,10 @@ type _String__Assembler struct {
 
 func (na *_String__Assembler) reset() {}
 func (_String__Assembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.String"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.String"}.BeginMap(0)
 }
 func (_String__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.String"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.String"}.BeginList(0)
 }
 func (na *_String__Assembler) AssignNull() error {
 	switch *na.m {
@@ -16370,20 +16370,20 @@ func (na *_String__Assembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.StringAssembler{"schemadmt.String"}.AssignNull()
+		return mixins.StringAssembler{TypeName: "schemadmt.String"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	}
 	panic("unreachable")
 }
 func (_String__Assembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.String"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.String"}.AssignBool(false)
 }
 func (_String__Assembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.String"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.String"}.AssignInt(0)
 }
 func (_String__Assembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.String"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.String"}.AssignFloat(0)
 }
 func (na *_String__Assembler) AssignString(v string) error {
 	switch *na.m {
@@ -16395,10 +16395,10 @@ func (na *_String__Assembler) AssignString(v string) error {
 	return nil
 }
 func (_String__Assembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.String"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.String"}.AssignBytes(nil)
 }
 func (_String__Assembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.String"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.String"}.AssignLink(nil)
 }
 func (na *_String__Assembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -16511,7 +16511,7 @@ func (n StructField) LookupByNode(key ipld.Node) (ipld.Node, error) {
 	return n.LookupByString(ks)
 }
 func (StructField) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.StructField"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.StructField"}.LookupByIndex(0)
 }
 func (n StructField) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -16562,22 +16562,22 @@ func (StructField) IsNull() bool {
 	return false
 }
 func (StructField) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.StructField"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.StructField"}.AsBool()
 }
 func (StructField) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.StructField"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.StructField"}.AsInt()
 }
 func (StructField) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.StructField"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.StructField"}.AsFloat()
 }
 func (StructField) AsString() (string, error) {
-	return mixins.Map{"schemadmt.StructField"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.StructField"}.AsString()
 }
 func (StructField) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.StructField"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.StructField"}.AsBytes()
 }
 func (StructField) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.StructField"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.StructField"}.AsLink()
 }
 func (StructField) Prototype() ipld.NodePrototype {
 	return _StructField__Prototype{}
@@ -16649,7 +16649,7 @@ func (na *_StructField__Assembler) BeginMap(int64) (ipld.MapAssembler, error) {
 	return na, nil
 }
 func (_StructField__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.StructField"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructField"}.BeginList(0)
 }
 func (na *_StructField__Assembler) AssignNull() error {
 	switch *na.m {
@@ -16657,7 +16657,7 @@ func (na *_StructField__Assembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.StructField"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.StructField"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -16666,22 +16666,22 @@ func (na *_StructField__Assembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_StructField__Assembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.StructField"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructField"}.AssignBool(false)
 }
 func (_StructField__Assembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.StructField"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructField"}.AssignInt(0)
 }
 func (_StructField__Assembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.StructField"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructField"}.AssignFloat(0)
 }
 func (_StructField__Assembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.StructField"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.StructField"}.AssignString("")
 }
 func (_StructField__Assembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.StructField"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructField"}.AssignBytes(nil)
 }
 func (_StructField__Assembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.StructField"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructField"}.AssignLink(nil)
 }
 func (na *_StructField__Assembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -16900,22 +16900,22 @@ func (ma *_StructField__Assembler) ValuePrototype(k string) ipld.NodePrototype {
 type _StructField__KeyAssembler _StructField__Assembler
 
 func (_StructField__KeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.StructField.KeyAssembler"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructField.KeyAssembler"}.BeginMap(0)
 }
 func (_StructField__KeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.StructField.KeyAssembler"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructField.KeyAssembler"}.BeginList(0)
 }
 func (na *_StructField__KeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"schemadmt.StructField.KeyAssembler"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "schemadmt.StructField.KeyAssembler"}.AssignNull()
 }
 func (_StructField__KeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.StructField.KeyAssembler"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructField.KeyAssembler"}.AssignBool(false)
 }
 func (_StructField__KeyAssembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.StructField.KeyAssembler"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructField.KeyAssembler"}.AssignInt(0)
 }
 func (_StructField__KeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.StructField.KeyAssembler"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructField.KeyAssembler"}.AssignFloat(0)
 }
 func (ka *_StructField__KeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
@@ -16949,10 +16949,10 @@ func (ka *_StructField__KeyAssembler) AssignString(k string) error {
 	return nil
 }
 func (_StructField__KeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.StructField.KeyAssembler"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructField.KeyAssembler"}.AssignBytes(nil)
 }
 func (_StructField__KeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.StructField.KeyAssembler"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructField.KeyAssembler"}.AssignLink(nil)
 }
 func (ka *_StructField__KeyAssembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
@@ -17003,7 +17003,7 @@ func (n *_StructField__Repr) LookupByNode(key ipld.Node) (ipld.Node, error) {
 	return n.LookupByString(ks)
 }
 func (_StructField__Repr) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.StructField.Repr"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.StructField.Repr"}.LookupByIndex(0)
 }
 func (n _StructField__Repr) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -17054,22 +17054,22 @@ func (_StructField__Repr) IsNull() bool {
 	return false
 }
 func (_StructField__Repr) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.StructField.Repr"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.StructField.Repr"}.AsBool()
 }
 func (_StructField__Repr) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.StructField.Repr"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.StructField.Repr"}.AsInt()
 }
 func (_StructField__Repr) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.StructField.Repr"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.StructField.Repr"}.AsFloat()
 }
 func (_StructField__Repr) AsString() (string, error) {
-	return mixins.Map{"schemadmt.StructField.Repr"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.StructField.Repr"}.AsString()
 }
 func (_StructField__Repr) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.StructField.Repr"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.StructField.Repr"}.AsBytes()
 }
 func (_StructField__Repr) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.StructField.Repr"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.StructField.Repr"}.AsLink()
 }
 func (_StructField__Repr) Prototype() ipld.NodePrototype {
 	return _StructField__ReprPrototype{}
@@ -17133,7 +17133,7 @@ func (na *_StructField__ReprAssembler) BeginMap(int64) (ipld.MapAssembler, error
 	return na, nil
 }
 func (_StructField__ReprAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.StructField.Repr"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructField.Repr"}.BeginList(0)
 }
 func (na *_StructField__ReprAssembler) AssignNull() error {
 	switch *na.m {
@@ -17141,7 +17141,7 @@ func (na *_StructField__ReprAssembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.StructField.Repr.Repr"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.StructField.Repr.Repr"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -17150,22 +17150,22 @@ func (na *_StructField__ReprAssembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_StructField__ReprAssembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.StructField.Repr"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructField.Repr"}.AssignBool(false)
 }
 func (_StructField__ReprAssembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.StructField.Repr"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructField.Repr"}.AssignInt(0)
 }
 func (_StructField__ReprAssembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.StructField.Repr"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructField.Repr"}.AssignFloat(0)
 }
 func (_StructField__ReprAssembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.StructField.Repr"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.StructField.Repr"}.AssignString("")
 }
 func (_StructField__ReprAssembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.StructField.Repr"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructField.Repr"}.AssignBytes(nil)
 }
 func (_StructField__ReprAssembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.StructField.Repr"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructField.Repr"}.AssignLink(nil)
 }
 func (na *_StructField__ReprAssembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -17382,22 +17382,22 @@ func (ma *_StructField__ReprAssembler) ValuePrototype(k string) ipld.NodePrototy
 type _StructField__ReprKeyAssembler _StructField__ReprAssembler
 
 func (_StructField__ReprKeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.StructField.Repr.KeyAssembler"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructField.Repr.KeyAssembler"}.BeginMap(0)
 }
 func (_StructField__ReprKeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.StructField.Repr.KeyAssembler"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructField.Repr.KeyAssembler"}.BeginList(0)
 }
 func (na *_StructField__ReprKeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"schemadmt.StructField.Repr.KeyAssembler"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "schemadmt.StructField.Repr.KeyAssembler"}.AssignNull()
 }
 func (_StructField__ReprKeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.StructField.Repr.KeyAssembler"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructField.Repr.KeyAssembler"}.AssignBool(false)
 }
 func (_StructField__ReprKeyAssembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.StructField.Repr.KeyAssembler"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructField.Repr.KeyAssembler"}.AssignInt(0)
 }
 func (_StructField__ReprKeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.StructField.Repr.KeyAssembler"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructField.Repr.KeyAssembler"}.AssignFloat(0)
 }
 func (ka *_StructField__ReprKeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
@@ -17432,10 +17432,10 @@ func (ka *_StructField__ReprKeyAssembler) AssignString(k string) error {
 	return ipld.ErrInvalidKey{TypeName: "schemadmt.StructField.Repr", Key: &_String{k}}
 }
 func (_StructField__ReprKeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.StructField.Repr.KeyAssembler"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructField.Repr.KeyAssembler"}.AssignBytes(nil)
 }
 func (_StructField__ReprKeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.StructField.Repr.KeyAssembler"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructField.Repr.KeyAssembler"}.AssignLink(nil)
 }
 func (ka *_StructField__ReprKeyAssembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
@@ -17551,7 +17551,7 @@ func (n StructRepresentation) LookupByNode(key ipld.Node) (ipld.Node, error) {
 	return n.LookupByString(ks)
 }
 func (StructRepresentation) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.StructRepresentation"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation"}.LookupByIndex(0)
 }
 func (n StructRepresentation) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -17603,22 +17603,22 @@ func (StructRepresentation) IsNull() bool {
 	return false
 }
 func (StructRepresentation) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.StructRepresentation"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation"}.AsBool()
 }
 func (StructRepresentation) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.StructRepresentation"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation"}.AsInt()
 }
 func (StructRepresentation) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.StructRepresentation"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation"}.AsFloat()
 }
 func (StructRepresentation) AsString() (string, error) {
-	return mixins.Map{"schemadmt.StructRepresentation"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation"}.AsString()
 }
 func (StructRepresentation) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.StructRepresentation"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation"}.AsBytes()
 }
 func (StructRepresentation) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.StructRepresentation"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation"}.AsLink()
 }
 func (StructRepresentation) Prototype() ipld.NodePrototype {
 	return _StructRepresentation__Prototype{}
@@ -17705,7 +17705,7 @@ func (na *_StructRepresentation__Assembler) BeginMap(int64) (ipld.MapAssembler, 
 	return na, nil
 }
 func (_StructRepresentation__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation"}.BeginList(0)
 }
 func (na *_StructRepresentation__Assembler) AssignNull() error {
 	switch *na.m {
@@ -17713,7 +17713,7 @@ func (na *_StructRepresentation__Assembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.StructRepresentation"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -17722,22 +17722,22 @@ func (na *_StructRepresentation__Assembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_StructRepresentation__Assembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation"}.AssignBool(false)
 }
 func (_StructRepresentation__Assembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation"}.AssignInt(0)
 }
 func (_StructRepresentation__Assembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation"}.AssignFloat(0)
 }
 func (_StructRepresentation__Assembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation"}.AssignString("")
 }
 func (_StructRepresentation__Assembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation"}.AssignBytes(nil)
 }
 func (_StructRepresentation__Assembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation"}.AssignLink(nil)
 }
 func (na *_StructRepresentation__Assembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -17948,22 +17948,22 @@ func (ma *_StructRepresentation__Assembler) ValuePrototype(k string) ipld.NodePr
 type _StructRepresentation__KeyAssembler _StructRepresentation__Assembler
 
 func (_StructRepresentation__KeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation.KeyAssembler"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation.KeyAssembler"}.BeginMap(0)
 }
 func (_StructRepresentation__KeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation.KeyAssembler"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation.KeyAssembler"}.BeginList(0)
 }
 func (na *_StructRepresentation__KeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation.KeyAssembler"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation.KeyAssembler"}.AssignNull()
 }
 func (_StructRepresentation__KeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation.KeyAssembler"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation.KeyAssembler"}.AssignBool(false)
 }
 func (_StructRepresentation__KeyAssembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation.KeyAssembler"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation.KeyAssembler"}.AssignInt(0)
 }
 func (_StructRepresentation__KeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation.KeyAssembler"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation.KeyAssembler"}.AssignFloat(0)
 }
 func (ka *_StructRepresentation__KeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
@@ -18002,10 +18002,10 @@ func (ka *_StructRepresentation__KeyAssembler) AssignString(k string) error {
 	return ipld.ErrInvalidKey{TypeName: "schemadmt.StructRepresentation", Key: &_String{k}} // TODO: error quality: ErrInvalidUnionDiscriminant ?
 }
 func (_StructRepresentation__KeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation.KeyAssembler"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation.KeyAssembler"}.AssignBytes(nil)
 }
 func (_StructRepresentation__KeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation.KeyAssembler"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation.KeyAssembler"}.AssignLink(nil)
 }
 func (ka *_StructRepresentation__KeyAssembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
@@ -18077,7 +18077,7 @@ func (n *_StructRepresentation__Repr) LookupByNode(key ipld.Node) (ipld.Node, er
 	return n.LookupByString(ks)
 }
 func (_StructRepresentation__Repr) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.StructRepresentation.Repr"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation.Repr"}.LookupByIndex(0)
 }
 func (n _StructRepresentation__Repr) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -18129,22 +18129,22 @@ func (_StructRepresentation__Repr) IsNull() bool {
 	return false
 }
 func (_StructRepresentation__Repr) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.StructRepresentation.Repr"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation.Repr"}.AsBool()
 }
 func (_StructRepresentation__Repr) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.StructRepresentation.Repr"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation.Repr"}.AsInt()
 }
 func (_StructRepresentation__Repr) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.StructRepresentation.Repr"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation.Repr"}.AsFloat()
 }
 func (_StructRepresentation__Repr) AsString() (string, error) {
-	return mixins.Map{"schemadmt.StructRepresentation.Repr"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation.Repr"}.AsString()
 }
 func (_StructRepresentation__Repr) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.StructRepresentation.Repr"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation.Repr"}.AsBytes()
 }
 func (_StructRepresentation__Repr) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.StructRepresentation.Repr"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation.Repr"}.AsLink()
 }
 func (_StructRepresentation__Repr) Prototype() ipld.NodePrototype {
 	return _StructRepresentation__ReprPrototype{}
@@ -18231,7 +18231,7 @@ func (na *_StructRepresentation__ReprAssembler) BeginMap(int64) (ipld.MapAssembl
 	return na, nil
 }
 func (_StructRepresentation__ReprAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation.Repr"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation.Repr"}.BeginList(0)
 }
 func (na *_StructRepresentation__ReprAssembler) AssignNull() error {
 	switch *na.m {
@@ -18239,7 +18239,7 @@ func (na *_StructRepresentation__ReprAssembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.StructRepresentation.Repr.Repr"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation.Repr.Repr"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -18248,22 +18248,22 @@ func (na *_StructRepresentation__ReprAssembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_StructRepresentation__ReprAssembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation.Repr"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation.Repr"}.AssignBool(false)
 }
 func (_StructRepresentation__ReprAssembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation.Repr"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation.Repr"}.AssignInt(0)
 }
 func (_StructRepresentation__ReprAssembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation.Repr"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation.Repr"}.AssignFloat(0)
 }
 func (_StructRepresentation__ReprAssembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation.Repr"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation.Repr"}.AssignString("")
 }
 func (_StructRepresentation__ReprAssembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation.Repr"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation.Repr"}.AssignBytes(nil)
 }
 func (_StructRepresentation__ReprAssembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation.Repr"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation.Repr"}.AssignLink(nil)
 }
 func (na *_StructRepresentation__ReprAssembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -18474,22 +18474,22 @@ func (ma *_StructRepresentation__ReprAssembler) ValuePrototype(k string) ipld.No
 type _StructRepresentation__ReprKeyAssembler _StructRepresentation__ReprAssembler
 
 func (_StructRepresentation__ReprKeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation.Repr.KeyAssembler"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation.Repr.KeyAssembler"}.BeginMap(0)
 }
 func (_StructRepresentation__ReprKeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation.Repr.KeyAssembler"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation.Repr.KeyAssembler"}.BeginList(0)
 }
 func (na *_StructRepresentation__ReprKeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation.Repr.KeyAssembler"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation.Repr.KeyAssembler"}.AssignNull()
 }
 func (_StructRepresentation__ReprKeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation.Repr.KeyAssembler"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation.Repr.KeyAssembler"}.AssignBool(false)
 }
 func (_StructRepresentation__ReprKeyAssembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation.Repr.KeyAssembler"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation.Repr.KeyAssembler"}.AssignInt(0)
 }
 func (_StructRepresentation__ReprKeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation.Repr.KeyAssembler"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation.Repr.KeyAssembler"}.AssignFloat(0)
 }
 func (ka *_StructRepresentation__ReprKeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
@@ -18528,10 +18528,10 @@ func (ka *_StructRepresentation__ReprKeyAssembler) AssignString(k string) error 
 	return ipld.ErrInvalidKey{TypeName: "schemadmt.StructRepresentation.Repr", Key: &_String{k}} // TODO: error quality: ErrInvalidUnionDiscriminant ?
 }
 func (_StructRepresentation__ReprKeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation.Repr.KeyAssembler"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation.Repr.KeyAssembler"}.AssignBytes(nil)
 }
 func (_StructRepresentation__ReprKeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation.Repr.KeyAssembler"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation.Repr.KeyAssembler"}.AssignLink(nil)
 }
 func (ka *_StructRepresentation__ReprKeyAssembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
@@ -18599,7 +18599,7 @@ func (n StructRepresentation_Listpairs) LookupByNode(key ipld.Node) (ipld.Node, 
 	return n.LookupByString(ks)
 }
 func (StructRepresentation_Listpairs) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Listpairs"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Listpairs"}.LookupByIndex(0)
 }
 func (n StructRepresentation_Listpairs) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -18634,22 +18634,22 @@ func (StructRepresentation_Listpairs) IsNull() bool {
 	return false
 }
 func (StructRepresentation_Listpairs) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Listpairs"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Listpairs"}.AsBool()
 }
 func (StructRepresentation_Listpairs) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Listpairs"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Listpairs"}.AsInt()
 }
 func (StructRepresentation_Listpairs) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Listpairs"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Listpairs"}.AsFloat()
 }
 func (StructRepresentation_Listpairs) AsString() (string, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Listpairs"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Listpairs"}.AsString()
 }
 func (StructRepresentation_Listpairs) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Listpairs"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Listpairs"}.AsBytes()
 }
 func (StructRepresentation_Listpairs) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Listpairs"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Listpairs"}.AsLink()
 }
 func (StructRepresentation_Listpairs) Prototype() ipld.NodePrototype {
 	return _StructRepresentation_Listpairs__Prototype{}
@@ -18712,7 +18712,7 @@ func (na *_StructRepresentation_Listpairs__Assembler) BeginMap(int64) (ipld.MapA
 	return na, nil
 }
 func (_StructRepresentation_Listpairs__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Listpairs"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Listpairs"}.BeginList(0)
 }
 func (na *_StructRepresentation_Listpairs__Assembler) AssignNull() error {
 	switch *na.m {
@@ -18720,7 +18720,7 @@ func (na *_StructRepresentation_Listpairs__Assembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.StructRepresentation_Listpairs"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Listpairs"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -18729,22 +18729,22 @@ func (na *_StructRepresentation_Listpairs__Assembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_StructRepresentation_Listpairs__Assembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Listpairs"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Listpairs"}.AssignBool(false)
 }
 func (_StructRepresentation_Listpairs__Assembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Listpairs"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Listpairs"}.AssignInt(0)
 }
 func (_StructRepresentation_Listpairs__Assembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Listpairs"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Listpairs"}.AssignFloat(0)
 }
 func (_StructRepresentation_Listpairs__Assembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Listpairs"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Listpairs"}.AssignString("")
 }
 func (_StructRepresentation_Listpairs__Assembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Listpairs"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Listpairs"}.AssignBytes(nil)
 }
 func (_StructRepresentation_Listpairs__Assembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Listpairs"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Listpairs"}.AssignLink(nil)
 }
 func (na *_StructRepresentation_Listpairs__Assembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -18880,22 +18880,22 @@ func (ma *_StructRepresentation_Listpairs__Assembler) ValuePrototype(k string) i
 type _StructRepresentation_Listpairs__KeyAssembler _StructRepresentation_Listpairs__Assembler
 
 func (_StructRepresentation_Listpairs__KeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Listpairs.KeyAssembler"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Listpairs.KeyAssembler"}.BeginMap(0)
 }
 func (_StructRepresentation_Listpairs__KeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Listpairs.KeyAssembler"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Listpairs.KeyAssembler"}.BeginList(0)
 }
 func (na *_StructRepresentation_Listpairs__KeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Listpairs.KeyAssembler"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Listpairs.KeyAssembler"}.AssignNull()
 }
 func (_StructRepresentation_Listpairs__KeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Listpairs.KeyAssembler"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Listpairs.KeyAssembler"}.AssignBool(false)
 }
 func (_StructRepresentation_Listpairs__KeyAssembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Listpairs.KeyAssembler"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Listpairs.KeyAssembler"}.AssignInt(0)
 }
 func (_StructRepresentation_Listpairs__KeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Listpairs.KeyAssembler"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Listpairs.KeyAssembler"}.AssignFloat(0)
 }
 func (ka *_StructRepresentation_Listpairs__KeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
@@ -18908,10 +18908,10 @@ func (ka *_StructRepresentation_Listpairs__KeyAssembler) AssignString(k string) 
 	return nil
 }
 func (_StructRepresentation_Listpairs__KeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Listpairs.KeyAssembler"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Listpairs.KeyAssembler"}.AssignBytes(nil)
 }
 func (_StructRepresentation_Listpairs__KeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Listpairs.KeyAssembler"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Listpairs.KeyAssembler"}.AssignLink(nil)
 }
 func (ka *_StructRepresentation_Listpairs__KeyAssembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
@@ -18952,7 +18952,7 @@ func (n *_StructRepresentation_Listpairs__Repr) LookupByNode(key ipld.Node) (ipl
 	return n.LookupByString(ks)
 }
 func (_StructRepresentation_Listpairs__Repr) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Listpairs.Repr"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Listpairs.Repr"}.LookupByIndex(0)
 }
 func (n _StructRepresentation_Listpairs__Repr) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -18987,22 +18987,22 @@ func (_StructRepresentation_Listpairs__Repr) IsNull() bool {
 	return false
 }
 func (_StructRepresentation_Listpairs__Repr) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Listpairs.Repr"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Listpairs.Repr"}.AsBool()
 }
 func (_StructRepresentation_Listpairs__Repr) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Listpairs.Repr"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Listpairs.Repr"}.AsInt()
 }
 func (_StructRepresentation_Listpairs__Repr) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Listpairs.Repr"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Listpairs.Repr"}.AsFloat()
 }
 func (_StructRepresentation_Listpairs__Repr) AsString() (string, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Listpairs.Repr"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Listpairs.Repr"}.AsString()
 }
 func (_StructRepresentation_Listpairs__Repr) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Listpairs.Repr"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Listpairs.Repr"}.AsBytes()
 }
 func (_StructRepresentation_Listpairs__Repr) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Listpairs.Repr"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Listpairs.Repr"}.AsLink()
 }
 func (_StructRepresentation_Listpairs__Repr) Prototype() ipld.NodePrototype {
 	return _StructRepresentation_Listpairs__ReprPrototype{}
@@ -19060,7 +19060,7 @@ func (na *_StructRepresentation_Listpairs__ReprAssembler) BeginMap(int64) (ipld.
 	return na, nil
 }
 func (_StructRepresentation_Listpairs__ReprAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Listpairs.Repr"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Listpairs.Repr"}.BeginList(0)
 }
 func (na *_StructRepresentation_Listpairs__ReprAssembler) AssignNull() error {
 	switch *na.m {
@@ -19068,7 +19068,7 @@ func (na *_StructRepresentation_Listpairs__ReprAssembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.StructRepresentation_Listpairs.Repr.Repr"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Listpairs.Repr.Repr"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -19077,22 +19077,22 @@ func (na *_StructRepresentation_Listpairs__ReprAssembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_StructRepresentation_Listpairs__ReprAssembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Listpairs.Repr"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Listpairs.Repr"}.AssignBool(false)
 }
 func (_StructRepresentation_Listpairs__ReprAssembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Listpairs.Repr"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Listpairs.Repr"}.AssignInt(0)
 }
 func (_StructRepresentation_Listpairs__ReprAssembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Listpairs.Repr"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Listpairs.Repr"}.AssignFloat(0)
 }
 func (_StructRepresentation_Listpairs__ReprAssembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Listpairs.Repr"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Listpairs.Repr"}.AssignString("")
 }
 func (_StructRepresentation_Listpairs__ReprAssembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Listpairs.Repr"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Listpairs.Repr"}.AssignBytes(nil)
 }
 func (_StructRepresentation_Listpairs__ReprAssembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Listpairs.Repr"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Listpairs.Repr"}.AssignLink(nil)
 }
 func (na *_StructRepresentation_Listpairs__ReprAssembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -19228,22 +19228,22 @@ func (ma *_StructRepresentation_Listpairs__ReprAssembler) ValuePrototype(k strin
 type _StructRepresentation_Listpairs__ReprKeyAssembler _StructRepresentation_Listpairs__ReprAssembler
 
 func (_StructRepresentation_Listpairs__ReprKeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Listpairs.Repr.KeyAssembler"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Listpairs.Repr.KeyAssembler"}.BeginMap(0)
 }
 func (_StructRepresentation_Listpairs__ReprKeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Listpairs.Repr.KeyAssembler"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Listpairs.Repr.KeyAssembler"}.BeginList(0)
 }
 func (na *_StructRepresentation_Listpairs__ReprKeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Listpairs.Repr.KeyAssembler"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Listpairs.Repr.KeyAssembler"}.AssignNull()
 }
 func (_StructRepresentation_Listpairs__ReprKeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Listpairs.Repr.KeyAssembler"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Listpairs.Repr.KeyAssembler"}.AssignBool(false)
 }
 func (_StructRepresentation_Listpairs__ReprKeyAssembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Listpairs.Repr.KeyAssembler"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Listpairs.Repr.KeyAssembler"}.AssignInt(0)
 }
 func (_StructRepresentation_Listpairs__ReprKeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Listpairs.Repr.KeyAssembler"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Listpairs.Repr.KeyAssembler"}.AssignFloat(0)
 }
 func (ka *_StructRepresentation_Listpairs__ReprKeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
@@ -19252,10 +19252,10 @@ func (ka *_StructRepresentation_Listpairs__ReprKeyAssembler) AssignString(k stri
 	return ipld.ErrInvalidKey{TypeName: "schemadmt.StructRepresentation_Listpairs.Repr", Key: &_String{k}}
 }
 func (_StructRepresentation_Listpairs__ReprKeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Listpairs.Repr.KeyAssembler"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Listpairs.Repr.KeyAssembler"}.AssignBytes(nil)
 }
 func (_StructRepresentation_Listpairs__ReprKeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Listpairs.Repr.KeyAssembler"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Listpairs.Repr.KeyAssembler"}.AssignLink(nil)
 }
 func (ka *_StructRepresentation_Listpairs__ReprKeyAssembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
@@ -19334,7 +19334,7 @@ func (n StructRepresentation_Map) LookupByNode(key ipld.Node) (ipld.Node, error)
 	return n.LookupByString(ks)
 }
 func (StructRepresentation_Map) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Map"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Map"}.LookupByIndex(0)
 }
 func (n StructRepresentation_Map) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -19383,22 +19383,22 @@ func (StructRepresentation_Map) IsNull() bool {
 	return false
 }
 func (StructRepresentation_Map) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Map"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Map"}.AsBool()
 }
 func (StructRepresentation_Map) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Map"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Map"}.AsInt()
 }
 func (StructRepresentation_Map) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Map"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Map"}.AsFloat()
 }
 func (StructRepresentation_Map) AsString() (string, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Map"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Map"}.AsString()
 }
 func (StructRepresentation_Map) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Map"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Map"}.AsBytes()
 }
 func (StructRepresentation_Map) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Map"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Map"}.AsLink()
 }
 func (StructRepresentation_Map) Prototype() ipld.NodePrototype {
 	return _StructRepresentation_Map__Prototype{}
@@ -19464,7 +19464,7 @@ func (na *_StructRepresentation_Map__Assembler) BeginMap(int64) (ipld.MapAssembl
 	return na, nil
 }
 func (_StructRepresentation_Map__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Map"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Map"}.BeginList(0)
 }
 func (na *_StructRepresentation_Map__Assembler) AssignNull() error {
 	switch *na.m {
@@ -19472,7 +19472,7 @@ func (na *_StructRepresentation_Map__Assembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.StructRepresentation_Map"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Map"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -19481,22 +19481,22 @@ func (na *_StructRepresentation_Map__Assembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_StructRepresentation_Map__Assembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Map"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Map"}.AssignBool(false)
 }
 func (_StructRepresentation_Map__Assembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Map"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Map"}.AssignInt(0)
 }
 func (_StructRepresentation_Map__Assembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Map"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Map"}.AssignFloat(0)
 }
 func (_StructRepresentation_Map__Assembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Map"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Map"}.AssignString("")
 }
 func (_StructRepresentation_Map__Assembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Map"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Map"}.AssignBytes(nil)
 }
 func (_StructRepresentation_Map__Assembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Map"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Map"}.AssignLink(nil)
 }
 func (na *_StructRepresentation_Map__Assembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -19656,22 +19656,22 @@ func (ma *_StructRepresentation_Map__Assembler) ValuePrototype(k string) ipld.No
 type _StructRepresentation_Map__KeyAssembler _StructRepresentation_Map__Assembler
 
 func (_StructRepresentation_Map__KeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Map.KeyAssembler"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Map.KeyAssembler"}.BeginMap(0)
 }
 func (_StructRepresentation_Map__KeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Map.KeyAssembler"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Map.KeyAssembler"}.BeginList(0)
 }
 func (na *_StructRepresentation_Map__KeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Map.KeyAssembler"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Map.KeyAssembler"}.AssignNull()
 }
 func (_StructRepresentation_Map__KeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Map.KeyAssembler"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Map.KeyAssembler"}.AssignBool(false)
 }
 func (_StructRepresentation_Map__KeyAssembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Map.KeyAssembler"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Map.KeyAssembler"}.AssignInt(0)
 }
 func (_StructRepresentation_Map__KeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Map.KeyAssembler"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Map.KeyAssembler"}.AssignFloat(0)
 }
 func (ka *_StructRepresentation_Map__KeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
@@ -19691,10 +19691,10 @@ func (ka *_StructRepresentation_Map__KeyAssembler) AssignString(k string) error 
 	return nil
 }
 func (_StructRepresentation_Map__KeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Map.KeyAssembler"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Map.KeyAssembler"}.AssignBytes(nil)
 }
 func (_StructRepresentation_Map__KeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Map.KeyAssembler"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Map.KeyAssembler"}.AssignLink(nil)
 }
 func (ka *_StructRepresentation_Map__KeyAssembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
@@ -19742,7 +19742,7 @@ func (n *_StructRepresentation_Map__Repr) LookupByNode(key ipld.Node) (ipld.Node
 	return n.LookupByString(ks)
 }
 func (_StructRepresentation_Map__Repr) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Map.Repr"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Map.Repr"}.LookupByIndex(0)
 }
 func (n _StructRepresentation_Map__Repr) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -19803,22 +19803,22 @@ func (_StructRepresentation_Map__Repr) IsNull() bool {
 	return false
 }
 func (_StructRepresentation_Map__Repr) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Map.Repr"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Map.Repr"}.AsBool()
 }
 func (_StructRepresentation_Map__Repr) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Map.Repr"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Map.Repr"}.AsInt()
 }
 func (_StructRepresentation_Map__Repr) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Map.Repr"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Map.Repr"}.AsFloat()
 }
 func (_StructRepresentation_Map__Repr) AsString() (string, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Map.Repr"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Map.Repr"}.AsString()
 }
 func (_StructRepresentation_Map__Repr) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Map.Repr"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Map.Repr"}.AsBytes()
 }
 func (_StructRepresentation_Map__Repr) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Map.Repr"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Map.Repr"}.AsLink()
 }
 func (_StructRepresentation_Map__Repr) Prototype() ipld.NodePrototype {
 	return _StructRepresentation_Map__ReprPrototype{}
@@ -19878,7 +19878,7 @@ func (na *_StructRepresentation_Map__ReprAssembler) BeginMap(int64) (ipld.MapAss
 	return na, nil
 }
 func (_StructRepresentation_Map__ReprAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Map.Repr"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Map.Repr"}.BeginList(0)
 }
 func (na *_StructRepresentation_Map__ReprAssembler) AssignNull() error {
 	switch *na.m {
@@ -19886,7 +19886,7 @@ func (na *_StructRepresentation_Map__ReprAssembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.StructRepresentation_Map.Repr.Repr"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Map.Repr.Repr"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -19895,22 +19895,22 @@ func (na *_StructRepresentation_Map__ReprAssembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_StructRepresentation_Map__ReprAssembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Map.Repr"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Map.Repr"}.AssignBool(false)
 }
 func (_StructRepresentation_Map__ReprAssembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Map.Repr"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Map.Repr"}.AssignInt(0)
 }
 func (_StructRepresentation_Map__ReprAssembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Map.Repr"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Map.Repr"}.AssignFloat(0)
 }
 func (_StructRepresentation_Map__ReprAssembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Map.Repr"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Map.Repr"}.AssignString("")
 }
 func (_StructRepresentation_Map__ReprAssembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Map.Repr"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Map.Repr"}.AssignBytes(nil)
 }
 func (_StructRepresentation_Map__ReprAssembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Map.Repr"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Map.Repr"}.AssignLink(nil)
 }
 func (na *_StructRepresentation_Map__ReprAssembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -20073,22 +20073,22 @@ func (ma *_StructRepresentation_Map__ReprAssembler) ValuePrototype(k string) ipl
 type _StructRepresentation_Map__ReprKeyAssembler _StructRepresentation_Map__ReprAssembler
 
 func (_StructRepresentation_Map__ReprKeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Map.Repr.KeyAssembler"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Map.Repr.KeyAssembler"}.BeginMap(0)
 }
 func (_StructRepresentation_Map__ReprKeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Map.Repr.KeyAssembler"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Map.Repr.KeyAssembler"}.BeginList(0)
 }
 func (na *_StructRepresentation_Map__ReprKeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Map.Repr.KeyAssembler"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Map.Repr.KeyAssembler"}.AssignNull()
 }
 func (_StructRepresentation_Map__ReprKeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Map.Repr.KeyAssembler"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Map.Repr.KeyAssembler"}.AssignBool(false)
 }
 func (_StructRepresentation_Map__ReprKeyAssembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Map.Repr.KeyAssembler"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Map.Repr.KeyAssembler"}.AssignInt(0)
 }
 func (_StructRepresentation_Map__ReprKeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Map.Repr.KeyAssembler"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Map.Repr.KeyAssembler"}.AssignFloat(0)
 }
 func (ka *_StructRepresentation_Map__ReprKeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
@@ -20107,10 +20107,10 @@ func (ka *_StructRepresentation_Map__ReprKeyAssembler) AssignString(k string) er
 	return ipld.ErrInvalidKey{TypeName: "schemadmt.StructRepresentation_Map.Repr", Key: &_String{k}}
 }
 func (_StructRepresentation_Map__ReprKeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Map.Repr.KeyAssembler"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Map.Repr.KeyAssembler"}.AssignBytes(nil)
 }
 func (_StructRepresentation_Map__ReprKeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Map.Repr.KeyAssembler"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Map.Repr.KeyAssembler"}.AssignLink(nil)
 }
 func (ka *_StructRepresentation_Map__ReprKeyAssembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
@@ -20198,7 +20198,7 @@ func (n StructRepresentation_Map_FieldDetails) LookupByNode(key ipld.Node) (ipld
 	return n.LookupByString(ks)
 }
 func (StructRepresentation_Map_FieldDetails) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Map_FieldDetails"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Map_FieldDetails"}.LookupByIndex(0)
 }
 func (n StructRepresentation_Map_FieldDetails) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -20254,22 +20254,22 @@ func (StructRepresentation_Map_FieldDetails) IsNull() bool {
 	return false
 }
 func (StructRepresentation_Map_FieldDetails) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Map_FieldDetails"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Map_FieldDetails"}.AsBool()
 }
 func (StructRepresentation_Map_FieldDetails) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Map_FieldDetails"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Map_FieldDetails"}.AsInt()
 }
 func (StructRepresentation_Map_FieldDetails) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Map_FieldDetails"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Map_FieldDetails"}.AsFloat()
 }
 func (StructRepresentation_Map_FieldDetails) AsString() (string, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Map_FieldDetails"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Map_FieldDetails"}.AsString()
 }
 func (StructRepresentation_Map_FieldDetails) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Map_FieldDetails"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Map_FieldDetails"}.AsBytes()
 }
 func (StructRepresentation_Map_FieldDetails) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Map_FieldDetails"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Map_FieldDetails"}.AsLink()
 }
 func (StructRepresentation_Map_FieldDetails) Prototype() ipld.NodePrototype {
 	return _StructRepresentation_Map_FieldDetails__Prototype{}
@@ -20338,7 +20338,7 @@ func (na *_StructRepresentation_Map_FieldDetails__Assembler) BeginMap(int64) (ip
 	return na, nil
 }
 func (_StructRepresentation_Map_FieldDetails__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Map_FieldDetails"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Map_FieldDetails"}.BeginList(0)
 }
 func (na *_StructRepresentation_Map_FieldDetails__Assembler) AssignNull() error {
 	switch *na.m {
@@ -20346,7 +20346,7 @@ func (na *_StructRepresentation_Map_FieldDetails__Assembler) AssignNull() error 
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.StructRepresentation_Map_FieldDetails"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Map_FieldDetails"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -20355,22 +20355,22 @@ func (na *_StructRepresentation_Map_FieldDetails__Assembler) AssignNull() error 
 	panic("unreachable")
 }
 func (_StructRepresentation_Map_FieldDetails__Assembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Map_FieldDetails"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Map_FieldDetails"}.AssignBool(false)
 }
 func (_StructRepresentation_Map_FieldDetails__Assembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Map_FieldDetails"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Map_FieldDetails"}.AssignInt(0)
 }
 func (_StructRepresentation_Map_FieldDetails__Assembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Map_FieldDetails"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Map_FieldDetails"}.AssignFloat(0)
 }
 func (_StructRepresentation_Map_FieldDetails__Assembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Map_FieldDetails"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Map_FieldDetails"}.AssignString("")
 }
 func (_StructRepresentation_Map_FieldDetails__Assembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Map_FieldDetails"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Map_FieldDetails"}.AssignBytes(nil)
 }
 func (_StructRepresentation_Map_FieldDetails__Assembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Map_FieldDetails"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Map_FieldDetails"}.AssignLink(nil)
 }
 func (na *_StructRepresentation_Map_FieldDetails__Assembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -20553,22 +20553,22 @@ func (ma *_StructRepresentation_Map_FieldDetails__Assembler) ValuePrototype(k st
 type _StructRepresentation_Map_FieldDetails__KeyAssembler _StructRepresentation_Map_FieldDetails__Assembler
 
 func (_StructRepresentation_Map_FieldDetails__KeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Map_FieldDetails.KeyAssembler"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Map_FieldDetails.KeyAssembler"}.BeginMap(0)
 }
 func (_StructRepresentation_Map_FieldDetails__KeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Map_FieldDetails.KeyAssembler"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Map_FieldDetails.KeyAssembler"}.BeginList(0)
 }
 func (na *_StructRepresentation_Map_FieldDetails__KeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Map_FieldDetails.KeyAssembler"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Map_FieldDetails.KeyAssembler"}.AssignNull()
 }
 func (_StructRepresentation_Map_FieldDetails__KeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Map_FieldDetails.KeyAssembler"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Map_FieldDetails.KeyAssembler"}.AssignBool(false)
 }
 func (_StructRepresentation_Map_FieldDetails__KeyAssembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Map_FieldDetails.KeyAssembler"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Map_FieldDetails.KeyAssembler"}.AssignInt(0)
 }
 func (_StructRepresentation_Map_FieldDetails__KeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Map_FieldDetails.KeyAssembler"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Map_FieldDetails.KeyAssembler"}.AssignFloat(0)
 }
 func (ka *_StructRepresentation_Map_FieldDetails__KeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
@@ -20595,10 +20595,10 @@ func (ka *_StructRepresentation_Map_FieldDetails__KeyAssembler) AssignString(k s
 	return nil
 }
 func (_StructRepresentation_Map_FieldDetails__KeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Map_FieldDetails.KeyAssembler"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Map_FieldDetails.KeyAssembler"}.AssignBytes(nil)
 }
 func (_StructRepresentation_Map_FieldDetails__KeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Map_FieldDetails.KeyAssembler"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Map_FieldDetails.KeyAssembler"}.AssignLink(nil)
 }
 func (ka *_StructRepresentation_Map_FieldDetails__KeyAssembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
@@ -20652,7 +20652,7 @@ func (n *_StructRepresentation_Map_FieldDetails__Repr) LookupByNode(key ipld.Nod
 	return n.LookupByString(ks)
 }
 func (_StructRepresentation_Map_FieldDetails__Repr) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Map_FieldDetails.Repr"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Map_FieldDetails.Repr"}.LookupByIndex(0)
 }
 func (n _StructRepresentation_Map_FieldDetails__Repr) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -20728,22 +20728,22 @@ func (_StructRepresentation_Map_FieldDetails__Repr) IsNull() bool {
 	return false
 }
 func (_StructRepresentation_Map_FieldDetails__Repr) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Map_FieldDetails.Repr"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Map_FieldDetails.Repr"}.AsBool()
 }
 func (_StructRepresentation_Map_FieldDetails__Repr) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Map_FieldDetails.Repr"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Map_FieldDetails.Repr"}.AsInt()
 }
 func (_StructRepresentation_Map_FieldDetails__Repr) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Map_FieldDetails.Repr"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Map_FieldDetails.Repr"}.AsFloat()
 }
 func (_StructRepresentation_Map_FieldDetails__Repr) AsString() (string, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Map_FieldDetails.Repr"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Map_FieldDetails.Repr"}.AsString()
 }
 func (_StructRepresentation_Map_FieldDetails__Repr) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Map_FieldDetails.Repr"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Map_FieldDetails.Repr"}.AsBytes()
 }
 func (_StructRepresentation_Map_FieldDetails__Repr) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Map_FieldDetails.Repr"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Map_FieldDetails.Repr"}.AsLink()
 }
 func (_StructRepresentation_Map_FieldDetails__Repr) Prototype() ipld.NodePrototype {
 	return _StructRepresentation_Map_FieldDetails__ReprPrototype{}
@@ -20805,7 +20805,7 @@ func (na *_StructRepresentation_Map_FieldDetails__ReprAssembler) BeginMap(int64)
 	return na, nil
 }
 func (_StructRepresentation_Map_FieldDetails__ReprAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Map_FieldDetails.Repr"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Map_FieldDetails.Repr"}.BeginList(0)
 }
 func (na *_StructRepresentation_Map_FieldDetails__ReprAssembler) AssignNull() error {
 	switch *na.m {
@@ -20813,7 +20813,7 @@ func (na *_StructRepresentation_Map_FieldDetails__ReprAssembler) AssignNull() er
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.StructRepresentation_Map_FieldDetails.Repr.Repr"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Map_FieldDetails.Repr.Repr"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -20822,22 +20822,22 @@ func (na *_StructRepresentation_Map_FieldDetails__ReprAssembler) AssignNull() er
 	panic("unreachable")
 }
 func (_StructRepresentation_Map_FieldDetails__ReprAssembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Map_FieldDetails.Repr"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Map_FieldDetails.Repr"}.AssignBool(false)
 }
 func (_StructRepresentation_Map_FieldDetails__ReprAssembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Map_FieldDetails.Repr"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Map_FieldDetails.Repr"}.AssignInt(0)
 }
 func (_StructRepresentation_Map_FieldDetails__ReprAssembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Map_FieldDetails.Repr"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Map_FieldDetails.Repr"}.AssignFloat(0)
 }
 func (_StructRepresentation_Map_FieldDetails__ReprAssembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Map_FieldDetails.Repr"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Map_FieldDetails.Repr"}.AssignString("")
 }
 func (_StructRepresentation_Map_FieldDetails__ReprAssembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Map_FieldDetails.Repr"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Map_FieldDetails.Repr"}.AssignBytes(nil)
 }
 func (_StructRepresentation_Map_FieldDetails__ReprAssembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Map_FieldDetails.Repr"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Map_FieldDetails.Repr"}.AssignLink(nil)
 }
 func (na *_StructRepresentation_Map_FieldDetails__ReprAssembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -21025,22 +21025,22 @@ func (ma *_StructRepresentation_Map_FieldDetails__ReprAssembler) ValuePrototype(
 type _StructRepresentation_Map_FieldDetails__ReprKeyAssembler _StructRepresentation_Map_FieldDetails__ReprAssembler
 
 func (_StructRepresentation_Map_FieldDetails__ReprKeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Map_FieldDetails.Repr.KeyAssembler"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Map_FieldDetails.Repr.KeyAssembler"}.BeginMap(0)
 }
 func (_StructRepresentation_Map_FieldDetails__ReprKeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Map_FieldDetails.Repr.KeyAssembler"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Map_FieldDetails.Repr.KeyAssembler"}.BeginList(0)
 }
 func (na *_StructRepresentation_Map_FieldDetails__ReprKeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Map_FieldDetails.Repr.KeyAssembler"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Map_FieldDetails.Repr.KeyAssembler"}.AssignNull()
 }
 func (_StructRepresentation_Map_FieldDetails__ReprKeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Map_FieldDetails.Repr.KeyAssembler"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Map_FieldDetails.Repr.KeyAssembler"}.AssignBool(false)
 }
 func (_StructRepresentation_Map_FieldDetails__ReprKeyAssembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Map_FieldDetails.Repr.KeyAssembler"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Map_FieldDetails.Repr.KeyAssembler"}.AssignInt(0)
 }
 func (_StructRepresentation_Map_FieldDetails__ReprKeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Map_FieldDetails.Repr.KeyAssembler"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Map_FieldDetails.Repr.KeyAssembler"}.AssignFloat(0)
 }
 func (ka *_StructRepresentation_Map_FieldDetails__ReprKeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
@@ -21067,10 +21067,10 @@ func (ka *_StructRepresentation_Map_FieldDetails__ReprKeyAssembler) AssignString
 	return ipld.ErrInvalidKey{TypeName: "schemadmt.StructRepresentation_Map_FieldDetails.Repr", Key: &_String{k}}
 }
 func (_StructRepresentation_Map_FieldDetails__ReprKeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Map_FieldDetails.Repr.KeyAssembler"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Map_FieldDetails.Repr.KeyAssembler"}.AssignBytes(nil)
 }
 func (_StructRepresentation_Map_FieldDetails__ReprKeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Map_FieldDetails.Repr.KeyAssembler"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Map_FieldDetails.Repr.KeyAssembler"}.AssignLink(nil)
 }
 func (ka *_StructRepresentation_Map_FieldDetails__ReprKeyAssembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
@@ -21155,7 +21155,7 @@ func (n StructRepresentation_Stringjoin) LookupByNode(key ipld.Node) (ipld.Node,
 	return n.LookupByString(ks)
 }
 func (StructRepresentation_Stringjoin) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Stringjoin"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Stringjoin"}.LookupByIndex(0)
 }
 func (n StructRepresentation_Stringjoin) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -21207,22 +21207,22 @@ func (StructRepresentation_Stringjoin) IsNull() bool {
 	return false
 }
 func (StructRepresentation_Stringjoin) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Stringjoin"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Stringjoin"}.AsBool()
 }
 func (StructRepresentation_Stringjoin) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Stringjoin"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Stringjoin"}.AsInt()
 }
 func (StructRepresentation_Stringjoin) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Stringjoin"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Stringjoin"}.AsFloat()
 }
 func (StructRepresentation_Stringjoin) AsString() (string, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Stringjoin"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Stringjoin"}.AsString()
 }
 func (StructRepresentation_Stringjoin) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Stringjoin"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Stringjoin"}.AsBytes()
 }
 func (StructRepresentation_Stringjoin) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Stringjoin"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Stringjoin"}.AsLink()
 }
 func (StructRepresentation_Stringjoin) Prototype() ipld.NodePrototype {
 	return _StructRepresentation_Stringjoin__Prototype{}
@@ -21291,7 +21291,7 @@ func (na *_StructRepresentation_Stringjoin__Assembler) BeginMap(int64) (ipld.Map
 	return na, nil
 }
 func (_StructRepresentation_Stringjoin__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Stringjoin"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Stringjoin"}.BeginList(0)
 }
 func (na *_StructRepresentation_Stringjoin__Assembler) AssignNull() error {
 	switch *na.m {
@@ -21299,7 +21299,7 @@ func (na *_StructRepresentation_Stringjoin__Assembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.StructRepresentation_Stringjoin"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Stringjoin"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -21308,22 +21308,22 @@ func (na *_StructRepresentation_Stringjoin__Assembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_StructRepresentation_Stringjoin__Assembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Stringjoin"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Stringjoin"}.AssignBool(false)
 }
 func (_StructRepresentation_Stringjoin__Assembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Stringjoin"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Stringjoin"}.AssignInt(0)
 }
 func (_StructRepresentation_Stringjoin__Assembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Stringjoin"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Stringjoin"}.AssignFloat(0)
 }
 func (_StructRepresentation_Stringjoin__Assembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Stringjoin"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Stringjoin"}.AssignString("")
 }
 func (_StructRepresentation_Stringjoin__Assembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Stringjoin"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Stringjoin"}.AssignBytes(nil)
 }
 func (_StructRepresentation_Stringjoin__Assembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Stringjoin"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Stringjoin"}.AssignLink(nil)
 }
 func (na *_StructRepresentation_Stringjoin__Assembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -21510,22 +21510,22 @@ func (ma *_StructRepresentation_Stringjoin__Assembler) ValuePrototype(k string) 
 type _StructRepresentation_Stringjoin__KeyAssembler _StructRepresentation_Stringjoin__Assembler
 
 func (_StructRepresentation_Stringjoin__KeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Stringjoin.KeyAssembler"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Stringjoin.KeyAssembler"}.BeginMap(0)
 }
 func (_StructRepresentation_Stringjoin__KeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Stringjoin.KeyAssembler"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Stringjoin.KeyAssembler"}.BeginList(0)
 }
 func (na *_StructRepresentation_Stringjoin__KeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Stringjoin.KeyAssembler"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Stringjoin.KeyAssembler"}.AssignNull()
 }
 func (_StructRepresentation_Stringjoin__KeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Stringjoin.KeyAssembler"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Stringjoin.KeyAssembler"}.AssignBool(false)
 }
 func (_StructRepresentation_Stringjoin__KeyAssembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Stringjoin.KeyAssembler"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Stringjoin.KeyAssembler"}.AssignInt(0)
 }
 func (_StructRepresentation_Stringjoin__KeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Stringjoin.KeyAssembler"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Stringjoin.KeyAssembler"}.AssignFloat(0)
 }
 func (ka *_StructRepresentation_Stringjoin__KeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
@@ -21552,10 +21552,10 @@ func (ka *_StructRepresentation_Stringjoin__KeyAssembler) AssignString(k string)
 	return nil
 }
 func (_StructRepresentation_Stringjoin__KeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Stringjoin.KeyAssembler"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Stringjoin.KeyAssembler"}.AssignBytes(nil)
 }
 func (_StructRepresentation_Stringjoin__KeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Stringjoin.KeyAssembler"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Stringjoin.KeyAssembler"}.AssignLink(nil)
 }
 func (ka *_StructRepresentation_Stringjoin__KeyAssembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
@@ -21606,7 +21606,7 @@ func (n *_StructRepresentation_Stringjoin__Repr) LookupByNode(key ipld.Node) (ip
 	return n.LookupByString(ks)
 }
 func (_StructRepresentation_Stringjoin__Repr) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Stringjoin.Repr"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Stringjoin.Repr"}.LookupByIndex(0)
 }
 func (n _StructRepresentation_Stringjoin__Repr) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -21670,22 +21670,22 @@ func (_StructRepresentation_Stringjoin__Repr) IsNull() bool {
 	return false
 }
 func (_StructRepresentation_Stringjoin__Repr) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Stringjoin.Repr"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Stringjoin.Repr"}.AsBool()
 }
 func (_StructRepresentation_Stringjoin__Repr) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Stringjoin.Repr"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Stringjoin.Repr"}.AsInt()
 }
 func (_StructRepresentation_Stringjoin__Repr) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Stringjoin.Repr"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Stringjoin.Repr"}.AsFloat()
 }
 func (_StructRepresentation_Stringjoin__Repr) AsString() (string, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Stringjoin.Repr"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Stringjoin.Repr"}.AsString()
 }
 func (_StructRepresentation_Stringjoin__Repr) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Stringjoin.Repr"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Stringjoin.Repr"}.AsBytes()
 }
 func (_StructRepresentation_Stringjoin__Repr) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Stringjoin.Repr"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Stringjoin.Repr"}.AsLink()
 }
 func (_StructRepresentation_Stringjoin__Repr) Prototype() ipld.NodePrototype {
 	return _StructRepresentation_Stringjoin__ReprPrototype{}
@@ -21747,7 +21747,7 @@ func (na *_StructRepresentation_Stringjoin__ReprAssembler) BeginMap(int64) (ipld
 	return na, nil
 }
 func (_StructRepresentation_Stringjoin__ReprAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Stringjoin.Repr"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Stringjoin.Repr"}.BeginList(0)
 }
 func (na *_StructRepresentation_Stringjoin__ReprAssembler) AssignNull() error {
 	switch *na.m {
@@ -21755,7 +21755,7 @@ func (na *_StructRepresentation_Stringjoin__ReprAssembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.StructRepresentation_Stringjoin.Repr.Repr"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Stringjoin.Repr.Repr"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -21764,22 +21764,22 @@ func (na *_StructRepresentation_Stringjoin__ReprAssembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_StructRepresentation_Stringjoin__ReprAssembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Stringjoin.Repr"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Stringjoin.Repr"}.AssignBool(false)
 }
 func (_StructRepresentation_Stringjoin__ReprAssembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Stringjoin.Repr"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Stringjoin.Repr"}.AssignInt(0)
 }
 func (_StructRepresentation_Stringjoin__ReprAssembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Stringjoin.Repr"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Stringjoin.Repr"}.AssignFloat(0)
 }
 func (_StructRepresentation_Stringjoin__ReprAssembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Stringjoin.Repr"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Stringjoin.Repr"}.AssignString("")
 }
 func (_StructRepresentation_Stringjoin__ReprAssembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Stringjoin.Repr"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Stringjoin.Repr"}.AssignBytes(nil)
 }
 func (_StructRepresentation_Stringjoin__ReprAssembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Stringjoin.Repr"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Stringjoin.Repr"}.AssignLink(nil)
 }
 func (na *_StructRepresentation_Stringjoin__ReprAssembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -21968,22 +21968,22 @@ func (ma *_StructRepresentation_Stringjoin__ReprAssembler) ValuePrototype(k stri
 type _StructRepresentation_Stringjoin__ReprKeyAssembler _StructRepresentation_Stringjoin__ReprAssembler
 
 func (_StructRepresentation_Stringjoin__ReprKeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Stringjoin.Repr.KeyAssembler"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Stringjoin.Repr.KeyAssembler"}.BeginMap(0)
 }
 func (_StructRepresentation_Stringjoin__ReprKeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Stringjoin.Repr.KeyAssembler"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Stringjoin.Repr.KeyAssembler"}.BeginList(0)
 }
 func (na *_StructRepresentation_Stringjoin__ReprKeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Stringjoin.Repr.KeyAssembler"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Stringjoin.Repr.KeyAssembler"}.AssignNull()
 }
 func (_StructRepresentation_Stringjoin__ReprKeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Stringjoin.Repr.KeyAssembler"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Stringjoin.Repr.KeyAssembler"}.AssignBool(false)
 }
 func (_StructRepresentation_Stringjoin__ReprKeyAssembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Stringjoin.Repr.KeyAssembler"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Stringjoin.Repr.KeyAssembler"}.AssignInt(0)
 }
 func (_StructRepresentation_Stringjoin__ReprKeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Stringjoin.Repr.KeyAssembler"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Stringjoin.Repr.KeyAssembler"}.AssignFloat(0)
 }
 func (ka *_StructRepresentation_Stringjoin__ReprKeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
@@ -22010,10 +22010,10 @@ func (ka *_StructRepresentation_Stringjoin__ReprKeyAssembler) AssignString(k str
 	return ipld.ErrInvalidKey{TypeName: "schemadmt.StructRepresentation_Stringjoin.Repr", Key: &_String{k}}
 }
 func (_StructRepresentation_Stringjoin__ReprKeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Stringjoin.Repr.KeyAssembler"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Stringjoin.Repr.KeyAssembler"}.AssignBytes(nil)
 }
 func (_StructRepresentation_Stringjoin__ReprKeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Stringjoin.Repr.KeyAssembler"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Stringjoin.Repr.KeyAssembler"}.AssignLink(nil)
 }
 func (ka *_StructRepresentation_Stringjoin__ReprKeyAssembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
@@ -22095,7 +22095,7 @@ func (n StructRepresentation_Stringpairs) LookupByNode(key ipld.Node) (ipld.Node
 	return n.LookupByString(ks)
 }
 func (StructRepresentation_Stringpairs) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Stringpairs"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Stringpairs"}.LookupByIndex(0)
 }
 func (n StructRepresentation_Stringpairs) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -22143,22 +22143,22 @@ func (StructRepresentation_Stringpairs) IsNull() bool {
 	return false
 }
 func (StructRepresentation_Stringpairs) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Stringpairs"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Stringpairs"}.AsBool()
 }
 func (StructRepresentation_Stringpairs) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Stringpairs"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Stringpairs"}.AsInt()
 }
 func (StructRepresentation_Stringpairs) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Stringpairs"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Stringpairs"}.AsFloat()
 }
 func (StructRepresentation_Stringpairs) AsString() (string, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Stringpairs"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Stringpairs"}.AsString()
 }
 func (StructRepresentation_Stringpairs) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Stringpairs"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Stringpairs"}.AsBytes()
 }
 func (StructRepresentation_Stringpairs) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Stringpairs"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Stringpairs"}.AsLink()
 }
 func (StructRepresentation_Stringpairs) Prototype() ipld.NodePrototype {
 	return _StructRepresentation_Stringpairs__Prototype{}
@@ -22227,7 +22227,7 @@ func (na *_StructRepresentation_Stringpairs__Assembler) BeginMap(int64) (ipld.Ma
 	return na, nil
 }
 func (_StructRepresentation_Stringpairs__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Stringpairs"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Stringpairs"}.BeginList(0)
 }
 func (na *_StructRepresentation_Stringpairs__Assembler) AssignNull() error {
 	switch *na.m {
@@ -22235,7 +22235,7 @@ func (na *_StructRepresentation_Stringpairs__Assembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.StructRepresentation_Stringpairs"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Stringpairs"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -22244,22 +22244,22 @@ func (na *_StructRepresentation_Stringpairs__Assembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_StructRepresentation_Stringpairs__Assembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Stringpairs"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Stringpairs"}.AssignBool(false)
 }
 func (_StructRepresentation_Stringpairs__Assembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Stringpairs"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Stringpairs"}.AssignInt(0)
 }
 func (_StructRepresentation_Stringpairs__Assembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Stringpairs"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Stringpairs"}.AssignFloat(0)
 }
 func (_StructRepresentation_Stringpairs__Assembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Stringpairs"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Stringpairs"}.AssignString("")
 }
 func (_StructRepresentation_Stringpairs__Assembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Stringpairs"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Stringpairs"}.AssignBytes(nil)
 }
 func (_StructRepresentation_Stringpairs__Assembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Stringpairs"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Stringpairs"}.AssignLink(nil)
 }
 func (na *_StructRepresentation_Stringpairs__Assembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -22451,22 +22451,22 @@ func (ma *_StructRepresentation_Stringpairs__Assembler) ValuePrototype(k string)
 type _StructRepresentation_Stringpairs__KeyAssembler _StructRepresentation_Stringpairs__Assembler
 
 func (_StructRepresentation_Stringpairs__KeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Stringpairs.KeyAssembler"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Stringpairs.KeyAssembler"}.BeginMap(0)
 }
 func (_StructRepresentation_Stringpairs__KeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Stringpairs.KeyAssembler"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Stringpairs.KeyAssembler"}.BeginList(0)
 }
 func (na *_StructRepresentation_Stringpairs__KeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Stringpairs.KeyAssembler"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Stringpairs.KeyAssembler"}.AssignNull()
 }
 func (_StructRepresentation_Stringpairs__KeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Stringpairs.KeyAssembler"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Stringpairs.KeyAssembler"}.AssignBool(false)
 }
 func (_StructRepresentation_Stringpairs__KeyAssembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Stringpairs.KeyAssembler"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Stringpairs.KeyAssembler"}.AssignInt(0)
 }
 func (_StructRepresentation_Stringpairs__KeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Stringpairs.KeyAssembler"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Stringpairs.KeyAssembler"}.AssignFloat(0)
 }
 func (ka *_StructRepresentation_Stringpairs__KeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
@@ -22493,10 +22493,10 @@ func (ka *_StructRepresentation_Stringpairs__KeyAssembler) AssignString(k string
 	return nil
 }
 func (_StructRepresentation_Stringpairs__KeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Stringpairs.KeyAssembler"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Stringpairs.KeyAssembler"}.AssignBytes(nil)
 }
 func (_StructRepresentation_Stringpairs__KeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Stringpairs.KeyAssembler"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Stringpairs.KeyAssembler"}.AssignLink(nil)
 }
 func (ka *_StructRepresentation_Stringpairs__KeyAssembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
@@ -22544,7 +22544,7 @@ func (n *_StructRepresentation_Stringpairs__Repr) LookupByNode(key ipld.Node) (i
 	return n.LookupByString(ks)
 }
 func (_StructRepresentation_Stringpairs__Repr) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Stringpairs.Repr"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Stringpairs.Repr"}.LookupByIndex(0)
 }
 func (n _StructRepresentation_Stringpairs__Repr) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -22592,22 +22592,22 @@ func (_StructRepresentation_Stringpairs__Repr) IsNull() bool {
 	return false
 }
 func (_StructRepresentation_Stringpairs__Repr) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Stringpairs.Repr"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Stringpairs.Repr"}.AsBool()
 }
 func (_StructRepresentation_Stringpairs__Repr) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Stringpairs.Repr"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Stringpairs.Repr"}.AsInt()
 }
 func (_StructRepresentation_Stringpairs__Repr) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Stringpairs.Repr"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Stringpairs.Repr"}.AsFloat()
 }
 func (_StructRepresentation_Stringpairs__Repr) AsString() (string, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Stringpairs.Repr"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Stringpairs.Repr"}.AsString()
 }
 func (_StructRepresentation_Stringpairs__Repr) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Stringpairs.Repr"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Stringpairs.Repr"}.AsBytes()
 }
 func (_StructRepresentation_Stringpairs__Repr) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Stringpairs.Repr"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Stringpairs.Repr"}.AsLink()
 }
 func (_StructRepresentation_Stringpairs__Repr) Prototype() ipld.NodePrototype {
 	return _StructRepresentation_Stringpairs__ReprPrototype{}
@@ -22669,7 +22669,7 @@ func (na *_StructRepresentation_Stringpairs__ReprAssembler) BeginMap(int64) (ipl
 	return na, nil
 }
 func (_StructRepresentation_Stringpairs__ReprAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Stringpairs.Repr"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Stringpairs.Repr"}.BeginList(0)
 }
 func (na *_StructRepresentation_Stringpairs__ReprAssembler) AssignNull() error {
 	switch *na.m {
@@ -22677,7 +22677,7 @@ func (na *_StructRepresentation_Stringpairs__ReprAssembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.StructRepresentation_Stringpairs.Repr.Repr"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Stringpairs.Repr.Repr"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -22686,22 +22686,22 @@ func (na *_StructRepresentation_Stringpairs__ReprAssembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_StructRepresentation_Stringpairs__ReprAssembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Stringpairs.Repr"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Stringpairs.Repr"}.AssignBool(false)
 }
 func (_StructRepresentation_Stringpairs__ReprAssembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Stringpairs.Repr"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Stringpairs.Repr"}.AssignInt(0)
 }
 func (_StructRepresentation_Stringpairs__ReprAssembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Stringpairs.Repr"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Stringpairs.Repr"}.AssignFloat(0)
 }
 func (_StructRepresentation_Stringpairs__ReprAssembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Stringpairs.Repr"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Stringpairs.Repr"}.AssignString("")
 }
 func (_StructRepresentation_Stringpairs__ReprAssembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Stringpairs.Repr"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Stringpairs.Repr"}.AssignBytes(nil)
 }
 func (_StructRepresentation_Stringpairs__ReprAssembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Stringpairs.Repr"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Stringpairs.Repr"}.AssignLink(nil)
 }
 func (na *_StructRepresentation_Stringpairs__ReprAssembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -22892,22 +22892,22 @@ func (ma *_StructRepresentation_Stringpairs__ReprAssembler) ValuePrototype(k str
 type _StructRepresentation_Stringpairs__ReprKeyAssembler _StructRepresentation_Stringpairs__ReprAssembler
 
 func (_StructRepresentation_Stringpairs__ReprKeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Stringpairs.Repr.KeyAssembler"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Stringpairs.Repr.KeyAssembler"}.BeginMap(0)
 }
 func (_StructRepresentation_Stringpairs__ReprKeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Stringpairs.Repr.KeyAssembler"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Stringpairs.Repr.KeyAssembler"}.BeginList(0)
 }
 func (na *_StructRepresentation_Stringpairs__ReprKeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Stringpairs.Repr.KeyAssembler"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Stringpairs.Repr.KeyAssembler"}.AssignNull()
 }
 func (_StructRepresentation_Stringpairs__ReprKeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Stringpairs.Repr.KeyAssembler"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Stringpairs.Repr.KeyAssembler"}.AssignBool(false)
 }
 func (_StructRepresentation_Stringpairs__ReprKeyAssembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Stringpairs.Repr.KeyAssembler"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Stringpairs.Repr.KeyAssembler"}.AssignInt(0)
 }
 func (_StructRepresentation_Stringpairs__ReprKeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Stringpairs.Repr.KeyAssembler"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Stringpairs.Repr.KeyAssembler"}.AssignFloat(0)
 }
 func (ka *_StructRepresentation_Stringpairs__ReprKeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
@@ -22934,10 +22934,10 @@ func (ka *_StructRepresentation_Stringpairs__ReprKeyAssembler) AssignString(k st
 	return ipld.ErrInvalidKey{TypeName: "schemadmt.StructRepresentation_Stringpairs.Repr", Key: &_String{k}}
 }
 func (_StructRepresentation_Stringpairs__ReprKeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Stringpairs.Repr.KeyAssembler"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Stringpairs.Repr.KeyAssembler"}.AssignBytes(nil)
 }
 func (_StructRepresentation_Stringpairs__ReprKeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Stringpairs.Repr.KeyAssembler"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Stringpairs.Repr.KeyAssembler"}.AssignLink(nil)
 }
 func (ka *_StructRepresentation_Stringpairs__ReprKeyAssembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
@@ -23016,7 +23016,7 @@ func (n StructRepresentation_Tuple) LookupByNode(key ipld.Node) (ipld.Node, erro
 	return n.LookupByString(ks)
 }
 func (StructRepresentation_Tuple) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Tuple"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Tuple"}.LookupByIndex(0)
 }
 func (n StructRepresentation_Tuple) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -23065,22 +23065,22 @@ func (StructRepresentation_Tuple) IsNull() bool {
 	return false
 }
 func (StructRepresentation_Tuple) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Tuple"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Tuple"}.AsBool()
 }
 func (StructRepresentation_Tuple) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Tuple"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Tuple"}.AsInt()
 }
 func (StructRepresentation_Tuple) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Tuple"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Tuple"}.AsFloat()
 }
 func (StructRepresentation_Tuple) AsString() (string, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Tuple"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Tuple"}.AsString()
 }
 func (StructRepresentation_Tuple) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Tuple"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Tuple"}.AsBytes()
 }
 func (StructRepresentation_Tuple) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Tuple"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Tuple"}.AsLink()
 }
 func (StructRepresentation_Tuple) Prototype() ipld.NodePrototype {
 	return _StructRepresentation_Tuple__Prototype{}
@@ -23146,7 +23146,7 @@ func (na *_StructRepresentation_Tuple__Assembler) BeginMap(int64) (ipld.MapAssem
 	return na, nil
 }
 func (_StructRepresentation_Tuple__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Tuple"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Tuple"}.BeginList(0)
 }
 func (na *_StructRepresentation_Tuple__Assembler) AssignNull() error {
 	switch *na.m {
@@ -23154,7 +23154,7 @@ func (na *_StructRepresentation_Tuple__Assembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.StructRepresentation_Tuple"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Tuple"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -23163,22 +23163,22 @@ func (na *_StructRepresentation_Tuple__Assembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_StructRepresentation_Tuple__Assembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Tuple"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Tuple"}.AssignBool(false)
 }
 func (_StructRepresentation_Tuple__Assembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Tuple"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Tuple"}.AssignInt(0)
 }
 func (_StructRepresentation_Tuple__Assembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Tuple"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Tuple"}.AssignFloat(0)
 }
 func (_StructRepresentation_Tuple__Assembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Tuple"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Tuple"}.AssignString("")
 }
 func (_StructRepresentation_Tuple__Assembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Tuple"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Tuple"}.AssignBytes(nil)
 }
 func (_StructRepresentation_Tuple__Assembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Tuple"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Tuple"}.AssignLink(nil)
 }
 func (na *_StructRepresentation_Tuple__Assembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -23338,22 +23338,22 @@ func (ma *_StructRepresentation_Tuple__Assembler) ValuePrototype(k string) ipld.
 type _StructRepresentation_Tuple__KeyAssembler _StructRepresentation_Tuple__Assembler
 
 func (_StructRepresentation_Tuple__KeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Tuple.KeyAssembler"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Tuple.KeyAssembler"}.BeginMap(0)
 }
 func (_StructRepresentation_Tuple__KeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Tuple.KeyAssembler"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Tuple.KeyAssembler"}.BeginList(0)
 }
 func (na *_StructRepresentation_Tuple__KeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Tuple.KeyAssembler"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Tuple.KeyAssembler"}.AssignNull()
 }
 func (_StructRepresentation_Tuple__KeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Tuple.KeyAssembler"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Tuple.KeyAssembler"}.AssignBool(false)
 }
 func (_StructRepresentation_Tuple__KeyAssembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Tuple.KeyAssembler"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Tuple.KeyAssembler"}.AssignInt(0)
 }
 func (_StructRepresentation_Tuple__KeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Tuple.KeyAssembler"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Tuple.KeyAssembler"}.AssignFloat(0)
 }
 func (ka *_StructRepresentation_Tuple__KeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
@@ -23373,10 +23373,10 @@ func (ka *_StructRepresentation_Tuple__KeyAssembler) AssignString(k string) erro
 	return nil
 }
 func (_StructRepresentation_Tuple__KeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Tuple.KeyAssembler"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Tuple.KeyAssembler"}.AssignBytes(nil)
 }
 func (_StructRepresentation_Tuple__KeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Tuple.KeyAssembler"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Tuple.KeyAssembler"}.AssignLink(nil)
 }
 func (ka *_StructRepresentation_Tuple__KeyAssembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
@@ -23424,7 +23424,7 @@ func (n *_StructRepresentation_Tuple__Repr) LookupByNode(key ipld.Node) (ipld.No
 	return n.LookupByString(ks)
 }
 func (_StructRepresentation_Tuple__Repr) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Tuple.Repr"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Tuple.Repr"}.LookupByIndex(0)
 }
 func (n _StructRepresentation_Tuple__Repr) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -23485,22 +23485,22 @@ func (_StructRepresentation_Tuple__Repr) IsNull() bool {
 	return false
 }
 func (_StructRepresentation_Tuple__Repr) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Tuple.Repr"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Tuple.Repr"}.AsBool()
 }
 func (_StructRepresentation_Tuple__Repr) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Tuple.Repr"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Tuple.Repr"}.AsInt()
 }
 func (_StructRepresentation_Tuple__Repr) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Tuple.Repr"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Tuple.Repr"}.AsFloat()
 }
 func (_StructRepresentation_Tuple__Repr) AsString() (string, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Tuple.Repr"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Tuple.Repr"}.AsString()
 }
 func (_StructRepresentation_Tuple__Repr) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Tuple.Repr"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Tuple.Repr"}.AsBytes()
 }
 func (_StructRepresentation_Tuple__Repr) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.StructRepresentation_Tuple.Repr"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.StructRepresentation_Tuple.Repr"}.AsLink()
 }
 func (_StructRepresentation_Tuple__Repr) Prototype() ipld.NodePrototype {
 	return _StructRepresentation_Tuple__ReprPrototype{}
@@ -23560,7 +23560,7 @@ func (na *_StructRepresentation_Tuple__ReprAssembler) BeginMap(int64) (ipld.MapA
 	return na, nil
 }
 func (_StructRepresentation_Tuple__ReprAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Tuple.Repr"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Tuple.Repr"}.BeginList(0)
 }
 func (na *_StructRepresentation_Tuple__ReprAssembler) AssignNull() error {
 	switch *na.m {
@@ -23568,7 +23568,7 @@ func (na *_StructRepresentation_Tuple__ReprAssembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.StructRepresentation_Tuple.Repr.Repr"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Tuple.Repr.Repr"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -23577,22 +23577,22 @@ func (na *_StructRepresentation_Tuple__ReprAssembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_StructRepresentation_Tuple__ReprAssembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Tuple.Repr"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Tuple.Repr"}.AssignBool(false)
 }
 func (_StructRepresentation_Tuple__ReprAssembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Tuple.Repr"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Tuple.Repr"}.AssignInt(0)
 }
 func (_StructRepresentation_Tuple__ReprAssembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Tuple.Repr"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Tuple.Repr"}.AssignFloat(0)
 }
 func (_StructRepresentation_Tuple__ReprAssembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Tuple.Repr"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Tuple.Repr"}.AssignString("")
 }
 func (_StructRepresentation_Tuple__ReprAssembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Tuple.Repr"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Tuple.Repr"}.AssignBytes(nil)
 }
 func (_StructRepresentation_Tuple__ReprAssembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.StructRepresentation_Tuple.Repr"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.StructRepresentation_Tuple.Repr"}.AssignLink(nil)
 }
 func (na *_StructRepresentation_Tuple__ReprAssembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -23755,22 +23755,22 @@ func (ma *_StructRepresentation_Tuple__ReprAssembler) ValuePrototype(k string) i
 type _StructRepresentation_Tuple__ReprKeyAssembler _StructRepresentation_Tuple__ReprAssembler
 
 func (_StructRepresentation_Tuple__ReprKeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Tuple.Repr.KeyAssembler"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Tuple.Repr.KeyAssembler"}.BeginMap(0)
 }
 func (_StructRepresentation_Tuple__ReprKeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Tuple.Repr.KeyAssembler"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Tuple.Repr.KeyAssembler"}.BeginList(0)
 }
 func (na *_StructRepresentation_Tuple__ReprKeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Tuple.Repr.KeyAssembler"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Tuple.Repr.KeyAssembler"}.AssignNull()
 }
 func (_StructRepresentation_Tuple__ReprKeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Tuple.Repr.KeyAssembler"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Tuple.Repr.KeyAssembler"}.AssignBool(false)
 }
 func (_StructRepresentation_Tuple__ReprKeyAssembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Tuple.Repr.KeyAssembler"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Tuple.Repr.KeyAssembler"}.AssignInt(0)
 }
 func (_StructRepresentation_Tuple__ReprKeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Tuple.Repr.KeyAssembler"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Tuple.Repr.KeyAssembler"}.AssignFloat(0)
 }
 func (ka *_StructRepresentation_Tuple__ReprKeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
@@ -23789,10 +23789,10 @@ func (ka *_StructRepresentation_Tuple__ReprKeyAssembler) AssignString(k string) 
 	return ipld.ErrInvalidKey{TypeName: "schemadmt.StructRepresentation_Tuple.Repr", Key: &_String{k}}
 }
 func (_StructRepresentation_Tuple__ReprKeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Tuple.Repr.KeyAssembler"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Tuple.Repr.KeyAssembler"}.AssignBytes(nil)
 }
 func (_StructRepresentation_Tuple__ReprKeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.StructRepresentation_Tuple.Repr.KeyAssembler"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Tuple.Repr.KeyAssembler"}.AssignLink(nil)
 }
 func (ka *_StructRepresentation_Tuple__ReprKeyAssembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
@@ -23860,7 +23860,7 @@ func (n TypeBool) LookupByNode(key ipld.Node) (ipld.Node, error) {
 	return n.LookupByString(ks)
 }
 func (TypeBool) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.TypeBool"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.TypeBool"}.LookupByIndex(0)
 }
 func (n TypeBool) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -23895,22 +23895,22 @@ func (TypeBool) IsNull() bool {
 	return false
 }
 func (TypeBool) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.TypeBool"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.TypeBool"}.AsBool()
 }
 func (TypeBool) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.TypeBool"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.TypeBool"}.AsInt()
 }
 func (TypeBool) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.TypeBool"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.TypeBool"}.AsFloat()
 }
 func (TypeBool) AsString() (string, error) {
-	return mixins.Map{"schemadmt.TypeBool"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.TypeBool"}.AsString()
 }
 func (TypeBool) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.TypeBool"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.TypeBool"}.AsBytes()
 }
 func (TypeBool) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.TypeBool"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.TypeBool"}.AsLink()
 }
 func (TypeBool) Prototype() ipld.NodePrototype {
 	return _TypeBool__Prototype{}
@@ -23973,7 +23973,7 @@ func (na *_TypeBool__Assembler) BeginMap(int64) (ipld.MapAssembler, error) {
 	return na, nil
 }
 func (_TypeBool__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.TypeBool"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeBool"}.BeginList(0)
 }
 func (na *_TypeBool__Assembler) AssignNull() error {
 	switch *na.m {
@@ -23981,7 +23981,7 @@ func (na *_TypeBool__Assembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.TypeBool"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.TypeBool"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -23990,22 +23990,22 @@ func (na *_TypeBool__Assembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_TypeBool__Assembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.TypeBool"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeBool"}.AssignBool(false)
 }
 func (_TypeBool__Assembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.TypeBool"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeBool"}.AssignInt(0)
 }
 func (_TypeBool__Assembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.TypeBool"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeBool"}.AssignFloat(0)
 }
 func (_TypeBool__Assembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.TypeBool"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeBool"}.AssignString("")
 }
 func (_TypeBool__Assembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.TypeBool"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeBool"}.AssignBytes(nil)
 }
 func (_TypeBool__Assembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.TypeBool"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeBool"}.AssignLink(nil)
 }
 func (na *_TypeBool__Assembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -24141,22 +24141,22 @@ func (ma *_TypeBool__Assembler) ValuePrototype(k string) ipld.NodePrototype {
 type _TypeBool__KeyAssembler _TypeBool__Assembler
 
 func (_TypeBool__KeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.TypeBool.KeyAssembler"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeBool.KeyAssembler"}.BeginMap(0)
 }
 func (_TypeBool__KeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.TypeBool.KeyAssembler"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeBool.KeyAssembler"}.BeginList(0)
 }
 func (na *_TypeBool__KeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"schemadmt.TypeBool.KeyAssembler"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeBool.KeyAssembler"}.AssignNull()
 }
 func (_TypeBool__KeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.TypeBool.KeyAssembler"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeBool.KeyAssembler"}.AssignBool(false)
 }
 func (_TypeBool__KeyAssembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.TypeBool.KeyAssembler"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeBool.KeyAssembler"}.AssignInt(0)
 }
 func (_TypeBool__KeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.TypeBool.KeyAssembler"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeBool.KeyAssembler"}.AssignFloat(0)
 }
 func (ka *_TypeBool__KeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
@@ -24169,10 +24169,10 @@ func (ka *_TypeBool__KeyAssembler) AssignString(k string) error {
 	return nil
 }
 func (_TypeBool__KeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.TypeBool.KeyAssembler"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeBool.KeyAssembler"}.AssignBytes(nil)
 }
 func (_TypeBool__KeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.TypeBool.KeyAssembler"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeBool.KeyAssembler"}.AssignLink(nil)
 }
 func (ka *_TypeBool__KeyAssembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
@@ -24213,7 +24213,7 @@ func (n *_TypeBool__Repr) LookupByNode(key ipld.Node) (ipld.Node, error) {
 	return n.LookupByString(ks)
 }
 func (_TypeBool__Repr) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.TypeBool.Repr"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.TypeBool.Repr"}.LookupByIndex(0)
 }
 func (n _TypeBool__Repr) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -24248,22 +24248,22 @@ func (_TypeBool__Repr) IsNull() bool {
 	return false
 }
 func (_TypeBool__Repr) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.TypeBool.Repr"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.TypeBool.Repr"}.AsBool()
 }
 func (_TypeBool__Repr) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.TypeBool.Repr"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.TypeBool.Repr"}.AsInt()
 }
 func (_TypeBool__Repr) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.TypeBool.Repr"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.TypeBool.Repr"}.AsFloat()
 }
 func (_TypeBool__Repr) AsString() (string, error) {
-	return mixins.Map{"schemadmt.TypeBool.Repr"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.TypeBool.Repr"}.AsString()
 }
 func (_TypeBool__Repr) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.TypeBool.Repr"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.TypeBool.Repr"}.AsBytes()
 }
 func (_TypeBool__Repr) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.TypeBool.Repr"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.TypeBool.Repr"}.AsLink()
 }
 func (_TypeBool__Repr) Prototype() ipld.NodePrototype {
 	return _TypeBool__ReprPrototype{}
@@ -24321,7 +24321,7 @@ func (na *_TypeBool__ReprAssembler) BeginMap(int64) (ipld.MapAssembler, error) {
 	return na, nil
 }
 func (_TypeBool__ReprAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.TypeBool.Repr"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeBool.Repr"}.BeginList(0)
 }
 func (na *_TypeBool__ReprAssembler) AssignNull() error {
 	switch *na.m {
@@ -24329,7 +24329,7 @@ func (na *_TypeBool__ReprAssembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.TypeBool.Repr.Repr"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.TypeBool.Repr.Repr"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -24338,22 +24338,22 @@ func (na *_TypeBool__ReprAssembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_TypeBool__ReprAssembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.TypeBool.Repr"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeBool.Repr"}.AssignBool(false)
 }
 func (_TypeBool__ReprAssembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.TypeBool.Repr"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeBool.Repr"}.AssignInt(0)
 }
 func (_TypeBool__ReprAssembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.TypeBool.Repr"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeBool.Repr"}.AssignFloat(0)
 }
 func (_TypeBool__ReprAssembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.TypeBool.Repr"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeBool.Repr"}.AssignString("")
 }
 func (_TypeBool__ReprAssembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.TypeBool.Repr"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeBool.Repr"}.AssignBytes(nil)
 }
 func (_TypeBool__ReprAssembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.TypeBool.Repr"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeBool.Repr"}.AssignLink(nil)
 }
 func (na *_TypeBool__ReprAssembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -24489,22 +24489,22 @@ func (ma *_TypeBool__ReprAssembler) ValuePrototype(k string) ipld.NodePrototype 
 type _TypeBool__ReprKeyAssembler _TypeBool__ReprAssembler
 
 func (_TypeBool__ReprKeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.TypeBool.Repr.KeyAssembler"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeBool.Repr.KeyAssembler"}.BeginMap(0)
 }
 func (_TypeBool__ReprKeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.TypeBool.Repr.KeyAssembler"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeBool.Repr.KeyAssembler"}.BeginList(0)
 }
 func (na *_TypeBool__ReprKeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"schemadmt.TypeBool.Repr.KeyAssembler"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeBool.Repr.KeyAssembler"}.AssignNull()
 }
 func (_TypeBool__ReprKeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.TypeBool.Repr.KeyAssembler"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeBool.Repr.KeyAssembler"}.AssignBool(false)
 }
 func (_TypeBool__ReprKeyAssembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.TypeBool.Repr.KeyAssembler"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeBool.Repr.KeyAssembler"}.AssignInt(0)
 }
 func (_TypeBool__ReprKeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.TypeBool.Repr.KeyAssembler"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeBool.Repr.KeyAssembler"}.AssignFloat(0)
 }
 func (ka *_TypeBool__ReprKeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
@@ -24513,10 +24513,10 @@ func (ka *_TypeBool__ReprKeyAssembler) AssignString(k string) error {
 	return ipld.ErrInvalidKey{TypeName: "schemadmt.TypeBool.Repr", Key: &_String{k}}
 }
 func (_TypeBool__ReprKeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.TypeBool.Repr.KeyAssembler"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeBool.Repr.KeyAssembler"}.AssignBytes(nil)
 }
 func (_TypeBool__ReprKeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.TypeBool.Repr.KeyAssembler"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeBool.Repr.KeyAssembler"}.AssignLink(nil)
 }
 func (ka *_TypeBool__ReprKeyAssembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
@@ -24584,7 +24584,7 @@ func (n TypeBytes) LookupByNode(key ipld.Node) (ipld.Node, error) {
 	return n.LookupByString(ks)
 }
 func (TypeBytes) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.TypeBytes"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.TypeBytes"}.LookupByIndex(0)
 }
 func (n TypeBytes) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -24619,22 +24619,22 @@ func (TypeBytes) IsNull() bool {
 	return false
 }
 func (TypeBytes) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.TypeBytes"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.TypeBytes"}.AsBool()
 }
 func (TypeBytes) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.TypeBytes"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.TypeBytes"}.AsInt()
 }
 func (TypeBytes) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.TypeBytes"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.TypeBytes"}.AsFloat()
 }
 func (TypeBytes) AsString() (string, error) {
-	return mixins.Map{"schemadmt.TypeBytes"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.TypeBytes"}.AsString()
 }
 func (TypeBytes) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.TypeBytes"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.TypeBytes"}.AsBytes()
 }
 func (TypeBytes) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.TypeBytes"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.TypeBytes"}.AsLink()
 }
 func (TypeBytes) Prototype() ipld.NodePrototype {
 	return _TypeBytes__Prototype{}
@@ -24697,7 +24697,7 @@ func (na *_TypeBytes__Assembler) BeginMap(int64) (ipld.MapAssembler, error) {
 	return na, nil
 }
 func (_TypeBytes__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.TypeBytes"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeBytes"}.BeginList(0)
 }
 func (na *_TypeBytes__Assembler) AssignNull() error {
 	switch *na.m {
@@ -24705,7 +24705,7 @@ func (na *_TypeBytes__Assembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.TypeBytes"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.TypeBytes"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -24714,22 +24714,22 @@ func (na *_TypeBytes__Assembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_TypeBytes__Assembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.TypeBytes"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeBytes"}.AssignBool(false)
 }
 func (_TypeBytes__Assembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.TypeBytes"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeBytes"}.AssignInt(0)
 }
 func (_TypeBytes__Assembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.TypeBytes"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeBytes"}.AssignFloat(0)
 }
 func (_TypeBytes__Assembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.TypeBytes"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeBytes"}.AssignString("")
 }
 func (_TypeBytes__Assembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.TypeBytes"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeBytes"}.AssignBytes(nil)
 }
 func (_TypeBytes__Assembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.TypeBytes"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeBytes"}.AssignLink(nil)
 }
 func (na *_TypeBytes__Assembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -24865,22 +24865,22 @@ func (ma *_TypeBytes__Assembler) ValuePrototype(k string) ipld.NodePrototype {
 type _TypeBytes__KeyAssembler _TypeBytes__Assembler
 
 func (_TypeBytes__KeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.TypeBytes.KeyAssembler"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeBytes.KeyAssembler"}.BeginMap(0)
 }
 func (_TypeBytes__KeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.TypeBytes.KeyAssembler"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeBytes.KeyAssembler"}.BeginList(0)
 }
 func (na *_TypeBytes__KeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"schemadmt.TypeBytes.KeyAssembler"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeBytes.KeyAssembler"}.AssignNull()
 }
 func (_TypeBytes__KeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.TypeBytes.KeyAssembler"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeBytes.KeyAssembler"}.AssignBool(false)
 }
 func (_TypeBytes__KeyAssembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.TypeBytes.KeyAssembler"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeBytes.KeyAssembler"}.AssignInt(0)
 }
 func (_TypeBytes__KeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.TypeBytes.KeyAssembler"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeBytes.KeyAssembler"}.AssignFloat(0)
 }
 func (ka *_TypeBytes__KeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
@@ -24893,10 +24893,10 @@ func (ka *_TypeBytes__KeyAssembler) AssignString(k string) error {
 	return nil
 }
 func (_TypeBytes__KeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.TypeBytes.KeyAssembler"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeBytes.KeyAssembler"}.AssignBytes(nil)
 }
 func (_TypeBytes__KeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.TypeBytes.KeyAssembler"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeBytes.KeyAssembler"}.AssignLink(nil)
 }
 func (ka *_TypeBytes__KeyAssembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
@@ -24937,7 +24937,7 @@ func (n *_TypeBytes__Repr) LookupByNode(key ipld.Node) (ipld.Node, error) {
 	return n.LookupByString(ks)
 }
 func (_TypeBytes__Repr) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.TypeBytes.Repr"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.TypeBytes.Repr"}.LookupByIndex(0)
 }
 func (n _TypeBytes__Repr) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -24972,22 +24972,22 @@ func (_TypeBytes__Repr) IsNull() bool {
 	return false
 }
 func (_TypeBytes__Repr) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.TypeBytes.Repr"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.TypeBytes.Repr"}.AsBool()
 }
 func (_TypeBytes__Repr) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.TypeBytes.Repr"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.TypeBytes.Repr"}.AsInt()
 }
 func (_TypeBytes__Repr) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.TypeBytes.Repr"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.TypeBytes.Repr"}.AsFloat()
 }
 func (_TypeBytes__Repr) AsString() (string, error) {
-	return mixins.Map{"schemadmt.TypeBytes.Repr"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.TypeBytes.Repr"}.AsString()
 }
 func (_TypeBytes__Repr) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.TypeBytes.Repr"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.TypeBytes.Repr"}.AsBytes()
 }
 func (_TypeBytes__Repr) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.TypeBytes.Repr"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.TypeBytes.Repr"}.AsLink()
 }
 func (_TypeBytes__Repr) Prototype() ipld.NodePrototype {
 	return _TypeBytes__ReprPrototype{}
@@ -25045,7 +25045,7 @@ func (na *_TypeBytes__ReprAssembler) BeginMap(int64) (ipld.MapAssembler, error) 
 	return na, nil
 }
 func (_TypeBytes__ReprAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.TypeBytes.Repr"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeBytes.Repr"}.BeginList(0)
 }
 func (na *_TypeBytes__ReprAssembler) AssignNull() error {
 	switch *na.m {
@@ -25053,7 +25053,7 @@ func (na *_TypeBytes__ReprAssembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.TypeBytes.Repr.Repr"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.TypeBytes.Repr.Repr"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -25062,22 +25062,22 @@ func (na *_TypeBytes__ReprAssembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_TypeBytes__ReprAssembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.TypeBytes.Repr"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeBytes.Repr"}.AssignBool(false)
 }
 func (_TypeBytes__ReprAssembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.TypeBytes.Repr"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeBytes.Repr"}.AssignInt(0)
 }
 func (_TypeBytes__ReprAssembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.TypeBytes.Repr"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeBytes.Repr"}.AssignFloat(0)
 }
 func (_TypeBytes__ReprAssembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.TypeBytes.Repr"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeBytes.Repr"}.AssignString("")
 }
 func (_TypeBytes__ReprAssembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.TypeBytes.Repr"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeBytes.Repr"}.AssignBytes(nil)
 }
 func (_TypeBytes__ReprAssembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.TypeBytes.Repr"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeBytes.Repr"}.AssignLink(nil)
 }
 func (na *_TypeBytes__ReprAssembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -25213,22 +25213,22 @@ func (ma *_TypeBytes__ReprAssembler) ValuePrototype(k string) ipld.NodePrototype
 type _TypeBytes__ReprKeyAssembler _TypeBytes__ReprAssembler
 
 func (_TypeBytes__ReprKeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.TypeBytes.Repr.KeyAssembler"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeBytes.Repr.KeyAssembler"}.BeginMap(0)
 }
 func (_TypeBytes__ReprKeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.TypeBytes.Repr.KeyAssembler"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeBytes.Repr.KeyAssembler"}.BeginList(0)
 }
 func (na *_TypeBytes__ReprKeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"schemadmt.TypeBytes.Repr.KeyAssembler"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeBytes.Repr.KeyAssembler"}.AssignNull()
 }
 func (_TypeBytes__ReprKeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.TypeBytes.Repr.KeyAssembler"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeBytes.Repr.KeyAssembler"}.AssignBool(false)
 }
 func (_TypeBytes__ReprKeyAssembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.TypeBytes.Repr.KeyAssembler"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeBytes.Repr.KeyAssembler"}.AssignInt(0)
 }
 func (_TypeBytes__ReprKeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.TypeBytes.Repr.KeyAssembler"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeBytes.Repr.KeyAssembler"}.AssignFloat(0)
 }
 func (ka *_TypeBytes__ReprKeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
@@ -25237,10 +25237,10 @@ func (ka *_TypeBytes__ReprKeyAssembler) AssignString(k string) error {
 	return ipld.ErrInvalidKey{TypeName: "schemadmt.TypeBytes.Repr", Key: &_String{k}}
 }
 func (_TypeBytes__ReprKeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.TypeBytes.Repr.KeyAssembler"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeBytes.Repr.KeyAssembler"}.AssignBytes(nil)
 }
 func (_TypeBytes__ReprKeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.TypeBytes.Repr.KeyAssembler"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeBytes.Repr.KeyAssembler"}.AssignLink(nil)
 }
 func (ka *_TypeBytes__ReprKeyAssembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
@@ -25316,7 +25316,7 @@ func (n TypeCopy) LookupByNode(key ipld.Node) (ipld.Node, error) {
 	return n.LookupByString(ks)
 }
 func (TypeCopy) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.TypeCopy"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.TypeCopy"}.LookupByIndex(0)
 }
 func (n TypeCopy) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -25361,22 +25361,22 @@ func (TypeCopy) IsNull() bool {
 	return false
 }
 func (TypeCopy) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.TypeCopy"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.TypeCopy"}.AsBool()
 }
 func (TypeCopy) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.TypeCopy"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.TypeCopy"}.AsInt()
 }
 func (TypeCopy) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.TypeCopy"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.TypeCopy"}.AsFloat()
 }
 func (TypeCopy) AsString() (string, error) {
-	return mixins.Map{"schemadmt.TypeCopy"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.TypeCopy"}.AsString()
 }
 func (TypeCopy) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.TypeCopy"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.TypeCopy"}.AsBytes()
 }
 func (TypeCopy) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.TypeCopy"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.TypeCopy"}.AsLink()
 }
 func (TypeCopy) Prototype() ipld.NodePrototype {
 	return _TypeCopy__Prototype{}
@@ -25442,7 +25442,7 @@ func (na *_TypeCopy__Assembler) BeginMap(int64) (ipld.MapAssembler, error) {
 	return na, nil
 }
 func (_TypeCopy__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.TypeCopy"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeCopy"}.BeginList(0)
 }
 func (na *_TypeCopy__Assembler) AssignNull() error {
 	switch *na.m {
@@ -25450,7 +25450,7 @@ func (na *_TypeCopy__Assembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.TypeCopy"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.TypeCopy"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -25459,22 +25459,22 @@ func (na *_TypeCopy__Assembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_TypeCopy__Assembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.TypeCopy"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeCopy"}.AssignBool(false)
 }
 func (_TypeCopy__Assembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.TypeCopy"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeCopy"}.AssignInt(0)
 }
 func (_TypeCopy__Assembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.TypeCopy"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeCopy"}.AssignFloat(0)
 }
 func (_TypeCopy__Assembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.TypeCopy"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeCopy"}.AssignString("")
 }
 func (_TypeCopy__Assembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.TypeCopy"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeCopy"}.AssignBytes(nil)
 }
 func (_TypeCopy__Assembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.TypeCopy"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeCopy"}.AssignLink(nil)
 }
 func (na *_TypeCopy__Assembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -25639,22 +25639,22 @@ func (ma *_TypeCopy__Assembler) ValuePrototype(k string) ipld.NodePrototype {
 type _TypeCopy__KeyAssembler _TypeCopy__Assembler
 
 func (_TypeCopy__KeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.TypeCopy.KeyAssembler"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeCopy.KeyAssembler"}.BeginMap(0)
 }
 func (_TypeCopy__KeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.TypeCopy.KeyAssembler"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeCopy.KeyAssembler"}.BeginList(0)
 }
 func (na *_TypeCopy__KeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"schemadmt.TypeCopy.KeyAssembler"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeCopy.KeyAssembler"}.AssignNull()
 }
 func (_TypeCopy__KeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.TypeCopy.KeyAssembler"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeCopy.KeyAssembler"}.AssignBool(false)
 }
 func (_TypeCopy__KeyAssembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.TypeCopy.KeyAssembler"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeCopy.KeyAssembler"}.AssignInt(0)
 }
 func (_TypeCopy__KeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.TypeCopy.KeyAssembler"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeCopy.KeyAssembler"}.AssignFloat(0)
 }
 func (ka *_TypeCopy__KeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
@@ -25674,10 +25674,10 @@ func (ka *_TypeCopy__KeyAssembler) AssignString(k string) error {
 	return nil
 }
 func (_TypeCopy__KeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.TypeCopy.KeyAssembler"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeCopy.KeyAssembler"}.AssignBytes(nil)
 }
 func (_TypeCopy__KeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.TypeCopy.KeyAssembler"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeCopy.KeyAssembler"}.AssignLink(nil)
 }
 func (ka *_TypeCopy__KeyAssembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
@@ -25722,7 +25722,7 @@ func (n *_TypeCopy__Repr) LookupByNode(key ipld.Node) (ipld.Node, error) {
 	return n.LookupByString(ks)
 }
 func (_TypeCopy__Repr) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.TypeCopy.Repr"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.TypeCopy.Repr"}.LookupByIndex(0)
 }
 func (n _TypeCopy__Repr) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -25767,22 +25767,22 @@ func (_TypeCopy__Repr) IsNull() bool {
 	return false
 }
 func (_TypeCopy__Repr) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.TypeCopy.Repr"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.TypeCopy.Repr"}.AsBool()
 }
 func (_TypeCopy__Repr) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.TypeCopy.Repr"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.TypeCopy.Repr"}.AsInt()
 }
 func (_TypeCopy__Repr) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.TypeCopy.Repr"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.TypeCopy.Repr"}.AsFloat()
 }
 func (_TypeCopy__Repr) AsString() (string, error) {
-	return mixins.Map{"schemadmt.TypeCopy.Repr"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.TypeCopy.Repr"}.AsString()
 }
 func (_TypeCopy__Repr) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.TypeCopy.Repr"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.TypeCopy.Repr"}.AsBytes()
 }
 func (_TypeCopy__Repr) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.TypeCopy.Repr"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.TypeCopy.Repr"}.AsLink()
 }
 func (_TypeCopy__Repr) Prototype() ipld.NodePrototype {
 	return _TypeCopy__ReprPrototype{}
@@ -25842,7 +25842,7 @@ func (na *_TypeCopy__ReprAssembler) BeginMap(int64) (ipld.MapAssembler, error) {
 	return na, nil
 }
 func (_TypeCopy__ReprAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.TypeCopy.Repr"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeCopy.Repr"}.BeginList(0)
 }
 func (na *_TypeCopy__ReprAssembler) AssignNull() error {
 	switch *na.m {
@@ -25850,7 +25850,7 @@ func (na *_TypeCopy__ReprAssembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.TypeCopy.Repr.Repr"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.TypeCopy.Repr.Repr"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -25859,22 +25859,22 @@ func (na *_TypeCopy__ReprAssembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_TypeCopy__ReprAssembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.TypeCopy.Repr"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeCopy.Repr"}.AssignBool(false)
 }
 func (_TypeCopy__ReprAssembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.TypeCopy.Repr"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeCopy.Repr"}.AssignInt(0)
 }
 func (_TypeCopy__ReprAssembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.TypeCopy.Repr"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeCopy.Repr"}.AssignFloat(0)
 }
 func (_TypeCopy__ReprAssembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.TypeCopy.Repr"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeCopy.Repr"}.AssignString("")
 }
 func (_TypeCopy__ReprAssembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.TypeCopy.Repr"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeCopy.Repr"}.AssignBytes(nil)
 }
 func (_TypeCopy__ReprAssembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.TypeCopy.Repr"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeCopy.Repr"}.AssignLink(nil)
 }
 func (na *_TypeCopy__ReprAssembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -26039,22 +26039,22 @@ func (ma *_TypeCopy__ReprAssembler) ValuePrototype(k string) ipld.NodePrototype 
 type _TypeCopy__ReprKeyAssembler _TypeCopy__ReprAssembler
 
 func (_TypeCopy__ReprKeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.TypeCopy.Repr.KeyAssembler"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeCopy.Repr.KeyAssembler"}.BeginMap(0)
 }
 func (_TypeCopy__ReprKeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.TypeCopy.Repr.KeyAssembler"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeCopy.Repr.KeyAssembler"}.BeginList(0)
 }
 func (na *_TypeCopy__ReprKeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"schemadmt.TypeCopy.Repr.KeyAssembler"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeCopy.Repr.KeyAssembler"}.AssignNull()
 }
 func (_TypeCopy__ReprKeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.TypeCopy.Repr.KeyAssembler"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeCopy.Repr.KeyAssembler"}.AssignBool(false)
 }
 func (_TypeCopy__ReprKeyAssembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.TypeCopy.Repr.KeyAssembler"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeCopy.Repr.KeyAssembler"}.AssignInt(0)
 }
 func (_TypeCopy__ReprKeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.TypeCopy.Repr.KeyAssembler"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeCopy.Repr.KeyAssembler"}.AssignFloat(0)
 }
 func (ka *_TypeCopy__ReprKeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
@@ -26073,10 +26073,10 @@ func (ka *_TypeCopy__ReprKeyAssembler) AssignString(k string) error {
 	return ipld.ErrInvalidKey{TypeName: "schemadmt.TypeCopy.Repr", Key: &_String{k}}
 }
 func (_TypeCopy__ReprKeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.TypeCopy.Repr.KeyAssembler"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeCopy.Repr.KeyAssembler"}.AssignBytes(nil)
 }
 func (_TypeCopy__ReprKeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.TypeCopy.Repr.KeyAssembler"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeCopy.Repr.KeyAssembler"}.AssignLink(nil)
 }
 func (ka *_TypeCopy__ReprKeyAssembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
@@ -26248,7 +26248,7 @@ func (n TypeDefn) LookupByNode(key ipld.Node) (ipld.Node, error) {
 	return n.LookupByString(ks)
 }
 func (TypeDefn) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.TypeDefn"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.TypeDefn"}.LookupByIndex(0)
 }
 func (n TypeDefn) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -26314,22 +26314,22 @@ func (TypeDefn) IsNull() bool {
 	return false
 }
 func (TypeDefn) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.TypeDefn"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.TypeDefn"}.AsBool()
 }
 func (TypeDefn) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.TypeDefn"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.TypeDefn"}.AsInt()
 }
 func (TypeDefn) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.TypeDefn"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.TypeDefn"}.AsFloat()
 }
 func (TypeDefn) AsString() (string, error) {
-	return mixins.Map{"schemadmt.TypeDefn"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.TypeDefn"}.AsString()
 }
 func (TypeDefn) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.TypeDefn"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.TypeDefn"}.AsBytes()
 }
 func (TypeDefn) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.TypeDefn"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.TypeDefn"}.AsLink()
 }
 func (TypeDefn) Prototype() ipld.NodePrototype {
 	return _TypeDefn__Prototype{}
@@ -26451,7 +26451,7 @@ func (na *_TypeDefn__Assembler) BeginMap(int64) (ipld.MapAssembler, error) {
 	return na, nil
 }
 func (_TypeDefn__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.TypeDefn"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeDefn"}.BeginList(0)
 }
 func (na *_TypeDefn__Assembler) AssignNull() error {
 	switch *na.m {
@@ -26459,7 +26459,7 @@ func (na *_TypeDefn__Assembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.TypeDefn"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.TypeDefn"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -26468,22 +26468,22 @@ func (na *_TypeDefn__Assembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_TypeDefn__Assembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.TypeDefn"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeDefn"}.AssignBool(false)
 }
 func (_TypeDefn__Assembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.TypeDefn"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeDefn"}.AssignInt(0)
 }
 func (_TypeDefn__Assembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.TypeDefn"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeDefn"}.AssignFloat(0)
 }
 func (_TypeDefn__Assembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.TypeDefn"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeDefn"}.AssignString("")
 }
 func (_TypeDefn__Assembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.TypeDefn"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeDefn"}.AssignBytes(nil)
 }
 func (_TypeDefn__Assembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.TypeDefn"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeDefn"}.AssignLink(nil)
 }
 func (na *_TypeDefn__Assembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -26785,22 +26785,22 @@ func (ma *_TypeDefn__Assembler) ValuePrototype(k string) ipld.NodePrototype {
 type _TypeDefn__KeyAssembler _TypeDefn__Assembler
 
 func (_TypeDefn__KeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.TypeDefn.KeyAssembler"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeDefn.KeyAssembler"}.BeginMap(0)
 }
 func (_TypeDefn__KeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.TypeDefn.KeyAssembler"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeDefn.KeyAssembler"}.BeginList(0)
 }
 func (na *_TypeDefn__KeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"schemadmt.TypeDefn.KeyAssembler"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeDefn.KeyAssembler"}.AssignNull()
 }
 func (_TypeDefn__KeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.TypeDefn.KeyAssembler"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeDefn.KeyAssembler"}.AssignBool(false)
 }
 func (_TypeDefn__KeyAssembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.TypeDefn.KeyAssembler"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeDefn.KeyAssembler"}.AssignInt(0)
 }
 func (_TypeDefn__KeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.TypeDefn.KeyAssembler"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeDefn.KeyAssembler"}.AssignFloat(0)
 }
 func (ka *_TypeDefn__KeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
@@ -26874,10 +26874,10 @@ func (ka *_TypeDefn__KeyAssembler) AssignString(k string) error {
 	return ipld.ErrInvalidKey{TypeName: "schemadmt.TypeDefn", Key: &_String{k}} // TODO: error quality: ErrInvalidUnionDiscriminant ?
 }
 func (_TypeDefn__KeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.TypeDefn.KeyAssembler"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeDefn.KeyAssembler"}.AssignBytes(nil)
 }
 func (_TypeDefn__KeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.TypeDefn.KeyAssembler"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeDefn.KeyAssembler"}.AssignLink(nil)
 }
 func (ka *_TypeDefn__KeyAssembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
@@ -26991,7 +26991,7 @@ func (n *_TypeDefn__Repr) LookupByNode(key ipld.Node) (ipld.Node, error) {
 	return n.LookupByString(ks)
 }
 func (_TypeDefn__Repr) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.TypeDefn.Repr"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.TypeDefn.Repr"}.LookupByIndex(0)
 }
 func (n _TypeDefn__Repr) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -27057,22 +27057,22 @@ func (_TypeDefn__Repr) IsNull() bool {
 	return false
 }
 func (_TypeDefn__Repr) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.TypeDefn.Repr"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.TypeDefn.Repr"}.AsBool()
 }
 func (_TypeDefn__Repr) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.TypeDefn.Repr"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.TypeDefn.Repr"}.AsInt()
 }
 func (_TypeDefn__Repr) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.TypeDefn.Repr"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.TypeDefn.Repr"}.AsFloat()
 }
 func (_TypeDefn__Repr) AsString() (string, error) {
-	return mixins.Map{"schemadmt.TypeDefn.Repr"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.TypeDefn.Repr"}.AsString()
 }
 func (_TypeDefn__Repr) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.TypeDefn.Repr"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.TypeDefn.Repr"}.AsBytes()
 }
 func (_TypeDefn__Repr) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.TypeDefn.Repr"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.TypeDefn.Repr"}.AsLink()
 }
 func (_TypeDefn__Repr) Prototype() ipld.NodePrototype {
 	return _TypeDefn__ReprPrototype{}
@@ -27194,7 +27194,7 @@ func (na *_TypeDefn__ReprAssembler) BeginMap(int64) (ipld.MapAssembler, error) {
 	return na, nil
 }
 func (_TypeDefn__ReprAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.TypeDefn.Repr"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeDefn.Repr"}.BeginList(0)
 }
 func (na *_TypeDefn__ReprAssembler) AssignNull() error {
 	switch *na.m {
@@ -27202,7 +27202,7 @@ func (na *_TypeDefn__ReprAssembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.TypeDefn.Repr.Repr"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.TypeDefn.Repr.Repr"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -27211,22 +27211,22 @@ func (na *_TypeDefn__ReprAssembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_TypeDefn__ReprAssembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.TypeDefn.Repr"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeDefn.Repr"}.AssignBool(false)
 }
 func (_TypeDefn__ReprAssembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.TypeDefn.Repr"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeDefn.Repr"}.AssignInt(0)
 }
 func (_TypeDefn__ReprAssembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.TypeDefn.Repr"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeDefn.Repr"}.AssignFloat(0)
 }
 func (_TypeDefn__ReprAssembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.TypeDefn.Repr"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeDefn.Repr"}.AssignString("")
 }
 func (_TypeDefn__ReprAssembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.TypeDefn.Repr"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeDefn.Repr"}.AssignBytes(nil)
 }
 func (_TypeDefn__ReprAssembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.TypeDefn.Repr"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeDefn.Repr"}.AssignLink(nil)
 }
 func (na *_TypeDefn__ReprAssembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -27528,22 +27528,22 @@ func (ma *_TypeDefn__ReprAssembler) ValuePrototype(k string) ipld.NodePrototype 
 type _TypeDefn__ReprKeyAssembler _TypeDefn__ReprAssembler
 
 func (_TypeDefn__ReprKeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.TypeDefn.Repr.KeyAssembler"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeDefn.Repr.KeyAssembler"}.BeginMap(0)
 }
 func (_TypeDefn__ReprKeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.TypeDefn.Repr.KeyAssembler"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeDefn.Repr.KeyAssembler"}.BeginList(0)
 }
 func (na *_TypeDefn__ReprKeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"schemadmt.TypeDefn.Repr.KeyAssembler"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeDefn.Repr.KeyAssembler"}.AssignNull()
 }
 func (_TypeDefn__ReprKeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.TypeDefn.Repr.KeyAssembler"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeDefn.Repr.KeyAssembler"}.AssignBool(false)
 }
 func (_TypeDefn__ReprKeyAssembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.TypeDefn.Repr.KeyAssembler"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeDefn.Repr.KeyAssembler"}.AssignInt(0)
 }
 func (_TypeDefn__ReprKeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.TypeDefn.Repr.KeyAssembler"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeDefn.Repr.KeyAssembler"}.AssignFloat(0)
 }
 func (ka *_TypeDefn__ReprKeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
@@ -27617,10 +27617,10 @@ func (ka *_TypeDefn__ReprKeyAssembler) AssignString(k string) error {
 	return ipld.ErrInvalidKey{TypeName: "schemadmt.TypeDefn.Repr", Key: &_String{k}} // TODO: error quality: ErrInvalidUnionDiscriminant ?
 }
 func (_TypeDefn__ReprKeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.TypeDefn.Repr.KeyAssembler"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeDefn.Repr.KeyAssembler"}.AssignBytes(nil)
 }
 func (_TypeDefn__ReprKeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.TypeDefn.Repr.KeyAssembler"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeDefn.Repr.KeyAssembler"}.AssignLink(nil)
 }
 func (ka *_TypeDefn__ReprKeyAssembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
@@ -27707,7 +27707,7 @@ func (n TypeDefnInline) LookupByNode(key ipld.Node) (ipld.Node, error) {
 	return n.LookupByString(ks)
 }
 func (TypeDefnInline) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.TypeDefnInline"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.TypeDefnInline"}.LookupByIndex(0)
 }
 func (n TypeDefnInline) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -27753,22 +27753,22 @@ func (TypeDefnInline) IsNull() bool {
 	return false
 }
 func (TypeDefnInline) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.TypeDefnInline"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.TypeDefnInline"}.AsBool()
 }
 func (TypeDefnInline) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.TypeDefnInline"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.TypeDefnInline"}.AsInt()
 }
 func (TypeDefnInline) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.TypeDefnInline"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.TypeDefnInline"}.AsFloat()
 }
 func (TypeDefnInline) AsString() (string, error) {
-	return mixins.Map{"schemadmt.TypeDefnInline"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.TypeDefnInline"}.AsString()
 }
 func (TypeDefnInline) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.TypeDefnInline"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.TypeDefnInline"}.AsBytes()
 }
 func (TypeDefnInline) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.TypeDefnInline"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.TypeDefnInline"}.AsLink()
 }
 func (TypeDefnInline) Prototype() ipld.NodePrototype {
 	return _TypeDefnInline__Prototype{}
@@ -27840,7 +27840,7 @@ func (na *_TypeDefnInline__Assembler) BeginMap(int64) (ipld.MapAssembler, error)
 	return na, nil
 }
 func (_TypeDefnInline__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.TypeDefnInline"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeDefnInline"}.BeginList(0)
 }
 func (na *_TypeDefnInline__Assembler) AssignNull() error {
 	switch *na.m {
@@ -27848,7 +27848,7 @@ func (na *_TypeDefnInline__Assembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.TypeDefnInline"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.TypeDefnInline"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -27857,22 +27857,22 @@ func (na *_TypeDefnInline__Assembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_TypeDefnInline__Assembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.TypeDefnInline"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeDefnInline"}.AssignBool(false)
 }
 func (_TypeDefnInline__Assembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.TypeDefnInline"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeDefnInline"}.AssignInt(0)
 }
 func (_TypeDefnInline__Assembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.TypeDefnInline"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeDefnInline"}.AssignFloat(0)
 }
 func (_TypeDefnInline__Assembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.TypeDefnInline"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeDefnInline"}.AssignString("")
 }
 func (_TypeDefnInline__Assembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.TypeDefnInline"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeDefnInline"}.AssignBytes(nil)
 }
 func (_TypeDefnInline__Assembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.TypeDefnInline"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeDefnInline"}.AssignLink(nil)
 }
 func (na *_TypeDefnInline__Assembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -28062,22 +28062,22 @@ func (ma *_TypeDefnInline__Assembler) ValuePrototype(k string) ipld.NodePrototyp
 type _TypeDefnInline__KeyAssembler _TypeDefnInline__Assembler
 
 func (_TypeDefnInline__KeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.TypeDefnInline.KeyAssembler"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeDefnInline.KeyAssembler"}.BeginMap(0)
 }
 func (_TypeDefnInline__KeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.TypeDefnInline.KeyAssembler"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeDefnInline.KeyAssembler"}.BeginList(0)
 }
 func (na *_TypeDefnInline__KeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"schemadmt.TypeDefnInline.KeyAssembler"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeDefnInline.KeyAssembler"}.AssignNull()
 }
 func (_TypeDefnInline__KeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.TypeDefnInline.KeyAssembler"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeDefnInline.KeyAssembler"}.AssignBool(false)
 }
 func (_TypeDefnInline__KeyAssembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.TypeDefnInline.KeyAssembler"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeDefnInline.KeyAssembler"}.AssignInt(0)
 }
 func (_TypeDefnInline__KeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.TypeDefnInline.KeyAssembler"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeDefnInline.KeyAssembler"}.AssignFloat(0)
 }
 func (ka *_TypeDefnInline__KeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
@@ -28099,10 +28099,10 @@ func (ka *_TypeDefnInline__KeyAssembler) AssignString(k string) error {
 	return ipld.ErrInvalidKey{TypeName: "schemadmt.TypeDefnInline", Key: &_String{k}} // TODO: error quality: ErrInvalidUnionDiscriminant ?
 }
 func (_TypeDefnInline__KeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.TypeDefnInline.KeyAssembler"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeDefnInline.KeyAssembler"}.AssignBytes(nil)
 }
 func (_TypeDefnInline__KeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.TypeDefnInline.KeyAssembler"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeDefnInline.KeyAssembler"}.AssignLink(nil)
 }
 func (ka *_TypeDefnInline__KeyAssembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
@@ -28158,7 +28158,7 @@ func (n *_TypeDefnInline__Repr) LookupByNode(key ipld.Node) (ipld.Node, error) {
 	return n.LookupByString(ks)
 }
 func (_TypeDefnInline__Repr) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.TypeDefnInline.Repr"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.TypeDefnInline.Repr"}.LookupByIndex(0)
 }
 func (n _TypeDefnInline__Repr) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -28204,22 +28204,22 @@ func (_TypeDefnInline__Repr) IsNull() bool {
 	return false
 }
 func (_TypeDefnInline__Repr) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.TypeDefnInline.Repr"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.TypeDefnInline.Repr"}.AsBool()
 }
 func (_TypeDefnInline__Repr) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.TypeDefnInline.Repr"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.TypeDefnInline.Repr"}.AsInt()
 }
 func (_TypeDefnInline__Repr) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.TypeDefnInline.Repr"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.TypeDefnInline.Repr"}.AsFloat()
 }
 func (_TypeDefnInline__Repr) AsString() (string, error) {
-	return mixins.Map{"schemadmt.TypeDefnInline.Repr"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.TypeDefnInline.Repr"}.AsString()
 }
 func (_TypeDefnInline__Repr) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.TypeDefnInline.Repr"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.TypeDefnInline.Repr"}.AsBytes()
 }
 func (_TypeDefnInline__Repr) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.TypeDefnInline.Repr"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.TypeDefnInline.Repr"}.AsLink()
 }
 func (_TypeDefnInline__Repr) Prototype() ipld.NodePrototype {
 	return _TypeDefnInline__ReprPrototype{}
@@ -28291,7 +28291,7 @@ func (na *_TypeDefnInline__ReprAssembler) BeginMap(int64) (ipld.MapAssembler, er
 	return na, nil
 }
 func (_TypeDefnInline__ReprAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.TypeDefnInline.Repr"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeDefnInline.Repr"}.BeginList(0)
 }
 func (na *_TypeDefnInline__ReprAssembler) AssignNull() error {
 	switch *na.m {
@@ -28299,7 +28299,7 @@ func (na *_TypeDefnInline__ReprAssembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.TypeDefnInline.Repr.Repr"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.TypeDefnInline.Repr.Repr"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -28308,22 +28308,22 @@ func (na *_TypeDefnInline__ReprAssembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_TypeDefnInline__ReprAssembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.TypeDefnInline.Repr"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeDefnInline.Repr"}.AssignBool(false)
 }
 func (_TypeDefnInline__ReprAssembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.TypeDefnInline.Repr"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeDefnInline.Repr"}.AssignInt(0)
 }
 func (_TypeDefnInline__ReprAssembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.TypeDefnInline.Repr"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeDefnInline.Repr"}.AssignFloat(0)
 }
 func (_TypeDefnInline__ReprAssembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.TypeDefnInline.Repr"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeDefnInline.Repr"}.AssignString("")
 }
 func (_TypeDefnInline__ReprAssembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.TypeDefnInline.Repr"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeDefnInline.Repr"}.AssignBytes(nil)
 }
 func (_TypeDefnInline__ReprAssembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.TypeDefnInline.Repr"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeDefnInline.Repr"}.AssignLink(nil)
 }
 func (na *_TypeDefnInline__ReprAssembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -28513,22 +28513,22 @@ func (ma *_TypeDefnInline__ReprAssembler) ValuePrototype(k string) ipld.NodeProt
 type _TypeDefnInline__ReprKeyAssembler _TypeDefnInline__ReprAssembler
 
 func (_TypeDefnInline__ReprKeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.TypeDefnInline.Repr.KeyAssembler"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeDefnInline.Repr.KeyAssembler"}.BeginMap(0)
 }
 func (_TypeDefnInline__ReprKeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.TypeDefnInline.Repr.KeyAssembler"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeDefnInline.Repr.KeyAssembler"}.BeginList(0)
 }
 func (na *_TypeDefnInline__ReprKeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"schemadmt.TypeDefnInline.Repr.KeyAssembler"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeDefnInline.Repr.KeyAssembler"}.AssignNull()
 }
 func (_TypeDefnInline__ReprKeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.TypeDefnInline.Repr.KeyAssembler"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeDefnInline.Repr.KeyAssembler"}.AssignBool(false)
 }
 func (_TypeDefnInline__ReprKeyAssembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.TypeDefnInline.Repr.KeyAssembler"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeDefnInline.Repr.KeyAssembler"}.AssignInt(0)
 }
 func (_TypeDefnInline__ReprKeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.TypeDefnInline.Repr.KeyAssembler"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeDefnInline.Repr.KeyAssembler"}.AssignFloat(0)
 }
 func (ka *_TypeDefnInline__ReprKeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
@@ -28550,10 +28550,10 @@ func (ka *_TypeDefnInline__ReprKeyAssembler) AssignString(k string) error {
 	return ipld.ErrInvalidKey{TypeName: "schemadmt.TypeDefnInline.Repr", Key: &_String{k}} // TODO: error quality: ErrInvalidUnionDiscriminant ?
 }
 func (_TypeDefnInline__ReprKeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.TypeDefnInline.Repr.KeyAssembler"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeDefnInline.Repr.KeyAssembler"}.AssignBytes(nil)
 }
 func (_TypeDefnInline__ReprKeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.TypeDefnInline.Repr.KeyAssembler"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeDefnInline.Repr.KeyAssembler"}.AssignLink(nil)
 }
 func (ka *_TypeDefnInline__ReprKeyAssembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
@@ -28635,7 +28635,7 @@ func (n TypeEnum) LookupByNode(key ipld.Node) (ipld.Node, error) {
 	return n.LookupByString(ks)
 }
 func (TypeEnum) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.TypeEnum"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.TypeEnum"}.LookupByIndex(0)
 }
 func (n TypeEnum) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -28683,22 +28683,22 @@ func (TypeEnum) IsNull() bool {
 	return false
 }
 func (TypeEnum) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.TypeEnum"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.TypeEnum"}.AsBool()
 }
 func (TypeEnum) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.TypeEnum"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.TypeEnum"}.AsInt()
 }
 func (TypeEnum) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.TypeEnum"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.TypeEnum"}.AsFloat()
 }
 func (TypeEnum) AsString() (string, error) {
-	return mixins.Map{"schemadmt.TypeEnum"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.TypeEnum"}.AsString()
 }
 func (TypeEnum) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.TypeEnum"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.TypeEnum"}.AsBytes()
 }
 func (TypeEnum) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.TypeEnum"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.TypeEnum"}.AsLink()
 }
 func (TypeEnum) Prototype() ipld.NodePrototype {
 	return _TypeEnum__Prototype{}
@@ -28767,7 +28767,7 @@ func (na *_TypeEnum__Assembler) BeginMap(int64) (ipld.MapAssembler, error) {
 	return na, nil
 }
 func (_TypeEnum__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.TypeEnum"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeEnum"}.BeginList(0)
 }
 func (na *_TypeEnum__Assembler) AssignNull() error {
 	switch *na.m {
@@ -28775,7 +28775,7 @@ func (na *_TypeEnum__Assembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.TypeEnum"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.TypeEnum"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -28784,22 +28784,22 @@ func (na *_TypeEnum__Assembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_TypeEnum__Assembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.TypeEnum"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeEnum"}.AssignBool(false)
 }
 func (_TypeEnum__Assembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.TypeEnum"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeEnum"}.AssignInt(0)
 }
 func (_TypeEnum__Assembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.TypeEnum"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeEnum"}.AssignFloat(0)
 }
 func (_TypeEnum__Assembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.TypeEnum"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeEnum"}.AssignString("")
 }
 func (_TypeEnum__Assembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.TypeEnum"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeEnum"}.AssignBytes(nil)
 }
 func (_TypeEnum__Assembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.TypeEnum"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeEnum"}.AssignLink(nil)
 }
 func (na *_TypeEnum__Assembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -28991,22 +28991,22 @@ func (ma *_TypeEnum__Assembler) ValuePrototype(k string) ipld.NodePrototype {
 type _TypeEnum__KeyAssembler _TypeEnum__Assembler
 
 func (_TypeEnum__KeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.TypeEnum.KeyAssembler"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeEnum.KeyAssembler"}.BeginMap(0)
 }
 func (_TypeEnum__KeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.TypeEnum.KeyAssembler"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeEnum.KeyAssembler"}.BeginList(0)
 }
 func (na *_TypeEnum__KeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"schemadmt.TypeEnum.KeyAssembler"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeEnum.KeyAssembler"}.AssignNull()
 }
 func (_TypeEnum__KeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.TypeEnum.KeyAssembler"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeEnum.KeyAssembler"}.AssignBool(false)
 }
 func (_TypeEnum__KeyAssembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.TypeEnum.KeyAssembler"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeEnum.KeyAssembler"}.AssignInt(0)
 }
 func (_TypeEnum__KeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.TypeEnum.KeyAssembler"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeEnum.KeyAssembler"}.AssignFloat(0)
 }
 func (ka *_TypeEnum__KeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
@@ -29033,10 +29033,10 @@ func (ka *_TypeEnum__KeyAssembler) AssignString(k string) error {
 	return nil
 }
 func (_TypeEnum__KeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.TypeEnum.KeyAssembler"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeEnum.KeyAssembler"}.AssignBytes(nil)
 }
 func (_TypeEnum__KeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.TypeEnum.KeyAssembler"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeEnum.KeyAssembler"}.AssignLink(nil)
 }
 func (ka *_TypeEnum__KeyAssembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
@@ -29084,7 +29084,7 @@ func (n *_TypeEnum__Repr) LookupByNode(key ipld.Node) (ipld.Node, error) {
 	return n.LookupByString(ks)
 }
 func (_TypeEnum__Repr) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.TypeEnum.Repr"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.TypeEnum.Repr"}.LookupByIndex(0)
 }
 func (n _TypeEnum__Repr) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -29132,22 +29132,22 @@ func (_TypeEnum__Repr) IsNull() bool {
 	return false
 }
 func (_TypeEnum__Repr) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.TypeEnum.Repr"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.TypeEnum.Repr"}.AsBool()
 }
 func (_TypeEnum__Repr) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.TypeEnum.Repr"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.TypeEnum.Repr"}.AsInt()
 }
 func (_TypeEnum__Repr) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.TypeEnum.Repr"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.TypeEnum.Repr"}.AsFloat()
 }
 func (_TypeEnum__Repr) AsString() (string, error) {
-	return mixins.Map{"schemadmt.TypeEnum.Repr"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.TypeEnum.Repr"}.AsString()
 }
 func (_TypeEnum__Repr) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.TypeEnum.Repr"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.TypeEnum.Repr"}.AsBytes()
 }
 func (_TypeEnum__Repr) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.TypeEnum.Repr"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.TypeEnum.Repr"}.AsLink()
 }
 func (_TypeEnum__Repr) Prototype() ipld.NodePrototype {
 	return _TypeEnum__ReprPrototype{}
@@ -29209,7 +29209,7 @@ func (na *_TypeEnum__ReprAssembler) BeginMap(int64) (ipld.MapAssembler, error) {
 	return na, nil
 }
 func (_TypeEnum__ReprAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.TypeEnum.Repr"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeEnum.Repr"}.BeginList(0)
 }
 func (na *_TypeEnum__ReprAssembler) AssignNull() error {
 	switch *na.m {
@@ -29217,7 +29217,7 @@ func (na *_TypeEnum__ReprAssembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.TypeEnum.Repr.Repr"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.TypeEnum.Repr.Repr"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -29226,22 +29226,22 @@ func (na *_TypeEnum__ReprAssembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_TypeEnum__ReprAssembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.TypeEnum.Repr"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeEnum.Repr"}.AssignBool(false)
 }
 func (_TypeEnum__ReprAssembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.TypeEnum.Repr"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeEnum.Repr"}.AssignInt(0)
 }
 func (_TypeEnum__ReprAssembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.TypeEnum.Repr"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeEnum.Repr"}.AssignFloat(0)
 }
 func (_TypeEnum__ReprAssembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.TypeEnum.Repr"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeEnum.Repr"}.AssignString("")
 }
 func (_TypeEnum__ReprAssembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.TypeEnum.Repr"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeEnum.Repr"}.AssignBytes(nil)
 }
 func (_TypeEnum__ReprAssembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.TypeEnum.Repr"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeEnum.Repr"}.AssignLink(nil)
 }
 func (na *_TypeEnum__ReprAssembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -29432,22 +29432,22 @@ func (ma *_TypeEnum__ReprAssembler) ValuePrototype(k string) ipld.NodePrototype 
 type _TypeEnum__ReprKeyAssembler _TypeEnum__ReprAssembler
 
 func (_TypeEnum__ReprKeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.TypeEnum.Repr.KeyAssembler"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeEnum.Repr.KeyAssembler"}.BeginMap(0)
 }
 func (_TypeEnum__ReprKeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.TypeEnum.Repr.KeyAssembler"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeEnum.Repr.KeyAssembler"}.BeginList(0)
 }
 func (na *_TypeEnum__ReprKeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"schemadmt.TypeEnum.Repr.KeyAssembler"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeEnum.Repr.KeyAssembler"}.AssignNull()
 }
 func (_TypeEnum__ReprKeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.TypeEnum.Repr.KeyAssembler"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeEnum.Repr.KeyAssembler"}.AssignBool(false)
 }
 func (_TypeEnum__ReprKeyAssembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.TypeEnum.Repr.KeyAssembler"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeEnum.Repr.KeyAssembler"}.AssignInt(0)
 }
 func (_TypeEnum__ReprKeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.TypeEnum.Repr.KeyAssembler"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeEnum.Repr.KeyAssembler"}.AssignFloat(0)
 }
 func (ka *_TypeEnum__ReprKeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
@@ -29474,10 +29474,10 @@ func (ka *_TypeEnum__ReprKeyAssembler) AssignString(k string) error {
 	return ipld.ErrInvalidKey{TypeName: "schemadmt.TypeEnum.Repr", Key: &_String{k}}
 }
 func (_TypeEnum__ReprKeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.TypeEnum.Repr.KeyAssembler"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeEnum.Repr.KeyAssembler"}.AssignBytes(nil)
 }
 func (_TypeEnum__ReprKeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.TypeEnum.Repr.KeyAssembler"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeEnum.Repr.KeyAssembler"}.AssignLink(nil)
 }
 func (ka *_TypeEnum__ReprKeyAssembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
@@ -29545,7 +29545,7 @@ func (n TypeFloat) LookupByNode(key ipld.Node) (ipld.Node, error) {
 	return n.LookupByString(ks)
 }
 func (TypeFloat) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.TypeFloat"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.TypeFloat"}.LookupByIndex(0)
 }
 func (n TypeFloat) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -29580,22 +29580,22 @@ func (TypeFloat) IsNull() bool {
 	return false
 }
 func (TypeFloat) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.TypeFloat"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.TypeFloat"}.AsBool()
 }
 func (TypeFloat) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.TypeFloat"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.TypeFloat"}.AsInt()
 }
 func (TypeFloat) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.TypeFloat"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.TypeFloat"}.AsFloat()
 }
 func (TypeFloat) AsString() (string, error) {
-	return mixins.Map{"schemadmt.TypeFloat"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.TypeFloat"}.AsString()
 }
 func (TypeFloat) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.TypeFloat"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.TypeFloat"}.AsBytes()
 }
 func (TypeFloat) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.TypeFloat"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.TypeFloat"}.AsLink()
 }
 func (TypeFloat) Prototype() ipld.NodePrototype {
 	return _TypeFloat__Prototype{}
@@ -29658,7 +29658,7 @@ func (na *_TypeFloat__Assembler) BeginMap(int64) (ipld.MapAssembler, error) {
 	return na, nil
 }
 func (_TypeFloat__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.TypeFloat"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeFloat"}.BeginList(0)
 }
 func (na *_TypeFloat__Assembler) AssignNull() error {
 	switch *na.m {
@@ -29666,7 +29666,7 @@ func (na *_TypeFloat__Assembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.TypeFloat"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.TypeFloat"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -29675,22 +29675,22 @@ func (na *_TypeFloat__Assembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_TypeFloat__Assembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.TypeFloat"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeFloat"}.AssignBool(false)
 }
 func (_TypeFloat__Assembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.TypeFloat"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeFloat"}.AssignInt(0)
 }
 func (_TypeFloat__Assembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.TypeFloat"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeFloat"}.AssignFloat(0)
 }
 func (_TypeFloat__Assembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.TypeFloat"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeFloat"}.AssignString("")
 }
 func (_TypeFloat__Assembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.TypeFloat"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeFloat"}.AssignBytes(nil)
 }
 func (_TypeFloat__Assembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.TypeFloat"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeFloat"}.AssignLink(nil)
 }
 func (na *_TypeFloat__Assembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -29826,22 +29826,22 @@ func (ma *_TypeFloat__Assembler) ValuePrototype(k string) ipld.NodePrototype {
 type _TypeFloat__KeyAssembler _TypeFloat__Assembler
 
 func (_TypeFloat__KeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.TypeFloat.KeyAssembler"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeFloat.KeyAssembler"}.BeginMap(0)
 }
 func (_TypeFloat__KeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.TypeFloat.KeyAssembler"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeFloat.KeyAssembler"}.BeginList(0)
 }
 func (na *_TypeFloat__KeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"schemadmt.TypeFloat.KeyAssembler"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeFloat.KeyAssembler"}.AssignNull()
 }
 func (_TypeFloat__KeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.TypeFloat.KeyAssembler"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeFloat.KeyAssembler"}.AssignBool(false)
 }
 func (_TypeFloat__KeyAssembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.TypeFloat.KeyAssembler"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeFloat.KeyAssembler"}.AssignInt(0)
 }
 func (_TypeFloat__KeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.TypeFloat.KeyAssembler"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeFloat.KeyAssembler"}.AssignFloat(0)
 }
 func (ka *_TypeFloat__KeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
@@ -29854,10 +29854,10 @@ func (ka *_TypeFloat__KeyAssembler) AssignString(k string) error {
 	return nil
 }
 func (_TypeFloat__KeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.TypeFloat.KeyAssembler"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeFloat.KeyAssembler"}.AssignBytes(nil)
 }
 func (_TypeFloat__KeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.TypeFloat.KeyAssembler"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeFloat.KeyAssembler"}.AssignLink(nil)
 }
 func (ka *_TypeFloat__KeyAssembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
@@ -29898,7 +29898,7 @@ func (n *_TypeFloat__Repr) LookupByNode(key ipld.Node) (ipld.Node, error) {
 	return n.LookupByString(ks)
 }
 func (_TypeFloat__Repr) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.TypeFloat.Repr"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.TypeFloat.Repr"}.LookupByIndex(0)
 }
 func (n _TypeFloat__Repr) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -29933,22 +29933,22 @@ func (_TypeFloat__Repr) IsNull() bool {
 	return false
 }
 func (_TypeFloat__Repr) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.TypeFloat.Repr"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.TypeFloat.Repr"}.AsBool()
 }
 func (_TypeFloat__Repr) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.TypeFloat.Repr"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.TypeFloat.Repr"}.AsInt()
 }
 func (_TypeFloat__Repr) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.TypeFloat.Repr"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.TypeFloat.Repr"}.AsFloat()
 }
 func (_TypeFloat__Repr) AsString() (string, error) {
-	return mixins.Map{"schemadmt.TypeFloat.Repr"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.TypeFloat.Repr"}.AsString()
 }
 func (_TypeFloat__Repr) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.TypeFloat.Repr"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.TypeFloat.Repr"}.AsBytes()
 }
 func (_TypeFloat__Repr) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.TypeFloat.Repr"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.TypeFloat.Repr"}.AsLink()
 }
 func (_TypeFloat__Repr) Prototype() ipld.NodePrototype {
 	return _TypeFloat__ReprPrototype{}
@@ -30006,7 +30006,7 @@ func (na *_TypeFloat__ReprAssembler) BeginMap(int64) (ipld.MapAssembler, error) 
 	return na, nil
 }
 func (_TypeFloat__ReprAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.TypeFloat.Repr"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeFloat.Repr"}.BeginList(0)
 }
 func (na *_TypeFloat__ReprAssembler) AssignNull() error {
 	switch *na.m {
@@ -30014,7 +30014,7 @@ func (na *_TypeFloat__ReprAssembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.TypeFloat.Repr.Repr"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.TypeFloat.Repr.Repr"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -30023,22 +30023,22 @@ func (na *_TypeFloat__ReprAssembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_TypeFloat__ReprAssembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.TypeFloat.Repr"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeFloat.Repr"}.AssignBool(false)
 }
 func (_TypeFloat__ReprAssembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.TypeFloat.Repr"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeFloat.Repr"}.AssignInt(0)
 }
 func (_TypeFloat__ReprAssembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.TypeFloat.Repr"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeFloat.Repr"}.AssignFloat(0)
 }
 func (_TypeFloat__ReprAssembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.TypeFloat.Repr"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeFloat.Repr"}.AssignString("")
 }
 func (_TypeFloat__ReprAssembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.TypeFloat.Repr"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeFloat.Repr"}.AssignBytes(nil)
 }
 func (_TypeFloat__ReprAssembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.TypeFloat.Repr"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeFloat.Repr"}.AssignLink(nil)
 }
 func (na *_TypeFloat__ReprAssembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -30174,22 +30174,22 @@ func (ma *_TypeFloat__ReprAssembler) ValuePrototype(k string) ipld.NodePrototype
 type _TypeFloat__ReprKeyAssembler _TypeFloat__ReprAssembler
 
 func (_TypeFloat__ReprKeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.TypeFloat.Repr.KeyAssembler"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeFloat.Repr.KeyAssembler"}.BeginMap(0)
 }
 func (_TypeFloat__ReprKeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.TypeFloat.Repr.KeyAssembler"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeFloat.Repr.KeyAssembler"}.BeginList(0)
 }
 func (na *_TypeFloat__ReprKeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"schemadmt.TypeFloat.Repr.KeyAssembler"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeFloat.Repr.KeyAssembler"}.AssignNull()
 }
 func (_TypeFloat__ReprKeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.TypeFloat.Repr.KeyAssembler"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeFloat.Repr.KeyAssembler"}.AssignBool(false)
 }
 func (_TypeFloat__ReprKeyAssembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.TypeFloat.Repr.KeyAssembler"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeFloat.Repr.KeyAssembler"}.AssignInt(0)
 }
 func (_TypeFloat__ReprKeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.TypeFloat.Repr.KeyAssembler"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeFloat.Repr.KeyAssembler"}.AssignFloat(0)
 }
 func (ka *_TypeFloat__ReprKeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
@@ -30198,10 +30198,10 @@ func (ka *_TypeFloat__ReprKeyAssembler) AssignString(k string) error {
 	return ipld.ErrInvalidKey{TypeName: "schemadmt.TypeFloat.Repr", Key: &_String{k}}
 }
 func (_TypeFloat__ReprKeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.TypeFloat.Repr.KeyAssembler"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeFloat.Repr.KeyAssembler"}.AssignBytes(nil)
 }
 func (_TypeFloat__ReprKeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.TypeFloat.Repr.KeyAssembler"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeFloat.Repr.KeyAssembler"}.AssignLink(nil)
 }
 func (ka *_TypeFloat__ReprKeyAssembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
@@ -30269,7 +30269,7 @@ func (n TypeInt) LookupByNode(key ipld.Node) (ipld.Node, error) {
 	return n.LookupByString(ks)
 }
 func (TypeInt) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.TypeInt"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.TypeInt"}.LookupByIndex(0)
 }
 func (n TypeInt) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -30304,22 +30304,22 @@ func (TypeInt) IsNull() bool {
 	return false
 }
 func (TypeInt) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.TypeInt"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.TypeInt"}.AsBool()
 }
 func (TypeInt) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.TypeInt"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.TypeInt"}.AsInt()
 }
 func (TypeInt) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.TypeInt"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.TypeInt"}.AsFloat()
 }
 func (TypeInt) AsString() (string, error) {
-	return mixins.Map{"schemadmt.TypeInt"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.TypeInt"}.AsString()
 }
 func (TypeInt) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.TypeInt"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.TypeInt"}.AsBytes()
 }
 func (TypeInt) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.TypeInt"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.TypeInt"}.AsLink()
 }
 func (TypeInt) Prototype() ipld.NodePrototype {
 	return _TypeInt__Prototype{}
@@ -30382,7 +30382,7 @@ func (na *_TypeInt__Assembler) BeginMap(int64) (ipld.MapAssembler, error) {
 	return na, nil
 }
 func (_TypeInt__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.TypeInt"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeInt"}.BeginList(0)
 }
 func (na *_TypeInt__Assembler) AssignNull() error {
 	switch *na.m {
@@ -30390,7 +30390,7 @@ func (na *_TypeInt__Assembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.TypeInt"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.TypeInt"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -30399,22 +30399,22 @@ func (na *_TypeInt__Assembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_TypeInt__Assembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.TypeInt"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeInt"}.AssignBool(false)
 }
 func (_TypeInt__Assembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.TypeInt"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeInt"}.AssignInt(0)
 }
 func (_TypeInt__Assembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.TypeInt"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeInt"}.AssignFloat(0)
 }
 func (_TypeInt__Assembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.TypeInt"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeInt"}.AssignString("")
 }
 func (_TypeInt__Assembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.TypeInt"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeInt"}.AssignBytes(nil)
 }
 func (_TypeInt__Assembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.TypeInt"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeInt"}.AssignLink(nil)
 }
 func (na *_TypeInt__Assembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -30550,22 +30550,22 @@ func (ma *_TypeInt__Assembler) ValuePrototype(k string) ipld.NodePrototype {
 type _TypeInt__KeyAssembler _TypeInt__Assembler
 
 func (_TypeInt__KeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.TypeInt.KeyAssembler"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeInt.KeyAssembler"}.BeginMap(0)
 }
 func (_TypeInt__KeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.TypeInt.KeyAssembler"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeInt.KeyAssembler"}.BeginList(0)
 }
 func (na *_TypeInt__KeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"schemadmt.TypeInt.KeyAssembler"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeInt.KeyAssembler"}.AssignNull()
 }
 func (_TypeInt__KeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.TypeInt.KeyAssembler"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeInt.KeyAssembler"}.AssignBool(false)
 }
 func (_TypeInt__KeyAssembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.TypeInt.KeyAssembler"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeInt.KeyAssembler"}.AssignInt(0)
 }
 func (_TypeInt__KeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.TypeInt.KeyAssembler"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeInt.KeyAssembler"}.AssignFloat(0)
 }
 func (ka *_TypeInt__KeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
@@ -30578,10 +30578,10 @@ func (ka *_TypeInt__KeyAssembler) AssignString(k string) error {
 	return nil
 }
 func (_TypeInt__KeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.TypeInt.KeyAssembler"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeInt.KeyAssembler"}.AssignBytes(nil)
 }
 func (_TypeInt__KeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.TypeInt.KeyAssembler"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeInt.KeyAssembler"}.AssignLink(nil)
 }
 func (ka *_TypeInt__KeyAssembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
@@ -30622,7 +30622,7 @@ func (n *_TypeInt__Repr) LookupByNode(key ipld.Node) (ipld.Node, error) {
 	return n.LookupByString(ks)
 }
 func (_TypeInt__Repr) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.TypeInt.Repr"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.TypeInt.Repr"}.LookupByIndex(0)
 }
 func (n _TypeInt__Repr) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -30657,22 +30657,22 @@ func (_TypeInt__Repr) IsNull() bool {
 	return false
 }
 func (_TypeInt__Repr) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.TypeInt.Repr"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.TypeInt.Repr"}.AsBool()
 }
 func (_TypeInt__Repr) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.TypeInt.Repr"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.TypeInt.Repr"}.AsInt()
 }
 func (_TypeInt__Repr) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.TypeInt.Repr"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.TypeInt.Repr"}.AsFloat()
 }
 func (_TypeInt__Repr) AsString() (string, error) {
-	return mixins.Map{"schemadmt.TypeInt.Repr"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.TypeInt.Repr"}.AsString()
 }
 func (_TypeInt__Repr) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.TypeInt.Repr"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.TypeInt.Repr"}.AsBytes()
 }
 func (_TypeInt__Repr) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.TypeInt.Repr"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.TypeInt.Repr"}.AsLink()
 }
 func (_TypeInt__Repr) Prototype() ipld.NodePrototype {
 	return _TypeInt__ReprPrototype{}
@@ -30730,7 +30730,7 @@ func (na *_TypeInt__ReprAssembler) BeginMap(int64) (ipld.MapAssembler, error) {
 	return na, nil
 }
 func (_TypeInt__ReprAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.TypeInt.Repr"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeInt.Repr"}.BeginList(0)
 }
 func (na *_TypeInt__ReprAssembler) AssignNull() error {
 	switch *na.m {
@@ -30738,7 +30738,7 @@ func (na *_TypeInt__ReprAssembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.TypeInt.Repr.Repr"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.TypeInt.Repr.Repr"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -30747,22 +30747,22 @@ func (na *_TypeInt__ReprAssembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_TypeInt__ReprAssembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.TypeInt.Repr"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeInt.Repr"}.AssignBool(false)
 }
 func (_TypeInt__ReprAssembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.TypeInt.Repr"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeInt.Repr"}.AssignInt(0)
 }
 func (_TypeInt__ReprAssembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.TypeInt.Repr"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeInt.Repr"}.AssignFloat(0)
 }
 func (_TypeInt__ReprAssembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.TypeInt.Repr"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeInt.Repr"}.AssignString("")
 }
 func (_TypeInt__ReprAssembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.TypeInt.Repr"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeInt.Repr"}.AssignBytes(nil)
 }
 func (_TypeInt__ReprAssembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.TypeInt.Repr"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeInt.Repr"}.AssignLink(nil)
 }
 func (na *_TypeInt__ReprAssembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -30898,22 +30898,22 @@ func (ma *_TypeInt__ReprAssembler) ValuePrototype(k string) ipld.NodePrototype {
 type _TypeInt__ReprKeyAssembler _TypeInt__ReprAssembler
 
 func (_TypeInt__ReprKeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.TypeInt.Repr.KeyAssembler"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeInt.Repr.KeyAssembler"}.BeginMap(0)
 }
 func (_TypeInt__ReprKeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.TypeInt.Repr.KeyAssembler"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeInt.Repr.KeyAssembler"}.BeginList(0)
 }
 func (na *_TypeInt__ReprKeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"schemadmt.TypeInt.Repr.KeyAssembler"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeInt.Repr.KeyAssembler"}.AssignNull()
 }
 func (_TypeInt__ReprKeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.TypeInt.Repr.KeyAssembler"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeInt.Repr.KeyAssembler"}.AssignBool(false)
 }
 func (_TypeInt__ReprKeyAssembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.TypeInt.Repr.KeyAssembler"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeInt.Repr.KeyAssembler"}.AssignInt(0)
 }
 func (_TypeInt__ReprKeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.TypeInt.Repr.KeyAssembler"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeInt.Repr.KeyAssembler"}.AssignFloat(0)
 }
 func (ka *_TypeInt__ReprKeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
@@ -30922,10 +30922,10 @@ func (ka *_TypeInt__ReprKeyAssembler) AssignString(k string) error {
 	return ipld.ErrInvalidKey{TypeName: "schemadmt.TypeInt.Repr", Key: &_String{k}}
 }
 func (_TypeInt__ReprKeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.TypeInt.Repr.KeyAssembler"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeInt.Repr.KeyAssembler"}.AssignBytes(nil)
 }
 func (_TypeInt__ReprKeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.TypeInt.Repr.KeyAssembler"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeInt.Repr.KeyAssembler"}.AssignLink(nil)
 }
 func (ka *_TypeInt__ReprKeyAssembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
@@ -31004,7 +31004,7 @@ func (n TypeLink) LookupByNode(key ipld.Node) (ipld.Node, error) {
 	return n.LookupByString(ks)
 }
 func (TypeLink) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.TypeLink"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.TypeLink"}.LookupByIndex(0)
 }
 func (n TypeLink) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -31053,22 +31053,22 @@ func (TypeLink) IsNull() bool {
 	return false
 }
 func (TypeLink) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.TypeLink"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.TypeLink"}.AsBool()
 }
 func (TypeLink) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.TypeLink"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.TypeLink"}.AsInt()
 }
 func (TypeLink) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.TypeLink"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.TypeLink"}.AsFloat()
 }
 func (TypeLink) AsString() (string, error) {
-	return mixins.Map{"schemadmt.TypeLink"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.TypeLink"}.AsString()
 }
 func (TypeLink) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.TypeLink"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.TypeLink"}.AsBytes()
 }
 func (TypeLink) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.TypeLink"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.TypeLink"}.AsLink()
 }
 func (TypeLink) Prototype() ipld.NodePrototype {
 	return _TypeLink__Prototype{}
@@ -31134,7 +31134,7 @@ func (na *_TypeLink__Assembler) BeginMap(int64) (ipld.MapAssembler, error) {
 	return na, nil
 }
 func (_TypeLink__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.TypeLink"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeLink"}.BeginList(0)
 }
 func (na *_TypeLink__Assembler) AssignNull() error {
 	switch *na.m {
@@ -31142,7 +31142,7 @@ func (na *_TypeLink__Assembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.TypeLink"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.TypeLink"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -31151,22 +31151,22 @@ func (na *_TypeLink__Assembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_TypeLink__Assembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.TypeLink"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeLink"}.AssignBool(false)
 }
 func (_TypeLink__Assembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.TypeLink"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeLink"}.AssignInt(0)
 }
 func (_TypeLink__Assembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.TypeLink"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeLink"}.AssignFloat(0)
 }
 func (_TypeLink__Assembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.TypeLink"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeLink"}.AssignString("")
 }
 func (_TypeLink__Assembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.TypeLink"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeLink"}.AssignBytes(nil)
 }
 func (_TypeLink__Assembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.TypeLink"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeLink"}.AssignLink(nil)
 }
 func (na *_TypeLink__Assembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -31326,22 +31326,22 @@ func (ma *_TypeLink__Assembler) ValuePrototype(k string) ipld.NodePrototype {
 type _TypeLink__KeyAssembler _TypeLink__Assembler
 
 func (_TypeLink__KeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.TypeLink.KeyAssembler"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeLink.KeyAssembler"}.BeginMap(0)
 }
 func (_TypeLink__KeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.TypeLink.KeyAssembler"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeLink.KeyAssembler"}.BeginList(0)
 }
 func (na *_TypeLink__KeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"schemadmt.TypeLink.KeyAssembler"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeLink.KeyAssembler"}.AssignNull()
 }
 func (_TypeLink__KeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.TypeLink.KeyAssembler"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeLink.KeyAssembler"}.AssignBool(false)
 }
 func (_TypeLink__KeyAssembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.TypeLink.KeyAssembler"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeLink.KeyAssembler"}.AssignInt(0)
 }
 func (_TypeLink__KeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.TypeLink.KeyAssembler"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeLink.KeyAssembler"}.AssignFloat(0)
 }
 func (ka *_TypeLink__KeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
@@ -31361,10 +31361,10 @@ func (ka *_TypeLink__KeyAssembler) AssignString(k string) error {
 	return nil
 }
 func (_TypeLink__KeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.TypeLink.KeyAssembler"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeLink.KeyAssembler"}.AssignBytes(nil)
 }
 func (_TypeLink__KeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.TypeLink.KeyAssembler"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeLink.KeyAssembler"}.AssignLink(nil)
 }
 func (ka *_TypeLink__KeyAssembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
@@ -31412,7 +31412,7 @@ func (n *_TypeLink__Repr) LookupByNode(key ipld.Node) (ipld.Node, error) {
 	return n.LookupByString(ks)
 }
 func (_TypeLink__Repr) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.TypeLink.Repr"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.TypeLink.Repr"}.LookupByIndex(0)
 }
 func (n _TypeLink__Repr) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -31473,22 +31473,22 @@ func (_TypeLink__Repr) IsNull() bool {
 	return false
 }
 func (_TypeLink__Repr) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.TypeLink.Repr"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.TypeLink.Repr"}.AsBool()
 }
 func (_TypeLink__Repr) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.TypeLink.Repr"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.TypeLink.Repr"}.AsInt()
 }
 func (_TypeLink__Repr) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.TypeLink.Repr"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.TypeLink.Repr"}.AsFloat()
 }
 func (_TypeLink__Repr) AsString() (string, error) {
-	return mixins.Map{"schemadmt.TypeLink.Repr"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.TypeLink.Repr"}.AsString()
 }
 func (_TypeLink__Repr) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.TypeLink.Repr"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.TypeLink.Repr"}.AsBytes()
 }
 func (_TypeLink__Repr) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.TypeLink.Repr"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.TypeLink.Repr"}.AsLink()
 }
 func (_TypeLink__Repr) Prototype() ipld.NodePrototype {
 	return _TypeLink__ReprPrototype{}
@@ -31548,7 +31548,7 @@ func (na *_TypeLink__ReprAssembler) BeginMap(int64) (ipld.MapAssembler, error) {
 	return na, nil
 }
 func (_TypeLink__ReprAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.TypeLink.Repr"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeLink.Repr"}.BeginList(0)
 }
 func (na *_TypeLink__ReprAssembler) AssignNull() error {
 	switch *na.m {
@@ -31556,7 +31556,7 @@ func (na *_TypeLink__ReprAssembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.TypeLink.Repr.Repr"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.TypeLink.Repr.Repr"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -31565,22 +31565,22 @@ func (na *_TypeLink__ReprAssembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_TypeLink__ReprAssembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.TypeLink.Repr"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeLink.Repr"}.AssignBool(false)
 }
 func (_TypeLink__ReprAssembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.TypeLink.Repr"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeLink.Repr"}.AssignInt(0)
 }
 func (_TypeLink__ReprAssembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.TypeLink.Repr"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeLink.Repr"}.AssignFloat(0)
 }
 func (_TypeLink__ReprAssembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.TypeLink.Repr"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeLink.Repr"}.AssignString("")
 }
 func (_TypeLink__ReprAssembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.TypeLink.Repr"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeLink.Repr"}.AssignBytes(nil)
 }
 func (_TypeLink__ReprAssembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.TypeLink.Repr"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeLink.Repr"}.AssignLink(nil)
 }
 func (na *_TypeLink__ReprAssembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -31743,22 +31743,22 @@ func (ma *_TypeLink__ReprAssembler) ValuePrototype(k string) ipld.NodePrototype 
 type _TypeLink__ReprKeyAssembler _TypeLink__ReprAssembler
 
 func (_TypeLink__ReprKeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.TypeLink.Repr.KeyAssembler"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeLink.Repr.KeyAssembler"}.BeginMap(0)
 }
 func (_TypeLink__ReprKeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.TypeLink.Repr.KeyAssembler"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeLink.Repr.KeyAssembler"}.BeginList(0)
 }
 func (na *_TypeLink__ReprKeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"schemadmt.TypeLink.Repr.KeyAssembler"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeLink.Repr.KeyAssembler"}.AssignNull()
 }
 func (_TypeLink__ReprKeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.TypeLink.Repr.KeyAssembler"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeLink.Repr.KeyAssembler"}.AssignBool(false)
 }
 func (_TypeLink__ReprKeyAssembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.TypeLink.Repr.KeyAssembler"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeLink.Repr.KeyAssembler"}.AssignInt(0)
 }
 func (_TypeLink__ReprKeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.TypeLink.Repr.KeyAssembler"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeLink.Repr.KeyAssembler"}.AssignFloat(0)
 }
 func (ka *_TypeLink__ReprKeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
@@ -31777,10 +31777,10 @@ func (ka *_TypeLink__ReprKeyAssembler) AssignString(k string) error {
 	return ipld.ErrInvalidKey{TypeName: "schemadmt.TypeLink.Repr", Key: &_String{k}}
 }
 func (_TypeLink__ReprKeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.TypeLink.Repr.KeyAssembler"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeLink.Repr.KeyAssembler"}.AssignBytes(nil)
 }
 func (_TypeLink__ReprKeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.TypeLink.Repr.KeyAssembler"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeLink.Repr.KeyAssembler"}.AssignLink(nil)
 }
 func (ka *_TypeLink__ReprKeyAssembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
@@ -31868,7 +31868,7 @@ func (n TypeList) LookupByNode(key ipld.Node) (ipld.Node, error) {
 	return n.LookupByString(ks)
 }
 func (TypeList) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.TypeList"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.TypeList"}.LookupByIndex(0)
 }
 func (n TypeList) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -31919,22 +31919,22 @@ func (TypeList) IsNull() bool {
 	return false
 }
 func (TypeList) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.TypeList"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.TypeList"}.AsBool()
 }
 func (TypeList) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.TypeList"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.TypeList"}.AsInt()
 }
 func (TypeList) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.TypeList"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.TypeList"}.AsFloat()
 }
 func (TypeList) AsString() (string, error) {
-	return mixins.Map{"schemadmt.TypeList"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.TypeList"}.AsString()
 }
 func (TypeList) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.TypeList"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.TypeList"}.AsBytes()
 }
 func (TypeList) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.TypeList"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.TypeList"}.AsLink()
 }
 func (TypeList) Prototype() ipld.NodePrototype {
 	return _TypeList__Prototype{}
@@ -32006,7 +32006,7 @@ func (na *_TypeList__Assembler) BeginMap(int64) (ipld.MapAssembler, error) {
 	return na, nil
 }
 func (_TypeList__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.TypeList"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeList"}.BeginList(0)
 }
 func (na *_TypeList__Assembler) AssignNull() error {
 	switch *na.m {
@@ -32014,7 +32014,7 @@ func (na *_TypeList__Assembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.TypeList"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.TypeList"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -32023,22 +32023,22 @@ func (na *_TypeList__Assembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_TypeList__Assembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.TypeList"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeList"}.AssignBool(false)
 }
 func (_TypeList__Assembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.TypeList"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeList"}.AssignInt(0)
 }
 func (_TypeList__Assembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.TypeList"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeList"}.AssignFloat(0)
 }
 func (_TypeList__Assembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.TypeList"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeList"}.AssignString("")
 }
 func (_TypeList__Assembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.TypeList"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeList"}.AssignBytes(nil)
 }
 func (_TypeList__Assembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.TypeList"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeList"}.AssignLink(nil)
 }
 func (na *_TypeList__Assembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -32257,22 +32257,22 @@ func (ma *_TypeList__Assembler) ValuePrototype(k string) ipld.NodePrototype {
 type _TypeList__KeyAssembler _TypeList__Assembler
 
 func (_TypeList__KeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.TypeList.KeyAssembler"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeList.KeyAssembler"}.BeginMap(0)
 }
 func (_TypeList__KeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.TypeList.KeyAssembler"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeList.KeyAssembler"}.BeginList(0)
 }
 func (na *_TypeList__KeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"schemadmt.TypeList.KeyAssembler"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeList.KeyAssembler"}.AssignNull()
 }
 func (_TypeList__KeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.TypeList.KeyAssembler"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeList.KeyAssembler"}.AssignBool(false)
 }
 func (_TypeList__KeyAssembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.TypeList.KeyAssembler"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeList.KeyAssembler"}.AssignInt(0)
 }
 func (_TypeList__KeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.TypeList.KeyAssembler"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeList.KeyAssembler"}.AssignFloat(0)
 }
 func (ka *_TypeList__KeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
@@ -32306,10 +32306,10 @@ func (ka *_TypeList__KeyAssembler) AssignString(k string) error {
 	return nil
 }
 func (_TypeList__KeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.TypeList.KeyAssembler"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeList.KeyAssembler"}.AssignBytes(nil)
 }
 func (_TypeList__KeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.TypeList.KeyAssembler"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeList.KeyAssembler"}.AssignLink(nil)
 }
 func (ka *_TypeList__KeyAssembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
@@ -32360,7 +32360,7 @@ func (n *_TypeList__Repr) LookupByNode(key ipld.Node) (ipld.Node, error) {
 	return n.LookupByString(ks)
 }
 func (_TypeList__Repr) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.TypeList.Repr"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.TypeList.Repr"}.LookupByIndex(0)
 }
 func (n _TypeList__Repr) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -32411,22 +32411,22 @@ func (_TypeList__Repr) IsNull() bool {
 	return false
 }
 func (_TypeList__Repr) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.TypeList.Repr"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.TypeList.Repr"}.AsBool()
 }
 func (_TypeList__Repr) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.TypeList.Repr"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.TypeList.Repr"}.AsInt()
 }
 func (_TypeList__Repr) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.TypeList.Repr"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.TypeList.Repr"}.AsFloat()
 }
 func (_TypeList__Repr) AsString() (string, error) {
-	return mixins.Map{"schemadmt.TypeList.Repr"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.TypeList.Repr"}.AsString()
 }
 func (_TypeList__Repr) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.TypeList.Repr"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.TypeList.Repr"}.AsBytes()
 }
 func (_TypeList__Repr) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.TypeList.Repr"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.TypeList.Repr"}.AsLink()
 }
 func (_TypeList__Repr) Prototype() ipld.NodePrototype {
 	return _TypeList__ReprPrototype{}
@@ -32490,7 +32490,7 @@ func (na *_TypeList__ReprAssembler) BeginMap(int64) (ipld.MapAssembler, error) {
 	return na, nil
 }
 func (_TypeList__ReprAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.TypeList.Repr"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeList.Repr"}.BeginList(0)
 }
 func (na *_TypeList__ReprAssembler) AssignNull() error {
 	switch *na.m {
@@ -32498,7 +32498,7 @@ func (na *_TypeList__ReprAssembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.TypeList.Repr.Repr"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.TypeList.Repr.Repr"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -32507,22 +32507,22 @@ func (na *_TypeList__ReprAssembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_TypeList__ReprAssembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.TypeList.Repr"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeList.Repr"}.AssignBool(false)
 }
 func (_TypeList__ReprAssembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.TypeList.Repr"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeList.Repr"}.AssignInt(0)
 }
 func (_TypeList__ReprAssembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.TypeList.Repr"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeList.Repr"}.AssignFloat(0)
 }
 func (_TypeList__ReprAssembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.TypeList.Repr"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeList.Repr"}.AssignString("")
 }
 func (_TypeList__ReprAssembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.TypeList.Repr"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeList.Repr"}.AssignBytes(nil)
 }
 func (_TypeList__ReprAssembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.TypeList.Repr"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeList.Repr"}.AssignLink(nil)
 }
 func (na *_TypeList__ReprAssembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -32739,22 +32739,22 @@ func (ma *_TypeList__ReprAssembler) ValuePrototype(k string) ipld.NodePrototype 
 type _TypeList__ReprKeyAssembler _TypeList__ReprAssembler
 
 func (_TypeList__ReprKeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.TypeList.Repr.KeyAssembler"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeList.Repr.KeyAssembler"}.BeginMap(0)
 }
 func (_TypeList__ReprKeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.TypeList.Repr.KeyAssembler"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeList.Repr.KeyAssembler"}.BeginList(0)
 }
 func (na *_TypeList__ReprKeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"schemadmt.TypeList.Repr.KeyAssembler"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeList.Repr.KeyAssembler"}.AssignNull()
 }
 func (_TypeList__ReprKeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.TypeList.Repr.KeyAssembler"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeList.Repr.KeyAssembler"}.AssignBool(false)
 }
 func (_TypeList__ReprKeyAssembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.TypeList.Repr.KeyAssembler"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeList.Repr.KeyAssembler"}.AssignInt(0)
 }
 func (_TypeList__ReprKeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.TypeList.Repr.KeyAssembler"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeList.Repr.KeyAssembler"}.AssignFloat(0)
 }
 func (ka *_TypeList__ReprKeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
@@ -32789,10 +32789,10 @@ func (ka *_TypeList__ReprKeyAssembler) AssignString(k string) error {
 	return ipld.ErrInvalidKey{TypeName: "schemadmt.TypeList.Repr", Key: &_String{k}}
 }
 func (_TypeList__ReprKeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.TypeList.Repr.KeyAssembler"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeList.Repr.KeyAssembler"}.AssignBytes(nil)
 }
 func (_TypeList__ReprKeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.TypeList.Repr.KeyAssembler"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeList.Repr.KeyAssembler"}.AssignLink(nil)
 }
 func (ka *_TypeList__ReprKeyAssembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
@@ -32886,7 +32886,7 @@ func (n TypeMap) LookupByNode(key ipld.Node) (ipld.Node, error) {
 	return n.LookupByString(ks)
 }
 func (TypeMap) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.TypeMap"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.TypeMap"}.LookupByIndex(0)
 }
 func (n TypeMap) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -32940,22 +32940,22 @@ func (TypeMap) IsNull() bool {
 	return false
 }
 func (TypeMap) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.TypeMap"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.TypeMap"}.AsBool()
 }
 func (TypeMap) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.TypeMap"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.TypeMap"}.AsInt()
 }
 func (TypeMap) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.TypeMap"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.TypeMap"}.AsFloat()
 }
 func (TypeMap) AsString() (string, error) {
-	return mixins.Map{"schemadmt.TypeMap"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.TypeMap"}.AsString()
 }
 func (TypeMap) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.TypeMap"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.TypeMap"}.AsBytes()
 }
 func (TypeMap) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.TypeMap"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.TypeMap"}.AsLink()
 }
 func (TypeMap) Prototype() ipld.NodePrototype {
 	return _TypeMap__Prototype{}
@@ -33030,7 +33030,7 @@ func (na *_TypeMap__Assembler) BeginMap(int64) (ipld.MapAssembler, error) {
 	return na, nil
 }
 func (_TypeMap__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.TypeMap"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeMap"}.BeginList(0)
 }
 func (na *_TypeMap__Assembler) AssignNull() error {
 	switch *na.m {
@@ -33038,7 +33038,7 @@ func (na *_TypeMap__Assembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.TypeMap"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.TypeMap"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -33047,22 +33047,22 @@ func (na *_TypeMap__Assembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_TypeMap__Assembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.TypeMap"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeMap"}.AssignBool(false)
 }
 func (_TypeMap__Assembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.TypeMap"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeMap"}.AssignInt(0)
 }
 func (_TypeMap__Assembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.TypeMap"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeMap"}.AssignFloat(0)
 }
 func (_TypeMap__Assembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.TypeMap"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeMap"}.AssignString("")
 }
 func (_TypeMap__Assembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.TypeMap"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeMap"}.AssignBytes(nil)
 }
 func (_TypeMap__Assembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.TypeMap"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeMap"}.AssignLink(nil)
 }
 func (na *_TypeMap__Assembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -33308,22 +33308,22 @@ func (ma *_TypeMap__Assembler) ValuePrototype(k string) ipld.NodePrototype {
 type _TypeMap__KeyAssembler _TypeMap__Assembler
 
 func (_TypeMap__KeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.TypeMap.KeyAssembler"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeMap.KeyAssembler"}.BeginMap(0)
 }
 func (_TypeMap__KeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.TypeMap.KeyAssembler"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeMap.KeyAssembler"}.BeginList(0)
 }
 func (na *_TypeMap__KeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"schemadmt.TypeMap.KeyAssembler"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeMap.KeyAssembler"}.AssignNull()
 }
 func (_TypeMap__KeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.TypeMap.KeyAssembler"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeMap.KeyAssembler"}.AssignBool(false)
 }
 func (_TypeMap__KeyAssembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.TypeMap.KeyAssembler"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeMap.KeyAssembler"}.AssignInt(0)
 }
 func (_TypeMap__KeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.TypeMap.KeyAssembler"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeMap.KeyAssembler"}.AssignFloat(0)
 }
 func (ka *_TypeMap__KeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
@@ -33364,10 +33364,10 @@ func (ka *_TypeMap__KeyAssembler) AssignString(k string) error {
 	return nil
 }
 func (_TypeMap__KeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.TypeMap.KeyAssembler"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeMap.KeyAssembler"}.AssignBytes(nil)
 }
 func (_TypeMap__KeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.TypeMap.KeyAssembler"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeMap.KeyAssembler"}.AssignLink(nil)
 }
 func (ka *_TypeMap__KeyAssembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
@@ -33421,7 +33421,7 @@ func (n *_TypeMap__Repr) LookupByNode(key ipld.Node) (ipld.Node, error) {
 	return n.LookupByString(ks)
 }
 func (_TypeMap__Repr) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.TypeMap.Repr"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.TypeMap.Repr"}.LookupByIndex(0)
 }
 func (n _TypeMap__Repr) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -33475,22 +33475,22 @@ func (_TypeMap__Repr) IsNull() bool {
 	return false
 }
 func (_TypeMap__Repr) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.TypeMap.Repr"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.TypeMap.Repr"}.AsBool()
 }
 func (_TypeMap__Repr) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.TypeMap.Repr"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.TypeMap.Repr"}.AsInt()
 }
 func (_TypeMap__Repr) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.TypeMap.Repr"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.TypeMap.Repr"}.AsFloat()
 }
 func (_TypeMap__Repr) AsString() (string, error) {
-	return mixins.Map{"schemadmt.TypeMap.Repr"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.TypeMap.Repr"}.AsString()
 }
 func (_TypeMap__Repr) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.TypeMap.Repr"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.TypeMap.Repr"}.AsBytes()
 }
 func (_TypeMap__Repr) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.TypeMap.Repr"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.TypeMap.Repr"}.AsLink()
 }
 func (_TypeMap__Repr) Prototype() ipld.NodePrototype {
 	return _TypeMap__ReprPrototype{}
@@ -33556,7 +33556,7 @@ func (na *_TypeMap__ReprAssembler) BeginMap(int64) (ipld.MapAssembler, error) {
 	return na, nil
 }
 func (_TypeMap__ReprAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.TypeMap.Repr"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeMap.Repr"}.BeginList(0)
 }
 func (na *_TypeMap__ReprAssembler) AssignNull() error {
 	switch *na.m {
@@ -33564,7 +33564,7 @@ func (na *_TypeMap__ReprAssembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.TypeMap.Repr.Repr"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.TypeMap.Repr.Repr"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -33573,22 +33573,22 @@ func (na *_TypeMap__ReprAssembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_TypeMap__ReprAssembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.TypeMap.Repr"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeMap.Repr"}.AssignBool(false)
 }
 func (_TypeMap__ReprAssembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.TypeMap.Repr"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeMap.Repr"}.AssignInt(0)
 }
 func (_TypeMap__ReprAssembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.TypeMap.Repr"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeMap.Repr"}.AssignFloat(0)
 }
 func (_TypeMap__ReprAssembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.TypeMap.Repr"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeMap.Repr"}.AssignString("")
 }
 func (_TypeMap__ReprAssembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.TypeMap.Repr"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeMap.Repr"}.AssignBytes(nil)
 }
 func (_TypeMap__ReprAssembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.TypeMap.Repr"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeMap.Repr"}.AssignLink(nil)
 }
 func (na *_TypeMap__ReprAssembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -33831,22 +33831,22 @@ func (ma *_TypeMap__ReprAssembler) ValuePrototype(k string) ipld.NodePrototype {
 type _TypeMap__ReprKeyAssembler _TypeMap__ReprAssembler
 
 func (_TypeMap__ReprKeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.TypeMap.Repr.KeyAssembler"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeMap.Repr.KeyAssembler"}.BeginMap(0)
 }
 func (_TypeMap__ReprKeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.TypeMap.Repr.KeyAssembler"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeMap.Repr.KeyAssembler"}.BeginList(0)
 }
 func (na *_TypeMap__ReprKeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"schemadmt.TypeMap.Repr.KeyAssembler"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeMap.Repr.KeyAssembler"}.AssignNull()
 }
 func (_TypeMap__ReprKeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.TypeMap.Repr.KeyAssembler"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeMap.Repr.KeyAssembler"}.AssignBool(false)
 }
 func (_TypeMap__ReprKeyAssembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.TypeMap.Repr.KeyAssembler"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeMap.Repr.KeyAssembler"}.AssignInt(0)
 }
 func (_TypeMap__ReprKeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.TypeMap.Repr.KeyAssembler"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeMap.Repr.KeyAssembler"}.AssignFloat(0)
 }
 func (ka *_TypeMap__ReprKeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
@@ -33889,10 +33889,10 @@ func (ka *_TypeMap__ReprKeyAssembler) AssignString(k string) error {
 	return ipld.ErrInvalidKey{TypeName: "schemadmt.TypeMap.Repr", Key: &_String{k}}
 }
 func (_TypeMap__ReprKeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.TypeMap.Repr.KeyAssembler"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeMap.Repr.KeyAssembler"}.AssignBytes(nil)
 }
 func (_TypeMap__ReprKeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.TypeMap.Repr.KeyAssembler"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeMap.Repr.KeyAssembler"}.AssignLink(nil)
 }
 func (ka *_TypeMap__ReprKeyAssembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
@@ -33958,16 +33958,16 @@ func (TypeName) Kind() ipld.Kind {
 	return ipld.Kind_String
 }
 func (TypeName) LookupByString(string) (ipld.Node, error) {
-	return mixins.String{"schemadmt.TypeName"}.LookupByString("")
+	return mixins.String{TypeName: "schemadmt.TypeName"}.LookupByString("")
 }
 func (TypeName) LookupByNode(ipld.Node) (ipld.Node, error) {
-	return mixins.String{"schemadmt.TypeName"}.LookupByNode(nil)
+	return mixins.String{TypeName: "schemadmt.TypeName"}.LookupByNode(nil)
 }
 func (TypeName) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.String{"schemadmt.TypeName"}.LookupByIndex(0)
+	return mixins.String{TypeName: "schemadmt.TypeName"}.LookupByIndex(0)
 }
 func (TypeName) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
-	return mixins.String{"schemadmt.TypeName"}.LookupBySegment(seg)
+	return mixins.String{TypeName: "schemadmt.TypeName"}.LookupBySegment(seg)
 }
 func (TypeName) MapIterator() ipld.MapIterator {
 	return nil
@@ -33985,22 +33985,22 @@ func (TypeName) IsNull() bool {
 	return false
 }
 func (TypeName) AsBool() (bool, error) {
-	return mixins.String{"schemadmt.TypeName"}.AsBool()
+	return mixins.String{TypeName: "schemadmt.TypeName"}.AsBool()
 }
 func (TypeName) AsInt() (int64, error) {
-	return mixins.String{"schemadmt.TypeName"}.AsInt()
+	return mixins.String{TypeName: "schemadmt.TypeName"}.AsInt()
 }
 func (TypeName) AsFloat() (float64, error) {
-	return mixins.String{"schemadmt.TypeName"}.AsFloat()
+	return mixins.String{TypeName: "schemadmt.TypeName"}.AsFloat()
 }
 func (n TypeName) AsString() (string, error) {
 	return n.x, nil
 }
 func (TypeName) AsBytes() ([]byte, error) {
-	return mixins.String{"schemadmt.TypeName"}.AsBytes()
+	return mixins.String{TypeName: "schemadmt.TypeName"}.AsBytes()
 }
 func (TypeName) AsLink() (ipld.Link, error) {
-	return mixins.String{"schemadmt.TypeName"}.AsLink()
+	return mixins.String{TypeName: "schemadmt.TypeName"}.AsLink()
 }
 func (TypeName) Prototype() ipld.NodePrototype {
 	return _TypeName__Prototype{}
@@ -34037,10 +34037,10 @@ type _TypeName__Assembler struct {
 
 func (na *_TypeName__Assembler) reset() {}
 func (_TypeName__Assembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.TypeName"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeName"}.BeginMap(0)
 }
 func (_TypeName__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.TypeName"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeName"}.BeginList(0)
 }
 func (na *_TypeName__Assembler) AssignNull() error {
 	switch *na.m {
@@ -34048,20 +34048,20 @@ func (na *_TypeName__Assembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.StringAssembler{"schemadmt.TypeName"}.AssignNull()
+		return mixins.StringAssembler{TypeName: "schemadmt.TypeName"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	}
 	panic("unreachable")
 }
 func (_TypeName__Assembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.TypeName"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeName"}.AssignBool(false)
 }
 func (_TypeName__Assembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.TypeName"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeName"}.AssignInt(0)
 }
 func (_TypeName__Assembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.TypeName"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeName"}.AssignFloat(0)
 }
 func (na *_TypeName__Assembler) AssignString(v string) error {
 	switch *na.m {
@@ -34073,10 +34073,10 @@ func (na *_TypeName__Assembler) AssignString(v string) error {
 	return nil
 }
 func (_TypeName__Assembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.TypeName"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeName"}.AssignBytes(nil)
 }
 func (_TypeName__Assembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.TypeName"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeName"}.AssignLink(nil)
 }
 func (na *_TypeName__Assembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -34193,7 +34193,7 @@ func (n TypeNameOrInlineDefn) LookupByNode(key ipld.Node) (ipld.Node, error) {
 	return n.LookupByString(ks)
 }
 func (TypeNameOrInlineDefn) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.TypeNameOrInlineDefn"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.TypeNameOrInlineDefn"}.LookupByIndex(0)
 }
 func (n TypeNameOrInlineDefn) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -34239,22 +34239,22 @@ func (TypeNameOrInlineDefn) IsNull() bool {
 	return false
 }
 func (TypeNameOrInlineDefn) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.TypeNameOrInlineDefn"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.TypeNameOrInlineDefn"}.AsBool()
 }
 func (TypeNameOrInlineDefn) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.TypeNameOrInlineDefn"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.TypeNameOrInlineDefn"}.AsInt()
 }
 func (TypeNameOrInlineDefn) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.TypeNameOrInlineDefn"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.TypeNameOrInlineDefn"}.AsFloat()
 }
 func (TypeNameOrInlineDefn) AsString() (string, error) {
-	return mixins.Map{"schemadmt.TypeNameOrInlineDefn"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.TypeNameOrInlineDefn"}.AsString()
 }
 func (TypeNameOrInlineDefn) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.TypeNameOrInlineDefn"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.TypeNameOrInlineDefn"}.AsBytes()
 }
 func (TypeNameOrInlineDefn) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.TypeNameOrInlineDefn"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.TypeNameOrInlineDefn"}.AsLink()
 }
 func (TypeNameOrInlineDefn) Prototype() ipld.NodePrototype {
 	return _TypeNameOrInlineDefn__Prototype{}
@@ -34326,7 +34326,7 @@ func (na *_TypeNameOrInlineDefn__Assembler) BeginMap(int64) (ipld.MapAssembler, 
 	return na, nil
 }
 func (_TypeNameOrInlineDefn__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.TypeNameOrInlineDefn"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeNameOrInlineDefn"}.BeginList(0)
 }
 func (na *_TypeNameOrInlineDefn__Assembler) AssignNull() error {
 	switch *na.m {
@@ -34334,7 +34334,7 @@ func (na *_TypeNameOrInlineDefn__Assembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.TypeNameOrInlineDefn"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.TypeNameOrInlineDefn"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -34343,22 +34343,22 @@ func (na *_TypeNameOrInlineDefn__Assembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_TypeNameOrInlineDefn__Assembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.TypeNameOrInlineDefn"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeNameOrInlineDefn"}.AssignBool(false)
 }
 func (_TypeNameOrInlineDefn__Assembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.TypeNameOrInlineDefn"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeNameOrInlineDefn"}.AssignInt(0)
 }
 func (_TypeNameOrInlineDefn__Assembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.TypeNameOrInlineDefn"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeNameOrInlineDefn"}.AssignFloat(0)
 }
 func (_TypeNameOrInlineDefn__Assembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.TypeNameOrInlineDefn"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeNameOrInlineDefn"}.AssignString("")
 }
 func (_TypeNameOrInlineDefn__Assembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.TypeNameOrInlineDefn"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeNameOrInlineDefn"}.AssignBytes(nil)
 }
 func (_TypeNameOrInlineDefn__Assembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.TypeNameOrInlineDefn"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeNameOrInlineDefn"}.AssignLink(nil)
 }
 func (na *_TypeNameOrInlineDefn__Assembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -34530,22 +34530,22 @@ func (ma *_TypeNameOrInlineDefn__Assembler) ValuePrototype(k string) ipld.NodePr
 type _TypeNameOrInlineDefn__KeyAssembler _TypeNameOrInlineDefn__Assembler
 
 func (_TypeNameOrInlineDefn__KeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.TypeNameOrInlineDefn.KeyAssembler"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeNameOrInlineDefn.KeyAssembler"}.BeginMap(0)
 }
 func (_TypeNameOrInlineDefn__KeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.TypeNameOrInlineDefn.KeyAssembler"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeNameOrInlineDefn.KeyAssembler"}.BeginList(0)
 }
 func (na *_TypeNameOrInlineDefn__KeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"schemadmt.TypeNameOrInlineDefn.KeyAssembler"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeNameOrInlineDefn.KeyAssembler"}.AssignNull()
 }
 func (_TypeNameOrInlineDefn__KeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.TypeNameOrInlineDefn.KeyAssembler"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeNameOrInlineDefn.KeyAssembler"}.AssignBool(false)
 }
 func (_TypeNameOrInlineDefn__KeyAssembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.TypeNameOrInlineDefn.KeyAssembler"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeNameOrInlineDefn.KeyAssembler"}.AssignInt(0)
 }
 func (_TypeNameOrInlineDefn__KeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.TypeNameOrInlineDefn.KeyAssembler"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeNameOrInlineDefn.KeyAssembler"}.AssignFloat(0)
 }
 func (ka *_TypeNameOrInlineDefn__KeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
@@ -34569,10 +34569,10 @@ func (ka *_TypeNameOrInlineDefn__KeyAssembler) AssignString(k string) error {
 	return ipld.ErrInvalidKey{TypeName: "schemadmt.TypeNameOrInlineDefn", Key: &_String{k}} // TODO: error quality: ErrInvalidUnionDiscriminant ?
 }
 func (_TypeNameOrInlineDefn__KeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.TypeNameOrInlineDefn.KeyAssembler"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeNameOrInlineDefn.KeyAssembler"}.AssignBytes(nil)
 }
 func (_TypeNameOrInlineDefn__KeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.TypeNameOrInlineDefn.KeyAssembler"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeNameOrInlineDefn.KeyAssembler"}.AssignLink(nil)
 }
 func (ka *_TypeNameOrInlineDefn__KeyAssembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
@@ -34961,7 +34961,7 @@ func (n TypeString) LookupByNode(key ipld.Node) (ipld.Node, error) {
 	return n.LookupByString(ks)
 }
 func (TypeString) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.TypeString"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.TypeString"}.LookupByIndex(0)
 }
 func (n TypeString) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -34996,22 +34996,22 @@ func (TypeString) IsNull() bool {
 	return false
 }
 func (TypeString) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.TypeString"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.TypeString"}.AsBool()
 }
 func (TypeString) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.TypeString"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.TypeString"}.AsInt()
 }
 func (TypeString) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.TypeString"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.TypeString"}.AsFloat()
 }
 func (TypeString) AsString() (string, error) {
-	return mixins.Map{"schemadmt.TypeString"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.TypeString"}.AsString()
 }
 func (TypeString) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.TypeString"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.TypeString"}.AsBytes()
 }
 func (TypeString) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.TypeString"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.TypeString"}.AsLink()
 }
 func (TypeString) Prototype() ipld.NodePrototype {
 	return _TypeString__Prototype{}
@@ -35074,7 +35074,7 @@ func (na *_TypeString__Assembler) BeginMap(int64) (ipld.MapAssembler, error) {
 	return na, nil
 }
 func (_TypeString__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.TypeString"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeString"}.BeginList(0)
 }
 func (na *_TypeString__Assembler) AssignNull() error {
 	switch *na.m {
@@ -35082,7 +35082,7 @@ func (na *_TypeString__Assembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.TypeString"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.TypeString"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -35091,22 +35091,22 @@ func (na *_TypeString__Assembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_TypeString__Assembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.TypeString"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeString"}.AssignBool(false)
 }
 func (_TypeString__Assembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.TypeString"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeString"}.AssignInt(0)
 }
 func (_TypeString__Assembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.TypeString"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeString"}.AssignFloat(0)
 }
 func (_TypeString__Assembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.TypeString"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeString"}.AssignString("")
 }
 func (_TypeString__Assembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.TypeString"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeString"}.AssignBytes(nil)
 }
 func (_TypeString__Assembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.TypeString"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeString"}.AssignLink(nil)
 }
 func (na *_TypeString__Assembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -35242,22 +35242,22 @@ func (ma *_TypeString__Assembler) ValuePrototype(k string) ipld.NodePrototype {
 type _TypeString__KeyAssembler _TypeString__Assembler
 
 func (_TypeString__KeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.TypeString.KeyAssembler"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeString.KeyAssembler"}.BeginMap(0)
 }
 func (_TypeString__KeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.TypeString.KeyAssembler"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeString.KeyAssembler"}.BeginList(0)
 }
 func (na *_TypeString__KeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"schemadmt.TypeString.KeyAssembler"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeString.KeyAssembler"}.AssignNull()
 }
 func (_TypeString__KeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.TypeString.KeyAssembler"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeString.KeyAssembler"}.AssignBool(false)
 }
 func (_TypeString__KeyAssembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.TypeString.KeyAssembler"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeString.KeyAssembler"}.AssignInt(0)
 }
 func (_TypeString__KeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.TypeString.KeyAssembler"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeString.KeyAssembler"}.AssignFloat(0)
 }
 func (ka *_TypeString__KeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
@@ -35270,10 +35270,10 @@ func (ka *_TypeString__KeyAssembler) AssignString(k string) error {
 	return nil
 }
 func (_TypeString__KeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.TypeString.KeyAssembler"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeString.KeyAssembler"}.AssignBytes(nil)
 }
 func (_TypeString__KeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.TypeString.KeyAssembler"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeString.KeyAssembler"}.AssignLink(nil)
 }
 func (ka *_TypeString__KeyAssembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
@@ -35314,7 +35314,7 @@ func (n *_TypeString__Repr) LookupByNode(key ipld.Node) (ipld.Node, error) {
 	return n.LookupByString(ks)
 }
 func (_TypeString__Repr) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.TypeString.Repr"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.TypeString.Repr"}.LookupByIndex(0)
 }
 func (n _TypeString__Repr) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -35349,22 +35349,22 @@ func (_TypeString__Repr) IsNull() bool {
 	return false
 }
 func (_TypeString__Repr) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.TypeString.Repr"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.TypeString.Repr"}.AsBool()
 }
 func (_TypeString__Repr) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.TypeString.Repr"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.TypeString.Repr"}.AsInt()
 }
 func (_TypeString__Repr) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.TypeString.Repr"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.TypeString.Repr"}.AsFloat()
 }
 func (_TypeString__Repr) AsString() (string, error) {
-	return mixins.Map{"schemadmt.TypeString.Repr"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.TypeString.Repr"}.AsString()
 }
 func (_TypeString__Repr) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.TypeString.Repr"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.TypeString.Repr"}.AsBytes()
 }
 func (_TypeString__Repr) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.TypeString.Repr"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.TypeString.Repr"}.AsLink()
 }
 func (_TypeString__Repr) Prototype() ipld.NodePrototype {
 	return _TypeString__ReprPrototype{}
@@ -35422,7 +35422,7 @@ func (na *_TypeString__ReprAssembler) BeginMap(int64) (ipld.MapAssembler, error)
 	return na, nil
 }
 func (_TypeString__ReprAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.TypeString.Repr"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeString.Repr"}.BeginList(0)
 }
 func (na *_TypeString__ReprAssembler) AssignNull() error {
 	switch *na.m {
@@ -35430,7 +35430,7 @@ func (na *_TypeString__ReprAssembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.TypeString.Repr.Repr"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.TypeString.Repr.Repr"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -35439,22 +35439,22 @@ func (na *_TypeString__ReprAssembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_TypeString__ReprAssembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.TypeString.Repr"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeString.Repr"}.AssignBool(false)
 }
 func (_TypeString__ReprAssembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.TypeString.Repr"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeString.Repr"}.AssignInt(0)
 }
 func (_TypeString__ReprAssembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.TypeString.Repr"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeString.Repr"}.AssignFloat(0)
 }
 func (_TypeString__ReprAssembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.TypeString.Repr"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeString.Repr"}.AssignString("")
 }
 func (_TypeString__ReprAssembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.TypeString.Repr"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeString.Repr"}.AssignBytes(nil)
 }
 func (_TypeString__ReprAssembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.TypeString.Repr"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeString.Repr"}.AssignLink(nil)
 }
 func (na *_TypeString__ReprAssembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -35590,22 +35590,22 @@ func (ma *_TypeString__ReprAssembler) ValuePrototype(k string) ipld.NodePrototyp
 type _TypeString__ReprKeyAssembler _TypeString__ReprAssembler
 
 func (_TypeString__ReprKeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.TypeString.Repr.KeyAssembler"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeString.Repr.KeyAssembler"}.BeginMap(0)
 }
 func (_TypeString__ReprKeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.TypeString.Repr.KeyAssembler"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeString.Repr.KeyAssembler"}.BeginList(0)
 }
 func (na *_TypeString__ReprKeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"schemadmt.TypeString.Repr.KeyAssembler"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeString.Repr.KeyAssembler"}.AssignNull()
 }
 func (_TypeString__ReprKeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.TypeString.Repr.KeyAssembler"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeString.Repr.KeyAssembler"}.AssignBool(false)
 }
 func (_TypeString__ReprKeyAssembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.TypeString.Repr.KeyAssembler"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeString.Repr.KeyAssembler"}.AssignInt(0)
 }
 func (_TypeString__ReprKeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.TypeString.Repr.KeyAssembler"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeString.Repr.KeyAssembler"}.AssignFloat(0)
 }
 func (ka *_TypeString__ReprKeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
@@ -35614,10 +35614,10 @@ func (ka *_TypeString__ReprKeyAssembler) AssignString(k string) error {
 	return ipld.ErrInvalidKey{TypeName: "schemadmt.TypeString.Repr", Key: &_String{k}}
 }
 func (_TypeString__ReprKeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.TypeString.Repr.KeyAssembler"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeString.Repr.KeyAssembler"}.AssignBytes(nil)
 }
 func (_TypeString__ReprKeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.TypeString.Repr.KeyAssembler"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeString.Repr.KeyAssembler"}.AssignLink(nil)
 }
 func (ka *_TypeString__ReprKeyAssembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
@@ -35699,7 +35699,7 @@ func (n TypeStruct) LookupByNode(key ipld.Node) (ipld.Node, error) {
 	return n.LookupByString(ks)
 }
 func (TypeStruct) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.TypeStruct"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.TypeStruct"}.LookupByIndex(0)
 }
 func (n TypeStruct) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -35747,22 +35747,22 @@ func (TypeStruct) IsNull() bool {
 	return false
 }
 func (TypeStruct) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.TypeStruct"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.TypeStruct"}.AsBool()
 }
 func (TypeStruct) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.TypeStruct"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.TypeStruct"}.AsInt()
 }
 func (TypeStruct) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.TypeStruct"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.TypeStruct"}.AsFloat()
 }
 func (TypeStruct) AsString() (string, error) {
-	return mixins.Map{"schemadmt.TypeStruct"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.TypeStruct"}.AsString()
 }
 func (TypeStruct) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.TypeStruct"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.TypeStruct"}.AsBytes()
 }
 func (TypeStruct) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.TypeStruct"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.TypeStruct"}.AsLink()
 }
 func (TypeStruct) Prototype() ipld.NodePrototype {
 	return _TypeStruct__Prototype{}
@@ -35831,7 +35831,7 @@ func (na *_TypeStruct__Assembler) BeginMap(int64) (ipld.MapAssembler, error) {
 	return na, nil
 }
 func (_TypeStruct__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.TypeStruct"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeStruct"}.BeginList(0)
 }
 func (na *_TypeStruct__Assembler) AssignNull() error {
 	switch *na.m {
@@ -35839,7 +35839,7 @@ func (na *_TypeStruct__Assembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.TypeStruct"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.TypeStruct"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -35848,22 +35848,22 @@ func (na *_TypeStruct__Assembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_TypeStruct__Assembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.TypeStruct"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeStruct"}.AssignBool(false)
 }
 func (_TypeStruct__Assembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.TypeStruct"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeStruct"}.AssignInt(0)
 }
 func (_TypeStruct__Assembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.TypeStruct"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeStruct"}.AssignFloat(0)
 }
 func (_TypeStruct__Assembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.TypeStruct"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeStruct"}.AssignString("")
 }
 func (_TypeStruct__Assembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.TypeStruct"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeStruct"}.AssignBytes(nil)
 }
 func (_TypeStruct__Assembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.TypeStruct"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeStruct"}.AssignLink(nil)
 }
 func (na *_TypeStruct__Assembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -36055,22 +36055,22 @@ func (ma *_TypeStruct__Assembler) ValuePrototype(k string) ipld.NodePrototype {
 type _TypeStruct__KeyAssembler _TypeStruct__Assembler
 
 func (_TypeStruct__KeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.TypeStruct.KeyAssembler"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeStruct.KeyAssembler"}.BeginMap(0)
 }
 func (_TypeStruct__KeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.TypeStruct.KeyAssembler"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeStruct.KeyAssembler"}.BeginList(0)
 }
 func (na *_TypeStruct__KeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"schemadmt.TypeStruct.KeyAssembler"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeStruct.KeyAssembler"}.AssignNull()
 }
 func (_TypeStruct__KeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.TypeStruct.KeyAssembler"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeStruct.KeyAssembler"}.AssignBool(false)
 }
 func (_TypeStruct__KeyAssembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.TypeStruct.KeyAssembler"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeStruct.KeyAssembler"}.AssignInt(0)
 }
 func (_TypeStruct__KeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.TypeStruct.KeyAssembler"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeStruct.KeyAssembler"}.AssignFloat(0)
 }
 func (ka *_TypeStruct__KeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
@@ -36097,10 +36097,10 @@ func (ka *_TypeStruct__KeyAssembler) AssignString(k string) error {
 	return nil
 }
 func (_TypeStruct__KeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.TypeStruct.KeyAssembler"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeStruct.KeyAssembler"}.AssignBytes(nil)
 }
 func (_TypeStruct__KeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.TypeStruct.KeyAssembler"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeStruct.KeyAssembler"}.AssignLink(nil)
 }
 func (ka *_TypeStruct__KeyAssembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
@@ -36148,7 +36148,7 @@ func (n *_TypeStruct__Repr) LookupByNode(key ipld.Node) (ipld.Node, error) {
 	return n.LookupByString(ks)
 }
 func (_TypeStruct__Repr) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.TypeStruct.Repr"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.TypeStruct.Repr"}.LookupByIndex(0)
 }
 func (n _TypeStruct__Repr) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -36196,22 +36196,22 @@ func (_TypeStruct__Repr) IsNull() bool {
 	return false
 }
 func (_TypeStruct__Repr) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.TypeStruct.Repr"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.TypeStruct.Repr"}.AsBool()
 }
 func (_TypeStruct__Repr) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.TypeStruct.Repr"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.TypeStruct.Repr"}.AsInt()
 }
 func (_TypeStruct__Repr) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.TypeStruct.Repr"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.TypeStruct.Repr"}.AsFloat()
 }
 func (_TypeStruct__Repr) AsString() (string, error) {
-	return mixins.Map{"schemadmt.TypeStruct.Repr"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.TypeStruct.Repr"}.AsString()
 }
 func (_TypeStruct__Repr) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.TypeStruct.Repr"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.TypeStruct.Repr"}.AsBytes()
 }
 func (_TypeStruct__Repr) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.TypeStruct.Repr"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.TypeStruct.Repr"}.AsLink()
 }
 func (_TypeStruct__Repr) Prototype() ipld.NodePrototype {
 	return _TypeStruct__ReprPrototype{}
@@ -36273,7 +36273,7 @@ func (na *_TypeStruct__ReprAssembler) BeginMap(int64) (ipld.MapAssembler, error)
 	return na, nil
 }
 func (_TypeStruct__ReprAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.TypeStruct.Repr"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeStruct.Repr"}.BeginList(0)
 }
 func (na *_TypeStruct__ReprAssembler) AssignNull() error {
 	switch *na.m {
@@ -36281,7 +36281,7 @@ func (na *_TypeStruct__ReprAssembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.TypeStruct.Repr.Repr"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.TypeStruct.Repr.Repr"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -36290,22 +36290,22 @@ func (na *_TypeStruct__ReprAssembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_TypeStruct__ReprAssembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.TypeStruct.Repr"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeStruct.Repr"}.AssignBool(false)
 }
 func (_TypeStruct__ReprAssembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.TypeStruct.Repr"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeStruct.Repr"}.AssignInt(0)
 }
 func (_TypeStruct__ReprAssembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.TypeStruct.Repr"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeStruct.Repr"}.AssignFloat(0)
 }
 func (_TypeStruct__ReprAssembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.TypeStruct.Repr"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeStruct.Repr"}.AssignString("")
 }
 func (_TypeStruct__ReprAssembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.TypeStruct.Repr"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeStruct.Repr"}.AssignBytes(nil)
 }
 func (_TypeStruct__ReprAssembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.TypeStruct.Repr"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeStruct.Repr"}.AssignLink(nil)
 }
 func (na *_TypeStruct__ReprAssembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -36496,22 +36496,22 @@ func (ma *_TypeStruct__ReprAssembler) ValuePrototype(k string) ipld.NodePrototyp
 type _TypeStruct__ReprKeyAssembler _TypeStruct__ReprAssembler
 
 func (_TypeStruct__ReprKeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.TypeStruct.Repr.KeyAssembler"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeStruct.Repr.KeyAssembler"}.BeginMap(0)
 }
 func (_TypeStruct__ReprKeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.TypeStruct.Repr.KeyAssembler"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeStruct.Repr.KeyAssembler"}.BeginList(0)
 }
 func (na *_TypeStruct__ReprKeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"schemadmt.TypeStruct.Repr.KeyAssembler"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeStruct.Repr.KeyAssembler"}.AssignNull()
 }
 func (_TypeStruct__ReprKeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.TypeStruct.Repr.KeyAssembler"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeStruct.Repr.KeyAssembler"}.AssignBool(false)
 }
 func (_TypeStruct__ReprKeyAssembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.TypeStruct.Repr.KeyAssembler"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeStruct.Repr.KeyAssembler"}.AssignInt(0)
 }
 func (_TypeStruct__ReprKeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.TypeStruct.Repr.KeyAssembler"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeStruct.Repr.KeyAssembler"}.AssignFloat(0)
 }
 func (ka *_TypeStruct__ReprKeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
@@ -36538,10 +36538,10 @@ func (ka *_TypeStruct__ReprKeyAssembler) AssignString(k string) error {
 	return ipld.ErrInvalidKey{TypeName: "schemadmt.TypeStruct.Repr", Key: &_String{k}}
 }
 func (_TypeStruct__ReprKeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.TypeStruct.Repr.KeyAssembler"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeStruct.Repr.KeyAssembler"}.AssignBytes(nil)
 }
 func (_TypeStruct__ReprKeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.TypeStruct.Repr.KeyAssembler"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeStruct.Repr.KeyAssembler"}.AssignLink(nil)
 }
 func (ka *_TypeStruct__ReprKeyAssembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
@@ -36623,7 +36623,7 @@ func (n TypeUnion) LookupByNode(key ipld.Node) (ipld.Node, error) {
 	return n.LookupByString(ks)
 }
 func (TypeUnion) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.TypeUnion"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.TypeUnion"}.LookupByIndex(0)
 }
 func (n TypeUnion) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -36671,22 +36671,22 @@ func (TypeUnion) IsNull() bool {
 	return false
 }
 func (TypeUnion) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.TypeUnion"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.TypeUnion"}.AsBool()
 }
 func (TypeUnion) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.TypeUnion"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.TypeUnion"}.AsInt()
 }
 func (TypeUnion) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.TypeUnion"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.TypeUnion"}.AsFloat()
 }
 func (TypeUnion) AsString() (string, error) {
-	return mixins.Map{"schemadmt.TypeUnion"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.TypeUnion"}.AsString()
 }
 func (TypeUnion) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.TypeUnion"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.TypeUnion"}.AsBytes()
 }
 func (TypeUnion) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.TypeUnion"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.TypeUnion"}.AsLink()
 }
 func (TypeUnion) Prototype() ipld.NodePrototype {
 	return _TypeUnion__Prototype{}
@@ -36755,7 +36755,7 @@ func (na *_TypeUnion__Assembler) BeginMap(int64) (ipld.MapAssembler, error) {
 	return na, nil
 }
 func (_TypeUnion__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.TypeUnion"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeUnion"}.BeginList(0)
 }
 func (na *_TypeUnion__Assembler) AssignNull() error {
 	switch *na.m {
@@ -36763,7 +36763,7 @@ func (na *_TypeUnion__Assembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.TypeUnion"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.TypeUnion"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -36772,22 +36772,22 @@ func (na *_TypeUnion__Assembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_TypeUnion__Assembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.TypeUnion"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeUnion"}.AssignBool(false)
 }
 func (_TypeUnion__Assembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.TypeUnion"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeUnion"}.AssignInt(0)
 }
 func (_TypeUnion__Assembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.TypeUnion"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeUnion"}.AssignFloat(0)
 }
 func (_TypeUnion__Assembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.TypeUnion"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeUnion"}.AssignString("")
 }
 func (_TypeUnion__Assembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.TypeUnion"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeUnion"}.AssignBytes(nil)
 }
 func (_TypeUnion__Assembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.TypeUnion"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeUnion"}.AssignLink(nil)
 }
 func (na *_TypeUnion__Assembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -36979,22 +36979,22 @@ func (ma *_TypeUnion__Assembler) ValuePrototype(k string) ipld.NodePrototype {
 type _TypeUnion__KeyAssembler _TypeUnion__Assembler
 
 func (_TypeUnion__KeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.TypeUnion.KeyAssembler"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeUnion.KeyAssembler"}.BeginMap(0)
 }
 func (_TypeUnion__KeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.TypeUnion.KeyAssembler"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeUnion.KeyAssembler"}.BeginList(0)
 }
 func (na *_TypeUnion__KeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"schemadmt.TypeUnion.KeyAssembler"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeUnion.KeyAssembler"}.AssignNull()
 }
 func (_TypeUnion__KeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.TypeUnion.KeyAssembler"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeUnion.KeyAssembler"}.AssignBool(false)
 }
 func (_TypeUnion__KeyAssembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.TypeUnion.KeyAssembler"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeUnion.KeyAssembler"}.AssignInt(0)
 }
 func (_TypeUnion__KeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.TypeUnion.KeyAssembler"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeUnion.KeyAssembler"}.AssignFloat(0)
 }
 func (ka *_TypeUnion__KeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
@@ -37021,10 +37021,10 @@ func (ka *_TypeUnion__KeyAssembler) AssignString(k string) error {
 	return nil
 }
 func (_TypeUnion__KeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.TypeUnion.KeyAssembler"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeUnion.KeyAssembler"}.AssignBytes(nil)
 }
 func (_TypeUnion__KeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.TypeUnion.KeyAssembler"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeUnion.KeyAssembler"}.AssignLink(nil)
 }
 func (ka *_TypeUnion__KeyAssembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
@@ -37072,7 +37072,7 @@ func (n *_TypeUnion__Repr) LookupByNode(key ipld.Node) (ipld.Node, error) {
 	return n.LookupByString(ks)
 }
 func (_TypeUnion__Repr) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.TypeUnion.Repr"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.TypeUnion.Repr"}.LookupByIndex(0)
 }
 func (n _TypeUnion__Repr) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -37120,22 +37120,22 @@ func (_TypeUnion__Repr) IsNull() bool {
 	return false
 }
 func (_TypeUnion__Repr) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.TypeUnion.Repr"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.TypeUnion.Repr"}.AsBool()
 }
 func (_TypeUnion__Repr) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.TypeUnion.Repr"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.TypeUnion.Repr"}.AsInt()
 }
 func (_TypeUnion__Repr) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.TypeUnion.Repr"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.TypeUnion.Repr"}.AsFloat()
 }
 func (_TypeUnion__Repr) AsString() (string, error) {
-	return mixins.Map{"schemadmt.TypeUnion.Repr"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.TypeUnion.Repr"}.AsString()
 }
 func (_TypeUnion__Repr) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.TypeUnion.Repr"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.TypeUnion.Repr"}.AsBytes()
 }
 func (_TypeUnion__Repr) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.TypeUnion.Repr"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.TypeUnion.Repr"}.AsLink()
 }
 func (_TypeUnion__Repr) Prototype() ipld.NodePrototype {
 	return _TypeUnion__ReprPrototype{}
@@ -37197,7 +37197,7 @@ func (na *_TypeUnion__ReprAssembler) BeginMap(int64) (ipld.MapAssembler, error) 
 	return na, nil
 }
 func (_TypeUnion__ReprAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.TypeUnion.Repr"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeUnion.Repr"}.BeginList(0)
 }
 func (na *_TypeUnion__ReprAssembler) AssignNull() error {
 	switch *na.m {
@@ -37205,7 +37205,7 @@ func (na *_TypeUnion__ReprAssembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.TypeUnion.Repr.Repr"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.TypeUnion.Repr.Repr"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -37214,22 +37214,22 @@ func (na *_TypeUnion__ReprAssembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_TypeUnion__ReprAssembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.TypeUnion.Repr"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeUnion.Repr"}.AssignBool(false)
 }
 func (_TypeUnion__ReprAssembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.TypeUnion.Repr"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeUnion.Repr"}.AssignInt(0)
 }
 func (_TypeUnion__ReprAssembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.TypeUnion.Repr"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeUnion.Repr"}.AssignFloat(0)
 }
 func (_TypeUnion__ReprAssembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.TypeUnion.Repr"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeUnion.Repr"}.AssignString("")
 }
 func (_TypeUnion__ReprAssembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.TypeUnion.Repr"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeUnion.Repr"}.AssignBytes(nil)
 }
 func (_TypeUnion__ReprAssembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.TypeUnion.Repr"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.TypeUnion.Repr"}.AssignLink(nil)
 }
 func (na *_TypeUnion__ReprAssembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -37420,22 +37420,22 @@ func (ma *_TypeUnion__ReprAssembler) ValuePrototype(k string) ipld.NodePrototype
 type _TypeUnion__ReprKeyAssembler _TypeUnion__ReprAssembler
 
 func (_TypeUnion__ReprKeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.TypeUnion.Repr.KeyAssembler"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeUnion.Repr.KeyAssembler"}.BeginMap(0)
 }
 func (_TypeUnion__ReprKeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.TypeUnion.Repr.KeyAssembler"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeUnion.Repr.KeyAssembler"}.BeginList(0)
 }
 func (na *_TypeUnion__ReprKeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"schemadmt.TypeUnion.Repr.KeyAssembler"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeUnion.Repr.KeyAssembler"}.AssignNull()
 }
 func (_TypeUnion__ReprKeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.TypeUnion.Repr.KeyAssembler"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeUnion.Repr.KeyAssembler"}.AssignBool(false)
 }
 func (_TypeUnion__ReprKeyAssembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.TypeUnion.Repr.KeyAssembler"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeUnion.Repr.KeyAssembler"}.AssignInt(0)
 }
 func (_TypeUnion__ReprKeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.TypeUnion.Repr.KeyAssembler"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeUnion.Repr.KeyAssembler"}.AssignFloat(0)
 }
 func (ka *_TypeUnion__ReprKeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
@@ -37462,10 +37462,10 @@ func (ka *_TypeUnion__ReprKeyAssembler) AssignString(k string) error {
 	return ipld.ErrInvalidKey{TypeName: "schemadmt.TypeUnion.Repr", Key: &_String{k}}
 }
 func (_TypeUnion__ReprKeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.TypeUnion.Repr.KeyAssembler"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeUnion.Repr.KeyAssembler"}.AssignBytes(nil)
 }
 func (_TypeUnion__ReprKeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.TypeUnion.Repr.KeyAssembler"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.TypeUnion.Repr.KeyAssembler"}.AssignLink(nil)
 }
 func (ka *_TypeUnion__ReprKeyAssembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
@@ -37589,7 +37589,7 @@ func (n UnionRepresentation) LookupByNode(key ipld.Node) (ipld.Node, error) {
 	return n.LookupByString(ks)
 }
 func (UnionRepresentation) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation"}.LookupByIndex(0)
 }
 func (n UnionRepresentation) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -37643,22 +37643,22 @@ func (UnionRepresentation) IsNull() bool {
 	return false
 }
 func (UnionRepresentation) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation"}.AsBool()
 }
 func (UnionRepresentation) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation"}.AsInt()
 }
 func (UnionRepresentation) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation"}.AsFloat()
 }
 func (UnionRepresentation) AsString() (string, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation"}.AsString()
 }
 func (UnionRepresentation) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation"}.AsBytes()
 }
 func (UnionRepresentation) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation"}.AsLink()
 }
 func (UnionRepresentation) Prototype() ipld.NodePrototype {
 	return _UnionRepresentation__Prototype{}
@@ -37750,7 +37750,7 @@ func (na *_UnionRepresentation__Assembler) BeginMap(int64) (ipld.MapAssembler, e
 	return na, nil
 }
 func (_UnionRepresentation__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation"}.BeginList(0)
 }
 func (na *_UnionRepresentation__Assembler) AssignNull() error {
 	switch *na.m {
@@ -37758,7 +37758,7 @@ func (na *_UnionRepresentation__Assembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.UnionRepresentation"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -37767,22 +37767,22 @@ func (na *_UnionRepresentation__Assembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_UnionRepresentation__Assembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation"}.AssignBool(false)
 }
 func (_UnionRepresentation__Assembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation"}.AssignInt(0)
 }
 func (_UnionRepresentation__Assembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation"}.AssignFloat(0)
 }
 func (_UnionRepresentation__Assembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation"}.AssignString("")
 }
 func (_UnionRepresentation__Assembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation"}.AssignBytes(nil)
 }
 func (_UnionRepresentation__Assembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation"}.AssignLink(nil)
 }
 func (na *_UnionRepresentation__Assembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -38006,22 +38006,22 @@ func (ma *_UnionRepresentation__Assembler) ValuePrototype(k string) ipld.NodePro
 type _UnionRepresentation__KeyAssembler _UnionRepresentation__Assembler
 
 func (_UnionRepresentation__KeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation.KeyAssembler"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation.KeyAssembler"}.BeginMap(0)
 }
 func (_UnionRepresentation__KeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation.KeyAssembler"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation.KeyAssembler"}.BeginList(0)
 }
 func (na *_UnionRepresentation__KeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation.KeyAssembler"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation.KeyAssembler"}.AssignNull()
 }
 func (_UnionRepresentation__KeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation.KeyAssembler"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation.KeyAssembler"}.AssignBool(false)
 }
 func (_UnionRepresentation__KeyAssembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation.KeyAssembler"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation.KeyAssembler"}.AssignInt(0)
 }
 func (_UnionRepresentation__KeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation.KeyAssembler"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation.KeyAssembler"}.AssignFloat(0)
 }
 func (ka *_UnionRepresentation__KeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
@@ -38065,10 +38065,10 @@ func (ka *_UnionRepresentation__KeyAssembler) AssignString(k string) error {
 	return ipld.ErrInvalidKey{TypeName: "schemadmt.UnionRepresentation", Key: &_String{k}} // TODO: error quality: ErrInvalidUnionDiscriminant ?
 }
 func (_UnionRepresentation__KeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation.KeyAssembler"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation.KeyAssembler"}.AssignBytes(nil)
 }
 func (_UnionRepresentation__KeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation.KeyAssembler"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation.KeyAssembler"}.AssignLink(nil)
 }
 func (ka *_UnionRepresentation__KeyAssembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
@@ -38146,7 +38146,7 @@ func (n *_UnionRepresentation__Repr) LookupByNode(key ipld.Node) (ipld.Node, err
 	return n.LookupByString(ks)
 }
 func (_UnionRepresentation__Repr) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation.Repr"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation.Repr"}.LookupByIndex(0)
 }
 func (n _UnionRepresentation__Repr) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -38200,22 +38200,22 @@ func (_UnionRepresentation__Repr) IsNull() bool {
 	return false
 }
 func (_UnionRepresentation__Repr) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation.Repr"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation.Repr"}.AsBool()
 }
 func (_UnionRepresentation__Repr) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation.Repr"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation.Repr"}.AsInt()
 }
 func (_UnionRepresentation__Repr) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation.Repr"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation.Repr"}.AsFloat()
 }
 func (_UnionRepresentation__Repr) AsString() (string, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation.Repr"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation.Repr"}.AsString()
 }
 func (_UnionRepresentation__Repr) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation.Repr"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation.Repr"}.AsBytes()
 }
 func (_UnionRepresentation__Repr) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation.Repr"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation.Repr"}.AsLink()
 }
 func (_UnionRepresentation__Repr) Prototype() ipld.NodePrototype {
 	return _UnionRepresentation__ReprPrototype{}
@@ -38307,7 +38307,7 @@ func (na *_UnionRepresentation__ReprAssembler) BeginMap(int64) (ipld.MapAssemble
 	return na, nil
 }
 func (_UnionRepresentation__ReprAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation.Repr"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation.Repr"}.BeginList(0)
 }
 func (na *_UnionRepresentation__ReprAssembler) AssignNull() error {
 	switch *na.m {
@@ -38315,7 +38315,7 @@ func (na *_UnionRepresentation__ReprAssembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.UnionRepresentation.Repr.Repr"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation.Repr.Repr"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -38324,22 +38324,22 @@ func (na *_UnionRepresentation__ReprAssembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_UnionRepresentation__ReprAssembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation.Repr"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation.Repr"}.AssignBool(false)
 }
 func (_UnionRepresentation__ReprAssembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation.Repr"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation.Repr"}.AssignInt(0)
 }
 func (_UnionRepresentation__ReprAssembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation.Repr"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation.Repr"}.AssignFloat(0)
 }
 func (_UnionRepresentation__ReprAssembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation.Repr"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation.Repr"}.AssignString("")
 }
 func (_UnionRepresentation__ReprAssembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation.Repr"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation.Repr"}.AssignBytes(nil)
 }
 func (_UnionRepresentation__ReprAssembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation.Repr"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation.Repr"}.AssignLink(nil)
 }
 func (na *_UnionRepresentation__ReprAssembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -38563,22 +38563,22 @@ func (ma *_UnionRepresentation__ReprAssembler) ValuePrototype(k string) ipld.Nod
 type _UnionRepresentation__ReprKeyAssembler _UnionRepresentation__ReprAssembler
 
 func (_UnionRepresentation__ReprKeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation.Repr.KeyAssembler"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation.Repr.KeyAssembler"}.BeginMap(0)
 }
 func (_UnionRepresentation__ReprKeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation.Repr.KeyAssembler"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation.Repr.KeyAssembler"}.BeginList(0)
 }
 func (na *_UnionRepresentation__ReprKeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation.Repr.KeyAssembler"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation.Repr.KeyAssembler"}.AssignNull()
 }
 func (_UnionRepresentation__ReprKeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation.Repr.KeyAssembler"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation.Repr.KeyAssembler"}.AssignBool(false)
 }
 func (_UnionRepresentation__ReprKeyAssembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation.Repr.KeyAssembler"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation.Repr.KeyAssembler"}.AssignInt(0)
 }
 func (_UnionRepresentation__ReprKeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation.Repr.KeyAssembler"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation.Repr.KeyAssembler"}.AssignFloat(0)
 }
 func (ka *_UnionRepresentation__ReprKeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
@@ -38622,10 +38622,10 @@ func (ka *_UnionRepresentation__ReprKeyAssembler) AssignString(k string) error {
 	return ipld.ErrInvalidKey{TypeName: "schemadmt.UnionRepresentation.Repr", Key: &_String{k}} // TODO: error quality: ErrInvalidUnionDiscriminant ?
 }
 func (_UnionRepresentation__ReprKeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation.Repr.KeyAssembler"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation.Repr.KeyAssembler"}.AssignBytes(nil)
 }
 func (_UnionRepresentation__ReprKeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation.Repr.KeyAssembler"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation.Repr.KeyAssembler"}.AssignLink(nil)
 }
 func (ka *_UnionRepresentation__ReprKeyAssembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
@@ -38701,7 +38701,7 @@ func (n UnionRepresentation_BytePrefix) LookupByNode(key ipld.Node) (ipld.Node, 
 	return n.LookupByString(ks)
 }
 func (UnionRepresentation_BytePrefix) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_BytePrefix"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_BytePrefix"}.LookupByIndex(0)
 }
 func (n UnionRepresentation_BytePrefix) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -38746,22 +38746,22 @@ func (UnionRepresentation_BytePrefix) IsNull() bool {
 	return false
 }
 func (UnionRepresentation_BytePrefix) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_BytePrefix"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_BytePrefix"}.AsBool()
 }
 func (UnionRepresentation_BytePrefix) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_BytePrefix"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_BytePrefix"}.AsInt()
 }
 func (UnionRepresentation_BytePrefix) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_BytePrefix"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_BytePrefix"}.AsFloat()
 }
 func (UnionRepresentation_BytePrefix) AsString() (string, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_BytePrefix"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_BytePrefix"}.AsString()
 }
 func (UnionRepresentation_BytePrefix) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_BytePrefix"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_BytePrefix"}.AsBytes()
 }
 func (UnionRepresentation_BytePrefix) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_BytePrefix"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_BytePrefix"}.AsLink()
 }
 func (UnionRepresentation_BytePrefix) Prototype() ipld.NodePrototype {
 	return _UnionRepresentation_BytePrefix__Prototype{}
@@ -38827,7 +38827,7 @@ func (na *_UnionRepresentation_BytePrefix__Assembler) BeginMap(int64) (ipld.MapA
 	return na, nil
 }
 func (_UnionRepresentation_BytePrefix__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_BytePrefix"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_BytePrefix"}.BeginList(0)
 }
 func (na *_UnionRepresentation_BytePrefix__Assembler) AssignNull() error {
 	switch *na.m {
@@ -38835,7 +38835,7 @@ func (na *_UnionRepresentation_BytePrefix__Assembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.UnionRepresentation_BytePrefix"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_BytePrefix"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -38844,22 +38844,22 @@ func (na *_UnionRepresentation_BytePrefix__Assembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_UnionRepresentation_BytePrefix__Assembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_BytePrefix"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_BytePrefix"}.AssignBool(false)
 }
 func (_UnionRepresentation_BytePrefix__Assembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_BytePrefix"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_BytePrefix"}.AssignInt(0)
 }
 func (_UnionRepresentation_BytePrefix__Assembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_BytePrefix"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_BytePrefix"}.AssignFloat(0)
 }
 func (_UnionRepresentation_BytePrefix__Assembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_BytePrefix"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_BytePrefix"}.AssignString("")
 }
 func (_UnionRepresentation_BytePrefix__Assembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_BytePrefix"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_BytePrefix"}.AssignBytes(nil)
 }
 func (_UnionRepresentation_BytePrefix__Assembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_BytePrefix"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_BytePrefix"}.AssignLink(nil)
 }
 func (na *_UnionRepresentation_BytePrefix__Assembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -39024,22 +39024,22 @@ func (ma *_UnionRepresentation_BytePrefix__Assembler) ValuePrototype(k string) i
 type _UnionRepresentation_BytePrefix__KeyAssembler _UnionRepresentation_BytePrefix__Assembler
 
 func (_UnionRepresentation_BytePrefix__KeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation_BytePrefix.KeyAssembler"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation_BytePrefix.KeyAssembler"}.BeginMap(0)
 }
 func (_UnionRepresentation_BytePrefix__KeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation_BytePrefix.KeyAssembler"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation_BytePrefix.KeyAssembler"}.BeginList(0)
 }
 func (na *_UnionRepresentation_BytePrefix__KeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation_BytePrefix.KeyAssembler"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation_BytePrefix.KeyAssembler"}.AssignNull()
 }
 func (_UnionRepresentation_BytePrefix__KeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation_BytePrefix.KeyAssembler"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation_BytePrefix.KeyAssembler"}.AssignBool(false)
 }
 func (_UnionRepresentation_BytePrefix__KeyAssembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation_BytePrefix.KeyAssembler"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation_BytePrefix.KeyAssembler"}.AssignInt(0)
 }
 func (_UnionRepresentation_BytePrefix__KeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation_BytePrefix.KeyAssembler"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation_BytePrefix.KeyAssembler"}.AssignFloat(0)
 }
 func (ka *_UnionRepresentation_BytePrefix__KeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
@@ -39059,10 +39059,10 @@ func (ka *_UnionRepresentation_BytePrefix__KeyAssembler) AssignString(k string) 
 	return nil
 }
 func (_UnionRepresentation_BytePrefix__KeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation_BytePrefix.KeyAssembler"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation_BytePrefix.KeyAssembler"}.AssignBytes(nil)
 }
 func (_UnionRepresentation_BytePrefix__KeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation_BytePrefix.KeyAssembler"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation_BytePrefix.KeyAssembler"}.AssignLink(nil)
 }
 func (ka *_UnionRepresentation_BytePrefix__KeyAssembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
@@ -39107,7 +39107,7 @@ func (n *_UnionRepresentation_BytePrefix__Repr) LookupByNode(key ipld.Node) (ipl
 	return n.LookupByString(ks)
 }
 func (_UnionRepresentation_BytePrefix__Repr) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_BytePrefix.Repr"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_BytePrefix.Repr"}.LookupByIndex(0)
 }
 func (n _UnionRepresentation_BytePrefix__Repr) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -39152,22 +39152,22 @@ func (_UnionRepresentation_BytePrefix__Repr) IsNull() bool {
 	return false
 }
 func (_UnionRepresentation_BytePrefix__Repr) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_BytePrefix.Repr"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_BytePrefix.Repr"}.AsBool()
 }
 func (_UnionRepresentation_BytePrefix__Repr) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_BytePrefix.Repr"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_BytePrefix.Repr"}.AsInt()
 }
 func (_UnionRepresentation_BytePrefix__Repr) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_BytePrefix.Repr"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_BytePrefix.Repr"}.AsFloat()
 }
 func (_UnionRepresentation_BytePrefix__Repr) AsString() (string, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_BytePrefix.Repr"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_BytePrefix.Repr"}.AsString()
 }
 func (_UnionRepresentation_BytePrefix__Repr) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_BytePrefix.Repr"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_BytePrefix.Repr"}.AsBytes()
 }
 func (_UnionRepresentation_BytePrefix__Repr) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_BytePrefix.Repr"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_BytePrefix.Repr"}.AsLink()
 }
 func (_UnionRepresentation_BytePrefix__Repr) Prototype() ipld.NodePrototype {
 	return _UnionRepresentation_BytePrefix__ReprPrototype{}
@@ -39227,7 +39227,7 @@ func (na *_UnionRepresentation_BytePrefix__ReprAssembler) BeginMap(int64) (ipld.
 	return na, nil
 }
 func (_UnionRepresentation_BytePrefix__ReprAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_BytePrefix.Repr"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_BytePrefix.Repr"}.BeginList(0)
 }
 func (na *_UnionRepresentation_BytePrefix__ReprAssembler) AssignNull() error {
 	switch *na.m {
@@ -39235,7 +39235,7 @@ func (na *_UnionRepresentation_BytePrefix__ReprAssembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.UnionRepresentation_BytePrefix.Repr.Repr"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_BytePrefix.Repr.Repr"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -39244,22 +39244,22 @@ func (na *_UnionRepresentation_BytePrefix__ReprAssembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_UnionRepresentation_BytePrefix__ReprAssembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_BytePrefix.Repr"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_BytePrefix.Repr"}.AssignBool(false)
 }
 func (_UnionRepresentation_BytePrefix__ReprAssembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_BytePrefix.Repr"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_BytePrefix.Repr"}.AssignInt(0)
 }
 func (_UnionRepresentation_BytePrefix__ReprAssembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_BytePrefix.Repr"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_BytePrefix.Repr"}.AssignFloat(0)
 }
 func (_UnionRepresentation_BytePrefix__ReprAssembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_BytePrefix.Repr"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_BytePrefix.Repr"}.AssignString("")
 }
 func (_UnionRepresentation_BytePrefix__ReprAssembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_BytePrefix.Repr"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_BytePrefix.Repr"}.AssignBytes(nil)
 }
 func (_UnionRepresentation_BytePrefix__ReprAssembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_BytePrefix.Repr"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_BytePrefix.Repr"}.AssignLink(nil)
 }
 func (na *_UnionRepresentation_BytePrefix__ReprAssembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -39424,22 +39424,22 @@ func (ma *_UnionRepresentation_BytePrefix__ReprAssembler) ValuePrototype(k strin
 type _UnionRepresentation_BytePrefix__ReprKeyAssembler _UnionRepresentation_BytePrefix__ReprAssembler
 
 func (_UnionRepresentation_BytePrefix__ReprKeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation_BytePrefix.Repr.KeyAssembler"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation_BytePrefix.Repr.KeyAssembler"}.BeginMap(0)
 }
 func (_UnionRepresentation_BytePrefix__ReprKeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation_BytePrefix.Repr.KeyAssembler"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation_BytePrefix.Repr.KeyAssembler"}.BeginList(0)
 }
 func (na *_UnionRepresentation_BytePrefix__ReprKeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation_BytePrefix.Repr.KeyAssembler"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation_BytePrefix.Repr.KeyAssembler"}.AssignNull()
 }
 func (_UnionRepresentation_BytePrefix__ReprKeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation_BytePrefix.Repr.KeyAssembler"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation_BytePrefix.Repr.KeyAssembler"}.AssignBool(false)
 }
 func (_UnionRepresentation_BytePrefix__ReprKeyAssembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation_BytePrefix.Repr.KeyAssembler"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation_BytePrefix.Repr.KeyAssembler"}.AssignInt(0)
 }
 func (_UnionRepresentation_BytePrefix__ReprKeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation_BytePrefix.Repr.KeyAssembler"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation_BytePrefix.Repr.KeyAssembler"}.AssignFloat(0)
 }
 func (ka *_UnionRepresentation_BytePrefix__ReprKeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
@@ -39458,10 +39458,10 @@ func (ka *_UnionRepresentation_BytePrefix__ReprKeyAssembler) AssignString(k stri
 	return ipld.ErrInvalidKey{TypeName: "schemadmt.UnionRepresentation_BytePrefix.Repr", Key: &_String{k}}
 }
 func (_UnionRepresentation_BytePrefix__ReprKeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation_BytePrefix.Repr.KeyAssembler"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation_BytePrefix.Repr.KeyAssembler"}.AssignBytes(nil)
 }
 func (_UnionRepresentation_BytePrefix__ReprKeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation_BytePrefix.Repr.KeyAssembler"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation_BytePrefix.Repr.KeyAssembler"}.AssignLink(nil)
 }
 func (ka *_UnionRepresentation_BytePrefix__ReprKeyAssembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
@@ -39549,7 +39549,7 @@ func (n UnionRepresentation_Envelope) LookupByNode(key ipld.Node) (ipld.Node, er
 	return n.LookupByString(ks)
 }
 func (UnionRepresentation_Envelope) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_Envelope"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_Envelope"}.LookupByIndex(0)
 }
 func (n UnionRepresentation_Envelope) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -39600,22 +39600,22 @@ func (UnionRepresentation_Envelope) IsNull() bool {
 	return false
 }
 func (UnionRepresentation_Envelope) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_Envelope"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_Envelope"}.AsBool()
 }
 func (UnionRepresentation_Envelope) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_Envelope"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_Envelope"}.AsInt()
 }
 func (UnionRepresentation_Envelope) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_Envelope"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_Envelope"}.AsFloat()
 }
 func (UnionRepresentation_Envelope) AsString() (string, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_Envelope"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_Envelope"}.AsString()
 }
 func (UnionRepresentation_Envelope) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_Envelope"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_Envelope"}.AsBytes()
 }
 func (UnionRepresentation_Envelope) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_Envelope"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_Envelope"}.AsLink()
 }
 func (UnionRepresentation_Envelope) Prototype() ipld.NodePrototype {
 	return _UnionRepresentation_Envelope__Prototype{}
@@ -39687,7 +39687,7 @@ func (na *_UnionRepresentation_Envelope__Assembler) BeginMap(int64) (ipld.MapAss
 	return na, nil
 }
 func (_UnionRepresentation_Envelope__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_Envelope"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_Envelope"}.BeginList(0)
 }
 func (na *_UnionRepresentation_Envelope__Assembler) AssignNull() error {
 	switch *na.m {
@@ -39695,7 +39695,7 @@ func (na *_UnionRepresentation_Envelope__Assembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.UnionRepresentation_Envelope"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_Envelope"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -39704,22 +39704,22 @@ func (na *_UnionRepresentation_Envelope__Assembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_UnionRepresentation_Envelope__Assembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_Envelope"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_Envelope"}.AssignBool(false)
 }
 func (_UnionRepresentation_Envelope__Assembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_Envelope"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_Envelope"}.AssignInt(0)
 }
 func (_UnionRepresentation_Envelope__Assembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_Envelope"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_Envelope"}.AssignFloat(0)
 }
 func (_UnionRepresentation_Envelope__Assembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_Envelope"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_Envelope"}.AssignString("")
 }
 func (_UnionRepresentation_Envelope__Assembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_Envelope"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_Envelope"}.AssignBytes(nil)
 }
 func (_UnionRepresentation_Envelope__Assembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_Envelope"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_Envelope"}.AssignLink(nil)
 }
 func (na *_UnionRepresentation_Envelope__Assembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -39938,22 +39938,22 @@ func (ma *_UnionRepresentation_Envelope__Assembler) ValuePrototype(k string) ipl
 type _UnionRepresentation_Envelope__KeyAssembler _UnionRepresentation_Envelope__Assembler
 
 func (_UnionRepresentation_Envelope__KeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation_Envelope.KeyAssembler"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation_Envelope.KeyAssembler"}.BeginMap(0)
 }
 func (_UnionRepresentation_Envelope__KeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation_Envelope.KeyAssembler"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation_Envelope.KeyAssembler"}.BeginList(0)
 }
 func (na *_UnionRepresentation_Envelope__KeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation_Envelope.KeyAssembler"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation_Envelope.KeyAssembler"}.AssignNull()
 }
 func (_UnionRepresentation_Envelope__KeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation_Envelope.KeyAssembler"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation_Envelope.KeyAssembler"}.AssignBool(false)
 }
 func (_UnionRepresentation_Envelope__KeyAssembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation_Envelope.KeyAssembler"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation_Envelope.KeyAssembler"}.AssignInt(0)
 }
 func (_UnionRepresentation_Envelope__KeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation_Envelope.KeyAssembler"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation_Envelope.KeyAssembler"}.AssignFloat(0)
 }
 func (ka *_UnionRepresentation_Envelope__KeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
@@ -39987,10 +39987,10 @@ func (ka *_UnionRepresentation_Envelope__KeyAssembler) AssignString(k string) er
 	return nil
 }
 func (_UnionRepresentation_Envelope__KeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation_Envelope.KeyAssembler"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation_Envelope.KeyAssembler"}.AssignBytes(nil)
 }
 func (_UnionRepresentation_Envelope__KeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation_Envelope.KeyAssembler"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation_Envelope.KeyAssembler"}.AssignLink(nil)
 }
 func (ka *_UnionRepresentation_Envelope__KeyAssembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
@@ -40041,7 +40041,7 @@ func (n *_UnionRepresentation_Envelope__Repr) LookupByNode(key ipld.Node) (ipld.
 	return n.LookupByString(ks)
 }
 func (_UnionRepresentation_Envelope__Repr) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_Envelope.Repr"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_Envelope.Repr"}.LookupByIndex(0)
 }
 func (n _UnionRepresentation_Envelope__Repr) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -40092,22 +40092,22 @@ func (_UnionRepresentation_Envelope__Repr) IsNull() bool {
 	return false
 }
 func (_UnionRepresentation_Envelope__Repr) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_Envelope.Repr"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_Envelope.Repr"}.AsBool()
 }
 func (_UnionRepresentation_Envelope__Repr) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_Envelope.Repr"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_Envelope.Repr"}.AsInt()
 }
 func (_UnionRepresentation_Envelope__Repr) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_Envelope.Repr"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_Envelope.Repr"}.AsFloat()
 }
 func (_UnionRepresentation_Envelope__Repr) AsString() (string, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_Envelope.Repr"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_Envelope.Repr"}.AsString()
 }
 func (_UnionRepresentation_Envelope__Repr) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_Envelope.Repr"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_Envelope.Repr"}.AsBytes()
 }
 func (_UnionRepresentation_Envelope__Repr) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_Envelope.Repr"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_Envelope.Repr"}.AsLink()
 }
 func (_UnionRepresentation_Envelope__Repr) Prototype() ipld.NodePrototype {
 	return _UnionRepresentation_Envelope__ReprPrototype{}
@@ -40171,7 +40171,7 @@ func (na *_UnionRepresentation_Envelope__ReprAssembler) BeginMap(int64) (ipld.Ma
 	return na, nil
 }
 func (_UnionRepresentation_Envelope__ReprAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_Envelope.Repr"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_Envelope.Repr"}.BeginList(0)
 }
 func (na *_UnionRepresentation_Envelope__ReprAssembler) AssignNull() error {
 	switch *na.m {
@@ -40179,7 +40179,7 @@ func (na *_UnionRepresentation_Envelope__ReprAssembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.UnionRepresentation_Envelope.Repr.Repr"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_Envelope.Repr.Repr"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -40188,22 +40188,22 @@ func (na *_UnionRepresentation_Envelope__ReprAssembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_UnionRepresentation_Envelope__ReprAssembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_Envelope.Repr"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_Envelope.Repr"}.AssignBool(false)
 }
 func (_UnionRepresentation_Envelope__ReprAssembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_Envelope.Repr"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_Envelope.Repr"}.AssignInt(0)
 }
 func (_UnionRepresentation_Envelope__ReprAssembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_Envelope.Repr"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_Envelope.Repr"}.AssignFloat(0)
 }
 func (_UnionRepresentation_Envelope__ReprAssembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_Envelope.Repr"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_Envelope.Repr"}.AssignString("")
 }
 func (_UnionRepresentation_Envelope__ReprAssembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_Envelope.Repr"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_Envelope.Repr"}.AssignBytes(nil)
 }
 func (_UnionRepresentation_Envelope__ReprAssembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_Envelope.Repr"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_Envelope.Repr"}.AssignLink(nil)
 }
 func (na *_UnionRepresentation_Envelope__ReprAssembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -40420,22 +40420,22 @@ func (ma *_UnionRepresentation_Envelope__ReprAssembler) ValuePrototype(k string)
 type _UnionRepresentation_Envelope__ReprKeyAssembler _UnionRepresentation_Envelope__ReprAssembler
 
 func (_UnionRepresentation_Envelope__ReprKeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation_Envelope.Repr.KeyAssembler"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation_Envelope.Repr.KeyAssembler"}.BeginMap(0)
 }
 func (_UnionRepresentation_Envelope__ReprKeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation_Envelope.Repr.KeyAssembler"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation_Envelope.Repr.KeyAssembler"}.BeginList(0)
 }
 func (na *_UnionRepresentation_Envelope__ReprKeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation_Envelope.Repr.KeyAssembler"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation_Envelope.Repr.KeyAssembler"}.AssignNull()
 }
 func (_UnionRepresentation_Envelope__ReprKeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation_Envelope.Repr.KeyAssembler"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation_Envelope.Repr.KeyAssembler"}.AssignBool(false)
 }
 func (_UnionRepresentation_Envelope__ReprKeyAssembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation_Envelope.Repr.KeyAssembler"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation_Envelope.Repr.KeyAssembler"}.AssignInt(0)
 }
 func (_UnionRepresentation_Envelope__ReprKeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation_Envelope.Repr.KeyAssembler"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation_Envelope.Repr.KeyAssembler"}.AssignFloat(0)
 }
 func (ka *_UnionRepresentation_Envelope__ReprKeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
@@ -40470,10 +40470,10 @@ func (ka *_UnionRepresentation_Envelope__ReprKeyAssembler) AssignString(k string
 	return ipld.ErrInvalidKey{TypeName: "schemadmt.UnionRepresentation_Envelope.Repr", Key: &_String{k}}
 }
 func (_UnionRepresentation_Envelope__ReprKeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation_Envelope.Repr.KeyAssembler"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation_Envelope.Repr.KeyAssembler"}.AssignBytes(nil)
 }
 func (_UnionRepresentation_Envelope__ReprKeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation_Envelope.Repr.KeyAssembler"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation_Envelope.Repr.KeyAssembler"}.AssignLink(nil)
 }
 func (ka *_UnionRepresentation_Envelope__ReprKeyAssembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
@@ -40555,7 +40555,7 @@ func (n UnionRepresentation_Inline) LookupByNode(key ipld.Node) (ipld.Node, erro
 	return n.LookupByString(ks)
 }
 func (UnionRepresentation_Inline) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_Inline"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_Inline"}.LookupByIndex(0)
 }
 func (n UnionRepresentation_Inline) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -40603,22 +40603,22 @@ func (UnionRepresentation_Inline) IsNull() bool {
 	return false
 }
 func (UnionRepresentation_Inline) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_Inline"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_Inline"}.AsBool()
 }
 func (UnionRepresentation_Inline) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_Inline"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_Inline"}.AsInt()
 }
 func (UnionRepresentation_Inline) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_Inline"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_Inline"}.AsFloat()
 }
 func (UnionRepresentation_Inline) AsString() (string, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_Inline"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_Inline"}.AsString()
 }
 func (UnionRepresentation_Inline) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_Inline"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_Inline"}.AsBytes()
 }
 func (UnionRepresentation_Inline) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_Inline"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_Inline"}.AsLink()
 }
 func (UnionRepresentation_Inline) Prototype() ipld.NodePrototype {
 	return _UnionRepresentation_Inline__Prototype{}
@@ -40687,7 +40687,7 @@ func (na *_UnionRepresentation_Inline__Assembler) BeginMap(int64) (ipld.MapAssem
 	return na, nil
 }
 func (_UnionRepresentation_Inline__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_Inline"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_Inline"}.BeginList(0)
 }
 func (na *_UnionRepresentation_Inline__Assembler) AssignNull() error {
 	switch *na.m {
@@ -40695,7 +40695,7 @@ func (na *_UnionRepresentation_Inline__Assembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.UnionRepresentation_Inline"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_Inline"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -40704,22 +40704,22 @@ func (na *_UnionRepresentation_Inline__Assembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_UnionRepresentation_Inline__Assembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_Inline"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_Inline"}.AssignBool(false)
 }
 func (_UnionRepresentation_Inline__Assembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_Inline"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_Inline"}.AssignInt(0)
 }
 func (_UnionRepresentation_Inline__Assembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_Inline"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_Inline"}.AssignFloat(0)
 }
 func (_UnionRepresentation_Inline__Assembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_Inline"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_Inline"}.AssignString("")
 }
 func (_UnionRepresentation_Inline__Assembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_Inline"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_Inline"}.AssignBytes(nil)
 }
 func (_UnionRepresentation_Inline__Assembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_Inline"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_Inline"}.AssignLink(nil)
 }
 func (na *_UnionRepresentation_Inline__Assembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -40911,22 +40911,22 @@ func (ma *_UnionRepresentation_Inline__Assembler) ValuePrototype(k string) ipld.
 type _UnionRepresentation_Inline__KeyAssembler _UnionRepresentation_Inline__Assembler
 
 func (_UnionRepresentation_Inline__KeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation_Inline.KeyAssembler"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation_Inline.KeyAssembler"}.BeginMap(0)
 }
 func (_UnionRepresentation_Inline__KeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation_Inline.KeyAssembler"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation_Inline.KeyAssembler"}.BeginList(0)
 }
 func (na *_UnionRepresentation_Inline__KeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation_Inline.KeyAssembler"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation_Inline.KeyAssembler"}.AssignNull()
 }
 func (_UnionRepresentation_Inline__KeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation_Inline.KeyAssembler"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation_Inline.KeyAssembler"}.AssignBool(false)
 }
 func (_UnionRepresentation_Inline__KeyAssembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation_Inline.KeyAssembler"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation_Inline.KeyAssembler"}.AssignInt(0)
 }
 func (_UnionRepresentation_Inline__KeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation_Inline.KeyAssembler"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation_Inline.KeyAssembler"}.AssignFloat(0)
 }
 func (ka *_UnionRepresentation_Inline__KeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
@@ -40953,10 +40953,10 @@ func (ka *_UnionRepresentation_Inline__KeyAssembler) AssignString(k string) erro
 	return nil
 }
 func (_UnionRepresentation_Inline__KeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation_Inline.KeyAssembler"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation_Inline.KeyAssembler"}.AssignBytes(nil)
 }
 func (_UnionRepresentation_Inline__KeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation_Inline.KeyAssembler"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation_Inline.KeyAssembler"}.AssignLink(nil)
 }
 func (ka *_UnionRepresentation_Inline__KeyAssembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
@@ -41004,7 +41004,7 @@ func (n *_UnionRepresentation_Inline__Repr) LookupByNode(key ipld.Node) (ipld.No
 	return n.LookupByString(ks)
 }
 func (_UnionRepresentation_Inline__Repr) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_Inline.Repr"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_Inline.Repr"}.LookupByIndex(0)
 }
 func (n _UnionRepresentation_Inline__Repr) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -41052,22 +41052,22 @@ func (_UnionRepresentation_Inline__Repr) IsNull() bool {
 	return false
 }
 func (_UnionRepresentation_Inline__Repr) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_Inline.Repr"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_Inline.Repr"}.AsBool()
 }
 func (_UnionRepresentation_Inline__Repr) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_Inline.Repr"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_Inline.Repr"}.AsInt()
 }
 func (_UnionRepresentation_Inline__Repr) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_Inline.Repr"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_Inline.Repr"}.AsFloat()
 }
 func (_UnionRepresentation_Inline__Repr) AsString() (string, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_Inline.Repr"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_Inline.Repr"}.AsString()
 }
 func (_UnionRepresentation_Inline__Repr) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_Inline.Repr"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_Inline.Repr"}.AsBytes()
 }
 func (_UnionRepresentation_Inline__Repr) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_Inline.Repr"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_Inline.Repr"}.AsLink()
 }
 func (_UnionRepresentation_Inline__Repr) Prototype() ipld.NodePrototype {
 	return _UnionRepresentation_Inline__ReprPrototype{}
@@ -41129,7 +41129,7 @@ func (na *_UnionRepresentation_Inline__ReprAssembler) BeginMap(int64) (ipld.MapA
 	return na, nil
 }
 func (_UnionRepresentation_Inline__ReprAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_Inline.Repr"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_Inline.Repr"}.BeginList(0)
 }
 func (na *_UnionRepresentation_Inline__ReprAssembler) AssignNull() error {
 	switch *na.m {
@@ -41137,7 +41137,7 @@ func (na *_UnionRepresentation_Inline__ReprAssembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.UnionRepresentation_Inline.Repr.Repr"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_Inline.Repr.Repr"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -41146,22 +41146,22 @@ func (na *_UnionRepresentation_Inline__ReprAssembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_UnionRepresentation_Inline__ReprAssembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_Inline.Repr"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_Inline.Repr"}.AssignBool(false)
 }
 func (_UnionRepresentation_Inline__ReprAssembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_Inline.Repr"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_Inline.Repr"}.AssignInt(0)
 }
 func (_UnionRepresentation_Inline__ReprAssembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_Inline.Repr"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_Inline.Repr"}.AssignFloat(0)
 }
 func (_UnionRepresentation_Inline__ReprAssembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_Inline.Repr"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_Inline.Repr"}.AssignString("")
 }
 func (_UnionRepresentation_Inline__ReprAssembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_Inline.Repr"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_Inline.Repr"}.AssignBytes(nil)
 }
 func (_UnionRepresentation_Inline__ReprAssembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_Inline.Repr"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_Inline.Repr"}.AssignLink(nil)
 }
 func (na *_UnionRepresentation_Inline__ReprAssembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -41352,22 +41352,22 @@ func (ma *_UnionRepresentation_Inline__ReprAssembler) ValuePrototype(k string) i
 type _UnionRepresentation_Inline__ReprKeyAssembler _UnionRepresentation_Inline__ReprAssembler
 
 func (_UnionRepresentation_Inline__ReprKeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation_Inline.Repr.KeyAssembler"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation_Inline.Repr.KeyAssembler"}.BeginMap(0)
 }
 func (_UnionRepresentation_Inline__ReprKeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation_Inline.Repr.KeyAssembler"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation_Inline.Repr.KeyAssembler"}.BeginList(0)
 }
 func (na *_UnionRepresentation_Inline__ReprKeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation_Inline.Repr.KeyAssembler"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation_Inline.Repr.KeyAssembler"}.AssignNull()
 }
 func (_UnionRepresentation_Inline__ReprKeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation_Inline.Repr.KeyAssembler"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation_Inline.Repr.KeyAssembler"}.AssignBool(false)
 }
 func (_UnionRepresentation_Inline__ReprKeyAssembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation_Inline.Repr.KeyAssembler"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation_Inline.Repr.KeyAssembler"}.AssignInt(0)
 }
 func (_UnionRepresentation_Inline__ReprKeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation_Inline.Repr.KeyAssembler"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation_Inline.Repr.KeyAssembler"}.AssignFloat(0)
 }
 func (ka *_UnionRepresentation_Inline__ReprKeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
@@ -41394,10 +41394,10 @@ func (ka *_UnionRepresentation_Inline__ReprKeyAssembler) AssignString(k string) 
 	return ipld.ErrInvalidKey{TypeName: "schemadmt.UnionRepresentation_Inline.Repr", Key: &_String{k}}
 }
 func (_UnionRepresentation_Inline__ReprKeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation_Inline.Repr.KeyAssembler"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation_Inline.Repr.KeyAssembler"}.AssignBytes(nil)
 }
 func (_UnionRepresentation_Inline__ReprKeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation_Inline.Repr.KeyAssembler"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation_Inline.Repr.KeyAssembler"}.AssignLink(nil)
 }
 func (ka *_UnionRepresentation_Inline__ReprKeyAssembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
@@ -41517,7 +41517,7 @@ func (n UnionRepresentation_Keyed) LookupByNode(k ipld.Node) (ipld.Node, error) 
 	return v, nil
 }
 func (UnionRepresentation_Keyed) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_Keyed"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_Keyed"}.LookupByIndex(0)
 }
 func (n UnionRepresentation_Keyed) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -41558,22 +41558,22 @@ func (UnionRepresentation_Keyed) IsNull() bool {
 	return false
 }
 func (UnionRepresentation_Keyed) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_Keyed"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_Keyed"}.AsBool()
 }
 func (UnionRepresentation_Keyed) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_Keyed"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_Keyed"}.AsInt()
 }
 func (UnionRepresentation_Keyed) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_Keyed"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_Keyed"}.AsFloat()
 }
 func (UnionRepresentation_Keyed) AsString() (string, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_Keyed"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_Keyed"}.AsString()
 }
 func (UnionRepresentation_Keyed) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_Keyed"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_Keyed"}.AsBytes()
 }
 func (UnionRepresentation_Keyed) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_Keyed"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_Keyed"}.AsLink()
 }
 func (UnionRepresentation_Keyed) Prototype() ipld.NodePrototype {
 	return _UnionRepresentation_Keyed__Prototype{}
@@ -41634,7 +41634,7 @@ func (na *_UnionRepresentation_Keyed__Assembler) BeginMap(sizeHint int64) (ipld.
 	return na, nil
 }
 func (_UnionRepresentation_Keyed__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_Keyed"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_Keyed"}.BeginList(0)
 }
 func (na *_UnionRepresentation_Keyed__Assembler) AssignNull() error {
 	switch *na.m {
@@ -41642,7 +41642,7 @@ func (na *_UnionRepresentation_Keyed__Assembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.UnionRepresentation_Keyed"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_Keyed"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -41651,22 +41651,22 @@ func (na *_UnionRepresentation_Keyed__Assembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_UnionRepresentation_Keyed__Assembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_Keyed"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_Keyed"}.AssignBool(false)
 }
 func (_UnionRepresentation_Keyed__Assembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_Keyed"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_Keyed"}.AssignInt(0)
 }
 func (_UnionRepresentation_Keyed__Assembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_Keyed"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_Keyed"}.AssignFloat(0)
 }
 func (_UnionRepresentation_Keyed__Assembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_Keyed"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_Keyed"}.AssignString("")
 }
 func (_UnionRepresentation_Keyed__Assembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_Keyed"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_Keyed"}.AssignBytes(nil)
 }
 func (_UnionRepresentation_Keyed__Assembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_Keyed"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_Keyed"}.AssignLink(nil)
 }
 func (na *_UnionRepresentation_Keyed__Assembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -41857,7 +41857,7 @@ func (nr *_UnionRepresentation_Keyed__Repr) LookupByNode(k ipld.Node) (ipld.Node
 	return v.(TypeName).Representation(), nil
 }
 func (_UnionRepresentation_Keyed__Repr) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_Keyed.Repr"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_Keyed.Repr"}.LookupByIndex(0)
 }
 func (n _UnionRepresentation_Keyed__Repr) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -41892,22 +41892,22 @@ func (_UnionRepresentation_Keyed__Repr) IsNull() bool {
 	return false
 }
 func (_UnionRepresentation_Keyed__Repr) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_Keyed.Repr"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_Keyed.Repr"}.AsBool()
 }
 func (_UnionRepresentation_Keyed__Repr) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_Keyed.Repr"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_Keyed.Repr"}.AsInt()
 }
 func (_UnionRepresentation_Keyed__Repr) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_Keyed.Repr"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_Keyed.Repr"}.AsFloat()
 }
 func (_UnionRepresentation_Keyed__Repr) AsString() (string, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_Keyed.Repr"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_Keyed.Repr"}.AsString()
 }
 func (_UnionRepresentation_Keyed__Repr) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_Keyed.Repr"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_Keyed.Repr"}.AsBytes()
 }
 func (_UnionRepresentation_Keyed__Repr) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_Keyed.Repr"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_Keyed.Repr"}.AsLink()
 }
 func (_UnionRepresentation_Keyed__Repr) Prototype() ipld.NodePrototype {
 	return _UnionRepresentation_Keyed__ReprPrototype{}
@@ -41968,7 +41968,7 @@ func (na *_UnionRepresentation_Keyed__ReprAssembler) BeginMap(sizeHint int64) (i
 	return na, nil
 }
 func (_UnionRepresentation_Keyed__ReprAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_Keyed.Repr"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_Keyed.Repr"}.BeginList(0)
 }
 func (na *_UnionRepresentation_Keyed__ReprAssembler) AssignNull() error {
 	switch *na.m {
@@ -41976,7 +41976,7 @@ func (na *_UnionRepresentation_Keyed__ReprAssembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.UnionRepresentation_Keyed.Repr.Repr"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_Keyed.Repr.Repr"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -41985,22 +41985,22 @@ func (na *_UnionRepresentation_Keyed__ReprAssembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_UnionRepresentation_Keyed__ReprAssembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_Keyed.Repr"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_Keyed.Repr"}.AssignBool(false)
 }
 func (_UnionRepresentation_Keyed__ReprAssembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_Keyed.Repr"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_Keyed.Repr"}.AssignInt(0)
 }
 func (_UnionRepresentation_Keyed__ReprAssembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_Keyed.Repr"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_Keyed.Repr"}.AssignFloat(0)
 }
 func (_UnionRepresentation_Keyed__ReprAssembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_Keyed.Repr"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_Keyed.Repr"}.AssignString("")
 }
 func (_UnionRepresentation_Keyed__ReprAssembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_Keyed.Repr"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_Keyed.Repr"}.AssignBytes(nil)
 }
 func (_UnionRepresentation_Keyed__ReprAssembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_Keyed.Repr"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_Keyed.Repr"}.AssignLink(nil)
 }
 func (na *_UnionRepresentation_Keyed__ReprAssembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -42270,7 +42270,7 @@ func (n UnionRepresentation_Kinded) LookupByNode(k ipld.Node) (ipld.Node, error)
 	return v, nil
 }
 func (UnionRepresentation_Kinded) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_Kinded"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_Kinded"}.LookupByIndex(0)
 }
 func (n UnionRepresentation_Kinded) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -42311,22 +42311,22 @@ func (UnionRepresentation_Kinded) IsNull() bool {
 	return false
 }
 func (UnionRepresentation_Kinded) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_Kinded"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_Kinded"}.AsBool()
 }
 func (UnionRepresentation_Kinded) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_Kinded"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_Kinded"}.AsInt()
 }
 func (UnionRepresentation_Kinded) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_Kinded"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_Kinded"}.AsFloat()
 }
 func (UnionRepresentation_Kinded) AsString() (string, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_Kinded"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_Kinded"}.AsString()
 }
 func (UnionRepresentation_Kinded) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_Kinded"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_Kinded"}.AsBytes()
 }
 func (UnionRepresentation_Kinded) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_Kinded"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_Kinded"}.AsLink()
 }
 func (UnionRepresentation_Kinded) Prototype() ipld.NodePrototype {
 	return _UnionRepresentation_Kinded__Prototype{}
@@ -42387,7 +42387,7 @@ func (na *_UnionRepresentation_Kinded__Assembler) BeginMap(sizeHint int64) (ipld
 	return na, nil
 }
 func (_UnionRepresentation_Kinded__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_Kinded"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_Kinded"}.BeginList(0)
 }
 func (na *_UnionRepresentation_Kinded__Assembler) AssignNull() error {
 	switch *na.m {
@@ -42395,7 +42395,7 @@ func (na *_UnionRepresentation_Kinded__Assembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.UnionRepresentation_Kinded"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_Kinded"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -42404,22 +42404,22 @@ func (na *_UnionRepresentation_Kinded__Assembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_UnionRepresentation_Kinded__Assembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_Kinded"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_Kinded"}.AssignBool(false)
 }
 func (_UnionRepresentation_Kinded__Assembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_Kinded"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_Kinded"}.AssignInt(0)
 }
 func (_UnionRepresentation_Kinded__Assembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_Kinded"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_Kinded"}.AssignFloat(0)
 }
 func (_UnionRepresentation_Kinded__Assembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_Kinded"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_Kinded"}.AssignString("")
 }
 func (_UnionRepresentation_Kinded__Assembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_Kinded"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_Kinded"}.AssignBytes(nil)
 }
 func (_UnionRepresentation_Kinded__Assembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_Kinded"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_Kinded"}.AssignLink(nil)
 }
 func (na *_UnionRepresentation_Kinded__Assembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -42610,7 +42610,7 @@ func (nr *_UnionRepresentation_Kinded__Repr) LookupByNode(k ipld.Node) (ipld.Nod
 	return v.(TypeName).Representation(), nil
 }
 func (_UnionRepresentation_Kinded__Repr) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_Kinded.Repr"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_Kinded.Repr"}.LookupByIndex(0)
 }
 func (n _UnionRepresentation_Kinded__Repr) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -42645,22 +42645,22 @@ func (_UnionRepresentation_Kinded__Repr) IsNull() bool {
 	return false
 }
 func (_UnionRepresentation_Kinded__Repr) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_Kinded.Repr"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_Kinded.Repr"}.AsBool()
 }
 func (_UnionRepresentation_Kinded__Repr) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_Kinded.Repr"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_Kinded.Repr"}.AsInt()
 }
 func (_UnionRepresentation_Kinded__Repr) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_Kinded.Repr"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_Kinded.Repr"}.AsFloat()
 }
 func (_UnionRepresentation_Kinded__Repr) AsString() (string, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_Kinded.Repr"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_Kinded.Repr"}.AsString()
 }
 func (_UnionRepresentation_Kinded__Repr) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_Kinded.Repr"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_Kinded.Repr"}.AsBytes()
 }
 func (_UnionRepresentation_Kinded__Repr) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_Kinded.Repr"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_Kinded.Repr"}.AsLink()
 }
 func (_UnionRepresentation_Kinded__Repr) Prototype() ipld.NodePrototype {
 	return _UnionRepresentation_Kinded__ReprPrototype{}
@@ -42721,7 +42721,7 @@ func (na *_UnionRepresentation_Kinded__ReprAssembler) BeginMap(sizeHint int64) (
 	return na, nil
 }
 func (_UnionRepresentation_Kinded__ReprAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_Kinded.Repr"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_Kinded.Repr"}.BeginList(0)
 }
 func (na *_UnionRepresentation_Kinded__ReprAssembler) AssignNull() error {
 	switch *na.m {
@@ -42729,7 +42729,7 @@ func (na *_UnionRepresentation_Kinded__ReprAssembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.UnionRepresentation_Kinded.Repr.Repr"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_Kinded.Repr.Repr"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -42738,22 +42738,22 @@ func (na *_UnionRepresentation_Kinded__ReprAssembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_UnionRepresentation_Kinded__ReprAssembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_Kinded.Repr"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_Kinded.Repr"}.AssignBool(false)
 }
 func (_UnionRepresentation_Kinded__ReprAssembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_Kinded.Repr"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_Kinded.Repr"}.AssignInt(0)
 }
 func (_UnionRepresentation_Kinded__ReprAssembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_Kinded.Repr"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_Kinded.Repr"}.AssignFloat(0)
 }
 func (_UnionRepresentation_Kinded__ReprAssembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_Kinded.Repr"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_Kinded.Repr"}.AssignString("")
 }
 func (_UnionRepresentation_Kinded__ReprAssembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_Kinded.Repr"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_Kinded.Repr"}.AssignBytes(nil)
 }
 func (_UnionRepresentation_Kinded__ReprAssembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_Kinded.Repr"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_Kinded.Repr"}.AssignLink(nil)
 }
 func (na *_UnionRepresentation_Kinded__ReprAssembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -42979,7 +42979,7 @@ func (n UnionRepresentation_StringPrefix) LookupByNode(key ipld.Node) (ipld.Node
 	return n.LookupByString(ks)
 }
 func (UnionRepresentation_StringPrefix) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_StringPrefix"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_StringPrefix"}.LookupByIndex(0)
 }
 func (n UnionRepresentation_StringPrefix) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -43024,22 +43024,22 @@ func (UnionRepresentation_StringPrefix) IsNull() bool {
 	return false
 }
 func (UnionRepresentation_StringPrefix) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_StringPrefix"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_StringPrefix"}.AsBool()
 }
 func (UnionRepresentation_StringPrefix) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_StringPrefix"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_StringPrefix"}.AsInt()
 }
 func (UnionRepresentation_StringPrefix) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_StringPrefix"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_StringPrefix"}.AsFloat()
 }
 func (UnionRepresentation_StringPrefix) AsString() (string, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_StringPrefix"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_StringPrefix"}.AsString()
 }
 func (UnionRepresentation_StringPrefix) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_StringPrefix"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_StringPrefix"}.AsBytes()
 }
 func (UnionRepresentation_StringPrefix) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_StringPrefix"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_StringPrefix"}.AsLink()
 }
 func (UnionRepresentation_StringPrefix) Prototype() ipld.NodePrototype {
 	return _UnionRepresentation_StringPrefix__Prototype{}
@@ -43105,7 +43105,7 @@ func (na *_UnionRepresentation_StringPrefix__Assembler) BeginMap(int64) (ipld.Ma
 	return na, nil
 }
 func (_UnionRepresentation_StringPrefix__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_StringPrefix"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_StringPrefix"}.BeginList(0)
 }
 func (na *_UnionRepresentation_StringPrefix__Assembler) AssignNull() error {
 	switch *na.m {
@@ -43113,7 +43113,7 @@ func (na *_UnionRepresentation_StringPrefix__Assembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.UnionRepresentation_StringPrefix"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_StringPrefix"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -43122,22 +43122,22 @@ func (na *_UnionRepresentation_StringPrefix__Assembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_UnionRepresentation_StringPrefix__Assembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_StringPrefix"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_StringPrefix"}.AssignBool(false)
 }
 func (_UnionRepresentation_StringPrefix__Assembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_StringPrefix"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_StringPrefix"}.AssignInt(0)
 }
 func (_UnionRepresentation_StringPrefix__Assembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_StringPrefix"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_StringPrefix"}.AssignFloat(0)
 }
 func (_UnionRepresentation_StringPrefix__Assembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_StringPrefix"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_StringPrefix"}.AssignString("")
 }
 func (_UnionRepresentation_StringPrefix__Assembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_StringPrefix"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_StringPrefix"}.AssignBytes(nil)
 }
 func (_UnionRepresentation_StringPrefix__Assembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_StringPrefix"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_StringPrefix"}.AssignLink(nil)
 }
 func (na *_UnionRepresentation_StringPrefix__Assembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -43302,22 +43302,22 @@ func (ma *_UnionRepresentation_StringPrefix__Assembler) ValuePrototype(k string)
 type _UnionRepresentation_StringPrefix__KeyAssembler _UnionRepresentation_StringPrefix__Assembler
 
 func (_UnionRepresentation_StringPrefix__KeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation_StringPrefix.KeyAssembler"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation_StringPrefix.KeyAssembler"}.BeginMap(0)
 }
 func (_UnionRepresentation_StringPrefix__KeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation_StringPrefix.KeyAssembler"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation_StringPrefix.KeyAssembler"}.BeginList(0)
 }
 func (na *_UnionRepresentation_StringPrefix__KeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation_StringPrefix.KeyAssembler"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation_StringPrefix.KeyAssembler"}.AssignNull()
 }
 func (_UnionRepresentation_StringPrefix__KeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation_StringPrefix.KeyAssembler"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation_StringPrefix.KeyAssembler"}.AssignBool(false)
 }
 func (_UnionRepresentation_StringPrefix__KeyAssembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation_StringPrefix.KeyAssembler"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation_StringPrefix.KeyAssembler"}.AssignInt(0)
 }
 func (_UnionRepresentation_StringPrefix__KeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation_StringPrefix.KeyAssembler"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation_StringPrefix.KeyAssembler"}.AssignFloat(0)
 }
 func (ka *_UnionRepresentation_StringPrefix__KeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
@@ -43337,10 +43337,10 @@ func (ka *_UnionRepresentation_StringPrefix__KeyAssembler) AssignString(k string
 	return nil
 }
 func (_UnionRepresentation_StringPrefix__KeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation_StringPrefix.KeyAssembler"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation_StringPrefix.KeyAssembler"}.AssignBytes(nil)
 }
 func (_UnionRepresentation_StringPrefix__KeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation_StringPrefix.KeyAssembler"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation_StringPrefix.KeyAssembler"}.AssignLink(nil)
 }
 func (ka *_UnionRepresentation_StringPrefix__KeyAssembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
@@ -43385,7 +43385,7 @@ func (n *_UnionRepresentation_StringPrefix__Repr) LookupByNode(key ipld.Node) (i
 	return n.LookupByString(ks)
 }
 func (_UnionRepresentation_StringPrefix__Repr) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_StringPrefix.Repr"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_StringPrefix.Repr"}.LookupByIndex(0)
 }
 func (n _UnionRepresentation_StringPrefix__Repr) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -43430,22 +43430,22 @@ func (_UnionRepresentation_StringPrefix__Repr) IsNull() bool {
 	return false
 }
 func (_UnionRepresentation_StringPrefix__Repr) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_StringPrefix.Repr"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_StringPrefix.Repr"}.AsBool()
 }
 func (_UnionRepresentation_StringPrefix__Repr) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_StringPrefix.Repr"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_StringPrefix.Repr"}.AsInt()
 }
 func (_UnionRepresentation_StringPrefix__Repr) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_StringPrefix.Repr"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_StringPrefix.Repr"}.AsFloat()
 }
 func (_UnionRepresentation_StringPrefix__Repr) AsString() (string, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_StringPrefix.Repr"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_StringPrefix.Repr"}.AsString()
 }
 func (_UnionRepresentation_StringPrefix__Repr) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_StringPrefix.Repr"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_StringPrefix.Repr"}.AsBytes()
 }
 func (_UnionRepresentation_StringPrefix__Repr) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.UnionRepresentation_StringPrefix.Repr"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.UnionRepresentation_StringPrefix.Repr"}.AsLink()
 }
 func (_UnionRepresentation_StringPrefix__Repr) Prototype() ipld.NodePrototype {
 	return _UnionRepresentation_StringPrefix__ReprPrototype{}
@@ -43505,7 +43505,7 @@ func (na *_UnionRepresentation_StringPrefix__ReprAssembler) BeginMap(int64) (ipl
 	return na, nil
 }
 func (_UnionRepresentation_StringPrefix__ReprAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_StringPrefix.Repr"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_StringPrefix.Repr"}.BeginList(0)
 }
 func (na *_UnionRepresentation_StringPrefix__ReprAssembler) AssignNull() error {
 	switch *na.m {
@@ -43513,7 +43513,7 @@ func (na *_UnionRepresentation_StringPrefix__ReprAssembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.UnionRepresentation_StringPrefix.Repr.Repr"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_StringPrefix.Repr.Repr"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -43522,22 +43522,22 @@ func (na *_UnionRepresentation_StringPrefix__ReprAssembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_UnionRepresentation_StringPrefix__ReprAssembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_StringPrefix.Repr"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_StringPrefix.Repr"}.AssignBool(false)
 }
 func (_UnionRepresentation_StringPrefix__ReprAssembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_StringPrefix.Repr"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_StringPrefix.Repr"}.AssignInt(0)
 }
 func (_UnionRepresentation_StringPrefix__ReprAssembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_StringPrefix.Repr"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_StringPrefix.Repr"}.AssignFloat(0)
 }
 func (_UnionRepresentation_StringPrefix__ReprAssembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_StringPrefix.Repr"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_StringPrefix.Repr"}.AssignString("")
 }
 func (_UnionRepresentation_StringPrefix__ReprAssembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_StringPrefix.Repr"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_StringPrefix.Repr"}.AssignBytes(nil)
 }
 func (_UnionRepresentation_StringPrefix__ReprAssembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.UnionRepresentation_StringPrefix.Repr"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.UnionRepresentation_StringPrefix.Repr"}.AssignLink(nil)
 }
 func (na *_UnionRepresentation_StringPrefix__ReprAssembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -43702,22 +43702,22 @@ func (ma *_UnionRepresentation_StringPrefix__ReprAssembler) ValuePrototype(k str
 type _UnionRepresentation_StringPrefix__ReprKeyAssembler _UnionRepresentation_StringPrefix__ReprAssembler
 
 func (_UnionRepresentation_StringPrefix__ReprKeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation_StringPrefix.Repr.KeyAssembler"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation_StringPrefix.Repr.KeyAssembler"}.BeginMap(0)
 }
 func (_UnionRepresentation_StringPrefix__ReprKeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation_StringPrefix.Repr.KeyAssembler"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation_StringPrefix.Repr.KeyAssembler"}.BeginList(0)
 }
 func (na *_UnionRepresentation_StringPrefix__ReprKeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation_StringPrefix.Repr.KeyAssembler"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation_StringPrefix.Repr.KeyAssembler"}.AssignNull()
 }
 func (_UnionRepresentation_StringPrefix__ReprKeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation_StringPrefix.Repr.KeyAssembler"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation_StringPrefix.Repr.KeyAssembler"}.AssignBool(false)
 }
 func (_UnionRepresentation_StringPrefix__ReprKeyAssembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation_StringPrefix.Repr.KeyAssembler"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation_StringPrefix.Repr.KeyAssembler"}.AssignInt(0)
 }
 func (_UnionRepresentation_StringPrefix__ReprKeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation_StringPrefix.Repr.KeyAssembler"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation_StringPrefix.Repr.KeyAssembler"}.AssignFloat(0)
 }
 func (ka *_UnionRepresentation_StringPrefix__ReprKeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
@@ -43736,10 +43736,10 @@ func (ka *_UnionRepresentation_StringPrefix__ReprKeyAssembler) AssignString(k st
 	return ipld.ErrInvalidKey{TypeName: "schemadmt.UnionRepresentation_StringPrefix.Repr", Key: &_String{k}}
 }
 func (_UnionRepresentation_StringPrefix__ReprKeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation_StringPrefix.Repr.KeyAssembler"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation_StringPrefix.Repr.KeyAssembler"}.AssignBytes(nil)
 }
 func (_UnionRepresentation_StringPrefix__ReprKeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.UnionRepresentation_StringPrefix.Repr.KeyAssembler"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation_StringPrefix.Repr.KeyAssembler"}.AssignLink(nil)
 }
 func (ka *_UnionRepresentation_StringPrefix__ReprKeyAssembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
@@ -43807,7 +43807,7 @@ func (n Unit) LookupByNode(key ipld.Node) (ipld.Node, error) {
 	return n.LookupByString(ks)
 }
 func (Unit) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.Unit"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.Unit"}.LookupByIndex(0)
 }
 func (n Unit) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -43842,22 +43842,22 @@ func (Unit) IsNull() bool {
 	return false
 }
 func (Unit) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.Unit"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.Unit"}.AsBool()
 }
 func (Unit) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.Unit"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.Unit"}.AsInt()
 }
 func (Unit) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.Unit"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.Unit"}.AsFloat()
 }
 func (Unit) AsString() (string, error) {
-	return mixins.Map{"schemadmt.Unit"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.Unit"}.AsString()
 }
 func (Unit) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.Unit"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.Unit"}.AsBytes()
 }
 func (Unit) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.Unit"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.Unit"}.AsLink()
 }
 func (Unit) Prototype() ipld.NodePrototype {
 	return _Unit__Prototype{}
@@ -43920,7 +43920,7 @@ func (na *_Unit__Assembler) BeginMap(int64) (ipld.MapAssembler, error) {
 	return na, nil
 }
 func (_Unit__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.Unit"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.Unit"}.BeginList(0)
 }
 func (na *_Unit__Assembler) AssignNull() error {
 	switch *na.m {
@@ -43928,7 +43928,7 @@ func (na *_Unit__Assembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.Unit"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.Unit"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -43937,22 +43937,22 @@ func (na *_Unit__Assembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_Unit__Assembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.Unit"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.Unit"}.AssignBool(false)
 }
 func (_Unit__Assembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.Unit"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.Unit"}.AssignInt(0)
 }
 func (_Unit__Assembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.Unit"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.Unit"}.AssignFloat(0)
 }
 func (_Unit__Assembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.Unit"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.Unit"}.AssignString("")
 }
 func (_Unit__Assembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.Unit"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.Unit"}.AssignBytes(nil)
 }
 func (_Unit__Assembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.Unit"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.Unit"}.AssignLink(nil)
 }
 func (na *_Unit__Assembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -44088,22 +44088,22 @@ func (ma *_Unit__Assembler) ValuePrototype(k string) ipld.NodePrototype {
 type _Unit__KeyAssembler _Unit__Assembler
 
 func (_Unit__KeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.Unit.KeyAssembler"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.Unit.KeyAssembler"}.BeginMap(0)
 }
 func (_Unit__KeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.Unit.KeyAssembler"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.Unit.KeyAssembler"}.BeginList(0)
 }
 func (na *_Unit__KeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"schemadmt.Unit.KeyAssembler"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "schemadmt.Unit.KeyAssembler"}.AssignNull()
 }
 func (_Unit__KeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.Unit.KeyAssembler"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.Unit.KeyAssembler"}.AssignBool(false)
 }
 func (_Unit__KeyAssembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.Unit.KeyAssembler"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.Unit.KeyAssembler"}.AssignInt(0)
 }
 func (_Unit__KeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.Unit.KeyAssembler"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.Unit.KeyAssembler"}.AssignFloat(0)
 }
 func (ka *_Unit__KeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
@@ -44116,10 +44116,10 @@ func (ka *_Unit__KeyAssembler) AssignString(k string) error {
 	return nil
 }
 func (_Unit__KeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.Unit.KeyAssembler"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.Unit.KeyAssembler"}.AssignBytes(nil)
 }
 func (_Unit__KeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.Unit.KeyAssembler"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.Unit.KeyAssembler"}.AssignLink(nil)
 }
 func (ka *_Unit__KeyAssembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
@@ -44160,7 +44160,7 @@ func (n *_Unit__Repr) LookupByNode(key ipld.Node) (ipld.Node, error) {
 	return n.LookupByString(ks)
 }
 func (_Unit__Repr) LookupByIndex(idx int64) (ipld.Node, error) {
-	return mixins.Map{"schemadmt.Unit.Repr"}.LookupByIndex(0)
+	return mixins.Map{TypeName: "schemadmt.Unit.Repr"}.LookupByIndex(0)
 }
 func (n _Unit__Repr) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
 	return n.LookupByString(seg.String())
@@ -44195,22 +44195,22 @@ func (_Unit__Repr) IsNull() bool {
 	return false
 }
 func (_Unit__Repr) AsBool() (bool, error) {
-	return mixins.Map{"schemadmt.Unit.Repr"}.AsBool()
+	return mixins.Map{TypeName: "schemadmt.Unit.Repr"}.AsBool()
 }
 func (_Unit__Repr) AsInt() (int64, error) {
-	return mixins.Map{"schemadmt.Unit.Repr"}.AsInt()
+	return mixins.Map{TypeName: "schemadmt.Unit.Repr"}.AsInt()
 }
 func (_Unit__Repr) AsFloat() (float64, error) {
-	return mixins.Map{"schemadmt.Unit.Repr"}.AsFloat()
+	return mixins.Map{TypeName: "schemadmt.Unit.Repr"}.AsFloat()
 }
 func (_Unit__Repr) AsString() (string, error) {
-	return mixins.Map{"schemadmt.Unit.Repr"}.AsString()
+	return mixins.Map{TypeName: "schemadmt.Unit.Repr"}.AsString()
 }
 func (_Unit__Repr) AsBytes() ([]byte, error) {
-	return mixins.Map{"schemadmt.Unit.Repr"}.AsBytes()
+	return mixins.Map{TypeName: "schemadmt.Unit.Repr"}.AsBytes()
 }
 func (_Unit__Repr) AsLink() (ipld.Link, error) {
-	return mixins.Map{"schemadmt.Unit.Repr"}.AsLink()
+	return mixins.Map{TypeName: "schemadmt.Unit.Repr"}.AsLink()
 }
 func (_Unit__Repr) Prototype() ipld.NodePrototype {
 	return _Unit__ReprPrototype{}
@@ -44268,7 +44268,7 @@ func (na *_Unit__ReprAssembler) BeginMap(int64) (ipld.MapAssembler, error) {
 	return na, nil
 }
 func (_Unit__ReprAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.MapAssembler{"schemadmt.Unit.Repr"}.BeginList(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.Unit.Repr"}.BeginList(0)
 }
 func (na *_Unit__ReprAssembler) AssignNull() error {
 	switch *na.m {
@@ -44276,7 +44276,7 @@ func (na *_Unit__ReprAssembler) AssignNull() error {
 		*na.m = schema.Maybe_Null
 		return nil
 	case schema.Maybe_Absent:
-		return mixins.MapAssembler{"schemadmt.Unit.Repr.Repr"}.AssignNull()
+		return mixins.MapAssembler{TypeName: "schemadmt.Unit.Repr.Repr"}.AssignNull()
 	case schema.Maybe_Value, schema.Maybe_Null:
 		panic("invalid state: cannot assign into assembler that's already finished")
 	case midvalue:
@@ -44285,22 +44285,22 @@ func (na *_Unit__ReprAssembler) AssignNull() error {
 	panic("unreachable")
 }
 func (_Unit__ReprAssembler) AssignBool(bool) error {
-	return mixins.MapAssembler{"schemadmt.Unit.Repr"}.AssignBool(false)
+	return mixins.MapAssembler{TypeName: "schemadmt.Unit.Repr"}.AssignBool(false)
 }
 func (_Unit__ReprAssembler) AssignInt(int64) error {
-	return mixins.MapAssembler{"schemadmt.Unit.Repr"}.AssignInt(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.Unit.Repr"}.AssignInt(0)
 }
 func (_Unit__ReprAssembler) AssignFloat(float64) error {
-	return mixins.MapAssembler{"schemadmt.Unit.Repr"}.AssignFloat(0)
+	return mixins.MapAssembler{TypeName: "schemadmt.Unit.Repr"}.AssignFloat(0)
 }
 func (_Unit__ReprAssembler) AssignString(string) error {
-	return mixins.MapAssembler{"schemadmt.Unit.Repr"}.AssignString("")
+	return mixins.MapAssembler{TypeName: "schemadmt.Unit.Repr"}.AssignString("")
 }
 func (_Unit__ReprAssembler) AssignBytes([]byte) error {
-	return mixins.MapAssembler{"schemadmt.Unit.Repr"}.AssignBytes(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.Unit.Repr"}.AssignBytes(nil)
 }
 func (_Unit__ReprAssembler) AssignLink(ipld.Link) error {
-	return mixins.MapAssembler{"schemadmt.Unit.Repr"}.AssignLink(nil)
+	return mixins.MapAssembler{TypeName: "schemadmt.Unit.Repr"}.AssignLink(nil)
 }
 func (na *_Unit__ReprAssembler) AssignNode(v ipld.Node) error {
 	if v.IsNull() {
@@ -44436,22 +44436,22 @@ func (ma *_Unit__ReprAssembler) ValuePrototype(k string) ipld.NodePrototype {
 type _Unit__ReprKeyAssembler _Unit__ReprAssembler
 
 func (_Unit__ReprKeyAssembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.Unit.Repr.KeyAssembler"}.BeginMap(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.Unit.Repr.KeyAssembler"}.BeginMap(0)
 }
 func (_Unit__ReprKeyAssembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
-	return mixins.StringAssembler{"schemadmt.Unit.Repr.KeyAssembler"}.BeginList(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.Unit.Repr.KeyAssembler"}.BeginList(0)
 }
 func (na *_Unit__ReprKeyAssembler) AssignNull() error {
-	return mixins.StringAssembler{"schemadmt.Unit.Repr.KeyAssembler"}.AssignNull()
+	return mixins.StringAssembler{TypeName: "schemadmt.Unit.Repr.KeyAssembler"}.AssignNull()
 }
 func (_Unit__ReprKeyAssembler) AssignBool(bool) error {
-	return mixins.StringAssembler{"schemadmt.Unit.Repr.KeyAssembler"}.AssignBool(false)
+	return mixins.StringAssembler{TypeName: "schemadmt.Unit.Repr.KeyAssembler"}.AssignBool(false)
 }
 func (_Unit__ReprKeyAssembler) AssignInt(int64) error {
-	return mixins.StringAssembler{"schemadmt.Unit.Repr.KeyAssembler"}.AssignInt(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.Unit.Repr.KeyAssembler"}.AssignInt(0)
 }
 func (_Unit__ReprKeyAssembler) AssignFloat(float64) error {
-	return mixins.StringAssembler{"schemadmt.Unit.Repr.KeyAssembler"}.AssignFloat(0)
+	return mixins.StringAssembler{TypeName: "schemadmt.Unit.Repr.KeyAssembler"}.AssignFloat(0)
 }
 func (ka *_Unit__ReprKeyAssembler) AssignString(k string) error {
 	if ka.state != maState_midKey {
@@ -44460,10 +44460,10 @@ func (ka *_Unit__ReprKeyAssembler) AssignString(k string) error {
 	return ipld.ErrInvalidKey{TypeName: "schemadmt.Unit.Repr", Key: &_String{k}}
 }
 func (_Unit__ReprKeyAssembler) AssignBytes([]byte) error {
-	return mixins.StringAssembler{"schemadmt.Unit.Repr.KeyAssembler"}.AssignBytes(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.Unit.Repr.KeyAssembler"}.AssignBytes(nil)
 }
 func (_Unit__ReprKeyAssembler) AssignLink(ipld.Link) error {
-	return mixins.StringAssembler{"schemadmt.Unit.Repr.KeyAssembler"}.AssignLink(nil)
+	return mixins.StringAssembler{TypeName: "schemadmt.Unit.Repr.KeyAssembler"}.AssignLink(nil)
 }
 func (ka *_Unit__ReprKeyAssembler) AssignNode(v ipld.Node) error {
 	if v2, err := v.AsString(); err != nil {
