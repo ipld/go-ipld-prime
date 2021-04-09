@@ -1,9 +1,10 @@
 package gengo
 
 import (
+	"bytes"
 	"fmt"
 	"io"
-	"os"
+	"io/ioutil"
 	"path/filepath"
 	"sort"
 
@@ -138,12 +139,20 @@ func Generate(pth string, pkgName string, ts schema.TypeSystem, adjCfg *AdjunctC
 }
 
 func withFile(filename string, fn func(io.Writer)) {
-	f, err := os.OpenFile(filename, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
-	if err != nil {
+	// Don't write directly to the file, as that many write syscalls can be
+	// expensive. Moreover, they can have a knock-on effect on daemons
+	// watching for file changes. gopls can easily eat CPU for many seconds
+	// just handling tens of thousands of file writes, for example.
+	//
+	// To alleviate both of those problems, write to a buffer first, and
+	// then write the resulting bytes to disk in a single go.
+	// A buffer is slightly better than bufio.Writer, as it gets us a bit
+	// more atomicity via the single write.
+	buf := new(bytes.Buffer)
+	fn(buf)
+	if err := ioutil.WriteFile(filename, buf.Bytes(), 0666); err != nil {
 		panic(err)
 	}
-	defer f.Close()
-	fn(f)
 }
 
 type sortableTypeNames []schema.TypeName
