@@ -14,6 +14,5 @@
 // The code generation is triggered by `go:generate` comments in the `doc.go` file.
 
 //go:generate go run gen.go
-//go:generate gofmt -w .
 
 package gendemo

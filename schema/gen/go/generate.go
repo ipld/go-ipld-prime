@@ -3,6 +3,7 @@ package gengo
 import (
 	"bytes"
 	"fmt"
+	"go/format"
 	"io"
 	"io/ioutil"
 	"path/filepath"
@@ -150,7 +151,16 @@ func withFile(filename string, fn func(io.Writer)) {
 	// more atomicity via the single write.
 	buf := new(bytes.Buffer)
 	fn(buf)
-	if err := ioutil.WriteFile(filename, buf.Bytes(), 0666); err != nil {
+
+	src := buf.Bytes()
+	// Format the source before writing, just like gofmt would.
+	// This also prevents us from writing invalid syntax to disk.
+	src, err := format.Source(src)
+	if err != nil {
+		panic(err)
+	}
+
+	if err := ioutil.WriteFile(filename, src, 0666); err != nil {
 		panic(err)
 	}
 }
