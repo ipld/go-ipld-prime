@@ -28,6 +28,7 @@ func (g listGenerator) EmitNativeType(w io.Writer) {
 		type _{{ .Type | TypeSymbol }} struct {
 			x []_{{ .Type.ValueType | TypeSymbol }}{{if .Type.ValueIsNullable }}__Maybe{{end}}
 		}
+		type {{ .Type | TypeSymbol }}__Assembler = *_{{ .Type | TypeSymbol }}__Assembler
 	`, w, g.AdjCfg, g)
 }
 

@@ -29,6 +29,7 @@ func (g structGenerator) EmitNativeType(w io.Writer) {
 			{{ $field | FieldSymbolLower }} _{{ $field.Type | TypeSymbol }}{{if $field.IsMaybe }}__Maybe{{end}}
 			{{- end}}
 		}
+		type {{ .Type | TypeSymbol }}__Assembler = *_{{ .Type | TypeSymbol }}__Assembler
 	`, w, g.AdjCfg, g)
 }
 
@@ -44,7 +45,44 @@ func (g structGenerator) EmitNativeAccessors(w io.Writer) {
 }
 
 func (g structGenerator) EmitNativeBuilder(w io.Writer) {
-	// Unclear what, if anything, goes here.
+	// The speciated methods for structs are... fun.
+	doTemplate(`
+		{{- range $i, $field := .Type.Fields }}
+		func (ma *_{{ dot.Type | TypeSymbol }}__Assembler) AssembleField{{ $field | FieldSymbolUpper }}() {{ $field.Type | TypeSymbol }}__Assembler {
+			switch ma.state {
+			case maState_initial:
+				// carry on
+			case maState_midKey:
+				panic("invalid state: AssembleEntry cannot be called when in the middle of assembling another key")
+			case maState_expectValue:
+				panic("invalid state: AssembleEntry cannot be called when expecting start of value assembly")
+			case maState_midValue:
+				if !ma.valueFinishTidy() {
+					panic("invalid state: AssembleEntry cannot be called when in the middle of assembling a value")
+				} // if tidy success: carry on
+			case maState_finished:
+				panic("invalid state: AssembleEntry cannot be called on an assembler that's already finished")
+			}
+			if ma.s & fieldBit__{{ dot.Type | TypeSymbol }}_{{ $field | FieldSymbolUpper }} != 0 {
+				panic(ipld.ErrRepeatedMapKey{Key: &fieldName__{{ dot.Type | TypeSymbol }}_{{ $field | FieldSymbolUpper }}})
+			}
+			ma.s += fieldBit__{{ dot.Type | TypeSymbol }}_{{ $field | FieldSymbolUpper }}
+			ma.state = maState_midValue
+			ma.f = {{ $i }}
+			{{- if $field.IsMaybe }}
+			ma.ca_{{ $field | FieldSymbolLower }}.w = {{if not (MaybeUsesPtr $field.Type) }}&{{end}}ma.w.{{ $field | FieldSymbolLower }}.v
+			ma.ca_{{ $field | FieldSymbolLower }}.m = &ma.w.{{ $field | FieldSymbolLower }}.m
+			{{- if $field.IsNullable }}
+			ma.w.{{ $field | FieldSymbolLower }}.m = allowNull
+			{{- end}}
+			{{- else}}
+			ma.ca_{{ $field | FieldSymbolLower }}.w = &ma.w.{{ $field | FieldSymbolLower }}
+			ma.ca_{{ $field | FieldSymbolLower }}.m = &ma.cm
+			{{- end}}
+			return &ma.ca_{{ $field | FieldSymbolLower }}
+		}
+		{{- end}}
+	`, w, g.AdjCfg, g)
 }
 
 func (g structGenerator) EmitNativeMaybe(w io.Writer) {

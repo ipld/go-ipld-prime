@@ -65,6 +65,7 @@ func emitNativeType_scalar(w io.Writer, adjCfg *AdjunctCfg, data interface{}) {
 		{{- end}}
 		type {{ .Type | TypeSymbol }} = *_{{ .Type | TypeSymbol }}
 		type _{{ .Type | TypeSymbol }} struct{ x {{ .Kind | KindPrim }} }
+		type {{ .Type | TypeSymbol }}__Assembler = *_{{ .Type | TypeSymbol }}__Assembler
 	`, w, adjCfg, data)
 }
 

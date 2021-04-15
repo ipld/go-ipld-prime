@@ -69,6 +69,7 @@ func (g unionGenerator) EmitNativeType(w io.Writer) {
 			String() string
 			{{- end}}
 		}
+		type {{ .Type | TypeSymbol }}__Assembler = *_{{ .Type | TypeSymbol }}__Assembler
 
 		{{- range $member := .Type.Members }}
 		func (_{{ $member | TypeSymbol }}) _{{ dot.Type | TypeSymbol }}__member() {}

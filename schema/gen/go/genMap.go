@@ -33,6 +33,7 @@ func (g mapGenerator) EmitNativeType(w io.Writer) {
 			m map[_{{ .Type.KeyType | TypeSymbol }}]{{if .Type.ValueIsNullable }}Maybe{{else}}*_{{end}}{{ .Type.ValueType | TypeSymbol }}
 			t []_{{ .Type | TypeSymbol }}__entry
 		}
+		type {{ .Type | TypeSymbol }}__Assembler = *_{{ .Type | TypeSymbol }}__Assembler
 	`, w, g.AdjCfg, g)
 	// - address of 'k' is used when we return keys as nodes, such as in iterators.
 	//    Having these in the 't' slice above amortizes moving all of them to heap at once,
