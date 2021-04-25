@@ -9,21 +9,43 @@
 // Here in the godoc, the first couple of types to look at should be:
 //
 //   - Node
-//   - NodeBuilder (and NodeAssembler)
+//   - NodeBuilder and NodeAssembler
+//   - NodePrototype.
 //
 // These types provide a generic description of the data model.
+//
+// A Node is a piece of IPLD data which can be inspected.
+// A NodeAssembler is used to create Nodes.
+// (A NodeBuilder is just like a NodeAssembler, but allocates memory
+// (whereas a NodeAssembler just fills up memory; using these carefully
+// allows construction of very efficient code.)
+//
+// Different NodePrototypes can be used to describe Nodes which follow certain logical rules
+// (e.g., we use these as part of implementing Schemas),
+// and can also be used so that programs can use different memory layouts for different data
+// (which can be useful for constructing efficient programs when data has known shape for
+// which we can use specific or compacted memory layouts).
 //
 // If working with linked data (data which is split into multiple
 // trees of Nodes, loaded separately, and connected by some kind of
 // "link" reference), the next types you should look at are:
 //
-//   - Link
-//   - LinkBuilder
-//   - Loader
-//   - Storer
+//   - LinkSystem
+//   - ... and its fields.
 //
-// All of these types are interfaces.  There are several implementations you
-// can choose; we've provided some in subpackages, or you can bring your own.
+// The most typical use of LinkSystem is to use the linking/cid package
+// to get a LinkSystem that works with CIDs:
+//
+//   lsys := cidlink.DefaultLinkSystem()
+//
+// ... and then assign the StorageWriteOpener and StorageReadOpener fields
+// in order to control where data is stored to and read from.
+// Methods on the LinkSystem then provide the functions typically used
+// to get data in and out of Nodes so you can work with it.
+//
+// This root package only provides the essential interfaces,
+// as well as a Path implementation, and a variety of error types.
+// Most actual functionality is found in subpackages.
 //
 // Particularly interesting subpackages include:
 //
