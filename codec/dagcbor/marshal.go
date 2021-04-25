@@ -10,9 +10,10 @@ import (
 	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
 )
 
-// This should be identical to the general feature in the parent package,
+// This file should be identical to the general feature in the parent package,
 // except for the `case ipld.Kind_Link` block,
 // which is dag-cbor's special sauce for schemafree links.
+
 func Marshal(n ipld.Node, sink shared.TokenSink, allowLinks bool) error {
 	var tk tok.Token
 	return marshal(n, &tk, sink, allowLinks)

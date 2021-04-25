@@ -23,7 +23,7 @@ const (
 	listEntryGasScore = 4
 )
 
-// This should be identical to the general feature in the parent package,
+// This file should be identical to the general feature in the parent package,
 // except for the `case tok.TBytes` block,
 // which has dag-cbor's special sauce for detecting schemafree links.
 
