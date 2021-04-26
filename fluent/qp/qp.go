@@ -2,6 +2,8 @@
 package qp
 
 import (
+	"fmt"
+
 	"github.com/ipld/go-ipld-prime"
 )
 
@@ -10,7 +12,12 @@ type Assemble = func(ipld.NodeAssembler)
 func BuildMap(np ipld.NodePrototype, sizeHint int64, fn func(ipld.MapAssembler)) (_ ipld.Node, err error) {
 	defer func() {
 		if r := recover(); r != nil {
-			err = r.(error)
+			if rerr, ok := r.(error); ok {
+				err = rerr
+			} else {
+				// A reasonable fallback, for e.g. strings.
+				err = fmt.Errorf("%v", r)
+			}
 		}
 	}()
 	nb := np.NewBuilder()
@@ -49,7 +56,12 @@ func MapEntry(ma ipld.MapAssembler, k string, fn Assemble) {
 func BuildList(np ipld.NodePrototype, sizeHint int64, fn func(ipld.ListAssembler)) (_ ipld.Node, err error) {
 	defer func() {
 		if r := recover(); r != nil {
-			err = r.(error)
+			if rerr, ok := r.(error); ok {
+				err = rerr
+			} else {
+				// A reasonable fallback, for e.g. strings.
+				err = fmt.Errorf("%v", r)
+			}
 		}
 	}()
 	nb := np.NewBuilder()
