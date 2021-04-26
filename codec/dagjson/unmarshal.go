@@ -1,6 +1,7 @@
 package dagjson
 
 import (
+	"encoding/base64"
 	"fmt"
 
 	cid "github.com/ipfs/go-cid"
@@ -32,8 +33,9 @@ func Unmarshal(na ipld.NodeAssembler, tokSrc shared.TokenSource) error {
 }
 
 type unmarshalState struct {
-	tk    [4]tok.Token // mostly, only 0'th is used... but [1:4] are used during lookahead for links.
-	shift int          // how many times to slide something out of tk[1:4] instead of getting a new token.
+	tk         [7]tok.Token // mostly, only 0'th is used... but [1:7] are used during lookahead for links.
+	shift      int          // how many times to slide something out of tk[1:7] instead of getting a new token.
+	parseLinks bool
 }
 
 // step leaves a "new" token in tk[0],
@@ -67,9 +69,44 @@ func (st *unmarshalState) step(tokSrc shared.TokenSource) error {
 		st.tk[2] = st.tk[3]
 		st.shift--
 		return nil
+	case 4:
+		st.tk[0] = st.tk[1]
+		st.tk[1] = st.tk[2]
+		st.tk[2] = st.tk[3]
+		st.tk[3] = st.tk[4]
+		st.shift--
+		return nil
+	case 5:
+		st.tk[0] = st.tk[1]
+		st.tk[1] = st.tk[2]
+		st.tk[2] = st.tk[3]
+		st.tk[3] = st.tk[4]
+		st.tk[4] = st.tk[5]
+		st.shift--
+		return nil
+	case 6:
+		st.tk[0] = st.tk[1]
+		st.tk[1] = st.tk[2]
+		st.tk[2] = st.tk[3]
+		st.tk[3] = st.tk[4]
+		st.tk[4] = st.tk[5]
+		st.tk[5] = st.tk[6]
+		st.shift--
+		return nil
 	default:
 		panic("unreachable")
 	}
+}
+
+// ensure checks that the token lookahead-ahead (tk[lookhead]) is loaded from the underlying source.
+func (st *unmarshalState) ensure(tokSrc shared.TokenSource, lookahead int) error {
+	if st.shift < lookahead {
+		if _, err := tokSrc.Step(&st.tk[lookahead]); err != nil {
+			return err
+		}
+		st.shift = lookahead
+	}
+	return nil
 }
 
 // linkLookahead is called after receiving a TMapOpen token;
@@ -81,37 +118,30 @@ func (st *unmarshalState) step(tokSrc shared.TokenSource) error {
 // continue to attempt to build a map.
 func (st *unmarshalState) linkLookahead(na ipld.NodeAssembler, tokSrc shared.TokenSource) (bool, error) {
 	// Peek next token.  If it's a "/" string, link is still a possibility
-	_, err := tokSrc.Step(&st.tk[1])
-	if err != nil {
+	if err := st.ensure(tokSrc, 1); err != nil {
 		return false, err
 	}
 	if st.tk[1].Type != tok.TString {
-		st.shift = 1
 		return false, nil
 	}
 	if st.tk[1].Str != "/" {
-		st.shift = 1
 		return false, nil
 	}
 	// Peek next token.  If it's a string, link is still a possibility.
 	//  We won't try to parse it as a CID until we're sure it's the only thing in the map, though.
-	_, err = tokSrc.Step(&st.tk[2])
-	if err != nil {
+	if err := st.ensure(tokSrc, 2); err != nil {
 		return false, err
 	}
 	if st.tk[2].Type != tok.TString {
-		st.shift = 2
 		return false, nil
 	}
 	// Peek next token.  If it's map close, we've got a link!
 	//  (Otherwise it had better be a string, because another map key is the
 	//   only other valid transition here... but we'll leave that check to the caller.
-	_, err = tokSrc.Step(&st.tk[3])
-	if err != nil {
+	if err := st.ensure(tokSrc, 3); err != nil {
 		return false, err
 	}
 	if st.tk[3].Type != tok.TMapClose {
-		st.shift = 3
 		return false, nil
 	}
 	// Okay, we made it -- this looks like a link.  Parse it.
@@ -123,8 +153,71 @@ func (st *unmarshalState) linkLookahead(na ipld.NodeAssembler, tokSrc shared.Tok
 	if err := na.AssignLink(cidlink.Link{elCid}); err != nil {
 		return false, err
 	}
+	// consume the look-ahead tokens
+	st.shift = 0
 	return true, nil
+}
 
+func (st *unmarshalState) bytesLookahead(na ipld.NodeAssembler, tokSrc shared.TokenSource) (bool, error) {
+	// Peek next token.  If it's a "/" string, bytes is still a possibility
+	if err := st.ensure(tokSrc, 1); err != nil {
+		return false, err
+	}
+	if st.tk[1].Type != tok.TString {
+		return false, nil
+	}
+	if st.tk[1].Str != "/" {
+		return false, nil
+	}
+	// Peek next token.  If it's a map, bytes is still a possibility.
+	if err := st.ensure(tokSrc, 2); err != nil {
+		return false, err
+	}
+	if st.tk[2].Type != tok.TMapOpen {
+		return false, nil
+	}
+	// peek next token. If it's the string "bytes", we're on track.
+	if err := st.ensure(tokSrc, 3); err != nil {
+		return false, err
+	}
+	if st.tk[3].Type != tok.TString {
+		return false, nil
+	}
+	if st.tk[3].Str != "bytes" {
+		return false, nil
+	}
+	// peek next token. if it's a string, we're on track.
+	if err := st.ensure(tokSrc, 4); err != nil {
+		return false, err
+	}
+	if st.tk[4].Type != tok.TString {
+		return false, nil
+	}
+	// peek next token. if it's the first map close we're on track.
+	if err := st.ensure(tokSrc, 5); err != nil {
+		return false, err
+	}
+	if st.tk[5].Type != tok.TMapClose {
+		return false, nil
+	}
+	// Peek next token.  If it's map close, we've got bytes!
+	if err := st.ensure(tokSrc, 6); err != nil {
+		return false, err
+	}
+	if st.tk[6].Type != tok.TMapClose {
+		return false, nil
+	}
+	// Okay, we made it -- this looks like bytes.  Parse it.
+	elBytes, err := base64.StdEncoding.DecodeString(st.tk[4].Str)
+	if err != nil {
+		return false, err
+	}
+	if err := na.AssignBytes(elBytes); err != nil {
+		return false, err
+	}
+	// consume the look-ahead tokens
+	st.shift = 0
+	return true, nil
 }
 
 // starts with the first token already primed.  Necessary to get recursion
@@ -135,12 +228,22 @@ func (st *unmarshalState) unmarshal(na ipld.NodeAssembler, tokSrc shared.TokenSo
 	case tok.TMapOpen:
 		// dag-json has special needs: we pump a few tokens ahead to look for dag-json's "link" pattern.
 		//  We can't actually call BeginMap until we're sure it's not gonna turn out to be a link.
-		gotLink, err := st.linkLookahead(na, tokSrc)
-		if err != nil { // return in error if any token peeks failed or if structure looked like a link but failed to parse as CID.
-			return err
-		}
-		if gotLink {
-			return nil
+		if st.parseLinks {
+			gotLink, err := st.linkLookahead(na, tokSrc)
+			if err != nil { // return in error if any token peeks failed or if structure looked like a link but failed to parse as CID.
+				return err
+			}
+			if gotLink {
+				return nil
+			}
+
+			gotBytes, err := st.bytesLookahead(na, tokSrc)
+			if err != nil {
+				return err
+			}
+			if gotBytes {
+				return nil
+			}
 		}
 
 		// Okay, now back to regularly scheduled map logic.

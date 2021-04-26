@@ -1,6 +1,7 @@
 package dagjson
 
 import (
+	"encoding/base64"
 	"fmt"
 
 	"github.com/polydawn/refmt/shared"
@@ -115,10 +116,47 @@ func Marshal(n ipld.Node, sink shared.TokenSink) error {
 		if err != nil {
 			return err
 		}
-		tk.Type = tok.TBytes
-		tk.Bytes = v
-		_, err = sink.Step(&tk)
-		return err
+		if allowLinks {
+			// Precisely seven tokens to emit:
+			tk.Type = tok.TMapOpen
+			tk.Length = 1
+			if _, err = sink.Step(&tk); err != nil {
+				return err
+			}
+			tk.Type = tok.TString
+			tk.Str = "/"
+			if _, err = sink.Step(&tk); err != nil {
+				return err
+			}
+			tk.Type = tok.TMapOpen
+			tk.Length = 1
+			if _, err = sink.Step(&tk); err != nil {
+				return err
+			}
+			tk.Type = tok.TString
+			tk.Str = "bytes"
+			if _, err = sink.Step(&tk); err != nil {
+				return err
+			}
+			tk.Str = base64.StdEncoding.EncodeToString(v)
+			if _, err = sink.Step(&tk); err != nil {
+				return err
+			}
+			tk.Type = tok.TMapClose
+			if _, err = sink.Step(&tk); err != nil {
+				return err
+			}
+			tk.Type = tok.TMapClose
+			if _, err = sink.Step(&tk); err != nil {
+				return err
+			}
+			return nil
+		} else {
+			tk.Type = tok.TBytes
+			tk.Bytes = v
+			_, err = sink.Step(&tk)
+			return err
+		}
 	case ipld.Kind_Link:
 		v, err := n.AsLink()
 		if err != nil {
