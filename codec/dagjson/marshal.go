@@ -1,9 +1,9 @@
 package dagjson
 
 import (
-	"encoding/base64"
 	"fmt"
 
+	mbase "github.com/multiformats/go-multibase"
 	"github.com/polydawn/refmt/shared"
 	"github.com/polydawn/refmt/tok"
 
@@ -138,7 +138,10 @@ func Marshal(n ipld.Node, sink shared.TokenSink, allowLinks bool) error {
 			if _, err = sink.Step(&tk); err != nil {
 				return err
 			}
-			tk.Str = base64.StdEncoding.EncodeToString(v)
+			tk.Str, err = mbase.Encode(mbase.Base64, v)
+			if err != nil {
+				return err
+			}
 			if _, err = sink.Step(&tk); err != nil {
 				return err
 			}

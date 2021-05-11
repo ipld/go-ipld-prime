@@ -1,10 +1,10 @@
 package dagjson
 
 import (
-	"encoding/base64"
 	"fmt"
 
 	cid "github.com/ipfs/go-cid"
+	mbase "github.com/multiformats/go-multibase"
 	"github.com/polydawn/refmt/shared"
 	"github.com/polydawn/refmt/tok"
 
@@ -209,7 +209,10 @@ func (st *unmarshalState) bytesLookahead(na ipld.NodeAssembler, tokSrc shared.To
 		return false, nil
 	}
 	// Okay, we made it -- this looks like bytes.  Parse it.
-	elBytes, err := base64.StdEncoding.DecodeString(st.tk[4].Str)
+	_, elBytes, err := mbase.Decode(st.tk[4].Str)
+	if err != nil {
+		return false, err
+	}
 	if err != nil {
 		return false, err
 	}

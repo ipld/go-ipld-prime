@@ -19,7 +19,7 @@ var byteSerial = `{
 	"plain": "olde string",
 	"bytes": {
 		"/": {
-			"bytes": "ZGVhZGJlZWY="
+			"bytes": "mZGVhZGJlZWY"
 		}
 	}
 }
@@ -50,7 +50,7 @@ var encapsulatedSerial = `{
 	"/": {
 		"bytes": {
 			"/": {
-				"bytes": "ZGVhZGJlZWY="
+				"bytes": "mZGVhZGJlZWY"
 			}
 		}
 	}
