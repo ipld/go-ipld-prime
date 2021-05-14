@@ -59,6 +59,16 @@ func LookupEncoder(indicator uint64) (ipld.Encoder, error) {
 	return encodeFunc, nil
 }
 
+// ListEncoders enumerates the list of known multicodec indicators for which an ipld.Encoder is known.
+func ListEncoders() []uint64 {
+	encoders := make([]uint64, 0, len(encoderRegistry))
+	for e := range encoderRegistry {
+		encoders = append(encoders, e)
+	}
+
+	return encoders
+}
+
 // RegisterDecoder updates a simple map of multicodec indicator number to ipld.Decoder function.
 // The decoder functions registered can be subsequently looked up using LookupDecoder.
 //
@@ -107,4 +117,14 @@ func LookupDecoder(indicator uint64) (ipld.Decoder, error) {
 		return nil, fmt.Errorf("no decoder registered for multicodec code %d (0x%x)", indicator, indicator)
 	}
 	return decodeFunc, nil
+}
+
+// ListDecoders enumerates the list of known multicodec indicators for which an ipld.Decoder is known.
+func ListDecoders() []uint64 {
+	decoders := make([]uint64, 0, len(decoderRegistry))
+	for d := range decoderRegistry {
+		decoders = append(decoders, d)
+	}
+
+	return decoders
 }
