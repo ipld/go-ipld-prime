@@ -29,6 +29,7 @@ func Unmarshal(na ipld.NodeAssembler, tokSrc shared.TokenSource) error {
 	if done && !st.tk[0].Type.IsValue() {
 		return fmt.Errorf("unexpected eof")
 	}
+	st.parseLinks = true
 	return st.unmarshal(na, tokSrc)
 }
 
