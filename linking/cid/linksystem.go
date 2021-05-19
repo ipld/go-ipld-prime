@@ -10,12 +10,28 @@ import (
 	"github.com/ipld/go-ipld-prime/multicodec"
 )
 
+// DefaultLinkSystem returns an ipld.LinkSystem which uses cidlink.Link for ipld.Link.
+// During selection of encoders, decoders, and hashers, it examines the multicodec indicator numbers and multihash indicator numbers from the CID,
+// and uses the default global multicodec registry (see the go-ipld-prime/multicodec package) for resolving codec implementations,
+// and the default global multihash registry (see the go-multihash/core package) for resolving multihash implementations.
+//
+// No storage functions are present in the returned LinkSystem.
+// The caller can assign those themselves as desired.
 func DefaultLinkSystem() ipld.LinkSystem {
+	return LinkSystemUsingMulticodecRegistry(multicodec.DefaultRegistry)
+}
+
+// LinkSystemUsingMulticodecRegistry is similar to DefaultLinkSystem, but accepts a multicodec.Registry as a parameter.
+//
+// This can help create a LinkSystem which uses different multicodec implementations than the global registry.
+// (Sometimes this can be desired if you want some parts of a program to support a more limited suite of codecs than other parts of the program,
+// or needed to use a different multicodec registry than the global one for synchronization purposes, or etc.)
+func LinkSystemUsingMulticodecRegistry(mcReg multicodec.Registry) ipld.LinkSystem {
 	return ipld.LinkSystem{
 		EncoderChooser: func(lp ipld.LinkPrototype) (ipld.Encoder, error) {
 			switch lp2 := lp.(type) {
 			case LinkPrototype:
-				fn, err := multicodec.LookupEncoder(lp2.GetCodec())
+				fn, err := mcReg.LookupEncoder(lp2.GetCodec())
 				if err != nil {
 					return nil, err
 				}
@@ -28,7 +44,7 @@ func DefaultLinkSystem() ipld.LinkSystem {
 			lp := lnk.Prototype()
 			switch lp2 := lp.(type) {
 			case LinkPrototype:
-				fn, err := multicodec.LookupDecoder(lp2.GetCodec())
+				fn, err := mcReg.LookupDecoder(lp2.GetCodec())
 				if err != nil {
 					return nil, err
 				}
