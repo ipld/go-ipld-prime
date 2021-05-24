@@ -133,7 +133,7 @@ func TestStructNesting(t *testing.T) {
 					ma.AssembleEntry("q").AssignString("woo")
 				})
 			})
-			Wish(t, n, ShouldEqual, nr)
+			Wish(t, ipld.DeepEqual(n, nr), ShouldEqual, true)
 		})
 	})
 }

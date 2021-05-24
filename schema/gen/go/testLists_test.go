@@ -58,7 +58,7 @@ func TestListsContainingMaybe(t *testing.T) {
 					la.AssembleValue().AssignString("1")
 					la.AssembleValue().AssignString("2")
 				})
-				Wish(t, n, ShouldEqual, nr)
+				Wish(t, ipld.DeepEqual(n, nr), ShouldEqual, true)
 			})
 		})
 		t.Run("nullable", func(t *testing.T) {
@@ -93,7 +93,7 @@ func TestListsContainingMaybe(t *testing.T) {
 					la.AssembleValue().AssignString("1")
 					la.AssembleValue().AssignNull()
 				})
-				Wish(t, n, ShouldEqual, nr)
+				Wish(t, ipld.DeepEqual(n, nr), ShouldEqual, true)
 			})
 		})
 	}
@@ -207,7 +207,7 @@ func TestListsContainingLists(t *testing.T) {
 					la.AssembleValue().CreateMap(1, func(ma fluent.MapAssembler) { ma.AssembleEntry("encoded").AssignString("32") })
 				})
 			})
-			Wish(t, n, ShouldEqual, nr)
+			Wish(t, ipld.DeepEqual(n, nr), ShouldEqual, true)
 		})
 	})
 
