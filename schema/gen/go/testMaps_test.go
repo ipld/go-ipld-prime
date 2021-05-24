@@ -58,7 +58,7 @@ func TestMapsContainingMaybe(t *testing.T) {
 					ma.AssembleEntry("one").AssignString("1")
 					ma.AssembleEntry("two").AssignString("2")
 				})
-				Wish(t, n, ShouldEqual, nr)
+				Wish(t, ipld.DeepEqual(n, nr), ShouldEqual, true)
 			})
 		})
 		t.Run("nullable", func(t *testing.T) {
@@ -93,7 +93,7 @@ func TestMapsContainingMaybe(t *testing.T) {
 					ma.AssembleEntry("one").AssignString("1")
 					ma.AssembleEntry("none").AssignNull()
 				})
-				Wish(t, n, ShouldEqual, nr)
+				Wish(t, ipld.DeepEqual(n, nr), ShouldEqual, true)
 			})
 		})
 	}
@@ -206,7 +206,7 @@ func TestMapsContainingMaps(t *testing.T) {
 		})
 		t.Run("repr-create", func(t *testing.T) {
 			nr := creation(t, nrp, "encoded")
-			Wish(t, n, ShouldEqual, nr)
+			Wish(t, ipld.DeepEqual(n, nr), ShouldEqual, true)
 		})
 	})
 }
@@ -276,7 +276,7 @@ func TestMapsWithComplexKeys(t *testing.T) {
 				ma.AssembleEntry("c:d").AssignString("2")
 				ma.AssembleEntry("e:f").AssignString("3")
 			})
-			Wish(t, n, ShouldEqual, nr)
+			Wish(t, ipld.DeepEqual(n, nr), ShouldEqual, true)
 		})
 	})
 }

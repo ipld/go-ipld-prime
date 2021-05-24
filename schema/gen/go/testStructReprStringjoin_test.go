@@ -73,7 +73,7 @@ func TestStructReprStringjoin(t *testing.T) {
 				nr := fluent.MustBuild(nrp, func(na fluent.NodeAssembler) {
 					na.AssignString("valoo")
 				})
-				Wish(t, n, ShouldEqual, nr)
+				Wish(t, ipld.DeepEqual(n, nr), ShouldEqual, true)
 			})
 		})
 
@@ -102,7 +102,7 @@ func TestStructReprStringjoin(t *testing.T) {
 				nr := fluent.MustBuild(nrp, func(na fluent.NodeAssembler) {
 					na.AssignString("v1:v2")
 				})
-				Wish(t, n, ShouldEqual, nr)
+				Wish(t, ipld.DeepEqual(n, nr), ShouldEqual, true)
 			})
 		})
 
@@ -139,7 +139,7 @@ func TestStructReprStringjoin(t *testing.T) {
 				nr := fluent.MustBuild(nrp, func(na fluent.NodeAssembler) {
 					na.AssignString("v1-v2:v3-v4")
 				})
-				Wish(t, n, ShouldEqual, nr)
+				Wish(t, ipld.DeepEqual(n, nr), ShouldEqual, true)
 			})
 		})
 	})

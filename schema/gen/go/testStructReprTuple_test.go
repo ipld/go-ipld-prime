@@ -64,7 +64,7 @@ func TestStructReprTuple(t *testing.T) {
 				nr := fluent.MustBuildList(nrp, 1, func(la fluent.ListAssembler) {
 					la.AssembleValue().AssignString("valoo")
 				})
-				Wish(t, n, ShouldEqual, nr)
+				Wish(t, ipld.DeepEqual(n, nr), ShouldEqual, true)
 			})
 		})
 
@@ -104,7 +104,7 @@ func TestStructReprTuple(t *testing.T) {
 					la.AssembleValue().AssignString("2")
 					la.AssembleValue().AssignString("3")
 				})
-				Wish(t, n, ShouldEqual, nr)
+				Wish(t, ipld.DeepEqual(n, nr), ShouldEqual, true)
 			})
 		})
 
@@ -138,7 +138,7 @@ func TestStructReprTuple(t *testing.T) {
 					la.AssembleValue().AssignString("0")
 					la.AssembleValue().AssignNull()
 				})
-				Wish(t, n, ShouldEqual, nr)
+				Wish(t, ipld.DeepEqual(n, nr), ShouldEqual, true)
 			})
 		})
 	})
