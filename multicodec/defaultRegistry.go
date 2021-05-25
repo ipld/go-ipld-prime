@@ -53,6 +53,22 @@ func LookupEncoder(indicator uint64) (ipld.Encoder, error) {
 	return DefaultRegistry.LookupEncoder(indicator)
 }
 
+// ListEncoders returns a list of multicodec indicators for which an ipld.Encoder is registered.
+// The list is in no particular order.
+// It is a shortcut to the ListEncoders method on the global DefaultRegistry.
+//
+// Be judicious about trying to use this function outside of debugging.
+// Because the global default registry is global and easily modified,
+// and can be changed by any of the transitive dependencies of your program,
+// its contents are not particularly stable.
+// In particular, it is not recommended to make any behaviors of your program conditional
+// based on information returned by this function -- if your program needs conditional
+// behavior based on registred codecs, you may want to consider taking more explicit control
+// and using your own non-default registry.
+func ListEncoders() []uint64 {
+	return DefaultRegistry.ListEncoders()
+}
+
 // RegisterDecoder updates the global DefaultRegistry a map a multicodec indicator number to the given ipld.Decoder function.
 // The decoder functions registered can be subsequently looked up using LookupDecoder.
 // It is a shortcut to the RegisterDecoder method on the global DefaultRegistry.
@@ -82,4 +98,20 @@ func RegisterDecoder(indicator uint64, decodeFunc ipld.Decoder) {
 // for this indicator number by an earlier call to the RegisterDecoder function.
 func LookupDecoder(indicator uint64) (ipld.Decoder, error) {
 	return DefaultRegistry.LookupDecoder(indicator)
+}
+
+// ListDecoders returns a list of multicodec indicators for which an ipld.Decoder is registered.
+// The list is in no particular order.
+// It is a shortcut to the ListDecoders method on the global DefaultRegistry.
+//
+// Be judicious about trying to use this function outside of debugging.
+// Because the global default registry is global and easily modified,
+// and can be changed by any of the transitive dependencies of your program,
+// its contents are not particularly stable.
+// In particular, it is not recommended to make any behaviors of your program conditional
+// based on information returned by this function -- if your program needs conditional
+// behavior based on registred codecs, you may want to consider taking more explicit control
+// and using your own non-default registry.
+func ListDecoders() []uint64 {
+	return DefaultRegistry.ListDecoders()
 }
