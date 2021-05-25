@@ -114,13 +114,16 @@ type Node interface {
 	// before itr.Done becomes true.
 	MapIterator() MapIterator
 
-	// ListIterator returns an iterator which yields key-value pairs
-	// traversing the node.
+	// ListIterator returns an iterator which traverses the node and yields indicies and list entries.
 	// If the node kind is anything other than a list, nil will be returned.
 	//
 	// The iterator will yield every entry in the list; that is, it
 	// can be expected that itr.Next will be called node.Length times
 	// before itr.Done becomes true.
+	//
+	// List iteration is ordered, and indices yielded during iteration will range from 0 to Node.Length-1.
+	// (The IPLD Data Model definition of lists only defines that it is an ordered list of elements;
+	// the definition does not include a concept of sparseness, so the indices are always sequential.)
 	ListIterator() ListIterator
 
 	// Length returns the length of a list, or the number of entries in a map,
@@ -236,8 +239,10 @@ type MapIterator interface {
 	// An error value can also be returned at any step: in the case of advanced
 	// data structures with incremental loading, it's possible to encounter
 	// cancellation or I/O errors at any point in iteration.
-	// If an error is returned, the boolean will always be false (so it's
-	// correct to check the bool first and short circuit to continuing if true).
+	// If an error will be returned by the next call to Next,
+	// then the boolean returned by the Done method will be false
+	// (meaning it's acceptable to check Done first and move on if it's true,
+	// since that both means the iterator is complete and that there is no error).
 	// If an error is returned, the key and value may be nil.
 	Next() (key Node, value Node, err error)
 
@@ -256,16 +261,20 @@ type MapIterator interface {
 // Sequential calls to Next() will yield index-value pairs;
 // Done() describes whether iteration should continue.
 //
-// A loop which iterates from 0 to Node.Length is a valid
-// alternative to using a ListIterator.
+// ListIterator's Next method returns an index for convenience,
+// but this number will always start at 0 and increment by 1 monotonically.
+// A loop which iterates from 0 to Node.Length while calling Node.LookupByIndex
+// is equivalent to using a ListIterator.
 type ListIterator interface {
 	// Next returns the next index and value.
 	//
 	// An error value can also be returned at any step: in the case of advanced
 	// data structures with incremental loading, it's possible to encounter
 	// cancellation or I/O errors at any point in iteration.
-	// If an error is returned, the boolean will always be false (so it's
-	// correct to check the bool first and short circuit to continuing if true).
+	// If an error will be returned by the next call to Next,
+	// then the boolean returned by the Done method will be false
+	// (meaning it's acceptable to check Done first and move on if it's true,
+	// since that both means the iterator is complete and that there is no error).
 	// If an error is returned, the key and value may be nil.
 	Next() (idx int64, value Node, err error)
 
