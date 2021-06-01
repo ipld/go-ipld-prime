@@ -1,3 +1,4 @@
+//go:build cgo && !skipgenbehavtests
 // +build cgo,!skipgenbehavtests
 
 package gengo
@@ -34,7 +35,7 @@ func buildGennedCode(t *testing.T, prefix string, _ string) {
 	}
 }
 
-func runBehavioralTests(t *testing.T, prefix string, testsFn behavioralTests) {
+func fnPrototypeByName(prefix string) func(string) ipld.NodePrototype {
 	plg, err := plugin.Open(objPath(prefix))
 	if err != nil {
 		panic(err) // Panic because if this was going to flunk, we expected it to flunk earlier when we ran 'go build'.
@@ -43,9 +44,5 @@ func runBehavioralTests(t *testing.T, prefix string, testsFn behavioralTests) {
 	if err != nil {
 		panic(err)
 	}
-	getPrototypeByName := sym.(func(string) ipld.NodePrototype)
-
-	t.Run("bhvtest", func(t *testing.T) {
-		testsFn(t, getPrototypeByName)
-	})
+	return sym.(func(string) ipld.NodePrototype)
 }

@@ -1,4 +1,4 @@
-package gengo
+package tests
 
 import (
 	"bytes"
@@ -74,10 +74,12 @@ type testcase struct {
 	// there's really no need for an 'expectFail' that applies to marshal, because it shouldn't be possible to create data that's unmarshallable!  (excepting data which is not marshallable by some *codec* due to incompleteness of that codec.  But that's not what we're testing, here.)
 	// there's no need for a reprItr because the marshalling to reprJson always covers that; unlike with the type level, neither absents nor complex keys can throw a wrench in serialization, so it's always available to us to exercise the iteration code.
 }
+
 type testcasePoint struct {
 	path   string
 	expect interface{} // if primitive: we'll AsFoo and assert equal on that; if an error, we'll expect an error and compare error types; if a kind, we'll check that the thing reached simply has that kind.
 }
+
 type entry struct {
 	key   interface{} // (mostly string.  not yet defined how this will handle maps with complex keys.)
 	value interface{} // same rules as testcasePoint.expect
@@ -184,7 +186,6 @@ func (tcase testcase) Test(t *testing.T, np, npr ipld.NodePrototype) {
 			})
 		}
 	})
-
 }
 
 func testUnmarshal(t *testing.T, np ipld.NodePrototype, data string, expectFail error) ipld.Node {
@@ -273,8 +274,8 @@ func closeEnough(actual, expected interface{}) (string, bool) {
 func reformat(x string, opts json.EncodeOptions) string {
 	var buf bytes.Buffer
 	if err := (shared.TokenPump{
-		json.NewDecoder(strings.NewReader(x)),
-		json.NewEncoder(&buf, opts),
+		TokenSource: json.NewDecoder(strings.NewReader(x)),
+		TokenSink:   json.NewEncoder(&buf, opts),
 	}).Run(); err != nil {
 		panic(err)
 	}

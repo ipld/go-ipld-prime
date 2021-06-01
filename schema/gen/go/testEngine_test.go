@@ -7,44 +7,38 @@ import (
 	"testing"
 
 	"github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/node/tests"
 	"github.com/ipld/go-ipld-prime/schema"
 )
 
-// behavioralTests describes the interface of a function that can be supplied
-// in order to run tests on generated code.
-//
-// The getPrototypeByName function can get its job done using only interface types
-// that we already know from outside any generated code, so you can write tests
-// that have no _compile time_ dependency on the generated code.  This makes it
-// easier for IDEs and suchlike to help you write and check the test functions.
-//
-// Ask for prototypes using the type name alone (no package prefix);
-// their representation prototypes can be obtained by appending ".Repr".
-type behavioralTests func(t *testing.T, getPrototypeByName func(string) ipld.NodePrototype)
+var _ tests.Engine = (*genAndCompileEngine)(nil)
+
+type genAndCompileEngine struct {
+	subtestName string
+	prefix      string
+
+	adjCfg AdjunctCfg
+
+	prototypeByName func(string) ipld.NodePrototype
+}
 
 var tmpGenBuildDir = filepath.Join(os.TempDir(), "go-ipld-prime-gengo")
 
-func genAndCompileAndTest(
-	t *testing.T,
-	prefix string,
-	pkgName string,
-	ts schema.TypeSystem,
-	adjCfg *AdjunctCfg,
-	testsFn behavioralTests,
-) {
+func (e *genAndCompileEngine) Init(t *testing.T, ts schema.TypeSystem) {
 	// Make directories for the package we're about to generate.
 	// They will live in a temporary directory, usually
 	// /tmp/go-ipld-prime-gengo on Linux. It can be removed at any time.
 	// We don't by default because it's nicer to let go's builds of things cache.
 	// If you change the names of types, though, you'll have garbage files leftover,
 	// and that's currently a manual cleanup problem.  Sorry.
-	dir := filepath.Join(tmpGenBuildDir, prefix)
+	dir := filepath.Join(tmpGenBuildDir, e.prefix)
 	if err := os.MkdirAll(dir, 0755); err != nil {
 		t.Fatal(err)
 	}
+	pkgName := "main"
 
 	// Generate... everything, really.
-	Generate(dir, pkgName, ts, adjCfg)
+	Generate(dir, pkgName, ts, &e.adjCfg)
 
 	// Emit an exported top level function for getting NodePrototype.
 	//  This part isn't necessary except for a special need we have with this plugin trick;
@@ -69,7 +63,7 @@ func genAndCompileAndTest(
 					return nil
 				}
 			}
-		`, w, adjCfg, ts.GetTypes())
+		`, w, &e.adjCfg, ts.GetTypes())
 	})
 
 	// Build the genned code.
@@ -77,11 +71,11 @@ func genAndCompileAndTest(
 	//  or just build it quietly just to see if there are compile-time errors,
 	//  depending on your build tags.
 	// See 'HACKME_testing.md' for discussion.
-	buildGennedCode(t, prefix, pkgName)
+	buildGennedCode(t, e.prefix, pkgName)
 
-	// This will either load the plugin and run behavioral tests,
-	//  or emit a dummy t.Run and a skip,
-	//  depending on your build tags.
-	// See 'HACKME_testing.md' for discussion.
-	runBehavioralTests(t, prefix, testsFn)
+	e.prototypeByName = fnPrototypeByName(e.prefix)
+}
+
+func (e *genAndCompileEngine) PrototypeByName(name string) ipld.NodePrototype {
+	return e.prototypeByName(name)
 }

@@ -1,3 +1,4 @@
+//go:build !cgo && !skipgenbehavtests
 // +build !cgo,!skipgenbehavtests
 
 // Confession:
@@ -22,7 +23,10 @@ import (
 	"io"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"testing"
+
+	"github.com/ipld/go-ipld-prime"
 )
 
 func buildGennedCode(t *testing.T, prefix string, pkgName string) {
@@ -48,14 +52,14 @@ func buildGennedCode(t *testing.T, prefix string, pkgName string) {
 	cmd := exec.Command("go", args...)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
-	err := cmd.Run()
+	err = cmd.Run()
 	if err != nil {
 		t.Fatalf("genned code failed to compile: %s", err)
 	}
+
+	t.Skip("behavioral tests for generated code skipped: cgo is required for these tests")
 }
 
-func runBehavioralTests(t *testing.T, _ string, _ behavioralTests) {
-	t.Run("bhvtest=skip", func(t *testing.T) {
-		t.Skip("behavioral tests for generated code skipped: cgo is required for these tests")
-	})
+func fnPrototypeByName(prefix string) func(string) ipld.NodePrototype {
+	return nil // unused
 }

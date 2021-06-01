@@ -3,43 +3,12 @@ package gengo
 import (
 	"testing"
 
-	. "github.com/warpfork/go-wish"
-
-	"github.com/ipld/go-ipld-prime"
-	"github.com/ipld/go-ipld-prime/schema"
+	"github.com/ipld/go-ipld-prime/node/tests"
 )
 
 func TestString(t *testing.T) {
 	t.Parallel()
 
-	ts := schema.TypeSystem{}
-	ts.Init()
-	adjCfg := &AdjunctCfg{
-		maybeUsesPtr: map[schema.TypeName]bool{},
-	}
-
-	ts.Accumulate(schema.SpawnString("String"))
-
-	prefix := "justString"
-	pkgName := "main" // has to be 'main' for plugins to work.  this stricture makes little sense to me, but i didn't write the rules.
-	genAndCompileAndTest(t, prefix, pkgName, ts, adjCfg, func(t *testing.T, getPrototypeByName func(string) ipld.NodePrototype) {
-		np := getPrototypeByName("String")
-		t.Run("create string", func(t *testing.T) {
-			nb := np.NewBuilder()
-			Wish(t, nb.AssignString("woiu"), ShouldEqual, nil)
-			n := nb.Build().(schema.TypedNode)
-			t.Run("read string", func(t *testing.T) {
-				Wish(t, n.Kind(), ShouldEqual, ipld.Kind_String)
-			})
-			t.Run("read representation", func(t *testing.T) {
-				nr := n.Representation()
-				Wish(t, nr.Kind(), ShouldEqual, ipld.Kind_String)
-				Wish(t, str(nr), ShouldEqual, "woiu")
-			})
-		})
-		t.Run("create null is rejected", func(t *testing.T) {
-			nb := np.NewBuilder()
-			Wish(t, nb.AssignNull(), ShouldBeSameTypeAs, ipld.ErrWrongKind{})
-		})
-	})
+	engine := &genAndCompileEngine{prefix: "string"}
+	tests.SchemaTestString(t, engine)
 }
