@@ -37,7 +37,38 @@ Unreleased on master
 Changes here are on the master branch, but not in any tagged release yet.
 When a release tag is made, this block of bullet points will just slide down to the [Released Changes](#released-changes) section.
 
-- _nothing yet :)_
+- New: an `ipld.DeepEqual` method lets you easily compare two `ipld.Node` for equality.  (This is useful in case you have nodes with two different internal implementations, different memory layouts, etc, such that native golang equality would not be semantically correct.)
+  [[#174](https://github.com/ipld/go-ipld-prime/pull/174)]
+- New: the multicodec package exposes a `multicodec.Registry` type, and also some `multicodec.List*` methods.
+  [[#172](https://github.com/ipld/go-ipld-prime/pull/172), [#176](https://github.com/ipld/go-ipld-prime/pull/176)]
+	- Please be cautious of using these `List*` methods.  It's very possible to create race conditions with these, especially if using them on the global default registry instance.
+	  If we detect that these access methods seem to produce a source of bugs and design errors in downstream usage, they will be removed.
+	  Consider doing whatever you're doing by buildling your own registry systems, and attaching whatever semantics your system desires to those systems, rather than shoehorning this intentionally limited system into doing things it isn't made to do.
+- Improved: the dag-json codec now actually supports bytes!
+  (Perhaps surprisingly, this was a relatively recent addition to the dag-json spec.  We've now caught up with it.)
+  [[#166](https://github.com/ipld/go-ipld-prime/pull/166)]
+- Improved: the codegen system now gofmt's the generated code immediately.  You no longer need to do this manually in a separate step.
+  [[#163](https://github.com/ipld/go-ipld-prime/pull/163)]
+- Improved: the codegen system is slightly faster (due to use of more buffering during writes).
+  [[#161](https://github.com/ipld/go-ipld-prime/pull/161)]
+- Improved: the codegen system will now avoid pointers in the generated "Maybe" types, if they're known to be small in memory (and thus, reasonable to inline).
+  [[#160](https://github.com/ipld/go-ipld-prime/pull/160)]
+- New: `ipld.LinkSystem` now contains a "reification" hook system.  **This is really cool.**
+	- The center of this is the `ipld.LinkSystem.NodeReifier` field, and the `ipld.NodeReifier` function type.
+	- The `ipld.NodeReifier` function type is simply `func(LinkContext, Node, *LinkSystem) (Node, error)`.
+	- The purpose and intention of this is: you can use this hooking point in order to decide where to engage advanced IPLD features like [ADLs](https://ipld.io/glossary/#adl).
+	  One can use a `NodeReifier` to decide what ADLs to use and when... even when in the middle of a traversal.
+	- For example: one could write a NodeReifier that says "when I'm in a path that ends with '`foosys/*/hamt`', i'm going to try to load that as if it's a HAMT ADL".
+	  With that hook in place, you'd then be able to walks over whole forests of data with `traversal.*` functions, and they would automatically load the relevant ADL for you transparently every time that pattern is encountered, without disrupting or complicating the walk.
+	- In the future, we might begin to offer more structural and declaratively configurable approaches to this, and eventually, attempt to standardize them.
+	  For now: you can build any solution you like using this hook system.  (And we'll probably plug in any future declarative systems via these same hooks, too.)
+	- All this appeared in [#158](https://github.com/ipld/go-ipld-prime/pull/158).
+- New: `ipld.LinkSystem` now contains a boolean flag for `TrustedStorage`.  If set to true, it will cause methods like `Load` to _skip hashing_ when loading content.  **_Do not do this unless you know what you're doing._**
+  [[#149](https://github.com/ipld/go-ipld-prime/pull/149)]
+- New: a json (as opposed to dag-json) codec is now available from this repo.  It does roughly what you'd expect.  (It's like dag-json, but explicitly rejects encoding links and bytes, and correspondingly does not have dag-json's special decoding behaviors that produce those kinds.)
+  [[#152](https://github.com/ipld/go-ipld-prime/pull/152)]
+- New: a cbor (as opposed to dag-cbor) codec is now available from this repo.  Same story as the json codec: it just explicitly doesn't support links (because you should use dag-cbor if you want that).
+  [[#153](https://github.com/ipld/go-ipld-prime/pull/153)]
 
 
 Released Changes
