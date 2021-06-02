@@ -13,19 +13,19 @@ import (
 	"github.com/ipld/go-ipld-prime"
 )
 
-func objPath(prefix string) string {
-	return filepath.Join(tmpGenBuildDir, prefix, "obj.so")
+func objPath(dirName string) string {
+	return filepath.Join(tmpGenBuildDir, dirName, "obj.so")
 }
 
-func buildGennedCode(t *testing.T, prefix string, _ string) {
+func buildGennedCode(t *testing.T, dirName string, _ string) {
 	// Invoke `go build` with flags to create a plugin -- we'll be able to
 	//  load into this plugin into this selfsame process momentarily.
 	// Use globbing, because these are files outside our module.
-	files, err := filepath.Glob(filepath.Join(tmpGenBuildDir, prefix, "*.go"))
+	files, err := filepath.Glob(filepath.Join(tmpGenBuildDir, dirName, "*.go"))
 	if err != nil {
 		t.Fatal(err)
 	}
-	args := []string{"build", "-o=" + objPath(prefix), "-buildmode=plugin"}
+	args := []string{"build", "-o=" + objPath(dirName), "-buildmode=plugin"}
 	args = append(args, files...)
 	cmd := exec.Command("go", args...)
 	cmd.Stdout = os.Stdout
@@ -35,8 +35,8 @@ func buildGennedCode(t *testing.T, prefix string, _ string) {
 	}
 }
 
-func fnPrototypeByName(prefix string) func(string) ipld.NodePrototype {
-	plg, err := plugin.Open(objPath(prefix))
+func fnPrototypeByName(dirName string) func(string) ipld.NodePrototype {
+	plg, err := plugin.Open(objPath(dirName))
 	if err != nil {
 		panic(err) // Panic because if this was going to flunk, we expected it to flunk earlier when we ran 'go build'.
 	}

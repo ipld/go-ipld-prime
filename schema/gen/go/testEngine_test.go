@@ -4,6 +4,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/ipld/go-ipld-prime"
@@ -11,12 +12,36 @@ import (
 	"github.com/ipld/go-ipld-prime/schema"
 )
 
+func forSchemaTest(name string) []tests.EngineSubtest {
+	switch name {
+	case "MapsContainingMaybe":
+		return []tests.EngineSubtest{{
+			Name: "maybe-using-embed",
+			Engine: &genAndCompileEngine{adjCfg: AdjunctCfg{
+				maybeUsesPtr: map[schema.TypeName]bool{"String": false},
+			}},
+		}, {
+			Name: "maybe-using-ptr",
+			Engine: &genAndCompileEngine{adjCfg: AdjunctCfg{
+				maybeUsesPtr: map[schema.TypeName]bool{"String": true},
+			}},
+		}}
+	default:
+		return []tests.EngineSubtest{{
+			Engine: &genAndCompileEngine{},
+		}}
+	}
+}
+
+func TestSchema(t *testing.T) {
+	t.Parallel()
+
+	tests.SchemaTestAll(t, forSchemaTest)
+}
+
 var _ tests.Engine = (*genAndCompileEngine)(nil)
 
 type genAndCompileEngine struct {
-	subtestName string
-	prefix      string
-
 	adjCfg AdjunctCfg
 
 	prototypeByName func(string) ipld.NodePrototype
@@ -25,13 +50,16 @@ type genAndCompileEngine struct {
 var tmpGenBuildDir = filepath.Join(os.TempDir(), "go-ipld-prime-gengo")
 
 func (e *genAndCompileEngine) Init(t *testing.T, ts schema.TypeSystem) {
+	dirName := t.Name()
+	dirName = strings.ReplaceAll(dirName, "/", "#")
+
 	// Make directories for the package we're about to generate.
 	// They will live in a temporary directory, usually
 	// /tmp/go-ipld-prime-gengo on Linux. It can be removed at any time.
 	// We don't by default because it's nicer to let go's builds of things cache.
 	// If you change the names of types, though, you'll have garbage files leftover,
 	// and that's currently a manual cleanup problem.  Sorry.
-	dir := filepath.Join(tmpGenBuildDir, e.prefix)
+	dir := filepath.Join(tmpGenBuildDir, dirName)
 	if err := os.MkdirAll(dir, 0755); err != nil {
 		t.Fatal(err)
 	}
@@ -71,9 +99,9 @@ func (e *genAndCompileEngine) Init(t *testing.T, ts schema.TypeSystem) {
 	//  or just build it quietly just to see if there are compile-time errors,
 	//  depending on your build tags.
 	// See 'HACKME_testing.md' for discussion.
-	buildGennedCode(t, e.prefix, pkgName)
+	buildGennedCode(t, dirName, pkgName)
 
-	e.prototypeByName = fnPrototypeByName(e.prefix)
+	e.prototypeByName = fnPrototypeByName(dirName)
 }
 
 func (e *genAndCompileEngine) PrototypeByName(name string) ipld.NodePrototype {
