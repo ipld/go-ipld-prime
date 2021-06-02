@@ -49,10 +49,13 @@ When a release tag is made, this block of bullet points will just slide down to 
   [[#166](https://github.com/ipld/go-ipld-prime/pull/166)]
 - Improved: the codegen system now gofmt's the generated code immediately.  You no longer need to do this manually in a separate step.
   [[#163](https://github.com/ipld/go-ipld-prime/pull/163)]
-- Improved: the codegen system is slightly faster (due to use of more buffering during writes).
+- Improved: the codegen system is slightly faster at emitting code (due to use of more buffering during writes).
   [[#161](https://github.com/ipld/go-ipld-prime/pull/161)]
 - Improved: the codegen system will now avoid pointers in the generated "Maybe" types, if they're known to be small in memory (and thus, reasonable to inline).
   [[#160](https://github.com/ipld/go-ipld-prime/pull/160)]
+	- This is quite likely to result in performance improvements for most programs, as it decreases the number of small memory allocations done, and amount of time spent on dereferencing, cache misses, etc.
+	  Some workloads demonstrated over 10% speed increases, and 40% decreases in allocation counts.
+	  (Of course, run your own benchmarks; not all workloads are equal.)
 - New: `ipld.LinkSystem` now contains a "reification" hook system.  **This is really cool.**
 	- The center of this is the `ipld.LinkSystem.NodeReifier` field, and the `ipld.NodeReifier` function type.
 	- The `ipld.NodeReifier` function type is simply `func(LinkContext, Node, *LinkSystem) (Node, error)`.
