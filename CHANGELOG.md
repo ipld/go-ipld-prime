@@ -37,6 +37,25 @@ Unreleased on master
 Changes here are on the master branch, but not in any tagged release yet.
 When a release tag is made, this block of bullet points will just slide down to the [Released Changes](#released-changes) section.
 
+- _nothing yet :)_
+
+
+
+Released Changes
+----------------
+
+### v0.10.0
+
+_2021 June 02_
+
+v0.10.0 is a mild release, containing _no_ breaking changes, but lots of cool new stuff.  Update at your earliest convenience.
+
+There's a bunch of cool new features in here, some of which are significant power-ups for the ecosystem (e.g. the `NodeReifier` API), so we recommend updating as soon as possible.
+
+There's also some sizable performance improvements available for generated code, so go forth and update your generated code too!
+
+Check out the full feature list:
+
 - New: an `ipld.DeepEqual` method lets you easily compare two `ipld.Node` for equality.  (This is useful in case you have nodes with two different internal implementations, different memory layouts, etc, such that native golang equality would not be semantically correct.)
   [[#174](https://github.com/ipld/go-ipld-prime/pull/174)]
 - New: the multicodec package exposes a `multicodec.Registry` type, and also some `multicodec.List*` methods.
@@ -73,9 +92,9 @@ When a release tag is made, this block of bullet points will just slide down to 
 - New: a cbor (as opposed to dag-cbor) codec is now available from this repo.  Same story as the json codec: it just explicitly doesn't support links (because you should use dag-cbor if you want that).
   [[#153](https://github.com/ipld/go-ipld-prime/pull/153)]
 
+This contained a ton of contributions from lots of people: especially thanks to @mvdan, @hannahhoward, and @willscott for invaluable contributions.
 
-Released Changes
-----------------
+
 
 ### v0.9.0
 
