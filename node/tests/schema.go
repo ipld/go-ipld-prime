@@ -13,7 +13,7 @@ var allSchemaTests = []struct {
 	{"MapsContainingMaybe", SchemaTestMapsContainingMaybe},
 	{"MapsContainingMaps", SchemaTestMapsContainingMaps},
 	{"MapsWithComplexKeys", SchemaTestMapsWithComplexKeys},
-	{"String", SchemaTestString},
+	{"Scalars", SchemaTestScalars},
 	{"RequiredFields", SchemaTestRequiredFields},
 	{"StructNesting", SchemaTestStructNesting},
 	{"StructReprStringjoin", SchemaTestStructReprStringjoin},

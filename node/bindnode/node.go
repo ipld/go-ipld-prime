@@ -82,10 +82,16 @@ func fieldNameFromSchema(name string) string {
 
 func inferGoType(typ schema.Type) reflect.Type {
 	switch typ := typ.(type) {
+	case *schema.TypeBool:
+		return goTypeBool
 	case *schema.TypeInt:
 		return goTypeInt
+	case *schema.TypeFloat:
+		return goTypeFloat
 	case *schema.TypeString:
 		return goTypeString
+	case *schema.TypeBytes:
+		return goTypeBytes
 	case *schema.TypeStruct:
 		fields := typ.Fields()
 		goFields := make([]reflect.StructField, len(fields))
@@ -216,8 +222,10 @@ func (w *_prototype) Representation() ipld.NodePrototype {
 }
 
 var (
-	goTypeString = reflect.TypeOf("")
+	goTypeBool   = reflect.TypeOf(false)
 	goTypeInt    = reflect.TypeOf(int(0))
+	goTypeFloat  = reflect.TypeOf(0.0)
+	goTypeString = reflect.TypeOf("")
 	goTypeBytes  = reflect.TypeOf([]byte{})
 	goTypeLink   = reflect.TypeOf((*ipld.Link)(nil)).Elem()
 
@@ -296,9 +304,7 @@ func (w *_node) LookupByString(key string) (ipld.Node, error) {
 		}
 		fval := valuesVal.MapIndex(kval)
 		if !fval.IsValid() { // not found
-			return nil, ipld.ErrNotExists{
-				// TODO
-			}
+			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		// TODO: Error/panic if fval.IsNil() && !typ.ValueIsNullable()?
 		// Otherwise we could have two non-equal Go values (nil map,
@@ -326,15 +332,11 @@ func (w *_node) LookupByString(key string) (ipld.Node, error) {
 			}
 		}
 		if mtyp == nil { // not found
-			return nil, ipld.ErrNotExists{
-				// TODO
-			}
+			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		haveIdx := int(w.val.FieldByName("Index").Int())
 		if haveIdx != idx { // mismatching type
-			return nil, ipld.ErrNotExists{
-				// TODO
-			}
+			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
 		mval := w.val.FieldByName("Value").Elem()
 		node := &_node{
@@ -358,11 +360,8 @@ func (w *_node) LookupByIndex(idx int64) (ipld.Node, error) {
 	switch typ := w.schemaType.(type) {
 	case *schema.TypeList:
 		if idx < 0 || int(idx) >= w.val.Len() {
-			return nil, ipld.ErrNotExists{
-				// TODO
-			}
+			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfInt(idx)}
 		}
-		// TODO: bounds check
 		val := w.val.Index(int(idx))
 		if typ.ValueIsNullable() {
 			if val.IsNil() {
@@ -448,7 +447,14 @@ func (w *_node) IsNull() bool {
 }
 
 func (w *_node) AsBool() (bool, error) {
-	panic("TODO: ")
+	if w.Kind() != ipld.Kind_Bool {
+		return false, ipld.ErrWrongKind{
+			TypeName:   w.schemaType.Name().String(),
+			MethodName: "AsBool",
+			// TODO
+		}
+	}
+	return w.val.Bool(), nil
 }
 
 func (w *_node) AsInt() (int64, error) {
@@ -463,7 +469,14 @@ func (w *_node) AsInt() (int64, error) {
 }
 
 func (w *_node) AsFloat() (float64, error) {
-	panic("TODO: ")
+	if w.Kind() != ipld.Kind_Float {
+		return 0, ipld.ErrWrongKind{
+			TypeName:   w.schemaType.Name().String(),
+			MethodName: "AsFloat",
+			// TODO
+		}
+	}
+	return w.val.Float(), nil
 }
 
 func (w *_node) AsString() (string, error) {
@@ -509,6 +522,7 @@ type _builder struct {
 }
 
 func (w *_builder) Build() ipld.Node {
+	// TODO: should we panic if no Assign call was made, just like codegen?
 	return &_node{schemaType: w.schemaType, val: w.val}
 }
 
@@ -615,8 +629,22 @@ func (w *_assembler) AssignNull() error {
 	return nil
 }
 
-func (w *_assembler) AssignBool(bool) error {
-	panic("TODO: AssignBool")
+func (w *_assembler) AssignBool(b bool) error {
+	if w.kind() != ipld.Kind_Bool {
+		return ipld.ErrWrongKind{
+			TypeName:        w.schemaType.Name().String(),
+			MethodName:      "AssignBool",
+			AppropriateKind: ipld.KindSet{ipld.Kind_Bool},
+			ActualKind:      w.kind(),
+		}
+	}
+	w.nonPtrVal().SetBool(b)
+	if w.finish != nil {
+		if err := w.finish(); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func (w *_assembler) AssignInt(i int64) error {
@@ -637,8 +665,22 @@ func (w *_assembler) AssignInt(i int64) error {
 	return nil
 }
 
-func (w *_assembler) AssignFloat(float64) error {
-	panic("TODO: AssignFloat")
+func (w *_assembler) AssignFloat(f float64) error {
+	if w.kind() != ipld.Kind_Float {
+		return ipld.ErrWrongKind{
+			TypeName:        w.schemaType.Name().String(),
+			MethodName:      "AssignFloat",
+			AppropriateKind: ipld.KindSet{ipld.Kind_Float},
+			ActualKind:      w.kind(),
+		}
+	}
+	w.nonPtrVal().SetFloat(f)
+	if w.finish != nil {
+		if err := w.finish(); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func (w *_assembler) AssignString(s string) error {
@@ -736,12 +778,24 @@ func (w *_assembler) AssignNode(node ipld.Node) error {
 		}
 		return am.Finish()
 
+	case ipld.Kind_Bool:
+		b, err := node.AsBool()
+		if err != nil {
+			return err
+		}
+		return w.AssignBool(b)
 	case ipld.Kind_Int:
 		i, err := node.AsInt()
 		if err != nil {
 			return err
 		}
 		return w.AssignInt(i)
+	case ipld.Kind_Float:
+		f, err := node.AsFloat()
+		if err != nil {
+			return err
+		}
+		return w.AssignFloat(f)
 	case ipld.Kind_String:
 		s, err := node.AsString()
 		if err != nil {

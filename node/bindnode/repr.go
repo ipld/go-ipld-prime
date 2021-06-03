@@ -152,8 +152,10 @@ func (w *_nodeRepr) LookupByString(key string) (ipld.Node, error) {
 
 func (w *_nodeRepr) LookupByNode(key ipld.Node) (ipld.Node, error) {
 	return nil, ipld.ErrWrongKind{
-		TypeName:   w.schemaType.Name().String(),
-		MethodName: "LookupByNode", AppropriateKind: ipld.KindSet_JustList, ActualKind: ipld.Kind_Map,
+		TypeName:        w.schemaType.Name().String(),
+		MethodName:      "LookupByNode",
+		AppropriateKind: ipld.KindSet_JustList,
+		// TODO
 	}
 }
 
@@ -240,31 +242,52 @@ func (w *_nodeRepr) Length() int64 {
 }
 
 func (w *_nodeRepr) IsAbsent() bool {
+	if reprStrategy(w.schemaType) == nil {
+		return (*_node)(w).IsAbsent()
+	}
 	return false
 }
 
 func (w *_nodeRepr) IsNull() bool {
+	if reprStrategy(w.schemaType) == nil {
+		return (*_node)(w).IsNull()
+	}
 	return false
 }
 
 func (w *_nodeRepr) AsBool() (bool, error) {
+	if reprStrategy(w.schemaType) == nil {
+		return (*_node)(w).AsBool()
+	}
 	return false, ipld.ErrWrongKind{
-		TypeName:   w.schemaType.Name().String(),
-		MethodName: "AsBool", AppropriateKind: ipld.KindSet_JustBool, ActualKind: ipld.Kind_Map,
+		TypeName:        w.schemaType.Name().String(),
+		MethodName:      "AsBool",
+		AppropriateKind: ipld.KindSet_JustBool,
+		// TODO
 	}
 }
 
 func (w *_nodeRepr) AsInt() (int64, error) {
+	if reprStrategy(w.schemaType) == nil {
+		return (*_node)(w).AsInt()
+	}
 	return 0, ipld.ErrWrongKind{
-		TypeName: w.schemaType.Name().String(), MethodName: "AsInt",
-		AppropriateKind: ipld.KindSet_JustInt, ActualKind: ipld.Kind_Map,
+		TypeName:        w.schemaType.Name().String(),
+		MethodName:      "AsInt",
+		AppropriateKind: ipld.KindSet_JustInt,
+		// TODO
 	}
 }
 
 func (w *_nodeRepr) AsFloat() (float64, error) {
+	if reprStrategy(w.schemaType) == nil {
+		return (*_node)(w).AsFloat()
+	}
 	return 0, ipld.ErrWrongKind{
-		TypeName: w.schemaType.Name().String(), MethodName: "AsFloat",
-		AppropriateKind: ipld.KindSet_JustFloat, ActualKind: ipld.Kind_Map,
+		TypeName:        w.schemaType.Name().String(),
+		MethodName:      "AsFloat",
+		AppropriateKind: ipld.KindSet_JustFloat,
+		// TODO
 	}
 }
 
@@ -314,16 +337,26 @@ func (w *_nodeRepr) AsString() (string, error) {
 }
 
 func (w *_nodeRepr) AsBytes() ([]byte, error) {
+	if reprStrategy(w.schemaType) == nil {
+		return (*_node)(w).AsBytes()
+	}
 	return nil, ipld.ErrWrongKind{
-		TypeName: w.schemaType.Name().String(), MethodName: "AsBytes",
-		AppropriateKind: ipld.KindSet_JustBytes, ActualKind: ipld.Kind_Map,
+		TypeName:        w.schemaType.Name().String(),
+		MethodName:      "AsBytes",
+		AppropriateKind: ipld.KindSet_JustBytes,
+		// TODO
 	}
 }
 
 func (w *_nodeRepr) AsLink() (ipld.Link, error) {
+	if reprStrategy(w.schemaType) == nil {
+		return (*_node)(w).AsLink()
+	}
 	return nil, ipld.ErrWrongKind{
-		TypeName: w.schemaType.Name().String(), MethodName: "AsLink",
-		AppropriateKind: ipld.KindSet_JustLink, ActualKind: ipld.Kind_Map,
+		TypeName:        w.schemaType.Name().String(),
+		MethodName:      "AsLink",
+		AppropriateKind: ipld.KindSet_JustLink,
+		// TODO
 	}
 }
 
