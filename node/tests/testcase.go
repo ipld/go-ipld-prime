@@ -124,7 +124,7 @@ func (tcase testcase) Test(t *testing.T, np, npr ipld.NodePrototype) {
 		}
 		if n2 != nil {
 			t.Run("type-create and repr-create match", func(t *testing.T) {
-				Wish(t, n, ShouldEqual, n2)
+				Wish(t, ipld.DeepEqual(n, n2), ShouldEqual, true)
 			})
 		}
 

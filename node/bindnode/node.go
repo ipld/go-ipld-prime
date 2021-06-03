@@ -109,7 +109,26 @@ func inferGoType(typ schema.Type) reflect.Type {
 		if typ.ValueIsNullable() {
 			vtyp = reflect.PtrTo(vtyp)
 		}
-		return reflect.MapOf(ktyp, vtyp)
+		// We need an extra field to keep the map ordered,
+		// since IPLD maps must have stable iteration order.
+		// We could sort when iterating, but that's expensive.
+		// Keeping the insertion order is easy and intuitive.
+		//
+		//	struct {
+		//		Keys   []K
+		//		Values map[K]V
+		//	}
+		goFields := []reflect.StructField{
+			{
+				Name: "Keys",
+				Type: reflect.SliceOf(ktyp),
+			},
+			{
+				Name: "Values",
+				Type: reflect.MapOf(ktyp, vtyp),
+			},
+		}
+		return reflect.StructOf(goFields)
 	case *schema.TypeList:
 		etyp := inferGoType(typ.ValueType())
 		if typ.ValueIsNullable() {
@@ -117,6 +136,7 @@ func inferGoType(typ schema.Type) reflect.Type {
 		}
 		return reflect.SliceOf(etyp)
 	case *schema.TypeUnion:
+		// We need an extra field to record what member we stored.
 		type goUnion struct {
 			Index int // 0..len(typ.Members)-1
 			Value interface{}
@@ -260,20 +280,21 @@ func (w *_node) LookupByString(key string) (ipld.Node, error) {
 		return node, nil
 	case *schema.TypeMap:
 		var kval reflect.Value
+		valuesVal := w.val.FieldByName("Values")
 		switch ktyp := typ.KeyType().(type) {
 		case *schema.TypeString:
 			kval = reflect.ValueOf(key)
 		default:
 			asm := &_assembler{
 				schemaType: ktyp,
-				val:        reflect.New(w.val.Type().Key()).Elem(),
+				val:        reflect.New(valuesVal.Type().Key()).Elem(),
 			}
 			if err := (*_assemblerRepr)(asm).AssignString(key); err != nil {
 				return nil, err
 			}
 			kval = asm.val
 		}
-		fval := w.val.MapIndex(kval)
+		fval := valuesVal.MapIndex(kval)
 		if !fval.IsValid() { // not found
 			return nil, ipld.ErrNotExists{
 				// TODO
@@ -377,7 +398,11 @@ func (w *_node) MapIterator() ipld.MapIterator {
 			val:        w.val,
 		}
 	case *schema.TypeMap:
-		panic("TODO: ")
+		return &_mapIterator{
+			schemaType: typ,
+			keysVal:    w.val.FieldByName("Keys"),
+			valuesVal:  w.val.FieldByName("Values"),
+		}
 	}
 	return nil
 }
@@ -405,7 +430,7 @@ func (w *_node) Length() int64 {
 		case *schema.TypeUnion:
 			return 1
 		}
-		fallthrough // map
+		return int64(w.val.FieldByName("Keys").Len())
 	case ipld.Kind_List:
 		return int64(w.val.Len())
 	}
@@ -530,12 +555,15 @@ func (w *_assembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
 		}, nil
 	case *schema.TypeMap:
 		val := w.nonPtrVal()
-		if val.IsNil() {
-			val.Set(reflect.MakeMap(val.Type()))
+		keysVal := val.FieldByName("Keys")
+		valuesVal := val.FieldByName("Values")
+		if valuesVal.IsNil() {
+			valuesVal.Set(reflect.MakeMap(valuesVal.Type()))
 		}
 		return &_mapAssembler{
 			schemaType: typ,
-			val:        val,
+			keysVal:    keysVal,
+			valuesVal:  valuesVal,
 			finish:     w.finish,
 		}, nil
 	case *schema.TypeUnion:
@@ -841,7 +869,8 @@ func (w *_structAssembler) ValuePrototype(k string) ipld.NodePrototype {
 
 type _mapAssembler struct {
 	schemaType *schema.TypeMap
-	val        reflect.Value // non-pointer
+	keysVal    reflect.Value // non-pointer
+	valuesVal  reflect.Value // non-pointer
 	finish     func() error
 
 	// TODO: more state checks
@@ -854,17 +883,21 @@ type _mapAssembler struct {
 func (w *_mapAssembler) AssembleKey() ipld.NodeAssembler {
 	w.curKey = _assembler{
 		schemaType: w.schemaType.KeyType(),
-		val:        reflect.New(w.val.Type().Key()).Elem(),
+		val:        reflect.New(w.valuesVal.Type().Key()).Elem(),
 	}
 	return &w.curKey
 }
 
 func (w *_mapAssembler) AssembleValue() ipld.NodeAssembler {
 	kval := w.curKey.val
-	val := reflect.New(w.val.Type().Elem()).Elem()
+	val := reflect.New(w.valuesVal.Type().Elem()).Elem()
 	finish := func() error {
 		// fmt.Println(kval.Interface(), val.Interface())
-		w.val.SetMapIndex(kval, val)
+
+		// TODO: check for duplicates in keysVal
+		w.keysVal.Set(reflect.Append(w.keysVal, kval))
+
+		w.valuesVal.SetMapIndex(kval, val)
 		return nil
 	}
 	return &_assembler{
@@ -893,7 +926,7 @@ func (w *_mapAssembler) Finish() error {
 }
 
 func (w *_mapAssembler) KeyPrototype() ipld.NodePrototype {
-	return &_prototype{schemaType: w.schemaType.KeyType(), goType: w.val.Type().Key()}
+	return &_prototype{schemaType: w.schemaType.KeyType(), goType: w.valuesVal.Type().Key()}
 }
 
 func (w *_mapAssembler) ValuePrototype(k string) ipld.NodePrototype {
@@ -1050,6 +1083,45 @@ func (w *_structIterator) Done() bool {
 	return w.nextIndex >= len(w.fields)
 }
 
+type _mapIterator struct {
+	schemaType *schema.TypeMap
+	keysVal    reflect.Value // non-pointer
+	valuesVal  reflect.Value // non-pointer
+	nextIndex  int
+
+	// these are only used in repr.go
+	reprEnd int
+}
+
+func (w *_mapIterator) Next() (key, value ipld.Node, _ error) {
+	if w.Done() {
+		return nil, nil, ipld.ErrIteratorOverread{}
+	}
+	goKey := w.keysVal.Index(w.nextIndex)
+	val := w.valuesVal.MapIndex(goKey)
+	w.nextIndex++
+
+	key = &_node{
+		schemaType: w.schemaType.KeyType(),
+		val:        goKey,
+	}
+	if w.schemaType.ValueIsNullable() {
+		if val.IsNil() {
+			return key, ipld.Null, nil
+		}
+		val = val.Elem()
+	}
+	node := &_node{
+		schemaType: w.schemaType.ValueType(),
+		val:        val,
+	}
+	return key, node, nil
+}
+
+func (w *_mapIterator) Done() bool {
+	return w.nextIndex >= w.keysVal.Len()
+}
+
 type _listIterator struct {
 	schemaType *schema.TypeList
 	val        reflect.Value // non-pointer
@@ -1063,6 +1135,12 @@ func (w *_listIterator) Next() (index int64, value ipld.Node, _ error) {
 	idx := int64(w.nextIndex)
 	val := w.val.Index(w.nextIndex)
 	w.nextIndex++
+	if w.schemaType.ValueIsNullable() {
+		if val.IsNil() {
+			return idx, ipld.Null, nil
+		}
+		val = val.Elem()
+	}
 	return idx, &_node{schemaType: w.schemaType.ValueType(), val: val}, nil
 }
 

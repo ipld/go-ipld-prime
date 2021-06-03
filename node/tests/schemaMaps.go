@@ -156,7 +156,7 @@ func SchemaTestMapsContainingMaps(t *testing.T, engine Engine) {
 				})
 			})
 			withNode(must.Node(n.LookupByString("none")), func(n ipld.Node) {
-				Wish(t, n, ShouldEqual, ipld.Null)
+				Wish(t, ipld.DeepEqual(n, ipld.Null), ShouldEqual, true)
 			})
 			_, err := n.LookupByString("miss")
 			Wish(t, err, ShouldBeSameTypeAs, ipld.ErrNotExists{})
