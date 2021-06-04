@@ -66,8 +66,15 @@ func SchemaTestScalars(t *testing.T, engine Engine) {
 				t.Run(testName, func(t *testing.T) {
 					nb := np.NewBuilder()
 
+					// Assigning null, a list, or a map, should always fail.
+					err := nb.AssignNull()
+					qt.Assert(t, err, qt.Not(qt.IsNil))
+					_, err = nb.BeginMap(-1)
+					qt.Assert(t, err, qt.Not(qt.IsNil))
+					_, err = nb.BeginList(-1)
+					qt.Assert(t, err, qt.Not(qt.IsNil))
+
 					// Assigning the right value for the kind should succeed.
-					var err error
 					if useAssignNode {
 						np2 := engine.PrototypeByName(testAssign.name)
 						nb2 := np2.NewBuilder()
@@ -118,6 +125,19 @@ func SchemaTestScalars(t *testing.T, engine Engine) {
 						} else {
 							qt.Assert(t, err, qt.Not(qt.IsNil))
 						}
+
+						// Using Node methods which should never
+						// work on scalar kinds.
+
+						_, err = n.LookupByString("foo")
+						qt.Assert(t, err, qt.Not(qt.IsNil))
+						_, err = n.LookupByIndex(3)
+						qt.Assert(t, err, qt.Not(qt.IsNil))
+						qt.Assert(t, n.MapIterator(), qt.IsNil)
+						qt.Assert(t, n.ListIterator(), qt.IsNil)
+						qt.Assert(t, n.Length(), qt.Equals, int64(-1))
+						qt.Assert(t, n.IsAbsent(), qt.IsFalse)
+						qt.Assert(t, n.IsNull(), qt.IsFalse)
 					}
 				})
 			}
