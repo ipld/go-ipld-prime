@@ -1142,9 +1142,6 @@ type _mapIterator struct {
 	keysVal    reflect.Value // non-pointer
 	valuesVal  reflect.Value // non-pointer
 	nextIndex  int
-
-	// these are only used in repr.go
-	reprEnd int
 }
 
 func (w *_mapIterator) Next() (key, value ipld.Node, _ error) {

@@ -200,12 +200,17 @@ func (w *_nodeRepr) MapIterator() ipld.MapIterator {
 	case schema.UnionRepresentation_Keyed:
 		itr := (*_node)(w).MapIterator().(*_unionIterator)
 		return (*_unionIteratorRepr)(itr)
+	case nil:
+		return (*_node)(w).MapIterator()
 	default:
 		panic(fmt.Sprintf("TODO: %T", stg))
 	}
 }
 
 func (w *_nodeRepr) ListIterator() ipld.ListIterator {
+	if reprStrategy(w.schemaType) == nil {
+		return (*_node)(w).ListIterator()
+	}
 	return nil
 }
 
@@ -730,9 +735,6 @@ func (w *_unionAssemblerRepr) AssembleKey() ipld.NodeAssembler {
 	switch stg := reprStrategy(w.schemaType).(type) {
 	case schema.UnionRepresentation_Keyed:
 		return (*_unionAssembler)(w).AssembleKey()
-	case nil:
-		asm := (*_unionAssembler)(w).AssembleKey()
-		return (*_assemblerRepr)(asm.(*_assembler))
 	default:
 		panic(fmt.Sprintf("TODO: %T", stg))
 	}
@@ -748,9 +750,6 @@ func (w *_unionAssemblerRepr) AssembleValue() ipld.NodeAssembler {
 		valAsm := (*_unionAssembler)(w).AssembleValue()
 		valAsm = valAsm.(TypedAssembler).Representation()
 		return valAsm
-	case nil:
-		asm := (*_unionAssembler)(w).AssembleValue()
-		return (*_assemblerRepr)(asm.(*_assembler))
 	default:
 		panic(fmt.Sprintf("TODO: %T", stg))
 	}
@@ -767,8 +766,6 @@ func (w *_unionAssemblerRepr) AssembleEntry(k string) (ipld.NodeAssembler, error
 func (w *_unionAssemblerRepr) Finish() error {
 	switch stg := reprStrategy(w.schemaType).(type) {
 	case schema.UnionRepresentation_Keyed:
-		return (*_unionAssembler)(w).Finish()
-	case nil:
 		return (*_unionAssembler)(w).Finish()
 	default:
 		panic(fmt.Sprintf("TODO: %T", stg))
