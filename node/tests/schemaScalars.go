@@ -52,57 +52,60 @@ func SchemaTestScalars(t *testing.T, engine Engine) {
 
 	// We test each of the five scalar prototypes in subtests.
 	for _, testProto := range tests {
-		np := engine.PrototypeByName(testProto.name)
 
-		// For each prototype, we try assigning all scalar values.
-		for _, testAssign := range tests {
+		// For both the regular node and its repr version,
+		// getting the right value for the kind should work.
+		for _, useRepr := range []bool{false, true} {
 
-			// We try both AssignKind and AssignNode.
-			for _, useAssignNode := range []bool{false, true} {
-				testName := fmt.Sprintf("%s-Assign%s", testProto.name, testAssign.name)
-				if useAssignNode {
-					testName = fmt.Sprintf("%s-AssignNode-%s", testProto.name, testAssign.name)
-				}
-				t.Run(testName, func(t *testing.T) {
-					nb := np.NewBuilder()
+			protoName := testProto.name
+			if useRepr {
+				protoName += ".Repr"
+			}
+			np := engine.PrototypeByName(protoName)
 
-					// Assigning null, a list, or a map, should always fail.
-					err := nb.AssignNull()
-					qt.Assert(t, err, qt.Not(qt.IsNil))
-					_, err = nb.BeginMap(-1)
-					qt.Assert(t, err, qt.Not(qt.IsNil))
-					_, err = nb.BeginList(-1)
-					qt.Assert(t, err, qt.Not(qt.IsNil))
+			// For each prototype, we try assigning all scalar values.
+			for _, testAssign := range tests {
 
-					// Assigning the right value for the kind should succeed.
+				// We try both AssignKind and AssignNode.
+				for _, useAssignNode := range []bool{false, true} {
+					testName := fmt.Sprintf("%s-Assign%s", protoName, testAssign.name)
 					if useAssignNode {
-						np2 := engine.PrototypeByName(testAssign.name)
-						nb2 := np2.NewBuilder()
-						qt.Assert(t, assignValue(nb2, testAssign.value), qt.IsNil)
-						n2 := nb2.Build()
-
-						err = nb.AssignNode(n2)
-					} else {
-						err = assignValue(nb, testAssign.value)
+						testName = fmt.Sprintf("%s-AssignNode-%s", protoName, testAssign.name)
 					}
-					if testAssign.kind == testProto.kind {
-						qt.Assert(t, err, qt.IsNil)
-					} else {
+					t.Run(testName, func(t *testing.T) {
+						nb := np.NewBuilder()
+
+						// Assigning null, a list, or a map, should always fail.
+						err := nb.AssignNull()
+						qt.Assert(t, err, qt.Not(qt.IsNil))
+						_, err = nb.BeginMap(-1)
+						qt.Assert(t, err, qt.Not(qt.IsNil))
+						_, err = nb.BeginList(-1)
 						qt.Assert(t, err, qt.Not(qt.IsNil))
 
-						// Assign something anyway, just so we can Build later.
-						err := assignValue(nb, testProto.value)
-						qt.Assert(t, err, qt.IsNil)
-					}
+						// Assigning the right value for the kind should succeed.
+						if useAssignNode {
+							np2 := engine.PrototypeByName(testAssign.name)
+							nb2 := np2.NewBuilder()
+							qt.Assert(t, assignValue(nb2, testAssign.value), qt.IsNil)
+							n2 := nb2.Build()
 
-					n := nb.Build()
+							err = nb.AssignNode(n2)
+						} else {
+							err = assignValue(nb, testAssign.value)
+						}
+						if testAssign.kind == testProto.kind {
+							qt.Assert(t, err, qt.IsNil)
+						} else {
+							qt.Assert(t, err, qt.Not(qt.IsNil))
 
-					// For both the regular node and its repr version,
-					// getting the right value for the kind should work.
-					for _, n := range []ipld.Node{
-						n,
-						n.(schema.TypedNode).Representation(),
-					} {
+							// Assign something anyway, just so we can Build later.
+							err := assignValue(nb, testProto.value)
+							qt.Assert(t, err, qt.IsNil)
+						}
+
+						n := nb.Build()
+
 						var gotValue interface{}
 						err = nil
 						switch testAssign.kind {
@@ -138,8 +141,8 @@ func SchemaTestScalars(t *testing.T, engine Engine) {
 						qt.Assert(t, n.Length(), qt.Equals, int64(-1))
 						qt.Assert(t, n.IsAbsent(), qt.IsFalse)
 						qt.Assert(t, n.IsNull(), qt.IsFalse)
-					}
-				})
+					})
+				}
 			}
 		}
 	}

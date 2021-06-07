@@ -8,6 +8,7 @@ import (
 	"github.com/ipld/go-ipld-prime"
 	"github.com/ipld/go-ipld-prime/fluent"
 	"github.com/ipld/go-ipld-prime/must"
+	basicnode "github.com/ipld/go-ipld-prime/node/basic"
 	"github.com/ipld/go-ipld-prime/schema"
 )
 
@@ -101,16 +102,32 @@ func SchemaTestStructNesting(t *testing.T, engine Engine) {
 		t.Run("typed-read", func(t *testing.T) {
 			Require(t, n.Kind(), ShouldEqual, ipld.Kind_Map)
 			Wish(t, n.Length(), ShouldEqual, int64(1))
+
 			n2 := must.Node(n.LookupByString("x"))
 			Require(t, n2.Kind(), ShouldEqual, ipld.Kind_Map)
+
+			n2Seg := must.Node(n.LookupBySegment(ipld.PathSegmentOfString("x")))
+			Wish(t, ipld.DeepEqual(n2, n2Seg), ShouldEqual, true)
+
+			n2Node := must.Node(n.LookupByNode(basicnode.NewString("x")))
+			Wish(t, ipld.DeepEqual(n2, n2Node), ShouldEqual, true)
+
 			Wish(t, must.String(must.Node(n2.LookupByString("s"))), ShouldEqual, "woo")
 		})
 		t.Run("repr-read", func(t *testing.T) {
 			nr := n.Representation()
 			Require(t, nr.Kind(), ShouldEqual, ipld.Kind_Map)
 			Wish(t, nr.Length(), ShouldEqual, int64(1))
+
 			n2 := must.Node(nr.LookupByString("r"))
 			Require(t, n2.Kind(), ShouldEqual, ipld.Kind_Map)
+
+			n2Seg := must.Node(nr.LookupBySegment(ipld.PathSegmentOfString("r")))
+			Wish(t, ipld.DeepEqual(n2, n2Seg), ShouldEqual, true)
+
+			n2Node := must.Node(nr.LookupByNode(basicnode.NewString("r")))
+			Wish(t, ipld.DeepEqual(n2, n2Node), ShouldEqual, true)
+
 			Wish(t, must.String(must.Node(n2.LookupByString("q"))), ShouldEqual, "woo")
 		})
 	})

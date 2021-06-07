@@ -175,20 +175,35 @@ func prototype(goType reflect.Type, schemaType schema.Type) ipld.NodePrototype {
 	return &_prototype{schemaType: schemaType, goType: goType}
 }
 
+// Assert that we implement all the interfaces as expected.
+// Grouped by the interfaces to implement, roughly.
 var (
 	_ ipld.NodePrototype = (*_prototype)(nil)
+	_ TypedPrototype     = (*_prototype)(nil)
+	_ ipld.NodePrototype = (*_prototypeRepr)(nil)
 
 	_ ipld.Node        = (*_node)(nil)
 	_ schema.TypedNode = (*_node)(nil)
+	_ ipld.Node        = (*_nodeRepr)(nil)
 
 	_ ipld.NodeBuilder   = (*_builder)(nil)
 	_ ipld.NodeAssembler = (*_assembler)(nil)
+	_ ipld.NodeBuilder   = (*_builderRepr)(nil)
+	_ ipld.NodeAssembler = (*_assemblerRepr)(nil)
 
 	_ ipld.MapAssembler = (*_structAssembler)(nil)
 	_ ipld.MapIterator  = (*_structIterator)(nil)
+	_ ipld.MapAssembler = (*_structAssemblerRepr)(nil)
+	_ ipld.MapIterator  = (*_structIteratorRepr)(nil)
 
 	_ ipld.ListAssembler = (*_listAssembler)(nil)
 	_ ipld.ListIterator  = (*_listIterator)(nil)
+	_ ipld.ListAssembler = (*_listAssemblerRepr)(nil)
+
+	_ ipld.MapAssembler = (*_unionAssembler)(nil)
+	_ ipld.MapIterator  = (*_unionIterator)(nil)
+	_ ipld.MapAssembler = (*_unionAssemblerRepr)(nil)
+	_ ipld.MapIterator  = (*_unionIteratorRepr)(nil)
 )
 
 type _prototype struct {
@@ -209,12 +224,6 @@ type TypedPrototype interface {
 	ipld.NodePrototype
 
 	Representation() ipld.NodePrototype
-}
-
-type TypedAssembler interface {
-	ipld.NodeAssembler
-
-	Representation() ipld.NodeAssembler
 }
 
 func (w *_prototype) Representation() ipld.NodePrototype {
@@ -352,10 +361,6 @@ func (w *_node) LookupByString(key string) (ipld.Node, error) {
 	}
 }
 
-func (w *_node) LookupByNode(key ipld.Node) (ipld.Node, error) {
-	panic("TODO: LookupByNode")
-}
-
 func (w *_node) LookupByIndex(idx int64) (ipld.Node, error) {
 	switch typ := w.schemaType.(type) {
 	case *schema.TypeList:
@@ -379,7 +384,43 @@ func (w *_node) LookupByIndex(idx int64) (ipld.Node, error) {
 }
 
 func (w *_node) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
-	panic("TODO: LookupBySegment")
+	switch w.Kind() {
+	case ipld.Kind_Map:
+		return w.LookupByString(seg.String())
+	case ipld.Kind_List:
+		idx, err := seg.Index()
+		if err != nil {
+			return nil, err
+		}
+		return w.LookupByIndex(idx)
+	}
+	return nil, ipld.ErrWrongKind{
+		TypeName:   w.schemaType.Name().String(),
+		MethodName: "LookupBySegment",
+		// TODO
+	}
+}
+
+func (w *_node) LookupByNode(key ipld.Node) (ipld.Node, error) {
+	switch w.Kind() {
+	case ipld.Kind_Map:
+		s, err := key.AsString()
+		if err != nil {
+			return nil, err
+		}
+		return w.LookupByString(s)
+	case ipld.Kind_List:
+		i, err := key.AsInt()
+		if err != nil {
+			return nil, err
+		}
+		return w.LookupByIndex(i)
+	}
+	return nil, ipld.ErrWrongKind{
+		TypeName:   w.schemaType.Name().String(),
+		MethodName: "LookupByNode",
+		// TODO
+	}
 }
 
 func (w *_node) MapIterator() ipld.MapIterator {
