@@ -8,6 +8,7 @@ import (
 	"github.com/ipld/go-ipld-prime"
 	"github.com/ipld/go-ipld-prime/fluent"
 	"github.com/ipld/go-ipld-prime/must"
+	basicnode "github.com/ipld/go-ipld-prime/node/basic"
 	"github.com/ipld/go-ipld-prime/schema"
 )
 
@@ -33,8 +34,13 @@ func SchemaTestListsContainingMaybe(t *testing.T, engine Engine) {
 			t.Run("typed-read", func(t *testing.T) {
 				Require(t, n.Kind(), ShouldEqual, ipld.Kind_List)
 				Wish(t, n.Length(), ShouldEqual, int64(2))
+
 				Wish(t, must.String(must.Node(n.LookupByIndex(0))), ShouldEqual, "1")
 				Wish(t, must.String(must.Node(n.LookupByIndex(1))), ShouldEqual, "2")
+
+				Wish(t, must.String(must.Node(n.LookupBySegment(ipld.PathSegmentOfInt(0)))), ShouldEqual, "1")
+				Wish(t, must.String(must.Node(n.LookupByNode(basicnode.NewInt(0)))), ShouldEqual, "1")
+
 				_, err := n.LookupByIndex(3)
 				Wish(t, err, ShouldBeSameTypeAs, ipld.ErrNotExists{})
 			})
@@ -42,8 +48,13 @@ func SchemaTestListsContainingMaybe(t *testing.T, engine Engine) {
 				nr := n.Representation()
 				Require(t, nr.Kind(), ShouldEqual, ipld.Kind_List)
 				Wish(t, nr.Length(), ShouldEqual, int64(2))
+
 				Wish(t, must.String(must.Node(nr.LookupByIndex(0))), ShouldEqual, "1")
 				Wish(t, must.String(must.Node(nr.LookupByIndex(1))), ShouldEqual, "2")
+
+				Wish(t, must.String(must.Node(n.LookupBySegment(ipld.PathSegmentOfInt(0)))), ShouldEqual, "1")
+				Wish(t, must.String(must.Node(n.LookupByNode(basicnode.NewInt(0)))), ShouldEqual, "1")
+
 				_, err := n.LookupByIndex(3)
 				Wish(t, err, ShouldBeSameTypeAs, ipld.ErrNotExists{})
 			})

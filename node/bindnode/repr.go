@@ -150,15 +150,6 @@ func (w *_nodeRepr) LookupByString(key string) (ipld.Node, error) {
 	}
 }
 
-func (w *_nodeRepr) LookupByNode(key ipld.Node) (ipld.Node, error) {
-	return nil, ipld.ErrWrongKind{
-		TypeName:        w.schemaType.Name().String(),
-		MethodName:      "LookupByNode",
-		AppropriateKind: ipld.KindSet_JustList,
-		// TODO
-	}
-}
-
 func (w *_nodeRepr) LookupByIndex(idx int64) (ipld.Node, error) {
 	switch stg := reprStrategy(w.schemaType).(type) {
 	case schema.StructRepresentation_Tuple:
@@ -181,9 +172,41 @@ func (w *_nodeRepr) LookupByIndex(idx int64) (ipld.Node, error) {
 }
 
 func (w *_nodeRepr) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
+	switch w.Kind() {
+	case ipld.Kind_Map:
+		return w.LookupByString(seg.String())
+	case ipld.Kind_List:
+		idx, err := seg.Index()
+		if err != nil {
+			return nil, err
+		}
+		return w.LookupByIndex(idx)
+	}
 	return nil, ipld.ErrWrongKind{
 		TypeName:   w.schemaType.Name().String(),
 		MethodName: "LookupBySegment",
+		// TODO
+	}
+}
+
+func (w *_nodeRepr) LookupByNode(key ipld.Node) (ipld.Node, error) {
+	switch w.Kind() {
+	case ipld.Kind_Map:
+		s, err := key.AsString()
+		if err != nil {
+			return nil, err
+		}
+		return w.LookupByString(s)
+	case ipld.Kind_List:
+		i, err := key.AsInt()
+		if err != nil {
+			return nil, err
+		}
+		return w.LookupByIndex(i)
+	}
+	return nil, ipld.ErrWrongKind{
+		TypeName:   w.schemaType.Name().String(),
+		MethodName: "LookupByNode",
 		// TODO
 	}
 }
@@ -397,6 +420,10 @@ type _assemblerRepr struct {
 	nullable bool
 }
 
+func assemblerRepr(am ipld.NodeAssembler) *_assemblerRepr {
+	return (*_assemblerRepr)(am.(*_assembler))
+}
+
 func (w *_assemblerRepr) asKinded(stg schema.UnionRepresentation_Kinded, kind ipld.Kind) *_assemblerRepr {
 	name := stg.GetMember(kind)
 	members := w.schemaType.(*schema.TypeUnion).Members()
@@ -473,16 +500,31 @@ func (w *_assemblerRepr) AssignNull() error {
 	}
 }
 
-func (w *_assemblerRepr) AssignBool(bool) error {
-	panic("TODO: AssignBool")
+func (w *_assemblerRepr) AssignBool(b bool) error {
+	switch stg := reprStrategy(w.schemaType).(type) {
+	case nil:
+		return (*_assembler)(w).AssignBool(b)
+	default:
+		panic(fmt.Sprintf("TODO: %T", stg))
+	}
 }
 
 func (w *_assemblerRepr) AssignInt(i int64) error {
-	panic("TODO")
+	switch stg := reprStrategy(w.schemaType).(type) {
+	case nil:
+		return (*_assembler)(w).AssignInt(i)
+	default:
+		panic(fmt.Sprintf("TODO: %T", stg))
+	}
 }
 
-func (w *_assemblerRepr) AssignFloat(float64) error {
-	panic("TODO: AssignFloat")
+func (w *_assemblerRepr) AssignFloat(f float64) error {
+	switch stg := reprStrategy(w.schemaType).(type) {
+	case nil:
+		return (*_assembler)(w).AssignFloat(f)
+	default:
+		panic(fmt.Sprintf("TODO: %T", stg))
+	}
 }
 
 func (w *_assemblerRepr) AssignString(s string) error {
@@ -502,7 +544,7 @@ func (w *_assemblerRepr) AssignString(s string) error {
 			if err != nil {
 				return err
 			}
-			entryAsm = entryAsm.(TypedAssembler).Representation()
+			entryAsm = assemblerRepr(entryAsm)
 			if err := entryAsm.AssignString(parts[i]); err != nil {
 				return err
 			}
@@ -558,15 +600,30 @@ func (w *_assemblerRepr) AssignString(s string) error {
 }
 
 func (w *_assemblerRepr) AssignBytes(p []byte) error {
-	panic("TODO")
+	switch stg := reprStrategy(w.schemaType).(type) {
+	case nil:
+		return (*_assembler)(w).AssignBytes(p)
+	default:
+		panic(fmt.Sprintf("TODO: %T", stg))
+	}
 }
 
 func (w *_assemblerRepr) AssignLink(link ipld.Link) error {
-	panic("TODO")
+	switch stg := reprStrategy(w.schemaType).(type) {
+	case nil:
+		return (*_assembler)(w).AssignLink(link)
+	default:
+		panic(fmt.Sprintf("TODO: %T", stg))
+	}
 }
 
 func (w *_assemblerRepr) AssignNode(node ipld.Node) error {
-	panic("TODO")
+	switch stg := reprStrategy(w.schemaType).(type) {
+	case nil:
+		return (*_assembler)(w).AssignNode(node)
+	default:
+		panic(fmt.Sprintf("TODO: %T", stg))
+	}
 }
 
 func (w *_assemblerRepr) Prototype() ipld.NodePrototype {
@@ -592,7 +649,7 @@ func (w *_structAssemblerRepr) AssembleValue() ipld.NodeAssembler {
 		w.curKey.val.SetString(revKey)
 
 		valAsm := (*_structAssembler)(w).AssembleValue()
-		valAsm = valAsm.(TypedAssembler).Representation()
+		valAsm = assemblerRepr(valAsm)
 		return valAsm
 	default:
 		panic(fmt.Sprintf("TODO: %T", stg))
@@ -693,7 +750,7 @@ func (w *_listStructAssemblerRepr) AssembleValue() ipld.NodeAssembler {
 		if err != nil {
 			panic(err) // TODO: probably return an assembler that always errors?
 		}
-		entryAsm = entryAsm.(TypedAssembler).Representation()
+		entryAsm = assemblerRepr(entryAsm)
 		return entryAsm
 	default:
 		panic(fmt.Sprintf("TODO: %T", stg))
@@ -748,7 +805,7 @@ func (w *_unionAssemblerRepr) AssembleValue() ipld.NodeAssembler {
 		w.curKey.val.SetString(revKey)
 
 		valAsm := (*_unionAssembler)(w).AssembleValue()
-		valAsm = valAsm.(TypedAssembler).Representation()
+		valAsm = assemblerRepr(valAsm)
 		return valAsm
 	default:
 		panic(fmt.Sprintf("TODO: %T", stg))
