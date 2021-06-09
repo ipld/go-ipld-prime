@@ -8,10 +8,10 @@ import (
 	"github.com/ipld/go-ipld-prime/fluent/qp"
 	"github.com/ipld/go-ipld-prime/node/bindnode"
 	"github.com/ipld/go-ipld-prime/schema"
-	"github.com/polydawn/refmt/json"
+	refmtjson "github.com/polydawn/refmt/json"
 )
 
-func ExamplePrototypeOnlySchema() {
+func ExampleWrap_withSchema() {
 	ts := schema.TypeSystem{}
 	ts.Init()
 	ts.Accumulate(schema.SpawnString("String"))
@@ -27,9 +27,44 @@ func ExamplePrototypeOnlySchema() {
 	ts.Accumulate(schema.SpawnList("List_String", "String", false))
 
 	schemaType := ts.TypeByName("Person")
-	proto := bindnode.PrototypeOnlySchema(schemaType)
 
-	n, err := qp.BuildMap(proto, -1, func(ma ipld.MapAssembler) {
+	type Person struct {
+		Name    string
+		Age     *int64 // optional
+		Friends []string
+	}
+	person := &Person{
+		Name:    "Michael",
+		Friends: []string{"Sarah", "Alex"},
+	}
+	node := bindnode.Wrap(person, schemaType)
+
+	nodeRepr := node.Representation()
+	dagjson.Marshal(nodeRepr, refmtjson.NewEncoder(os.Stdout, refmtjson.EncodeOptions{}), true)
+
+	// Output:
+	// {"Name":"Michael","Friends":["Sarah","Alex"]}
+}
+
+func ExamplePrototype_onlySchema() {
+	ts := schema.TypeSystem{}
+	ts.Init()
+	ts.Accumulate(schema.SpawnString("String"))
+	ts.Accumulate(schema.SpawnInt("Int"))
+	ts.Accumulate(schema.SpawnStruct("Person",
+		[]schema.StructField{
+			schema.SpawnStructField("Name", "String", false, false),
+			schema.SpawnStructField("Age", "Int", true, false),
+			schema.SpawnStructField("Friends", "List_String", false, false),
+		},
+		schema.SpawnStructRepresentationMap(nil),
+	))
+	ts.Accumulate(schema.SpawnList("List_String", "String", false))
+
+	schemaType := ts.TypeByName("Person")
+	proto := bindnode.Prototype(nil, schemaType)
+
+	node, err := qp.BuildMap(proto, -1, func(ma ipld.MapAssembler) {
 		qp.MapEntry(ma, "Name", qp.String("Michael"))
 		qp.MapEntry(ma, "Friends", qp.List(-1, func(la ipld.ListAssembler) {
 			qp.ListEntry(la, qp.String("Sarah"))
@@ -39,8 +74,9 @@ func ExamplePrototypeOnlySchema() {
 	if err != nil {
 		panic(err)
 	}
-	nr := n.(schema.TypedNode).Representation()
-	dagjson.Marshal(nr, json.NewEncoder(os.Stdout, json.EncodeOptions{}), true)
+
+	nodeRepr := node.(schema.TypedNode).Representation()
+	dagjson.Marshal(nodeRepr, refmtjson.NewEncoder(os.Stdout, refmtjson.EncodeOptions{}), true)
 
 	// Output:
 	// {"Name":"Michael","Friends":["Sarah","Alex"]}

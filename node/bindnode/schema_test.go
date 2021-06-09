@@ -10,7 +10,7 @@ import (
 	"github.com/ipld/go-ipld-prime/schema"
 )
 
-// For now, we simply run all schema tests with PrototypeOnlySchema.
+// For now, we simply run all schema tests with Prototype.
 // In the future, forSchemaTest might return multiple engines.
 
 func forSchemaTest(name string) []tests.EngineSubtest {
@@ -41,12 +41,8 @@ func (e *bindEngine) PrototypeByName(name string) ipld.NodePrototype {
 		name = strings.TrimSuffix(name, ".Repr")
 	}
 	schemaType := e.ts.TypeByName(name)
-	if schemaType == nil {
-		return nil
-	}
-	proto := bindnode.PrototypeOnlySchema(schemaType)
 	if wantRepr {
-		proto = proto.(bindnode.TypedPrototype).Representation()
+		return bindnode.Prototype(nil, schemaType).Representation()
 	}
-	return proto
+	return bindnode.Prototype(nil, schemaType)
 }
