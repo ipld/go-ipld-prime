@@ -71,3 +71,16 @@ type TypedNode interface {
 type TypedLinkNode interface {
 	LinkTargetNodePrototype() ipld.NodePrototype
 }
+
+// TypedPrototype is a superset of the ipld.Nodeprototype interface, and has
+// additional behaviors, much like TypedNode for ipld.Node.
+type TypedPrototype interface {
+	ipld.NodePrototype
+
+	// Type returns a reference to the reified schema.Type value.
+	Type() Type
+
+	// Representation returns an ipld.NodePrototype for the representation
+	// form of the prototype.
+	Representation() ipld.NodePrototype
+}
