@@ -8,8 +8,8 @@ import (
 	"github.com/ipld/go-ipld-prime/schema"
 )
 
-// Prototype implements a TypedPrototype given a Go pointer type and an IPLD
-// schema type. Note that the result is also an ipld.NodePrototype.
+// Prototype implements a schema.TypedPrototype given a Go pointer type and an
+// IPLD schema type. Note that the result is also an ipld.NodePrototype.
 //
 // If both the Go type and schema type are supplied, it is assumed that they are
 // compatible with one another.
@@ -23,7 +23,7 @@ import (
 // from it, so its underlying value will typically be nil. For example:
 //
 //     proto := bindnode.Prototype((*goType)(nil), schemaType)
-func Prototype(ptrType interface{}, schemaType schema.Type) TypedPrototype {
+func Prototype(ptrType interface{}, schemaType schema.Type) schema.TypedPrototype {
 	if ptrType == nil && schemaType == nil {
 		panic("either ptrType or schemaType must not be nil")
 	}

@@ -12,9 +12,9 @@ import (
 // Assert that we implement all the interfaces as expected.
 // Grouped by the interfaces to implement, roughly.
 var (
-	_ ipld.NodePrototype = (*_prototype)(nil)
-	_ TypedPrototype     = (*_prototype)(nil)
-	_ ipld.NodePrototype = (*_prototypeRepr)(nil)
+	_ ipld.NodePrototype    = (*_prototype)(nil)
+	_ schema.TypedPrototype = (*_prototype)(nil)
+	_ ipld.NodePrototype    = (*_prototypeRepr)(nil)
 
 	_ ipld.Node        = (*_node)(nil)
 	_ schema.TypedNode = (*_node)(nil)
@@ -52,12 +52,8 @@ func (w *_prototype) NewBuilder() ipld.NodeBuilder {
 	}}
 }
 
-// TODO: consider these Typed interfaces for the schema package
-
-type TypedPrototype interface {
-	ipld.NodePrototype
-
-	Representation() ipld.NodePrototype
+func (w *_prototype) Type() schema.Type {
+	return w.schemaType
 }
 
 func (w *_prototype) Representation() ipld.NodePrototype {
