@@ -67,7 +67,7 @@ var Absent Node = absentNode{}
 type absentNode struct{}
 
 func (absentNode) Kind() Kind {
-	return Kind_Null
+	return Kind_Null // It's questionable if this is a good idea.  Perhaps it should be Kind_Invalid.  See https://github.com/ipld/go-ipld-prime/issues/191 .
 }
 func (absentNode) LookupByString(key string) (Node, error) {
 	return nil, ErrWrongKind{TypeName: "absent", MethodName: "LookupByString", AppropriateKind: KindSet_JustMap, ActualKind: Kind_Null}

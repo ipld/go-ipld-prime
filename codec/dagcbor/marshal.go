@@ -22,8 +22,11 @@ func Marshal(n ipld.Node, sink shared.TokenSink, allowLinks bool) error {
 func marshal(n ipld.Node, tk *tok.Token, sink shared.TokenSink, allowLinks bool) error {
 	switch n.Kind() {
 	case ipld.Kind_Invalid:
-		return fmt.Errorf("cannot traverse a node that is absent")
+		return fmt.Errorf("invalid node encountered")
 	case ipld.Kind_Null:
+		if n.IsAbsent() {
+			return fmt.Errorf("cannot encode a node that is absent")
+		}
 		tk.Type = tok.TNull
 		_, err := sink.Step(tk)
 		return err

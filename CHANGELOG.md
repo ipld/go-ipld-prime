@@ -37,7 +37,10 @@ Unreleased on master
 Changes here are on the master branch, but not in any tagged release yet.
 When a release tag is made, this block of bullet points will just slide down to the [Released Changes](#released-changes) section.
 
-- _nothing yet :)_
+- Changed: encoding functions for codecs in this repo (dag-cbor, dag-json, cbor, json) will now **error** if they encounter an `ipld.Absent` node (or more specifically, if `IsAbsent() == true`).
+  [[#196](https://github.com/ipld/go-ipld-prime/pull/196)]
+	- Previously, these codecs would quietly emit a serial "null" token in this scenario -- which was effectively implicitly coercing a value into null.  Implicit coercion creates bugs and is bad, so we will not be doing it anymore.
+	- This situation is only reachable when working with schema-typed data (since otherwise `Absent` values aren't used).  In that situation, handing that typed value to an encode function without having called `.Representation()` first is also typically a logical error, so, returning an explicit error now is also probably the right thing to do.
 
 
 
