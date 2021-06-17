@@ -136,10 +136,8 @@ func TestFocusWithLinkLoading(t *testing.T) {
 		lsys.StorageReadOpener = (&store).OpenRead
 		err := traversal.Progress{
 			Cfg: &traversal.Config{
-				LinkSystem: lsys,
-				LinkTargetNodePrototypeChooser: func(_ ipld.Link, _ ipld.LinkContext) (ipld.NodePrototype, error) {
-					return basicnode.Prototype__Any{}, nil
-				},
+				LinkSystem:                     lsys,
+				LinkTargetNodePrototypeChooser: basicnode.Chooser,
 			},
 		}.Focus(rootNode, ipld.ParsePath("linkedMap/nested/nonlink"), func(prog traversal.Progress, n ipld.Node) error {
 			Wish(t, n, ShouldEqual, basicnode.NewString("zoo"))
@@ -168,10 +166,8 @@ func TestGetWithLinkLoading(t *testing.T) {
 		lsys.StorageReadOpener = (&store).OpenRead
 		n, err := traversal.Progress{
 			Cfg: &traversal.Config{
-				LinkSystem: lsys,
-				LinkTargetNodePrototypeChooser: func(_ ipld.Link, _ ipld.LinkContext) (ipld.NodePrototype, error) {
-					return basicnode.Prototype__Any{}, nil
-				},
+				LinkSystem:                     lsys,
+				LinkTargetNodePrototypeChooser: basicnode.Chooser,
 			},
 		}.Get(rootNode, ipld.ParsePath("linkedMap/nested/nonlink"))
 		Wish(t, err, ShouldEqual, nil)
@@ -312,10 +308,8 @@ func TestFocusedTransformWithLinks(t *testing.T) {
 	lsys.StorageReadOpener = (&store).OpenRead
 	lsys.StorageWriteOpener = (&store2).OpenWrite
 	cfg := traversal.Config{
-		LinkSystem: lsys,
-		LinkTargetNodePrototypeChooser: func(_ ipld.Link, _ ipld.LinkContext) (ipld.NodePrototype, error) {
-			return basicnode.Prototype.Any, nil
-		},
+		LinkSystem:                     lsys,
+		LinkTargetNodePrototypeChooser: basicnode.Chooser,
 	}
 	t.Run("UpdateMapBeyondLink", func(t *testing.T) {
 		n, err := traversal.Progress{

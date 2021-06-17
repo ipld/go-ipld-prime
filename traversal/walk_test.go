@@ -122,10 +122,8 @@ func TestWalkMatching(t *testing.T) {
 		lsys.StorageReadOpener = (&store).OpenRead
 		err = traversal.Progress{
 			Cfg: &traversal.Config{
-				LinkSystem: lsys,
-				LinkTargetNodePrototypeChooser: func(_ ipld.Link, _ ipld.LinkContext) (ipld.NodePrototype, error) {
-					return basicnode.Prototype__Any{}, nil
-				},
+				LinkSystem:                     lsys,
+				LinkTargetNodePrototypeChooser: basicnode.Chooser,
 			},
 		}.WalkMatching(middleMapNode, s, func(prog traversal.Progress, n ipld.Node) error {
 			switch order {
@@ -168,10 +166,8 @@ func TestWalkMatching(t *testing.T) {
 		lsys.StorageReadOpener = (&store).OpenRead
 		err = traversal.Progress{
 			Cfg: &traversal.Config{
-				LinkSystem: lsys,
-				LinkTargetNodePrototypeChooser: func(_ ipld.Link, _ ipld.LinkContext) (ipld.NodePrototype, error) {
-					return basicnode.Prototype__Any{}, nil
-				},
+				LinkSystem:                     lsys,
+				LinkTargetNodePrototypeChooser: basicnode.Chooser,
 			},
 		}.WalkMatching(middleListNode, s, func(prog traversal.Progress, n ipld.Node) error {
 			switch order {
@@ -213,10 +209,8 @@ func TestWalkMatching(t *testing.T) {
 		lsys.StorageReadOpener = (&store).OpenRead
 		err = traversal.Progress{
 			Cfg: &traversal.Config{
-				LinkSystem: lsys,
-				LinkTargetNodePrototypeChooser: func(_ ipld.Link, _ ipld.LinkContext) (ipld.NodePrototype, error) {
-					return basicnode.Prototype__Any{}, nil
-				},
+				LinkSystem:                     lsys,
+				LinkTargetNodePrototypeChooser: basicnode.Chooser,
 			},
 		}.WalkMatching(rootNode, s, func(prog traversal.Progress, n ipld.Node) error {
 			switch order {
