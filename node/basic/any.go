@@ -11,6 +11,20 @@ var (
 	//_ ipld.NodeAssembler = &anyAssembler{}
 )
 
+// Note that we don't use a "var _" declaration to assert that Chooser
+// implements traversal.LinkTargetNodePrototypeChooser, to keep basicnode's
+// dependencies fairly light.
+
+// Chooser implements traversal.LinkTargetNodePrototypeChooser.
+//
+// It can be used directly when loading links into the "any" prototype,
+// or with another chooser layer on top, such as:
+//
+//    prototypeChooser := dagpb.AddSupportToChooser(basicnode.Chooser)
+func Chooser(_ ipld.Link, _ ipld.LinkContext) (ipld.NodePrototype, error) {
+	return Prototype__Any{}, nil
+}
+
 // anyNode is a union meant for alloc amortization; see anyAssembler.
 // Note that anyBuilder doesn't use anyNode, because it's not aiming to amortize anything.
 //
