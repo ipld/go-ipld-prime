@@ -1,4 +1,16 @@
-// qp is similar to fluent/quip, but with a bit more magic.
+// qp helps to quickly build IPLD nodes.
+//
+// It contains top-level Build funcs, such as BuildMap and BuildList, which
+// return the final node as well as an error.
+//
+// Underneath, one can use a number of Assemble functions to construct basic
+// nodes, such as String or Int.
+//
+// Finally, functions like MapEntry and ListEntry allow inserting into maps and
+// lists.
+//
+// These all use the same IPLD interfaces such as NodePrototype and
+// NodeAssembler, but with some magic to reduce verbosity.
 package qp
 
 import (
