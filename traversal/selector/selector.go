@@ -6,13 +6,27 @@ import (
 	ipld "github.com/ipld/go-ipld-prime"
 )
 
-// Selector is the programmatic representation of an IPLD Selector Node
-// and can be applied to traverse a given IPLD DAG
+// Selector is a "compiled" and executable IPLD Selector.
+// It can be put to work with functions like traversal.Walk,
+// which will use the Selector's guidance to decide how to traverse an IPLD data graph.
+//
+// A Selector is created by parsing an IPLD Data Model document that declares a Selector
+// (this is accomplished with functions like CompileSelector).
+// Alternatively, there is a builder subpackage,
+// which is useful if you would rather create the Selector declaration programmatically in golang.
+//
+// There is no way to go backwards from this "compiled" Selector type into the declarative IPLD data model information that produced it.
+// That declaration information is discarded after compilation in order to limit the amount of memory held.
+// Therefore, if you're building APIs about Selector composition, keep in mind that
+// you'll probably want to approach this be composing the Data Model declaration documents,
+// not be composing this type, which is only for the "compiled" result.
 type Selector interface {
 	Interests() []ipld.PathSegment                // returns the segments we're likely interested in **or nil** if we're a high-cardinality or expression based matcher and need all segments proposed to us.
 	Explore(ipld.Node, ipld.PathSegment) Selector // explore one step -- iteration comes from outside (either whole node, or by following suggestions of Interests).  returns nil if no interest.  you have to traverse to the next node yourself (the selector doesn't do it for you because you might be considering multiple selection reasons at the same time).
 	Decide(ipld.Node) bool
 }
+
+// REVIEW: do ParsedParent and ParseContext need to be exported?  They're mostly used during the compilation process.
 
 // ParsedParent is created whenever you are parsing a selector node that may have
 // child selectors nodes that need to know it
@@ -25,9 +39,22 @@ type ParseContext struct {
 	parentStack []ParsedParent
 }
 
-// ParseSelector creates a Selector that can be traversed from an IPLD Selector node
-func ParseSelector(n ipld.Node) (Selector, error) {
-	return ParseContext{}.ParseSelector(n)
+// CompileSelector accepts an ipld.Node which should contain data that declares a Selector.
+// The data layout expected for this declaration is documented in https://ipld.io/specs/selectors/ .
+//
+// If the Selector is compiled successfully, it is returned.
+// Otherwise, if the given data Node doesn't match the expected shape for a Selector declaration,
+// or there are any other problems compiling the selector
+// (such as a recursion edge with no enclosing recursion declaration, etc),
+// then nil and an error will be returned.
+func CompileSelector(dmt ipld.Node) (Selector, error) {
+	return ParseContext{}.ParseSelector(dmt)
+}
+
+// ParseSelector is an alias for CompileSelector, and is deprecated.
+// Prefer CompileSelector.
+func ParseSelector(dmt ipld.Node) (Selector, error) {
+	return CompileSelector(dmt)
 }
 
 // ParseSelector creates a Selector from an IPLD Selector Node with the given context
