@@ -3,6 +3,7 @@ package dagjson
 import (
 	"encoding/base64"
 	"fmt"
+	"sort"
 
 	"github.com/polydawn/refmt/shared"
 	"github.com/polydawn/refmt/tok"
@@ -31,21 +32,32 @@ func Marshal(n ipld.Node, sink shared.TokenSink, allowLinks bool) error {
 		if _, err := sink.Step(&tk); err != nil {
 			return err
 		}
-		// Emit map contents (and recurse).
+		// Collect map entries, then sort by key
+		type entry struct {
+			key   string
+			value ipld.Node
+		}
+		entries := []entry{}
 		for itr := n.MapIterator(); !itr.Done(); {
 			k, v, err := itr.Next()
 			if err != nil {
 				return err
 			}
-			tk.Type = tok.TString
-			tk.Str, err = k.AsString()
+			keyStr, err := k.AsString()
 			if err != nil {
 				return err
 			}
+			entries = append(entries, entry{keyStr, v})
+		}
+		sort.Slice(entries, func(i, j int) bool { return entries[i].key < entries[j].key })
+		// Emit map contents (and recurse).
+		for _, e := range entries {
+			tk.Type = tok.TString
+			tk.Str = e.key
 			if _, err := sink.Step(&tk); err != nil {
 				return err
 			}
-			if err := Marshal(v, sink, allowLinks); err != nil {
+			if err := Marshal(e.value, sink, allowLinks); err != nil {
 				return err
 			}
 		}
