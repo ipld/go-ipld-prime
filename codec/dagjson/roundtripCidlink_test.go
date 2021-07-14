@@ -36,7 +36,7 @@ func TestRoundtripCidlink(t *testing.T) {
 
 	n2, err := lsys.Load(ipld.LinkContext{}, lnk, basicnode.Prototype.Any)
 	Require(t, err, ShouldEqual, nil)
-	Wish(t, n2, ShouldEqual, n)
+	Wish(t, n2, ShouldEqual, nSorted)
 }
 
 // Make sure that a map that *almost* looks like a link is handled safely.

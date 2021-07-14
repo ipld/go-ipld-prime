@@ -47,7 +47,7 @@ func SchemaTestStructsContainingMaybe(t *testing.T, engine Engine) {
 		{
 			name:     "vvvvv-AllFieldsSet",
 			typeJson: `{"f1":"a","f2":"b","f3":"c","f4":"d","f5":"e"}`,
-			reprJson: `{"r1":"a","r2":"b","r3":"c","r4":"d","f5":"e"}`,
+			reprJson: `{"f5":"e","r1":"a","r2":"b","r3":"c","r4":"d"}`,
 			typePoints: []testcasePoint{
 				{"", ipld.Kind_Map},
 				{"f1", "a"},
@@ -68,7 +68,7 @@ func SchemaTestStructsContainingMaybe(t *testing.T, engine Engine) {
 		{
 			name:     "vvnnv-Nulls",
 			typeJson: `{"f1":"a","f2":"b","f3":null,"f4":null,"f5":"e"}`,
-			reprJson: `{"r1":"a","r2":"b","r3":null,"r4":null,"f5":"e"}`,
+			reprJson: `{"f5":"e","r1":"a","r2":"b","r3":null,"r4":null}`,
 			typePoints: []testcasePoint{
 				{"", ipld.Kind_Map},
 				{"f1", "a"},
@@ -89,7 +89,7 @@ func SchemaTestStructsContainingMaybe(t *testing.T, engine Engine) {
 		{
 			name:     "vzvzv-AbsentOptionals",
 			typeJson: `{"f1":"a","f3":"c","f5":"e"}`,
-			reprJson: `{"r1":"a","r3":"c","f5":"e"}`,
+			reprJson: `{"f5":"e","r1":"a","r3":"c"}`,
 			typePoints: []testcasePoint{
 				{"", ipld.Kind_Map},
 				{"f1", "a"},

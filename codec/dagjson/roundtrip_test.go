@@ -27,6 +27,22 @@ var n = fluent.MustBuildMap(basicnode.Prototype__Map{}, 4, func(na fluent.MapAss
 		})
 	})
 })
+var nSorted = fluent.MustBuildMap(basicnode.Prototype__Map{}, 4, func(na fluent.MapAssembler) {
+	na.AssembleEntry("list").CreateList(2, func(na fluent.ListAssembler) {
+		na.AssembleValue().AssignString("three")
+		na.AssembleValue().AssignString("four")
+	})
+	na.AssembleEntry("map").CreateMap(2, func(na fluent.MapAssembler) {
+		na.AssembleEntry("one").AssignInt(1)
+		na.AssembleEntry("two").AssignInt(2)
+	})
+	na.AssembleEntry("nested").CreateMap(1, func(na fluent.MapAssembler) {
+		na.AssembleEntry("deeper").CreateList(1, func(na fluent.ListAssembler) {
+			na.AssembleValue().AssignString("things")
+		})
+	})
+	na.AssembleEntry("plain").AssignString("olde string")
+})
 var serial = `{"list":["three","four"],"map":{"one":1,"two":2},"nested":{"deeper":["things"]},"plain":"olde string"}`
 
 func TestRoundtrip(t *testing.T) {
@@ -41,7 +57,7 @@ func TestRoundtrip(t *testing.T) {
 		nb := basicnode.Prototype__Map{}.NewBuilder()
 		err := Decode(nb, buf)
 		Require(t, err, ShouldEqual, nil)
-		Wish(t, nb.Build(), ShouldEqual, n)
+		Wish(t, nb.Build(), ShouldEqual, nSorted)
 	})
 }
 

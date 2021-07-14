@@ -15,6 +15,10 @@ var byteNode = fluent.MustBuildMap(basicnode.Prototype__Map{}, 4, func(na fluent
 	na.AssembleEntry("plain").AssignString("olde string")
 	na.AssembleEntry("bytes").AssignBytes([]byte("deadbeef"))
 })
+var byteNodeSorted = fluent.MustBuildMap(basicnode.Prototype__Map{}, 4, func(na fluent.MapAssembler) {
+	na.AssembleEntry("bytes").AssignBytes([]byte("deadbeef"))
+	na.AssembleEntry("plain").AssignString("olde string")
+})
 var byteSerial = `{"bytes":{"/":{"bytes":"ZGVhZGJlZWY="}},"plain":"olde string"}`
 
 func TestRoundtripBytes(t *testing.T) {
@@ -29,7 +33,7 @@ func TestRoundtripBytes(t *testing.T) {
 		nb := basicnode.Prototype__Map{}.NewBuilder()
 		err := Decode(nb, buf)
 		Require(t, err, ShouldEqual, nil)
-		Wish(t, nb.Build(), ShouldEqual, byteNode)
+		Wish(t, nb.Build(), ShouldEqual, byteNodeSorted)
 	})
 }
 
