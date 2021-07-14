@@ -318,7 +318,7 @@ func TestFocusedTransformWithLinks(t *testing.T) {
 			Wish(t, progress.Path.String(), ShouldEqual, "linkedMap/nested/nonlink")
 			Wish(t, must.String(prev), ShouldEqual, "zoo")
 			Wish(t, progress.LastBlock.Path.String(), ShouldEqual, "linkedMap")
-			Wish(t, progress.LastBlock.Link.String(), ShouldEqual, "baguqeeye2opztzy")
+			Wish(t, progress.LastBlock.Link.String(), ShouldEqual, "baguqeeyezhlahvq")
 			nb := prev.Prototype().NewBuilder()
 			nb.AssignString("new string!")
 			return nb.Build(), nil

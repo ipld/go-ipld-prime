@@ -42,7 +42,7 @@ func ExampleWrap_withSchema() {
 	dagjson.Encode(nodeRepr, os.Stdout)
 
 	// Output:
-	// {"Name":"Michael","Friends":["Sarah","Alex"]}
+	// {"Friends":["Sarah","Alex"],"Name":"Michael"}
 }
 
 func ExamplePrototype_onlySchema() {
@@ -78,5 +78,5 @@ func ExamplePrototype_onlySchema() {
 	dagjson.Encode(nodeRepr, os.Stdout)
 
 	// Output:
-	// {"Name":"Michael","Friends":["Sarah","Alex"]}
+	// {"Friends":["Sarah","Alex"],"Name":"Michael"}
 }
