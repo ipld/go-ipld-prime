@@ -24,10 +24,7 @@ func ExampleCreateDataAndMarshal() {
 	dagjson.Encode(n, os.Stdout)
 
 	// Output:
-	// {
-	//	"hey": "it works!",
-	//	"yes": true
-	// }
+	// {"hey":"it works!","yes":true}
 }
 
 func ExampleUnmarshalData() {
