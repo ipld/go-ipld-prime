@@ -46,8 +46,12 @@ Other IPLD Libraries
 The IPLD specifications are designed to be language-agnostic.
 Many implementations exist in a variety of languages.
 
-For overall behaviors and specifications, refer to the specs repo:
-  https://github.com/ipld/specs/
+For overall behaviors and specifications, refer to the IPLD website, or its source, in IPLD meta repo:
+- https://ipld.io/
+- https://github.com/ipld/ipld/
+You should find specs in the `specs/` dir there,
+human-friendly docs in the `docs/` dir,
+and information about _why_ things are designed the way they are mostly in the `design/` directories.
 
 
 ### distinctions from go-ipld-interface&go-ipld-cbor
