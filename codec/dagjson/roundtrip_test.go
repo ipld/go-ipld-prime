@@ -27,23 +27,7 @@ var n = fluent.MustBuildMap(basicnode.Prototype__Map{}, 4, func(na fluent.MapAss
 		})
 	})
 })
-var serial = `{
-	"plain": "olde string",
-	"map": {
-		"one": 1,
-		"two": 2
-	},
-	"list": [
-		"three",
-		"four"
-	],
-	"nested": {
-		"deeper": [
-			"things"
-		]
-	}
-}
-`
+var serial = `{"plain":"olde string","map":{"one":1,"two":2},"list":["three","four"],"nested":{"deeper":["things"]}}`
 
 func TestRoundtrip(t *testing.T) {
 	t.Run("encoding", func(t *testing.T) {

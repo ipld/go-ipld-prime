@@ -54,7 +54,7 @@ func Encode(n ipld.Node, w io.Writer) error {
 	//  (There's not really any fastpaths of note for json.)
 	// Write another function if you need to tune encoding options about whitespace.
 	return Marshal(n, json.NewEncoder(w, json.EncodeOptions{
-		Line:   []byte{'\n'},
-		Indent: []byte{'\t'},
+		Line:   nil,
+		Indent: nil,
 	}), true)
 }
