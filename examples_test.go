@@ -28,10 +28,7 @@ func Example_createDataAndMarshal() {
 	dagjson.Encode(n, os.Stdout)
 
 	// Output:
-	// {
-	//	"hey": "it works!",
-	//	"yes": true
-	// }
+	// {"hey":"it works!","yes":true}
 }
 
 // Example_unmarshalData shows how you can use a Decoder

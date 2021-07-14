@@ -30,16 +30,5 @@ func Example() {
 	dagjson.Encode(n, os.Stdout)
 
 	// Output:
-	// {
-	// 	"some key": "some value",
-	// 	"another key": "another value",
-	// 	"nested map": {
-	// 		"deeper entries": "deeper values",
-	// 		"more deeper entries": "more deeper values"
-	// 	},
-	// 	"nested list": [
-	// 		1,
-	// 		2
-	// 	]
-	// }
+	// {"some key":"some value","another key":"another value","nested map":{"deeper entries":"deeper values","more deeper entries":"more deeper values"},"nested list":[1,2]}
 }
