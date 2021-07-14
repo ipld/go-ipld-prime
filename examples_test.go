@@ -9,8 +9,12 @@ import (
 	basicnode "github.com/ipld/go-ipld-prime/node/basic"
 )
 
-func ExampleCreateDataAndMarshal() {
-
+// Example_createDataAndMarshal shows how you can feed data into a NodeBuilder,
+// and also how to then hand that to an Encoder.
+//
+// Often you'll encoding implicitly through a LinkSystem.Store call instead,
+// but you can do it directly, too.
+func Example_createDataAndMarshal() {
 	np := basicnode.Prototype.Any // Pick a prototype: this is how we decide what implementation will store the in-memory data.
 	nb := np.NewBuilder()         // Create a builder.
 	ma, _ := nb.BeginMap(2)       // Begin assembling a map.
@@ -30,7 +34,12 @@ func ExampleCreateDataAndMarshal() {
 	// }
 }
 
-func ExampleUnmarshalData() {
+// Example_unmarshalData shows how you can use a Decoder
+// and a NodeBuilder (or NodePrototype) together to do unmarshalling.
+//
+// Often you'll do this implicitly through a LinkSystem.Load call instead,
+// but you can do it directly, too.
+func Example_unmarshalData() {
 	serial := strings.NewReader(`{"hey":"it works!","yes": true}`)
 
 	np := basicnode.Prototype.Any // Pick a stle for the in-memory data.

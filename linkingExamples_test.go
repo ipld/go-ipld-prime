@@ -15,8 +15,8 @@ import (
 
 // storage is a map where we'll store serialized IPLD data.
 //
-// ExampleCreatingLink will put data into this;
-// ExampleLoadingLink will read out from it.
+// ExampleLinkSystem_Store will put data into this;
+// ExampleLinkSystem_Load will read out from it.
 //
 // In a real program, you'll probably make functions to load and store from disk,
 // or some network storage, or... whatever you want, really :)
@@ -25,7 +25,7 @@ var store = storage.Memory{}
 // TODO: These examples are really heavy on CIDs and the multicodec and multihash magic tables.
 // It would be good to have examples that create and use less magical LinkSystem constructions, too.
 
-func ExampleStoringLink() {
+func ExampleLinkSystem_Store() {
 	// Creating a Link is done by choosing a concrete link implementation (typically, CID),
 	//  getting a LinkSystem that knows how to work with that, and then using the LinkSystem methods.
 
@@ -89,19 +89,19 @@ func ExampleStoringLink() {
 	// concrete type: `cidlink.Link`
 }
 
-func ExampleLoadingLink() {
-	// Let's say we want to load this link (it's the same one we just created in the example above).
+func ExampleLinkSystem_Load() {
+	// Let's say we want to load this link (it's the same one we created in ExampleLinkSystem_Store).
 	cid, _ := cid.Decode("bafyrgqhai26anf3i7pips7q22coa4sz2fr4gk4q4sqdtymvvjyginfzaqewveaeqdh524nsktaq43j65v22xxrybrtertmcfxufdam3da3hbk")
 	lnk := cidlink.Link{cid}
 
 	// Let's get a LinkSystem.  We're going to be working with CID links,
 	//  so let's get the default LinkSystem that's ready to work with those.
-	// (This is the same as we did in ExampleStoringLink.)
+	// (This is the same as we did in ExampleLinkSystem_Store.)
 	lsys := cidlink.DefaultLinkSystem()
 
 	// We need somewhere to go looking for any of the data we might want to load!
 	//  We'll use an in-memory store for this.  (It's a package scoped variable.)
-	//   (This particular memory store was filled with the data we'll load earlier, during ExampleStoringLink.)
+	//   (This particular memory store was filled with the data we'll load earlier, during ExampleLinkSystem_Store.)
 	//  You can use any kind of storage system here;
 	//   you just need a function that conforms to the ipld.BlockReadOpener interface.
 	lsys.StorageReadOpener = (&store).OpenRead
@@ -113,7 +113,7 @@ func ExampleLoadingLink() {
 
 	// Before we use the LinkService, NOTE:
 	//  There's a side-effecting import at the top of the file.  It's for the dag-cbor codec.
-	//  See the comments in ExampleStoringLink for more discussion of this and why it's important.
+	//  See the comments in ExampleLinkSystem_Store for more discussion of this and why it's important.
 
 	// Apply the LinkSystem, and ask it to load our link!
 	n, err := lsys.Load(
