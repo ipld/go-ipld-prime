@@ -53,8 +53,5 @@ func Encode(n ipld.Node, w io.Writer) error {
 	// Shell out directly to generic inspection path.
 	//  (There's not really any fastpaths of note for json.)
 	// Write another function if you need to tune encoding options about whitespace.
-	return Marshal(n, json.NewEncoder(w, json.EncodeOptions{
-		Line:   nil,
-		Indent: nil,
-	}), true)
+	return Marshal(n, json.NewEncoder(w, json.EncodeOptions{}), true)
 }

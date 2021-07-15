@@ -8,7 +8,6 @@ import (
 	"github.com/ipld/go-ipld-prime/fluent/qp"
 	"github.com/ipld/go-ipld-prime/node/bindnode"
 	"github.com/ipld/go-ipld-prime/schema"
-	refmtjson "github.com/polydawn/refmt/json"
 )
 
 func ExampleWrap_withSchema() {
@@ -40,7 +39,7 @@ func ExampleWrap_withSchema() {
 	node := bindnode.Wrap(person, schemaType)
 
 	nodeRepr := node.Representation()
-	dagjson.Marshal(nodeRepr, refmtjson.NewEncoder(os.Stdout, refmtjson.EncodeOptions{}), true)
+	dagjson.Encode(nodeRepr, os.Stdout)
 
 	// Output:
 	// {"Name":"Michael","Friends":["Sarah","Alex"]}
@@ -76,7 +75,7 @@ func ExamplePrototype_onlySchema() {
 	}
 
 	nodeRepr := node.(schema.TypedNode).Representation()
-	dagjson.Marshal(nodeRepr, refmtjson.NewEncoder(os.Stdout, refmtjson.EncodeOptions{}), true)
+	dagjson.Encode(nodeRepr, os.Stdout)
 
 	// Output:
 	// {"Name":"Michael","Friends":["Sarah","Alex"]}

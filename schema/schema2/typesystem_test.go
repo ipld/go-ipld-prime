@@ -5,7 +5,6 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/polydawn/refmt/json"
 	. "github.com/warpfork/go-wish"
 
 	"github.com/ipld/go-ipld-prime/codec/dagjson"
@@ -206,7 +205,7 @@ func testParse(t *testing.T, schemajson string, expectParseErr error, expectType
 
 func parseSchema(schemajson string) (schemadmt.Schema, error) {
 	nb := schemadmt.Type.Schema__Repr.NewBuilder()
-	if err := dagjson.Unmarshal(nb, json.NewDecoder(strings.NewReader(schemajson)), true); err != nil {
+	if err := dagjson.Decode(nb, strings.NewReader(schemajson)); err != nil {
 		return nil, err
 	}
 	return nb.Build().(schemadmt.Schema), nil

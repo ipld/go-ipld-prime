@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	"github.com/ipfs/go-cid"
-	"github.com/polydawn/refmt/json"
 
 	"github.com/ipld/go-ipld-prime"
 	"github.com/ipld/go-ipld-prime/adl/rot13adl"
@@ -25,7 +24,7 @@ func ExampleUnmarshallingToADL() {
 	nb := rot13adl.Prototype.SubstrateRoot.NewBuilder()
 
 	// Unmarshal -- using the substrate's nodebuilder just like you'd unmarshal with any other nodebuilder.
-	err := dagjson.Unmarshal(nb, json.NewDecoder(strings.NewReader(`"n pbby fgevat"`)), true)
+	err := dagjson.Decode(nb, strings.NewReader(`"n pbby fgevat"`))
 	fmt.Printf("unmarshal error: %v\n", err)
 
 	// Use `Reify` to get the synthetic high-level view of the ADL data.
@@ -52,7 +51,7 @@ func ExampleLoadingToADL() {
 	nb := rot13adl.Prototype.SubstrateRoot.NewBuilder()
 
 	// Unmarshal -- using the substrate's nodebuilder just like you'd unmarshal with any other nodebuilder.
-	err := dagjson.Unmarshal(nb, json.NewDecoder(strings.NewReader(`"n pbby fgevat"`)), true)
+	err := dagjson.Decode(nb, strings.NewReader(`"n pbby fgevat"`))
 	fmt.Printf("unmarshal error: %v\n", err)
 
 	substrateNode := nb.Build()
@@ -108,7 +107,7 @@ func ExampleCreatingViaADL() {
 
 	// To marshal the ADL, just use marshal methods on its substrate as normal:
 	var marshalBuffer bytes.Buffer
-	err := dagjson.Marshal(substrateNode, json.NewEncoder(&marshalBuffer, json.EncodeOptions{}), true)
+	err := dagjson.Encode(substrateNode, &marshalBuffer)
 	fmt.Printf("marshalled: %v\n", marshalBuffer.String())
 	fmt.Printf("marshal error: %v\n", err)
 
