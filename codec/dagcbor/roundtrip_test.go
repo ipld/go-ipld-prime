@@ -30,7 +30,23 @@ var n = fluent.MustBuildMap(basicnode.Prototype__Map{}, 4, func(na fluent.MapAss
 		})
 	})
 })
-var serial = "\xa4eplainkolde stringcmap\xa2cone\x01ctwo\x02dlist\x82ethreedfourfnested\xa1fdeeper\x81fthings"
+var nSorted = fluent.MustBuildMap(basicnode.Prototype__Map{}, 4, func(na fluent.MapAssembler) {
+	na.AssembleEntry("map").CreateMap(2, func(na fluent.MapAssembler) {
+		na.AssembleEntry("one").AssignInt(1)
+		na.AssembleEntry("two").AssignInt(2)
+	})
+	na.AssembleEntry("list").CreateList(2, func(na fluent.ListAssembler) {
+		na.AssembleValue().AssignString("three")
+		na.AssembleValue().AssignString("four")
+	})
+	na.AssembleEntry("plain").AssignString("olde string")
+	na.AssembleEntry("nested").CreateMap(1, func(na fluent.MapAssembler) {
+		na.AssembleEntry("deeper").CreateList(1, func(na fluent.ListAssembler) {
+			na.AssembleValue().AssignString("things")
+		})
+	})
+})
+var serial = "\xa4cmap\xa2cone\x01ctwo\x02dlist\x82ethreedfoureplainkolde stringfnested\xa1fdeeper\x81fthings"
 
 func TestRoundtrip(t *testing.T) {
 	t.Run("encoding", func(t *testing.T) {
@@ -44,7 +60,7 @@ func TestRoundtrip(t *testing.T) {
 		nb := basicnode.Prototype__Map{}.NewBuilder()
 		err := Decode(nb, buf)
 		Require(t, err, ShouldEqual, nil)
-		Wish(t, nb.Build(), ShouldEqual, n)
+		Wish(t, nb.Build(), ShouldEqual, nSorted)
 	})
 }
 
