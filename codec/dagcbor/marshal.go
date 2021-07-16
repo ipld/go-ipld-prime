@@ -2,6 +2,7 @@ package dagcbor
 
 import (
 	"fmt"
+	"sort"
 
 	"github.com/polydawn/refmt/shared"
 	"github.com/polydawn/refmt/tok"
@@ -34,21 +35,39 @@ func marshal(n ipld.Node, tk *tok.Token, sink shared.TokenSink, allowLinks bool)
 		if _, err := sink.Step(tk); err != nil {
 			return err
 		}
-		// Emit map contents (and recurse).
+		// Collect map entries, then sort by key
+		type entry struct {
+			key   string
+			value ipld.Node
+		}
+		entries := []entry{}
 		for itr := n.MapIterator(); !itr.Done(); {
 			k, v, err := itr.Next()
 			if err != nil {
 				return err
 			}
-			tk.Type = tok.TString
-			tk.Str, err = k.AsString()
+			keyStr, err := k.AsString()
 			if err != nil {
 				return err
 			}
+			entries = append(entries, entry{keyStr, v})
+		}
+		// RFC7049 style sort as per DAG-CBOR spec
+		sort.Slice(entries, func(i, j int) bool {
+			li, lj := len(entries[i].key), len(entries[j].key)
+			if li == lj {
+				return entries[i].key < entries[j].key
+			}
+			return li < lj
+		})
+		// Emit map contents (and recurse).
+		for _, e := range entries {
+			tk.Type = tok.TString
+			tk.Str = e.key
 			if _, err := sink.Step(tk); err != nil {
 				return err
 			}
-			if err := marshal(v, tk, sink, allowLinks); err != nil {
+			if err := marshal(e.value, tk, sink, allowLinks); err != nil {
 				return err
 			}
 		}
