@@ -37,10 +37,9 @@ import (
 	"bytes"
 	"io"
 
-	"github.com/polydawn/refmt/json"
-
 	ipld "github.com/ipld/go-ipld-prime"
 	"github.com/ipld/go-ipld-prime/codec/dagjson"
+	"github.com/ipld/go-ipld-prime/codec/json"
 	basicnode "github.com/ipld/go-ipld-prime/node/basic"
 )
 
@@ -168,8 +167,8 @@ func (tab *table) Finalize() {
 	var buf bytes.Buffer
 	for _, cn := range cols {
 		buf.Reset()
-		dagjson.Marshal(basicnode.NewString(string(cn)), json.NewEncoder(&buf, json.EncodeOptions{}), false) // FIXME this would be a lot less irritating if we had more plumbing access to the json encoding -- we want to encode exactly one string into a buffer, it literally can't error.
-		tab.keySize[cn] = buf.Len()                                                                          // FIXME this is ignoring charsets, renderable glyphs, etc at present.
+		json.Encode(basicnode.NewString(string(cn)), &buf) // FIXME this would be a lot less irritating if we had more plumbing access to the json encoding -- we want to encode exactly one string into a buffer, it literally can't error.
+		tab.keySize[cn] = buf.Len()                        // FIXME this is ignoring charsets, renderable glyphs, etc at present.
 	}
 }
 
@@ -297,9 +296,7 @@ func marshal(ctx *state, n ipld.Node, w io.Writer) error {
 // It doesn't colorize or anything else.  To replace it with something clever that does,
 // we'll have to tear deeper into the plumbing level of json serializers; will, but later.
 func marshalPlain(ctx *state, n ipld.Node, w io.Writer) error {
-	err := dagjson.Marshal(n, json.NewEncoder(w, json.EncodeOptions{
-		// never indent here: these values will always end up being emitted mid-line.
-	}), true)
+	err := dagjson.Encode(n, w) // never indent here: these values will always end up being emitted mid-line.
 	if err != nil {
 		return recordErrorPosition(ctx, err)
 	}
@@ -470,7 +467,7 @@ func emitKey(ctx *state, k ipld.Node, w io.Writer) error {
 	if ctx.cfg.Color.Enabled {
 		w.Write(ctx.cfg.Color.KeyHighlight)
 	}
-	if err := dagjson.Marshal(k, json.NewEncoder(w, json.EncodeOptions{}), true); err != nil {
+	if err := dagjson.Encode(k, w); err != nil {
 		return recordErrorPosition(ctx, err)
 	}
 	if ctx.cfg.Color.Enabled {

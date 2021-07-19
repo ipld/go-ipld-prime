@@ -20,9 +20,19 @@ import (
 //       several steps of handling maps, because it necessitates peeking several
 //        tokens before deciding what kind of value to create).
 
-func Unmarshal(na ipld.NodeAssembler, tokSrc shared.TokenSource, parseLinks bool) error {
+type UnmarshalOptions struct {
+	// If true, parse DAG-CBOR `{"/":"cid string"}` as a Link kind node rather
+	// than a plain map
+	ParseLinks bool
+
+	// If true, parse DAG-CBOR `{"/":{"bytes":"base64 bytes..."}}` as a Bytes kind
+	// node rather than nested plain maps
+	ParseBytes bool
+}
+
+func Unmarshal(na ipld.NodeAssembler, tokSrc shared.TokenSource, options UnmarshalOptions) error {
 	var st unmarshalState
-	st.parseLinks = parseLinks
+	st.options = options
 	done, err := tokSrc.Step(&st.tk[0])
 	if err != nil {
 		return err
@@ -34,9 +44,9 @@ func Unmarshal(na ipld.NodeAssembler, tokSrc shared.TokenSource, parseLinks bool
 }
 
 type unmarshalState struct {
-	tk         [7]tok.Token // mostly, only 0'th is used... but [1:7] are used during lookahead for links.
-	shift      int          // how many times to slide something out of tk[1:7] instead of getting a new token.
-	parseLinks bool
+	tk      [7]tok.Token // mostly, only 0'th is used... but [1:7] are used during lookahead for links.
+	shift   int          // how many times to slide something out of tk[1:7] instead of getting a new token.
+	options UnmarshalOptions
 }
 
 // step leaves a "new" token in tk[0],
@@ -229,7 +239,7 @@ func (st *unmarshalState) unmarshal(na ipld.NodeAssembler, tokSrc shared.TokenSo
 	case tok.TMapOpen:
 		// dag-json has special needs: we pump a few tokens ahead to look for dag-json's "link" pattern.
 		//  We can't actually call BeginMap until we're sure it's not gonna turn out to be a link.
-		if st.parseLinks {
+		if st.options.ParseLinks {
 			gotLink, err := st.linkLookahead(na, tokSrc)
 			if err != nil { // return in error if any token peeks failed or if structure looked like a link but failed to parse as CID.
 				return err
@@ -237,7 +247,9 @@ func (st *unmarshalState) unmarshal(na ipld.NodeAssembler, tokSrc shared.TokenSo
 			if gotLink {
 				return nil
 			}
+		}
 
+		if st.options.ParseBytes {
 			gotBytes, err := st.bytesLookahead(na, tokSrc)
 			if err != nil {
 				return err

@@ -24,7 +24,10 @@ func init() {
 func Decode(na ipld.NodeAssembler, r io.Reader) error {
 	// Shell out directly to generic builder path.
 	//  (There's not really any fastpaths of note for json.)
-	err := dagjson.Unmarshal(na, rfmtjson.NewDecoder(r), false)
+	err := dagjson.Unmarshal(na, rfmtjson.NewDecoder(r), dagjson.UnmarshalOptions{
+		ParseLinks: false,
+		ParseBytes: false,
+	})
 	if err != nil {
 		return err
 	}
@@ -59,5 +62,9 @@ func Encode(n ipld.Node, w io.Writer) error {
 	return dagjson.Marshal(n, rfmtjson.NewEncoder(w, rfmtjson.EncodeOptions{
 		Line:   []byte{'\n'},
 		Indent: []byte{'\t'},
-	}), false)
+	}), dagjson.MarshalOptions{
+		EncodeLinks: false,
+		EncodeBytes: false,
+		SortMapKeys: false,
+	})
 }
