@@ -21,7 +21,10 @@ func init() {
 }
 
 func Decode(na ipld.NodeAssembler, r io.Reader) error {
-	err := Unmarshal(na, json.NewDecoder(r), true)
+	err := Unmarshal(na, json.NewDecoder(r), UnmarshalOptions{
+		ParseLinks: true,
+		ParseBytes: true,
+	})
 	if err != nil {
 		return err
 	}
@@ -53,5 +56,10 @@ func Encode(n ipld.Node, w io.Writer) error {
 	// Shell out directly to generic inspection path.
 	//  (There's not really any fastpaths of note for json.)
 	// Write another function if you need to tune encoding options about whitespace.
-	return Marshal(n, json.NewEncoder(w, json.EncodeOptions{}), true)
+	return Marshal(n, json.NewEncoder(w, json.EncodeOptions{}),
+		MarshalOptions{
+			EncodeLinks: true,
+			EncodeBytes: true,
+			SortMapKeys: true,
+		})
 }
