@@ -15,7 +15,7 @@ import (
 )
 
 func TestRoundtripCidlink(t *testing.T) {
-	lp := cidlink.LinkPrototype{cid.Prefix{
+	lp := cidlink.LinkPrototype{Prefix: cid.Prefix{
 		Version:  1,
 		Codec:    0x0129,
 		MhType:   0x13,
@@ -45,7 +45,7 @@ func TestRoundtripCidlink(t *testing.T) {
 // tokens have to be reprocessed before a recursion that find a real link appears.
 func TestUnmarshalTrickyMapContainingLink(t *testing.T) {
 	// Create a link; don't particularly care about its contents.
-	lnk := cidlink.LinkPrototype{cid.Prefix{
+	lnk := cidlink.LinkPrototype{Prefix: cid.Prefix{
 		Version:  1,
 		Codec:    0x71,
 		MhType:   0x13,

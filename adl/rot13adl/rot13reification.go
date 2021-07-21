@@ -66,7 +66,7 @@ func Reify(maybeSubstrateRoot ipld.Node) (ipld.Node, error) {
 	//  The AssignNode method on the substrate type already contains all the logic necessary for this, so we use that.
 	nb := Prototype.SubstrateRoot.NewBuilder()
 	if err := nb.AssignNode(maybeSubstrateRoot); err != nil {
-		fmt.Errorf("rot13adl.Reify failed: data does not match expected shape for substrate: %w", err)
+		return nil, fmt.Errorf("rot13adl.Reify failed: data does not match expected shape for substrate: %w", err)
 	}
 	return (*_R13String)(nb.Build().(*_Substrate)), nil
 }

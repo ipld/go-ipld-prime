@@ -230,7 +230,6 @@ func (ta *TokenAssembler) Process(tk *Token) (err error) {
 		default:
 			panic(fmt.Errorf("unrecognized token kind (%q?)", tk.Kind))
 		}
-		return nil
 	case 1:
 		if tk.Kind == TokenKind_ListClose {
 			err = tip.la.Finish()

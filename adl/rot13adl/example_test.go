@@ -16,7 +16,7 @@ import (
 	"github.com/ipld/go-ipld-prime/storage"
 )
 
-func ExampleUnmarshallingToADL() {
+func ExampleReify_unmarshallingToADL() {
 	// Create a NodeBuilder for the ADL's substrate.
 	//  Unmarshalling into this memory structure is optimal,
 	//   because it immediately puts data into the right memory layout for the ADL code to work on,
@@ -42,7 +42,7 @@ func ExampleUnmarshallingToADL() {
 	// adl node kind: string
 	// adl view value: "a cool string"
 }
-func ExampleLoadingToADL() {
+func ExampleReify_loadingToADL() {
 
 	// Create a NodeBuilder for the ADL's substrate.
 	//  Unmarshalling into this memory structure is optimal,
@@ -56,7 +56,7 @@ func ExampleLoadingToADL() {
 
 	substrateNode := nb.Build()
 	// now save the node to storage
-	lp := cidlink.LinkPrototype{cid.Prefix{
+	lp := cidlink.LinkPrototype{Prefix: cid.Prefix{
 		Version:  1,
 		Codec:    0x129,
 		MhType:   0x13,
@@ -87,7 +87,7 @@ func ExampleLoadingToADL() {
 	// adl node kind: string
 	// adl view value: "a cool string"
 }
-func ExampleCreatingViaADL() {
+func ExampleR13String_creatingViaADL() {
 	// Create a NodeBuilder for the ADL -- the high-level synthesized thing (not the substrate).
 	nb := rot13adl.Prototype.Node.NewBuilder()
 

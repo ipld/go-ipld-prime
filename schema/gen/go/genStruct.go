@@ -570,11 +570,11 @@ func (g structBuilderGenerator) emitKeyAssembler(w io.Writer) {
 				ka.s += fieldBit__{{ $type | TypeSymbol }}_{{ $field | FieldSymbolUpper }}
 				ka.state = maState_expectValue
 				ka.f = {{ $i }}
+				return nil
 			{{- end}}
 			default:
 				return ipld.ErrInvalidKey{TypeName:"{{ .PkgName }}.{{ .Type.Name }}", Key:&_String{k}}
 			}
-			return nil
 		}
 	`, w, g.AdjCfg, g)
 	stubs.EmitNodeAssemblerMethodAssignBytes(w)

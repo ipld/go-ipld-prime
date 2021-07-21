@@ -50,7 +50,7 @@ var (
 // just gimme a link and stuff the bytes in a map.
 // (also return the node again for convenient assignment.)
 func encode(n ipld.Node) (ipld.Node, ipld.Link) {
-	lp := cidlink.LinkPrototype{cid.Prefix{
+	lp := cidlink.LinkPrototype{Prefix: cid.Prefix{
 		Version:  1,
 		Codec:    0x0129,
 		MhType:   0x13,
