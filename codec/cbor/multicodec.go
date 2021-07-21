@@ -21,9 +21,11 @@ func init() {
 }
 
 func Decode(na ipld.NodeAssembler, r io.Reader) error {
-	return dagcbor.Unmarshal(na, cbor.NewDecoder(cbor.DecodeOptions{}, r), false)
+	return dagcbor.Unmarshal(na, cbor.NewDecoder(cbor.DecodeOptions{}, r),
+		dagcbor.UnmarshalOptions{AllowLinks: false})
 }
 
 func Encode(n ipld.Node, w io.Writer) error {
-	return dagcbor.Marshal(n, cbor.NewEncoder(w), false)
+	return dagcbor.Marshal(n, cbor.NewEncoder(w),
+		dagcbor.MarshalOptions{AllowLinks: false})
 }
