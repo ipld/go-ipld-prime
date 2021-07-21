@@ -15,10 +15,20 @@ import (
 // except for the `case ipld.Kind_Link` block,
 // which is dag-cbor's special sauce for schemafree links.
 
+const (
+	MapSortMode_none = iota
+	MapSortMode_RFC7049
+)
+
 type MarshalOptions struct {
 	// If true, allow encoding of Link nodes as CBOR tag(42), otherwise reject
 	// them as unencodable
 	AllowLinks bool
+
+	// Control the sorting of map keys, MapSortMode_none for no sorting or
+	// MapSortMode_RFC7049 for length-first bytewise sorting as per RFC7049 and
+	// DAG-CBOR
+	MapSortMode int
 }
 
 func Marshal(n ipld.Node, sink shared.TokenSink, options MarshalOptions) error {
@@ -35,52 +45,7 @@ func marshal(n ipld.Node, tk *tok.Token, sink shared.TokenSink, options MarshalO
 		_, err := sink.Step(tk)
 		return err
 	case ipld.Kind_Map:
-		// Emit start of map.
-		tk.Type = tok.TMapOpen
-		tk.Length = int(n.Length()) // TODO: overflow check
-		if _, err := sink.Step(tk); err != nil {
-			return err
-		}
-		// Collect map entries, then sort by key
-		type entry struct {
-			key   string
-			value ipld.Node
-		}
-		entries := []entry{}
-		for itr := n.MapIterator(); !itr.Done(); {
-			k, v, err := itr.Next()
-			if err != nil {
-				return err
-			}
-			keyStr, err := k.AsString()
-			if err != nil {
-				return err
-			}
-			entries = append(entries, entry{keyStr, v})
-		}
-		// RFC7049 style sort as per DAG-CBOR spec
-		sort.Slice(entries, func(i, j int) bool {
-			li, lj := len(entries[i].key), len(entries[j].key)
-			if li == lj {
-				return entries[i].key < entries[j].key
-			}
-			return li < lj
-		})
-		// Emit map contents (and recurse).
-		for _, e := range entries {
-			tk.Type = tok.TString
-			tk.Str = e.key
-			if _, err := sink.Step(tk); err != nil {
-				return err
-			}
-			if err := marshal(e.value, tk, sink, options); err != nil {
-				return err
-			}
-		}
-		// Emit map close.
-		tk.Type = tok.TMapClose
-		_, err := sink.Step(tk)
-		return err
+		return marshalMap(n, tk, sink, options)
 	case ipld.Kind_List:
 		// Emit start of list.
 		tk.Type = tok.TArrOpen
@@ -171,4 +136,74 @@ func marshal(n ipld.Node, tk *tok.Token, sink shared.TokenSink, options MarshalO
 	default:
 		panic("unreachable")
 	}
+}
+
+func marshalMap(n ipld.Node, tk *tok.Token, sink shared.TokenSink, options MarshalOptions) error {
+	// Emit start of map.
+	tk.Type = tok.TMapOpen
+	tk.Length = int(n.Length()) // TODO: overflow check
+	if _, err := sink.Step(tk); err != nil {
+		return err
+	}
+	if options.MapSortMode == MapSortMode_RFC7049 {
+		// Collect map entries, then sort by key
+		type entry struct {
+			key   string
+			value ipld.Node
+		}
+		entries := []entry{}
+		for itr := n.MapIterator(); !itr.Done(); {
+			k, v, err := itr.Next()
+			if err != nil {
+				return err
+			}
+			keyStr, err := k.AsString()
+			if err != nil {
+				return err
+			}
+			entries = append(entries, entry{keyStr, v})
+		}
+		// RFC7049 style sort as per DAG-CBOR spec
+		sort.Slice(entries, func(i, j int) bool {
+			li, lj := len(entries[i].key), len(entries[j].key)
+			if li == lj {
+				return entries[i].key < entries[j].key
+			}
+			return li < lj
+		})
+		// Emit map contents (and recurse).
+		for _, e := range entries {
+			tk.Type = tok.TString
+			tk.Str = e.key
+			if _, err := sink.Step(tk); err != nil {
+				return err
+			}
+			if err := marshal(e.value, tk, sink, options); err != nil {
+				return err
+			}
+		}
+	} else { // no sorting
+		// Emit map contents (and recurse).
+		for itr := n.MapIterator(); !itr.Done(); {
+			k, v, err := itr.Next()
+			if err != nil {
+				return err
+			}
+			tk.Type = tok.TString
+			tk.Str, err = k.AsString()
+			if err != nil {
+				return err
+			}
+			if _, err := sink.Step(tk); err != nil {
+				return err
+			}
+			if err := marshal(v, tk, sink, options); err != nil {
+				return err
+			}
+		}
+	}
+	// Emit map close.
+	tk.Type = tok.TMapClose
+	_, err := sink.Step(tk)
+	return err
 }
