@@ -115,7 +115,6 @@ func tokenWalk(tk *Token, n ipld.Node, visitFn func(*Token) error) error {
 	default:
 		panic(fmt.Errorf("unrecognized node kind (%q?)", n.Kind()))
 	}
-	return nil
 }
 
 var TokenWalkSkip = errors.New("token walk: skip")

@@ -5779,7 +5779,6 @@ func (ka *_ListRepresentation_List__KeyAssembler) AssignString(k string) error {
 	default:
 		return ipld.ErrInvalidKey{TypeName: "schemadmt.ListRepresentation_List", Key: &_String{k}}
 	}
-	return nil
 }
 func (_ListRepresentation_List__KeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{TypeName: "schemadmt.ListRepresentation_List.KeyAssembler"}.AssignBytes(nil)
@@ -8653,7 +8652,6 @@ func (ka *_MapRepresentation_Listpairs__KeyAssembler) AssignString(k string) err
 	default:
 		return ipld.ErrInvalidKey{TypeName: "schemadmt.MapRepresentation_Listpairs", Key: &_String{k}}
 	}
-	return nil
 }
 func (_MapRepresentation_Listpairs__KeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{TypeName: "schemadmt.MapRepresentation_Listpairs.KeyAssembler"}.AssignBytes(nil)
@@ -9377,7 +9375,6 @@ func (ka *_MapRepresentation_Map__KeyAssembler) AssignString(k string) error {
 	default:
 		return ipld.ErrInvalidKey{TypeName: "schemadmt.MapRepresentation_Map", Key: &_String{k}}
 	}
-	return nil
 }
 func (_MapRepresentation_Map__KeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{TypeName: "schemadmt.MapRepresentation_Map.KeyAssembler"}.AssignBytes(nil)
@@ -10194,6 +10191,7 @@ func (ka *_MapRepresentation_Stringpairs__KeyAssembler) AssignString(k string) e
 		ka.s += fieldBit__MapRepresentation_Stringpairs_InnerDelim
 		ka.state = maState_expectValue
 		ka.f = 0
+		return nil
 	case "entryDelim":
 		if ka.s&fieldBit__MapRepresentation_Stringpairs_EntryDelim != 0 {
 			return ipld.ErrRepeatedMapKey{Key: &fieldName__MapRepresentation_Stringpairs_EntryDelim}
@@ -10201,10 +10199,10 @@ func (ka *_MapRepresentation_Stringpairs__KeyAssembler) AssignString(k string) e
 		ka.s += fieldBit__MapRepresentation_Stringpairs_EntryDelim
 		ka.state = maState_expectValue
 		ka.f = 1
+		return nil
 	default:
 		return ipld.ErrInvalidKey{TypeName: "schemadmt.MapRepresentation_Stringpairs", Key: &_String{k}}
 	}
-	return nil
 }
 func (_MapRepresentation_Stringpairs__KeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{TypeName: "schemadmt.MapRepresentation_Stringpairs.KeyAssembler"}.AssignBytes(nil)
@@ -15053,10 +15051,10 @@ func (ka *_Schema__KeyAssembler) AssignString(k string) error {
 		ka.s += fieldBit__Schema_Types
 		ka.state = maState_expectValue
 		ka.f = 0
+		return nil
 	default:
 		return ipld.ErrInvalidKey{TypeName: "schemadmt.Schema", Key: &_String{k}}
 	}
-	return nil
 }
 func (_Schema__KeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{TypeName: "schemadmt.Schema.KeyAssembler"}.AssignBytes(nil)
@@ -16929,6 +16927,7 @@ func (ka *_StructField__KeyAssembler) AssignString(k string) error {
 		ka.s += fieldBit__StructField_Type
 		ka.state = maState_expectValue
 		ka.f = 0
+		return nil
 	case "optional":
 		if ka.s&fieldBit__StructField_Optional != 0 {
 			return ipld.ErrRepeatedMapKey{Key: &fieldName__StructField_Optional}
@@ -16936,6 +16935,7 @@ func (ka *_StructField__KeyAssembler) AssignString(k string) error {
 		ka.s += fieldBit__StructField_Optional
 		ka.state = maState_expectValue
 		ka.f = 1
+		return nil
 	case "nullable":
 		if ka.s&fieldBit__StructField_Nullable != 0 {
 			return ipld.ErrRepeatedMapKey{Key: &fieldName__StructField_Nullable}
@@ -16943,10 +16943,10 @@ func (ka *_StructField__KeyAssembler) AssignString(k string) error {
 		ka.s += fieldBit__StructField_Nullable
 		ka.state = maState_expectValue
 		ka.f = 2
+		return nil
 	default:
 		return ipld.ErrInvalidKey{TypeName: "schemadmt.StructField", Key: &_String{k}}
 	}
-	return nil
 }
 func (_StructField__KeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{TypeName: "schemadmt.StructField.KeyAssembler"}.AssignBytes(nil)
@@ -18905,7 +18905,6 @@ func (ka *_StructRepresentation_Listpairs__KeyAssembler) AssignString(k string) 
 	default:
 		return ipld.ErrInvalidKey{TypeName: "schemadmt.StructRepresentation_Listpairs", Key: &_String{k}}
 	}
-	return nil
 }
 func (_StructRepresentation_Listpairs__KeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Listpairs.KeyAssembler"}.AssignBytes(nil)
@@ -19685,10 +19684,10 @@ func (ka *_StructRepresentation_Map__KeyAssembler) AssignString(k string) error 
 		ka.s += fieldBit__StructRepresentation_Map_Fields
 		ka.state = maState_expectValue
 		ka.f = 0
+		return nil
 	default:
 		return ipld.ErrInvalidKey{TypeName: "schemadmt.StructRepresentation_Map", Key: &_String{k}}
 	}
-	return nil
 }
 func (_StructRepresentation_Map__KeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Map.KeyAssembler"}.AssignBytes(nil)
@@ -20582,6 +20581,7 @@ func (ka *_StructRepresentation_Map_FieldDetails__KeyAssembler) AssignString(k s
 		ka.s += fieldBit__StructRepresentation_Map_FieldDetails_Rename
 		ka.state = maState_expectValue
 		ka.f = 0
+		return nil
 	case "implicit":
 		if ka.s&fieldBit__StructRepresentation_Map_FieldDetails_Implicit != 0 {
 			return ipld.ErrRepeatedMapKey{Key: &fieldName__StructRepresentation_Map_FieldDetails_Implicit}
@@ -20589,10 +20589,10 @@ func (ka *_StructRepresentation_Map_FieldDetails__KeyAssembler) AssignString(k s
 		ka.s += fieldBit__StructRepresentation_Map_FieldDetails_Implicit
 		ka.state = maState_expectValue
 		ka.f = 1
+		return nil
 	default:
 		return ipld.ErrInvalidKey{TypeName: "schemadmt.StructRepresentation_Map_FieldDetails", Key: &_String{k}}
 	}
-	return nil
 }
 func (_StructRepresentation_Map_FieldDetails__KeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Map_FieldDetails.KeyAssembler"}.AssignBytes(nil)
@@ -21539,6 +21539,7 @@ func (ka *_StructRepresentation_Stringjoin__KeyAssembler) AssignString(k string)
 		ka.s += fieldBit__StructRepresentation_Stringjoin_Join
 		ka.state = maState_expectValue
 		ka.f = 0
+		return nil
 	case "fieldOrder":
 		if ka.s&fieldBit__StructRepresentation_Stringjoin_FieldOrder != 0 {
 			return ipld.ErrRepeatedMapKey{Key: &fieldName__StructRepresentation_Stringjoin_FieldOrder}
@@ -21546,10 +21547,10 @@ func (ka *_StructRepresentation_Stringjoin__KeyAssembler) AssignString(k string)
 		ka.s += fieldBit__StructRepresentation_Stringjoin_FieldOrder
 		ka.state = maState_expectValue
 		ka.f = 1
+		return nil
 	default:
 		return ipld.ErrInvalidKey{TypeName: "schemadmt.StructRepresentation_Stringjoin", Key: &_String{k}}
 	}
-	return nil
 }
 func (_StructRepresentation_Stringjoin__KeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Stringjoin.KeyAssembler"}.AssignBytes(nil)
@@ -22480,6 +22481,7 @@ func (ka *_StructRepresentation_Stringpairs__KeyAssembler) AssignString(k string
 		ka.s += fieldBit__StructRepresentation_Stringpairs_InnerDelim
 		ka.state = maState_expectValue
 		ka.f = 0
+		return nil
 	case "entryDelim":
 		if ka.s&fieldBit__StructRepresentation_Stringpairs_EntryDelim != 0 {
 			return ipld.ErrRepeatedMapKey{Key: &fieldName__StructRepresentation_Stringpairs_EntryDelim}
@@ -22487,10 +22489,10 @@ func (ka *_StructRepresentation_Stringpairs__KeyAssembler) AssignString(k string
 		ka.s += fieldBit__StructRepresentation_Stringpairs_EntryDelim
 		ka.state = maState_expectValue
 		ka.f = 1
+		return nil
 	default:
 		return ipld.ErrInvalidKey{TypeName: "schemadmt.StructRepresentation_Stringpairs", Key: &_String{k}}
 	}
-	return nil
 }
 func (_StructRepresentation_Stringpairs__KeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Stringpairs.KeyAssembler"}.AssignBytes(nil)
@@ -23367,10 +23369,10 @@ func (ka *_StructRepresentation_Tuple__KeyAssembler) AssignString(k string) erro
 		ka.s += fieldBit__StructRepresentation_Tuple_FieldOrder
 		ka.state = maState_expectValue
 		ka.f = 0
+		return nil
 	default:
 		return ipld.ErrInvalidKey{TypeName: "schemadmt.StructRepresentation_Tuple", Key: &_String{k}}
 	}
-	return nil
 }
 func (_StructRepresentation_Tuple__KeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{TypeName: "schemadmt.StructRepresentation_Tuple.KeyAssembler"}.AssignBytes(nil)
@@ -24166,7 +24168,6 @@ func (ka *_TypeBool__KeyAssembler) AssignString(k string) error {
 	default:
 		return ipld.ErrInvalidKey{TypeName: "schemadmt.TypeBool", Key: &_String{k}}
 	}
-	return nil
 }
 func (_TypeBool__KeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{TypeName: "schemadmt.TypeBool.KeyAssembler"}.AssignBytes(nil)
@@ -24890,7 +24891,6 @@ func (ka *_TypeBytes__KeyAssembler) AssignString(k string) error {
 	default:
 		return ipld.ErrInvalidKey{TypeName: "schemadmt.TypeBytes", Key: &_String{k}}
 	}
-	return nil
 }
 func (_TypeBytes__KeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{TypeName: "schemadmt.TypeBytes.KeyAssembler"}.AssignBytes(nil)
@@ -25668,10 +25668,10 @@ func (ka *_TypeCopy__KeyAssembler) AssignString(k string) error {
 		ka.s += fieldBit__TypeCopy_FromType
 		ka.state = maState_expectValue
 		ka.f = 0
+		return nil
 	default:
 		return ipld.ErrInvalidKey{TypeName: "schemadmt.TypeCopy", Key: &_String{k}}
 	}
-	return nil
 }
 func (_TypeCopy__KeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{TypeName: "schemadmt.TypeCopy.KeyAssembler"}.AssignBytes(nil)
@@ -29020,6 +29020,7 @@ func (ka *_TypeEnum__KeyAssembler) AssignString(k string) error {
 		ka.s += fieldBit__TypeEnum_Members
 		ka.state = maState_expectValue
 		ka.f = 0
+		return nil
 	case "representation":
 		if ka.s&fieldBit__TypeEnum_Representation != 0 {
 			return ipld.ErrRepeatedMapKey{Key: &fieldName__TypeEnum_Representation}
@@ -29027,10 +29028,10 @@ func (ka *_TypeEnum__KeyAssembler) AssignString(k string) error {
 		ka.s += fieldBit__TypeEnum_Representation
 		ka.state = maState_expectValue
 		ka.f = 1
+		return nil
 	default:
 		return ipld.ErrInvalidKey{TypeName: "schemadmt.TypeEnum", Key: &_String{k}}
 	}
-	return nil
 }
 func (_TypeEnum__KeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{TypeName: "schemadmt.TypeEnum.KeyAssembler"}.AssignBytes(nil)
@@ -29851,7 +29852,6 @@ func (ka *_TypeFloat__KeyAssembler) AssignString(k string) error {
 	default:
 		return ipld.ErrInvalidKey{TypeName: "schemadmt.TypeFloat", Key: &_String{k}}
 	}
-	return nil
 }
 func (_TypeFloat__KeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{TypeName: "schemadmt.TypeFloat.KeyAssembler"}.AssignBytes(nil)
@@ -30575,7 +30575,6 @@ func (ka *_TypeInt__KeyAssembler) AssignString(k string) error {
 	default:
 		return ipld.ErrInvalidKey{TypeName: "schemadmt.TypeInt", Key: &_String{k}}
 	}
-	return nil
 }
 func (_TypeInt__KeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{TypeName: "schemadmt.TypeInt.KeyAssembler"}.AssignBytes(nil)
@@ -31355,10 +31354,10 @@ func (ka *_TypeLink__KeyAssembler) AssignString(k string) error {
 		ka.s += fieldBit__TypeLink_ExpectedType
 		ka.state = maState_expectValue
 		ka.f = 0
+		return nil
 	default:
 		return ipld.ErrInvalidKey{TypeName: "schemadmt.TypeLink", Key: &_String{k}}
 	}
-	return nil
 }
 func (_TypeLink__KeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{TypeName: "schemadmt.TypeLink.KeyAssembler"}.AssignBytes(nil)
@@ -32286,6 +32285,7 @@ func (ka *_TypeList__KeyAssembler) AssignString(k string) error {
 		ka.s += fieldBit__TypeList_ValueType
 		ka.state = maState_expectValue
 		ka.f = 0
+		return nil
 	case "valueNullable":
 		if ka.s&fieldBit__TypeList_ValueNullable != 0 {
 			return ipld.ErrRepeatedMapKey{Key: &fieldName__TypeList_ValueNullable}
@@ -32293,6 +32293,7 @@ func (ka *_TypeList__KeyAssembler) AssignString(k string) error {
 		ka.s += fieldBit__TypeList_ValueNullable
 		ka.state = maState_expectValue
 		ka.f = 1
+		return nil
 	case "representation":
 		if ka.s&fieldBit__TypeList_Representation != 0 {
 			return ipld.ErrRepeatedMapKey{Key: &fieldName__TypeList_Representation}
@@ -32300,10 +32301,10 @@ func (ka *_TypeList__KeyAssembler) AssignString(k string) error {
 		ka.s += fieldBit__TypeList_Representation
 		ka.state = maState_expectValue
 		ka.f = 2
+		return nil
 	default:
 		return ipld.ErrInvalidKey{TypeName: "schemadmt.TypeList", Key: &_String{k}}
 	}
-	return nil
 }
 func (_TypeList__KeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{TypeName: "schemadmt.TypeList.KeyAssembler"}.AssignBytes(nil)
@@ -33337,6 +33338,7 @@ func (ka *_TypeMap__KeyAssembler) AssignString(k string) error {
 		ka.s += fieldBit__TypeMap_KeyType
 		ka.state = maState_expectValue
 		ka.f = 0
+		return nil
 	case "valueType":
 		if ka.s&fieldBit__TypeMap_ValueType != 0 {
 			return ipld.ErrRepeatedMapKey{Key: &fieldName__TypeMap_ValueType}
@@ -33344,6 +33346,7 @@ func (ka *_TypeMap__KeyAssembler) AssignString(k string) error {
 		ka.s += fieldBit__TypeMap_ValueType
 		ka.state = maState_expectValue
 		ka.f = 1
+		return nil
 	case "valueNullable":
 		if ka.s&fieldBit__TypeMap_ValueNullable != 0 {
 			return ipld.ErrRepeatedMapKey{Key: &fieldName__TypeMap_ValueNullable}
@@ -33351,6 +33354,7 @@ func (ka *_TypeMap__KeyAssembler) AssignString(k string) error {
 		ka.s += fieldBit__TypeMap_ValueNullable
 		ka.state = maState_expectValue
 		ka.f = 2
+		return nil
 	case "representation":
 		if ka.s&fieldBit__TypeMap_Representation != 0 {
 			return ipld.ErrRepeatedMapKey{Key: &fieldName__TypeMap_Representation}
@@ -33358,10 +33362,10 @@ func (ka *_TypeMap__KeyAssembler) AssignString(k string) error {
 		ka.s += fieldBit__TypeMap_Representation
 		ka.state = maState_expectValue
 		ka.f = 3
+		return nil
 	default:
 		return ipld.ErrInvalidKey{TypeName: "schemadmt.TypeMap", Key: &_String{k}}
 	}
-	return nil
 }
 func (_TypeMap__KeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{TypeName: "schemadmt.TypeMap.KeyAssembler"}.AssignBytes(nil)
@@ -35267,7 +35271,6 @@ func (ka *_TypeString__KeyAssembler) AssignString(k string) error {
 	default:
 		return ipld.ErrInvalidKey{TypeName: "schemadmt.TypeString", Key: &_String{k}}
 	}
-	return nil
 }
 func (_TypeString__KeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{TypeName: "schemadmt.TypeString.KeyAssembler"}.AssignBytes(nil)
@@ -36084,6 +36087,7 @@ func (ka *_TypeStruct__KeyAssembler) AssignString(k string) error {
 		ka.s += fieldBit__TypeStruct_Fields
 		ka.state = maState_expectValue
 		ka.f = 0
+		return nil
 	case "representation":
 		if ka.s&fieldBit__TypeStruct_Representation != 0 {
 			return ipld.ErrRepeatedMapKey{Key: &fieldName__TypeStruct_Representation}
@@ -36091,10 +36095,10 @@ func (ka *_TypeStruct__KeyAssembler) AssignString(k string) error {
 		ka.s += fieldBit__TypeStruct_Representation
 		ka.state = maState_expectValue
 		ka.f = 1
+		return nil
 	default:
 		return ipld.ErrInvalidKey{TypeName: "schemadmt.TypeStruct", Key: &_String{k}}
 	}
-	return nil
 }
 func (_TypeStruct__KeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{TypeName: "schemadmt.TypeStruct.KeyAssembler"}.AssignBytes(nil)
@@ -37008,6 +37012,7 @@ func (ka *_TypeUnion__KeyAssembler) AssignString(k string) error {
 		ka.s += fieldBit__TypeUnion_Members
 		ka.state = maState_expectValue
 		ka.f = 0
+		return nil
 	case "representation":
 		if ka.s&fieldBit__TypeUnion_Representation != 0 {
 			return ipld.ErrRepeatedMapKey{Key: &fieldName__TypeUnion_Representation}
@@ -37015,10 +37020,10 @@ func (ka *_TypeUnion__KeyAssembler) AssignString(k string) error {
 		ka.s += fieldBit__TypeUnion_Representation
 		ka.state = maState_expectValue
 		ka.f = 1
+		return nil
 	default:
 		return ipld.ErrInvalidKey{TypeName: "schemadmt.TypeUnion", Key: &_String{k}}
 	}
-	return nil
 }
 func (_TypeUnion__KeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{TypeName: "schemadmt.TypeUnion.KeyAssembler"}.AssignBytes(nil)
@@ -39053,10 +39058,10 @@ func (ka *_UnionRepresentation_BytePrefix__KeyAssembler) AssignString(k string) 
 		ka.s += fieldBit__UnionRepresentation_BytePrefix_DiscriminantTable
 		ka.state = maState_expectValue
 		ka.f = 0
+		return nil
 	default:
 		return ipld.ErrInvalidKey{TypeName: "schemadmt.UnionRepresentation_BytePrefix", Key: &_String{k}}
 	}
-	return nil
 }
 func (_UnionRepresentation_BytePrefix__KeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation_BytePrefix.KeyAssembler"}.AssignBytes(nil)
@@ -39967,6 +39972,7 @@ func (ka *_UnionRepresentation_Envelope__KeyAssembler) AssignString(k string) er
 		ka.s += fieldBit__UnionRepresentation_Envelope_DiscriminantKey
 		ka.state = maState_expectValue
 		ka.f = 0
+		return nil
 	case "contentKey":
 		if ka.s&fieldBit__UnionRepresentation_Envelope_ContentKey != 0 {
 			return ipld.ErrRepeatedMapKey{Key: &fieldName__UnionRepresentation_Envelope_ContentKey}
@@ -39974,6 +39980,7 @@ func (ka *_UnionRepresentation_Envelope__KeyAssembler) AssignString(k string) er
 		ka.s += fieldBit__UnionRepresentation_Envelope_ContentKey
 		ka.state = maState_expectValue
 		ka.f = 1
+		return nil
 	case "discriminantTable":
 		if ka.s&fieldBit__UnionRepresentation_Envelope_DiscriminantTable != 0 {
 			return ipld.ErrRepeatedMapKey{Key: &fieldName__UnionRepresentation_Envelope_DiscriminantTable}
@@ -39981,10 +39988,10 @@ func (ka *_UnionRepresentation_Envelope__KeyAssembler) AssignString(k string) er
 		ka.s += fieldBit__UnionRepresentation_Envelope_DiscriminantTable
 		ka.state = maState_expectValue
 		ka.f = 2
+		return nil
 	default:
 		return ipld.ErrInvalidKey{TypeName: "schemadmt.UnionRepresentation_Envelope", Key: &_String{k}}
 	}
-	return nil
 }
 func (_UnionRepresentation_Envelope__KeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation_Envelope.KeyAssembler"}.AssignBytes(nil)
@@ -40940,6 +40947,7 @@ func (ka *_UnionRepresentation_Inline__KeyAssembler) AssignString(k string) erro
 		ka.s += fieldBit__UnionRepresentation_Inline_DiscriminantKey
 		ka.state = maState_expectValue
 		ka.f = 0
+		return nil
 	case "discriminantTable":
 		if ka.s&fieldBit__UnionRepresentation_Inline_DiscriminantTable != 0 {
 			return ipld.ErrRepeatedMapKey{Key: &fieldName__UnionRepresentation_Inline_DiscriminantTable}
@@ -40947,10 +40955,10 @@ func (ka *_UnionRepresentation_Inline__KeyAssembler) AssignString(k string) erro
 		ka.s += fieldBit__UnionRepresentation_Inline_DiscriminantTable
 		ka.state = maState_expectValue
 		ka.f = 1
+		return nil
 	default:
 		return ipld.ErrInvalidKey{TypeName: "schemadmt.UnionRepresentation_Inline", Key: &_String{k}}
 	}
-	return nil
 }
 func (_UnionRepresentation_Inline__KeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation_Inline.KeyAssembler"}.AssignBytes(nil)
@@ -43331,10 +43339,10 @@ func (ka *_UnionRepresentation_StringPrefix__KeyAssembler) AssignString(k string
 		ka.s += fieldBit__UnionRepresentation_StringPrefix_DiscriminantTable
 		ka.state = maState_expectValue
 		ka.f = 0
+		return nil
 	default:
 		return ipld.ErrInvalidKey{TypeName: "schemadmt.UnionRepresentation_StringPrefix", Key: &_String{k}}
 	}
-	return nil
 }
 func (_UnionRepresentation_StringPrefix__KeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{TypeName: "schemadmt.UnionRepresentation_StringPrefix.KeyAssembler"}.AssignBytes(nil)
@@ -44113,7 +44121,6 @@ func (ka *_Unit__KeyAssembler) AssignString(k string) error {
 	default:
 		return ipld.ErrInvalidKey{TypeName: "schemadmt.Unit", Key: &_String{k}}
 	}
-	return nil
 }
 func (_Unit__KeyAssembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{TypeName: "schemadmt.Unit.KeyAssembler"}.AssignBytes(nil)

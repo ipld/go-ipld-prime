@@ -43,7 +43,7 @@ func ExampleLinkSystem_Store() {
 	// This gathers together any parameters that might be needed when making a link.
 	// (For CIDs, the version, the codec, and the multihash type are all parameters we'll need.)
 	// Often, you can probably make this a constant for your whole application.
-	lp := cidlink.LinkPrototype{cid.Prefix{
+	lp := cidlink.LinkPrototype{Prefix: cid.Prefix{
 		Version:  1,    // Usually '1'.
 		Codec:    0x71, // 0x71 means "dag-cbor" -- See the multicodecs table: https://github.com/multiformats/multicodec/
 		MhType:   0x13, // 0x20 means "sha2-512" -- See the multicodecs table: https://github.com/multiformats/multicodec/
@@ -92,7 +92,7 @@ func ExampleLinkSystem_Store() {
 func ExampleLinkSystem_Load() {
 	// Let's say we want to load this link (it's the same one we created in ExampleLinkSystem_Store).
 	cid, _ := cid.Decode("bafyrgqhai26anf3i7pips7q22coa4sz2fr4gk4q4sqdtymvvjyginfzaqewveaeqdh524nsktaq43j65v22xxrybrtertmcfxufdam3da3hbk")
-	lnk := cidlink.Link{cid}
+	lnk := cidlink.Link{Cid: cid}
 
 	// Let's get a LinkSystem.  We're going to be working with CID links,
 	//  so let's get the default LinkSystem that's ready to work with those.

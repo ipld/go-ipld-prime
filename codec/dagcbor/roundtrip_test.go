@@ -84,7 +84,7 @@ func TestRoundtripScalar(t *testing.T) {
 }
 
 func TestRoundtripLinksAndBytes(t *testing.T) {
-	lnk := cidlink.LinkPrototype{cid.Prefix{
+	lnk := cidlink.LinkPrototype{Prefix: cid.Prefix{
 		Version:  1,
 		Codec:    0x71,
 		MhType:   0x13,
