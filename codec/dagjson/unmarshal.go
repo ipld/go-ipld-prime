@@ -21,11 +21,11 @@ import (
 //        tokens before deciding what kind of value to create).
 
 type UnmarshalOptions struct {
-	// If true, parse DAG-CBOR `{"/":"cid string"}` as a Link kind node rather
+	// If true, parse DAG-JSON `{"/":"cid string"}` as a Link kind node rather
 	// than a plain map
 	ParseLinks bool
 
-	// If true, parse DAG-CBOR `{"/":{"bytes":"base64 bytes..."}}` as a Bytes kind
+	// If true, parse DAG-JSON `{"/":{"bytes":"base64 bytes..."}}` as a Bytes kind
 	// node rather than nested plain maps
 	ParseBytes bool
 }

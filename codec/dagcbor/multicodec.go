@@ -28,7 +28,7 @@ func Decode(na ipld.NodeAssembler, r io.Reader) error {
 		return na2.DecodeDagCbor(r)
 	}
 	// Okay, generic builder path.
-	return Unmarshal(na, cbor.NewDecoder(cbor.DecodeOptions{}, r), true)
+	return Unmarshal(na, cbor.NewDecoder(cbor.DecodeOptions{}, r), UnmarshalOptions{AllowLinks: true})
 }
 
 func Encode(n ipld.Node, w io.Writer) error {
@@ -40,5 +40,5 @@ func Encode(n ipld.Node, w io.Writer) error {
 		return n2.EncodeDagCbor(w)
 	}
 	// Okay, generic inspection path.
-	return Marshal(n, cbor.NewEncoder(w), true)
+	return Marshal(n, cbor.NewEncoder(w), MarshalOptions{AllowLinks: true})
 }
