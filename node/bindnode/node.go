@@ -60,17 +60,6 @@ func (w *_prototype) Representation() ipld.NodePrototype {
 	return (*_prototypeRepr)(w)
 }
 
-var (
-	goTypeBool   = reflect.TypeOf(false)
-	goTypeInt    = reflect.TypeOf(int(0))
-	goTypeFloat  = reflect.TypeOf(0.0)
-	goTypeString = reflect.TypeOf("")
-	goTypeBytes  = reflect.TypeOf([]byte{})
-	goTypeLink   = reflect.TypeOf((*ipld.Link)(nil)).Elem()
-
-	schemaTypeFieldName = schema.SpawnString("fieldNameString")
-)
-
 type _node struct {
 	schemaType schema.Type
 
@@ -719,7 +708,7 @@ type _structAssembler struct {
 
 func (w *_structAssembler) AssembleKey() ipld.NodeAssembler {
 	w.curKey = _assembler{
-		schemaType: schemaTypeFieldName,
+		schemaType: schemaTypeString,
 		val:        reflect.New(goTypeString).Elem(),
 	}
 	return &w.curKey
@@ -785,7 +774,9 @@ func (w *_structAssembler) Finish() error {
 }
 
 func (w *_structAssembler) KeyPrototype() ipld.NodePrototype {
-	return &_prototype{schemaType: schemaTypeFieldName, goType: goTypeString}
+	// TODO: if the user provided their own schema with their own typesystem,
+	// the schemaTypeString here may be using the wrong typesystem.
+	return &_prototype{schemaType: schemaTypeString, goType: goTypeString}
 }
 
 func (w *_structAssembler) ValuePrototype(k string) ipld.NodePrototype {
@@ -902,7 +893,7 @@ type _unionAssembler struct {
 
 func (w *_unionAssembler) AssembleKey() ipld.NodeAssembler {
 	w.curKey = _assembler{
-		schemaType: schemaTypeFieldName,
+		schemaType: schemaTypeString,
 		val:        reflect.New(goTypeString).Elem(),
 	}
 	return &w.curKey
@@ -959,7 +950,7 @@ func (w *_unionAssembler) Finish() error {
 }
 
 func (w *_unionAssembler) KeyPrototype() ipld.NodePrototype {
-	return &_prototype{schemaType: schemaTypeFieldName, goType: goTypeString}
+	return &_prototype{schemaType: schemaTypeString, goType: goTypeString}
 }
 
 func (w *_unionAssembler) ValuePrototype(k string) ipld.NodePrototype {

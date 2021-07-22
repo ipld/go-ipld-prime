@@ -45,6 +45,25 @@ func ExampleWrap_withSchema() {
 	// {"Friends":["Sarah","Alex"],"Name":"Michael"}
 }
 
+func ExampleWrap_noSchema() {
+	type Person struct {
+		Name    string
+		Age     int64 // TODO: optional to match other examples
+		Friends []string
+	}
+	person := &Person{
+		Name:    "Michael",
+		Friends: []string{"Sarah", "Alex"},
+	}
+	node := bindnode.Wrap(person, nil)
+
+	nodeRepr := node.Representation()
+	dagjson.Encode(nodeRepr, os.Stdout)
+
+	// Output:
+	// {"Age":0,"Friends":["Sarah","Alex"],"Name":"Michael"}
+}
+
 func ExamplePrototype_onlySchema() {
 	ts := schema.TypeSystem{}
 	ts.Init()

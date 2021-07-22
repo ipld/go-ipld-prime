@@ -5,7 +5,24 @@ import (
 	"reflect"
 	"strings"
 
+	ipld "github.com/ipld/go-ipld-prime"
 	"github.com/ipld/go-ipld-prime/schema"
+)
+
+var (
+	goTypeBool   = reflect.TypeOf(false)
+	goTypeInt    = reflect.TypeOf(int(0))
+	goTypeFloat  = reflect.TypeOf(0.0)
+	goTypeString = reflect.TypeOf("")
+	goTypeBytes  = reflect.TypeOf([]byte{})
+	goTypeLink   = reflect.TypeOf((*ipld.Link)(nil)).Elem()
+
+	schemaTypeBool   = schema.SpawnBool("Bool")
+	schemaTypeInt    = schema.SpawnInt("Int")
+	schemaTypeFloat  = schema.SpawnFloat("Float")
+	schemaTypeString = schema.SpawnString("String")
+	schemaTypeBytes  = schema.SpawnBytes("Bytes")
+	schemaTypeLink   = schema.SpawnLink("Link")
 )
 
 // Consider exposing these APIs later, if they might be useful.
@@ -24,21 +41,21 @@ func inferGoType(typ schema.Type) reflect.Type {
 		return goTypeBytes
 	case *schema.TypeStruct:
 		fields := typ.Fields()
-		goFields := make([]reflect.StructField, len(fields))
+		fieldsGo := make([]reflect.StructField, len(fields))
 		for i, field := range fields {
-			ftyp := inferGoType(field.Type())
+			ftypGo := inferGoType(field.Type())
 			if field.IsNullable() {
-				ftyp = reflect.PtrTo(ftyp)
+				ftypGo = reflect.PtrTo(ftypGo)
 			}
 			if field.IsOptional() {
-				ftyp = reflect.PtrTo(ftyp)
+				ftypGo = reflect.PtrTo(ftypGo)
 			}
-			goFields[i] = reflect.StructField{
+			fieldsGo[i] = reflect.StructField{
 				Name: fieldNameFromSchema(field.Name()),
-				Type: ftyp,
+				Type: ftypGo,
 			}
 		}
-		return reflect.StructOf(goFields)
+		return reflect.StructOf(fieldsGo)
 	case *schema.TypeMap:
 		ktyp := inferGoType(typ.KeyType())
 		vtyp := inferGoType(typ.ValueType())
@@ -54,7 +71,7 @@ func inferGoType(typ schema.Type) reflect.Type {
 		//		Keys   []K
 		//		Values map[K]V
 		//	}
-		goFields := []reflect.StructField{
+		fieldsGo := []reflect.StructField{
 			{
 				Name: "Keys",
 				Type: reflect.SliceOf(ktyp),
@@ -64,7 +81,7 @@ func inferGoType(typ schema.Type) reflect.Type {
 				Type: reflect.MapOf(ktyp, vtyp),
 			},
 		}
-		return reflect.StructOf(goFields)
+		return reflect.StructOf(fieldsGo)
 	case *schema.TypeList:
 		etyp := inferGoType(typ.ValueType())
 		if typ.ValueIsNullable() {
@@ -87,6 +104,78 @@ func fieldNameFromSchema(name string) string {
 	return strings.Title(name)
 }
 
+var defaultTypeSystem schema.TypeSystem
+
+func init() {
+	defaultTypeSystem.Init()
+
+	defaultTypeSystem.Accumulate(schemaTypeBool)
+	defaultTypeSystem.Accumulate(schemaTypeInt)
+	defaultTypeSystem.Accumulate(schemaTypeFloat)
+	defaultTypeSystem.Accumulate(schemaTypeString)
+	defaultTypeSystem.Accumulate(schemaTypeBytes)
+	defaultTypeSystem.Accumulate(schemaTypeLink)
+}
+
+// TODO: support IPLD maps and unions in inferSchema
+
+// TODO: support bringing your own TypeSystem?
+
+// TODO: we should probably avoid re-spawning the same types if the TypeSystem
+// has them, and test that that works as expected
+
 func inferSchema(typ reflect.Type) schema.Type {
-	panic("TODO")
+	switch typ.Kind() {
+	case reflect.Bool:
+		return schemaTypeBool
+	case reflect.Int64:
+		return schemaTypeInt
+	case reflect.Float64:
+		return schemaTypeFloat
+	case reflect.String:
+		return schemaTypeString
+	case reflect.Struct:
+		fieldsSchema := make([]schema.StructField, typ.NumField())
+		for i := range fieldsSchema {
+			field := typ.Field(i)
+			ftyp := field.Type
+			ftypSchema := inferSchema(ftyp)
+			fieldsSchema[i] = schema.SpawnStructField(
+				field.Name, // TODO: allow configuring the name with tags
+				ftypSchema.Name(),
+
+				// TODO: support nullable/optional with tags
+				false,
+				false,
+			)
+		}
+		name := schema.TypeName(typ.Name())
+		if name == "" {
+			panic("TODO: anonymous composite types")
+		}
+		typSchema := schema.SpawnStruct(name, fieldsSchema, nil)
+		defaultTypeSystem.Accumulate(typSchema)
+		return typSchema
+	case reflect.Slice:
+		if typ.Elem().Kind() == reflect.Uint8 {
+			// Special case for []byte.
+			return schemaTypeBytes
+		}
+
+		etyp := typ.Elem()
+		nullable := false
+		if etyp.Kind() == reflect.Ptr {
+			etyp = etyp.Elem()
+			nullable = true
+		}
+		etypSchema := inferSchema(typ.Elem())
+		name := schema.TypeName(typ.Name())
+		if name == "" {
+			name = "List_" + etypSchema.Name()
+		}
+		typSchema := schema.SpawnList(name, etypSchema.Name(), nullable)
+		defaultTypeSystem.Accumulate(typSchema)
+		return typSchema
+	}
+	panic(fmt.Sprintf("%s\n", typ.Kind()))
 }
