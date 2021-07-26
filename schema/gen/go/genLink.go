@@ -53,7 +53,7 @@ func (g linkGenerator) EmitTypedNodeMethodType(w io.Writer) {
 	if g.Type.HasReferencedType() {
 		doTemplate(`
 			func ({{ .Type | TypeSymbol }}) LinkTargetNodePrototype() ipld.NodePrototype {
-				return Type.{{ .Type | TypeSymbol }}__Repr
+				return Type.{{ .Type.ReferencedType | TypeSymbol }}__Repr
 			}
 		`, w, g.AdjCfg, g)
 	}
