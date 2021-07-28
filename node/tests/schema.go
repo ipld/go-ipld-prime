@@ -8,6 +8,7 @@ var allSchemaTests = []struct {
 	name string
 	fn   func(*testing.T, Engine)
 }{
+	{"Links", SchemaTestLinks},
 	{"ListsContainingMaybe", SchemaTestListsContainingMaybe},
 	{"ListsContainingLists", SchemaTestListsContainingLists},
 	{"MapsContainingMaybe", SchemaTestMapsContainingMaybe},
