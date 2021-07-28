@@ -14,6 +14,9 @@ import (
 // In the future, forSchemaTest might return multiple engines.
 
 func forSchemaTest(name string) []tests.EngineSubtest {
+	if name == "Links" {
+		return nil // TODO(mvdan): add support for links
+	}
 	return []tests.EngineSubtest{{
 		Engine: &bindEngine{},
 	}}
