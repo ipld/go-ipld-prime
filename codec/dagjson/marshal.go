@@ -185,7 +185,7 @@ func Marshal(n ipld.Node, sink shared.TokenSink, options MarshalOptions) error {
 			if _, err = sink.Step(&tk); err != nil {
 				return err
 			}
-			tk.Str = base64.StdEncoding.EncodeToString(v)
+			tk.Str = base64.RawStdEncoding.EncodeToString(v)
 			if _, err = sink.Step(&tk); err != nil {
 				return err
 			}

@@ -19,7 +19,7 @@ var byteNodeSorted = fluent.MustBuildMap(basicnode.Prototype__Map{}, 4, func(na 
 	na.AssembleEntry("bytes").AssignBytes([]byte("deadbeef"))
 	na.AssembleEntry("plain").AssignString("olde string")
 })
-var byteSerial = `{"bytes":{"/":{"bytes":"ZGVhZGJlZWY="}},"plain":"olde string"}`
+var byteSerial = `{"bytes":{"/":{"bytes":"ZGVhZGJlZWY"}},"plain":"olde string"}`
 
 func TestRoundtripBytes(t *testing.T) {
 	t.Run("encoding", func(t *testing.T) {
@@ -42,7 +42,7 @@ var encapsulatedNode = fluent.MustBuildMap(basicnode.Prototype__Map{}, 1, func(n
 		sa.AssembleEntry("bytes").AssignBytes([]byte("deadbeef"))
 	})
 })
-var encapsulatedSerial = `{"/":{"bytes":{"/":{"bytes":"ZGVhZGJlZWY="}}}}`
+var encapsulatedSerial = `{"/":{"bytes":{"/":{"bytes":"ZGVhZGJlZWY"}}}}`
 
 func TestEncapsulatedBytes(t *testing.T) {
 	t.Run("encoding", func(t *testing.T) {
