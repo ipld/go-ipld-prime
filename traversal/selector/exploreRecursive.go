@@ -156,9 +156,6 @@ func (s ExploreRecursive) replaceRecursiveEdge(nextSelector Selector, replacemen
 
 // Decide if a node directly matches
 func (s ExploreRecursive) Decide(n ipld.Node) bool {
-	if s.stopAt != nil && s.stopAt.Match(n) {
-		return false
-	}
 	return s.current.Decide(n)
 }
 
@@ -203,7 +200,7 @@ func (pc ParseContext) ParseExploreRecursive(n ipld.Node) (Selector, error) {
 	var stopCondition *Condition
 	stop, err := n.LookupByString(SelectorKey_StopAt)
 	if err == nil {
-		condition, err := pc.PushParent(erc).ParseCondition(stop)
+		condition, err := pc.ParseCondition(stop)
 		if err != nil {
 			return nil, err
 		}

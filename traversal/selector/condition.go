@@ -28,7 +28,7 @@ const (
 func (c *Condition) Match(n ipld.Node) bool {
 	switch c.mode {
 	case ConditionMode_Link:
-		if n.Kind() != ipld.Kind_Link || c.match.Kind() != ipld.Kind_Link {
+		if n.Kind() != ipld.Kind_Link {
 			return false
 		}
 		lnk, err := n.AsLink()
