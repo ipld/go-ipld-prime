@@ -35,6 +35,7 @@ type ExploreRecursive struct {
 	sequence Selector       // selector for element we're interested in
 	current  Selector       // selector to apply to the current node
 	limit    RecursionLimit // the limit for this recursive selector
+	stopAt   *Condition     // a condition for not exploring the node or children
 }
 
 // RecursionLimit_Mode is an enum that represents the type of a recursion limit
@@ -86,6 +87,10 @@ func (s ExploreRecursive) Interests() []ipld.PathSegment {
 
 // Explore returns the node's selector for all fields
 func (s ExploreRecursive) Explore(n ipld.Node, p ipld.PathSegment) Selector {
+	if s.stopAt != nil && s.stopAt.Match(n) {
+		return nil
+	}
+
 	nextSelector := s.current.Explore(n, p)
 	limit := s.limit
 
@@ -93,16 +98,16 @@ func (s ExploreRecursive) Explore(n ipld.Node, p ipld.PathSegment) Selector {
 		return nil
 	}
 	if !s.hasRecursiveEdge(nextSelector) {
-		return ExploreRecursive{s.sequence, nextSelector, limit}
+		return ExploreRecursive{s.sequence, nextSelector, limit, s.stopAt}
 	}
 	switch limit.mode {
 	case RecursionLimit_Depth:
 		if limit.depth < 2 {
 			return s.replaceRecursiveEdge(nextSelector, nil)
 		}
-		return ExploreRecursive{s.sequence, s.replaceRecursiveEdge(nextSelector, s.sequence), RecursionLimit{RecursionLimit_Depth, limit.depth - 1}}
+		return ExploreRecursive{s.sequence, s.replaceRecursiveEdge(nextSelector, s.sequence), RecursionLimit{RecursionLimit_Depth, limit.depth - 1}, s.stopAt}
 	case RecursionLimit_None:
-		return ExploreRecursive{s.sequence, s.replaceRecursiveEdge(nextSelector, s.sequence), limit}
+		return ExploreRecursive{s.sequence, s.replaceRecursiveEdge(nextSelector, s.sequence), limit, s.stopAt}
 	default:
 		panic("Unsupported recursion limit type")
 	}
@@ -149,8 +154,11 @@ func (s ExploreRecursive) replaceRecursiveEdge(nextSelector Selector, replacemen
 	return nextSelector
 }
 
-// Decide always returns false because this is not a matcher
+// Decide if a node directly matches
 func (s ExploreRecursive) Decide(n ipld.Node) bool {
+	if s.stopAt != nil && s.stopAt.Match(n) {
+		return false
+	}
 	return s.current.Decide(n)
 }
 
@@ -192,7 +200,16 @@ func (pc ParseContext) ParseExploreRecursive(n ipld.Node) (Selector, error) {
 	if erc.edgesFound == 0 {
 		return nil, fmt.Errorf("selector spec parse rejected: ExploreRecursive must have at least one ExploreRecursiveEdge")
 	}
-	return ExploreRecursive{selector, selector, limit}, nil
+	var stopCondition *Condition
+	stop, err := n.LookupByString(SelectorKey_StopAt)
+	if err == nil {
+		condition, err := pc.PushParent(erc).ParseCondition(stop)
+		if err != nil {
+			return nil, err
+		}
+		stopCondition = &condition
+	}
+	return ExploreRecursive{selector, selector, limit, stopCondition}, nil
 }
 
 func parseLimit(n ipld.Node) (RecursionLimit, error) {
