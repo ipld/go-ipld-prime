@@ -19,3 +19,14 @@ jobs:
       uses: actions/checkout@v2
     - name: Test
       run: go test ./...
+    - name: Checkout codec-fixtures
+      uses: actions/checkout@v2
+      with:
+        repository: ipld/codec-fixtures
+        path: codec-fixtures
+    - name: Run codec-fixtures tests
+      run: |
+        cd codec-fixtures/go
+        echo "replace github.com/ipld/go-ipld-prime => ../../" >> go.mod
+        go test -v ./...
+
