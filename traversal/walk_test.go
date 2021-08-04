@@ -1,11 +1,13 @@
 package traversal_test
 
 import (
+	"bytes"
 	"testing"
 
 	. "github.com/warpfork/go-wish"
 
 	"github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/codec/dagjson"
 	_ "github.com/ipld/go-ipld-prime/codec/dagjson"
 	"github.com/ipld/go-ipld-prime/fluent"
 	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
@@ -129,6 +131,60 @@ func TestWalkMatching(t *testing.T) {
 			switch order {
 			case 0:
 				Wish(t, n, ShouldEqual, middleMapNode)
+				Wish(t, prog.Path.String(), ShouldEqual, "")
+			case 1:
+				Wish(t, n, ShouldEqual, basicnode.NewBool(true))
+				Wish(t, prog.Path.String(), ShouldEqual, "foo")
+			case 2:
+				Wish(t, n, ShouldEqual, basicnode.NewBool(false))
+				Wish(t, prog.Path.String(), ShouldEqual, "bar")
+			case 3:
+				Wish(t, n, ShouldEqual, fluent.MustBuildMap(basicnode.Prototype__Map{}, 2, func(na fluent.MapAssembler) {
+					na.AssembleEntry("alink").AssignLink(leafAlphaLnk)
+					na.AssembleEntry("nonlink").AssignString("zoo")
+				}))
+				Wish(t, prog.Path.String(), ShouldEqual, "nested")
+			case 4:
+				Wish(t, n, ShouldEqual, basicnode.NewString("alpha"))
+				Wish(t, prog.Path.String(), ShouldEqual, "nested/alink")
+				Wish(t, prog.LastBlock.Path.String(), ShouldEqual, "nested/alink")
+				Wish(t, prog.LastBlock.Link.String(), ShouldEqual, leafAlphaLnk.String())
+
+			case 5:
+				Wish(t, n, ShouldEqual, basicnode.NewString("zoo"))
+				Wish(t, prog.Path.String(), ShouldEqual, "nested/nonlink")
+			}
+			order++
+			return nil
+		})
+		Wish(t, err, ShouldEqual, nil)
+		Wish(t, order, ShouldEqual, 6)
+	})
+	t.Run("traversing after serialization round trip should not change order", func(t *testing.T) {
+		ss := ssb.ExploreRecursive(selector.RecursionLimitDepth(3), ssb.ExploreUnion(
+			ssb.Matcher(),
+			ssb.ExploreAll(ssb.ExploreRecursiveEdge()),
+		))
+		s, err := ss.Selector()
+		var order int
+		buf := new(bytes.Buffer)
+		err = dagjson.Encode(middleMapNode, buf)
+		Wish(t, err, ShouldEqual, nil)
+		nb := basicnode.Prototype.Any.NewBuilder()
+		err = dagjson.Decode(nb, buf)
+		Wish(t, err, ShouldEqual, nil)
+		decodedMiddleMapNode := nb.Build()
+		lsys := cidlink.DefaultLinkSystem()
+		lsys.StorageReadOpener = (&store).OpenRead
+		err = traversal.Progress{
+			Cfg: &traversal.Config{
+				LinkSystem:                     lsys,
+				LinkTargetNodePrototypeChooser: basicnode.Chooser,
+			},
+		}.WalkMatching(decodedMiddleMapNode, s, func(prog traversal.Progress, n ipld.Node) error {
+			switch order {
+			case 0:
+				Wish(t, n, ShouldEqual, decodedMiddleMapNode)
 				Wish(t, prog.Path.String(), ShouldEqual, "")
 			case 1:
 				Wish(t, n, ShouldEqual, basicnode.NewBool(true))
