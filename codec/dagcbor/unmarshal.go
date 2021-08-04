@@ -47,7 +47,7 @@ func unmarshal1(na ipld.NodeAssembler, tokSrc shared.TokenSource, gas *int, opti
 	if err != nil {
 		return err
 	}
-	if done && !tk.Type.IsValue() {
+	if done && !tk.Type.IsValue() && tk.Type != tok.TNull {
 		return fmt.Errorf("unexpected eof")
 	}
 	return unmarshal2(na, tokSrc, &tk, gas, options)
