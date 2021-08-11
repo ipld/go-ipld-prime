@@ -37,7 +37,55 @@ Unreleased on master
 Changes here are on the master branch, but not in any tagged release yet.
 When a release tag is made, this block of bullet points will just slide down to the [Released Changes](#released-changes) section.
 
-- _nothing yet :)_
+- Fixed: cbor, dag-cbor, json, and dag-json codecs now all accept parsing a block that contains just a null token alone.  (Previously, this returned an "unexpected EOF" error, which was silly.)
+  [[#217](https://github.com/ipld/go-ipld-prime/pull/217)]
+- Fixed (upstream): json floats are actually supported.  (You might've had this already, if anything dragged in a newer version of the `refmt` library.  We just make sure to require this ourselves in our `go.mod` file now.)
+  [[#215](https://github.com/ipld/go-ipld-prime/pull/215)]
+- New: Selectors now support some kinds of conditions.  Specifically, `ExploreRecursive` clauses can contain a `stopAt` condition, and the condition system now supports `Condition_IsLink`, which can be used to do an equality check for CIDs.
+  [[#214](https://github.com/ipld/go-ipld-prime/pull/214)]
+- Fixed: in codegen'd types, the `LinkTargetNodePrototype` on links was returning the wrong prototype; now it returns the right one.
+  [[#211](https://github.com/ipld/go-ipld-prime/pull/211)]
+- New: `schema.TypedPrototype` interface, which is like `ipld.NodePrototype` but also has methods for asking `Type() schema.Type` and `Representation() ipld.NodePrototype`, both of which should probably instantly make sense to you.
+  [[#195](https://github.com/ipld/go-ipld-prime/pull/195)]
+- Changed: the dag-json and dag-cbor codecs now apply sorting.
+  [[#203](https://github.com/ipld/go-ipld-prime/pull/203), [#204](https://github.com/ipld/go-ipld-prime/pull/204)]
+	- This means all serial data created with these codecs is sorted as advised by their respective specifications.
+	  Previously, the implementations of these codecs was order-preserving, and emitted data in whatever order the `ipld.Node` yielded it.
+	- There may be new performance costs originating from this sorting.
+	- The codecs do not reject other orderings when parsing serial data.
+	  The `ipld.Node` trees resulting from deserialization will still preserve the serialized order.
+	  However, it has now become impossible to re-encode data in that same preserved order.
+	- If doing your own encoding, there are customization options in `dagcbor.MarshalOptions.MapSortMode` and `dagjson.MarshalOptions.SortMapKeys`.
+	  (However, note that these options are not available to you while using any systems that only operate in terms of multicodec codes.)
+	- _Be cautious of this change._  It is now extremely easy to write code which puts data into an `ipld.Node` in memory in one order,
+	  then save and load that data using these codecs, and end up with different data as a result because the sorting changes the order of data.
+	  For some applications, this may not be a problem; for others, it may be surprising.
+	  In particular, mind this carefully in the presense of other order-sensitive logic -- for example,
+	  such as when using Selectors, whose behaviors also depend on ordering of data returned when iterating over an `ipld.Node`.
+- Fixed/Changed: the dag-json codec no longer emits whitespace (!).  It is now spec-compliant.
+  [[#202](https://github.com/ipld/go-ipld-prime/pull/202)]
+	- This means hashes of content produced by dag-json codec will change.  This is unfortunate, but the previous implementation was woefully and wildly out of sync with the spec, and addressing that is a predominating concern.
+- Removed: `fluent/quip` has been dropped.  `fluent/qp` is superior.  `fluent/quip` was too easy to use incorrectly, so we no longer offer it.
+  [[#197](https://github.com/ipld/go-ipld-prime/pull/197)]
+	- This was an experimental package introduced a few releases ago, together with caveats that we may choose to drop it.  The warning was purposeful!
+	  We don't believe that this will be too painful of a change; not many things depended on the `fluent/quip` variant, and those that did should not be difficult to rewrite to `fluent/qp`.
+- New: `node/basic.Chooser` is a function that implements `traversal.LinkTargetNodePrototypeChooser`.  It's a small handy quality-of-life increase if you need to supply such a function, which is common.
+  [[#198](https://github.com/ipld/go-ipld-prime/pull/198)]
+- New: `bindnode`!  **This is a huge feature.**  The beginnings of it may have been visible in v0.10.0, but it's grown into a usable thing we're ready to talk about.
+	- Bindnode lets you write golang types and structures, and "bind" them into being IPLD Nodes and supporting Data Model operations by using golang reflection.
+	- The result of working with `bindnode` is somewhere between using basicnode and using codegen:
+	  it's going to provide some structural constraints (like codegen) and provide moderate performance (it lets you use structs rather than memory-expensive maps; but reflection is still going to be slower than codegen).
+	- However, most importantly, `bindnode` is *nice to use*.  It doesn't have a huge barrier to entry like codegen does.
+	- `bindnode` can be used with _or without_ IPLD Schemas.  For basic golang types, a schema can be inferred automatically.  For more advanced features (e.g. any representation customization), you can provide a Schema.
+	- Please note that though it is now usable, bindnode remains _in development_.  There is not yet any promise that it will be frozen against changes.
+		- In fact, several changes are expected; in particular, be advised there is some sizable change expected around the shape of golang types expected for unions.
+- Improved: tests for behavior of schema typed nodes are now extracted to a package, where they are reusable.
+	- The same tests now cover the `bindnode` implementation, as well as being used in tests of our codegen outputs.
+	- Previously, these tests were already mostly agnostic of implementation, but had been thrown into packages in a way that made them hard to reuse.
+- Improved (or Fixed, depending on your point of view): dag-json codec now supports bytes as per the spec.
+  [[#166](https://github.com/ipld/go-ipld-prime/pull/166),[#216](https://github.com/ipld/go-ipld-prime/pull/216)]
+	- Bytes are encoded in roughly this form: `{"/":{"bytes":"base64data"}}`.
+	- Note: the json codec does _not_ include this behavior; this is behavior specific to dag-json.
 
 
 
