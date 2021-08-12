@@ -1,4 +1,7 @@
 // Package bindnode provides an ipld.Node implementation via Go reflection.
+//
+// This package is EXPERIMENTAL; its behavior and API might change as it's still
+// in development.
 package bindnode
 
 import (
