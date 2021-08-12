@@ -59,6 +59,10 @@ most of the changes are around codecs becoming *more* spec-compliant.
 So, for example, if you were using another IPLD library that always enforced sorting on e.g. DAG-CBOR,
 you won't be surprised or experience it much like a "change" when using this version of go-ipld-prime, which now also enforces such sorting in that codec.
 
+Also!  At least one huge and awesome new feature: `bindnode`.
+This is a new implementation of `ipld.Node` which can bind to native golang structures using reflection,
+which provides a new and easy-to-use way to move data in and out of golang structures (or traverse them, etc!) with IPLD interfaces and codecs.
+
 See the full change list for details:
 
 - New: some new helpful constructors for making Selectors out of serial forms can now be found in the `traversal/selector/parse` package.
