@@ -21,6 +21,7 @@ import (
 // the other provided type. For example, we can infer an unnamed Go struct type
 // for a schema struct tyep, and we can infer a schema Int type for a Go int64
 // type. The inferring logic is still a work in progress and subject to change.
+// At this time, inferring IPLD Unions and Enums from Go types is not supported.
 //
 // When supplying a non-nil ptrType, Prototype only obtains the Go pointer type
 // from it, so its underlying value will typically be nil. For example:

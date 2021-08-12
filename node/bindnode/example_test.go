@@ -1,6 +1,7 @@
 package bindnode_test
 
 import (
+	"fmt"
 	"os"
 
 	ipld "github.com/ipld/go-ipld-prime"
@@ -98,4 +99,61 @@ func ExamplePrototype_onlySchema() {
 
 	// Output:
 	// {"Friends":["Sarah","Alex"],"Name":"Michael"}
+}
+
+func ExamplePrototype_union() {
+	ts := schema.TypeSystem{}
+	ts.Init()
+	ts.Accumulate(schema.SpawnString("String"))
+	ts.Accumulate(schema.SpawnInt("Int"))
+	ts.Accumulate(schema.SpawnUnion("StringOrInt",
+		[]schema.TypeName{
+			"String",
+			"Int",
+		},
+		schema.SpawnUnionRepresentationKeyed(map[string]schema.TypeName{
+			"hasString": "String",
+			"hasInt":    "Int",
+		}),
+	))
+
+	schemaType := ts.TypeByName("StringOrInt")
+
+	type CustomIntType int64
+	type StringOrInt struct {
+		String *string
+		Int    *CustomIntType // We can use custom types, too.
+	}
+
+	proto := bindnode.Prototype((*StringOrInt)(nil), schemaType)
+
+	node, err := qp.BuildMap(proto.Representation(), -1, func(ma ipld.MapAssembler) {
+		qp.MapEntry(ma, "hasInt", qp.Int(123))
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Print("Type level DAG-JSON: ")
+	dagjson.Encode(node, os.Stdout)
+	fmt.Println()
+
+	fmt.Print("Representation level DAG-JSON: ")
+	nodeRepr := node.(schema.TypedNode).Representation()
+	dagjson.Encode(nodeRepr, os.Stdout)
+	fmt.Println()
+
+	// Inspect what the underlying Go value contains.
+	union := bindnode.Unwrap(node).(*StringOrInt)
+	switch {
+	case union.String != nil:
+		fmt.Printf("Go StringOrInt.String: %v\n", *union.String)
+	case union.Int != nil:
+		fmt.Printf("Go StringOrInt.Int: %v\n", *union.Int)
+	}
+
+	// Output:
+	// Type level DAG-JSON: {"Int":123}
+	// Representation level DAG-JSON: {"hasInt":123}
+	// Go StringOrInt.Int: 123
 }
