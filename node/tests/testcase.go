@@ -11,6 +11,7 @@ import (
 	. "github.com/warpfork/go-wish"
 
 	"github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/codec"
 	"github.com/ipld/go-ipld-prime/codec/dagjson"
 	"github.com/ipld/go-ipld-prime/schema"
 	"github.com/ipld/go-ipld-prime/traversal"
@@ -210,10 +211,10 @@ func testMarshal(t *testing.T, n ipld.Node, data string) {
 	// We'll marshal with "pretty" linebreaks and indents (and re-format the fixture to the same) for better diffing.
 	prettyprint := json.EncodeOptions{Line: []byte{'\n'}, Indent: []byte{'\t'}}
 	var buf bytes.Buffer
-	err := dagjson.Marshal(n, json.NewEncoder(&buf, prettyprint), dagjson.MarshalOptions{
+	err := dagjson.Marshal(n, json.NewEncoder(&buf, prettyprint), dagjson.EncodeOptions{
 		EncodeLinks: true,
 		EncodeBytes: true,
-		SortMapKeys: true,
+		MapSortMode: codec.MapSortMode_Lexical,
 	})
 	if err != nil {
 		t.Errorf("marshal failed: %s", err)

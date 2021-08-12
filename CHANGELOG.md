@@ -58,7 +58,7 @@ When a release tag is made, this block of bullet points will just slide down to 
 	- The codecs do not reject other orderings when parsing serial data.
 	  The `ipld.Node` trees resulting from deserialization will still preserve the serialized order.
 	  However, it has now become impossible to re-encode data in that same preserved order.
-	- If doing your own encoding, there are customization options in `dagcbor.MarshalOptions.MapSortMode` and `dagjson.MarshalOptions.SortMapKeys`.
+	- If doing your own encoding, there are customization options in `dagcbor.EncodeOptions.MapSortMode` and `dagjson.EncodeOptions.MapSortMode`.
 	  (However, note that these options are not available to you while using any systems that only operate in terms of multicodec codes.)
 	- _Be cautious of this change._  It is now extremely easy to write code which puts data into an `ipld.Node` in memory in one order,
 	  then save and load that data using these codecs, and end up with different data as a result because the sorting changes the order of data.

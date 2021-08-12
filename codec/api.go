@@ -42,3 +42,11 @@ type ErrBudgetExhausted struct{}
 func (e ErrBudgetExhausted) Error() string {
 	return "decoder resource budget exhausted (message too long or too complex)"
 }
+
+type MapSortMode uint8
+
+const (
+	MapSortMode_None MapSortMode = iota
+	MapSortMode_Lexical
+	MapSortMode_RFC7049
+)

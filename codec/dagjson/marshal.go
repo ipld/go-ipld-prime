@@ -3,12 +3,15 @@ package dagjson
 import (
 	"encoding/base64"
 	"fmt"
+	"io"
 	"sort"
 
+	"github.com/polydawn/refmt/json"
 	"github.com/polydawn/refmt/shared"
 	"github.com/polydawn/refmt/tok"
 
 	ipld "github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/codec"
 	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
 )
 
@@ -16,7 +19,9 @@ import (
 // except for the `case ipld.Kind_Link` block,
 // which is dag-json's special sauce for schemafree links.
 
-type MarshalOptions struct {
+// EncodeOptions can be used to customize the behavior of an encoding function.
+// The Encode method on this struct fits the ipld.Encoder function interface.
+type EncodeOptions struct {
 	// If true, will encode nodes with a Link kind using the DAG-JSON
 	// `{"/":"cid string"}` form.
 	EncodeLinks bool
@@ -25,12 +30,26 @@ type MarshalOptions struct {
 	// `{"/":{"bytes":"base64 bytes..."}}` form.
 	EncodeBytes bool
 
-	// If true, will sort map keys prior to encoding using plain bytewise
-	// comparison.
-	SortMapKeys bool
+	// Control the sorting of map keys, using one of the `codec.MapSortMode_*` constants.
+	MapSortMode codec.MapSortMode
 }
 
-func Marshal(n ipld.Node, sink shared.TokenSink, options MarshalOptions) error {
+// Encode walks the given ipld.Node and serializes it to the given io.Writer.
+// Encode fits the ipld.Encoder function interface.
+//
+// The behavior of the encoder can be customized by setting fields in the EncodeOptions struct before calling this method.
+func (cfg EncodeOptions) Encode(n ipld.Node, w io.Writer) error {
+	return Marshal(n, json.NewEncoder(w, json.EncodeOptions{}), cfg)
+}
+
+// Future work: we would like to remove the Marshal function,
+// and in particular, stop seeing types from refmt (like shared.TokenSink) be visible.
+// Right now, some kinds of configuration (e.g. for whitespace and prettyprint) are only available through interacting with the refmt types;
+// we should improve our API so that this can be done with only our own types in this package.
+
+// Marshal is a deprecated function.
+// Please consider switching to EncodeOptions.Encode instead.
+func Marshal(n ipld.Node, sink shared.TokenSink, options EncodeOptions) error {
 	var tk tok.Token
 	switch n.Kind() {
 	case ipld.Kind_Invalid:
@@ -46,7 +65,7 @@ func Marshal(n ipld.Node, sink shared.TokenSink, options MarshalOptions) error {
 		if _, err := sink.Step(&tk); err != nil {
 			return err
 		}
-		if options.SortMapKeys {
+		if options.MapSortMode != codec.MapSortMode_None {
 			// Collect map entries, then sort by key
 			type entry struct {
 				key   string
@@ -64,7 +83,22 @@ func Marshal(n ipld.Node, sink shared.TokenSink, options MarshalOptions) error {
 				}
 				entries = append(entries, entry{keyStr, v})
 			}
-			sort.Slice(entries, func(i, j int) bool { return entries[i].key < entries[j].key })
+			// Apply the desired sort function.
+			switch options.MapSortMode {
+			case codec.MapSortMode_Lexical:
+				sort.Slice(entries, func(i, j int) bool {
+					return entries[i].key < entries[j].key
+				})
+			case codec.MapSortMode_RFC7049:
+				sort.Slice(entries, func(i, j int) bool {
+					// RFC7049 style sort as per DAG-CBOR spec
+					li, lj := len(entries[i].key), len(entries[j].key)
+					if li == lj {
+						return entries[i].key < entries[j].key
+					}
+					return li < lj
+				})
+			}
 			// Emit map contents (and recurse).
 			for _, e := range entries {
 				tk.Type = tok.TString

@@ -1,12 +1,10 @@
 package dagjson
 
 import (
-	"fmt"
 	"io"
 
-	"github.com/polydawn/refmt/json"
-
 	"github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/codec"
 	"github.com/ipld/go-ipld-prime/multicodec"
 )
 
@@ -20,46 +18,33 @@ func init() {
 	multicodec.RegisterDecoder(0x0129, Decode)
 }
 
+// Decode deserializes data from the given io.Reader and feeds it into the given ipld.NodeAssembler.
+// Decode fits the ipld.Decoder function interface.
+//
+// A similar function is available on DecodeOptions type if you would like to customize any of the decoding details.
+// This function uses the defaults for the dag-json codec
+// (meaning: links are decoded, and bytes are decoded).
+//
+// This is the function that will be registered in the default multicodec registry during package init time.
 func Decode(na ipld.NodeAssembler, r io.Reader) error {
-	err := Unmarshal(na, json.NewDecoder(r), UnmarshalOptions{
+	return DecodeOptions{
 		ParseLinks: true,
 		ParseBytes: true,
-	})
-	if err != nil {
-		return err
-	}
-	// Slurp any remaining whitespace.
-	//  (This is relevant if our reader is tee'ing bytes to a hasher, and
-	//   the json contained any trailing whitespace.)
-	//  (We can't actually support multiple objects per reader from here;
-	//   we can't unpeek if we find a non-whitespace token, so our only
-	//    option is to error if this reader seems to contain more content.)
-	var buf [1]byte
-	for {
-		_, err := r.Read(buf[:])
-		switch buf[0] {
-		case ' ', 0x0, '\t', '\r', '\n': // continue
-		default:
-			return fmt.Errorf("unexpected content after end of json object")
-		}
-		if err == nil {
-			continue
-		} else if err == io.EOF {
-			return nil
-		} else {
-			return err
-		}
-	}
+	}.Decode(na, r)
 }
 
+// Encode walks the given ipld.Node and serializes it to the given io.Writer.
+// Encode fits the ipld.Encoder function interface.
+//
+// A similar function is available on EncodeOptions type if you would like to customize any of the encoding details.
+// This function uses the defaults for the dag-json codec
+// (meaning: links are encoded, bytes are encoded, and map keys are sorted during encode).
+//
+// This is the function that will be registered in the default multicodec registry during package init time.
 func Encode(n ipld.Node, w io.Writer) error {
-	// Shell out directly to generic inspection path.
-	//  (There's not really any fastpaths of note for json.)
-	// Write another function if you need to tune encoding options about whitespace.
-	return Marshal(n, json.NewEncoder(w, json.EncodeOptions{}),
-		MarshalOptions{
-			EncodeLinks: true,
-			EncodeBytes: true,
-			SortMapKeys: true,
-		})
+	return EncodeOptions{
+		EncodeLinks: true,
+		EncodeBytes: true,
+		MapSortMode: codec.MapSortMode_Lexical,
+	}.Encode(n, w)
 }
