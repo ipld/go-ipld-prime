@@ -10,6 +10,9 @@ import (
 	ipld "github.com/ipld/go-ipld-prime"
 )
 
+// Future work: we would like to remove the Unmarshal function,
+// and in particular, stop seeing types from refmt (like shared.TokenSource) be visible.
+
 // wishlist: if we could reconstruct the ipld.Path of an error while
 //  *unwinding* from that error... that'd be nice.
 //   (trying to build it proactively would waste tons of allocs on the happy path.)
@@ -19,6 +22,9 @@ import (
 //  They're effectively doing double duty: testing the builders, too.
 //   (Is that sensible?  Should it be refactored?  Not sure; maybe!)
 
+// Unmarshal is a deprecated function.
+// Please consider switching to one of the Decode functions of one of the subpackages instead.
+//
 // Unmarshal provides a very general tokens-to-node unmarshalling feature.
 // It can handle either cbor or json by being combined with a refmt TokenSink.
 //

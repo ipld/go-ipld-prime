@@ -3,8 +3,10 @@ package dagjson
 import (
 	"encoding/base64"
 	"fmt"
+	"io"
 
 	cid "github.com/ipfs/go-cid"
+	"github.com/polydawn/refmt/json"
 	"github.com/polydawn/refmt/shared"
 	"github.com/polydawn/refmt/tok"
 
@@ -20,7 +22,9 @@ import (
 //       several steps of handling maps, because it necessitates peeking several
 //        tokens before deciding what kind of value to create).
 
-type UnmarshalOptions struct {
+// DecodeOptions can be used to customize the behavior of a decoding function.
+// The Decode method on this struct fits the ipld.Decoder function interface.
+type DecodeOptions struct {
 	// If true, parse DAG-JSON `{"/":"cid string"}` as a Link kind node rather
 	// than a plain map
 	ParseLinks bool
@@ -30,7 +34,48 @@ type UnmarshalOptions struct {
 	ParseBytes bool
 }
 
-func Unmarshal(na ipld.NodeAssembler, tokSrc shared.TokenSource, options UnmarshalOptions) error {
+// Decode deserializes data from the given io.Reader and feeds it into the given ipld.NodeAssembler.
+// Decode fits the ipld.Decoder function interface.
+//
+// The behavior of the decoder can be customized by setting fields in the DecodeOptions struct before calling this method.
+func (cfg DecodeOptions) Decode(na ipld.NodeAssembler, r io.Reader) error {
+	err := Unmarshal(na, json.NewDecoder(r), cfg)
+	if err != nil {
+		return err
+	}
+	// Slurp any remaining whitespace.
+	//  This behavior may be due for review.
+	//  (This is relevant if our reader is tee'ing bytes to a hasher, and
+	//   the json contained any trailing whitespace.)
+	//  (We can't actually support multiple objects per reader from here;
+	//   we can't unpeek if we find a non-whitespace token, so our only
+	//    option is to error if this reader seems to contain more content.)
+	var buf [1]byte
+	for {
+		_, err := r.Read(buf[:])
+		switch buf[0] {
+		case ' ', 0x0, '\t', '\r', '\n': // continue
+		default:
+			return fmt.Errorf("unexpected content after end of json object")
+		}
+		if err == nil {
+			continue
+		} else if err == io.EOF {
+			return nil
+		} else {
+			return err
+		}
+	}
+}
+
+// Future work: we would like to remove the Unmarshal function,
+// and in particular, stop seeing types from refmt (like shared.TokenSource) be visible.
+// Right now, some kinds of configuration (e.g. for whitespace and prettyprint) are only available through interacting with the refmt types;
+// we should improve our API so that this can be done with only our own types in this package.
+
+// Unmarshal is a deprecated function.
+// Please consider switching to DecodeOptions.Decode instead.
+func Unmarshal(na ipld.NodeAssembler, tokSrc shared.TokenSource, options DecodeOptions) error {
 	var st unmarshalState
 	st.options = options
 	done, err := tokSrc.Step(&st.tk[0])
@@ -46,7 +91,7 @@ func Unmarshal(na ipld.NodeAssembler, tokSrc shared.TokenSource, options Unmarsh
 type unmarshalState struct {
 	tk      [7]tok.Token // mostly, only 0'th is used... but [1:7] are used during lookahead for links.
 	shift   int          // how many times to slide something out of tk[1:7] instead of getting a new token.
-	options UnmarshalOptions
+	options DecodeOptions
 }
 
 // step leaves a "new" token in tk[0],

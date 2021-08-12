@@ -9,6 +9,12 @@ import (
 	ipld "github.com/ipld/go-ipld-prime"
 )
 
+// Future work: we would like to remove the Marshal function,
+// and in particular, stop seeing types from refmt (like shared.TokenSink) be visible.
+
+// Marshal is a deprecated function.
+// Please consider switching to one of the Encode functions of one of the subpackages instead.
+//
 // Marshal provides a very general node-to-tokens marshalling feature.
 // It can handle either cbor or json by being combined with a refmt TokenSink.
 //
