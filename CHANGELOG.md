@@ -37,6 +37,30 @@ Unreleased on master
 Changes here are on the master branch, but not in any tagged release yet.
 When a release tag is made, this block of bullet points will just slide down to the [Released Changes](#released-changes) section.
 
+- _nothing yet :)_
+
+
+
+Released Changes
+----------------
+
+### v0.11.0
+
+_2021 August 12_
+
+This release is an odd numbered release, which means it may contain breaking changes.
+
+Unfortunately, the changes here may be particularly, tricky, as well -- for the most part, they're not compile-time detectable.
+They're behavioral changes.  Much more subtle.  Run tests on your systems before accepting these changes.
+Specifically: several codecs now enforce sorting when emitting serial data.
+
+There's also some details of what's changing that makes it milder than it first sounds:
+most of the changes are around codecs becoming *more* spec-compliant.
+So, for example, if you were using another IPLD library that always enforced sorting on e.g. DAG-CBOR,
+you won't be surprised or experience it much like a "change" when using this version of go-ipld-prime, which now also enforces such sorting in that codec.
+
+See the full change list for details:
+
 - New: some new helpful constructors for making Selectors out of serial forms can now be found in the `traversal/selector/parse` package.
   [[#199](https://github.com/ipld/go-ipld-prime/pull/199)]
 	- Some constants are also included which show some examples of creating common selectors from JSON.
@@ -91,9 +115,6 @@ When a release tag is made, this block of bullet points will just slide down to 
 	- Note: the json codec does _not_ include this behavior; this is behavior specific to dag-json.
 
 
-
-Released Changes
-----------------
 
 ### v0.10.0
 
