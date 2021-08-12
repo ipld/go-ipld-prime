@@ -37,6 +37,9 @@ Unreleased on master
 Changes here are on the master branch, but not in any tagged release yet.
 When a release tag is made, this block of bullet points will just slide down to the [Released Changes](#released-changes) section.
 
+- New: some new helpful constructors for making Selectors out of serial forms can now be found in the `traversal/selector/parse` package.
+  [[#199](https://github.com/ipld/go-ipld-prime/pull/199)]
+	- Some constants are also included which show some examples of creating common selectors from JSON.
 - Fixed: cbor, dag-cbor, json, and dag-json codecs now all accept parsing a block that contains just a null token alone.  (Previously, this returned an "unexpected EOF" error, which was silly.)
   [[#217](https://github.com/ipld/go-ipld-prime/pull/217)]
 - Fixed (upstream): json floats are actually supported.  (You might've had this already, if anything dragged in a newer version of the `refmt` library.  We just make sure to require this ourselves in our `go.mod` file now.)
