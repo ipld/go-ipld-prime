@@ -52,7 +52,7 @@ func (w *_nodeRepr) Kind() ipld.Kind {
 	case schema.UnionRepresentation_Keyed:
 		return ipld.Kind_Map
 	case schema.UnionRepresentation_Kinded:
-		haveIdx := int(w.val.FieldByName("Index").Int())
+		haveIdx, _ := unionMember(w.val)
 		mtyp := w.schemaType.(*schema.TypeUnion).Members()[haveIdx]
 		return mtyp.TypeKind().ActsLike()
 	case schema.UnionRepresentation_Stringprefix:
@@ -108,12 +108,12 @@ func inboundMappedType(typ *schema.TypeUnion, stg schema.UnionRepresentation_Key
 func (w *_nodeRepr) asKinded(stg schema.UnionRepresentation_Kinded, kind ipld.Kind) *_nodeRepr {
 	name := stg.GetMember(kind)
 	members := w.schemaType.(*schema.TypeUnion).Members()
-	for _, member := range members {
+	for i, member := range members {
 		if member.Name() != name {
 			continue
 		}
 		w2 := *w
-		w2.val = w.val.FieldByName("Value").Elem()
+		w2.val = w.val.Field(i).Elem()
 		w2.schemaType = member
 		return &w2
 	}
@@ -340,11 +340,11 @@ func (w *_nodeRepr) AsString() (string, error) {
 		}
 		return b.String(), nil
 	case schema.UnionRepresentation_Stringprefix:
-		haveIdx := int(w.val.FieldByName("Index").Int())
+		haveIdx, mval := unionMember(w.val)
 		mtyp := w.schemaType.(*schema.TypeUnion).Members()[haveIdx]
 
 		w2 := *w
-		w2.val = w.val.FieldByName("Value").Elem()
+		w2.val = mval
 		w2.schemaType = mtyp
 		s, err := w2.AsString()
 		if err != nil {
@@ -432,8 +432,9 @@ func (w *_assemblerRepr) asKinded(stg schema.UnionRepresentation_Kinded, kind ip
 			continue
 		}
 		w2 := *w
-		goType := inferGoType(member) // TODO: do this upfront
-		w2.val = reflect.New(goType).Elem()
+		goType := w.val.Field(idx).Type().Elem()
+		valPtr := reflect.New(goType)
+		w2.val = valPtr.Elem()
 		w2.schemaType = member
 
 		// Layer a new finish func on top, to set Index/Value.
@@ -443,8 +444,7 @@ func (w *_assemblerRepr) asKinded(stg schema.UnionRepresentation_Kinded, kind ip
 					return err
 				}
 			}
-			w.val.FieldByName("Index").SetInt(int64(idx))
-			w.val.FieldByName("Value").Set(w2.val)
+			unionSetMember(w.val, idx, valPtr)
 			return nil
 		}
 		return &w2
@@ -557,8 +557,9 @@ func (w *_assemblerRepr) AssignString(s string) error {
 			if member.Name() != name {
 				continue
 			}
-			w.val.FieldByName("Index").SetInt(int64(idx))
-			w.val.FieldByName("Value").Set(reflect.ValueOf(s))
+			valPtr := reflect.New(goTypeString)
+			valPtr.Elem().SetString(s)
+			unionSetMember(w.val, idx, valPtr)
 			return nil
 		}
 		panic("TODO: GetMember result is missing?")
@@ -575,8 +576,9 @@ func (w *_assemblerRepr) AssignString(s string) error {
 			}
 
 			w2 := *w
-			goType := inferGoType(member) // TODO: do this upfront
-			w2.val = reflect.New(goType).Elem()
+			goType := w.val.Field(idx).Type().Elem()
+			valPtr := reflect.New(goType)
+			w2.val = valPtr.Elem()
 			w2.schemaType = member
 			w2.finish = func() error {
 				if w.finish != nil {
@@ -584,8 +586,7 @@ func (w *_assemblerRepr) AssignString(s string) error {
 						return err
 					}
 				}
-				w.val.FieldByName("Index").SetInt(int64(idx))
-				w.val.FieldByName("Value").Set(w2.val)
+				unionSetMember(w.val, idx, valPtr)
 				return nil
 			}
 

@@ -162,11 +162,11 @@ func (w *_node) LookupByString(key string) (ipld.Node, error) {
 		if mtyp == nil { // not found
 			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
-		haveIdx := int(w.val.FieldByName("Index").Int())
+		// TODO: we could look up the right Go field straight away via idx.
+		haveIdx, mval := unionMember(w.val)
 		if haveIdx != idx { // mismatching type
 			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
 		}
-		mval := w.val.FieldByName("Value").Elem()
 		node := &_node{
 			schemaType: mtyp,
 			val:        mval,
@@ -178,6 +178,28 @@ func (w *_node) LookupByString(key string) (ipld.Node, error) {
 		MethodName: "LookupByString",
 		// TODO
 	}
+}
+
+var invalidValue reflect.Value
+
+func unionMember(val reflect.Value) (int, reflect.Value) {
+	// The first non-nil field is a match.
+	for i := 0; i < val.NumField(); i++ {
+		elemVal := val.Field(i)
+		if elemVal.IsNil() {
+			continue
+		}
+		return i, elemVal.Elem()
+	}
+	return -1, invalidValue
+}
+
+func unionSetMember(val reflect.Value, memberIdx int, memberPtr reflect.Value) {
+	// Reset the entire union struct to zero, to clear any non-nil pointers.
+	val.Set(reflect.Zero(val.Type()))
+
+	// Set the index pointer to the given value.
+	val.Field(memberIdx).Set(memberPtr)
 }
 
 func (w *_node) LookupByIndex(idx int64) (ipld.Node, error) {
@@ -917,17 +939,17 @@ func (w *_unionAssembler) AssembleValue() ipld.NodeAssembler {
 		// 	Key:      basicnode.NewString(name),
 		// }
 	}
-	goType := inferGoType(mtyp) // TODO: do this upfront
-	val := reflect.New(goType).Elem()
+
+	goType := w.val.Field(idx).Type().Elem()
+	valPtr := reflect.New(goType)
 	finish := func() error {
 		// fmt.Println(kval.Interface(), val.Interface())
-		w.val.FieldByName("Index").SetInt(int64(idx))
-		w.val.FieldByName("Value").Set(val)
+		unionSetMember(w.val, idx, valPtr)
 		return nil
 	}
 	return &_assembler{
 		schemaType: mtyp,
-		val:        val,
+		val:        valPtr.Elem(),
 		finish:     finish,
 	}
 }
@@ -1076,9 +1098,8 @@ func (w *_unionIterator) Next() (key, value ipld.Node, _ error) {
 	}
 	w.done = true
 
-	haveIdx := int(w.val.FieldByName("Index").Int())
+	haveIdx, mval := unionMember(w.val)
 	mtyp := w.members[haveIdx]
-	mval := w.val.FieldByName("Value").Elem()
 
 	node := &_node{
 		schemaType: mtyp,
