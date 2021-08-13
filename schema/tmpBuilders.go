@@ -154,7 +154,7 @@ func (ts TypeSystem) ValidateGraph() []error {
 		case *TypeStruct:
 			for _, f := range t2.fields {
 				if _, ok := ts.namedTypes[f.typ]; !ok {
-					ee = append(ee, fmt.Errorf("type %s refers to missing type %s (in field %s)", tn, f.typ, f.name))
+					ee = append(ee, fmt.Errorf("type %s refers to missing type %s (in field %q)", tn, f.typ, f.name))
 				}
 			}
 		case *TypeMap:
