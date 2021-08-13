@@ -162,11 +162,11 @@ func (ts TypeSystem) ValidateGraph() []error {
 				ee = append(ee, fmt.Errorf("type %s refers to missing type %s (as key type)", tn, t2.keyType))
 			}
 			if _, ok := ts.namedTypes[t2.valueType]; !ok {
-				ee = append(ee, fmt.Errorf("type %s refers to missing type %s (as key type)", tn, t2.valueType))
+				ee = append(ee, fmt.Errorf("type %s refers to missing type %s (as value type)", tn, t2.valueType))
 			}
 		case *TypeList:
 			if _, ok := ts.namedTypes[t2.valueType]; !ok {
-				ee = append(ee, fmt.Errorf("type %s refers to missing type %s (as key type)", tn, t2.valueType))
+				ee = append(ee, fmt.Errorf("type %s refers to missing type %s (as value type)", tn, t2.valueType))
 			}
 		case *TypeUnion:
 			for _, mn := range t2.members {
