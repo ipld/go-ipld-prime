@@ -637,6 +637,23 @@ func (w *_structAssemblerRepr) AssembleKey() ipld.NodeAssembler {
 	switch stg := reprStrategy(w.schemaType).(type) {
 	case schema.StructRepresentation_Map:
 		return (*_structAssembler)(w).AssembleKey()
+	case schema.StructRepresentation_Stringjoin,
+		schema.StructRepresentation_StringPairs:
+		// TODO an error-carrying "NodeAssembler" is needed so that this can refrain from panicking.
+		// TODO perhaps the ErrorWrongKind type should also be extended to explicitly describe whether the method was applied on bare DM, type-level, or repr-level.
+		panic(&ipld.ErrWrongKind{
+			TypeName:        string(w.schemaType.Name()) + ".Repr",
+			MethodName:      "AssembleKey",
+			AppropriateKind: ipld.KindSet_JustMap,
+			ActualKind:      ipld.Kind_String,
+		})
+	case schema.StructRepresentation_Tuple:
+		panic(&ipld.ErrWrongKind{
+			TypeName:        string(w.schemaType.Name()) + ".Repr",
+			MethodName:      "AssembleKey",
+			AppropriateKind: ipld.KindSet_JustMap,
+			ActualKind:      ipld.Kind_List,
+		})
 	default:
 		panic(fmt.Sprintf("TODO: %T", stg))
 	}
