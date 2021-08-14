@@ -551,32 +551,11 @@ func (w *_assemblerRepr) AssignString(s string) error {
 		}
 		return mapAsm.Finish()
 	case schema.UnionRepresentation_Kinded:
-		name := stg.GetMember(ipld.Kind_String)
-		members := w.schemaType.(*schema.TypeUnion).Members()
-		for idx, member := range members {
-			if member.Name() != name {
-				continue
-			}
-
-			// TODO: DRY with behavior below.
-			w2 := *w
-			goType := w.val.Field(idx).Type().Elem()
-			valPtr := reflect.New(goType)
-			w2.val = valPtr.Elem()
-			w2.schemaType = member
-			w2.finish = func() error {
-				if w.finish != nil {
-					if err := w.finish(); err != nil {
-						return err
-					}
-				}
-				unionSetMember(w.val, idx, valPtr)
-				return nil
-			}
-
-			return w2.AssignString(s)
+		w2 := w.asKinded(stg, ipld.Kind_String)
+		if w2 == nil {
+			panic("TODO: GetMember result is missing?")
 		}
-		panic("TODO: GetMember result is missing?")
+		return w2.AssignString(s)
 	case schema.UnionRepresentation_Stringprefix:
 		hasDelim := stg.GetDelim() != ""
 
@@ -603,6 +582,7 @@ func (w *_assemblerRepr) AssignString(s string) error {
 				remainder = s[len(descrm):]
 			}
 
+			// TODO: DRY: this has much in common with the asKinded method; it differs only in that we picked idx already in a different way.
 			w2 := *w
 			goType := w.val.Field(idx).Type().Elem()
 			valPtr := reflect.New(goType)
