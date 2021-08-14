@@ -551,30 +551,38 @@ func (w *_assemblerRepr) AssignString(s string) error {
 		}
 		return mapAsm.Finish()
 	case schema.UnionRepresentation_Kinded:
-		name := stg.GetMember(ipld.Kind_String)
-		members := w.schemaType.(*schema.TypeUnion).Members()
-		for idx, member := range members {
-			if member.Name() != name {
-				continue
-			}
-			valPtr := reflect.New(goTypeString)
-			valPtr.Elem().SetString(s)
-			unionSetMember(w.val, idx, valPtr)
-			return nil
+		w2 := w.asKinded(stg, ipld.Kind_String)
+		if w2 == nil {
+			panic("TODO: GetMember result is missing?")
 		}
-		panic("TODO: GetMember result is missing?")
+		return w2.AssignString(s)
 	case schema.UnionRepresentation_Stringprefix:
-		parts := strings.SplitN(s, stg.GetDelim(), 2)
-		if len(parts) != 2 {
-			panic("TODO: bad format")
+		hasDelim := stg.GetDelim() != ""
+
+		var prefix, remainder string
+		if hasDelim {
+			parts := strings.SplitN(s, stg.GetDelim(), 2)
+			if len(parts) != 2 {
+				return fmt.Errorf("schema rejects data: the union type %s expects delimiter %q, and it was not found in the data %q", w.schemaType.Name(), stg.GetDelim(), s)
+			}
+			prefix, remainder = parts[0], parts[1]
 		}
-		name, value := parts[0], parts[1]
+
 		members := w.schemaType.(*schema.TypeUnion).Members()
 		for idx, member := range members {
-			if stg.GetDiscriminant(member) != name {
-				continue
+			descrm := stg.GetDiscriminant(member)
+			if hasDelim {
+				if stg.GetDiscriminant(member) != prefix {
+					continue
+				}
+			} else {
+				if !strings.HasPrefix(s, descrm) {
+					continue
+				}
+				remainder = s[len(descrm):]
 			}
 
+			// TODO: DRY: this has much in common with the asKinded method; it differs only in that we picked idx already in a different way.
 			w2 := *w
 			goType := w.val.Field(idx).Type().Elem()
 			valPtr := reflect.New(goType)
@@ -589,10 +597,9 @@ func (w *_assemblerRepr) AssignString(s string) error {
 				unionSetMember(w.val, idx, valPtr)
 				return nil
 			}
-
-			return w2.AssignString(value)
+			return w2.AssignString(remainder)
 		}
-		panic("TODO: GetMember result is missing?")
+		return fmt.Errorf("schema rejects data: the union type %s requires a known prefix, and it was not found in the data %q", w.schemaType.Name(), s)
 	case nil:
 		return (*_assembler)(w).AssignString(s)
 	default:
@@ -637,6 +644,23 @@ func (w *_structAssemblerRepr) AssembleKey() ipld.NodeAssembler {
 	switch stg := reprStrategy(w.schemaType).(type) {
 	case schema.StructRepresentation_Map:
 		return (*_structAssembler)(w).AssembleKey()
+	case schema.StructRepresentation_Stringjoin,
+		schema.StructRepresentation_StringPairs:
+		// TODO an error-carrying "NodeAssembler" is needed so that this can refrain from panicking.
+		// TODO perhaps the ErrorWrongKind type should also be extended to explicitly describe whether the method was applied on bare DM, type-level, or repr-level.
+		panic(&ipld.ErrWrongKind{
+			TypeName:        string(w.schemaType.Name()) + ".Repr",
+			MethodName:      "AssembleKey",
+			AppropriateKind: ipld.KindSet_JustMap,
+			ActualKind:      ipld.Kind_String,
+		})
+	case schema.StructRepresentation_Tuple:
+		panic(&ipld.ErrWrongKind{
+			TypeName:        string(w.schemaType.Name()) + ".Repr",
+			MethodName:      "AssembleKey",
+			AppropriateKind: ipld.KindSet_JustMap,
+			ActualKind:      ipld.Kind_List,
+		})
 	default:
 		panic(fmt.Sprintf("TODO: %T", stg))
 	}

@@ -749,7 +749,8 @@ func (w *_structAssembler) AssembleValue() ipld.NodeAssembler {
 	}
 	ftyp, ok := w.val.Type().FieldByName(fieldNameFromSchema(name))
 	if !ok {
-		panic("TODO: go-schema mismatch")
+		// It is unfortunate this is not detected proactively earlier during bind.
+		panic(fmt.Errorf("schema type %q has field %q, we expect go struct to have field %q", w.schemaType.Name(), field.Name(), fieldNameFromSchema(name)))
 	}
 	if len(ftyp.Index) > 1 {
 		panic("TODO: embedded fields")
