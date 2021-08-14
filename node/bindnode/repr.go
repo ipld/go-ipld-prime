@@ -578,15 +578,29 @@ func (w *_assemblerRepr) AssignString(s string) error {
 		}
 		panic("TODO: GetMember result is missing?")
 	case schema.UnionRepresentation_Stringprefix:
-		parts := strings.SplitN(s, stg.GetDelim(), 2)
-		if len(parts) != 2 {
-			panic("TODO: bad format")
+		hasDelim := stg.GetDelim() != ""
+
+		var prefix, remainder string
+		if hasDelim {
+			parts := strings.SplitN(s, stg.GetDelim(), 2)
+			if len(parts) != 2 {
+				return fmt.Errorf("data doesn't match union type: type %s expects delimiter %q and it was not found in the data", w.schemaType.Name(), stg.GetDelim())
+			}
+			prefix, remainder = parts[0], parts[1]
 		}
-		name, value := parts[0], parts[1]
+
 		members := w.schemaType.(*schema.TypeUnion).Members()
 		for idx, member := range members {
-			if stg.GetDiscriminant(member) != name {
-				continue
+			descrm := stg.GetDiscriminant(member)
+			if hasDelim {
+				if stg.GetDiscriminant(member) != prefix {
+					continue
+				}
+			} else {
+				if !strings.HasPrefix(s, descrm) {
+					continue
+				}
+				remainder = s[len(descrm):]
 			}
 
 			w2 := *w
@@ -603,10 +617,9 @@ func (w *_assemblerRepr) AssignString(s string) error {
 				unionSetMember(w.val, idx, valPtr)
 				return nil
 			}
-
-			return w2.AssignString(value)
+			return w2.AssignString(remainder)
 		}
-		panic("TODO: GetMember result is missing?")
+		return fmt.Errorf("data doesn't match union type: type %s couldn't match any of its prefixes to the data %q", w.schemaType.Name(), s)
 	case nil:
 		return (*_assembler)(w).AssignString(s)
 	default:
