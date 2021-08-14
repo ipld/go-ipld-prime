@@ -557,10 +557,24 @@ func (w *_assemblerRepr) AssignString(s string) error {
 			if member.Name() != name {
 				continue
 			}
-			valPtr := reflect.New(goTypeString)
-			valPtr.Elem().SetString(s)
-			unionSetMember(w.val, idx, valPtr)
-			return nil
+
+			// TODO: DRY with behavior below.
+			w2 := *w
+			goType := w.val.Field(idx).Type().Elem()
+			valPtr := reflect.New(goType)
+			w2.val = valPtr.Elem()
+			w2.schemaType = member
+			w2.finish = func() error {
+				if w.finish != nil {
+					if err := w.finish(); err != nil {
+						return err
+					}
+				}
+				unionSetMember(w.val, idx, valPtr)
+				return nil
+			}
+
+			return w2.AssignString(s)
 		}
 		panic("TODO: GetMember result is missing?")
 	case schema.UnionRepresentation_Stringprefix:
