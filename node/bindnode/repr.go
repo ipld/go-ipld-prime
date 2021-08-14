@@ -584,7 +584,7 @@ func (w *_assemblerRepr) AssignString(s string) error {
 		if hasDelim {
 			parts := strings.SplitN(s, stg.GetDelim(), 2)
 			if len(parts) != 2 {
-				return fmt.Errorf("data doesn't match union type: type %s expects delimiter %q and it was not found in the data", w.schemaType.Name(), stg.GetDelim())
+				return fmt.Errorf("schema rejects data: the union type %s expects delimiter %q, and it was not found in the data %q", w.schemaType.Name(), stg.GetDelim(), s)
 			}
 			prefix, remainder = parts[0], parts[1]
 		}
@@ -619,7 +619,7 @@ func (w *_assemblerRepr) AssignString(s string) error {
 			}
 			return w2.AssignString(remainder)
 		}
-		return fmt.Errorf("data doesn't match union type: type %s couldn't match any of its prefixes to the data %q", w.schemaType.Name(), s)
+		return fmt.Errorf("schema rejects data: the union type %s requires a known prefix, and it was not found in the data %q", w.schemaType.Name(), s)
 	case nil:
 		return (*_assembler)(w).AssignString(s)
 	default:
