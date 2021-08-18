@@ -34,7 +34,7 @@ func (store *Memory) beInitialized() {
 	store.Bag = make(map[datamodel.Link][]byte)
 }
 
-func (store *Memory) OpenRead(lnkCtx datamodel.LinkContext, lnk datamodel.Link) (io.Reader, error) {
+func (store *Memory) OpenRead(lnkCtx linking.LinkContext, lnk datamodel.Link) (io.Reader, error) {
 	store.beInitialized()
 	data, exists := store.Bag[lnk]
 	if !exists {
@@ -43,7 +43,7 @@ func (store *Memory) OpenRead(lnkCtx datamodel.LinkContext, lnk datamodel.Link) 
 	return bytes.NewReader(data), nil
 }
 
-func (store *Memory) OpenWrite(lnkCtx datamodel.LinkContext) (io.Writer, linking.BlockWriteCommitter, error) {
+func (store *Memory) OpenWrite(lnkCtx linking.LinkContext) (io.Writer, linking.BlockWriteCommitter, error) {
 	store.beInitialized()
 	buf := bytes.Buffer{}
 	return &buf, func(lnk datamodel.Link) error {

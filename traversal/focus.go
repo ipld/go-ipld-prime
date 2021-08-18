@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/ipld/go-ipld-prime/datamodel"
+	"github.com/ipld/go-ipld-prime/linking"
 )
 
 // Focus traverses a Node graph according to a path, reaches a single Node,
@@ -112,7 +113,7 @@ func (prog *Progress) get(n datamodel.Node, p datamodel.Path, trackProgress bool
 		// Dereference any links.
 		for n.Kind() == datamodel.Kind_Link {
 			lnk, _ := n.AsLink()
-			lnkCtx := datamodel.LinkContext{
+			lnkCtx := linking.LinkContext{
 				Ctx:        prog.Cfg.Ctx,
 				LinkPath:   p.Truncate(i),
 				LinkNode:   n,
@@ -318,7 +319,7 @@ func (prog Progress) focusedTransform(n datamodel.Node, na datamodel.NodeAssembl
 		}
 		return la.Finish()
 	case datamodel.Kind_Link:
-		lnkCtx := datamodel.LinkContext{
+		lnkCtx := linking.LinkContext{
 			Ctx:        prog.Cfg.Ctx,
 			LinkPath:   prog.Path,
 			LinkNode:   n,

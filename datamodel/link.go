@@ -1,9 +1,5 @@
 package datamodel
 
-import (
-	"context"
-)
-
 // Link is a special kind of value in IPLD which can be "loaded" to access more nodes.
 //
 // Nodes can be a Link: "link" is one of the kinds in the IPLD Data Model;
@@ -56,44 +52,4 @@ type LinkPrototype interface {
 	//
 	// The hashsum reference must not be retained (the caller is free to reuse it).
 	BuildLink(hashsum []byte) Link
-}
-
-// LinkContext is a structure carrying ancilary information that may be used
-// while loading or storing data -- see its usage in BlockReadOpener, BlockWriteOpener,
-// and in the methods on LinkSystem which handle loading and storing data.
-//
-// A zero value for LinkContext is generally acceptable in any functions that use it.
-// In this case, any operations that need a Context will use Context.Background
-// (thus being uncancellable) and simply have no additional information to work with.
-type LinkContext struct {
-	// Ctx is the familiar golang Context pattern.
-	// Use this for cancellation, or attaching additional info
-	// (for example, perhaps to pass auth tokens through to the storage functions).
-	Ctx context.Context
-
-	// Path where the link was encountered.  May be zero.
-	//
-	// Functions in the traversal package will set this automatically.
-	LinkPath Path
-
-	// When traversing data or encoding: the Node containing the link --
-	// it may have additional type info, etc, that can be accessed.
-	// When building / decoding: not present.
-	//
-	// Functions in the traversal package will set this automatically.
-	LinkNode Node
-
-	// When building data or decoding: the NodeAssembler that will be receiving the link --
-	// it may have additional type info, etc, that can be accessed.
-	// When traversing / encoding: not present.
-	//
-	// Functions in the traversal package will set this automatically.
-	LinkNodeAssembler NodeAssembler
-
-	// Parent of the LinkNode.  May be zero.
-	//
-	// Functions in the traversal package will set this automatically.
-	ParentNode Node
-
-	// REVIEW: ParentNode in LinkContext -- so far, this has only ever been hypothetically useful.  Keep or drop?
 }

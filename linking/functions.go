@@ -21,7 +21,7 @@ import (
 // Can we get as far as a `QuickLoad(lnk Link) (Node, error)` function, which doesn't even ask you for a NodePrototype?
 //  No, not quite.  (Alas.)  If we tried to do so, and make it use `basicnode.Prototype`, we'd have import cycles; ded.
 
-func (lsys *LinkSystem) Load(lnkCtx datamodel.LinkContext, lnk datamodel.Link, np datamodel.NodePrototype) (datamodel.Node, error) {
+func (lsys *LinkSystem) Load(lnkCtx LinkContext, lnk datamodel.Link, np datamodel.NodePrototype) (datamodel.Node, error) {
 	nb := np.NewBuilder()
 	if err := lsys.Fill(lnkCtx, lnk, nb); err != nil {
 		return nil, err
@@ -33,7 +33,7 @@ func (lsys *LinkSystem) Load(lnkCtx datamodel.LinkContext, lnk datamodel.Link, n
 	return lsys.NodeReifier(lnkCtx, nd, lsys)
 }
 
-func (lsys *LinkSystem) MustLoad(lnkCtx datamodel.LinkContext, lnk datamodel.Link, np datamodel.NodePrototype) datamodel.Node {
+func (lsys *LinkSystem) MustLoad(lnkCtx LinkContext, lnk datamodel.Link, np datamodel.NodePrototype) datamodel.Node {
 	if n, err := lsys.Load(lnkCtx, lnk, np); err != nil {
 		panic(err)
 	} else {
@@ -41,7 +41,7 @@ func (lsys *LinkSystem) MustLoad(lnkCtx datamodel.LinkContext, lnk datamodel.Lin
 	}
 }
 
-func (lsys *LinkSystem) Fill(lnkCtx datamodel.LinkContext, lnk datamodel.Link, na datamodel.NodeAssembler) error {
+func (lsys *LinkSystem) Fill(lnkCtx LinkContext, lnk datamodel.Link, na datamodel.NodeAssembler) error {
 	if lnkCtx.Ctx == nil {
 		lnkCtx.Ctx = context.Background()
 	}
@@ -89,13 +89,13 @@ func (lsys *LinkSystem) Fill(lnkCtx datamodel.LinkContext, lnk datamodel.Link, n
 	return nil
 }
 
-func (lsys *LinkSystem) MustFill(lnkCtx datamodel.LinkContext, lnk datamodel.Link, na datamodel.NodeAssembler) {
+func (lsys *LinkSystem) MustFill(lnkCtx LinkContext, lnk datamodel.Link, na datamodel.NodeAssembler) {
 	if err := lsys.Fill(lnkCtx, lnk, na); err != nil {
 		panic(err)
 	}
 }
 
-func (lsys *LinkSystem) Store(lnkCtx datamodel.LinkContext, lp datamodel.LinkPrototype, n datamodel.Node) (datamodel.Link, error) {
+func (lsys *LinkSystem) Store(lnkCtx LinkContext, lp datamodel.LinkPrototype, n datamodel.Node) (datamodel.Link, error) {
 	if lnkCtx.Ctx == nil {
 		lnkCtx.Ctx = context.Background()
 	}
@@ -125,7 +125,7 @@ func (lsys *LinkSystem) Store(lnkCtx datamodel.LinkContext, lp datamodel.LinkPro
 	return lnk, commitFn(lnk)
 }
 
-func (lsys *LinkSystem) MustStore(lnkCtx datamodel.LinkContext, lp datamodel.LinkPrototype, n datamodel.Node) datamodel.Link {
+func (lsys *LinkSystem) MustStore(lnkCtx LinkContext, lp datamodel.LinkPrototype, n datamodel.Node) datamodel.Link {
 	if lnk, err := lsys.Store(lnkCtx, lp, n); err != nil {
 		panic(err)
 	} else {

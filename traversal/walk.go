@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/ipld/go-ipld-prime/datamodel"
+	"github.com/ipld/go-ipld-prime/linking"
 	"github.com/ipld/go-ipld-prime/traversal/selector"
 )
 
@@ -183,7 +184,7 @@ func (prog Progress) loadLink(v datamodel.Node, parent datamodel.Node) (datamode
 	if err != nil {
 		return nil, err
 	}
-	lnkCtx := datamodel.LinkContext{
+	lnkCtx := linking.LinkContext{
 		Ctx:        prog.Cfg.Ctx,
 		LinkPath:   prog.Path,
 		LinkNode:   v,

@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/ipld/go-ipld-prime/datamodel"
+	"github.com/ipld/go-ipld-prime/linking"
 	"github.com/ipld/go-ipld-prime/schema"
 )
 
@@ -19,7 +20,7 @@ func (tc *Config) init() {
 		tc.Ctx = context.Background()
 	}
 	if tc.LinkTargetNodePrototypeChooser == nil {
-		tc.LinkTargetNodePrototypeChooser = func(lnk datamodel.Link, lnkCtx datamodel.LinkContext) (datamodel.NodePrototype, error) {
+		tc.LinkTargetNodePrototypeChooser = func(lnk datamodel.Link, lnkCtx linking.LinkContext) (datamodel.NodePrototype, error) {
 			if tlnkNd, ok := lnkCtx.LinkNode.(schema.TypedLinkNode); ok {
 				return tlnkNd.LinkTargetNodePrototype(), nil
 			}

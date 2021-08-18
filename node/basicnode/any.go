@@ -2,6 +2,7 @@ package basicnode
 
 import (
 	"github.com/ipld/go-ipld-prime/datamodel"
+	"github.com/ipld/go-ipld-prime/linking"
 )
 
 var (
@@ -21,7 +22,7 @@ var (
 // or with another chooser layer on top, such as:
 //
 //    prototypeChooser := dagpb.AddSupportToChooser(basicnode.Chooser)
-func Chooser(_ datamodel.Link, _ datamodel.LinkContext) (datamodel.NodePrototype, error) {
+func Chooser(_ datamodel.Link, _ linking.LinkContext) (datamodel.NodePrototype, error) {
 	return Prototype.Any, nil
 }
 

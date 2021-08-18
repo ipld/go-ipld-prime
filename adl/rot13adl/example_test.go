@@ -67,14 +67,14 @@ func ExampleReify_loadingToADL() {
 	storage := &storage.Memory{}
 	linkSystem.StorageReadOpener = storage.OpenRead
 	linkSystem.StorageWriteOpener = storage.OpenWrite
-	linkSystem.NodeReifier = func(_ datamodel.LinkContext, nd datamodel.Node, _ *linking.LinkSystem) (datamodel.Node, error) {
+	linkSystem.NodeReifier = func(_ linking.LinkContext, nd datamodel.Node, _ *linking.LinkSystem) (datamodel.Node, error) {
 		return rot13adl.Reify(nd)
 	}
-	lnk, err := linkSystem.Store(datamodel.LinkContext{Ctx: context.Background()}, lp, substrateNode)
+	lnk, err := linkSystem.Store(linking.LinkContext{Ctx: context.Background()}, lp, substrateNode)
 	fmt.Printf("storage error: %v\n", err)
 
 	// reload from storage, but this time the NodeReifier function should give us the ADL
-	syntheticView, err := linkSystem.Load(datamodel.LinkContext{Ctx: context.Background()}, lnk, rot13adl.Prototype.SubstrateRoot)
+	syntheticView, err := linkSystem.Load(linking.LinkContext{Ctx: context.Background()}, lnk, rot13adl.Prototype.SubstrateRoot)
 	fmt.Printf("load error: %v\n", err)
 
 	// We can inspect the synthetic ADL node like any other node!

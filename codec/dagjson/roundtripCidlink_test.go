@@ -25,17 +25,17 @@ func TestRoundtripCidlink(t *testing.T) {
 	lsys := cidlink.DefaultLinkSystem()
 
 	buf := bytes.Buffer{}
-	lsys.StorageWriteOpener = func(lnkCtx datamodel.LinkContext) (io.Writer, linking.BlockWriteCommitter, error) {
+	lsys.StorageWriteOpener = func(lnkCtx linking.LinkContext) (io.Writer, linking.BlockWriteCommitter, error) {
 		return &buf, func(lnk datamodel.Link) error { return nil }, nil
 	}
-	lsys.StorageReadOpener = func(lnkCtx datamodel.LinkContext, lnk datamodel.Link) (io.Reader, error) {
+	lsys.StorageReadOpener = func(lnkCtx linking.LinkContext, lnk datamodel.Link) (io.Reader, error) {
 		return bytes.NewReader(buf.Bytes()), nil
 	}
 
-	lnk, err := lsys.Store(datamodel.LinkContext{}, lp, n)
+	lnk, err := lsys.Store(linking.LinkContext{}, lp, n)
 	Require(t, err, ShouldEqual, nil)
 
-	n2, err := lsys.Load(datamodel.LinkContext{}, lnk, basicnode.Prototype.Any)
+	n2, err := lsys.Load(linking.LinkContext{}, lnk, basicnode.Prototype.Any)
 	Require(t, err, ShouldEqual, nil)
 	Wish(t, n2, ShouldEqual, nSorted)
 }

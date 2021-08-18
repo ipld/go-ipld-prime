@@ -11,6 +11,7 @@ import (
 	"github.com/ipld/go-ipld-prime/codec/dagjson"
 	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/fluent"
+	"github.com/ipld/go-ipld-prime/linking"
 	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
 	"github.com/ipld/go-ipld-prime/node/basicnode"
 	"github.com/ipld/go-ipld-prime/schema"
@@ -32,7 +33,7 @@ func encode(n datamodel.Node) (datamodel.Node, datamodel.Link) {
 	lsys := cidlink.DefaultLinkSystem()
 	lsys.StorageWriteOpener = (&store).OpenWrite
 
-	lnk, err := lsys.Store(datamodel.LinkContext{}, lp, n)
+	lnk, err := lsys.Store(linking.LinkContext{}, lp, n)
 	if err != nil {
 		panic(err)
 	}
@@ -99,7 +100,7 @@ func SchemaTestLinks(t *testing.T, engine Engine) {
 		err = traversal.Progress{
 			Cfg: &traversal.Config{
 				LinkSystem: lsys,
-				LinkTargetNodePrototypeChooser: func(lnk datamodel.Link, lnkCtx datamodel.LinkContext) (datamodel.NodePrototype, error) {
+				LinkTargetNodePrototypeChooser: func(lnk datamodel.Link, lnkCtx linking.LinkContext) (datamodel.NodePrototype, error) {
 					if tlnkNd, ok := lnkCtx.LinkNode.(schema.TypedLinkNode); ok {
 						return tlnkNd.LinkTargetNodePrototype(), nil
 					}

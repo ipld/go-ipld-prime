@@ -6,8 +6,8 @@ import (
 	"github.com/ipfs/go-cid"
 
 	_ "github.com/ipld/go-ipld-prime/codec/dagcbor"
-	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/fluent"
+	"github.com/ipld/go-ipld-prime/linking"
 	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
 	"github.com/ipld/go-ipld-prime/node/basicnode"
 	"github.com/ipld/go-ipld-prime/storage"
@@ -68,9 +68,9 @@ func ExampleLinkSystem_Store() {
 
 	// Now: time to apply the LinkSystem, and do the actual store operation!
 	lnk, err := lsys.Store(
-		datamodel.LinkContext{}, // The zero value is fine.  Configure it it you want cancellability or other features.
-		lp,                      // The LinkPrototype says what codec and hashing to use.
-		n,                       // And here's our data.
+		linking.LinkContext{}, // The zero value is fine.  Configure it it you want cancellability or other features.
+		lp,                    // The LinkPrototype says what codec and hashing to use.
+		n,                     // And here's our data.
 	)
 	if err != nil {
 		panic(err)
@@ -117,9 +117,9 @@ func ExampleLinkSystem_Load() {
 
 	// Apply the LinkSystem, and ask it to load our link!
 	n, err := lsys.Load(
-		datamodel.LinkContext{}, // The zero value is fine.  Configure it it you want cancellability or other features.
-		lnk,                     // The Link we want to load!
-		np,                      // The NodePrototype says what kind of Node we want as a result.
+		linking.LinkContext{}, // The zero value is fine.  Configure it it you want cancellability or other features.
+		lnk,                   // The Link we want to load!
+		np,                    // The NodePrototype says what kind of Node we want as a result.
 	)
 	if err != nil {
 		panic(err)

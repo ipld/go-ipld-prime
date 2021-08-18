@@ -5,5 +5,6 @@ import (
 )
 
 type (
-	LinkSystem = linking.LinkSystem
+	LinkSystem  = linking.LinkSystem
+	LinkContext = linking.LinkContext
 )

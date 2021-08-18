@@ -10,6 +10,7 @@ import (
 	_ "github.com/ipld/go-ipld-prime/codec/dagjson"
 	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/fluent"
+	"github.com/ipld/go-ipld-prime/linking"
 	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
 	"github.com/ipld/go-ipld-prime/must"
 	"github.com/ipld/go-ipld-prime/node/basicnode"
@@ -59,7 +60,7 @@ func encode(n datamodel.Node) (datamodel.Node, datamodel.Link) {
 	lsys := cidlink.DefaultLinkSystem()
 	lsys.StorageWriteOpener = (&store).OpenWrite
 
-	lnk, err := lsys.Store(datamodel.LinkContext{}, lp, n)
+	lnk, err := lsys.Store(linking.LinkContext{}, lp, n)
 	if err != nil {
 		panic(err)
 	}

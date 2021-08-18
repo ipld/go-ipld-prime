@@ -53,7 +53,7 @@ type Config struct {
 // In a more complex example, a program using `bind` over native Go types
 // could decide what kind of native type is expected, and return a
 // `bind.NodeBuilder` for that specific concrete native type.
-type LinkTargetNodePrototypeChooser func(datamodel.Link, datamodel.LinkContext) (datamodel.NodePrototype, error)
+type LinkTargetNodePrototypeChooser func(datamodel.Link, linking.LinkContext) (datamodel.NodePrototype, error)
 
 // SkipMe is a signalling "error" which can be used to tell traverse to skip some data.
 //
