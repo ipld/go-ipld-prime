@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"strings"
 
-	ipld "github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime"
 	"github.com/ipld/go-ipld-prime/schema"
 )
 

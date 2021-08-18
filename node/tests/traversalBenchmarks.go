@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	ipld "github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime"
 	"github.com/ipld/go-ipld-prime/node/tests/corpus"
 	"github.com/ipld/go-ipld-prime/traversal"
 )

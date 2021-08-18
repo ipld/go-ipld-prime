@@ -28,11 +28,11 @@ and such internal details should not be considered part of the intended public A
 
 ### absent values
 
-Iterating a type-level node with optional fields will yield the field key and the `ipld.Absent` constant as a value.
-Getting a such a field will also yield the `ipld.Absent` constant as a value, and will not return a "not found" error.
+Iterating a type-level node with optional fields will yield the field key and the `datamodel.Absent` constant as a value.
+Getting a such a field will also yield the `datamodel.Absent` constant as a value, and will not return a "not found" error.
 
-Attempting to *assign* an `ipld.Absent` value, however --
+Attempting to *assign* an `datamodel.Absent` value, however --
 via the `NodeAssembler.AssignNode` function (none of the other function signatures permit expressing this) --
-will result in an `ipld.ErrWrongKind` error.
+will result in an `datamodel.ErrWrongKind` error.
 
 // Seealso some unresolved todos in the [HACKME_wip](HACKME_wip.md) document regarding how absent values are handled.

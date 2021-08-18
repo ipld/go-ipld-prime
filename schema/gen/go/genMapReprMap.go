@@ -62,15 +62,15 @@ func (g mapReprMapReprGenerator) EmitNodeType(w io.Writer) {
 }
 func (g mapReprMapReprGenerator) EmitNodeTypeAssertions(w io.Writer) {
 	doTemplate(`
-		var _ ipld.Node = &_{{ .Type | TypeSymbol }}__Repr{}
+		var _ datamodel.Node = &_{{ .Type | TypeSymbol }}__Repr{}
 	`, w, g.AdjCfg, g)
 }
 
 func (g mapReprMapReprGenerator) EmitNodeMethodLookupByString(w io.Writer) {
 	doTemplate(`
-		func (nr *_{{ .Type | TypeSymbol }}__Repr) LookupByString(k string) (ipld.Node, error) {
+		func (nr *_{{ .Type | TypeSymbol }}__Repr) LookupByString(k string) (datamodel.Node, error) {
 			v, err := ({{ .Type | TypeSymbol }})(nr).LookupByString(k)
-			if err != nil || v == ipld.Null {
+			if err != nil || v == datamodel.Null {
 				return v, err
 			}
 			return v.({{ .Type.ValueType | TypeSymbol}}).Representation(), nil
@@ -82,9 +82,9 @@ func (g mapReprMapReprGenerator) EmitNodeMethodLookupByNode(w io.Writer) {
 	// REVIEW: these unchecked casts are definitely safe at compile time, but I'm not sure if the compiler considers that provable,
 	//  so we should investigate if there's any runtime checks injected here that waste time.  If so: write this with more gsloc to avoid :(
 	doTemplate(`
-		func (nr *_{{ .Type | TypeSymbol }}__Repr) LookupByNode(k ipld.Node) (ipld.Node, error) {
+		func (nr *_{{ .Type | TypeSymbol }}__Repr) LookupByNode(k datamodel.Node) (datamodel.Node, error) {
 			v, err := ({{ .Type | TypeSymbol }})(nr).LookupByNode(k)
-			if err != nil || v == ipld.Null {
+			if err != nil || v == datamodel.Null {
 				return v, err
 			}
 			return v.({{ .Type.ValueType | TypeSymbol}}).Representation(), nil
@@ -94,15 +94,15 @@ func (g mapReprMapReprGenerator) EmitNodeMethodLookupByNode(w io.Writer) {
 func (g mapReprMapReprGenerator) EmitNodeMethodMapIterator(w io.Writer) {
 	// FUTURE: trying to get this to share the preallocated memory if we get iterators wedged into their node slab will be ... fun.
 	doTemplate(`
-		func (nr *_{{ .Type | TypeSymbol }}__Repr) MapIterator() ipld.MapIterator {
+		func (nr *_{{ .Type | TypeSymbol }}__Repr) MapIterator() datamodel.MapIterator {
 			return &_{{ .Type | TypeSymbol }}__ReprMapItr{({{ .Type | TypeSymbol }})(nr), 0}
 		}
 
 		type _{{ .Type | TypeSymbol }}__ReprMapItr _{{ .Type | TypeSymbol }}__MapItr
 
-		func (itr *_{{ .Type | TypeSymbol }}__ReprMapItr) Next() (k ipld.Node, v ipld.Node, err error) {
+		func (itr *_{{ .Type | TypeSymbol }}__ReprMapItr) Next() (k datamodel.Node, v datamodel.Node, err error) {
 			k, v, err = (*_{{ .Type | TypeSymbol }}__MapItr)(itr).Next()
-			if err != nil || v == ipld.Null {
+			if err != nil || v == datamodel.Null {
 				return
 			}
 			return k, v.({{ .Type.ValueType | TypeSymbol}}).Representation(), nil

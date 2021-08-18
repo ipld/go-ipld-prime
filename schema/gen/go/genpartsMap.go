@@ -16,7 +16,7 @@ func emitNodeAssemblerMethodBeginMap_mapoid(w io.Writer, adjCfg *AdjunctCfg, dat
 	//  This allocation only happens if the 'w' ptr is nil, which means we're being used on a Maybe;
 	//  otherwise, the 'w' ptr should already be set, and we fill that memory location without allocating, as usual.
 	doTemplate(`
-		func (na *_{{ .Type | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Assembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
+		func (na *_{{ .Type | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Assembler) BeginMap(sizeHint int64) (datamodel.MapAssembler, error) {
 			switch *na.m {
 			case schema.Maybe_Value, schema.Maybe_Null:
 				panic("invalid state: cannot assign into assembler that's already finished")
@@ -50,7 +50,7 @@ func emitNodeAssemblerMethodAssignNode_mapoid(w io.Writer, adjCfg *AdjunctCfg, d
 	// This works easily for both type-level and representational nodes because
 	//  any divergences that have to do with the child value are nicely hidden behind  `AssembleKey` and `AssembleValue`.
 	doTemplate(`
-		func (na *_{{ .Type | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Assembler) AssignNode(v ipld.Node) error {
+		func (na *_{{ .Type | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Assembler) AssignNode(v datamodel.Node) error {
 			if v.IsNull() {
 				return na.AssignNull()
 			}
@@ -72,8 +72,8 @@ func emitNodeAssemblerMethodAssignNode_mapoid(w io.Writer, adjCfg *AdjunctCfg, d
 				*na.m = schema.Maybe_Value
 				return nil
 			}
-			if v.Kind() != ipld.Kind_Map {
-				return ipld.ErrWrongKind{TypeName: "{{ .PkgName }}.{{ .Type.Name }}{{ if .IsRepr }}.Repr{{end}}", MethodName: "AssignNode", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
+			if v.Kind() != datamodel.Kind_Map {
+				return datamodel.ErrWrongKind{TypeName: "{{ .PkgName }}.{{ .Type.Name }}{{ if .IsRepr }}.Repr{{end}}", MethodName: "AssignNode", AppropriateKind: datamodel.KindSet_JustMap, ActualKind: v.Kind()}
 			}
 			itr := v.MapIterator()
 			for !itr.Done() {
@@ -200,7 +200,7 @@ func emitNodeAssemblerHelper_mapoid_mapAssemblerMethods(w io.Writer, adjCfg *Adj
 	//   except for the fact they need to call the valueFinishTidy function, which is another one of those points that blocks extraction because we strongly don't want virtual functions calls there.
 	//   Maybe the templates can be textually dedup'd more, though, at least.
 	doTemplate(`
-		func (ma *_{{ .Type | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Assembler) AssembleEntry(k string) (ipld.NodeAssembler, error) {
+		func (ma *_{{ .Type | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Assembler) AssembleEntry(k string) (datamodel.NodeAssembler, error) {
 			switch ma.state {
 			case maState_initial:
 				// carry on
@@ -227,7 +227,7 @@ func emitNodeAssemblerHelper_mapoid_mapAssemblerMethods(w io.Writer, adjCfg *Adj
 			}
 			{{- end}}
 			if _, exists := ma.w.m[k2]; exists {
-				return nil, ipld.ErrRepeatedMapKey{Key: &k2}
+				return nil, datamodel.ErrRepeatedMapKey{Key: &k2}
 			}
 			ma.w.t = append(ma.w.t, _{{ .Type | TypeSymbol }}__entry{k: k2})
 			tz := &ma.w.t[len(ma.w.t)-1]
@@ -248,7 +248,7 @@ func emitNodeAssemblerHelper_mapoid_mapAssemblerMethods(w io.Writer, adjCfg *Adj
 		}
 	`, w, adjCfg, data)
 	doTemplate(`
-		func (ma *_{{ .Type | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Assembler) AssembleKey() ipld.NodeAssembler {
+		func (ma *_{{ .Type | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Assembler) AssembleKey() datamodel.NodeAssembler {
 			switch ma.state {
 			case maState_initial:
 				// carry on
@@ -271,7 +271,7 @@ func emitNodeAssemblerHelper_mapoid_mapAssemblerMethods(w io.Writer, adjCfg *Adj
 		}
 	`, w, adjCfg, data)
 	doTemplate(`
-		func (ma *_{{ .Type | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Assembler) AssembleValue() ipld.NodeAssembler {
+		func (ma *_{{ .Type | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Assembler) AssembleValue() datamodel.NodeAssembler {
 			switch ma.state {
 			case maState_initial:
 				panic("invalid state: AssembleValue cannot be called when no key is primed")
@@ -312,10 +312,10 @@ func emitNodeAssemblerHelper_mapoid_mapAssemblerMethods(w io.Writer, adjCfg *Adj
 		}
 	`, w, adjCfg, data)
 	doTemplate(`
-		func (ma *_{{ .Type | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Assembler) KeyPrototype() ipld.NodePrototype {
+		func (ma *_{{ .Type | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Assembler) KeyPrototype() datamodel.NodePrototype {
 			return _{{ .Type.KeyType | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Prototype{}
 		}
-		func (ma *_{{ .Type | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Assembler) ValuePrototype(_ string) ipld.NodePrototype {
+		func (ma *_{{ .Type | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Assembler) ValuePrototype(_ string) datamodel.NodePrototype {
 			return _{{ .Type.ValueType | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Prototype{}
 		}
 	`, w, adjCfg, data)

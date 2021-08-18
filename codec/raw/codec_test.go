@@ -8,9 +8,10 @@ import (
 
 	qt "github.com/frankban/quicktest"
 	"github.com/ipfs/go-cid"
-	ipld "github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/datamodel"
+	"github.com/ipld/go-ipld-prime/linking"
 	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
-	basicnode "github.com/ipld/go-ipld-prime/node/basic"
+	"github.com/ipld/go-ipld-prime/node/basicnode"
 )
 
 var tests = []struct {
@@ -58,17 +59,17 @@ func TestRoundtripCidlink(t *testing.T) {
 	lsys := cidlink.DefaultLinkSystem()
 
 	buf := bytes.Buffer{}
-	lsys.StorageWriteOpener = func(lnkCtx ipld.LinkContext) (io.Writer, ipld.BlockWriteCommitter, error) {
-		return &buf, func(lnk ipld.Link) error { return nil }, nil
+	lsys.StorageWriteOpener = func(lnkCtx datamodel.LinkContext) (io.Writer, linking.BlockWriteCommitter, error) {
+		return &buf, func(lnk datamodel.Link) error { return nil }, nil
 	}
-	lsys.StorageReadOpener = func(lnkCtx ipld.LinkContext, lnk ipld.Link) (io.Reader, error) {
+	lsys.StorageReadOpener = func(lnkCtx datamodel.LinkContext, lnk datamodel.Link) (io.Reader, error) {
 		return bytes.NewReader(buf.Bytes()), nil
 	}
-	lnk, err := lsys.Store(ipld.LinkContext{}, lp, node)
+	lnk, err := lsys.Store(datamodel.LinkContext{}, lp, node)
 
 	qt.Assert(t, err, qt.IsNil)
 
-	newNode, err := lsys.Load(ipld.LinkContext{}, lnk, basicnode.Prototype__Any{})
+	newNode, err := lsys.Load(datamodel.LinkContext{}, lnk, basicnode.Prototype.Any)
 	qt.Assert(t, err, qt.IsNil)
 	qt.Assert(t, newNode, qt.DeepEquals, node)
 }

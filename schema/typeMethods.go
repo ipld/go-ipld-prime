@@ -1,7 +1,7 @@
 package schema
 
 import (
-	ipld "github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/datamodel"
 )
 
 /* cookie-cutter standard interface stuff */
@@ -24,45 +24,45 @@ func (TypeUnion) TypeKind() TypeKind  { return TypeKind_Union }
 func (TypeStruct) TypeKind() TypeKind { return TypeKind_Struct }
 func (TypeEnum) TypeKind() TypeKind   { return TypeKind_Enum }
 
-func (TypeBool) RepresentationBehavior() ipld.Kind   { return ipld.Kind_Bool }
-func (TypeString) RepresentationBehavior() ipld.Kind { return ipld.Kind_String }
-func (TypeBytes) RepresentationBehavior() ipld.Kind  { return ipld.Kind_Bytes }
-func (TypeInt) RepresentationBehavior() ipld.Kind    { return ipld.Kind_Int }
-func (TypeFloat) RepresentationBehavior() ipld.Kind  { return ipld.Kind_Float }
-func (TypeMap) RepresentationBehavior() ipld.Kind    { return ipld.Kind_Map }
-func (TypeList) RepresentationBehavior() ipld.Kind   { return ipld.Kind_List }
-func (TypeLink) RepresentationBehavior() ipld.Kind   { return ipld.Kind_Link }
-func (t TypeUnion) RepresentationBehavior() ipld.Kind {
+func (TypeBool) RepresentationBehavior() datamodel.Kind   { return datamodel.Kind_Bool }
+func (TypeString) RepresentationBehavior() datamodel.Kind { return datamodel.Kind_String }
+func (TypeBytes) RepresentationBehavior() datamodel.Kind  { return datamodel.Kind_Bytes }
+func (TypeInt) RepresentationBehavior() datamodel.Kind    { return datamodel.Kind_Int }
+func (TypeFloat) RepresentationBehavior() datamodel.Kind  { return datamodel.Kind_Float }
+func (TypeMap) RepresentationBehavior() datamodel.Kind    { return datamodel.Kind_Map }
+func (TypeList) RepresentationBehavior() datamodel.Kind   { return datamodel.Kind_List }
+func (TypeLink) RepresentationBehavior() datamodel.Kind   { return datamodel.Kind_Link }
+func (t TypeUnion) RepresentationBehavior() datamodel.Kind {
 	switch t.representation.(type) {
 	case UnionRepresentation_Keyed:
-		return ipld.Kind_Map
+		return datamodel.Kind_Map
 	case UnionRepresentation_Kinded:
-		return ipld.Kind_Invalid // you can't know with this one, until you see the value (and thus can its inhabitant's behavior)!
+		return datamodel.Kind_Invalid // you can't know with this one, until you see the value (and thus can its inhabitant's behavior)!
 	case UnionRepresentation_Envelope:
-		return ipld.Kind_Map
+		return datamodel.Kind_Map
 	case UnionRepresentation_Inline:
-		return ipld.Kind_Map
+		return datamodel.Kind_Map
 	default:
 		panic("unreachable")
 	}
 }
-func (t TypeStruct) RepresentationBehavior() ipld.Kind {
+func (t TypeStruct) RepresentationBehavior() datamodel.Kind {
 	switch t.representation.(type) {
 	case StructRepresentation_Map:
-		return ipld.Kind_Map
+		return datamodel.Kind_Map
 	case StructRepresentation_Tuple:
-		return ipld.Kind_List
+		return datamodel.Kind_List
 	case StructRepresentation_StringPairs:
-		return ipld.Kind_String
+		return datamodel.Kind_String
 	case StructRepresentation_Stringjoin:
-		return ipld.Kind_String
+		return datamodel.Kind_String
 	default:
 		panic("unreachable")
 	}
 }
-func (t TypeEnum) RepresentationBehavior() ipld.Kind {
+func (t TypeEnum) RepresentationBehavior() datamodel.Kind {
 	// TODO: this should have a representation strategy switch too; sometimes that will indicate int representation behavior.
-	return ipld.Kind_String
+	return datamodel.Kind_String
 }
 
 /* interesting methods per Type type */
@@ -163,7 +163,7 @@ func (r UnionRepresentation_Stringprefix) GetDiscriminant(t Type) string {
 
 // GetMember returns type info for the member matching the kind argument,
 // or may return nil if that kind is not mapped to a member of this union.
-func (r UnionRepresentation_Kinded) GetMember(k ipld.Kind) TypeName {
+func (r UnionRepresentation_Kinded) GetMember(k datamodel.Kind) TypeName {
 	return r.table[k]
 }
 

@@ -5,8 +5,8 @@ import (
 	"reflect"
 	"strings"
 
-	ipld "github.com/ipld/go-ipld-prime"
-	basicnode "github.com/ipld/go-ipld-prime/node/basic"
+	"github.com/ipld/go-ipld-prime/datamodel"
+	"github.com/ipld/go-ipld-prime/node/basicnode"
 	"github.com/ipld/go-ipld-prime/schema"
 )
 
@@ -104,7 +104,7 @@ func init() {
 	// Get the basic node sizes via basicnode.
 	for _, tk := range []struct {
 		typeKind  schema.TypeKind
-		prototype ipld.NodePrototype
+		prototype datamodel.NodePrototype
 	}{
 		{schema.TypeKind_Bool, basicnode.Prototype.Bool},
 		{schema.TypeKind_Int, basicnode.Prototype.Int},

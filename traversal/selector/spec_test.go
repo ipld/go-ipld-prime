@@ -8,11 +8,11 @@ import (
 	qt "github.com/frankban/quicktest"
 	"github.com/warpfork/go-testmark"
 
-	"github.com/ipld/go-ipld-prime"
 	"github.com/ipld/go-ipld-prime/codec/dagjson"
 	"github.com/ipld/go-ipld-prime/codec/json"
+	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/fluent/qp"
-	"github.com/ipld/go-ipld-prime/node/basic"
+	"github.com/ipld/go-ipld-prime/node/basicnode"
 	"github.com/ipld/go-ipld-prime/traversal"
 	"github.com/ipld/go-ipld-prime/traversal/selector/parse"
 )
@@ -58,15 +58,15 @@ func TestSpecFixtures(t *testing.T) {
 			//   at the end, we're actually going to... do that, and use string diffs for the final assertion
 			//    (because string diffing is actually really nice for aggregate feedback in a system like this);
 			//   and also that means we're ready to save updated serial data into the fixture files, if we did want to patch them.
-			var visitLogs []ipld.Node
-			traversal.WalkAdv(dataDmt, selector, func(prog traversal.Progress, n ipld.Node, reason traversal.VisitReason) error {
+			var visitLogs []datamodel.Node
+			traversal.WalkAdv(dataDmt, selector, func(prog traversal.Progress, n datamodel.Node, reason traversal.VisitReason) error {
 				// Munge info about where we are into DMT shaped like the expectation records in the fixture.
-				visitEventDescr, err := qp.BuildMap(basicnode.Prototype.Any, 3, func(ma ipld.MapAssembler) {
+				visitEventDescr, err := qp.BuildMap(basicnode.Prototype.Any, 3, func(ma datamodel.MapAssembler) {
 					qp.MapEntry(ma, "path", qp.String(prog.Path.String()))
-					qp.MapEntry(ma, "node", qp.Map(1, func(ma ipld.MapAssembler) {
-						qp.MapEntry(ma, n.Kind().String(), func(na ipld.NodeAssembler) {
+					qp.MapEntry(ma, "node", qp.Map(1, func(ma datamodel.MapAssembler) {
+						qp.MapEntry(ma, n.Kind().String(), func(na datamodel.NodeAssembler) {
 							switch n.Kind() {
-							case ipld.Kind_Map, ipld.Kind_List:
+							case datamodel.Kind_Map, datamodel.Kind_List:
 								na.AssignNull()
 							default:
 								na.AssignNode(n)

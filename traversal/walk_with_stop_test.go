@@ -6,11 +6,11 @@ import (
 
 	. "github.com/warpfork/go-wish"
 
-	"github.com/ipld/go-ipld-prime"
 	_ "github.com/ipld/go-ipld-prime/codec/dagjson"
+	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/fluent"
 	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
-	basicnode "github.com/ipld/go-ipld-prime/node/basic"
+	"github.com/ipld/go-ipld-prime/node/basicnode"
 	"github.com/ipld/go-ipld-prime/traversal"
 	"github.com/ipld/go-ipld-prime/traversal/selector"
 	"github.com/ipld/go-ipld-prime/traversal/selector/builder"
@@ -44,7 +44,7 @@ var (
 */
 
 // ExploreRecursiveWithStop builds a recursive selector node with a stop condition
-func ExploreRecursiveWithStop(limit selector.RecursionLimit, sequence builder.SelectorSpec, stopLnk ipld.Link) ipld.Node {
+func ExploreRecursiveWithStop(limit selector.RecursionLimit, sequence builder.SelectorSpec, stopLnk datamodel.Link) datamodel.Node {
 	np := basicnode.Prototype__Map{}
 	return fluent.MustBuildMap(np, 1, func(na fluent.MapAssembler) {
 		// RecursionLimit
@@ -99,7 +99,7 @@ func TestStopAtLink(t *testing.T) {
 				LinkSystem:                     lsys,
 				LinkTargetNodePrototypeChooser: basicnode.Chooser,
 			},
-		}.WalkMatching(rootNode, s, func(prog traversal.Progress, n ipld.Node) error {
+		}.WalkMatching(rootNode, s, func(prog traversal.Progress, n datamodel.Node) error {
 			// fmt.Println("Order", order, prog.Path.String())
 			switch order {
 			case 0:
@@ -128,7 +128,7 @@ func TestStopAtLink(t *testing.T) {
 // The stopAt condition is extremely appealing for these use cases, as we can
 // partially sync a chain using ExploreRecursive without having to sync the
 // chain from scratch if we are already partially synced
-func mkChain() (ipld.Node, []ipld.Link) {
+func mkChain() (datamodel.Node, []datamodel.Link) {
 	leafAlpha, leafAlphaLnk = encode(basicnode.NewString("alpha"))
 	leafBeta, leafBetaLnk = encode(basicnode.NewString("beta"))
 	middleMapNode, middleMapNodeLnk = encode(fluent.MustBuildMap(basicnode.Prototype__Map{}, 3, func(na fluent.MapAssembler) {
@@ -162,7 +162,7 @@ func mkChain() (ipld.Node, []ipld.Link) {
 		na.AssembleEntry("plain").AssignString("olde string")
 		na.AssembleEntry("ch3").AssignLink(ch3Lnk)
 	}))
-	return headNode, []ipld.Link{headLnk, ch3Lnk, ch2Lnk, ch1Lnk}
+	return headNode, []datamodel.Link{headLnk, ch3Lnk, ch2Lnk, ch1Lnk}
 }
 
 func TestStopInChain(t *testing.T) {
@@ -177,7 +177,7 @@ func TestStopInChain(t *testing.T) {
 	stopAtInChainTest(t, chainNode, nil, 17)
 }
 
-func stopAtInChainTest(t *testing.T, chainNode ipld.Node, stopLnk ipld.Link, numSeen int) {
+func stopAtInChainTest(t *testing.T, chainNode datamodel.Node, stopLnk datamodel.Link, numSeen int) {
 	ssb := builder.NewSelectorSpecBuilder(basicnode.Prototype__Any{})
 	t.Run(fmt.Sprintf("test ExploreRecursive stopAt in chain with stoplink: %s", stopLnk), func(t *testing.T) {
 		s, err := selector.CompileSelector(ExploreRecursiveWithStop(
@@ -195,7 +195,7 @@ func stopAtInChainTest(t *testing.T, chainNode ipld.Node, stopLnk ipld.Link, num
 				LinkSystem:                     lsys,
 				LinkTargetNodePrototypeChooser: basicnode.Chooser,
 			},
-		}.WalkMatching(chainNode, s, func(prog traversal.Progress, n ipld.Node) error {
+		}.WalkMatching(chainNode, s, func(prog traversal.Progress, n datamodel.Node) error {
 			//fmt.Println("Order", order, prog.Path.String())
 			switch order {
 			case 0:

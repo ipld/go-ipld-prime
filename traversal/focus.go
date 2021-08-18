@@ -3,7 +3,7 @@ package traversal
 import (
 	"fmt"
 
-	ipld "github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/datamodel"
 )
 
 // Focus traverses a Node graph according to a path, reaches a single Node,
@@ -13,7 +13,7 @@ import (
 // It cannot cross links automatically (since this requires configuration).
 // Use the equivalent Focus function on the Progress structure
 // for more advanced and configurable walks.
-func Focus(n ipld.Node, p ipld.Path, fn VisitFn) error {
+func Focus(n datamodel.Node, p datamodel.Path, fn VisitFn) error {
 	return Progress{}.Focus(n, p, fn)
 }
 
@@ -24,11 +24,11 @@ func Focus(n ipld.Node, p ipld.Path, fn VisitFn) error {
 // It cannot cross links automatically (since this requires configuration).
 // Use the equivalent Get function on the Progress structure
 // for more advanced and configurable walks.
-func Get(n ipld.Node, p ipld.Path) (ipld.Node, error) {
+func Get(n datamodel.Node, p datamodel.Path) (datamodel.Node, error) {
 	return Progress{}.Get(n, p)
 }
 
-// FocusedTransform traverses an ipld.Node graph, reaches a single Node,
+// FocusedTransform traverses an datamodel.Node graph, reaches a single Node,
 // and calls the given TransformFn to decide what new node to replace the visited node with.
 // A new Node tree will be returned (the original is unchanged).
 //
@@ -36,7 +36,7 @@ func Get(n ipld.Node, p ipld.Path) (ipld.Node, error) {
 // It cannot cross links automatically (since this requires configuration).
 // Use the equivalent FocusedTransform function on the Progress structure
 // for more advanced and configurable walks.
-func FocusedTransform(n ipld.Node, p ipld.Path, fn TransformFn, createParents bool) (ipld.Node, error) {
+func FocusedTransform(n datamodel.Node, p datamodel.Path, fn TransformFn, createParents bool) (datamodel.Node, error) {
 	return Progress{}.FocusedTransform(n, p, fn, createParents)
 }
 
@@ -55,7 +55,7 @@ func FocusedTransform(n ipld.Node, p ipld.Path, fn TransformFn, createParents bo
 // By using the traversal.Progress handed to the VisitFn,
 // the Path recorded of the traversal so far will continue to be extended,
 // and thus continued nested uses of Walk and Focus will see the fully contextualized Path.
-func (prog Progress) Focus(n ipld.Node, p ipld.Path, fn VisitFn) error {
+func (prog Progress) Focus(n datamodel.Node, p datamodel.Path, fn VisitFn) error {
 	n, err := prog.get(n, p, true)
 	if err != nil {
 		return err
@@ -74,29 +74,29 @@ func (prog Progress) Focus(n ipld.Node, p ipld.Path, fn VisitFn) error {
 // If doing several traversals which are nested, consider using the Focus funcion in preference to Get;
 // the Focus functions provide updated Progress objects which can be used to do nested traversals while keeping consistent track of progress,
 // such that continued nested uses of Walk or Focus or Get will see the fully contextualized Path.
-func (prog Progress) Get(n ipld.Node, p ipld.Path) (ipld.Node, error) {
+func (prog Progress) Get(n datamodel.Node, p datamodel.Path) (datamodel.Node, error) {
 	return prog.get(n, p, false)
 }
 
 // get is the internal implementation for Focus and Get.
 // It *mutates* the Progress object it's called on, and returns reached nodes.
 // For Get calls, trackProgress=false, which avoids some allocations for state tracking that's not needed by that call.
-func (prog *Progress) get(n ipld.Node, p ipld.Path, trackProgress bool) (ipld.Node, error) {
+func (prog *Progress) get(n datamodel.Node, p datamodel.Path, trackProgress bool) (datamodel.Node, error) {
 	prog.init()
 	segments := p.Segments()
-	var prev ipld.Node // for LinkContext
+	var prev datamodel.Node // for LinkContext
 	for i, seg := range segments {
 		// Traverse the segment.
 		switch n.Kind() {
-		case ipld.Kind_Invalid:
+		case datamodel.Kind_Invalid:
 			panic(fmt.Errorf("invalid node encountered at %q", p.Truncate(i)))
-		case ipld.Kind_Map:
+		case datamodel.Kind_Map:
 			next, err := n.LookupByString(seg.String())
 			if err != nil {
 				return nil, fmt.Errorf("error traversing segment %q on node at %q: %s", seg, p.Truncate(i), err)
 			}
 			prev, n = n, next
-		case ipld.Kind_List:
+		case datamodel.Kind_List:
 			intSeg, err := seg.Index()
 			if err != nil {
 				return nil, fmt.Errorf("error traversing segment %q on node at %q: the segment cannot be parsed as a number and the node is a list", seg, p.Truncate(i))
@@ -110,9 +110,9 @@ func (prog *Progress) get(n ipld.Node, p ipld.Path, trackProgress bool) (ipld.No
 			return nil, fmt.Errorf("cannot traverse node at %q: %s", p.Truncate(i), fmt.Errorf("cannot traverse terminals"))
 		}
 		// Dereference any links.
-		for n.Kind() == ipld.Kind_Link {
+		for n.Kind() == datamodel.Kind_Link {
 			lnk, _ := n.AsLink()
-			lnkCtx := ipld.LinkContext{
+			lnkCtx := datamodel.LinkContext{
 				Ctx:        prog.Cfg.Ctx,
 				LinkPath:   p.Truncate(i),
 				LinkNode:   n,
@@ -141,7 +141,7 @@ func (prog *Progress) get(n ipld.Node, p ipld.Path, trackProgress bool) (ipld.No
 	return n, nil
 }
 
-// FocusedTransform traverses an ipld.Node graph, reaches a single Node,
+// FocusedTransform traverses an datamodel.Node graph, reaches a single Node,
 // and calls the given TransformFn to decide what new node to replace the visited node with.
 // A new Node tree will be returned (the original is unchanged).
 //
@@ -178,7 +178,7 @@ func (prog *Progress) get(n ipld.Node, p ipld.Path, trackProgress bool) (ipld.No
 // does a large amount of the intermediate bookkeeping that's useful when
 // creating new values which are partial updates to existing values.
 //
-func (prog Progress) FocusedTransform(n ipld.Node, p ipld.Path, fn TransformFn, createParents bool) (ipld.Node, error) {
+func (prog Progress) FocusedTransform(n datamodel.Node, p datamodel.Path, fn TransformFn, createParents bool) (datamodel.Node, error) {
 	prog.init()
 	nb := n.Prototype().NewBuilder()
 	if err := prog.focusedTransform(n, nb, p, fn, createParents); err != nil {
@@ -191,7 +191,7 @@ func (prog Progress) FocusedTransform(n ipld.Node, p ipld.Path, fn TransformFn, 
 // begins building an updated node tree.
 //
 // As implemented, this is not actually efficient if the update will be a no-op; it won't notice until it gets there.
-func (prog Progress) focusedTransform(n ipld.Node, na ipld.NodeAssembler, p ipld.Path, fn TransformFn, createParents bool) error {
+func (prog Progress) focusedTransform(n datamodel.Node, na datamodel.NodeAssembler, p datamodel.Path, fn TransformFn, createParents bool) error {
 	if p.Len() == 0 {
 		n2, err := fn(prog, n)
 		if err != nil {
@@ -224,7 +224,7 @@ func (prog Progress) focusedTransform(n ipld.Node, na ipld.NodeAssembler, p ipld
 	//   if we're at the end, it was already handled at the top of the function,
 	//   so we only get to this case if we were expecting to go deeper.
 	switch n.Kind() {
-	case ipld.Kind_Map:
+	case datamodel.Kind_Map:
 		ma, err := na.BeginMap(n.Length())
 		if err != nil {
 			return err
@@ -269,7 +269,7 @@ func (prog Progress) focusedTransform(n ipld.Node, na ipld.NodeAssembler, p ipld
 			return err
 		}
 		return ma.Finish()
-	case ipld.Kind_List:
+	case datamodel.Kind_List:
 		la, err := na.BeginList(n.Length())
 		if err != nil {
 			return err
@@ -312,13 +312,13 @@ func (prog Progress) focusedTransform(n ipld.Node, na ipld.NodeAssembler, p ipld
 		if ti >= 0 {
 			return fmt.Errorf("transform: cannot navigate path segment %q at %q because it is beyond the list bounds", seg, prog.Path)
 		}
-		prog.Path = prog.Path.AppendSegment(ipld.PathSegmentOfInt(n.Length()))
+		prog.Path = prog.Path.AppendSegment(datamodel.PathSegmentOfInt(n.Length()))
 		if err := prog.focusedTransform(nil, la.AssembleValue(), p2, fn, createParents); err != nil {
 			return err
 		}
 		return la.Finish()
-	case ipld.Kind_Link:
-		lnkCtx := ipld.LinkContext{
+	case datamodel.Kind_Link:
+		lnkCtx := datamodel.LinkContext{
 			Ctx:        prog.Cfg.Ctx,
 			LinkPath:   prog.Path,
 			LinkNode:   n,

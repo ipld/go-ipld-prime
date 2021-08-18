@@ -8,11 +8,11 @@ import (
 	. "github.com/warpfork/go-wish"
 
 	"github.com/ipfs/go-cid"
-	ipld "github.com/ipld/go-ipld-prime"
 	"github.com/ipld/go-ipld-prime/codec/dagjson"
+	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/fluent"
 	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
-	basicnode "github.com/ipld/go-ipld-prime/node/basic"
+	"github.com/ipld/go-ipld-prime/node/basicnode"
 	"github.com/ipld/go-ipld-prime/schema"
 	"github.com/ipld/go-ipld-prime/storage"
 	"github.com/ipld/go-ipld-prime/traversal"
@@ -22,7 +22,7 @@ import (
 
 var store = storage.Memory{}
 
-func encode(n ipld.Node) (ipld.Node, ipld.Link) {
+func encode(n datamodel.Node) (datamodel.Node, datamodel.Link) {
 	lp := cidlink.LinkPrototype{cid.Prefix{
 		Version:  1,
 		Codec:    0x0129,
@@ -32,7 +32,7 @@ func encode(n ipld.Node) (ipld.Node, ipld.Link) {
 	lsys := cidlink.DefaultLinkSystem()
 	lsys.StorageWriteOpener = (&store).OpenWrite
 
-	lnk, err := lsys.Store(ipld.LinkContext{}, lp, n)
+	lnk, err := lsys.Store(datamodel.LinkContext{}, lp, n)
 	if err != nil {
 		panic(err)
 	}
@@ -64,7 +64,7 @@ func SchemaTestLinks(t *testing.T, engine Engine) {
 	engine.Init(t, ts)
 
 	t.Run("typed linkage traversal", func(t *testing.T) {
-		_, intNodeLnk := func() (ipld.Node, ipld.Link) {
+		_, intNodeLnk := func() (datamodel.Node, datamodel.Link) {
 			np := engine.PrototypeByName("Int")
 			nb := np.NewBuilder()
 			nb.AssignInt(101)
@@ -85,7 +85,7 @@ func SchemaTestLinks(t *testing.T, engine Engine) {
 			ma.AssembleEntry("strlist").AssignLink(listOfStringsNodeLnk)
 		}))
 
-		ssb := builder.NewSelectorSpecBuilder(basicnode.Prototype__Any{})
+		ssb := builder.NewSelectorSpecBuilder(basicnode.Prototype.Any)
 		ss := ssb.ExploreRecursive(selector.RecursionLimitDepth(3), ssb.ExploreUnion(
 			ssb.Matcher(),
 			ssb.ExploreAll(ssb.ExploreRecursiveEdge()),
@@ -99,14 +99,14 @@ func SchemaTestLinks(t *testing.T, engine Engine) {
 		err = traversal.Progress{
 			Cfg: &traversal.Config{
 				LinkSystem: lsys,
-				LinkTargetNodePrototypeChooser: func(lnk ipld.Link, lnkCtx ipld.LinkContext) (ipld.NodePrototype, error) {
+				LinkTargetNodePrototypeChooser: func(lnk datamodel.Link, lnkCtx datamodel.LinkContext) (datamodel.NodePrototype, error) {
 					if tlnkNd, ok := lnkCtx.LinkNode.(schema.TypedLinkNode); ok {
 						return tlnkNd.LinkTargetNodePrototype(), nil
 					}
 					return basicnode.Prototype.Any, nil
 				},
 			},
-		}.WalkMatching(linkStructNode, s, func(prog traversal.Progress, n ipld.Node) error {
+		}.WalkMatching(linkStructNode, s, func(prog traversal.Progress, n datamodel.Node) error {
 			buf := new(bytes.Buffer)
 			dagjson.Encode(n, buf)
 			fmt.Printf("Walked %d: %v\n", order, buf.String())

@@ -3,7 +3,7 @@
 //
 // The codec can be used with any node which supports AsBytes and AssignBytes.
 // In general, it only makes sense to use this codec on a plain "bytes" node
-// such as github.com/ipld/go-ipld-prime/node/basic.Prototype.Bytes.
+// such as github.com/ipld/go-ipld-prime/node/basicnode.Prototype.Bytes.
 package raw
 
 import (
@@ -11,16 +11,17 @@ import (
 	"io"
 	"io/ioutil"
 
-	ipld "github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/codec"
+	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/multicodec"
 )
 
-// TODO(mvdan): make go-ipld-prime use go-multicodec soon
+// TODO(mvdan): make go-ipld use go-multicodec soon
 const rawMulticodec = 0x55
 
 var (
-	_ ipld.Decoder = Decode
-	_ ipld.Encoder = Encode
+	_ codec.Decoder = Decode
+	_ codec.Encoder = Encode
 )
 
 func init() {
@@ -40,7 +41,7 @@ func init() {
 // with an io.Reader:
 //
 //     Decode([...], struct{io.Reader}{buf})
-func Decode(am ipld.NodeAssembler, r io.Reader) error {
+func Decode(am datamodel.NodeAssembler, r io.Reader) error {
 	var data []byte
 	if buf, ok := r.(interface{ Bytes() []byte }); ok {
 		data = buf.Bytes()
@@ -58,7 +59,7 @@ func Decode(am ipld.NodeAssembler, r io.Reader) error {
 //
 // Note that Encode won't copy the node's bytes as returned by AsBytes, but the
 // call to Write will typically have to copy the bytes anyway.
-func Encode(node ipld.Node, w io.Writer) error {
+func Encode(node datamodel.Node, w io.Writer) error {
 	data, err := node.AsBytes()
 	if err != nil {
 		return err

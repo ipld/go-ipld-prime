@@ -3,7 +3,7 @@ package tests
 import (
 	"testing"
 
-	"github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/schema"
 )
 
@@ -30,14 +30,14 @@ func SchemaTestUnionKeyed(t *testing.T, engine Engine) {
 			typeJson: `{"String":"whee"}`,
 			reprJson: `{"a":"whee"}`,
 			typePoints: []testcasePoint{
-				{"", ipld.Kind_Map},
+				{"", datamodel.Kind_Map},
 				{"String", "whee"},
-				//{"Strung", ipld.ErrNotExists{}}, // TODO: need better error typing from traversal package.
+				//{"Strung", datamodel.ErrNotExists{}}, // TODO: need better error typing from traversal package.
 			},
 			reprPoints: []testcasePoint{
-				{"", ipld.Kind_Map},
+				{"", datamodel.Kind_Map},
 				{"a", "whee"},
-				//{"b", ipld.ErrNotExists{}}, // TODO: need better error typing from traversal package.
+				//{"b", datamodel.ErrNotExists{}}, // TODO: need better error typing from traversal package.
 			},
 		},
 		{
@@ -45,13 +45,13 @@ func SchemaTestUnionKeyed(t *testing.T, engine Engine) {
 			typeJson: `{"Strung":"whee"}`,
 			reprJson: `{"b":"whee"}`,
 			typePoints: []testcasePoint{
-				{"", ipld.Kind_Map},
-				//{"String", ipld.ErrNotExists{}}, // TODO: need better error typing from traversal package.
+				{"", datamodel.Kind_Map},
+				//{"String", datamodel.ErrNotExists{}}, // TODO: need better error typing from traversal package.
 				{"Strung", "whee"},
 			},
 			reprPoints: []testcasePoint{
-				{"", ipld.Kind_Map},
-				//{"a", ipld.ErrNotExists{}}, // TODO: need better error typing from traversal package.
+				{"", datamodel.Kind_Map},
+				//{"a", datamodel.ErrNotExists{}}, // TODO: need better error typing from traversal package.
 				{"b", "whee"},
 			},
 		},
@@ -101,14 +101,14 @@ func SchemaTestUnionKeyedComplexChildren(t *testing.T, engine Engine) {
 			typeJson: `{"String":"whee"}`,
 			reprJson: `{"a":"whee"}`,
 			typePoints: []testcasePoint{
-				{"", ipld.Kind_Map},
+				{"", datamodel.Kind_Map},
 				{"String", "whee"},
-				//{"SmolStruct", ipld.ErrNotExists{}}, // TODO: need better error typing from traversal package.
+				//{"SmolStruct", datamodel.ErrNotExists{}}, // TODO: need better error typing from traversal package.
 			},
 			reprPoints: []testcasePoint{
-				{"", ipld.Kind_Map},
+				{"", datamodel.Kind_Map},
 				{"a", "whee"},
-				//{"b", ipld.ErrNotExists{}}, // TODO: need better error typing from traversal package.
+				//{"b", datamodel.ErrNotExists{}}, // TODO: need better error typing from traversal package.
 			},
 		},
 		{
@@ -116,15 +116,15 @@ func SchemaTestUnionKeyedComplexChildren(t *testing.T, engine Engine) {
 			typeJson: `{"SmolStruct":{"s":"whee"}}`,
 			reprJson: `{"b":{"q":"whee"}}`,
 			typePoints: []testcasePoint{
-				{"", ipld.Kind_Map},
-				//{"String", ipld.ErrNotExists{}}, // TODO: need better error typing from traversal package.
-				{"SmolStruct", ipld.Kind_Map},
+				{"", datamodel.Kind_Map},
+				//{"String", datamodel.ErrNotExists{}}, // TODO: need better error typing from traversal package.
+				{"SmolStruct", datamodel.Kind_Map},
 				{"SmolStruct/s", "whee"},
 			},
 			reprPoints: []testcasePoint{
-				{"", ipld.Kind_Map},
-				//{"a", ipld.ErrNotExists{}}, // TODO: need better error typing from traversal package.
-				{"b", ipld.Kind_Map},
+				{"", datamodel.Kind_Map},
+				//{"a", datamodel.ErrNotExists{}}, // TODO: need better error typing from traversal package.
+				{"b", datamodel.Kind_Map},
 				{"b/q", "whee"},
 			},
 		},

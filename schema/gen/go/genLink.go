@@ -52,7 +52,7 @@ func (g linkGenerator) EmitTypedNodeMethodType(w io.Writer) {
 	// Bonus feature for some links (conforms to the schema.TypedLinkNode interface):
 	if g.Type.HasReferencedType() {
 		doTemplate(`
-			func ({{ .Type | TypeSymbol }}) LinkTargetNodePrototype() ipld.NodePrototype {
+			func ({{ .Type | TypeSymbol }}) LinkTargetNodePrototype() datamodel.NodePrototype {
 				return Type.{{ .Type.ReferencedType | TypeSymbol }}__Repr
 			}
 		`, w, g.AdjCfg, g)

@@ -45,7 +45,6 @@ func buildGennedCode(t *testing.T, prefix string, pkgName string) {
 	t.Skip("behavioral tests for generated code skipped: you used the 'skipgenbehavtests' build tag.")
 }
 
-
-func fnPrototypeByName(prefix string) func(string) ipld.NodePrototype {
+func fnPrototypeByName(prefix string) func(string) datamodel.NodePrototype {
 	return nil // unused
 }

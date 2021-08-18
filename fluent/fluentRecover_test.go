@@ -5,9 +5,9 @@ import (
 
 	. "github.com/warpfork/go-wish"
 
-	ipld "github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/fluent"
-	basicnode "github.com/ipld/go-ipld-prime/node/basic"
+	"github.com/ipld/go-ipld-prime/node/basicnode"
 )
 
 func TestRecover(t *testing.T) {
@@ -20,7 +20,7 @@ func TestRecover(t *testing.T) {
 				t.Fatal("should not be reached")
 			}),
 			ShouldEqual,
-			fluent.Error{ipld.ErrWrongKind{TypeName: "string", MethodName: "AssignInt", AppropriateKind: ipld.KindSet_JustInt, ActualKind: ipld.Kind_String}},
+			fluent.Error{datamodel.ErrWrongKind{TypeName: "string", MethodName: "AssignInt", AppropriateKind: datamodel.KindSet_JustInt, ActualKind: datamodel.Kind_String}},
 		)
 	})
 	t.Run("correct build should return nil", func(t *testing.T) {

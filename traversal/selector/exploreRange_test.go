@@ -6,9 +6,9 @@ import (
 
 	. "github.com/warpfork/go-wish"
 
-	ipld "github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/fluent"
-	basicnode "github.com/ipld/go-ipld-prime/node/basic"
+	"github.com/ipld/go-ipld-prime/node/basicnode"
 )
 
 func TestParseExploreRange(t *testing.T) {
@@ -98,15 +98,15 @@ func TestParseExploreRange(t *testing.T) {
 		})
 		s, err := ParseContext{}.ParseExploreRange(sn)
 		Wish(t, err, ShouldEqual, nil)
-		Wish(t, s, ShouldEqual, ExploreRange{Matcher{}, 2, 3, []ipld.PathSegment{ipld.PathSegmentOfInt(2)}})
+		Wish(t, s, ShouldEqual, ExploreRange{Matcher{}, 2, 3, []datamodel.PathSegment{datamodel.PathSegmentOfInt(2)}})
 	})
 }
 
 func TestExploreRangeExplore(t *testing.T) {
-	s := ExploreRange{Matcher{}, 3, 4, []ipld.PathSegment{ipld.PathSegmentOfInt(3)}}
+	s := ExploreRange{Matcher{}, 3, 4, []datamodel.PathSegment{datamodel.PathSegmentOfInt(3)}}
 	t.Run("exploring should return nil unless node is a list", func(t *testing.T) {
 		n := fluent.MustBuildMap(basicnode.Prototype__Map{}, 0, func(na fluent.MapAssembler) {})
-		returnedSelector, _ := s.Explore(n, ipld.PathSegmentOfInt(3))
+		returnedSelector, _ := s.Explore(n, datamodel.PathSegmentOfInt(3))
 		Wish(t, returnedSelector, ShouldEqual, nil)
 	})
 	n := fluent.MustBuildList(basicnode.Prototype__List{}, 4, func(na fluent.ListAssembler) {
@@ -116,15 +116,15 @@ func TestExploreRangeExplore(t *testing.T) {
 		na.AssembleValue().AssignInt(3)
 	})
 	t.Run("exploring should return nil when given a path segment out of range", func(t *testing.T) {
-		returnedSelector, _ := s.Explore(n, ipld.PathSegmentOfInt(2))
+		returnedSelector, _ := s.Explore(n, datamodel.PathSegmentOfInt(2))
 		Wish(t, returnedSelector, ShouldEqual, nil)
 	})
 	t.Run("exploring should return nil when given a path segment that isn't an index", func(t *testing.T) {
-		returnedSelector, _ := s.Explore(n, ipld.PathSegmentOfString("cheese"))
+		returnedSelector, _ := s.Explore(n, datamodel.PathSegmentOfString("cheese"))
 		Wish(t, returnedSelector, ShouldEqual, nil)
 	})
 	t.Run("exploring should return the next selector when given a path segment with index in range", func(t *testing.T) {
-		returnedSelector, _ := s.Explore(n, ipld.PathSegmentOfInt(3))
+		returnedSelector, _ := s.Explore(n, datamodel.PathSegmentOfInt(3))
 		Wish(t, returnedSelector, ShouldEqual, Matcher{})
 	})
 }

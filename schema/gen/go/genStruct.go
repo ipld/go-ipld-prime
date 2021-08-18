@@ -95,18 +95,18 @@ func (g structGenerator) EmitNodeTypeAssertions(w io.Writer) {
 
 func (g structGenerator) EmitNodeMethodLookupByString(w io.Writer) {
 	doTemplate(`
-		func (n {{ .Type | TypeSymbol }}) LookupByString(key string) (ipld.Node, error) {
+		func (n {{ .Type | TypeSymbol }}) LookupByString(key string) (datamodel.Node, error) {
 			switch key {
 			{{- range $field := .Type.Fields }}
 			case "{{ $field.Name }}":
 				{{- if $field.IsOptional }}
 				if n.{{ $field | FieldSymbolLower }}.m == schema.Maybe_Absent {
-					return ipld.Absent, nil
+					return datamodel.Absent, nil
 				}
 				{{- end}}
 				{{- if $field.IsNullable }}
 				if n.{{ $field | FieldSymbolLower }}.m == schema.Maybe_Null {
-					return ipld.Null, nil
+					return datamodel.Null, nil
 				}
 				{{- end}}
 				{{- if $field.IsMaybe }}
@@ -116,7 +116,7 @@ func (g structGenerator) EmitNodeMethodLookupByString(w io.Writer) {
 				{{- end}}
 			{{- end}}
 			default:
-				return nil, schema.ErrNoSuchField{Type: nil /*TODO*/, Field: ipld.PathSegmentOfString(key)}
+				return nil, schema.ErrNoSuchField{Type: nil /*TODO*/, Field: datamodel.PathSegmentOfString(key)}
 			}
 		}
 	`, w, g.AdjCfg, g)
@@ -124,7 +124,7 @@ func (g structGenerator) EmitNodeMethodLookupByString(w io.Writer) {
 
 func (g structGenerator) EmitNodeMethodLookupByNode(w io.Writer) {
 	doTemplate(`
-		func (n {{ .Type | TypeSymbol }}) LookupByNode(key ipld.Node) (ipld.Node, error) {
+		func (n {{ .Type | TypeSymbol }}) LookupByNode(key datamodel.Node) (datamodel.Node, error) {
 			ks, err := key.AsString()
 			if err != nil {
 				return nil, err
@@ -138,7 +138,7 @@ func (g structGenerator) EmitNodeMethodMapIterator(w io.Writer) {
 	// Note that the typed iterator will report absent fields.
 	//  The representation iterator (if has one) however will skip those.
 	doTemplate(`
-		func (n {{ .Type | TypeSymbol }}) MapIterator() ipld.MapIterator {
+		func (n {{ .Type | TypeSymbol }}) MapIterator() datamodel.MapIterator {
 			return &_{{ .Type | TypeSymbol }}__MapItr{n, 0}
 		}
 
@@ -147,12 +147,12 @@ func (g structGenerator) EmitNodeMethodMapIterator(w io.Writer) {
 			idx  int
 		}
 
-		func (itr *_{{ .Type | TypeSymbol }}__MapItr) Next() (k ipld.Node, v ipld.Node, _ error) {
+		func (itr *_{{ .Type | TypeSymbol }}__MapItr) Next() (k datamodel.Node, v datamodel.Node, _ error) {
 			{{- if not .Type.Fields }}
-			return nil, nil, ipld.ErrIteratorOverread{}
+			return nil, nil, datamodel.ErrIteratorOverread{}
 			{{ else -}}
 			if itr.idx >= {{ len .Type.Fields }} {
-				return nil, nil, ipld.ErrIteratorOverread{}
+				return nil, nil, datamodel.ErrIteratorOverread{}
 			}
 			switch itr.idx {
 			{{- $type := .Type -}} {{- /* ranging modifies dot, unhelpfully */ -}}
@@ -161,13 +161,13 @@ func (g structGenerator) EmitNodeMethodMapIterator(w io.Writer) {
 				k = &fieldName__{{ $type | TypeSymbol }}_{{ $field | FieldSymbolUpper }}
 				{{- if $field.IsOptional }}
 				if itr.n.{{ $field | FieldSymbolLower }}.m == schema.Maybe_Absent {
-					v = ipld.Absent
+					v = datamodel.Absent
 					break
 				}
 				{{- end}}
 				{{- if $field.IsNullable }}
 				if itr.n.{{ $field | FieldSymbolLower }}.m == schema.Maybe_Null {
-					v = ipld.Null
+					v = datamodel.Null
 					break
 				}
 				{{- end}}
@@ -292,7 +292,7 @@ func (g structBuilderGenerator) EmitNodeAssemblerMethodAssignNode(w io.Writer) {
 	//
 	// We do not set m=midvalue in phase 3 -- it shouldn't matter unless you're trying to pull off concurrent access, which is wrong and unsafe regardless.
 	doTemplate(`
-		func (na *_{{ .Type | TypeSymbol }}__Assembler) AssignNode(v ipld.Node) error {
+		func (na *_{{ .Type | TypeSymbol }}__Assembler) AssignNode(v datamodel.Node) error {
 			if v.IsNull() {
 				return na.AssignNull()
 			}
@@ -314,8 +314,8 @@ func (g structBuilderGenerator) EmitNodeAssemblerMethodAssignNode(w io.Writer) {
 				*na.m = schema.Maybe_Value
 				return nil
 			}
-			if v.Kind() != ipld.Kind_Map {
-				return ipld.ErrWrongKind{TypeName: "{{ .PkgName }}.{{ .Type.Name }}", MethodName: "AssignNode", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
+			if v.Kind() != datamodel.Kind_Map {
+				return datamodel.ErrWrongKind{TypeName: "{{ .PkgName }}.{{ .Type.Name }}", MethodName: "AssignNode", AppropriateKind: datamodel.KindSet_JustMap, ActualKind: v.Kind()}
 			}
 			itr := v.MapIterator()
 			for !itr.Done() {
@@ -407,7 +407,7 @@ func (g structBuilderGenerator) emitMapAssemblerChildTidyHelper(w io.Writer) {
 func (g structBuilderGenerator) emitMapAssemblerMethods(w io.Writer) {
 	// FUTURE: some of the setup of the child assemblers could probably be DRY'd up.
 	doTemplate(`
-		func (ma *_{{ .Type | TypeSymbol }}__Assembler) AssembleEntry(k string) (ipld.NodeAssembler, error) {
+		func (ma *_{{ .Type | TypeSymbol }}__Assembler) AssembleEntry(k string) (datamodel.NodeAssembler, error) {
 			switch ma.state {
 			case maState_initial:
 				// carry on
@@ -428,7 +428,7 @@ func (g structBuilderGenerator) emitMapAssemblerMethods(w io.Writer) {
 			{{- range $i, $field := .Type.Fields }}
 			case "{{ $field.Name }}":
 				if ma.s & fieldBit__{{ $type | TypeSymbol }}_{{ $field | FieldSymbolUpper }} != 0 {
-					return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__{{ $type | TypeSymbol }}_{{ $field | FieldSymbolUpper }}}
+					return nil, datamodel.ErrRepeatedMapKey{Key: &fieldName__{{ $type | TypeSymbol }}_{{ $field | FieldSymbolUpper }}}
 				}
 				ma.s += fieldBit__{{ $type | TypeSymbol }}_{{ $field | FieldSymbolUpper }}
 				ma.state = maState_midValue
@@ -447,9 +447,9 @@ func (g structBuilderGenerator) emitMapAssemblerMethods(w io.Writer) {
 			{{- end}}
 			}
 			{{- end}}
-			return nil, ipld.ErrInvalidKey{TypeName:"{{ .PkgName }}.{{ .Type.Name }}", Key:&_String{k}}
+			return nil, schema.ErrInvalidKey{TypeName:"{{ .PkgName }}.{{ .Type.Name }}", Key:&_String{k}}
 		}
-		func (ma *_{{ .Type | TypeSymbol }}__Assembler) AssembleKey() ipld.NodeAssembler {
+		func (ma *_{{ .Type | TypeSymbol }}__Assembler) AssembleKey() datamodel.NodeAssembler {
 			switch ma.state {
 			case maState_initial:
 				// carry on
@@ -467,7 +467,7 @@ func (g structBuilderGenerator) emitMapAssemblerMethods(w io.Writer) {
 			ma.state = maState_midKey
 			return (*_{{ .Type | TypeSymbol }}__KeyAssembler)(ma)
 		}
-		func (ma *_{{ .Type | TypeSymbol }}__Assembler) AssembleValue() ipld.NodeAssembler {
+		func (ma *_{{ .Type | TypeSymbol }}__Assembler) AssembleValue() datamodel.NodeAssembler {
 			switch ma.state {
 			case maState_initial:
 				panic("invalid state: AssembleValue cannot be called when no key is primed")
@@ -516,7 +516,7 @@ func (g structBuilderGenerator) emitMapAssemblerMethods(w io.Writer) {
 				panic("invalid state: Finish cannot be called on an assembler that's already finished")
 			}
 			if ma.s & fieldBits__{{ $type | TypeSymbol }}_sufficient != fieldBits__{{ $type | TypeSymbol }}_sufficient {
-				err := ipld.ErrMissingRequiredField{Missing: make([]string, 0)}
+				err := schema.ErrMissingRequiredField{Missing: make([]string, 0)}
 				{{- range $i, $field := .Type.Fields }}
 				{{- if not $field.IsMaybe}}
 				if ma.s & fieldBit__{{ $type | TypeSymbol }}_{{ $field | FieldSymbolUpper }} == 0 {
@@ -530,10 +530,10 @@ func (g structBuilderGenerator) emitMapAssemblerMethods(w io.Writer) {
 			*ma.m = schema.Maybe_Value
 			return nil
 		}
-		func (ma *_{{ .Type | TypeSymbol }}__Assembler) KeyPrototype() ipld.NodePrototype {
+		func (ma *_{{ .Type | TypeSymbol }}__Assembler) KeyPrototype() datamodel.NodePrototype {
 			return _String__Prototype{}
 		}
-		func (ma *_{{ .Type | TypeSymbol }}__Assembler) ValuePrototype(k string) ipld.NodePrototype {
+		func (ma *_{{ .Type | TypeSymbol }}__Assembler) ValuePrototype(k string) datamodel.NodePrototype {
 			panic("todo structbuilder mapassembler valueprototype")
 		}
 	`, w, g.AdjCfg, g)
@@ -565,7 +565,7 @@ func (g structBuilderGenerator) emitKeyAssembler(w io.Writer) {
 			{{- range $i, $field := .Type.Fields }}
 			case "{{ $field.Name }}":
 				if ka.s & fieldBit__{{ $type | TypeSymbol }}_{{ $field | FieldSymbolUpper }} != 0 {
-					return ipld.ErrRepeatedMapKey{Key: &fieldName__{{ $type | TypeSymbol }}_{{ $field | FieldSymbolUpper }}}
+					return datamodel.ErrRepeatedMapKey{Key: &fieldName__{{ $type | TypeSymbol }}_{{ $field | FieldSymbolUpper }}}
 				}
 				ka.s += fieldBit__{{ $type | TypeSymbol }}_{{ $field | FieldSymbolUpper }}
 				ka.state = maState_expectValue
@@ -573,21 +573,21 @@ func (g structBuilderGenerator) emitKeyAssembler(w io.Writer) {
 				return nil
 			{{- end}}
 			default:
-				return ipld.ErrInvalidKey{TypeName:"{{ .PkgName }}.{{ .Type.Name }}", Key:&_String{k}}
+				return schema.ErrInvalidKey{TypeName:"{{ .PkgName }}.{{ .Type.Name }}", Key:&_String{k}}
 			}
 		}
 	`, w, g.AdjCfg, g)
 	stubs.EmitNodeAssemblerMethodAssignBytes(w)
 	stubs.EmitNodeAssemblerMethodAssignLink(w)
 	doTemplate(`
-		func (ka *_{{ .Type | TypeSymbol }}__KeyAssembler) AssignNode(v ipld.Node) error {
+		func (ka *_{{ .Type | TypeSymbol }}__KeyAssembler) AssignNode(v datamodel.Node) error {
 			if v2, err := v.AsString(); err != nil {
 				return err
 			} else {
 				return ka.AssignString(v2)
 			}
 		}
-		func (_{{ .Type | TypeSymbol }}__KeyAssembler) Prototype() ipld.NodePrototype {
+		func (_{{ .Type | TypeSymbol }}__KeyAssembler) Prototype() datamodel.NodePrototype {
 			return _String__Prototype{}
 		}
 	`, w, g.AdjCfg, g)

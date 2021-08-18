@@ -3,7 +3,7 @@ package schema
 import (
 	"fmt"
 
-	"github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/datamodel"
 	schemadmt "github.com/ipld/go-ipld-prime/schema/dmt"
 )
 
@@ -160,7 +160,7 @@ func BuildTypeSystem(schdmt schemadmt.Schema) (*TypeSystem, []error) {
 					//  We create these temporary things rather than looking in the typesystem map we're accumulating because it makes the process work correctly regardless of order.
 					//  For some of the kinds, this is fairly overkill (we know that the representation behavior of a bool type is bool because it doesn't have any other representation strategies!)
 					//   but I've ground the whole thing out in a consistent way anyway.
-					var mkind ipld.Kind
+					var mkind datamodel.Kind
 					switch t3 := typesdmt.Lookup(v).AsInterface().(type) {
 					case schemadmt.TypeBool:
 						mkind = TypeBool{dmt: t3}.RepresentationBehavior()
@@ -190,7 +190,7 @@ func BuildTypeSystem(schdmt schemadmt.Schema) (*TypeSystem, []error) {
 						panic("unreachable")
 					}
 					// TODO RepresentationKind is supposed to be an enum, but is not presently generated as such.  This block's use of `k` as a string should turn into something cleaner when enum gen is implemented and used for RepresentationKind.
-					if mkind == ipld.Kind_Invalid {
+					if mkind == datamodel.Kind_Invalid {
 						ee = append(ee, fmt.Errorf("kinded union %s declares a %s kind should be received as type %s, which is not sensible because that type is also a kinded union", tn, k, v))
 					} else if k.String() != mkind.String() {
 						ee = append(ee, fmt.Errorf("kinded union %s declares a %s kind should be received as type %s, but that type's representation kind is %s", tn, k, v, mkind))
@@ -207,7 +207,7 @@ func BuildTypeSystem(schdmt schemadmt.Schema) (*TypeSystem, []error) {
 					_, v := itr.Next()
 					// As with the switch above which handles kinded union members, we go for the full destructuring here.
 					//  It's slightly overkill considering that most of the type kinds will flatly error in practice, but consistency is nice.
-					var mkind ipld.Kind
+					var mkind datamodel.Kind
 					switch t3 := typesdmt.Lookup(v).AsInterface().(type) {
 					case schemadmt.TypeBool:
 						mkind = TypeBool{dmt: t3}.RepresentationBehavior()
@@ -240,7 +240,7 @@ func BuildTypeSystem(schdmt schemadmt.Schema) (*TypeSystem, []error) {
 					case schemadmt.TypeStruct:
 						// Check representation strategy first.  Still has to be mappy.
 						t4 := TypeStruct{dmt: t3}
-						if t4.RepresentationBehavior() != ipld.Kind_Map {
+						if t4.RepresentationBehavior() != datamodel.Kind_Map {
 							goto kindcheck // it'll fail, of course, but this goto DRY's the error message.
 						}
 
@@ -267,7 +267,7 @@ func BuildTypeSystem(schdmt schemadmt.Schema) (*TypeSystem, []error) {
 						panic("unreachable")
 					}
 				kindcheck:
-					if mkind != ipld.Kind_Map {
+					if mkind != datamodel.Kind_Map {
 						ee = append(ee, fmt.Errorf("union %s has representation strategy inline, which requires all members have map representations, so %s (which has representation kind %s) is not a valid member", tn, v, mkind))
 					}
 				}
@@ -416,7 +416,7 @@ func hasStringRepresentation(t schemadmt.TypeDefn) bool {
 // The discriminantsMap is an untyped Node because it turns out convenient to do that way:
 // we happen to know all the different union representations have a map *somewhere* for this,
 // but its position and key types vary.  Untyped access lets us write more reusable code in this case.
-func checkUnionDiscriminantInfo(tn TypeName, members []schemadmt.TypeName, discriminantsMap ipld.Node, ee *[]error) {
+func checkUnionDiscriminantInfo(tn TypeName, members []schemadmt.TypeName, discriminantsMap datamodel.Node, ee *[]error) {
 	for itr := discriminantsMap.MapIterator(); !itr.Done(); {
 		_, v, _ := itr.Next()
 		found := false

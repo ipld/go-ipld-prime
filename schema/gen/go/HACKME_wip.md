@@ -5,8 +5,8 @@ The handling of absent values is still not consistent.
 
 Currently:
 
-- reading (via accessors or iterators) yields `ipld.Absent` values for absent fields
-- putting those ipld.Absent values via NodeAssembler.AssignNode will result in `ErrWrongKind`.
+- reading (via accessors or iterators) yields `datamodel.Absent` values for absent fields
+- putting those datamodel.Absent values via NodeAssembler.AssignNode will result in `ErrWrongKind`.
 - *the recursive copies embedded in AssignNode methods don't handle absents either*.
 
 The first two are defensible and consistent (if not necessarily ergonomic).
@@ -76,9 +76,9 @@ Perhaps this only matters for certain styles of unions.
 
 Perhaps we should get used to the idea of codec packages offering two styles of methods:
 
-- `UnmarshalIntoAssembler(io.Reader, ipld.NodeAssembler) error`
+- `UnmarshalIntoAssembler(io.Reader, datamodel.NodeAssembler) error`
 	- this is for when you have opinions about what kind of in-memory format should be used
-- `Unmarshal(io.Reader) (ipld.Node, error)`
+- `Unmarshal(io.Reader) (datamodel.Node, error)`
 	- this is for when you want to let the codec pick.
 
 We might actually end up preferring the latter in a fair number of cases.

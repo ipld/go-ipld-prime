@@ -3,7 +3,7 @@ package selector
 import (
 	"fmt"
 
-	ipld "github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/datamodel"
 )
 
 // ExploreRecursive traverses some structure recursively.
@@ -81,12 +81,12 @@ func RecursionLimitNone() RecursionLimit {
 }
 
 // Interests for ExploreRecursive is empty (meaning traverse everything)
-func (s ExploreRecursive) Interests() []ipld.PathSegment {
+func (s ExploreRecursive) Interests() []datamodel.PathSegment {
 	return s.current.Interests()
 }
 
 // Explore returns the node's selector for all fields
-func (s ExploreRecursive) Explore(n ipld.Node, p ipld.PathSegment) (Selector, error) {
+func (s ExploreRecursive) Explore(n datamodel.Node, p datamodel.PathSegment) (Selector, error) {
 	if s.stopAt != nil {
 		target, err := n.LookupBySegment(p)
 		if err != nil {
@@ -161,7 +161,7 @@ func (s ExploreRecursive) replaceRecursiveEdge(nextSelector Selector, replacemen
 }
 
 // Decide if a node directly matches
-func (s ExploreRecursive) Decide(n ipld.Node) bool {
+func (s ExploreRecursive) Decide(n datamodel.Node) bool {
 	return s.current.Decide(n)
 }
 
@@ -178,8 +178,8 @@ func (erc *exploreRecursiveContext) Link(s Selector) bool {
 }
 
 // ParseExploreRecursive assembles a Selector from a ExploreRecursive selector node
-func (pc ParseContext) ParseExploreRecursive(n ipld.Node) (Selector, error) {
-	if n.Kind() != ipld.Kind_Map {
+func (pc ParseContext) ParseExploreRecursive(n datamodel.Node) (Selector, error) {
+	if n.Kind() != datamodel.Kind_Map {
 		return nil, fmt.Errorf("selector spec parse rejected: selector body must be a map")
 	}
 
@@ -215,8 +215,8 @@ func (pc ParseContext) ParseExploreRecursive(n ipld.Node) (Selector, error) {
 	return ExploreRecursive{selector, selector, limit, stopCondition}, nil
 }
 
-func parseLimit(n ipld.Node) (RecursionLimit, error) {
-	if n.Kind() != ipld.Kind_Map {
+func parseLimit(n datamodel.Node) (RecursionLimit, error) {
+	if n.Kind() != datamodel.Kind_Map {
 		return RecursionLimit{}, fmt.Errorf("selector spec parse rejected: limit in ExploreRecursive is a keyed union and thus must be a map")
 	}
 	if n.Length() != 1 {

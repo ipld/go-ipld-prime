@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	cid "github.com/ipfs/go-cid"
-	ipld "github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime"
 	multihash "github.com/multiformats/go-multihash"
 )
 

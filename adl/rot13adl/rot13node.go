@@ -15,20 +15,20 @@
 			- optionally, use `SubstrateRootPrototype` as the prototype for loading the raw substrate data;
 			  any kind of Node is a valid input to Reify, but this one will generally have optimal performance.
 		- take the synthesized form and inspect its substrate data:
-			- the `Substrate()` method will return another ipld.Node which is the root of the raw substrate data,
-			  and can be walked normally like any other ipld.Node.
+			- the `Substrate()` method will return another datamodel.Node which is the root of the raw substrate data,
+			  and can be walked normally like any other datamodel.Node.
 */
 package rot13adl
 
 import (
-	"github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/node/mixins"
 	"github.com/ipld/go-ipld-prime/schema"
 )
 
 // -- Node -->
 
-var _ ipld.Node = (R13String)(nil)
+var _ datamodel.Node = (R13String)(nil)
 
 type R13String = *_R13String
 
@@ -37,25 +37,25 @@ type _R13String struct {
 	synthesized string // the content that the ADL presents.  calculated proactively from the original, in this implementation (though you could imagine implementing it lazily, in either direction, too).
 }
 
-func (*_R13String) Kind() ipld.Kind {
-	return ipld.Kind_String
+func (*_R13String) Kind() datamodel.Kind {
+	return datamodel.Kind_String
 }
-func (*_R13String) LookupByString(string) (ipld.Node, error) {
+func (*_R13String) LookupByString(string) (datamodel.Node, error) {
 	return mixins.String{TypeName: "rot13adl.R13String"}.LookupByString("")
 }
-func (*_R13String) LookupByNode(ipld.Node) (ipld.Node, error) {
+func (*_R13String) LookupByNode(datamodel.Node) (datamodel.Node, error) {
 	return mixins.String{TypeName: "rot13adl.R13String"}.LookupByNode(nil)
 }
-func (*_R13String) LookupByIndex(idx int64) (ipld.Node, error) {
+func (*_R13String) LookupByIndex(idx int64) (datamodel.Node, error) {
 	return mixins.String{TypeName: "rot13adl.R13String"}.LookupByIndex(0)
 }
-func (*_R13String) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
+func (*_R13String) LookupBySegment(seg datamodel.PathSegment) (datamodel.Node, error) {
 	return mixins.String{TypeName: "rot13adl.R13String"}.LookupBySegment(seg)
 }
-func (*_R13String) MapIterator() ipld.MapIterator {
+func (*_R13String) MapIterator() datamodel.MapIterator {
 	return nil
 }
-func (*_R13String) ListIterator() ipld.ListIterator {
+func (*_R13String) ListIterator() datamodel.ListIterator {
 	return nil
 }
 func (*_R13String) Length() int64 {
@@ -82,16 +82,16 @@ func (n *_R13String) AsString() (string, error) {
 func (*_R13String) AsBytes() ([]byte, error) {
 	return mixins.String{TypeName: "rot13adl.R13String"}.AsBytes()
 }
-func (*_R13String) AsLink() (ipld.Link, error) {
+func (*_R13String) AsLink() (datamodel.Link, error) {
 	return mixins.String{TypeName: "rot13adl.R13String"}.AsLink()
 }
-func (*_R13String) Prototype() ipld.NodePrototype {
+func (*_R13String) Prototype() datamodel.NodePrototype {
 	return _R13String__Prototype{}
 }
 
 // -- NodePrototype -->
 
-var _ ipld.NodePrototype = _R13String__Prototype{}
+var _ datamodel.NodePrototype = _R13String__Prototype{}
 
 type _R13String__Prototype struct {
 	// There's no configuration to this ADL.
@@ -107,19 +107,19 @@ type _R13String__Prototype struct {
 	// An ADL that does multi-block stuff might also need functions like a LinkLoader passed in through here.
 }
 
-func (np _R13String__Prototype) NewBuilder() ipld.NodeBuilder {
+func (np _R13String__Prototype) NewBuilder() datamodel.NodeBuilder {
 	return &_R13String__Builder{}
 }
 
 // -- NodeBuilder -->
 
-var _ ipld.NodeBuilder = (*_R13String__Builder)(nil)
+var _ datamodel.NodeBuilder = (*_R13String__Builder)(nil)
 
 type _R13String__Builder struct {
 	_R13String__Assembler
 }
 
-func (nb *_R13String__Builder) Build() ipld.Node {
+func (nb *_R13String__Builder) Build() datamodel.Node {
 	if nb.m != schema.Maybe_Value {
 		panic("invalid state: cannot call Build on an assembler that's not finished")
 	}
@@ -131,17 +131,17 @@ func (nb *_R13String__Builder) Reset() {
 
 // -- NodeAssembler -->
 
-var _ ipld.NodeAssembler = (*_R13String__Assembler)(nil)
+var _ datamodel.NodeAssembler = (*_R13String__Assembler)(nil)
 
 type _R13String__Assembler struct {
 	w *_R13String
 	m schema.Maybe // REVIEW: if the package where this Maybe enum lives is maybe not the right home for it after all.  Or should this line use something different?  We're only using some of its values after all.
 }
 
-func (_R13String__Assembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
+func (_R13String__Assembler) BeginMap(sizeHint int64) (datamodel.MapAssembler, error) {
 	return mixins.StringAssembler{TypeName: "rot13adl.R13String"}.BeginMap(0)
 }
-func (_R13String__Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
+func (_R13String__Assembler) BeginList(sizeHint int64) (datamodel.ListAssembler, error) {
 	return mixins.StringAssembler{TypeName: "rot13adl.R13String"}.BeginList(0)
 }
 func (na *_R13String__Assembler) AssignNull() error {
@@ -172,10 +172,10 @@ func (na *_R13String__Assembler) AssignString(v string) error {
 func (_R13String__Assembler) AssignBytes([]byte) error {
 	return mixins.StringAssembler{TypeName: "rot13adl.R13String"}.AssignBytes(nil)
 }
-func (_R13String__Assembler) AssignLink(ipld.Link) error {
+func (_R13String__Assembler) AssignLink(datamodel.Link) error {
 	return mixins.StringAssembler{TypeName: "rot13adl.R13String"}.AssignLink(nil)
 }
-func (na *_R13String__Assembler) AssignNode(v ipld.Node) error {
+func (na *_R13String__Assembler) AssignNode(v datamodel.Node) error {
 	if v.IsNull() {
 		return na.AssignNull()
 	}
@@ -194,6 +194,6 @@ func (na *_R13String__Assembler) AssignNode(v ipld.Node) error {
 		return na.AssignString(v2)
 	}
 }
-func (_R13String__Assembler) Prototype() ipld.NodePrototype {
+func (_R13String__Assembler) Prototype() datamodel.NodePrototype {
 	return _R13String__Prototype{}
 }

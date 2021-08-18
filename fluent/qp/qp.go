@@ -9,19 +9,19 @@
 // Finally, functions like MapEntry and ListEntry allow inserting into maps and
 // lists.
 //
-// These all use the same IPLD interfaces such as NodePrototype and
+// These all use the same IPLD datamodel interfaces such as NodePrototype and
 // NodeAssembler, but with some magic to reduce verbosity.
 package qp
 
 import (
 	"fmt"
 
-	"github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/datamodel"
 )
 
-type Assemble = func(ipld.NodeAssembler)
+type Assemble = func(datamodel.NodeAssembler)
 
-func BuildMap(np ipld.NodePrototype, sizeHint int64, fn func(ipld.MapAssembler)) (_ ipld.Node, err error) {
+func BuildMap(np datamodel.NodePrototype, sizeHint int64, fn func(datamodel.MapAssembler)) (_ datamodel.Node, err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			if rerr, ok := r.(error); ok {
@@ -39,10 +39,10 @@ func BuildMap(np ipld.NodePrototype, sizeHint int64, fn func(ipld.MapAssembler))
 
 type mapParams struct {
 	sizeHint int64
-	fn       func(ipld.MapAssembler)
+	fn       func(datamodel.MapAssembler)
 }
 
-func (mp mapParams) Assemble(na ipld.NodeAssembler) {
+func (mp mapParams) Assemble(na datamodel.NodeAssembler) {
 	ma, err := na.BeginMap(mp.sizeHint)
 	if err != nil {
 		panic(err)
@@ -53,11 +53,11 @@ func (mp mapParams) Assemble(na ipld.NodeAssembler) {
 	}
 }
 
-func Map(sizeHint int64, fn func(ipld.MapAssembler)) Assemble {
+func Map(sizeHint int64, fn func(datamodel.MapAssembler)) Assemble {
 	return mapParams{sizeHint, fn}.Assemble
 }
 
-func MapEntry(ma ipld.MapAssembler, k string, fn Assemble) {
+func MapEntry(ma datamodel.MapAssembler, k string, fn Assemble) {
 	na, err := ma.AssembleEntry(k)
 	if err != nil {
 		panic(err)
@@ -65,7 +65,7 @@ func MapEntry(ma ipld.MapAssembler, k string, fn Assemble) {
 	fn(na)
 }
 
-func BuildList(np ipld.NodePrototype, sizeHint int64, fn func(ipld.ListAssembler)) (_ ipld.Node, err error) {
+func BuildList(np datamodel.NodePrototype, sizeHint int64, fn func(datamodel.ListAssembler)) (_ datamodel.Node, err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			if rerr, ok := r.(error); ok {
@@ -83,10 +83,10 @@ func BuildList(np ipld.NodePrototype, sizeHint int64, fn func(ipld.ListAssembler
 
 type listParams struct {
 	sizeHint int64
-	fn       func(ipld.ListAssembler)
+	fn       func(datamodel.ListAssembler)
 }
 
-func (lp listParams) Assemble(na ipld.NodeAssembler) {
+func (lp listParams) Assemble(na datamodel.NodeAssembler) {
 	la, err := na.BeginList(lp.sizeHint)
 	if err != nil {
 		panic(err)
@@ -97,17 +97,17 @@ func (lp listParams) Assemble(na ipld.NodeAssembler) {
 	}
 }
 
-func List(sizeHint int64, fn func(ipld.ListAssembler)) Assemble {
+func List(sizeHint int64, fn func(datamodel.ListAssembler)) Assemble {
 	return listParams{sizeHint, fn}.Assemble
 }
 
-func ListEntry(la ipld.ListAssembler, fn Assemble) {
+func ListEntry(la datamodel.ListAssembler, fn Assemble) {
 	fn(la.AssembleValue())
 }
 
 type nullParam struct{}
 
-func (s nullParam) Assemble(na ipld.NodeAssembler) {
+func (s nullParam) Assemble(na datamodel.NodeAssembler) {
 	if err := na.AssignNull(); err != nil {
 		panic(err)
 	}
@@ -119,7 +119,7 @@ func Null() Assemble {
 
 type boolParam bool
 
-func (s boolParam) Assemble(na ipld.NodeAssembler) {
+func (s boolParam) Assemble(na datamodel.NodeAssembler) {
 	if err := na.AssignBool(bool(s)); err != nil {
 		panic(err)
 	}
@@ -131,7 +131,7 @@ func Bool(b bool) Assemble {
 
 type intParam int64
 
-func (i intParam) Assemble(na ipld.NodeAssembler) {
+func (i intParam) Assemble(na datamodel.NodeAssembler) {
 	if err := na.AssignInt(int64(i)); err != nil {
 		panic(err)
 	}
@@ -143,7 +143,7 @@ func Int(i int64) Assemble {
 
 type floatParam float64
 
-func (f floatParam) Assemble(na ipld.NodeAssembler) {
+func (f floatParam) Assemble(na datamodel.NodeAssembler) {
 	if err := na.AssignFloat(float64(f)); err != nil {
 		panic(err)
 	}
@@ -155,7 +155,7 @@ func Float(f float64) Assemble {
 
 type stringParam string
 
-func (s stringParam) Assemble(na ipld.NodeAssembler) {
+func (s stringParam) Assemble(na datamodel.NodeAssembler) {
 	if err := na.AssignString(string(s)); err != nil {
 		panic(err)
 	}
@@ -167,7 +167,7 @@ func String(s string) Assemble {
 
 type bytesParam []byte
 
-func (p bytesParam) Assemble(na ipld.NodeAssembler) {
+func (p bytesParam) Assemble(na datamodel.NodeAssembler) {
 	if err := na.AssignBytes([]byte(p)); err != nil {
 		panic(err)
 	}
@@ -178,29 +178,29 @@ func Bytes(p []byte) Assemble {
 }
 
 type linkParam struct {
-	x ipld.Link
+	x datamodel.Link
 }
 
-func (l linkParam) Assemble(na ipld.NodeAssembler) {
-	if err := na.AssignLink(ipld.Link(l.x)); err != nil {
+func (l linkParam) Assemble(na datamodel.NodeAssembler) {
+	if err := na.AssignLink(datamodel.Link(l.x)); err != nil {
 		panic(err)
 	}
 }
 
-func Link(l ipld.Link) Assemble {
+func Link(l datamodel.Link) Assemble {
 	return linkParam{l}.Assemble
 }
 
 type nodeParam struct {
-	x ipld.Node
+	x datamodel.Node
 }
 
-func (n nodeParam) Assemble(na ipld.NodeAssembler) {
-	if err := na.AssignNode(ipld.Node(n.x)); err != nil {
+func (n nodeParam) Assemble(na datamodel.NodeAssembler) {
+	if err := na.AssignNode(datamodel.Node(n.x)); err != nil {
 		panic(err)
 	}
 }
 
-func Node(n ipld.Node) Assemble {
+func Node(n datamodel.Node) Assemble {
 	return nodeParam{n}.Assemble
 }

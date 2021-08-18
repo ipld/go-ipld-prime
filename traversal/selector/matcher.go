@@ -3,7 +3,7 @@ package selector
 import (
 	"fmt"
 
-	ipld "github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/datamodel"
 )
 
 // Matcher marks a node to be included in the "result" set.
@@ -20,26 +20,26 @@ type Matcher struct{}
 
 // Interests are empty for a matcher (for now) because
 // It is always just there to match, not explore further
-func (s Matcher) Interests() []ipld.PathSegment {
-	return []ipld.PathSegment{}
+func (s Matcher) Interests() []datamodel.PathSegment {
+	return []datamodel.PathSegment{}
 }
 
 // Explore will return nil because a matcher is a terminal selector
-func (s Matcher) Explore(n ipld.Node, p ipld.PathSegment) (Selector, error) {
+func (s Matcher) Explore(n datamodel.Node, p datamodel.PathSegment) (Selector, error) {
 	return nil, nil
 }
 
 // Decide is always true for a match cause it's in the result set
 // TODO: Implement boolean logic for conditionals
-func (s Matcher) Decide(n ipld.Node) bool {
+func (s Matcher) Decide(n datamodel.Node) bool {
 	return true
 }
 
 // ParseMatcher assembles a Selector
 // from a matcher selector node
 // TODO: Parse labels and conditions
-func (pc ParseContext) ParseMatcher(n ipld.Node) (Selector, error) {
-	if n.Kind() != ipld.Kind_Map {
+func (pc ParseContext) ParseMatcher(n datamodel.Node) (Selector, error) {
+	if n.Kind() != datamodel.Kind_Map {
 		return nil, fmt.Errorf("selector spec parse rejected: selector body must be a map")
 	}
 	return Matcher{}, nil

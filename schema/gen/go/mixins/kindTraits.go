@@ -3,7 +3,7 @@ package mixins
 import (
 	"io"
 
-	ipld "github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/datamodel"
 )
 
 // kindTraitsGenerator is the center of all the other mixins,
@@ -28,77 +28,77 @@ type kindTraitsGenerator struct {
 	PkgName    string
 	TypeName   string // as will be printed in messages (e.g. can be goosed up a bit, like "Thing.Repr" instead of "_Thing__Repr").
 	TypeSymbol string // the identifier in code (sometimes is munged internals like "_Thing__Repr" corresponding to no publicly admitted schema.Type.Name).
-	Kind       ipld.Kind
+	Kind       datamodel.Kind
 }
 
 func (g kindTraitsGenerator) emitNodeMethodLookupByString(w io.Writer) {
-	if ipld.KindSet_JustMap.Contains(g.Kind) {
+	if datamodel.KindSet_JustMap.Contains(g.Kind) {
 		panic("gen internals error: you should've overriden this")
 	}
 	doTemplate(`
-		func ({{ .TypeSymbol }}) LookupByString(string) (ipld.Node, error) {
+		func ({{ .TypeSymbol }}) LookupByString(string) (datamodel.Node, error) {
 			return mixins.{{ .Kind.String | title }}{TypeName: "{{ .PkgName }}.{{ .TypeName }}"}.LookupByString("")
 		}
 	`, w, g)
 }
 
 func (g kindTraitsGenerator) emitNodeMethodLookupByNode(w io.Writer) {
-	if ipld.KindSet_JustMap.Contains(g.Kind) {
+	if datamodel.KindSet_JustMap.Contains(g.Kind) {
 		panic("gen internals error: you should've overriden this")
 	}
 	doTemplate(`
-		func ({{ .TypeSymbol }}) LookupByNode(ipld.Node) (ipld.Node, error) {
+		func ({{ .TypeSymbol }}) LookupByNode(datamodel.Node) (datamodel.Node, error) {
 			return mixins.{{ .Kind.String | title }}{TypeName: "{{ .PkgName }}.{{ .TypeName }}"}.LookupByNode(nil)
 		}
 	`, w, g)
 }
 
 func (g kindTraitsGenerator) emitNodeMethodLookupByIndex(w io.Writer) {
-	if ipld.KindSet_JustList.Contains(g.Kind) {
+	if datamodel.KindSet_JustList.Contains(g.Kind) {
 		panic("gen internals error: you should've overriden this")
 	}
 	doTemplate(`
-		func ({{ .TypeSymbol }}) LookupByIndex(idx int64) (ipld.Node, error) {
+		func ({{ .TypeSymbol }}) LookupByIndex(idx int64) (datamodel.Node, error) {
 			return mixins.{{ .Kind.String | title }}{TypeName: "{{ .PkgName }}.{{ .TypeName }}"}.LookupByIndex(0)
 		}
 	`, w, g)
 }
 
 func (g kindTraitsGenerator) emitNodeMethodLookupBySegment(w io.Writer) {
-	if ipld.KindSet_Recursive.Contains(g.Kind) {
+	if datamodel.KindSet_Recursive.Contains(g.Kind) {
 		panic("gen internals error: you should've overriden this")
 	}
 	doTemplate(`
-		func ({{ .TypeSymbol }}) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
+		func ({{ .TypeSymbol }}) LookupBySegment(seg datamodel.PathSegment) (datamodel.Node, error) {
 			return mixins.{{ .Kind.String | title }}{TypeName: "{{ .PkgName }}.{{ .TypeName }}"}.LookupBySegment(seg)
 		}
 	`, w, g)
 }
 
 func (g kindTraitsGenerator) emitNodeMethodMapIterator(w io.Writer) {
-	if ipld.KindSet_JustMap.Contains(g.Kind) {
+	if datamodel.KindSet_JustMap.Contains(g.Kind) {
 		panic("gen internals error: you should've overriden this")
 	}
 	doTemplate(`
-		func ({{ .TypeSymbol }}) MapIterator() ipld.MapIterator {
+		func ({{ .TypeSymbol }}) MapIterator() datamodel.MapIterator {
 			return nil
 		}
 	`, w, g)
 }
 
 func (g kindTraitsGenerator) emitNodeMethodListIterator(w io.Writer) {
-	if ipld.KindSet_JustList.Contains(g.Kind) {
+	if datamodel.KindSet_JustList.Contains(g.Kind) {
 		panic("gen internals error: you should've overriden this")
 	}
 	doTemplate(`
-		func ({{ .TypeSymbol }}) ListIterator() ipld.ListIterator {
+		func ({{ .TypeSymbol }}) ListIterator() datamodel.ListIterator {
 			return nil
 		}
 	`, w, g)
 }
 
 func (g kindTraitsGenerator) emitNodeMethodLength(w io.Writer) {
-	if ipld.KindSet_Recursive.Contains(g.Kind) {
+	if datamodel.KindSet_Recursive.Contains(g.Kind) {
 		panic("gen internals error: you should've overriden this")
 	}
 	doTemplate(`
@@ -125,7 +125,7 @@ func (g kindTraitsGenerator) emitNodeMethodIsNull(w io.Writer) {
 }
 
 func (g kindTraitsGenerator) emitNodeMethodAsBool(w io.Writer) {
-	if ipld.KindSet_JustBool.Contains(g.Kind) {
+	if datamodel.KindSet_JustBool.Contains(g.Kind) {
 		panic("gen internals error: you should've overriden this")
 	}
 	doTemplate(`
@@ -136,7 +136,7 @@ func (g kindTraitsGenerator) emitNodeMethodAsBool(w io.Writer) {
 }
 
 func (g kindTraitsGenerator) emitNodeMethodAsInt(w io.Writer) {
-	if ipld.KindSet_JustInt.Contains(g.Kind) {
+	if datamodel.KindSet_JustInt.Contains(g.Kind) {
 		panic("gen internals error: you should've overriden this")
 	}
 	doTemplate(`
@@ -147,7 +147,7 @@ func (g kindTraitsGenerator) emitNodeMethodAsInt(w io.Writer) {
 }
 
 func (g kindTraitsGenerator) emitNodeMethodAsFloat(w io.Writer) {
-	if ipld.KindSet_JustFloat.Contains(g.Kind) {
+	if datamodel.KindSet_JustFloat.Contains(g.Kind) {
 		panic("gen internals error: you should've overriden this")
 	}
 	doTemplate(`
@@ -158,7 +158,7 @@ func (g kindTraitsGenerator) emitNodeMethodAsFloat(w io.Writer) {
 }
 
 func (g kindTraitsGenerator) emitNodeMethodAsString(w io.Writer) {
-	if ipld.KindSet_JustString.Contains(g.Kind) {
+	if datamodel.KindSet_JustString.Contains(g.Kind) {
 		panic("gen internals error: you should've overriden this")
 	}
 	doTemplate(`
@@ -169,7 +169,7 @@ func (g kindTraitsGenerator) emitNodeMethodAsString(w io.Writer) {
 }
 
 func (g kindTraitsGenerator) emitNodeMethodAsBytes(w io.Writer) {
-	if ipld.KindSet_JustBytes.Contains(g.Kind) {
+	if datamodel.KindSet_JustBytes.Contains(g.Kind) {
 		panic("gen internals error: you should've overriden this")
 	}
 	doTemplate(`
@@ -180,11 +180,11 @@ func (g kindTraitsGenerator) emitNodeMethodAsBytes(w io.Writer) {
 }
 
 func (g kindTraitsGenerator) emitNodeMethodAsLink(w io.Writer) {
-	if ipld.KindSet_JustLink.Contains(g.Kind) {
+	if datamodel.KindSet_JustLink.Contains(g.Kind) {
 		panic("gen internals error: you should've overriden this")
 	}
 	doTemplate(`
-		func ({{ .TypeSymbol }}) AsLink() (ipld.Link, error) {
+		func ({{ .TypeSymbol }}) AsLink() (datamodel.Link, error) {
 			return mixins.{{ .Kind.String | title }}{TypeName: "{{ .PkgName }}.{{ .TypeName }}"}.AsLink()
 		}
 	`, w, g)
@@ -196,7 +196,7 @@ type kindAssemblerTraitsGenerator struct {
 	PkgName       string
 	TypeName      string // as will be printed in messages (e.g. can be goosed up a bit, like "Thing.Repr" instead of "_Thing__Repr").
 	AppliedPrefix string // the prefix of what to attach methods to... this one is a little wild: should probably be either "_{{ .Type | TypeSymbol }}__" or "_{{ .Type | TypeSymbol }}__Repr", and we'll just add the words "Builder" and "Assembler".
-	Kind          ipld.Kind
+	Kind          datamodel.Kind
 }
 
 // bailed on extracting a common emitNodeBuilderType: too many variations in content and pointer placement to be worth it.
@@ -208,29 +208,29 @@ type kindAssemblerTraitsGenerator struct {
 //  - to still be ready for boatloads of exceptions if the representation isn't directly castable to and from the type-level node.
 
 func (g kindAssemblerTraitsGenerator) emitNodeAssemblerMethodBeginMap(w io.Writer) {
-	if ipld.KindSet_JustMap.Contains(g.Kind) {
+	if datamodel.KindSet_JustMap.Contains(g.Kind) {
 		panic("gen internals error: you should've overriden this")
 	}
 	doTemplate(`
-		func ({{ .AppliedPrefix }}Assembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
+		func ({{ .AppliedPrefix }}Assembler) BeginMap(sizeHint int64) (datamodel.MapAssembler, error) {
 			return mixins.{{ .Kind.String | title }}Assembler{TypeName: "{{ .PkgName }}.{{ .TypeName }}"}.BeginMap(0)
 		}
 	`, w, g)
 }
 
 func (g kindAssemblerTraitsGenerator) emitNodeAssemblerMethodBeginList(w io.Writer) {
-	if ipld.KindSet_JustList.Contains(g.Kind) {
+	if datamodel.KindSet_JustList.Contains(g.Kind) {
 		panic("gen internals error: you should've overriden this")
 	}
 	doTemplate(`
-		func ({{ .AppliedPrefix }}Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
+		func ({{ .AppliedPrefix }}Assembler) BeginList(sizeHint int64) (datamodel.ListAssembler, error) {
 			return mixins.{{ .Kind.String | title }}Assembler{TypeName: "{{ .PkgName }}.{{ .TypeName }}"}.BeginList(0)
 		}
 	`, w, g)
 }
 
 func (g kindAssemblerTraitsGenerator) emitNodeAssemblerMethodAssignNull(w io.Writer) {
-	if ipld.KindSet_JustNull.Contains(g.Kind) {
+	if datamodel.KindSet_JustNull.Contains(g.Kind) {
 		panic("gen internals error: you should've overriden this")
 	}
 	doTemplate(`
@@ -241,7 +241,7 @@ func (g kindAssemblerTraitsGenerator) emitNodeAssemblerMethodAssignNull(w io.Wri
 }
 
 func (g kindAssemblerTraitsGenerator) emitNodeAssemblerMethodAssignBool(w io.Writer) {
-	if ipld.KindSet_JustBool.Contains(g.Kind) {
+	if datamodel.KindSet_JustBool.Contains(g.Kind) {
 		panic("gen internals error: you should've overriden this")
 	}
 	doTemplate(`
@@ -252,7 +252,7 @@ func (g kindAssemblerTraitsGenerator) emitNodeAssemblerMethodAssignBool(w io.Wri
 }
 
 func (g kindAssemblerTraitsGenerator) emitNodeAssemblerMethodAssignInt(w io.Writer) {
-	if ipld.KindSet_JustInt.Contains(g.Kind) {
+	if datamodel.KindSet_JustInt.Contains(g.Kind) {
 		panic("gen internals error: you should've overriden this")
 	}
 	doTemplate(`
@@ -263,7 +263,7 @@ func (g kindAssemblerTraitsGenerator) emitNodeAssemblerMethodAssignInt(w io.Writ
 }
 
 func (g kindAssemblerTraitsGenerator) emitNodeAssemblerMethodAssignFloat(w io.Writer) {
-	if ipld.KindSet_JustFloat.Contains(g.Kind) {
+	if datamodel.KindSet_JustFloat.Contains(g.Kind) {
 		panic("gen internals error: you should've overriden this")
 	}
 	doTemplate(`
@@ -274,7 +274,7 @@ func (g kindAssemblerTraitsGenerator) emitNodeAssemblerMethodAssignFloat(w io.Wr
 }
 
 func (g kindAssemblerTraitsGenerator) emitNodeAssemblerMethodAssignString(w io.Writer) {
-	if ipld.KindSet_JustString.Contains(g.Kind) {
+	if datamodel.KindSet_JustString.Contains(g.Kind) {
 		panic("gen internals error: you should've overriden this")
 	}
 	doTemplate(`
@@ -285,7 +285,7 @@ func (g kindAssemblerTraitsGenerator) emitNodeAssemblerMethodAssignString(w io.W
 }
 
 func (g kindAssemblerTraitsGenerator) emitNodeAssemblerMethodAssignBytes(w io.Writer) {
-	if ipld.KindSet_JustBytes.Contains(g.Kind) {
+	if datamodel.KindSet_JustBytes.Contains(g.Kind) {
 		panic("gen internals error: you should've overriden this")
 	}
 	doTemplate(`
@@ -296,11 +296,11 @@ func (g kindAssemblerTraitsGenerator) emitNodeAssemblerMethodAssignBytes(w io.Wr
 }
 
 func (g kindAssemblerTraitsGenerator) emitNodeAssemblerMethodAssignLink(w io.Writer) {
-	if ipld.KindSet_JustLink.Contains(g.Kind) {
+	if datamodel.KindSet_JustLink.Contains(g.Kind) {
 		panic("gen internals error: you should've overriden this")
 	}
 	doTemplate(`
-		func ({{ .AppliedPrefix }}Assembler) AssignLink(ipld.Link) error {
+		func ({{ .AppliedPrefix }}Assembler) AssignLink(datamodel.Link) error {
 			return mixins.{{ .Kind.String | title }}Assembler{TypeName: "{{ .PkgName }}.{{ .TypeName }}"}.AssignLink(nil)
 		}
 	`, w, g)
@@ -310,7 +310,7 @@ func (g kindAssemblerTraitsGenerator) emitNodeAssemblerMethodAssignLink(w io.Wri
 
 func (g kindAssemblerTraitsGenerator) emitNodeAssemblerMethodPrototype(w io.Writer) {
 	doTemplate(`
-		func ({{ .AppliedPrefix }}Assembler) Prototype() ipld.NodePrototype {
+		func ({{ .AppliedPrefix }}Assembler) Prototype() datamodel.NodePrototype {
 			return {{ .AppliedPrefix }}Prototype{}
 		}
 	`, w, g)

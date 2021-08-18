@@ -6,11 +6,11 @@ import (
 
 	qt "github.com/frankban/quicktest"
 
-	"github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/schema"
 )
 
-func assignValue(am ipld.NodeAssembler, value interface{}) error {
+func assignValue(am datamodel.NodeAssembler, value interface{}) error {
 	switch value := value.(type) {
 	case bool:
 		return am.AssignBool(value)
@@ -40,14 +40,14 @@ func SchemaTestScalars(t *testing.T, engine Engine) {
 
 	var tests = []struct {
 		name  string
-		kind  ipld.Kind
+		kind  datamodel.Kind
 		value interface{}
 	}{
-		{"Bool", ipld.Kind_Bool, true},
-		{"Int", ipld.Kind_Int, int64(23)},
-		{"Float", ipld.Kind_Float, 12.25},
-		{"String", ipld.Kind_String, "foo"},
-		{"Bytes", ipld.Kind_Bytes, []byte("bar")},
+		{"Bool", datamodel.Kind_Bool, true},
+		{"Int", datamodel.Kind_Int, int64(23)},
+		{"Float", datamodel.Kind_Float, 12.25},
+		{"String", datamodel.Kind_String, "foo"},
+		{"Bytes", datamodel.Kind_Bytes, []byte("bar")},
 	}
 
 	// We test each of the five scalar prototypes in subtests.
@@ -109,15 +109,15 @@ func SchemaTestScalars(t *testing.T, engine Engine) {
 						var gotValue interface{}
 						err = nil
 						switch testAssign.kind {
-						case ipld.Kind_Bool:
+						case datamodel.Kind_Bool:
 							gotValue, err = n.AsBool()
-						case ipld.Kind_Int:
+						case datamodel.Kind_Int:
 							gotValue, err = n.AsInt()
-						case ipld.Kind_Float:
+						case datamodel.Kind_Float:
 							gotValue, err = n.AsFloat()
-						case ipld.Kind_String:
+						case datamodel.Kind_String:
 							gotValue, err = n.AsString()
-						case ipld.Kind_Bytes:
+						case datamodel.Kind_Bytes:
 							gotValue, err = n.AsBytes()
 						default:
 							t.Fatal(testAssign.kind)

@@ -65,13 +65,13 @@ func (g unionKindedReprGenerator) EmitNodeType(w io.Writer) {
 
 func (g unionKindedReprGenerator) EmitNodeTypeAssertions(w io.Writer) {
 	doTemplate(`
-		var _ ipld.Node = &_{{ .Type | TypeSymbol }}__Repr{}
+		var _ datamodel.Node = &_{{ .Type | TypeSymbol }}__Repr{}
 	`, w, g.AdjCfg, g)
 }
 
 func (g unionKindedReprGenerator) EmitNodeMethodKind(w io.Writer) {
 	doTemplate(`
-		func (n *_{{ .Type | TypeSymbol }}__Repr) Kind() ipld.Kind {
+		func (n *_{{ .Type | TypeSymbol }}__Repr) Kind() datamodel.Kind {
 			{{- if (eq (.AdjCfg.UnionMemlayout .Type) "embedAll") }}
 			switch n.tag {
 			{{- range $i, $member := .Type.Members }}
@@ -115,7 +115,7 @@ func kindedUnionNodeMethodTemplateMunge(
 
 	errorClause := `return ` + nopeSentinel
 	if !nopeSentinelOnly {
-		errorClause += `, ipld.ErrWrongKind{TypeName: "{{ .PkgName }}.{{ .Type.Name }}.Repr", MethodName: "` + methodName + `", AppropriateKind: ` + appropriateKind + `, ActualKind: n.Kind()}`
+		errorClause += `, datamodel.ErrWrongKind{TypeName: "{{ .PkgName }}.{{ .Type.Name }}.Repr", MethodName: "` + methodName + `", AppropriateKind: ` + appropriateKind + `, ActualKind: n.Kind()}`
 	}
 	return `
 		func (n *_{{ .Type | TypeSymbol }}__Repr) ` + methodSig + ` {
@@ -150,11 +150,11 @@ func kindedUnionNodeMethodTemplateMunge(
 func (g unionKindedReprGenerator) EmitNodeMethodLookupByString(w io.Writer) {
 	doTemplate(kindedUnionNodeMethodTemplateMunge(
 		`LookupByString`,
-		`LookupByString(key string) (ipld.Node, error)`,
+		`LookupByString(key string) (datamodel.Node, error)`,
 		`{{- if .Type.RepresentationStrategy.GetMember (Kind "map") }}`,
 		`{{- if eq $member.RepresentationBehavior.String "map" }}`,
 		`.LookupByString(key)`,
-		`ipld.KindSet_JustMap`,
+		`datamodel.KindSet_JustMap`,
 		`nil`,
 		false,
 	), w, g.AdjCfg, g)
@@ -163,11 +163,11 @@ func (g unionKindedReprGenerator) EmitNodeMethodLookupByString(w io.Writer) {
 func (g unionKindedReprGenerator) EmitNodeMethodLookupByIndex(w io.Writer) {
 	doTemplate(kindedUnionNodeMethodTemplateMunge(
 		`LookupByIndex`,
-		`LookupByIndex(idx int64) (ipld.Node, error)`,
+		`LookupByIndex(idx int64) (datamodel.Node, error)`,
 		`{{- if .Type.RepresentationStrategy.GetMember (Kind "list") }}`,
 		`{{- if eq $member.RepresentationBehavior.String "list" }}`,
 		`.LookupByIndex(idx)`,
-		`ipld.KindSet_JustList`,
+		`datamodel.KindSet_JustList`,
 		`nil`,
 		false,
 	), w, g.AdjCfg, g)
@@ -176,11 +176,11 @@ func (g unionKindedReprGenerator) EmitNodeMethodLookupByIndex(w io.Writer) {
 func (g unionKindedReprGenerator) EmitNodeMethodLookupByNode(w io.Writer) {
 	doTemplate(kindedUnionNodeMethodTemplateMunge(
 		`LookupByNode`,
-		`LookupByNode(key ipld.Node) (ipld.Node, error)`,
+		`LookupByNode(key datamodel.Node) (datamodel.Node, error)`,
 		`{{- if or (.Type.RepresentationStrategy.GetMember (Kind "map")) (.Type.RepresentationStrategy.GetMember (Kind "list")) }}`,
 		`{{- if or (eq $member.RepresentationBehavior.String "map") (eq $member.RepresentationBehavior.String "list") }}`,
 		`.LookupByNode(key)`,
-		`ipld.KindSet_Recursive`,
+		`datamodel.KindSet_Recursive`,
 		`nil`,
 		false,
 	), w, g.AdjCfg, g)
@@ -189,11 +189,11 @@ func (g unionKindedReprGenerator) EmitNodeMethodLookupByNode(w io.Writer) {
 func (g unionKindedReprGenerator) EmitNodeMethodLookupBySegment(w io.Writer) {
 	doTemplate(kindedUnionNodeMethodTemplateMunge(
 		`LookupBySegment`,
-		`LookupBySegment(seg ipld.PathSegment) (ipld.Node, error)`,
+		`LookupBySegment(seg datamodel.PathSegment) (datamodel.Node, error)`,
 		`{{- if or (.Type.RepresentationStrategy.GetMember (Kind "map")) (.Type.RepresentationStrategy.GetMember (Kind "list")) }}`,
 		`{{- if or (eq $member.RepresentationBehavior.String "map") (eq $member.RepresentationBehavior.String "list") }}`,
 		`.LookupBySegment(seg)`,
-		`ipld.KindSet_Recursive`,
+		`datamodel.KindSet_Recursive`,
 		`nil`,
 		false,
 	), w, g.AdjCfg, g)
@@ -202,11 +202,11 @@ func (g unionKindedReprGenerator) EmitNodeMethodLookupBySegment(w io.Writer) {
 func (g unionKindedReprGenerator) EmitNodeMethodMapIterator(w io.Writer) {
 	doTemplate(kindedUnionNodeMethodTemplateMunge(
 		`MapIterator`,
-		`MapIterator() ipld.MapIterator`,
+		`MapIterator() datamodel.MapIterator`,
 		`{{- if .Type.RepresentationStrategy.GetMember (Kind "map") }}`,
 		`{{- if eq $member.RepresentationBehavior.String "map" }}`,
 		`.MapIterator()`,
-		`ipld.KindSet_JustMap`,
+		`datamodel.KindSet_JustMap`,
 		`nil`,
 		true,
 	), w, g.AdjCfg, g)
@@ -215,11 +215,11 @@ func (g unionKindedReprGenerator) EmitNodeMethodMapIterator(w io.Writer) {
 func (g unionKindedReprGenerator) EmitNodeMethodListIterator(w io.Writer) {
 	doTemplate(kindedUnionNodeMethodTemplateMunge(
 		`ListIterator`,
-		`ListIterator() ipld.ListIterator`,
+		`ListIterator() datamodel.ListIterator`,
 		`{{- if .Type.RepresentationStrategy.GetMember (Kind "list") }}`,
 		`{{- if eq $member.RepresentationBehavior.String "list" }}`,
 		`.ListIterator()`,
-		`ipld.KindSet_JustList`,
+		`datamodel.KindSet_JustList`,
 		`nil`,
 		true,
 	), w, g.AdjCfg, g)
@@ -232,7 +232,7 @@ func (g unionKindedReprGenerator) EmitNodeMethodLength(w io.Writer) {
 		`{{- if or (.Type.RepresentationStrategy.GetMember (Kind "map")) (.Type.RepresentationStrategy.GetMember (Kind "list")) }}`,
 		`{{- if or (eq $member.RepresentationBehavior.String "map") (eq $member.RepresentationBehavior.String "list") }}`,
 		`.Length()`,
-		`ipld.KindSet_Recursive`,
+		`datamodel.KindSet_Recursive`,
 		`-1`,
 		true,
 	), w, g.AdjCfg, g)
@@ -261,7 +261,7 @@ func (g unionKindedReprGenerator) EmitNodeMethodAsBool(w io.Writer) {
 		`{{- if .Type.RepresentationStrategy.GetMember (Kind "bool") }}`,
 		`{{- if eq $member.RepresentationBehavior.String "bool" }}`,
 		`.AsBool()`,
-		`ipld.KindSet_JustBool`,
+		`datamodel.KindSet_JustBool`,
 		`false`,
 		false,
 	), w, g.AdjCfg, g)
@@ -274,7 +274,7 @@ func (g unionKindedReprGenerator) EmitNodeMethodAsInt(w io.Writer) {
 		`{{- if .Type.RepresentationStrategy.GetMember (Kind "int") }}`,
 		`{{- if eq $member.RepresentationBehavior.String "int" }}`,
 		`.AsInt()`,
-		`ipld.KindSet_JustInt`,
+		`datamodel.KindSet_JustInt`,
 		`0`,
 		false,
 	), w, g.AdjCfg, g)
@@ -287,7 +287,7 @@ func (g unionKindedReprGenerator) EmitNodeMethodAsFloat(w io.Writer) {
 		`{{- if .Type.RepresentationStrategy.GetMember (Kind "float") }}`,
 		`{{- if eq $member.RepresentationBehavior.String "float" }}`,
 		`.AsFloat()`,
-		`ipld.KindSet_JustFloat`,
+		`datamodel.KindSet_JustFloat`,
 		`0`,
 		false,
 	), w, g.AdjCfg, g)
@@ -300,7 +300,7 @@ func (g unionKindedReprGenerator) EmitNodeMethodAsString(w io.Writer) {
 		`{{- if .Type.RepresentationStrategy.GetMember (Kind "string") }}`,
 		`{{- if eq $member.RepresentationBehavior.String "string" }}`,
 		`.AsString()`,
-		`ipld.KindSet_JustString`,
+		`datamodel.KindSet_JustString`,
 		`""`,
 		false,
 	), w, g.AdjCfg, g)
@@ -313,7 +313,7 @@ func (g unionKindedReprGenerator) EmitNodeMethodAsBytes(w io.Writer) {
 		`{{- if .Type.RepresentationStrategy.GetMember (Kind "bytes") }}`,
 		`{{- if eq $member.RepresentationBehavior.String "bytes" }}`,
 		`.AsBytes()`,
-		`ipld.KindSet_JustBytes`,
+		`datamodel.KindSet_JustBytes`,
 		`nil`,
 		false,
 	), w, g.AdjCfg, g)
@@ -322,11 +322,11 @@ func (g unionKindedReprGenerator) EmitNodeMethodAsBytes(w io.Writer) {
 func (g unionKindedReprGenerator) EmitNodeMethodAsLink(w io.Writer) {
 	doTemplate(kindedUnionNodeMethodTemplateMunge(
 		`AsLink`,
-		`AsLink() (ipld.Link, error)`,
+		`AsLink() (datamodel.Link, error)`,
 		`{{- if .Type.RepresentationStrategy.GetMember (Kind "link") }}`,
 		`{{- if eq $member.RepresentationBehavior.String "link" }}`,
 		`.AsLink()`,
-		`ipld.KindSet_JustLink`,
+		`datamodel.KindSet_JustLink`,
 		`nil`,
 		false,
 	), w, g.AdjCfg, g)
@@ -467,7 +467,7 @@ func kindedUnionNodeAssemblerMethodTemplateMunge(
 func (g unionKindedReprBuilderGenerator) EmitNodeAssemblerMethodBeginMap(w io.Writer) {
 	doTemplate(kindedUnionNodeAssemblerMethodTemplateMunge(
 		`BeginMap`,
-		`BeginMap(sizeHint int64) (ipld.MapAssembler, error)`,
+		`BeginMap(sizeHint int64) (datamodel.MapAssembler, error)`,
 		`{{- if eq $member.RepresentationBehavior.String "map" }}`,
 		`.BeginMap(sizeHint)`,
 		true,
@@ -476,7 +476,7 @@ func (g unionKindedReprBuilderGenerator) EmitNodeAssemblerMethodBeginMap(w io.Wr
 func (g unionKindedReprBuilderGenerator) EmitNodeAssemblerMethodBeginList(w io.Writer) {
 	doTemplate(kindedUnionNodeAssemblerMethodTemplateMunge(
 		`BeginList`,
-		`BeginList(sizeHint int64) (ipld.ListAssembler, error)`,
+		`BeginList(sizeHint int64) (datamodel.ListAssembler, error)`,
 		`{{- if eq $member.RepresentationBehavior.String "list" }}`,
 		`.BeginList(sizeHint)`,
 		true,
@@ -540,7 +540,7 @@ func (g unionKindedReprBuilderGenerator) EmitNodeAssemblerMethodAssignBytes(w io
 func (g unionKindedReprBuilderGenerator) EmitNodeAssemblerMethodAssignLink(w io.Writer) {
 	doTemplate(kindedUnionNodeAssemblerMethodTemplateMunge(
 		`AssignLink`,
-		`AssignLink(v ipld.Link) error `,
+		`AssignLink(v datamodel.Link) error `,
 		`{{- if eq $member.RepresentationBehavior.String "link" }}`,
 		`.AssignLink(v)`,
 		false,
@@ -555,7 +555,7 @@ func (g unionKindedReprBuilderGenerator) EmitNodeAssemblerMethodAssignNode(w io.
 	// Errors are problematic again, same as is noted in kindedUnionNodeAssemblerMethodTemplateMunge.
 	//  We also end up returning errors with other method names due to how we delegate; unfortunate.
 	doTemplate(`
-		func (na *_{{ .Type | TypeSymbol }}__ReprAssembler) AssignNode(v ipld.Node) error {
+		func (na *_{{ .Type | TypeSymbol }}__ReprAssembler) AssignNode(v datamodel.Node) error {
 			if v.IsNull() {
 				return na.AssignNull()
 			}
@@ -578,22 +578,22 @@ func (g unionKindedReprBuilderGenerator) EmitNodeAssemblerMethodAssignNode(w io.
 				return nil
 			}
 			switch v.Kind() {
-			case ipld.Kind_Bool:
+			case datamodel.Kind_Bool:
 				v2, _ := v.AsBool()
 				return na.AssignBool(v2)
-			case ipld.Kind_Int:
+			case datamodel.Kind_Int:
 				v2, _ := v.AsInt()
 				return na.AssignInt(v2)
-			case ipld.Kind_Float:
+			case datamodel.Kind_Float:
 				v2, _ := v.AsFloat()
 				return na.AssignFloat(v2)
-			case ipld.Kind_String:
+			case datamodel.Kind_String:
 				v2, _ := v.AsString()
 				return na.AssignString(v2)
-			case ipld.Kind_Bytes:
+			case datamodel.Kind_Bytes:
 				v2, _ := v.AsBytes()
 				return na.AssignBytes(v2)
-			case ipld.Kind_Map:
+			case datamodel.Kind_Map:
 				na, err := na.BeginMap(v.Length())
 				if err != nil {
 					return err
@@ -612,7 +612,7 @@ func (g unionKindedReprBuilderGenerator) EmitNodeAssemblerMethodAssignNode(w io.
 					}
 				}
 				return na.Finish()
-			case ipld.Kind_List:
+			case datamodel.Kind_List:
 				na, err := na.BeginList(v.Length())
 				if err != nil {
 					return err
@@ -628,7 +628,7 @@ func (g unionKindedReprBuilderGenerator) EmitNodeAssemblerMethodAssignNode(w io.
 					}
 				}
 				return na.Finish()
-			case ipld.Kind_Link:
+			case datamodel.Kind_Link:
 				v2, _ := v.AsLink()
 				return na.AssignLink(v2)
 			default:
@@ -639,7 +639,7 @@ func (g unionKindedReprBuilderGenerator) EmitNodeAssemblerMethodAssignNode(w io.
 }
 func (g unionKindedReprBuilderGenerator) EmitNodeAssemblerMethodPrototype(w io.Writer) {
 	doTemplate(`
-		func (na *_{{ .Type | TypeSymbol }}__ReprAssembler) Prototype() ipld.NodePrototype {
+		func (na *_{{ .Type | TypeSymbol }}__ReprAssembler) Prototype() datamodel.NodePrototype {
 			return _{{ .Type | TypeSymbol }}__ReprPrototype{}
 		}
 	`, w, g.AdjCfg, g)

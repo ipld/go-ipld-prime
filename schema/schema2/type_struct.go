@@ -3,7 +3,7 @@ package schema
 import (
 	"fmt"
 
-	"github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/datamodel"
 	schemadmt "github.com/ipld/go-ipld-prime/schema/dmt"
 )
 
@@ -62,18 +62,18 @@ func (t *TypeStruct) Name() TypeName {
 	return t.name
 }
 
-func (t TypeStruct) RepresentationBehavior() ipld.Kind {
+func (t TypeStruct) RepresentationBehavior() datamodel.Kind {
 	switch t.dmt.FieldRepresentation().AsInterface().(type) {
 	case schemadmt.StructRepresentation_Map:
-		return ipld.Kind_Map
+		return datamodel.Kind_Map
 	case schemadmt.StructRepresentation_Tuple:
-		return ipld.Kind_List
+		return datamodel.Kind_List
 	case schemadmt.StructRepresentation_Stringpairs:
-		return ipld.Kind_String
+		return datamodel.Kind_String
 	case schemadmt.StructRepresentation_Stringjoin:
-		return ipld.Kind_String
+		return datamodel.Kind_String
 	case schemadmt.StructRepresentation_Listpairs:
-		return ipld.Kind_List
+		return datamodel.Kind_List
 	default:
 		panic("unreachable")
 	}

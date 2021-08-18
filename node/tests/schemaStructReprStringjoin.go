@@ -5,7 +5,7 @@ import (
 
 	. "github.com/warpfork/go-wish"
 
-	"github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/fluent"
 	"github.com/ipld/go-ipld-prime/must"
 	"github.com/ipld/go-ipld-prime/schema"
@@ -51,13 +51,13 @@ func SchemaTestStructReprStringjoin(t *testing.T, engine Engine) {
 				ma.AssembleEntry("field").AssignString("valoo")
 			}).(schema.TypedNode)
 			t.Run("typed-read", func(t *testing.T) {
-				Require(t, n.Kind(), ShouldEqual, ipld.Kind_Map)
+				Require(t, n.Kind(), ShouldEqual, datamodel.Kind_Map)
 				Wish(t, n.Length(), ShouldEqual, int64(1))
 				Wish(t, must.String(must.Node(n.LookupByString("field"))), ShouldEqual, "valoo")
 			})
 			t.Run("repr-read", func(t *testing.T) {
 				nr := n.Representation()
-				Require(t, nr.Kind(), ShouldEqual, ipld.Kind_String)
+				Require(t, nr.Kind(), ShouldEqual, datamodel.Kind_String)
 				Wish(t, must.String(nr), ShouldEqual, "valoo")
 			})
 		})
@@ -65,7 +65,7 @@ func SchemaTestStructReprStringjoin(t *testing.T, engine Engine) {
 			nr := fluent.MustBuild(nrp, func(na fluent.NodeAssembler) {
 				na.AssignString("valoo")
 			})
-			Wish(t, ipld.DeepEqual(n, nr), ShouldEqual, true)
+			Wish(t, datamodel.DeepEqual(n, nr), ShouldEqual, true)
 		})
 	})
 
@@ -79,14 +79,14 @@ func SchemaTestStructReprStringjoin(t *testing.T, engine Engine) {
 				ma.AssembleEntry("bar").AssignString("v2")
 			}).(schema.TypedNode)
 			t.Run("typed-read", func(t *testing.T) {
-				Require(t, n.Kind(), ShouldEqual, ipld.Kind_Map)
+				Require(t, n.Kind(), ShouldEqual, datamodel.Kind_Map)
 				Wish(t, n.Length(), ShouldEqual, int64(2))
 				Wish(t, must.String(must.Node(n.LookupByString("foo"))), ShouldEqual, "v1")
 				Wish(t, must.String(must.Node(n.LookupByString("bar"))), ShouldEqual, "v2")
 			})
 			t.Run("repr-read", func(t *testing.T) {
 				nr := n.Representation()
-				Require(t, nr.Kind(), ShouldEqual, ipld.Kind_String)
+				Require(t, nr.Kind(), ShouldEqual, datamodel.Kind_String)
 				Wish(t, must.String(nr), ShouldEqual, "v1:v2")
 			})
 		})
@@ -94,7 +94,7 @@ func SchemaTestStructReprStringjoin(t *testing.T, engine Engine) {
 			nr := fluent.MustBuild(nrp, func(na fluent.NodeAssembler) {
 				na.AssignString("v1:v2")
 			})
-			Wish(t, ipld.DeepEqual(n, nr), ShouldEqual, true)
+			Wish(t, datamodel.DeepEqual(n, nr), ShouldEqual, true)
 		})
 	})
 
@@ -112,7 +112,7 @@ func SchemaTestStructReprStringjoin(t *testing.T, engine Engine) {
 				ma.AssembleEntry("bar").AssignString("v4")
 			}).(schema.TypedNode)
 			t.Run("typed-read", func(t *testing.T) {
-				Require(t, n.Kind(), ShouldEqual, ipld.Kind_Map)
+				Require(t, n.Kind(), ShouldEqual, datamodel.Kind_Map)
 				Wish(t, n.Length(), ShouldEqual, int64(3))
 				Wish(t, must.String(must.Node(n.LookupByString("foo"))), ShouldEqual, "v1")
 				Wish(t, must.String(must.Node(n.LookupByString("bar"))), ShouldEqual, "v4")
@@ -123,7 +123,7 @@ func SchemaTestStructReprStringjoin(t *testing.T, engine Engine) {
 			})
 			t.Run("repr-read", func(t *testing.T) {
 				nr := n.Representation()
-				Require(t, nr.Kind(), ShouldEqual, ipld.Kind_String)
+				Require(t, nr.Kind(), ShouldEqual, datamodel.Kind_String)
 				Wish(t, must.String(nr), ShouldEqual, "v1-v2:v3-v4")
 			})
 		})
@@ -131,7 +131,7 @@ func SchemaTestStructReprStringjoin(t *testing.T, engine Engine) {
 			nr := fluent.MustBuild(nrp, func(na fluent.NodeAssembler) {
 				na.AssignString("v1-v2:v3-v4")
 			})
-			Wish(t, ipld.DeepEqual(n, nr), ShouldEqual, true)
+			Wish(t, datamodel.DeepEqual(n, nr), ShouldEqual, true)
 		})
 	})
 }

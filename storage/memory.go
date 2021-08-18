@@ -5,15 +5,16 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/datamodel"
+	"github.com/ipld/go-ipld-prime/linking"
 )
 
-// Memory is a simple in-memory storage for data indexed by ipld.Link.
+// Memory is a simple in-memory storage for data indexed by datamodel.Link.
 // (It's little more than a map -- in fact, the map is exported,
 // and you can poke it directly.)
 //
-// The OpenRead method conforms to ipld.BlockReadOpener,
-// and the OpenWrite method conforms to ipld.BlockWriteOpener.
+// The OpenRead method conforms to linking.BlockReadOpener,
+// and the OpenWrite method conforms to linking.BlockWriteOpener.
 // Therefore it's easy to use in a LinkSystem like this:
 //
 //		store := storage.Memory{}
@@ -23,17 +24,17 @@ import (
 // This storage is mostly expected to be used for testing and demos,
 // and as an example of how you can implement and integrate your own storage systems.
 type Memory struct {
-	Bag map[ipld.Link][]byte
+	Bag map[datamodel.Link][]byte
 }
 
 func (store *Memory) beInitialized() {
 	if store.Bag != nil {
 		return
 	}
-	store.Bag = make(map[ipld.Link][]byte)
+	store.Bag = make(map[datamodel.Link][]byte)
 }
 
-func (store *Memory) OpenRead(lnkCtx ipld.LinkContext, lnk ipld.Link) (io.Reader, error) {
+func (store *Memory) OpenRead(lnkCtx datamodel.LinkContext, lnk datamodel.Link) (io.Reader, error) {
 	store.beInitialized()
 	data, exists := store.Bag[lnk]
 	if !exists {
@@ -42,10 +43,10 @@ func (store *Memory) OpenRead(lnkCtx ipld.LinkContext, lnk ipld.Link) (io.Reader
 	return bytes.NewReader(data), nil
 }
 
-func (store *Memory) OpenWrite(lnkCtx ipld.LinkContext) (io.Writer, ipld.BlockWriteCommitter, error) {
+func (store *Memory) OpenWrite(lnkCtx datamodel.LinkContext) (io.Writer, linking.BlockWriteCommitter, error) {
 	store.beInitialized()
 	buf := bytes.Buffer{}
-	return &buf, func(lnk ipld.Link) error {
+	return &buf, func(lnk datamodel.Link) error {
 		store.Bag[lnk] = buf.Bytes()
 		return nil
 	}, nil

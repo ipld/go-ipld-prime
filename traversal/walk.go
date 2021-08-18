@@ -3,7 +3,7 @@ package traversal
 import (
 	"fmt"
 
-	ipld "github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/traversal/selector"
 )
 
@@ -14,7 +14,7 @@ import (
 // It cannot cross links automatically (since this requires configuration).
 // Use the equivalent WalkMatching function on the Progress structure
 // for more advanced and configurable walks.
-func WalkMatching(n ipld.Node, s selector.Selector, fn VisitFn) error {
+func WalkMatching(n datamodel.Node, s selector.Selector, fn VisitFn) error {
 	return Progress{}.WalkMatching(n, s, fn)
 }
 
@@ -26,7 +26,7 @@ func WalkMatching(n ipld.Node, s selector.Selector, fn VisitFn) error {
 // It cannot cross links automatically (since this requires configuration).
 // Use the equivalent WalkAdv function on the Progress structure
 // for more advanced and configurable walks.
-func WalkAdv(n ipld.Node, s selector.Selector, fn AdvVisitFn) error {
+func WalkAdv(n datamodel.Node, s selector.Selector, fn AdvVisitFn) error {
 	return Progress{}.WalkAdv(n, s, fn)
 }
 
@@ -38,7 +38,7 @@ func WalkAdv(n ipld.Node, s selector.Selector, fn AdvVisitFn) error {
 // It cannot cross links automatically (since this requires configuration).
 // Use the equivalent WalkTransforming function on the Progress structure
 // for more advanced and configurable walks.
-func WalkTransforming(n ipld.Node, s selector.Selector, fn TransformFn) (ipld.Node, error) {
+func WalkTransforming(n datamodel.Node, s selector.Selector, fn TransformFn) (datamodel.Node, error) {
 	return Progress{}.WalkTransforming(n, s, fn)
 }
 
@@ -65,9 +65,9 @@ func WalkTransforming(n ipld.Node, s selector.Selector, fn TransformFn) (ipld.No
 // the Path recorded of the traversal so far will continue to be extended,
 // and thus continued nested uses of Walk and Focus will see the fully contextualized Path.
 //
-func (prog Progress) WalkMatching(n ipld.Node, s selector.Selector, fn VisitFn) error {
+func (prog Progress) WalkMatching(n datamodel.Node, s selector.Selector, fn VisitFn) error {
 	prog.init()
-	return prog.walkAdv(n, s, func(prog Progress, n ipld.Node, tr VisitReason) error {
+	return prog.walkAdv(n, s, func(prog Progress, n datamodel.Node, tr VisitReason) error {
 		if tr != VisitReason_SelectionMatch {
 			return nil
 		}
@@ -79,12 +79,12 @@ func (prog Progress) WalkMatching(n ipld.Node, s selector.Selector, fn VisitFn) 
 // visited (not just matching nodes), together with the reason for the visit.
 // An AdvVisitFn is used instead of a VisitFn, so that the reason can be provided.
 //
-func (prog Progress) WalkAdv(n ipld.Node, s selector.Selector, fn AdvVisitFn) error {
+func (prog Progress) WalkAdv(n datamodel.Node, s selector.Selector, fn AdvVisitFn) error {
 	prog.init()
 	return prog.walkAdv(n, s, fn)
 }
 
-func (prog Progress) walkAdv(n ipld.Node, s selector.Selector, fn AdvVisitFn) error {
+func (prog Progress) walkAdv(n datamodel.Node, s selector.Selector, fn AdvVisitFn) error {
 	if s.Decide(n) {
 		if err := fn(prog, n, VisitReason_SelectionMatch); err != nil {
 			return err
@@ -96,7 +96,7 @@ func (prog Progress) walkAdv(n ipld.Node, s selector.Selector, fn AdvVisitFn) er
 	}
 	nk := n.Kind()
 	switch nk {
-	case ipld.Kind_Map, ipld.Kind_List: // continue
+	case datamodel.Kind_Map, datamodel.Kind_List: // continue
 	default:
 		return nil
 	}
@@ -108,7 +108,7 @@ func (prog Progress) walkAdv(n ipld.Node, s selector.Selector, fn AdvVisitFn) er
 
 }
 
-func (prog Progress) walkAdv_iterateAll(n ipld.Node, s selector.Selector, fn AdvVisitFn) error {
+func (prog Progress) walkAdv_iterateAll(n datamodel.Node, s selector.Selector, fn AdvVisitFn) error {
 	for itr := selector.NewSegmentIterator(n); !itr.Done(); {
 		ps, v, err := itr.Next()
 		if err != nil {
@@ -121,7 +121,7 @@ func (prog Progress) walkAdv_iterateAll(n ipld.Node, s selector.Selector, fn Adv
 		if sNext != nil {
 			progNext := prog
 			progNext.Path = prog.Path.AppendSegment(ps)
-			if v.Kind() == ipld.Kind_Link {
+			if v.Kind() == datamodel.Kind_Link {
 				lnk, _ := v.AsLink()
 				progNext.LastBlock.Path = progNext.Path
 				progNext.LastBlock.Link = lnk
@@ -143,7 +143,7 @@ func (prog Progress) walkAdv_iterateAll(n ipld.Node, s selector.Selector, fn Adv
 	return nil
 }
 
-func (prog Progress) walkAdv_iterateSelective(n ipld.Node, attn []ipld.PathSegment, s selector.Selector, fn AdvVisitFn) error {
+func (prog Progress) walkAdv_iterateSelective(n datamodel.Node, attn []datamodel.PathSegment, s selector.Selector, fn AdvVisitFn) error {
 	for _, ps := range attn {
 		v, err := n.LookupBySegment(ps)
 		if err != nil {
@@ -156,7 +156,7 @@ func (prog Progress) walkAdv_iterateSelective(n ipld.Node, attn []ipld.PathSegme
 		if sNext != nil {
 			progNext := prog
 			progNext.Path = prog.Path.AppendSegment(ps)
-			if v.Kind() == ipld.Kind_Link {
+			if v.Kind() == datamodel.Kind_Link {
 				lnk, _ := v.AsLink()
 				progNext.LastBlock.Path = progNext.Path
 				progNext.LastBlock.Link = lnk
@@ -178,12 +178,12 @@ func (prog Progress) walkAdv_iterateSelective(n ipld.Node, attn []ipld.PathSegme
 	return nil
 }
 
-func (prog Progress) loadLink(v ipld.Node, parent ipld.Node) (ipld.Node, error) {
+func (prog Progress) loadLink(v datamodel.Node, parent datamodel.Node) (datamodel.Node, error) {
 	lnk, err := v.AsLink()
 	if err != nil {
 		return nil, err
 	}
-	lnkCtx := ipld.LinkContext{
+	lnkCtx := datamodel.LinkContext{
 		Ctx:        prog.Cfg.Ctx,
 		LinkPath:   prog.Path,
 		LinkNode:   v,
@@ -224,6 +224,6 @@ func (prog Progress) loadLink(v ipld.Node, parent ipld.Node) (ipld.Node, error) 
 // are chosen by asking the existing nodes about their prototype).
 //
 // This feature is not yet implemented.
-func (prog Progress) WalkTransforming(n ipld.Node, s selector.Selector, fn TransformFn) (ipld.Node, error) {
+func (prog Progress) WalkTransforming(n datamodel.Node, s selector.Selector, fn TransformFn) (datamodel.Node, error) {
 	panic("TODO")
 }

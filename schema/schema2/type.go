@@ -1,7 +1,7 @@
 package schema
 
 import (
-	ipld "github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime"
 )
 
 // typesystem.Type is an union interface; each of the `Type*` concrete types

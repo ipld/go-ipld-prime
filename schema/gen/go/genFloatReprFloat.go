@@ -49,7 +49,7 @@ func (g float64ReprFloatReprGenerator) EmitNodeType(w io.Writer) {
 }
 func (g float64ReprFloatReprGenerator) EmitNodeTypeAssertions(w io.Writer) {
 	doTemplate(`
-		var _ ipld.Node = &_{{ .Type | TypeSymbol }}__Repr{}
+		var _ datamodel.Node = &_{{ .Type | TypeSymbol }}__Repr{}
 	`, w, g.AdjCfg, g)
 }
 func (float64ReprFloatReprGenerator) EmitNodeMethodKind(io.Writer)            {}

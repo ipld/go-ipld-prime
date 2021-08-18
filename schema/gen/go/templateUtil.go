@@ -7,7 +7,7 @@ import (
 
 	wish "github.com/warpfork/go-wish"
 
-	ipld "github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/datamodel"
 )
 
 func doTemplate(tmplstr string, w io.Writer, adjCfg *AdjunctCfg, data interface{}) {
@@ -31,74 +31,74 @@ func doTemplate(tmplstr string, w io.Writer, adjCfg *AdjunctCfg, data interface{
 			//  (This may seem silly, but empirically, I found myself writing a dummy line to store the value of dot before endering a range clause >20 times; that's plenty.)
 			"dot": func() interface{} { return data },
 
-			"KindPrim": func(k ipld.Kind) string {
+			"KindPrim": func(k datamodel.Kind) string {
 				switch k {
-				case ipld.Kind_Map:
+				case datamodel.Kind_Map:
 					panic("this isn't useful for non-scalars")
-				case ipld.Kind_List:
+				case datamodel.Kind_List:
 					panic("this isn't useful for non-scalars")
-				case ipld.Kind_Null:
+				case datamodel.Kind_Null:
 					panic("this isn't useful for null")
-				case ipld.Kind_Bool:
+				case datamodel.Kind_Bool:
 					return "bool"
-				case ipld.Kind_Int:
+				case datamodel.Kind_Int:
 					return "int64"
-				case ipld.Kind_Float:
+				case datamodel.Kind_Float:
 					return "float64"
-				case ipld.Kind_String:
+				case datamodel.Kind_String:
 					return "string"
-				case ipld.Kind_Bytes:
+				case datamodel.Kind_Bytes:
 					return "[]byte"
-				case ipld.Kind_Link:
-					return "ipld.Link"
+				case datamodel.Kind_Link:
+					return "datamodel.Link"
 				default:
 					panic("invalid enumeration value!")
 				}
 			},
-			"Kind": func(s string) ipld.Kind {
+			"Kind": func(s string) datamodel.Kind {
 				switch s {
 				case "map":
-					return ipld.Kind_Map
+					return datamodel.Kind_Map
 				case "list":
-					return ipld.Kind_List
+					return datamodel.Kind_List
 				case "null":
-					return ipld.Kind_Null
+					return datamodel.Kind_Null
 				case "bool":
-					return ipld.Kind_Bool
+					return datamodel.Kind_Bool
 				case "int":
-					return ipld.Kind_Int
+					return datamodel.Kind_Int
 				case "float":
-					return ipld.Kind_Float
+					return datamodel.Kind_Float
 				case "string":
-					return ipld.Kind_String
+					return datamodel.Kind_String
 				case "bytes":
-					return ipld.Kind_Bytes
+					return datamodel.Kind_Bytes
 				case "link":
-					return ipld.Kind_Link
+					return datamodel.Kind_Link
 				default:
 					panic("invalid enumeration value!")
 				}
 			},
-			"KindSymbol": func(k ipld.Kind) string {
+			"KindSymbol": func(k datamodel.Kind) string {
 				switch k {
-				case ipld.Kind_Map:
-					return "ipld.Kind_Map"
-				case ipld.Kind_List:
-					return "ipld.Kind_List"
-				case ipld.Kind_Null:
-					return "ipld.Kind_Null"
-				case ipld.Kind_Bool:
-					return "ipld.Kind_Bool"
-				case ipld.Kind_Int:
-					return "ipld.Kind_Int"
-				case ipld.Kind_Float:
-					return "ipld.Kind_Float"
-				case ipld.Kind_String:
-					return "ipld.Kind_String"
-				case ipld.Kind_Bytes:
-					return "ipld.Kind_Bytes"
-				case ipld.Kind_Link:
-					return "ipld.Kind_Link"
+				case datamodel.Kind_Map:
+					return "datamodel.Kind_Map"
+				case datamodel.Kind_List:
+					return "datamodel.Kind_List"
+				case datamodel.Kind_Null:
+					return "datamodel.Kind_Null"
+				case datamodel.Kind_Bool:
+					return "datamodel.Kind_Bool"
+				case datamodel.Kind_Int:
+					return "datamodel.Kind_Int"
+				case datamodel.Kind_Float:
+					return "datamodel.Kind_Float"
+				case datamodel.Kind_String:
+					return "datamodel.Kind_String"
+				case datamodel.Kind_Bytes:
+					return "datamodel.Kind_Bytes"
+				case datamodel.Kind_Link:
+					return "datamodel.Kind_Link"
 				default:
 					panic("invalid enumeration value!")
 				}

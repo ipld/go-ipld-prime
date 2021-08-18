@@ -1,7 +1,7 @@
 package traversal
 
 import (
-	"github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/datamodel"
 )
 
 // SelectLinks walks a Node tree and returns a slice of all Links encountered.
@@ -22,15 +22,15 @@ import (
 // If an identical link is found several times during the walk,
 // it is reported several times in the resulting list;
 // no deduplication is performed by this method.
-func SelectLinks(n ipld.Node) ([]ipld.Link, error) {
-	var answer []ipld.Link
+func SelectLinks(n datamodel.Node) ([]datamodel.Link, error) {
+	var answer []datamodel.Link
 	err := accumulateLinks(&answer, n)
 	return answer, err
 }
 
-func accumulateLinks(a *[]ipld.Link, n ipld.Node) error {
+func accumulateLinks(a *[]datamodel.Link, n datamodel.Node) error {
 	switch n.Kind() {
-	case ipld.Kind_Map:
+	case datamodel.Kind_Map:
 		for itr := n.MapIterator(); !itr.Done(); {
 			_, v, err := itr.Next()
 			if err != nil {
@@ -38,7 +38,7 @@ func accumulateLinks(a *[]ipld.Link, n ipld.Node) error {
 			}
 			accumulateLinks(a, v)
 		}
-	case ipld.Kind_List:
+	case datamodel.Kind_List:
 		for itr := n.ListIterator(); !itr.Done(); {
 			_, v, err := itr.Next()
 			if err != nil {
@@ -46,7 +46,7 @@ func accumulateLinks(a *[]ipld.Link, n ipld.Node) error {
 			}
 			accumulateLinks(a, v)
 		}
-	case ipld.Kind_Link:
+	case datamodel.Kind_Link:
 		lnk, _ := n.AsLink()
 		*a = append(*a, lnk)
 	}

@@ -11,10 +11,10 @@ import (
 
 	"github.com/ipld/go-ipld-prime/fluent"
 	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
-	basicnode "github.com/ipld/go-ipld-prime/node/basic"
+	"github.com/ipld/go-ipld-prime/node/basicnode"
 )
 
-var n = fluent.MustBuildMap(basicnode.Prototype__Map{}, 4, func(na fluent.MapAssembler) {
+var n = fluent.MustBuildMap(basicnode.Prototype.Map, 4, func(na fluent.MapAssembler) {
 	na.AssembleEntry("plain").AssignString("olde string")
 	na.AssembleEntry("map").CreateMap(2, func(na fluent.MapAssembler) {
 		na.AssembleEntry("one").AssignInt(1)
@@ -30,7 +30,7 @@ var n = fluent.MustBuildMap(basicnode.Prototype__Map{}, 4, func(na fluent.MapAss
 		})
 	})
 })
-var nSorted = fluent.MustBuildMap(basicnode.Prototype__Map{}, 4, func(na fluent.MapAssembler) {
+var nSorted = fluent.MustBuildMap(basicnode.Prototype.Map, 4, func(na fluent.MapAssembler) {
 	na.AssembleEntry("map").CreateMap(2, func(na fluent.MapAssembler) {
 		na.AssembleEntry("one").AssignInt(1)
 		na.AssembleEntry("two").AssignInt(2)
@@ -57,7 +57,7 @@ func TestRoundtrip(t *testing.T) {
 	})
 	t.Run("decoding", func(t *testing.T) {
 		buf := strings.NewReader(serial)
-		nb := basicnode.Prototype__Map{}.NewBuilder()
+		nb := basicnode.Prototype.Map.NewBuilder()
 		err := Decode(nb, buf)
 		Require(t, err, ShouldEqual, nil)
 		Wish(t, nb.Build(), ShouldEqual, nSorted)
@@ -91,7 +91,7 @@ func TestRoundtripLinksAndBytes(t *testing.T) {
 		MhLength: 4,
 	}}.BuildLink([]byte{1, 2, 3, 4}) // dummy value, content does not matter to this test.
 
-	var linkByteNode = fluent.MustBuildMap(basicnode.Prototype__Map{}, 4, func(na fluent.MapAssembler) {
+	var linkByteNode = fluent.MustBuildMap(basicnode.Prototype.Map, 4, func(na fluent.MapAssembler) {
 		nva := na.AssembleEntry("Link")
 		nva.AssignLink(lnk)
 		nva = na.AssembleEntry("Bytes")
@@ -103,7 +103,7 @@ func TestRoundtripLinksAndBytes(t *testing.T) {
 	buf := bytes.Buffer{}
 	err := Encode(linkByteNode, &buf)
 	Require(t, err, ShouldEqual, nil)
-	nb := basicnode.Prototype__Map{}.NewBuilder()
+	nb := basicnode.Prototype.Map.NewBuilder()
 	err = Decode(nb, &buf)
 	Require(t, err, ShouldEqual, nil)
 	reconstructed := nb.Build()

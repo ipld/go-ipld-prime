@@ -10,7 +10,7 @@ import (
 	"github.com/polydawn/refmt/shared"
 	"github.com/polydawn/refmt/tok"
 
-	ipld "github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime"
 	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
 )
 
@@ -23,7 +23,7 @@ import (
 //        tokens before deciding what kind of value to create).
 
 // DecodeOptions can be used to customize the behavior of a decoding function.
-// The Decode method on this struct fits the ipld.Decoder function interface.
+// The Decode method on this struct fits the codec.Decoder function interface.
 type DecodeOptions struct {
 	// If true, parse DAG-JSON `{"/":"cid string"}` as a Link kind node rather
 	// than a plain map
@@ -35,7 +35,7 @@ type DecodeOptions struct {
 }
 
 // Decode deserializes data from the given io.Reader and feeds it into the given ipld.NodeAssembler.
-// Decode fits the ipld.Decoder function interface.
+// Decode fits the codec.Decoder function interface.
 //
 // The behavior of the decoder can be customized by setting fields in the DecodeOptions struct before calling this method.
 func (cfg DecodeOptions) Decode(na ipld.NodeAssembler, r io.Reader) error {

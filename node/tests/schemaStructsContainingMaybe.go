@@ -3,7 +3,7 @@ package tests
 import (
 	"testing"
 
-	"github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/schema"
 )
 
@@ -49,7 +49,7 @@ func SchemaTestStructsContainingMaybe(t *testing.T, engine Engine) {
 			typeJson: `{"f1":"a","f2":"b","f3":"c","f4":"d","f5":"e"}`,
 			reprJson: `{"f5":"e","r1":"a","r2":"b","r3":"c","r4":"d"}`,
 			typePoints: []testcasePoint{
-				{"", ipld.Kind_Map},
+				{"", datamodel.Kind_Map},
 				{"f1", "a"},
 				{"f2", "b"},
 				{"f3", "c"},
@@ -57,7 +57,7 @@ func SchemaTestStructsContainingMaybe(t *testing.T, engine Engine) {
 				{"f5", "e"},
 			},
 			reprPoints: []testcasePoint{
-				{"", ipld.Kind_Map},
+				{"", datamodel.Kind_Map},
 				{"r1", "a"},
 				{"r2", "b"},
 				{"r3", "c"},
@@ -70,19 +70,19 @@ func SchemaTestStructsContainingMaybe(t *testing.T, engine Engine) {
 			typeJson: `{"f1":"a","f2":"b","f3":null,"f4":null,"f5":"e"}`,
 			reprJson: `{"f5":"e","r1":"a","r2":"b","r3":null,"r4":null}`,
 			typePoints: []testcasePoint{
-				{"", ipld.Kind_Map},
+				{"", datamodel.Kind_Map},
 				{"f1", "a"},
 				{"f2", "b"},
-				{"f3", ipld.Null},
-				{"f4", ipld.Null},
+				{"f3", datamodel.Null},
+				{"f4", datamodel.Null},
 				{"f5", "e"},
 			},
 			reprPoints: []testcasePoint{
-				{"", ipld.Kind_Map},
+				{"", datamodel.Kind_Map},
 				{"r1", "a"},
 				{"r2", "b"},
-				{"r3", ipld.Null},
-				{"r4", ipld.Null},
+				{"r3", datamodel.Null},
+				{"r4", datamodel.Null},
 				{"f5", "e"},
 			},
 		},
@@ -91,26 +91,26 @@ func SchemaTestStructsContainingMaybe(t *testing.T, engine Engine) {
 			typeJson: `{"f1":"a","f3":"c","f5":"e"}`,
 			reprJson: `{"f5":"e","r1":"a","r3":"c"}`,
 			typePoints: []testcasePoint{
-				{"", ipld.Kind_Map},
+				{"", datamodel.Kind_Map},
 				{"f1", "a"},
-				{"f2", ipld.Absent},
+				{"f2", datamodel.Absent},
 				{"f3", "c"},
-				{"f4", ipld.Absent},
+				{"f4", datamodel.Absent},
 				{"f5", "e"},
 			},
 			reprPoints: []testcasePoint{
-				{"", ipld.Kind_Map},
+				{"", datamodel.Kind_Map},
 				{"r1", "a"},
-				//{"r2", ipld.ErrNotExists{}}, // TODO: need better error typing from traversal package.
+				//{"r2", datamodel.ErrNotExists{}}, // TODO: need better error typing from traversal package.
 				{"r3", "c"},
-				//{"r4", ipld.ErrNotExists{}}, // TODO: need better error typing from traversal package.
+				//{"r4", datamodel.ErrNotExists{}}, // TODO: need better error typing from traversal package.
 				{"f5", "e"},
 			},
 			typeItr: []entry{
 				{"f1", "a"},
-				{"f2", ipld.Absent},
+				{"f2", datamodel.Absent},
 				{"f3", "c"},
-				{"f4", ipld.Absent},
+				{"f4", datamodel.Absent},
 				{"f5", "e"},
 			},
 		},
@@ -119,27 +119,27 @@ func SchemaTestStructsContainingMaybe(t *testing.T, engine Engine) {
 			typeJson: `{"f1":"a","f2":"b","f3":null}`,
 			reprJson: `{"r1":"a","r2":"b","r3":null}`,
 			typePoints: []testcasePoint{
-				{"", ipld.Kind_Map},
+				{"", datamodel.Kind_Map},
 				{"f1", "a"},
 				{"f2", "b"},
-				{"f3", ipld.Null},
-				{"f4", ipld.Absent},
-				{"f5", ipld.Absent},
+				{"f3", datamodel.Null},
+				{"f4", datamodel.Absent},
+				{"f5", datamodel.Absent},
 			},
 			reprPoints: []testcasePoint{
-				{"", ipld.Kind_Map},
+				{"", datamodel.Kind_Map},
 				{"r1", "a"},
 				{"r2", "b"},
-				{"r3", ipld.Null},
-				//{"r4", ipld.ErrNotExists{}}, // TODO: need better error typing from traversal package.
-				//{"f5", ipld.ErrNotExists{}}, // TODO: need better error typing from traversal package.
+				{"r3", datamodel.Null},
+				//{"r4", datamodel.ErrNotExists{}}, // TODO: need better error typing from traversal package.
+				//{"f5", datamodel.ErrNotExists{}}, // TODO: need better error typing from traversal package.
 			},
 			typeItr: []entry{
 				{"f1", "a"},
 				{"f2", "b"},
-				{"f3", ipld.Null},
-				{"f4", ipld.Absent},
-				{"f5", ipld.Absent},
+				{"f3", datamodel.Null},
+				{"f4", datamodel.Absent},
+				{"f5", datamodel.Absent},
 			},
 		},
 	}

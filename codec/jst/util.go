@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"io"
 
-	ipld "github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime"
 )
 
 func max(a, b int) int { // honestly golang

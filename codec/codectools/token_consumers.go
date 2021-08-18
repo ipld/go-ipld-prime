@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/ipld/go-ipld-prime"
 	"github.com/ipld/go-ipld-prime/codec"
+	"github.com/ipld/go-ipld-prime/datamodel"
 )
 
-// TokenAssemble takes an ipld.NodeAssembler and a TokenReader,
-// and repeatedly pumps the TokenReader for tokens and feeds their data into the ipld.NodeAssembler
+// TokenAssemble takes an datamodel.NodeAssembler and a TokenReader,
+// and repeatedly pumps the TokenReader for tokens and feeds their data into the datamodel.NodeAssembler
 // until it finishes a complete value.
 //
 // To compare and contrast to other token oriented tools:
@@ -20,7 +20,7 @@ import (
 // TokenAssemble does not enforce the "map keys must be strings" rule which is present in the Data Model;
 // it will also happily do even recursive structures in map keys,
 // meaning it can be used when handling schema values like maps with complex keys.
-func TokenAssemble(na ipld.NodeAssembler, tr TokenReader, budget int64) error {
+func TokenAssemble(na datamodel.NodeAssembler, tr TokenReader, budget int64) error {
 	tk, err := tr(&budget)
 	if err != nil {
 		return err
@@ -28,7 +28,7 @@ func TokenAssemble(na ipld.NodeAssembler, tr TokenReader, budget int64) error {
 	return tokenAssemble(na, tk, tr, &budget)
 }
 
-func tokenAssemble(na ipld.NodeAssembler, tk *Token, tr TokenReader, budget *int64) error {
+func tokenAssemble(na datamodel.NodeAssembler, tk *Token, tr TokenReader, budget *int64) error {
 	if *budget < 0 {
 		return codec.ErrBudgetExhausted{}
 	}
@@ -132,17 +132,17 @@ type TokenAssembler struct {
 }
 
 type assemblerStackRow struct {
-	state uint8              // 0: assign this node; 1: continue list; 2: continue map with key; 3: continue map with value.
-	na    ipld.NodeAssembler // Always present.
-	la    ipld.ListAssembler // At most one of these is present.
-	ma    ipld.MapAssembler  // At most one of these is present.
+	state uint8                   // 0: assign this node; 1: continue list; 2: continue map with key; 3: continue map with value.
+	na    datamodel.NodeAssembler // Always present.
+	la    datamodel.ListAssembler // At most one of these is present.
+	ma    datamodel.MapAssembler  // At most one of these is present.
 }
 type assemblerStack []assemblerStackRow
 
 func (stk assemblerStack) Tip() *assemblerStackRow {
 	return &stk[len(stk)-1]
 }
-func (stk *assemblerStack) Push(na ipld.NodeAssembler) {
+func (stk *assemblerStack) Push(na datamodel.NodeAssembler) {
 	*stk = append(*stk, assemblerStackRow{na: na})
 }
 func (stk *assemblerStack) Pop() {
@@ -152,7 +152,7 @@ func (stk *assemblerStack) Pop() {
 	*stk = (*stk)[0 : len(*stk)-1]
 }
 
-func (ta *TokenAssembler) Initialize(na ipld.NodeAssembler, budget int64) {
+func (ta *TokenAssembler) Initialize(na datamodel.NodeAssembler, budget int64) {
 	if ta.stk == nil {
 		ta.stk = make(assemblerStack, 0, 10)
 	} else {

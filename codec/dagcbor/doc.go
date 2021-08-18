@@ -1,7 +1,7 @@
 /*
 	The dagcbor package provides a DAG-CBOR codec implementation.
 
-	The Encode and Decode functions match the ipld.Encoder and ipld.Decoder function interfaces,
+	The Encode and Decode functions match the codec.Encoder and codec.Decoder function interfaces,
 	and can be registered with the go-ipld-prime/multicodec package for easy usage with systems such as CIDs.
 
 	Importing this package will automatically have the side-effect of registering Encode and Decode

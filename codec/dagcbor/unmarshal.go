@@ -11,7 +11,7 @@ import (
 	"github.com/polydawn/refmt/shared"
 	"github.com/polydawn/refmt/tok"
 
-	ipld "github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime"
 	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
 )
 
@@ -30,14 +30,14 @@ const (
 // which has dag-cbor's special sauce for detecting schemafree links.
 
 // DecodeOptions can be used to customize the behavior of a decoding function.
-// The Decode method on this struct fits the ipld.Decoder function interface.
+// The Decode method on this struct fits the codec.Decoder function interface.
 type DecodeOptions struct {
 	// If true, parse DAG-CBOR tag(42) as Link nodes, otherwise reject them
 	AllowLinks bool
 }
 
 // Decode deserializes data from the given io.Reader and feeds it into the given ipld.NodeAssembler.
-// Decode fits the ipld.Decoder function interface.
+// Decode fits the codec.Decoder function interface.
 //
 // The behavior of the decoder can be customized by setting fields in the DecodeOptions struct before calling this method.
 func (cfg DecodeOptions) Decode(na ipld.NodeAssembler, r io.Reader) error {

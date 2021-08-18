@@ -1,7 +1,7 @@
 package fluent
 
 import (
-	ipld "github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime"
 )
 
 func Build(np ipld.NodePrototype, fn func(NodeAssembler)) (ipld.Node, error) {

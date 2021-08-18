@@ -12,8 +12,8 @@ import (
 )
 
 var (
-	_ ipld.Decoder = Decode
-	_ ipld.Encoder = Encode
+	_ codec.Decoder = Decode
+	_ codec.Encoder = Encode
 )
 
 func init() {
@@ -22,7 +22,7 @@ func init() {
 }
 
 // Decode deserializes data from the given io.Reader and feeds it into the given ipld.NodeAssembler.
-// Decode fits the ipld.Decoder function interface.
+// Decode fits the codec.Decoder function interface.
 //
 // This is the function that will be registered in the default multicodec registry during package init time.
 func Decode(na ipld.NodeAssembler, r io.Reader) error {
@@ -33,7 +33,7 @@ func Decode(na ipld.NodeAssembler, r io.Reader) error {
 }
 
 // Encode walks the given ipld.Node and serializes it to the given io.Writer.
-// Encode fits the ipld.Encoder function interface.
+// Encode fits the codec.Encoder function interface.
 //
 // This is the function that will be registered in the default multicodec registry during package init time.
 func Encode(n ipld.Node, w io.Writer) error {

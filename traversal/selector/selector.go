@@ -3,7 +3,7 @@ package selector
 import (
 	"fmt"
 
-	ipld "github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/datamodel"
 )
 
 // Selector is a "compiled" and executable IPLD Selector.
@@ -85,7 +85,7 @@ type Selector interface {
 	// **or nil**, which indicates we're a high-cardinality or expression-based selection clause and thus we'll need all segments proposed to us.
 	//
 	// Traversal will call this before calling Explore, and use it to try to call Explore less often (or even avoid iterating on the data node at all).
-	Interests() []ipld.PathSegment
+	Interests() []datamodel.PathSegment
 
 	// Explore is told about the node we're at, and the pathSegment inside it to consider,
 	// and returns either nil, if we shouldn't explore that path any further,
@@ -98,13 +98,13 @@ type Selector interface {
 	// Remember that Explore does **not** iterate `node` itself; the visits to any children of `node` will be driven from the outside, by the traversal function.
 	// (The Selector's job is just guiding that process by returning information.)
 	// The architecture works this way so that a sufficiently clever traversal function could consider several reasons for exploring a node before deciding whether to do so.
-	Explore(node ipld.Node, child ipld.PathSegment) (subsequent Selector, err error)
+	Explore(node datamodel.Node, child datamodel.PathSegment) (subsequent Selector, err error)
 
 	// Decide returns true if the subject node is "matched".
 	//
 	// Only "Matcher" clauses actually implement this in a way that ever returns "true".
 	// See the Selector specs for discussion on "matched" vs "reached"/"visited" nodes.
-	Decide(node ipld.Node) bool
+	Decide(node datamodel.Node) bool
 }
 
 // REVIEW: do ParsedParent and ParseContext need to be exported?  They're mostly used during the compilation process.
@@ -120,27 +120,27 @@ type ParseContext struct {
 	parentStack []ParsedParent
 }
 
-// CompileSelector accepts an ipld.Node which should contain data that declares a Selector.
-// The data layout expected for this declaration is documented in https://ipld.io/specs/selectors/ .
+// CompileSelector accepts an datamodel.Node which should contain data that declares a Selector.
+// The data layout expected for this declaration is documented in https://datamodel.io/specs/selectors/ .
 //
 // If the Selector is compiled successfully, it is returned.
 // Otherwise, if the given data Node doesn't match the expected shape for a Selector declaration,
 // or there are any other problems compiling the selector
 // (such as a recursion edge with no enclosing recursion declaration, etc),
 // then nil and an error will be returned.
-func CompileSelector(dmt ipld.Node) (Selector, error) {
+func CompileSelector(dmt datamodel.Node) (Selector, error) {
 	return ParseContext{}.ParseSelector(dmt)
 }
 
 // ParseSelector is an alias for CompileSelector, and is deprecated.
 // Prefer CompileSelector.
-func ParseSelector(dmt ipld.Node) (Selector, error) {
+func ParseSelector(dmt datamodel.Node) (Selector, error) {
 	return CompileSelector(dmt)
 }
 
 // ParseSelector creates a Selector from an IPLD Selector Node with the given context
-func (pc ParseContext) ParseSelector(n ipld.Node) (Selector, error) {
-	if n.Kind() != ipld.Kind_Map {
+func (pc ParseContext) ParseSelector(n datamodel.Node) (Selector, error) {
+	if n.Kind() != datamodel.Kind_Map {
 		return nil, fmt.Errorf("selector spec parse rejected: selector is a keyed union and thus must be a map")
 	}
 	if n.Length() != 1 {
@@ -184,25 +184,25 @@ func (pc ParseContext) PushParent(parent ParsedParent) ParseContext {
 // SegmentIterator iterates either a list or a map, generating PathSegments
 // instead of indexes or keys
 type SegmentIterator interface {
-	Next() (pathSegment ipld.PathSegment, value ipld.Node, err error)
+	Next() (pathSegment datamodel.PathSegment, value datamodel.Node, err error)
 	Done() bool
 }
 
 // NewSegmentIterator generates a new iterator based on the node type
-func NewSegmentIterator(n ipld.Node) SegmentIterator {
-	if n.Kind() == ipld.Kind_List {
+func NewSegmentIterator(n datamodel.Node) SegmentIterator {
+	if n.Kind() == datamodel.Kind_List {
 		return listSegmentIterator{n.ListIterator()}
 	}
 	return mapSegmentIterator{n.MapIterator()}
 }
 
 type listSegmentIterator struct {
-	ipld.ListIterator
+	datamodel.ListIterator
 }
 
-func (lsi listSegmentIterator) Next() (pathSegment ipld.PathSegment, value ipld.Node, err error) {
+func (lsi listSegmentIterator) Next() (pathSegment datamodel.PathSegment, value datamodel.Node, err error) {
 	i, v, err := lsi.ListIterator.Next()
-	return ipld.PathSegmentOfInt(i), v, err
+	return datamodel.PathSegmentOfInt(i), v, err
 }
 
 func (lsi listSegmentIterator) Done() bool {
@@ -210,16 +210,16 @@ func (lsi listSegmentIterator) Done() bool {
 }
 
 type mapSegmentIterator struct {
-	ipld.MapIterator
+	datamodel.MapIterator
 }
 
-func (msi mapSegmentIterator) Next() (pathSegment ipld.PathSegment, value ipld.Node, err error) {
+func (msi mapSegmentIterator) Next() (pathSegment datamodel.PathSegment, value datamodel.Node, err error) {
 	k, v, err := msi.MapIterator.Next()
 	if err != nil {
-		return ipld.PathSegment{}, v, err
+		return datamodel.PathSegment{}, v, err
 	}
 	kstr, _ := k.AsString()
-	return ipld.PathSegmentOfString(kstr), v, err
+	return datamodel.PathSegmentOfString(kstr), v, err
 }
 
 func (msi mapSegmentIterator) Done() bool {

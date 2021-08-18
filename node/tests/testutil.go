@@ -1,7 +1,7 @@
 package tests
 
 import (
-	ipld "github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime"
 )
 
 // This file is full of helper functions.  Most are moderately embarassing.
