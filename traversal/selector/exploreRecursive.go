@@ -87,8 +87,14 @@ func (s ExploreRecursive) Interests() []ipld.PathSegment {
 
 // Explore returns the node's selector for all fields
 func (s ExploreRecursive) Explore(n ipld.Node, p ipld.PathSegment) Selector {
-	if s.stopAt != nil && s.stopAt.Match(n) {
-		return nil
+	if s.stopAt != nil {
+		target, err := n.LookupBySegment(p)
+		if err != nil {
+			panic(err) // oh dear
+		}
+		if s.stopAt.Match(target) {
+			return nil
+		}
 	}
 
 	nextSelector := s.current.Explore(n, p)
