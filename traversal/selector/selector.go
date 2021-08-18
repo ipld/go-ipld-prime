@@ -33,13 +33,13 @@ type Selector interface {
 	// Each of the functions on this type should be pure; they can can read the Selector's fields, but should treat them as config, not as state -- the Selector should never mutate.
 	//
 	// The traversal process will ask things of a Selector in three phases,
-	// and control flow will bounce back and forth between the traversal logic --
+	// and control flow will bounce back and forth between traversal logic and selector evaluation --
 	// traversal owns the actual walking (and any data loading), and just briefly dips down into the Selector so it can answer questions:
 	//   T1. Traversal starts at some Node with some Selector.
 	//   S1. First, the traversal asks the Selector what its "interests" are.
 	//        This lets the Selector hint to the traversal process what it should load,
-	//        which can be important to performance purposes if not all of the next data elements are in memory already.
-	//        (This may applicable especially for things like ADLs which contain large sharded data, for example.)
+	//        which can be important for performance if not all of the next data elements are in memory already.
+	//        (This is applicable to ADLs which contain large sharded data, for example.)
 	//        (The "interests" phase should be _fast_; more complicated checks, and anything that actually looks at the children, should wait until the "explore" phase;
 	//        in fact, for this reason, the `Interests` function doesn't even get to look at the data at all yet.)
 	//   T2. The traversal looks at the Node and its actual fields, and what the Selector just said are interesting,
@@ -77,7 +77,7 @@ type Selector interface {
 	// Right now, no, they can't.  (Sort of.)  They don't have access to a LinkLoader; the traversal would have to give them one.
 	// This might be needed in the future, e.g. if the Selector has a Condition clause that requires looking deeper; so far, we don't have those features, so it hasn't been needed.
 	// The "sort of" is for ADLs.  ADLs that work with large sharded data sometimes hold onto their own LinkLoader and apply it transparently.
-	// In that case, of course, `Explore` and `Decide` can just interrogate the Node they've been given, and that make cause link loading.
+	// In that case, of course, `Explore` and `Decide` can just interrogate the Node they've been given, and that may cause link loading.
 	// (If that happens, we're currently assuming the ADL has a reasonable caching behavior.  It's very likely that the traversal will look up the same paths that Explore just looked up (assuming the Condition told exploration to continue).)
 	//
 
