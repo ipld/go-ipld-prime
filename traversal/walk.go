@@ -114,7 +114,10 @@ func (prog Progress) walkAdv_iterateAll(n ipld.Node, s selector.Selector, fn Adv
 		if err != nil {
 			return err
 		}
-		sNext := s.Explore(n, ps)
+		sNext, err := s.Explore(n, ps)
+		if err != nil {
+			return err
+		}
 		if sNext != nil {
 			progNext := prog
 			progNext.Path = prog.Path.AppendSegment(ps)
@@ -146,7 +149,10 @@ func (prog Progress) walkAdv_iterateSelective(n ipld.Node, attn []ipld.PathSegme
 		if err != nil {
 			continue
 		}
-		sNext := s.Explore(n, ps)
+		sNext, err := s.Explore(n, ps)
+		if err != nil {
+			return err
+		}
 		if sNext != nil {
 			progNext := prog
 			progNext.Path = prog.Path.AppendSegment(ps)

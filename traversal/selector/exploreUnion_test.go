@@ -57,14 +57,14 @@ func TestExploreUnionExplore(t *testing.T) {
 	})
 	t.Run("exploring should return nil if all member selectors return nil when explored", func(t *testing.T) {
 		s := ExploreUnion{[]Selector{Matcher{}, ExploreIndex{Matcher{}, [1]ipld.PathSegment{ipld.PathSegmentOfInt(2)}}}}
-		returnedSelector := s.Explore(n, ipld.PathSegmentOfInt(3))
+		returnedSelector, _ := s.Explore(n, ipld.PathSegmentOfInt(3))
 		Wish(t, returnedSelector, ShouldEqual, nil)
 	})
 
 	t.Run("if exactly one member selector returns a non-nil selector when explored, exploring should return that value", func(t *testing.T) {
 		s := ExploreUnion{[]Selector{Matcher{}, ExploreIndex{Matcher{}, [1]ipld.PathSegment{ipld.PathSegmentOfInt(2)}}}}
 
-		returnedSelector := s.Explore(n, ipld.PathSegmentOfInt(2))
+		returnedSelector, _ := s.Explore(n, ipld.PathSegmentOfInt(2))
 		Wish(t, returnedSelector, ShouldEqual, Matcher{})
 	})
 	t.Run("exploring should return a new union selector if more than one member selector returns a non nil selector when explored", func(t *testing.T) {
@@ -75,7 +75,7 @@ func TestExploreUnionExplore(t *testing.T) {
 			ExploreFields{map[string]Selector{"applesauce": Matcher{}}, []ipld.PathSegment{ipld.PathSegmentOfString("applesauce")}},
 		}}
 
-		returnedSelector := s.Explore(n, ipld.PathSegmentOfInt(2))
+		returnedSelector, _ := s.Explore(n, ipld.PathSegmentOfInt(2))
 		Wish(t, returnedSelector, ShouldEqual, ExploreUnion{[]Selector{Matcher{}, Matcher{}}})
 	})
 }

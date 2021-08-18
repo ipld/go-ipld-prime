@@ -21,8 +21,8 @@ import (
 // you'll probably want to approach this be composing the Data Model declaration documents,
 // not be composing this type, which is only for the "compiled" result.
 type Selector interface {
-	Interests() []ipld.PathSegment                // returns the segments we're likely interested in **or nil** if we're a high-cardinality or expression based matcher and need all segments proposed to us.
-	Explore(ipld.Node, ipld.PathSegment) Selector // explore one step -- iteration comes from outside (either whole node, or by following suggestions of Interests).  returns nil if no interest.  you have to traverse to the next node yourself (the selector doesn't do it for you because you might be considering multiple selection reasons at the same time).
+	Interests() []ipld.PathSegment                         // returns the segments we're likely interested in **or nil** if we're a high-cardinality or expression based matcher and need all segments proposed to us.
+	Explore(ipld.Node, ipld.PathSegment) (Selector, error) // explore one step -- iteration comes from outside (either whole node, or by following suggestions of Interests).  returns nil if no interest.  you have to traverse to the next node yourself (the selector doesn't do it for you because you might be considering multiple selection reasons at the same time).
 	Decide(ipld.Node) bool
 }
 

@@ -18,8 +18,8 @@ func (s ExploreAll) Interests() []ipld.PathSegment {
 }
 
 // Explore returns the node's selector for all fields
-func (s ExploreAll) Explore(n ipld.Node, p ipld.PathSegment) Selector {
-	return s.next
+func (s ExploreAll) Explore(n ipld.Node, p ipld.PathSegment) (Selector, error) {
+	return s.next, nil
 }
 
 // Decide always returns false because this is not a matcher

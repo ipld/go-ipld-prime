@@ -20,16 +20,16 @@ func (s ExploreIndex) Interests() []ipld.PathSegment {
 
 // Explore returns the node's selector if
 // the path matches the index for this selector or nil if not
-func (s ExploreIndex) Explore(n ipld.Node, p ipld.PathSegment) Selector {
+func (s ExploreIndex) Explore(n ipld.Node, p ipld.PathSegment) (Selector, error) {
 	if n.Kind() != ipld.Kind_List {
-		return nil
+		return nil, nil
 	}
 	expectedIndex, expectedErr := p.Index()
 	actualIndex, actualErr := s.interest[0].Index()
 	if expectedErr != nil || actualErr != nil || expectedIndex != actualIndex {
-		return nil
+		return nil, nil
 	}
-	return s.next
+	return s.next, nil
 }
 
 // Decide always returns false because this is not a matcher
