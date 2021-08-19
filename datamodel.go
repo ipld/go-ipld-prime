@@ -2,6 +2,7 @@ package ipld
 
 import (
 	"github.com/ipld/go-ipld-prime/datamodel"
+	"github.com/ipld/go-ipld-prime/linking"
 	"github.com/ipld/go-ipld-prime/schema"
 )
 
@@ -69,6 +70,7 @@ type (
 	ErrIteratorOverread      = datamodel.ErrIteratorOverread
 	ErrInvalidKey            = schema.ErrInvalidKey
 	ErrMissingRequiredField  = schema.ErrMissingRequiredField
+	ErrHashMismatch          = linking.ErrHashMismatch
 )
 
 // Future: a bunch of these alias methods for path creation may be dropped someday.
