@@ -1,7 +1,7 @@
 package ipld
 
 import (
-	"github.com/ipld/go-ipld-prime/datamodel"
+	"github.com/ipld/go-ipld-prime/adl"
 )
 
-type ADL = datamodel.ADL
+type ADL = adl.ADL
