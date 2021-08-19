@@ -28,6 +28,25 @@ import (
 //   (It would mean the golang types don't tell you whether the values have been checked for global properties or not, but, eh.)
 //   (It's not really compatible with "Prototype and Type are the same thing for codegen'd stuff", either (or, we need more interfaces, and to *really* lean into them), but maybe that's okay.)
 
+func SpawnTypeSystem(types ...Type) (*TypeSystem, []error) {
+	ts := TypeSystem{}
+	ts.Init()
+	for _, typ := range types {
+		ts.Accumulate(typ)
+	}
+	if errs := ts.ValidateGraph(); errs != nil {
+		return nil, errs
+	}
+	return &ts, nil
+}
+func MustTypeSystem(types ...Type) *TypeSystem {
+	if ts, err := SpawnTypeSystem(types...); err != nil {
+		panic(err)
+	} else {
+		return ts
+	}
+}
+
 func SpawnString(name TypeName) *TypeString {
 	return &TypeString{typeBase{name, nil}}
 }
