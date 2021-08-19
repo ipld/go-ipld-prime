@@ -29,7 +29,7 @@ import (
 // Most codec packages should have a ReusableEncoder and ResuableDecoder type,
 // which contain any working memory needed by the implementation, as well as any configuration options,
 // and those types should have an Encode and Decode function respectively which match these function types.
-// The may alternatively have EncoderConfig and DecoderConfig types, which have similar purpose,
+// They may alternatively have EncoderConfig and DecoderConfig types, which have similar purpose,
 // but aren't promising memory reuse if kept around.
 //
 // By convention, a codec package that expects to fulfill a multicodec contract will also have
@@ -41,7 +41,7 @@ import (
 //
 // Note that an EncoderConfig or DecoderConfig type that supports configuration options
 // does not functionally expose those options when invoked by the multicodec system --
-// multicodec indicators do not provide room for extended configuration info.
+// multicodec indicator codes do not provide room for extended configuration info.
 // Codecs that expose configuration options are doing so for library users to enjoy;
 // it does not mean those non-default configurations will necessarly be available
 // in all scenarios that use codecs indirectly.
