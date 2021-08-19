@@ -1,7 +1,7 @@
 package schema
 
 import (
-	"github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/datamodel"
 	schemadmt "github.com/ipld/go-ipld-prime/schema/dmt"
 )
 
@@ -41,12 +41,12 @@ func (t *TypeEnum) Name() TypeName {
 	return t.name
 }
 
-func (t TypeEnum) RepresentationBehavior() ipld.Kind {
+func (t TypeEnum) RepresentationBehavior() datamodel.Kind {
 	switch t.dmt.FieldRepresentation().AsInterface().(type) {
 	case schemadmt.EnumRepresentation_String:
-		return ipld.Kind_String
+		return datamodel.Kind_String
 	case schemadmt.EnumRepresentation_Int:
-		return ipld.Kind_Int
+		return datamodel.Kind_Int
 	default:
 		panic("unreachable")
 	}

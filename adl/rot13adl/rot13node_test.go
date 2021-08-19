@@ -5,8 +5,8 @@ import (
 
 	. "github.com/warpfork/go-wish"
 
-	"github.com/ipld/go-ipld-prime"
-	basicnode "github.com/ipld/go-ipld-prime/node/basic"
+	"github.com/ipld/go-ipld-prime/datamodel"
+	"github.com/ipld/go-ipld-prime/node/basicnode"
 )
 
 func TestLogicalNodeRoundtrip(t *testing.T) {
@@ -40,7 +40,7 @@ func TestReify(t *testing.T) {
 		synth, err := Reify(sn)
 		// Inspect the resulting high level node.
 		Require(t, err, ShouldEqual, nil)
-		Wish(t, synth.Kind(), ShouldEqual, ipld.Kind_String)
+		Wish(t, synth.Kind(), ShouldEqual, datamodel.Kind_String)
 		s, err := synth.AsString()
 		Wish(t, err, ShouldEqual, nil)
 		Wish(t, s, ShouldEqual, "abcd")
@@ -54,7 +54,7 @@ func TestReify(t *testing.T) {
 		synth, err := Reify(sn)
 		// Inspect the resulting high level node.
 		Require(t, err, ShouldEqual, nil)
-		Wish(t, synth.Kind(), ShouldEqual, ipld.Kind_String)
+		Wish(t, synth.Kind(), ShouldEqual, datamodel.Kind_String)
 		s, err := synth.AsString()
 		Wish(t, err, ShouldEqual, nil)
 		Wish(t, s, ShouldEqual, "abcd")

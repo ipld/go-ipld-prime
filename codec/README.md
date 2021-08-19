@@ -7,8 +7,8 @@ The subpackages contains some codecs which reside in this repo.
 The codecs included here are our "batteries included" codecs,
 but they are not otherwise special.
 
-It is not necessary for a codec to be a subpackage here to be a valid codec to use with go-ipld-prime;
-anything that implements the `ipld.Encoder` and `ipld.Decoder` interfaces is fine.
+It is not necessary for a codec to be a subpackage here to be a valid codec to use with go-ipld;
+anything that implements the `codec.Encoder` and `codec.Decoder` interfaces is fine.
 
 
 Terminology

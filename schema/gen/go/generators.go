@@ -84,7 +84,7 @@ func EmitFileHeader(packageName string, w io.Writer) {
 	fmt.Fprintf(w, "package %s\n\n", packageName)
 	fmt.Fprintf(w, doNotEditComment+"\n\n")
 	fmt.Fprintf(w, "import (\n")
-	fmt.Fprintf(w, "\tipld \"github.com/ipld/go-ipld-prime\"\n")
+	fmt.Fprintf(w, "\t\"github.com/ipld/go-ipld-prime/datamodel\"\n")
 	fmt.Fprintf(w, "\t\"github.com/ipld/go-ipld-prime/node/mixins\"\n")
 	fmt.Fprintf(w, "\t\"github.com/ipld/go-ipld-prime/schema\"\n")
 	fmt.Fprintf(w, ")\n\n")

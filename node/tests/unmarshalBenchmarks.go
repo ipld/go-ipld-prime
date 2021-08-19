@@ -6,10 +6,8 @@ import (
 	"strings"
 	"testing"
 
-	refmtjson "github.com/polydawn/refmt/json"
-
-	ipld "github.com/ipld/go-ipld-prime"
-	"github.com/ipld/go-ipld-prime/codec"
+	"github.com/ipld/go-ipld-prime/codec/json"
+	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/node/tests/corpus"
 )
 
@@ -22,11 +20,11 @@ import (
 // - we can make direct comparisons to the standard library json marshalling
 //    and unmarshalling, thus having a back-of-the-envelope baseline to compare.
 
-func BenchmarkSpec_Unmarshal_Map3StrInt(b *testing.B, np ipld.NodePrototype) {
+func BenchmarkSpec_Unmarshal_Map3StrInt(b *testing.B, np datamodel.NodePrototype) {
 	var err error
 	for i := 0; i < b.N; i++ {
 		nb := np.NewBuilder()
-		err = codec.Unmarshal(nb, refmtjson.NewDecoder(strings.NewReader(`{"whee":1,"woot":2,"waga":3}`)))
+		err = json.Decode(nb, strings.NewReader(`{"whee":1,"woot":2,"waga":3}`))
 		sink = nb.Build()
 	}
 	if err != nil {
@@ -34,29 +32,29 @@ func BenchmarkSpec_Unmarshal_Map3StrInt(b *testing.B, np ipld.NodePrototype) {
 	}
 }
 
-func BenchmarkSpec_Unmarshal_MapNStrMap3StrInt(b *testing.B, np ipld.NodePrototype) {
+func BenchmarkSpec_Unmarshal_MapNStrMap3StrInt(b *testing.B, np datamodel.NodePrototype) {
 	for _, n := range []int{0, 1, 2, 4, 8, 16, 32} {
 		b.Run(fmt.Sprintf("n=%d", n), func(b *testing.B) {
 			msg := corpus.MapNStrMap3StrInt(n)
 			b.ResetTimer()
 
-			var node ipld.Node
+			var node datamodel.Node
 			var err error
 			nb := np.NewBuilder()
 			for i := 0; i < b.N; i++ {
-				err = codec.Unmarshal(nb, refmtjson.NewDecoder(strings.NewReader(msg)))
+				err = json.Decode(nb, strings.NewReader(msg))
 				node = nb.Build()
 				nb.Reset()
 			}
 
 			b.StopTimer()
 			if err != nil {
-				b.Fatalf("unmarshal errored: %s", err)
+				b.Fatalf("decode errored: %s", err)
 			}
 			var buf bytes.Buffer
-			codec.Marshal(node, refmtjson.NewEncoder(&buf, refmtjson.EncodeOptions{}))
+			json.Encode(node, &buf)
 			if buf.String() != msg {
-				b.Fatalf("remarshal didn't match corpus")
+				b.Fatalf("re-encode result didn't match corpus")
 			}
 		})
 	}

@@ -10,9 +10,9 @@ import (
 	"github.com/polydawn/refmt/shared"
 	. "github.com/warpfork/go-wish"
 
-	"github.com/ipld/go-ipld-prime"
 	"github.com/ipld/go-ipld-prime/codec"
 	"github.com/ipld/go-ipld-prime/codec/dagjson"
+	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/schema"
 	"github.com/ipld/go-ipld-prime/traversal"
 )
@@ -86,10 +86,10 @@ type entry struct {
 	value interface{} // same rules as testcasePoint.expect
 }
 
-func (tcase testcase) Test(t *testing.T, np, npr ipld.NodePrototype) {
+func (tcase testcase) Test(t *testing.T, np, npr datamodel.NodePrototype) {
 	t.Run(tcase.name, func(t *testing.T) {
 		// We'll produce either one or two nodes, depending on the fixture; if two, we'll be expecting them to be equal.
-		var n, n2 ipld.Node
+		var n, n2 datamodel.Node
 
 		// Attempt to produce a node by using unmarshal on type-level fixture data and the type-level NodePrototype.
 		//  This exercises creating a value using the AssembleEntry path (but note, not AssembleKey+AssembleValue path).
@@ -125,7 +125,7 @@ func (tcase testcase) Test(t *testing.T, np, npr ipld.NodePrototype) {
 		}
 		if n2 != nil {
 			t.Run("type-create and repr-create match", func(t *testing.T) {
-				Wish(t, ipld.DeepEqual(n, n2), ShouldEqual, true)
+				Wish(t, datamodel.DeepEqual(n, n2), ShouldEqual, true)
 			})
 		}
 
@@ -172,7 +172,7 @@ func (tcase testcase) Test(t *testing.T, np, npr ipld.NodePrototype) {
 			k, v, err := itr.Next()
 			Wish(t, k, ShouldEqual, nil)
 			Wish(t, v, ShouldEqual, nil)
-			Wish(t, err, ShouldEqual, ipld.ErrIteratorOverread{})
+			Wish(t, err, ShouldEqual, datamodel.ErrIteratorOverread{})
 		} else if tcase.typeJson != "" {
 			t.Run("type-marshal", func(t *testing.T) {
 				testMarshal(t, n, tcase.typeJson)
@@ -189,7 +189,7 @@ func (tcase testcase) Test(t *testing.T, np, npr ipld.NodePrototype) {
 	})
 }
 
-func testUnmarshal(t *testing.T, np ipld.NodePrototype, data string, expectFail error) ipld.Node {
+func testUnmarshal(t *testing.T, np datamodel.NodePrototype, data string, expectFail error) datamodel.Node {
 	t.Helper()
 	nb := np.NewBuilder()
 	err := dagjson.Decode(nb, strings.NewReader(data))
@@ -206,7 +206,7 @@ func testUnmarshal(t *testing.T, np ipld.NodePrototype, data string, expectFail 
 	return nb.Build()
 }
 
-func testMarshal(t *testing.T, n ipld.Node, data string) {
+func testMarshal(t *testing.T, n datamodel.Node, data string) {
 	t.Helper()
 	// We'll marshal with "pretty" linebreaks and indents (and re-format the fixture to the same) for better diffing.
 	prettyprint := json.EncodeOptions{Line: []byte{'\n'}, Indent: []byte{'\t'}}
@@ -222,9 +222,9 @@ func testMarshal(t *testing.T, n ipld.Node, data string) {
 	Wish(t, buf.String(), ShouldEqual, reformat(data, prettyprint))
 }
 
-func wishPoint(t *testing.T, n ipld.Node, point testcasePoint) {
+func wishPoint(t *testing.T, n datamodel.Node, point testcasePoint) {
 	t.Helper()
-	reached, err := traversal.Get(n, ipld.ParsePath(point.path))
+	reached, err := traversal.Get(n, datamodel.ParsePath(point.path))
 	switch point.expect.(type) {
 	case error:
 		Wish(t, err, ShouldBeSameTypeAs, point.expect)
@@ -243,33 +243,33 @@ func wishPoint(t *testing.T, n ipld.Node, point testcasePoint) {
 //
 // If the expected value is a primitive string, it'll AsStrong on the Node; etc.
 //
-// Using an ipld.Kind value is also possible, which will just check the kind and not the value contents.
+// Using an datamodel.Kind value is also possible, which will just check the kind and not the value contents.
 //
-// If an ipld.Node is the expected value, a full deep ShouldEqual is used as normal.
+// If an datamodel.Node is the expected value, a full deep ShouldEqual is used as normal.
 func closeEnough(actual, expected interface{}) (string, bool) {
 	if expected == nil {
 		return ShouldEqual(actual, nil)
 	}
-	a, ok := actual.(ipld.Node)
+	a, ok := actual.(datamodel.Node)
 	if !ok {
-		return "this checker only supports checking ipld.Node values", false
+		return "this checker only supports checking datamodel.Node values", false
 	}
 	switch expected.(type) {
-	case ipld.Kind:
+	case datamodel.Kind:
 		return ShouldEqual(a.Kind(), expected)
 	case string:
-		if a.Kind() != ipld.Kind_String {
+		if a.Kind() != datamodel.Kind_String {
 			return fmt.Sprintf("expected something with kind string, got kind %s", a.Kind()), false
 		}
 		x, _ := a.AsString()
 		return ShouldEqual(x, expected)
 	case int:
-		if a.Kind() != ipld.Kind_Int {
+		if a.Kind() != datamodel.Kind_Int {
 			return fmt.Sprintf("expected something with kind int, got kind %s", a.Kind()), false
 		}
 		x, _ := a.AsInt()
 		return ShouldEqual(x, expected)
-	case ipld.Node:
+	case datamodel.Node:
 		return ShouldEqual(actual, expected)
 	default:
 		return fmt.Sprintf("this checker doesn't support an expected value of type %T", expected), false

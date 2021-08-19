@@ -34,12 +34,12 @@ func emitNativeMaybe(w io.Writer, adjCfg *AdjunctCfg, data interface{}) {
 		func (m Maybe{{ .Type | TypeSymbol }}) Exists() bool {
 			return m.m == schema.Maybe_Value
 		}
-		func (m Maybe{{ .Type | TypeSymbol }}) AsNode() ipld.Node {
+		func (m Maybe{{ .Type | TypeSymbol }}) AsNode() datamodel.Node {
 			switch m.m {
 				case schema.Maybe_Absent:
-					return ipld.Absent
+					return datamodel.Absent
 				case schema.Maybe_Null:
-					return ipld.Null
+					return datamodel.Null
 				case schema.Maybe_Value:
 					return {{if not (MaybeUsesPtr .Type) }}&{{end}}m.v
 				default:
@@ -95,7 +95,7 @@ func emitNativeBuilder_scalar(w io.Writer, adjCfg *AdjunctCfg, data interface{})
 
 func emitNodeTypeAssertions_typical(w io.Writer, adjCfg *AdjunctCfg, data interface{}) {
 	doTemplate(`
-		var _ ipld.Node = ({{ .Type | TypeSymbol }})(&_{{ .Type | TypeSymbol }}{})
+		var _ datamodel.Node = ({{ .Type | TypeSymbol }})(&_{{ .Type | TypeSymbol }}{})
 		var _ schema.TypedNode = ({{ .Type | TypeSymbol }})(&_{{ .Type | TypeSymbol }}{})
 	`, w, adjCfg, data)
 }
@@ -110,7 +110,7 @@ func emitNodeMethodAsKind_scalar(w io.Writer, adjCfg *AdjunctCfg, data interface
 
 func emitNodeMethodPrototype_typical(w io.Writer, adjCfg *AdjunctCfg, data interface{}) {
 	doTemplate(`
-		func ({{ if .IsRepr }}_{{end}}{{ .Type | TypeSymbol }}{{ if .IsRepr }}__Repr{{end}}) Prototype() ipld.NodePrototype {
+		func ({{ if .IsRepr }}_{{end}}{{ .Type | TypeSymbol }}{{ if .IsRepr }}__Repr{{end}}) Prototype() datamodel.NodePrototype {
 			return _{{ .Type | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Prototype{}
 		}
 	`, w, adjCfg, data)
@@ -122,7 +122,7 @@ func emitNodePrototypeType_typical(w io.Writer, adjCfg *AdjunctCfg, data interfa
 	doTemplate(`
 		type _{{ .Type | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Prototype struct{}
 
-		func (_{{ .Type | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Prototype) NewBuilder() ipld.NodeBuilder {
+		func (_{{ .Type | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Prototype) NewBuilder() datamodel.NodeBuilder {
 			var nb _{{ .Type | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Builder
 			nb.Reset()
 			return &nb
@@ -142,7 +142,7 @@ func emitNodePrototypeType_typical(w io.Writer, adjCfg *AdjunctCfg, data interfa
 // and two, mixins are also used in the repr generators, and it wouldn't be all sane for this method to end up also on reprs.
 func emitTypicalTypedNodeMethodRepresentation(w io.Writer, adjCfg *AdjunctCfg, data interface{}) {
 	doTemplate(`
-		func (n {{ .Type | TypeSymbol }}) Representation() ipld.Node {
+		func (n {{ .Type | TypeSymbol }}) Representation() datamodel.Node {
 			return (*_{{ .Type | TypeSymbol }}__Repr)(n)
 		}
 	`, w, adjCfg, data)
@@ -161,7 +161,7 @@ func emitEmitNodeBuilderType_typical(w io.Writer, adjCfg *AdjunctCfg, data inter
 // We count on the zero value of any addntl non-common fields of the assembler being correct.
 func emitNodeBuilderMethods_typical(w io.Writer, adjCfg *AdjunctCfg, data interface{}) {
 	doTemplate(`
-		func (nb *_{{ .Type | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Builder) Build() ipld.Node {
+		func (nb *_{{ .Type | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Builder) Build() datamodel.Node {
 			if *nb.m != schema.Maybe_Value {
 				panic("invalid state: cannot call Build on an assembler that's not finished")
 			}
@@ -258,7 +258,7 @@ func emitNodeAssemblerMethodAssignNode_scalar(w io.Writer, adjCfg *AdjunctCfg, d
 	// 2. is it our own type?  Handle specially -- we might be able to do efficient things.
 	// 3. is it the right kind to morph into us?  Do so.
 	doTemplate(`
-		func (na *_{{ .Type | TypeSymbol }}__Assembler) AssignNode(v ipld.Node) error {
+		func (na *_{{ .Type | TypeSymbol }}__Assembler) AssignNode(v datamodel.Node) error {
 			if v.IsNull() {
 				return na.AssignNull()
 			}

@@ -72,24 +72,24 @@ func (g structReprTupleReprGenerator) EmitNodeType(w io.Writer) {
 
 func (g structReprTupleReprGenerator) EmitNodeTypeAssertions(w io.Writer) {
 	doTemplate(`
-		var _ ipld.Node = &_{{ .Type | TypeSymbol }}__Repr{}
+		var _ datamodel.Node = &_{{ .Type | TypeSymbol }}__Repr{}
 	`, w, g.AdjCfg, g)
 }
 
 func (g structReprTupleReprGenerator) EmitNodeMethodLookupByIndex(w io.Writer) {
 	doTemplate(`
-		func (n *_{{ .Type | TypeSymbol }}__Repr) LookupByIndex(idx int64) (ipld.Node, error) {
+		func (n *_{{ .Type | TypeSymbol }}__Repr) LookupByIndex(idx int64) (datamodel.Node, error) {
 			switch idx {
 			{{- range $i, $field := .Type.Fields }}
 			case {{ $i }}:
 				{{- if $field.IsOptional }}
 				if n.{{ $field | FieldSymbolLower }}.m == schema.Maybe_Absent {
-					return ipld.Absent, ipld.ErrNotExists{Segment: ipld.PathSegmentOfInt(idx)}
+					return datamodel.Absent, datamodel.ErrNotExists{Segment: datamodel.PathSegmentOfInt(idx)}
 				}
 				{{- end}}
 				{{- if $field.IsNullable }}
 				if n.{{ $field | FieldSymbolLower }}.m == schema.Maybe_Null {
-					return ipld.Null, nil
+					return datamodel.Null, nil
 				}
 				{{- end}}
 				{{- if $field.IsMaybe }}
@@ -99,7 +99,7 @@ func (g structReprTupleReprGenerator) EmitNodeMethodLookupByIndex(w io.Writer) {
 				{{- end}}
 			{{- end}}
 			default:
-				return nil, schema.ErrNoSuchField{Type: nil /*TODO*/, Field: ipld.PathSegmentOfInt(idx)}
+				return nil, schema.ErrNoSuchField{Type: nil /*TODO*/, Field: datamodel.PathSegmentOfInt(idx)}
 			}
 		}
 	`, w, g.AdjCfg, g)
@@ -107,7 +107,7 @@ func (g structReprTupleReprGenerator) EmitNodeMethodLookupByIndex(w io.Writer) {
 
 func (g structReprTupleReprGenerator) EmitNodeMethodLookupByNode(w io.Writer) {
 	doTemplate(`
-		func (n *_{{ .Type | TypeSymbol }}__Repr) LookupByNode(key ipld.Node) (ipld.Node, error) {
+		func (n *_{{ .Type | TypeSymbol }}__Repr) LookupByNode(key datamodel.Node) (datamodel.Node, error) {
 			ki, err := key.AsInt()
 			if err != nil {
 				return nil, err
@@ -144,7 +144,7 @@ func (g structReprTupleReprGenerator) EmitNodeMethodListIterator(w io.Writer) {
 
 	// Now: finally we can get on with the actual templating.
 	doTemplate(`
-		func (n *_{{ .Type | TypeSymbol }}__Repr) ListIterator() ipld.ListIterator {
+		func (n *_{{ .Type | TypeSymbol }}__Repr) ListIterator() datamodel.ListIterator {
 			{{- if .HaveTrailingOptionals }}
 			end := {{ len .Type.Fields }}`+
 		func() string { // this next part was too silly in templates due to lack of reverse ranging.
@@ -170,9 +170,9 @@ func (g structReprTupleReprGenerator) EmitNodeMethodListIterator(w io.Writer) {
 			{{if .HaveTrailingOptionals }}end int{{end}}
 		}
 
-		func (itr *_{{ .Type | TypeSymbol }}__ReprListItr) Next() (idx int64, v ipld.Node, err error) {
+		func (itr *_{{ .Type | TypeSymbol }}__ReprListItr) Next() (idx int64, v datamodel.Node, err error) {
 			if itr.idx >= {{ len .Type.Fields }} {
-				return -1, nil, ipld.ErrIteratorOverread{}
+				return -1, nil, datamodel.ErrIteratorOverread{}
 			}
 			switch itr.idx {
 			{{- range $i, $field := .Type.Fields }}
@@ -180,12 +180,12 @@ func (g structReprTupleReprGenerator) EmitNodeMethodListIterator(w io.Writer) {
 				idx = int64(itr.idx)
 				{{- if $field.IsOptional }}
 				if itr.n.{{ $field | FieldSymbolLower }}.m == schema.Maybe_Absent {
-					return -1, nil, ipld.ErrIteratorOverread{}
+					return -1, nil, datamodel.ErrIteratorOverread{}
 				}
 				{{- end}}
 				{{- if $field.IsNullable }}
 				if itr.n.{{ $field | FieldSymbolLower }}.m == schema.Maybe_Null {
-					v = ipld.Null
+					v = datamodel.Null
 					break
 				}
 				{{- end}}
@@ -312,7 +312,7 @@ func (g structReprTupleReprBuilderGenerator) EmitNodeAssemblerType(w io.Writer) 
 func (g structReprTupleReprBuilderGenerator) EmitNodeAssemblerMethodBeginList(w io.Writer) {
 	// Future: This could do something strict with the sizehint; it currently ignores it.
 	doTemplate(`
-		func (na *_{{ .Type | TypeSymbol }}__ReprAssembler) BeginList(int64) (ipld.ListAssembler, error) {
+		func (na *_{{ .Type | TypeSymbol }}__ReprAssembler) BeginList(int64) (datamodel.ListAssembler, error) {
 			switch *na.m {
 			case schema.Maybe_Value, schema.Maybe_Null:
 				panic("invalid state: cannot assign into assembler that's already finished")
@@ -380,7 +380,7 @@ func (g structReprTupleReprBuilderGenerator) emitListAssemblerChildTidyHelper(w 
 }
 func (g structReprTupleReprBuilderGenerator) emitListAssemblerChildListAssemblerMethods(w io.Writer) {
 	doTemplate(`
-		func (la *_{{ .Type | TypeSymbol }}__ReprAssembler) AssembleValue() ipld.NodeAssembler {
+		func (la *_{{ .Type | TypeSymbol }}__ReprAssembler) AssembleValue() datamodel.NodeAssembler {
 			switch la.state {
 			case laState_initial:
 				// carry on
@@ -392,7 +392,7 @@ func (g structReprTupleReprBuilderGenerator) emitListAssemblerChildListAssembler
 				panic("invalid state: AssembleValue cannot be called on an assembler that's already finished")
 			}
 			if la.f >= {{ len .Type.Fields }} {
-				return _ErrorThunkAssembler{schema.ErrNoSuchField{Type: nil /*TODO*/, Field: ipld.PathSegmentOfInt({{ len .Type.Fields }})}}
+				return _ErrorThunkAssembler{schema.ErrNoSuchField{Type: nil /*TODO*/, Field: datamodel.PathSegmentOfInt({{ len .Type.Fields }})}}
 			}
 			la.state = laState_midValue
 			switch la.f {
@@ -436,7 +436,7 @@ func (g structReprTupleReprBuilderGenerator) emitListAssemblerChildListAssembler
 		}
 	`, w, g.AdjCfg, g)
 	doTemplate(`
-		func (la *_{{ .Type | TypeSymbol }}__ReprAssembler) ValuePrototype(_ int64) ipld.NodePrototype {
+		func (la *_{{ .Type | TypeSymbol }}__ReprAssembler) ValuePrototype(_ int64) datamodel.NodePrototype {
 			panic("todo structbuilder tuplerepr valueprototype")
 		}
 	`, w, g.AdjCfg, g)

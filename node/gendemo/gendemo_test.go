@@ -18,9 +18,6 @@ func BenchmarkMapStrInt_3n_Iteration(b *testing.B) {
 func BenchmarkSpec_Marshal_Map3StrInt(b *testing.B) {
 	tests.BenchmarkSpec_Marshal_Map3StrInt(b, _Msg3__Prototype{})
 }
-func BenchmarkSpec_Marshal_Map3StrInt_CodecNull(b *testing.B) {
-	tests.BenchmarkSpec_Marshal_Map3StrInt_CodecNull(b, _Msg3__Prototype{})
-}
 func BenchmarkSpec_Unmarshal_Map3StrInt(b *testing.B) {
 	tests.BenchmarkSpec_Unmarshal_Map3StrInt(b, _Msg3__Prototype{})
 }

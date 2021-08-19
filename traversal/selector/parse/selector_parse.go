@@ -9,20 +9,20 @@ package selectorparse
 import (
 	"strings"
 
-	"github.com/ipld/go-ipld-prime"
 	"github.com/ipld/go-ipld-prime/codec/dagjson"
-	"github.com/ipld/go-ipld-prime/node/basic"
+	"github.com/ipld/go-ipld-prime/datamodel"
+	"github.com/ipld/go-ipld-prime/node/basicnode"
 	"github.com/ipld/go-ipld-prime/traversal/selector"
 )
 
 // ParseJSONSelector accepts a string of json which will be parsed as a selector,
-// and returns an ipld.Node of the parsed Data Model.
-// The returned ipld.Node is suitable to hand to `selector.CompileSelector`,
+// and returns an datamodel.Node of the parsed Data Model.
+// The returned datamodel.Node is suitable to hand to `selector.CompileSelector`,
 // or, could be composed programmatically with other Data Model selector clauses
 // and then compiled later.
 //
 // The selector will be checked for compileability, and an error returned if it is not.
-func ParseJSONSelector(jsonStr string) (ipld.Node, error) {
+func ParseJSONSelector(jsonStr string) (datamodel.Node, error) {
 	nb := basicnode.Prototype.Any.NewBuilder()
 	if err := dagjson.Decode(nb, strings.NewReader(jsonStr)); err != nil {
 		return nil, err

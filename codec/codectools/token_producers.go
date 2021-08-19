@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/datamodel"
 )
 
 // TokenWalk walks an ipld Node and repeatedly calls the visitFn,
@@ -30,7 +30,7 @@ import (
 // (e.g. anything other than a MapOpen or a ListOpen) has no effect.
 //
 // TokenAssembler is the rough dual of TokenWalk.
-func TokenWalk(n ipld.Node, visitFn func(tk *Token) error) error {
+func TokenWalk(n datamodel.Node, visitFn func(tk *Token) error) error {
 	// TokenWalk would be trivial to implement over NodeTokenizer,
 	//  but we do a distinct implementation here because NodeTokenizer's resumable implementation means it needs a user-space stack,
 	//  and to reuse that would require allocations which this method (since it's not resumable in the same way) can easily avoid (or at least, keep on the stack).
@@ -39,9 +39,9 @@ func TokenWalk(n ipld.Node, visitFn func(tk *Token) error) error {
 	return tokenWalk(&tk, n, visitFn)
 }
 
-func tokenWalk(tk *Token, n ipld.Node, visitFn func(*Token) error) error {
+func tokenWalk(tk *Token, n datamodel.Node, visitFn func(*Token) error) error {
 	switch n.Kind() {
-	case ipld.Kind_Map:
+	case datamodel.Kind_Map:
 		tk.Kind = TokenKind_MapOpen
 		tk.Length = n.Length()
 		tk.Node = n
@@ -64,7 +64,7 @@ func tokenWalk(tk *Token, n ipld.Node, visitFn func(*Token) error) error {
 		tk.Kind = TokenKind_MapClose
 		tk.Node = n
 		return visitFn(tk)
-	case ipld.Kind_List:
+	case datamodel.Kind_List:
 		tk.Kind = TokenKind_ListOpen
 		tk.Length = n.Length()
 		tk.Node = n
@@ -84,31 +84,31 @@ func tokenWalk(tk *Token, n ipld.Node, visitFn func(*Token) error) error {
 		tk.Kind = TokenKind_ListClose
 		tk.Node = n
 		return visitFn(tk)
-	case ipld.Kind_Null:
+	case datamodel.Kind_Null:
 		tk.Kind = TokenKind_Null
 		return visitFn(tk)
-	case ipld.Kind_Bool:
+	case datamodel.Kind_Bool:
 		tk.Kind = TokenKind_Bool
 		tk.Bool, _ = n.AsBool()
 		return visitFn(tk)
-	case ipld.Kind_Int:
+	case datamodel.Kind_Int:
 		tk.Kind = TokenKind_Int
 		i, _ := n.AsInt()
 		tk.Int = int64(i) // TODO: upgrade all of ipld to use high precision int consistently
 		return visitFn(tk)
-	case ipld.Kind_Float:
+	case datamodel.Kind_Float:
 		tk.Kind = TokenKind_Float
 		tk.Float, _ = n.AsFloat()
 		return visitFn(tk)
-	case ipld.Kind_String:
+	case datamodel.Kind_String:
 		tk.Kind = TokenKind_String
 		tk.Str, _ = n.AsString()
 		return visitFn(tk)
-	case ipld.Kind_Bytes:
+	case datamodel.Kind_Bytes:
 		tk.Kind = TokenKind_Bytes
 		tk.Bytes, _ = n.AsBytes()
 		return visitFn(tk)
-	case ipld.Kind_Link:
+	case datamodel.Kind_Link:
 		tk.Kind = TokenKind_Link
 		tk.Link, _ = n.AsLink()
 		return visitFn(tk)
@@ -121,7 +121,7 @@ var TokenWalkSkip = errors.New("token walk: skip")
 
 // --- the stepwise token producer system (more complicated; has a userland stack) is below -->
 
-// A TokenReader can be produced from any ipld.Node using NodeTokenizer.
+// A TokenReader can be produced from any datamodel.Node using NodeTokenizer.
 // TokenReader are also commonly implemented by codec packages,
 // wherein they're created over a serial data stream and tokenize that stream when pumped.
 //
@@ -146,7 +146,7 @@ type NodeTokenizer struct {
 	stk nodeTokenizerStack
 }
 
-func (nt *NodeTokenizer) Initialize(n ipld.Node) {
+func (nt *NodeTokenizer) Initialize(n datamodel.Node) {
 	if nt.stk == nil {
 		nt.stk = make(nodeTokenizerStack, 0, 10)
 	} else {
@@ -156,11 +156,11 @@ func (nt *NodeTokenizer) Initialize(n ipld.Node) {
 }
 
 type nodeTokenizerStackRow struct {
-	state uint8             // 0: start this node; 1: continue list; 2: continue map with key; 3: continue map with value.
-	n     ipld.Node         // Always present.
-	litr  ipld.ListIterator // At most one of these is present.
-	mitr  ipld.MapIterator  // At most one of these is present.
-	mval  ipld.Node         // The value to resume at when in state 3.
+	state uint8                  // 0: start this node; 1: continue list; 2: continue map with key; 3: continue map with value.
+	n     datamodel.Node         // Always present.
+	litr  datamodel.ListIterator // At most one of these is present.
+	mitr  datamodel.MapIterator  // At most one of these is present.
+	mval  datamodel.Node         // The value to resume at when in state 3.
 
 }
 type nodeTokenizerStack []nodeTokenizerStackRow
@@ -168,7 +168,7 @@ type nodeTokenizerStack []nodeTokenizerStackRow
 func (stk nodeTokenizerStack) Tip() *nodeTokenizerStackRow {
 	return &stk[len(stk)-1]
 }
-func (stk *nodeTokenizerStack) Push(n ipld.Node) {
+func (stk *nodeTokenizerStack) Push(n datamodel.Node) {
 	*stk = append(*stk, nodeTokenizerStackRow{n: n})
 }
 func (stk *nodeTokenizerStack) Pop() {
@@ -195,51 +195,51 @@ func (nt *NodeTokenizer) ReadToken() (next *Token, err error) {
 	switch tip.state {
 	case 0:
 		switch tip.n.Kind() {
-		case ipld.Kind_Map:
+		case datamodel.Kind_Map:
 			nt.tk.Kind = TokenKind_MapOpen
 			nt.tk.Length = tip.n.Length()
 			nt.tk.Node = tip.n
 			tip.state = 2
 			tip.mitr = tip.n.MapIterator()
 			return &nt.tk, nil
-		case ipld.Kind_List:
+		case datamodel.Kind_List:
 			nt.tk.Kind = TokenKind_ListOpen
 			nt.tk.Length = tip.n.Length()
 			nt.tk.Node = tip.n
 			tip.state = 1
 			tip.litr = tip.n.ListIterator()
 			return &nt.tk, nil
-		case ipld.Kind_Null:
+		case datamodel.Kind_Null:
 			nt.tk.Kind = TokenKind_Null
 			nt.stk.Pop()
 			return &nt.tk, nil
-		case ipld.Kind_Bool:
+		case datamodel.Kind_Bool:
 			nt.tk.Kind = TokenKind_Bool
 			nt.tk.Bool, _ = tip.n.AsBool()
 			nt.stk.Pop()
 			return &nt.tk, nil
-		case ipld.Kind_Int:
+		case datamodel.Kind_Int:
 			nt.tk.Kind = TokenKind_Int
 			i, _ := tip.n.AsInt()
 			nt.tk.Int = int64(i) // TODO: upgrade all of ipld to use high precision int consistently
 			nt.stk.Pop()
 			return &nt.tk, nil
-		case ipld.Kind_Float:
+		case datamodel.Kind_Float:
 			nt.tk.Kind = TokenKind_Float
 			nt.tk.Float, _ = tip.n.AsFloat()
 			nt.stk.Pop()
 			return &nt.tk, nil
-		case ipld.Kind_String:
+		case datamodel.Kind_String:
 			nt.tk.Kind = TokenKind_String
 			nt.tk.Str, _ = tip.n.AsString()
 			nt.stk.Pop()
 			return &nt.tk, nil
-		case ipld.Kind_Bytes:
+		case datamodel.Kind_Bytes:
 			nt.tk.Kind = TokenKind_Bytes
 			nt.tk.Bytes, _ = tip.n.AsBytes()
 			nt.stk.Pop()
 			return &nt.tk, nil
-		case ipld.Kind_Link:
+		case datamodel.Kind_Link:
 			nt.tk.Kind = TokenKind_Link
 			nt.tk.Link, _ = tip.n.AsLink()
 			nt.stk.Pop()

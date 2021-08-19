@@ -6,11 +6,8 @@ import (
 	"strings"
 	"testing"
 
-	refmtjson "github.com/polydawn/refmt/json"
-	"github.com/polydawn/refmt/tok"
-
-	ipld "github.com/ipld/go-ipld-prime"
-	"github.com/ipld/go-ipld-prime/codec"
+	"github.com/ipld/go-ipld-prime/codec/json"
+	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/must"
 	"github.com/ipld/go-ipld-prime/node/tests/corpus"
 )
@@ -24,15 +21,15 @@ import (
 // - we can make direct comparisons to the standard library json marshalling
 //    and unmarshalling, thus having a back-of-the-envelope baseline to compare.
 
-func BenchmarkSpec_Marshal_Map3StrInt(b *testing.B, np ipld.NodePrototype) {
+func BenchmarkSpec_Marshal_Map3StrInt(b *testing.B, np datamodel.NodePrototype) {
 	nb := np.NewBuilder()
-	must.NotError(codec.Unmarshal(nb, refmtjson.NewDecoder(strings.NewReader(`{"whee":1,"woot":2,"waga":3}`))))
+	must.NotError(json.Decode(nb, strings.NewReader(`{"whee":1,"woot":2,"waga":3}`)))
 	n := nb.Build()
 	b.ResetTimer()
 	var err error
 	for i := 0; i < b.N; i++ {
 		var buf bytes.Buffer
-		err = codec.Marshal(n, refmtjson.NewEncoder(&buf, refmtjson.EncodeOptions{}))
+		err = json.Encode(n, &buf)
 		sink = buf
 	}
 	if err != nil {
@@ -40,30 +37,7 @@ func BenchmarkSpec_Marshal_Map3StrInt(b *testing.B, np ipld.NodePrototype) {
 	}
 }
 
-func BenchmarkSpec_Marshal_Map3StrInt_CodecNull(b *testing.B, np ipld.NodePrototype) {
-	nb := np.NewBuilder()
-	must.NotError(codec.Unmarshal(nb, refmtjson.NewDecoder(strings.NewReader(`{"whee":1,"woot":2,"waga":3}`))))
-	n := nb.Build()
-	b.ResetTimer()
-	var err error
-	encoder := &nullTokenSink{}
-	for i := 0; i < b.N; i++ {
-		var buf bytes.Buffer
-		err = codec.Marshal(n, encoder)
-		sink = buf
-	}
-	if err != nil {
-		panic(err)
-	}
-}
-
-type nullTokenSink struct{}
-
-func (nullTokenSink) Step(_ *tok.Token) (bool, error) {
-	return false, nil
-}
-
-func BenchmarkSpec_Marshal_MapNStrMap3StrInt(b *testing.B, np ipld.NodePrototype) {
+func BenchmarkSpec_Marshal_MapNStrMap3StrInt(b *testing.B, np datamodel.NodePrototype) {
 	for _, n := range []int{0, 1, 2, 4, 8, 16, 32} {
 		b.Run(fmt.Sprintf("n=%d", n), func(b *testing.B) {
 			msg := corpus.MapNStrMap3StrInt(n)
@@ -74,15 +48,15 @@ func BenchmarkSpec_Marshal_MapNStrMap3StrInt(b *testing.B, np ipld.NodePrototype
 			var err error
 			for i := 0; i < b.N; i++ {
 				buf = bytes.Buffer{}
-				err = codec.Marshal(node, refmtjson.NewEncoder(&buf, refmtjson.EncodeOptions{}))
+				err = json.Encode(node, &buf)
 			}
 
 			b.StopTimer()
 			if err != nil {
-				b.Fatalf("marshal errored: %s", err)
+				b.Fatalf("encode errored: %s", err)
 			}
 			if buf.String() != msg {
-				b.Fatalf("marshal didn't match corpus")
+				b.Fatalf("encode result didn't match corpus")
 			}
 		})
 	}

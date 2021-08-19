@@ -3,7 +3,7 @@ package rot13adl
 import (
 	"fmt"
 
-	"github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/datamodel"
 )
 
 // Reify examines data in a Node to see if it matches the shape for valid substrate data for this ADL,
@@ -40,7 +40,7 @@ import (
 // Reification for multiblock ADLs might also need link loader systems as a parameter here
 // so they can capture them as config and hold them for use in future operations that do lazy loading.
 //
-func Reify(maybeSubstrateRoot ipld.Node) (ipld.Node, error) {
+func Reify(maybeSubstrateRoot datamodel.Node) (datamodel.Node, error) {
 	// Reify is often very easy to implement,
 	//  especially if you have an IPLD Schema that specifies the shape of the substrate data:
 	// We can just check if the data in maybeSubstrateRoot happens to already be exactly the right type,

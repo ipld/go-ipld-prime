@@ -3,7 +3,7 @@ package schema
 import (
 	"fmt"
 
-	"github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/datamodel"
 )
 
 // Everything in this file is __a temporary hack__ and will be __removed__.
@@ -104,7 +104,7 @@ func SpawnUnion(name TypeName, members []TypeName, repr UnionRepresentation) *Ty
 func SpawnUnionRepresentationKeyed(table map[string]TypeName) UnionRepresentation_Keyed {
 	return UnionRepresentation_Keyed{table}
 }
-func SpawnUnionRepresentationKinded(table map[ipld.Kind]TypeName) UnionRepresentation_Kinded {
+func SpawnUnionRepresentationKinded(table map[datamodel.Kind]TypeName) UnionRepresentation_Kinded {
 	return UnionRepresentation_Kinded{table}
 }
 func SpawnUnionRepresentationStringprefix(delim string, table map[string]TypeName) UnionRepresentation_Stringprefix {

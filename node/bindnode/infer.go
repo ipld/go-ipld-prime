@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"strings"
 
-	ipld "github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/schema"
 )
 
@@ -15,7 +15,7 @@ var (
 	goTypeFloat  = reflect.TypeOf(0.0)
 	goTypeString = reflect.TypeOf("")
 	goTypeBytes  = reflect.TypeOf([]byte{})
-	goTypeLink   = reflect.TypeOf((*ipld.Link)(nil)).Elem()
+	goTypeLink   = reflect.TypeOf((*datamodel.Link)(nil)).Elem()
 
 	schemaTypeBool   = schema.SpawnBool("Bool")
 	schemaTypeInt    = schema.SpawnInt("Int")

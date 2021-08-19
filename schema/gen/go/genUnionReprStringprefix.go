@@ -69,7 +69,7 @@ func (g unionReprStringprefixReprGenerator) EmitNodeType(w io.Writer) {
 
 func (g unionReprStringprefixReprGenerator) EmitNodeTypeAssertions(w io.Writer) {
 	doTemplate(`
-		var _ ipld.Node = &_{{ .Type | TypeSymbol }}__Repr{}
+		var _ datamodel.Node = &_{{ .Type | TypeSymbol }}__Repr{}
 	`, w, g.AdjCfg, g)
 }
 
@@ -154,7 +154,7 @@ func (g unionReprStringprefixReprBuilderGenerator) EmitNodeBuilderMethods(w io.W
 		func (_{{ .Type | TypeSymbol }}__ReprPrototype) fromString(w *_{{ .Type | TypeSymbol }}, v string) error {
 			ss := mixins.SplitN(v, "{{ .Type.RepresentationStrategy.GetDelim }}", 2)
 			if len(ss) != 2 {
-				return ipld.ErrUnmatchable{TypeName:"{{ .PkgName }}.{{ .Type.Name }}.Repr"}.Reasonf("expecting a stringprefix union but found no delimiter in the value")
+				return schema.ErrUnmatchable{TypeName:"{{ .PkgName }}.{{ .Type.Name }}.Repr"}.Reasonf("expecting a stringprefix union but found no delimiter in the value")
 			}
 			switch ss[0] {
 			{{- range $i, $member := .Type.Members }}
@@ -162,20 +162,20 @@ func (g unionReprStringprefixReprBuilderGenerator) EmitNodeBuilderMethods(w io.W
 				{{- if (eq (dot.AdjCfg.UnionMemlayout dot.Type) "embedAll") }}
 				w.tag = {{ add $i 1 }}
 				if err := (_{{ $member | TypeSymbol }}__ReprPrototype{}).fromString(&w.x{{ add $i 1 }}, ss[1]); err != nil {
-					return ipld.ErrUnmatchable{TypeName:"{{ dot.PkgName }}.{{ dot.Type.Name }}.Repr", Reason: err}
+					return schema.ErrUnmatchable{TypeName:"{{ dot.PkgName }}.{{ dot.Type.Name }}.Repr", Reason: err}
 				}
 				return nil
 				{{- else if (eq (dot.AdjCfg.UnionMemlayout dot.Type) "interface") }}
 				var n2 _{{ $member | TypeSymbol }}
 				if err := (_{{ $member | TypeSymbol }}__ReprPrototype{}).fromString(&n2, ss[1]); err != nil {
-					return ipld.ErrUnmatchable{TypeName:"{{ dot.PkgName }}.{{ dot.Type.Name }}.Repr", Reason: err}
+					return schema.ErrUnmatchable{TypeName:"{{ dot.PkgName }}.{{ dot.Type.Name }}.Repr", Reason: err}
 				}
 				w.x = &n2
 				return nil
 				{{- end}}
 			{{- end}}
 			default:
-				return schema.ErrNoSuchField{Type: nil /*TODO*/, Field: ipld.PathSegmentOfString(ss[0])}
+				return schema.ErrNoSuchField{Type: nil /*TODO*/, Field: datamodel.PathSegmentOfString(ss[0])}
 			}
 		}
 	`, w, g.AdjCfg, g)
@@ -225,7 +225,7 @@ func (g unionReprStringprefixReprBuilderGenerator) EmitNodeAssemblerMethodAssign
 	// 3. is it the right kind to morph into us?  Do so.
 	// TODO:DRY: this is identical to other string-repr-on-non-string-type.
 	doTemplate(`
-		func (na *_{{ .Type | TypeSymbol }}__ReprAssembler) AssignNode(v ipld.Node) error {
+		func (na *_{{ .Type | TypeSymbol }}__ReprAssembler) AssignNode(v datamodel.Node) error {
 			if v.IsNull() {
 				return na.AssignNull()
 			}

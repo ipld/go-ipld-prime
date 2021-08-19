@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	ipld "github.com/ipld/go-ipld-prime"
 	"github.com/ipld/go-ipld-prime/codec/dagjson"
+	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/fluent/qp"
 	"github.com/ipld/go-ipld-prime/node/bindnode"
 	"github.com/ipld/go-ipld-prime/schema"
@@ -83,9 +83,9 @@ func ExamplePrototype_onlySchema() {
 	schemaType := ts.TypeByName("Person")
 	proto := bindnode.Prototype(nil, schemaType)
 
-	node, err := qp.BuildMap(proto, -1, func(ma ipld.MapAssembler) {
+	node, err := qp.BuildMap(proto, -1, func(ma datamodel.MapAssembler) {
 		qp.MapEntry(ma, "Name", qp.String("Michael"))
-		qp.MapEntry(ma, "Friends", qp.List(-1, func(la ipld.ListAssembler) {
+		qp.MapEntry(ma, "Friends", qp.List(-1, func(la datamodel.ListAssembler) {
 			qp.ListEntry(la, qp.String("Sarah"))
 			qp.ListEntry(la, qp.String("Alex"))
 		}))
@@ -127,7 +127,7 @@ func ExamplePrototype_union() {
 
 	proto := bindnode.Prototype((*StringOrInt)(nil), schemaType)
 
-	node, err := qp.BuildMap(proto.Representation(), -1, func(ma ipld.MapAssembler) {
+	node, err := qp.BuildMap(proto.Representation(), -1, func(ma datamodel.MapAssembler) {
 		qp.MapEntry(ma, "hasInt", qp.Int(123))
 	})
 	if err != nil {

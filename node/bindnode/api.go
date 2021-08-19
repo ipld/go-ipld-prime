@@ -1,4 +1,4 @@
-// Package bindnode provides an ipld.Node implementation via Go reflection.
+// Package bindnode provides an datamodel.Node implementation via Go reflection.
 //
 // This package is EXPERIMENTAL; its behavior and API might change as it's still
 // in development.
@@ -7,12 +7,12 @@ package bindnode
 import (
 	"reflect"
 
-	ipld "github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/schema"
 )
 
 // Prototype implements a schema.TypedPrototype given a Go pointer type and an
-// IPLD schema type. Note that the result is also an ipld.NodePrototype.
+// IPLD schema type. Note that the result is also an datamodel.NodePrototype.
 //
 // If both the Go type and schema type are supplied, it is assumed that they are
 // compatible with one another.
@@ -53,7 +53,7 @@ func Prototype(ptrType interface{}, schemaType schema.Type) schema.TypedPrototyp
 }
 
 // Wrap implements a schema.TypedNode given a non-nil pointer to a Go value and an
-// IPLD schema type. Note that the result is also an ipld.Node.
+// IPLD schema type. Note that the result is also an datamodel.Node.
 //
 // Wrap is meant to be used when one already has a Go value with data.
 // As such, ptrVal must not be nil.
@@ -78,11 +78,11 @@ func Wrap(ptrVal interface{}, schemaType schema.Type) schema.TypedNode {
 	return &_node{val: goVal, schemaType: schemaType}
 }
 
-// Unwrap takes an ipld.Node implemented by Prototype or Wrap,
+// Unwrap takes an datamodel.Node implemented by Prototype or Wrap,
 // and returns a pointer to the inner Go value.
 //
 // Unwrap returns nil if the node isn't implemented by this package.
-func Unwrap(node ipld.Node) (ptr interface{}) {
+func Unwrap(node datamodel.Node) (ptr interface{}) {
 	var val reflect.Value
 	switch node := node.(type) {
 	case *_node:

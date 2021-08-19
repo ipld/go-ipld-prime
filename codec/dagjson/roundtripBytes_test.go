@@ -8,14 +8,14 @@ import (
 	. "github.com/warpfork/go-wish"
 
 	"github.com/ipld/go-ipld-prime/fluent"
-	basicnode "github.com/ipld/go-ipld-prime/node/basic"
+	"github.com/ipld/go-ipld-prime/node/basicnode"
 )
 
-var byteNode = fluent.MustBuildMap(basicnode.Prototype__Map{}, 4, func(na fluent.MapAssembler) {
+var byteNode = fluent.MustBuildMap(basicnode.Prototype.Map, 4, func(na fluent.MapAssembler) {
 	na.AssembleEntry("plain").AssignString("olde string")
 	na.AssembleEntry("bytes").AssignBytes([]byte("deadbeef"))
 })
-var byteNodeSorted = fluent.MustBuildMap(basicnode.Prototype__Map{}, 4, func(na fluent.MapAssembler) {
+var byteNodeSorted = fluent.MustBuildMap(basicnode.Prototype.Map, 4, func(na fluent.MapAssembler) {
 	na.AssembleEntry("bytes").AssignBytes([]byte("deadbeef"))
 	na.AssembleEntry("plain").AssignString("olde string")
 })
@@ -30,14 +30,14 @@ func TestRoundtripBytes(t *testing.T) {
 	})
 	t.Run("decoding", func(t *testing.T) {
 		buf := strings.NewReader(byteSerial)
-		nb := basicnode.Prototype__Map{}.NewBuilder()
+		nb := basicnode.Prototype.Map.NewBuilder()
 		err := Decode(nb, buf)
 		Require(t, err, ShouldEqual, nil)
 		Wish(t, nb.Build(), ShouldEqual, byteNodeSorted)
 	})
 }
 
-var encapsulatedNode = fluent.MustBuildMap(basicnode.Prototype__Map{}, 1, func(na fluent.MapAssembler) {
+var encapsulatedNode = fluent.MustBuildMap(basicnode.Prototype.Map, 1, func(na fluent.MapAssembler) {
 	na.AssembleEntry("/").CreateMap(1, func(sa fluent.MapAssembler) {
 		sa.AssembleEntry("bytes").AssignBytes([]byte("deadbeef"))
 	})
@@ -53,7 +53,7 @@ func TestEncapsulatedBytes(t *testing.T) {
 	})
 	t.Run("decoding", func(t *testing.T) {
 		buf := strings.NewReader(encapsulatedSerial)
-		nb := basicnode.Prototype__Map{}.NewBuilder()
+		nb := basicnode.Prototype.Map.NewBuilder()
 		err := Decode(nb, buf)
 		Require(t, err, ShouldEqual, nil)
 		Wish(t, nb.Build(), ShouldEqual, encapsulatedNode)

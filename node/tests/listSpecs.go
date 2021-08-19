@@ -5,12 +5,12 @@ import (
 
 	. "github.com/warpfork/go-wish"
 
-	ipld "github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/fluent"
 	"github.com/ipld/go-ipld-prime/must"
 )
 
-func SpecTestListString(t *testing.T, np ipld.NodePrototype) {
+func SpecTestListString(t *testing.T, np datamodel.NodePrototype) {
 	t.Run("list<string>, 3 entries", func(t *testing.T) {
 		n := fluent.MustBuildList(np, 3, func(la fluent.ListAssembler) {
 			la.AssembleValue().AssignString("one")
@@ -55,7 +55,7 @@ func SpecTestListString(t *testing.T, np ipld.NodePrototype) {
 
 			Wish(t, itr.Done(), ShouldEqual, true)
 			idx, v, err = itr.Next()
-			Wish(t, err, ShouldEqual, ipld.ErrIteratorOverread{})
+			Wish(t, err, ShouldEqual, datamodel.ErrIteratorOverread{})
 			Wish(t, idx, ShouldEqual, int64(-1))
 			Wish(t, v, ShouldEqual, nil)
 		})

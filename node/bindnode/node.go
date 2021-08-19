@@ -4,40 +4,40 @@ import (
 	"fmt"
 	"reflect"
 
-	ipld "github.com/ipld/go-ipld-prime"
-	basicnode "github.com/ipld/go-ipld-prime/node/basic"
+	"github.com/ipld/go-ipld-prime/datamodel"
+	"github.com/ipld/go-ipld-prime/node/basicnode"
 	"github.com/ipld/go-ipld-prime/schema"
 )
 
 // Assert that we implement all the interfaces as expected.
 // Grouped by the interfaces to implement, roughly.
 var (
-	_ ipld.NodePrototype    = (*_prototype)(nil)
-	_ schema.TypedPrototype = (*_prototype)(nil)
-	_ ipld.NodePrototype    = (*_prototypeRepr)(nil)
+	_ datamodel.NodePrototype = (*_prototype)(nil)
+	_ schema.TypedPrototype   = (*_prototype)(nil)
+	_ datamodel.NodePrototype = (*_prototypeRepr)(nil)
 
-	_ ipld.Node        = (*_node)(nil)
+	_ datamodel.Node   = (*_node)(nil)
 	_ schema.TypedNode = (*_node)(nil)
-	_ ipld.Node        = (*_nodeRepr)(nil)
+	_ datamodel.Node   = (*_nodeRepr)(nil)
 
-	_ ipld.NodeBuilder   = (*_builder)(nil)
-	_ ipld.NodeAssembler = (*_assembler)(nil)
-	_ ipld.NodeBuilder   = (*_builderRepr)(nil)
-	_ ipld.NodeAssembler = (*_assemblerRepr)(nil)
+	_ datamodel.NodeBuilder   = (*_builder)(nil)
+	_ datamodel.NodeAssembler = (*_assembler)(nil)
+	_ datamodel.NodeBuilder   = (*_builderRepr)(nil)
+	_ datamodel.NodeAssembler = (*_assemblerRepr)(nil)
 
-	_ ipld.MapAssembler = (*_structAssembler)(nil)
-	_ ipld.MapIterator  = (*_structIterator)(nil)
-	_ ipld.MapAssembler = (*_structAssemblerRepr)(nil)
-	_ ipld.MapIterator  = (*_structIteratorRepr)(nil)
+	_ datamodel.MapAssembler = (*_structAssembler)(nil)
+	_ datamodel.MapIterator  = (*_structIterator)(nil)
+	_ datamodel.MapAssembler = (*_structAssemblerRepr)(nil)
+	_ datamodel.MapIterator  = (*_structIteratorRepr)(nil)
 
-	_ ipld.ListAssembler = (*_listAssembler)(nil)
-	_ ipld.ListIterator  = (*_listIterator)(nil)
-	_ ipld.ListAssembler = (*_listAssemblerRepr)(nil)
+	_ datamodel.ListAssembler = (*_listAssembler)(nil)
+	_ datamodel.ListIterator  = (*_listIterator)(nil)
+	_ datamodel.ListAssembler = (*_listAssemblerRepr)(nil)
 
-	_ ipld.MapAssembler = (*_unionAssembler)(nil)
-	_ ipld.MapIterator  = (*_unionIterator)(nil)
-	_ ipld.MapAssembler = (*_unionAssemblerRepr)(nil)
-	_ ipld.MapIterator  = (*_unionIteratorRepr)(nil)
+	_ datamodel.MapAssembler = (*_unionAssembler)(nil)
+	_ datamodel.MapIterator  = (*_unionIterator)(nil)
+	_ datamodel.MapAssembler = (*_unionAssemblerRepr)(nil)
+	_ datamodel.MapIterator  = (*_unionIteratorRepr)(nil)
 )
 
 type _prototype struct {
@@ -45,7 +45,7 @@ type _prototype struct {
 	goType     reflect.Type // non-pointer
 }
 
-func (w *_prototype) NewBuilder() ipld.NodeBuilder {
+func (w *_prototype) NewBuilder() datamodel.NodeBuilder {
 	return &_builder{_assembler{
 		schemaType: w.schemaType,
 		val:        reflect.New(w.goType).Elem(),
@@ -56,7 +56,7 @@ func (w *_prototype) Type() schema.Type {
 	return w.schemaType
 }
 
-func (w *_prototype) Representation() ipld.NodePrototype {
+func (w *_prototype) Representation() datamodel.NodePrototype {
 	return (*_prototypeRepr)(w)
 }
 
@@ -75,20 +75,20 @@ func (w *_node) Type() schema.Type {
 	return w.schemaType
 }
 
-func (w *_node) Representation() ipld.Node {
+func (w *_node) Representation() datamodel.Node {
 	return (*_nodeRepr)(w)
 }
 
-func (w *_node) Kind() ipld.Kind {
+func (w *_node) Kind() datamodel.Kind {
 	return w.schemaType.TypeKind().ActsLike()
 }
 
-func (w *_node) LookupByString(key string) (ipld.Node, error) {
+func (w *_node) LookupByString(key string) (datamodel.Node, error) {
 	switch typ := w.schemaType.(type) {
 	case *schema.TypeStruct:
 		field := typ.Field(key)
 		if field == nil {
-			return nil, ipld.ErrInvalidKey{
+			return nil, schema.ErrInvalidKey{
 				TypeName: typ.Name().String(),
 				Key:      basicnode.NewString(key),
 			}
@@ -99,13 +99,13 @@ func (w *_node) LookupByString(key string) (ipld.Node, error) {
 		}
 		if field.IsOptional() {
 			if fval.IsNil() {
-				return ipld.Absent, nil
+				return datamodel.Absent, nil
 			}
 			fval = fval.Elem()
 		}
 		if field.IsNullable() {
 			if fval.IsNil() {
-				return ipld.Null, nil
+				return datamodel.Null, nil
 			}
 			fval = fval.Elem()
 		}
@@ -132,7 +132,7 @@ func (w *_node) LookupByString(key string) (ipld.Node, error) {
 		}
 		fval := valuesVal.MapIndex(kval)
 		if !fval.IsValid() { // not found
-			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
+			return nil, datamodel.ErrNotExists{Segment: datamodel.PathSegmentOfString(key)}
 		}
 		// TODO: Error/panic if fval.IsNil() && !typ.ValueIsNullable()?
 		// Otherwise we could have two non-equal Go values (nil map,
@@ -140,7 +140,7 @@ func (w *_node) LookupByString(key string) (ipld.Node, error) {
 		// node when the field is not nullable.
 		if typ.ValueIsNullable() {
 			if fval.IsNil() {
-				return ipld.Null, nil
+				return datamodel.Null, nil
 			}
 			fval = fval.Elem()
 		}
@@ -160,12 +160,12 @@ func (w *_node) LookupByString(key string) (ipld.Node, error) {
 			}
 		}
 		if mtyp == nil { // not found
-			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
+			return nil, datamodel.ErrNotExists{Segment: datamodel.PathSegmentOfString(key)}
 		}
 		// TODO: we could look up the right Go field straight away via idx.
 		haveIdx, mval := unionMember(w.val)
 		if haveIdx != idx { // mismatching type
-			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
+			return nil, datamodel.ErrNotExists{Segment: datamodel.PathSegmentOfString(key)}
 		}
 		node := &_node{
 			schemaType: mtyp,
@@ -173,7 +173,7 @@ func (w *_node) LookupByString(key string) (ipld.Node, error) {
 		}
 		return node, nil
 	}
-	return nil, ipld.ErrWrongKind{
+	return nil, datamodel.ErrWrongKind{
 		TypeName:   w.schemaType.Name().String(),
 		MethodName: "LookupByString",
 		// TODO
@@ -202,69 +202,69 @@ func unionSetMember(val reflect.Value, memberIdx int, memberPtr reflect.Value) {
 	val.Field(memberIdx).Set(memberPtr)
 }
 
-func (w *_node) LookupByIndex(idx int64) (ipld.Node, error) {
+func (w *_node) LookupByIndex(idx int64) (datamodel.Node, error) {
 	switch typ := w.schemaType.(type) {
 	case *schema.TypeList:
 		if idx < 0 || int(idx) >= w.val.Len() {
-			return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfInt(idx)}
+			return nil, datamodel.ErrNotExists{Segment: datamodel.PathSegmentOfInt(idx)}
 		}
 		val := w.val.Index(int(idx))
 		if typ.ValueIsNullable() {
 			if val.IsNil() {
-				return ipld.Null, nil
+				return datamodel.Null, nil
 			}
 			val = val.Elem()
 		}
 		return &_node{schemaType: typ.ValueType(), val: val}, nil
 	}
-	return nil, ipld.ErrWrongKind{
+	return nil, datamodel.ErrWrongKind{
 		TypeName:   w.schemaType.Name().String(),
 		MethodName: "LookupByIndex",
 		// TODO
 	}
 }
 
-func (w *_node) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
+func (w *_node) LookupBySegment(seg datamodel.PathSegment) (datamodel.Node, error) {
 	switch w.Kind() {
-	case ipld.Kind_Map:
+	case datamodel.Kind_Map:
 		return w.LookupByString(seg.String())
-	case ipld.Kind_List:
+	case datamodel.Kind_List:
 		idx, err := seg.Index()
 		if err != nil {
 			return nil, err
 		}
 		return w.LookupByIndex(idx)
 	}
-	return nil, ipld.ErrWrongKind{
+	return nil, datamodel.ErrWrongKind{
 		TypeName:   w.schemaType.Name().String(),
 		MethodName: "LookupBySegment",
 		// TODO
 	}
 }
 
-func (w *_node) LookupByNode(key ipld.Node) (ipld.Node, error) {
+func (w *_node) LookupByNode(key datamodel.Node) (datamodel.Node, error) {
 	switch w.Kind() {
-	case ipld.Kind_Map:
+	case datamodel.Kind_Map:
 		s, err := key.AsString()
 		if err != nil {
 			return nil, err
 		}
 		return w.LookupByString(s)
-	case ipld.Kind_List:
+	case datamodel.Kind_List:
 		i, err := key.AsInt()
 		if err != nil {
 			return nil, err
 		}
 		return w.LookupByIndex(i)
 	}
-	return nil, ipld.ErrWrongKind{
+	return nil, datamodel.ErrWrongKind{
 		TypeName:   w.schemaType.Name().String(),
 		MethodName: "LookupByNode",
 		// TODO
 	}
 }
 
-func (w *_node) MapIterator() ipld.MapIterator {
+func (w *_node) MapIterator() datamodel.MapIterator {
 	switch typ := w.schemaType.(type) {
 	case *schema.TypeStruct:
 		return &_structIterator{
@@ -288,7 +288,7 @@ func (w *_node) MapIterator() ipld.MapIterator {
 	return nil
 }
 
-func (w *_node) ListIterator() ipld.ListIterator {
+func (w *_node) ListIterator() datamodel.ListIterator {
 	val := w.val
 	if val.Type().Kind() == reflect.Ptr {
 		if !val.IsNil() {
@@ -304,7 +304,7 @@ func (w *_node) ListIterator() ipld.ListIterator {
 
 func (w *_node) Length() int64 {
 	switch w.Kind() {
-	case ipld.Kind_Map:
+	case datamodel.Kind_Map:
 		switch typ := w.schemaType.(type) {
 		case *schema.TypeStruct:
 			return int64(len(typ.Fields()))
@@ -312,7 +312,7 @@ func (w *_node) Length() int64 {
 			return 1
 		}
 		return int64(w.val.FieldByName("Keys").Len())
-	case ipld.Kind_List:
+	case datamodel.Kind_List:
 		return int64(w.val.Len())
 	}
 	return -1
@@ -329,8 +329,8 @@ func (w *_node) IsNull() bool {
 }
 
 func (w *_node) AsBool() (bool, error) {
-	if w.Kind() != ipld.Kind_Bool {
-		return false, ipld.ErrWrongKind{
+	if w.Kind() != datamodel.Kind_Bool {
+		return false, datamodel.ErrWrongKind{
 			TypeName:   w.schemaType.Name().String(),
 			MethodName: "AsBool",
 			// TODO
@@ -340,8 +340,8 @@ func (w *_node) AsBool() (bool, error) {
 }
 
 func (w *_node) AsInt() (int64, error) {
-	if w.Kind() != ipld.Kind_Int {
-		return 0, ipld.ErrWrongKind{
+	if w.Kind() != datamodel.Kind_Int {
+		return 0, datamodel.ErrWrongKind{
 			TypeName:   w.schemaType.Name().String(),
 			MethodName: "AsInt",
 			// TODO
@@ -351,8 +351,8 @@ func (w *_node) AsInt() (int64, error) {
 }
 
 func (w *_node) AsFloat() (float64, error) {
-	if w.Kind() != ipld.Kind_Float {
-		return 0, ipld.ErrWrongKind{
+	if w.Kind() != datamodel.Kind_Float {
+		return 0, datamodel.ErrWrongKind{
 			TypeName:   w.schemaType.Name().String(),
 			MethodName: "AsFloat",
 			// TODO
@@ -362,8 +362,8 @@ func (w *_node) AsFloat() (float64, error) {
 }
 
 func (w *_node) AsString() (string, error) {
-	if w.Kind() != ipld.Kind_String {
-		return "", ipld.ErrWrongKind{
+	if w.Kind() != datamodel.Kind_String {
+		return "", datamodel.ErrWrongKind{
 			TypeName:   w.schemaType.Name().String(),
 			MethodName: "AsString",
 			// TODO
@@ -373,8 +373,8 @@ func (w *_node) AsString() (string, error) {
 }
 
 func (w *_node) AsBytes() ([]byte, error) {
-	if w.Kind() != ipld.Kind_Bytes {
-		return nil, ipld.ErrWrongKind{
+	if w.Kind() != datamodel.Kind_Bytes {
+		return nil, datamodel.ErrWrongKind{
 			TypeName:   w.schemaType.Name().String(),
 			MethodName: "AsBytes",
 			// TODO
@@ -383,19 +383,19 @@ func (w *_node) AsBytes() ([]byte, error) {
 	return w.val.Bytes(), nil
 }
 
-func (w *_node) AsLink() (ipld.Link, error) {
-	if w.Kind() != ipld.Kind_Link {
-		return nil, ipld.ErrWrongKind{
+func (w *_node) AsLink() (datamodel.Link, error) {
+	if w.Kind() != datamodel.Kind_Link {
+		return nil, datamodel.ErrWrongKind{
 			TypeName:   w.schemaType.Name().String(),
 			MethodName: "AsLink",
 			// TODO
 		}
 	}
-	link, _ := w.val.Interface().(ipld.Link)
+	link, _ := w.val.Interface().(datamodel.Link)
 	return link, nil
 }
 
-func (w *_node) Prototype() ipld.NodePrototype {
+func (w *_node) Prototype() datamodel.NodePrototype {
 	panic("TODO: Prototype")
 }
 
@@ -403,7 +403,7 @@ type _builder struct {
 	_assembler
 }
 
-func (w *_builder) Build() ipld.Node {
+func (w *_builder) Build() datamodel.Node {
 	// TODO: should we panic if no Assign call was made, just like codegen?
 	return &_node{schemaType: w.schemaType, val: w.val}
 }
@@ -430,15 +430,15 @@ func (w *_assembler) nonPtrVal() reflect.Value {
 	return val
 }
 
-func (w *_assembler) kind() ipld.Kind {
+func (w *_assembler) kind() datamodel.Kind {
 	return w.schemaType.TypeKind().ActsLike()
 }
 
-func (w *_assembler) Representation() ipld.NodeAssembler {
+func (w *_assembler) Representation() datamodel.NodeAssembler {
 	return (*_assemblerRepr)(w)
 }
 
-func (w *_assembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
+func (w *_assembler) BeginMap(sizeHint int64) (datamodel.MapAssembler, error) {
 	switch typ := w.schemaType.(type) {
 	case *schema.TypeStruct:
 		val := w.nonPtrVal()
@@ -470,14 +470,14 @@ func (w *_assembler) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
 			finish:     w.finish,
 		}, nil
 	}
-	return nil, ipld.ErrWrongKind{
+	return nil, datamodel.ErrWrongKind{
 		TypeName:   w.schemaType.Name().String(),
 		MethodName: "BeginMap",
 		// TODO
 	}
 }
 
-func (w *_assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
+func (w *_assembler) BeginList(sizeHint int64) (datamodel.ListAssembler, error) {
 	switch typ := w.schemaType.(type) {
 	case *schema.TypeList:
 		val := w.nonPtrVal()
@@ -487,7 +487,7 @@ func (w *_assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
 			finish:     w.finish,
 		}, nil
 	}
-	return nil, ipld.ErrWrongKind{
+	return nil, datamodel.ErrWrongKind{
 		TypeName:   w.schemaType.Name().String(),
 		MethodName: "BeginList",
 		// TODO
@@ -496,7 +496,7 @@ func (w *_assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
 
 func (w *_assembler) AssignNull() error {
 	if !w.nullable {
-		return ipld.ErrWrongKind{
+		return datamodel.ErrWrongKind{
 			TypeName:   w.schemaType.Name().String(),
 			MethodName: "AssignNull",
 			// TODO
@@ -512,11 +512,11 @@ func (w *_assembler) AssignNull() error {
 }
 
 func (w *_assembler) AssignBool(b bool) error {
-	if w.kind() != ipld.Kind_Bool {
-		return ipld.ErrWrongKind{
+	if w.kind() != datamodel.Kind_Bool {
+		return datamodel.ErrWrongKind{
 			TypeName:        w.schemaType.Name().String(),
 			MethodName:      "AssignBool",
-			AppropriateKind: ipld.KindSet{ipld.Kind_Bool},
+			AppropriateKind: datamodel.KindSet{datamodel.Kind_Bool},
 			ActualKind:      w.kind(),
 		}
 	}
@@ -530,11 +530,11 @@ func (w *_assembler) AssignBool(b bool) error {
 }
 
 func (w *_assembler) AssignInt(i int64) error {
-	if w.kind() != ipld.Kind_Int {
-		return ipld.ErrWrongKind{
+	if w.kind() != datamodel.Kind_Int {
+		return datamodel.ErrWrongKind{
 			TypeName:        w.schemaType.Name().String(),
 			MethodName:      "AssignInt",
-			AppropriateKind: ipld.KindSet{ipld.Kind_Int},
+			AppropriateKind: datamodel.KindSet{datamodel.Kind_Int},
 			ActualKind:      w.kind(),
 		}
 	}
@@ -548,11 +548,11 @@ func (w *_assembler) AssignInt(i int64) error {
 }
 
 func (w *_assembler) AssignFloat(f float64) error {
-	if w.kind() != ipld.Kind_Float {
-		return ipld.ErrWrongKind{
+	if w.kind() != datamodel.Kind_Float {
+		return datamodel.ErrWrongKind{
 			TypeName:        w.schemaType.Name().String(),
 			MethodName:      "AssignFloat",
-			AppropriateKind: ipld.KindSet{ipld.Kind_Float},
+			AppropriateKind: datamodel.KindSet{datamodel.Kind_Float},
 			ActualKind:      w.kind(),
 		}
 	}
@@ -566,11 +566,11 @@ func (w *_assembler) AssignFloat(f float64) error {
 }
 
 func (w *_assembler) AssignString(s string) error {
-	if w.kind() != ipld.Kind_String {
-		return ipld.ErrWrongKind{
+	if w.kind() != datamodel.Kind_String {
+		return datamodel.ErrWrongKind{
 			TypeName:        w.schemaType.Name().String(),
 			MethodName:      "AssignString",
-			AppropriateKind: ipld.KindSet{ipld.Kind_String},
+			AppropriateKind: datamodel.KindSet{datamodel.Kind_String},
 			ActualKind:      w.kind(),
 		}
 	}
@@ -584,11 +584,11 @@ func (w *_assembler) AssignString(s string) error {
 }
 
 func (w *_assembler) AssignBytes(p []byte) error {
-	if w.kind() != ipld.Kind_Bytes {
-		return ipld.ErrWrongKind{
+	if w.kind() != datamodel.Kind_Bytes {
+		return datamodel.ErrWrongKind{
 			TypeName:        w.schemaType.Name().String(),
 			MethodName:      "AssignBytes",
-			AppropriateKind: ipld.KindSet{ipld.Kind_Bytes},
+			AppropriateKind: datamodel.KindSet{datamodel.Kind_Bytes},
 			ActualKind:      w.kind(),
 		}
 	}
@@ -596,10 +596,10 @@ func (w *_assembler) AssignBytes(p []byte) error {
 	return nil
 }
 
-func (w *_assembler) AssignLink(link ipld.Link) error {
+func (w *_assembler) AssignLink(link datamodel.Link) error {
 	newVal := reflect.ValueOf(link)
 	if !newVal.Type().AssignableTo(w.val.Type()) {
-		return ipld.ErrWrongKind{
+		return datamodel.ErrWrongKind{
 			TypeName:   w.schemaType.Name().String(),
 			MethodName: "AssignLink",
 			// TODO
@@ -614,7 +614,7 @@ func (w *_assembler) AssignLink(link ipld.Link) error {
 	return nil
 }
 
-func (w *_assembler) AssignNode(node ipld.Node) error {
+func (w *_assembler) AssignNode(node datamodel.Node) error {
 	// TODO: does this ever trigger?
 	// newVal := reflect.ValueOf(node)
 	// if newVal.Type().AssignableTo(w.val.Type()) {
@@ -622,10 +622,10 @@ func (w *_assembler) AssignNode(node ipld.Node) error {
 	// 	return nil
 	// }
 	switch node.Kind() {
-	case ipld.Kind_Map:
+	case datamodel.Kind_Map:
 		itr := node.MapIterator()
 		// TODO: consider reusing this code from elsewhere,
-		// via something like ipld.BlindCopyMap.
+		// via something like datamodel.BlindCopyMap.
 		am, err := w.BeginMap(-1) // TODO: length?
 		if err != nil {
 			return err
@@ -643,7 +643,7 @@ func (w *_assembler) AssignNode(node ipld.Node) error {
 			}
 		}
 		return am.Finish()
-	case ipld.Kind_List:
+	case datamodel.Kind_List:
 		itr := node.ListIterator()
 		am, err := w.BeginList(-1) // TODO: length?
 		if err != nil {
@@ -660,50 +660,50 @@ func (w *_assembler) AssignNode(node ipld.Node) error {
 		}
 		return am.Finish()
 
-	case ipld.Kind_Bool:
+	case datamodel.Kind_Bool:
 		b, err := node.AsBool()
 		if err != nil {
 			return err
 		}
 		return w.AssignBool(b)
-	case ipld.Kind_Int:
+	case datamodel.Kind_Int:
 		i, err := node.AsInt()
 		if err != nil {
 			return err
 		}
 		return w.AssignInt(i)
-	case ipld.Kind_Float:
+	case datamodel.Kind_Float:
 		f, err := node.AsFloat()
 		if err != nil {
 			return err
 		}
 		return w.AssignFloat(f)
-	case ipld.Kind_String:
+	case datamodel.Kind_String:
 		s, err := node.AsString()
 		if err != nil {
 			return err
 		}
 		return w.AssignString(s)
-	case ipld.Kind_Bytes:
+	case datamodel.Kind_Bytes:
 		p, err := node.AsBytes()
 		if err != nil {
 			return err
 		}
 		return w.AssignBytes(p)
-	case ipld.Kind_Link:
+	case datamodel.Kind_Link:
 		l, err := node.AsLink()
 		if err != nil {
 			return err
 		}
 		return w.AssignLink(l)
-	case ipld.Kind_Null:
+	case datamodel.Kind_Null:
 		return w.AssignNull()
 	}
 	// fmt.Println(w.val.Type(), reflect.TypeOf(node))
 	panic(fmt.Sprintf("TODO: %v %v", w.val.Type(), node.Kind()))
 }
 
-func (w *_assembler) Prototype() ipld.NodePrototype {
+func (w *_assembler) Prototype() datamodel.NodePrototype {
 	panic("TODO: Assembler.Prototype")
 }
 
@@ -728,7 +728,7 @@ type _structAssembler struct {
 	nextIndex int // only used by repr.go
 }
 
-func (w *_structAssembler) AssembleKey() ipld.NodeAssembler {
+func (w *_structAssembler) AssembleKey() datamodel.NodeAssembler {
 	w.curKey = _assembler{
 		schemaType: schemaTypeString,
 		val:        reflect.New(goTypeString).Elem(),
@@ -736,13 +736,13 @@ func (w *_structAssembler) AssembleKey() ipld.NodeAssembler {
 	return &w.curKey
 }
 
-func (w *_structAssembler) AssembleValue() ipld.NodeAssembler {
+func (w *_structAssembler) AssembleValue() datamodel.NodeAssembler {
 	// TODO: optimize this to do one lookup by name
 	name := w.curKey.val.String()
 	field := w.schemaType.Field(name)
 	if field == nil {
 		panic(name)
-		// return nil, ipld.ErrInvalidKey{
+		// return nil, datamodel.ErrInvalidKey{
 		// 	TypeName: w.schemaType.Name().String(),
 		// 	Key:      basicnode.NewString(name),
 		// }
@@ -769,7 +769,7 @@ func (w *_structAssembler) AssembleValue() ipld.NodeAssembler {
 	}
 }
 
-func (w *_structAssembler) AssembleEntry(k string) (ipld.NodeAssembler, error) {
+func (w *_structAssembler) AssembleEntry(k string) (datamodel.NodeAssembler, error) {
 	if err := w.AssembleKey().AssignString(k); err != nil {
 		return nil, err
 	}
@@ -786,7 +786,7 @@ func (w *_structAssembler) Finish() error {
 		}
 	}
 	if len(missing) > 0 {
-		return ipld.ErrMissingRequiredField{Missing: missing}
+		return schema.ErrMissingRequiredField{Missing: missing}
 	}
 	if w.finish != nil {
 		if err := w.finish(); err != nil {
@@ -796,13 +796,13 @@ func (w *_structAssembler) Finish() error {
 	return nil
 }
 
-func (w *_structAssembler) KeyPrototype() ipld.NodePrototype {
+func (w *_structAssembler) KeyPrototype() datamodel.NodePrototype {
 	// TODO: if the user provided their own schema with their own typesystem,
 	// the schemaTypeString here may be using the wrong typesystem.
 	return &_prototype{schemaType: schemaTypeString, goType: goTypeString}
 }
 
-func (w *_structAssembler) ValuePrototype(k string) ipld.NodePrototype {
+func (w *_structAssembler) ValuePrototype(k string) datamodel.NodePrototype {
 	panic("TODO: struct ValuePrototype")
 }
 
@@ -819,7 +819,7 @@ type _mapAssembler struct {
 	nextIndex int // only used by repr.go
 }
 
-func (w *_mapAssembler) AssembleKey() ipld.NodeAssembler {
+func (w *_mapAssembler) AssembleKey() datamodel.NodeAssembler {
 	w.curKey = _assembler{
 		schemaType: w.schemaType.KeyType(),
 		val:        reflect.New(w.valuesVal.Type().Key()).Elem(),
@@ -827,7 +827,7 @@ func (w *_mapAssembler) AssembleKey() ipld.NodeAssembler {
 	return &w.curKey
 }
 
-func (w *_mapAssembler) AssembleValue() ipld.NodeAssembler {
+func (w *_mapAssembler) AssembleValue() datamodel.NodeAssembler {
 	kval := w.curKey.val
 	val := reflect.New(w.valuesVal.Type().Elem()).Elem()
 	finish := func() error {
@@ -847,7 +847,7 @@ func (w *_mapAssembler) AssembleValue() ipld.NodeAssembler {
 	}
 }
 
-func (w *_mapAssembler) AssembleEntry(k string) (ipld.NodeAssembler, error) {
+func (w *_mapAssembler) AssembleEntry(k string) (datamodel.NodeAssembler, error) {
 	if err := w.AssembleKey().AssignString(k); err != nil {
 		return nil, err
 	}
@@ -864,11 +864,11 @@ func (w *_mapAssembler) Finish() error {
 	return nil
 }
 
-func (w *_mapAssembler) KeyPrototype() ipld.NodePrototype {
+func (w *_mapAssembler) KeyPrototype() datamodel.NodePrototype {
 	return &_prototype{schemaType: w.schemaType.KeyType(), goType: w.valuesVal.Type().Key()}
 }
 
-func (w *_mapAssembler) ValuePrototype(k string) ipld.NodePrototype {
+func (w *_mapAssembler) ValuePrototype(k string) datamodel.NodePrototype {
 	panic("TODO: struct ValuePrototype")
 }
 
@@ -878,7 +878,7 @@ type _listAssembler struct {
 	finish     func() error
 }
 
-func (w *_listAssembler) AssembleValue() ipld.NodeAssembler {
+func (w *_listAssembler) AssembleValue() datamodel.NodeAssembler {
 	goType := w.val.Type().Elem()
 	// TODO: use a finish func to append
 	w.val.Set(reflect.Append(w.val, reflect.New(goType).Elem()))
@@ -898,7 +898,7 @@ func (w *_listAssembler) Finish() error {
 	return nil
 }
 
-func (w *_listAssembler) ValuePrototype(idx int64) ipld.NodePrototype {
+func (w *_listAssembler) ValuePrototype(idx int64) datamodel.NodePrototype {
 	panic("TODO: list ValuePrototype")
 }
 
@@ -914,7 +914,7 @@ type _unionAssembler struct {
 	nextIndex int // only used by repr.go
 }
 
-func (w *_unionAssembler) AssembleKey() ipld.NodeAssembler {
+func (w *_unionAssembler) AssembleKey() datamodel.NodeAssembler {
 	w.curKey = _assembler{
 		schemaType: schemaTypeString,
 		val:        reflect.New(goTypeString).Elem(),
@@ -922,7 +922,7 @@ func (w *_unionAssembler) AssembleKey() ipld.NodeAssembler {
 	return &w.curKey
 }
 
-func (w *_unionAssembler) AssembleValue() ipld.NodeAssembler {
+func (w *_unionAssembler) AssembleValue() datamodel.NodeAssembler {
 	name := w.curKey.val.String()
 	var idx int
 	var mtyp schema.Type
@@ -935,7 +935,7 @@ func (w *_unionAssembler) AssembleValue() ipld.NodeAssembler {
 	}
 	if mtyp == nil {
 		panic("TODO: missing member")
-		// return nil, ipld.ErrInvalidKey{
+		// return nil, datamodel.ErrInvalidKey{
 		// 	TypeName: w.schemaType.Name().String(),
 		// 	Key:      basicnode.NewString(name),
 		// }
@@ -955,7 +955,7 @@ func (w *_unionAssembler) AssembleValue() ipld.NodeAssembler {
 	}
 }
 
-func (w *_unionAssembler) AssembleEntry(k string) (ipld.NodeAssembler, error) {
+func (w *_unionAssembler) AssembleEntry(k string) (datamodel.NodeAssembler, error) {
 	if err := w.AssembleKey().AssignString(k); err != nil {
 		return nil, err
 	}
@@ -972,11 +972,11 @@ func (w *_unionAssembler) Finish() error {
 	return nil
 }
 
-func (w *_unionAssembler) KeyPrototype() ipld.NodePrototype {
+func (w *_unionAssembler) KeyPrototype() datamodel.NodePrototype {
 	return &_prototype{schemaType: schemaTypeString, goType: goTypeString}
 }
 
-func (w *_unionAssembler) ValuePrototype(k string) ipld.NodePrototype {
+func (w *_unionAssembler) ValuePrototype(k string) datamodel.NodePrototype {
 	panic("TODO: struct ValuePrototype")
 }
 
@@ -991,9 +991,9 @@ type _structIterator struct {
 	reprEnd int
 }
 
-func (w *_structIterator) Next() (key, value ipld.Node, _ error) {
+func (w *_structIterator) Next() (key, value datamodel.Node, _ error) {
 	if w.Done() {
-		return nil, nil, ipld.ErrIteratorOverread{}
+		return nil, nil, datamodel.ErrIteratorOverread{}
 	}
 	field := w.fields[w.nextIndex]
 	val := w.val.Field(w.nextIndex)
@@ -1001,13 +1001,13 @@ func (w *_structIterator) Next() (key, value ipld.Node, _ error) {
 	key = basicnode.NewString(field.Name())
 	if field.IsOptional() {
 		if val.IsNil() {
-			return key, ipld.Absent, nil
+			return key, datamodel.Absent, nil
 		}
 		val = val.Elem()
 	}
 	if field.IsNullable() {
 		if val.IsNil() {
-			return key, ipld.Null, nil
+			return key, datamodel.Null, nil
 		}
 		val = val.Elem()
 	}
@@ -1029,9 +1029,9 @@ type _mapIterator struct {
 	nextIndex  int
 }
 
-func (w *_mapIterator) Next() (key, value ipld.Node, _ error) {
+func (w *_mapIterator) Next() (key, value datamodel.Node, _ error) {
 	if w.Done() {
-		return nil, nil, ipld.ErrIteratorOverread{}
+		return nil, nil, datamodel.ErrIteratorOverread{}
 	}
 	goKey := w.keysVal.Index(w.nextIndex)
 	val := w.valuesVal.MapIndex(goKey)
@@ -1043,7 +1043,7 @@ func (w *_mapIterator) Next() (key, value ipld.Node, _ error) {
 	}
 	if w.schemaType.ValueIsNullable() {
 		if val.IsNil() {
-			return key, ipld.Null, nil
+			return key, datamodel.Null, nil
 		}
 		val = val.Elem()
 	}
@@ -1064,16 +1064,16 @@ type _listIterator struct {
 	nextIndex  int
 }
 
-func (w *_listIterator) Next() (index int64, value ipld.Node, _ error) {
+func (w *_listIterator) Next() (index int64, value datamodel.Node, _ error) {
 	if w.Done() {
-		return 0, nil, ipld.ErrIteratorOverread{}
+		return 0, nil, datamodel.ErrIteratorOverread{}
 	}
 	idx := int64(w.nextIndex)
 	val := w.val.Index(w.nextIndex)
 	w.nextIndex++
 	if w.schemaType.ValueIsNullable() {
 		if val.IsNil() {
-			return idx, ipld.Null, nil
+			return idx, datamodel.Null, nil
 		}
 		val = val.Elem()
 	}
@@ -1093,9 +1093,9 @@ type _unionIterator struct {
 	done bool
 }
 
-func (w *_unionIterator) Next() (key, value ipld.Node, _ error) {
+func (w *_unionIterator) Next() (key, value datamodel.Node, _ error) {
 	if w.Done() {
-		return nil, nil, ipld.ErrIteratorOverread{}
+		return nil, nil, datamodel.ErrIteratorOverread{}
 	}
 	w.done = true
 
@@ -1117,9 +1117,9 @@ func (w *_unionIterator) Done() bool {
 // TODO: consider making our own Node interface, like:
 //
 // type WrappedNode interface {
-//     ipld.Node
+//     datamodel.Node
 //     Unwrap() (ptr interface)
 // }
 //
-// Pros: API is easier to understand, harder to mix up with other ipld.Nodes.
-// Cons: One usually only has an ipld.Node, and type assertions can be weird.
+// Pros: API is easier to understand, harder to mix up with other datamodel.Nodes.
+// Cons: One usually only has an datamodel.Node, and type assertions can be weird.

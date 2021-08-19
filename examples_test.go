@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/ipld/go-ipld-prime/codec/dagjson"
-	basicnode "github.com/ipld/go-ipld-prime/node/basic"
+	"github.com/ipld/go-ipld-prime/node/basicnode"
 )
 
 // Example_createDataAndMarshal shows how you can feed data into a NodeBuilder,

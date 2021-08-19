@@ -1,15 +1,15 @@
 package builder
 
 import (
-	ipld "github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/fluent"
-	selector "github.com/ipld/go-ipld-prime/traversal/selector"
+	"github.com/ipld/go-ipld-prime/traversal/selector"
 )
 
 // SelectorSpec is a specification for a selector that can build
-// a selector ipld.Node or an actual parsed Selector
+// a selector datamodel.Node or an actual parsed Selector
 type SelectorSpec interface {
-	Node() ipld.Node
+	Node() datamodel.Node
 	Selector() (selector.Selector, error)
 }
 
@@ -17,7 +17,7 @@ type SelectorSpec interface {
 // quickly.
 //
 // It serves two purposes:
-// 1. Save the user of go-ipld-prime time and mental overhead with an easy
+// 1. Save the user of go-ipld time and mental overhead with an easy
 // interface for making selector nodes in much less code without having to remember
 // the selector sigils
 // 2. Provide a level of protection from selector schema changes, at least in terms
@@ -45,14 +45,14 @@ type ExploreFieldsSpecBuilder interface {
 }
 
 type selectorSpecBuilder struct {
-	np ipld.NodePrototype
+	np datamodel.NodePrototype
 }
 
 type selectorSpec struct {
-	n ipld.Node
+	n datamodel.Node
 }
 
-func (ss selectorSpec) Node() ipld.Node {
+func (ss selectorSpec) Node() datamodel.Node {
 	return ss.n
 }
 
@@ -61,8 +61,8 @@ func (ss selectorSpec) Selector() (selector.Selector, error) {
 }
 
 // NewSelectorSpecBuilder creates a SelectorSpecBuilder which will store
-// data in the format determined by the given ipld.NodePrototype.
-func NewSelectorSpecBuilder(np ipld.NodePrototype) SelectorSpecBuilder {
+// data in the format determined by the given datamodel.NodePrototype.
+func NewSelectorSpecBuilder(np datamodel.NodePrototype) SelectorSpecBuilder {
 	return &selectorSpecBuilder{np}
 }
 

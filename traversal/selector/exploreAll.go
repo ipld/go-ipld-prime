@@ -3,7 +3,7 @@ package selector
 import (
 	"fmt"
 
-	ipld "github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/datamodel"
 )
 
 // ExploreAll is similar to a `*` -- it traverses all elements of an array,
@@ -13,23 +13,23 @@ type ExploreAll struct {
 }
 
 // Interests for ExploreAll is nil (meaning traverse everything)
-func (s ExploreAll) Interests() []ipld.PathSegment {
+func (s ExploreAll) Interests() []datamodel.PathSegment {
 	return nil
 }
 
 // Explore returns the node's selector for all fields
-func (s ExploreAll) Explore(n ipld.Node, p ipld.PathSegment) (Selector, error) {
+func (s ExploreAll) Explore(n datamodel.Node, p datamodel.PathSegment) (Selector, error) {
 	return s.next, nil
 }
 
 // Decide always returns false because this is not a matcher
-func (s ExploreAll) Decide(n ipld.Node) bool {
+func (s ExploreAll) Decide(n datamodel.Node) bool {
 	return false
 }
 
 // ParseExploreAll assembles a Selector from a ExploreAll selector node
-func (pc ParseContext) ParseExploreAll(n ipld.Node) (Selector, error) {
-	if n.Kind() != ipld.Kind_Map {
+func (pc ParseContext) ParseExploreAll(n datamodel.Node) (Selector, error) {
+	if n.Kind() != datamodel.Kind_Map {
 		return nil, fmt.Errorf("selector spec parse rejected: selector body must be a map")
 	}
 	next, err := n.LookupByString(SelectorKey_Next)

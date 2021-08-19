@@ -3,7 +3,8 @@ package traversal
 import (
 	"context"
 
-	ipld "github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/datamodel"
+	"github.com/ipld/go-ipld-prime/linking"
 )
 
 // This file defines interfaces for things users provide,
@@ -11,13 +12,13 @@ import (
 //--------------------------------------------------------
 
 // VisitFn is a read-only visitor.
-type VisitFn func(Progress, ipld.Node) error
+type VisitFn func(Progress, datamodel.Node) error
 
 // TransformFn is like a visitor that can also return a new Node to replace the visited one.
-type TransformFn func(Progress, ipld.Node) (ipld.Node, error)
+type TransformFn func(Progress, datamodel.Node) (datamodel.Node, error)
 
 // AdvVisitFn is like VisitFn, but for use with AdvTraversal: it gets additional arguments describing *why* this node is visited.
-type AdvVisitFn func(Progress, ipld.Node, VisitReason) error
+type AdvVisitFn func(Progress, datamodel.Node, VisitReason) error
 
 // VisitReason provides additional information to traversals using AdvVisitFn.
 type VisitReason byte
@@ -30,16 +31,16 @@ const (
 
 type Progress struct {
 	Cfg       *Config
-	Path      ipld.Path // Path is how we reached the current point in the traversal.
-	LastBlock struct {  // LastBlock stores the Path and Link of the last block edge we had to load.  (It will always be zero in traversals with no linkloader.)
-		Path ipld.Path
-		Link ipld.Link
+	Path      datamodel.Path // Path is how we reached the current point in the traversal.
+	LastBlock struct {       // LastBlock stores the Path and Link of the last block edge we had to load.  (It will always be zero in traversals with no linkloader.)
+		Path datamodel.Path
+		Link datamodel.Link
 	}
 }
 
 type Config struct {
 	Ctx                            context.Context                // Context carried through a traversal.  Optional; use it if you need cancellation.
-	LinkSystem                     ipld.LinkSystem                // LinkSystem used for automatic link loading, and also any storing if mutation features (e.g. traversal.Transform) are used.
+	LinkSystem                     linking.LinkSystem             // LinkSystem used for automatic link loading, and also any storing if mutation features (e.g. traversal.Transform) are used.
 	LinkTargetNodePrototypeChooser LinkTargetNodePrototypeChooser // Chooser for Node implementations to produce during automatic link traversal.
 }
 
@@ -48,11 +49,11 @@ type Config struct {
 //
 // A LinkTargetNodePrototypeChooser can be used in a traversal.Config to be clear about
 // what kind of Node implementation to use when loading a Link.
-// In a simple example, it could constantly return a `basicnode.Prototype__Any{}`.
+// In a simple example, it could constantly return a `basicnode.Prototype.Any`.
 // In a more complex example, a program using `bind` over native Go types
 // could decide what kind of native type is expected, and return a
 // `bind.NodeBuilder` for that specific concrete native type.
-type LinkTargetNodePrototypeChooser func(ipld.Link, ipld.LinkContext) (ipld.NodePrototype, error)
+type LinkTargetNodePrototypeChooser func(datamodel.Link, linking.LinkContext) (datamodel.NodePrototype, error)
 
 // SkipMe is a signalling "error" which can be used to tell traverse to skip some data.
 //

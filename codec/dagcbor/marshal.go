@@ -9,17 +9,17 @@ import (
 	"github.com/polydawn/refmt/shared"
 	"github.com/polydawn/refmt/tok"
 
-	ipld "github.com/ipld/go-ipld-prime"
 	"github.com/ipld/go-ipld-prime/codec"
+	"github.com/ipld/go-ipld-prime/datamodel"
 	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
 )
 
 // This file should be identical to the general feature in the parent package,
-// except for the `case ipld.Kind_Link` block,
+// except for the `case datamodel.Kind_Link` block,
 // which is dag-cbor's special sauce for schemafree links.
 
 // EncodeOptions can be used to customize the behavior of an encoding function.
-// The Encode method on this struct fits the ipld.Encoder function interface.
+// The Encode method on this struct fits the codec.Encoder function interface.
 type EncodeOptions struct {
 	// If true, allow encoding of Link nodes as CBOR tag(42);
 	// otherwise, reject them as unencodable.
@@ -29,11 +29,11 @@ type EncodeOptions struct {
 	MapSortMode codec.MapSortMode
 }
 
-// Encode walks the given ipld.Node and serializes it to the given io.Writer.
-// Encode fits the ipld.Encoder function interface.
+// Encode walks the given datamodel.Node and serializes it to the given io.Writer.
+// Encode fits the codec.Encoder function interface.
 //
 // The behavior of the encoder can be customized by setting fields in the EncodeOptions struct before calling this method.
-func (cfg EncodeOptions) Encode(n ipld.Node, w io.Writer) error {
+func (cfg EncodeOptions) Encode(n datamodel.Node, w io.Writer) error {
 	// Probe for a builtin fast path.  Shortcut to that if possible.
 	type detectFastPath interface {
 		EncodeDagCbor(io.Writer) error
@@ -52,22 +52,22 @@ func (cfg EncodeOptions) Encode(n ipld.Node, w io.Writer) error {
 
 // Marshal is a deprecated function.
 // Please consider switching to EncodeOptions.Encode instead.
-func Marshal(n ipld.Node, sink shared.TokenSink, options EncodeOptions) error {
+func Marshal(n datamodel.Node, sink shared.TokenSink, options EncodeOptions) error {
 	var tk tok.Token
 	return marshal(n, &tk, sink, options)
 }
 
-func marshal(n ipld.Node, tk *tok.Token, sink shared.TokenSink, options EncodeOptions) error {
+func marshal(n datamodel.Node, tk *tok.Token, sink shared.TokenSink, options EncodeOptions) error {
 	switch n.Kind() {
-	case ipld.Kind_Invalid:
+	case datamodel.Kind_Invalid:
 		return fmt.Errorf("cannot traverse a node that is absent")
-	case ipld.Kind_Null:
+	case datamodel.Kind_Null:
 		tk.Type = tok.TNull
 		_, err := sink.Step(tk)
 		return err
-	case ipld.Kind_Map:
+	case datamodel.Kind_Map:
 		return marshalMap(n, tk, sink, options)
-	case ipld.Kind_List:
+	case datamodel.Kind_List:
 		// Emit start of list.
 		tk.Type = tok.TArrOpen
 		l := n.Length()
@@ -89,7 +89,7 @@ func marshal(n ipld.Node, tk *tok.Token, sink shared.TokenSink, options EncodeOp
 		tk.Type = tok.TArrClose
 		_, err := sink.Step(tk)
 		return err
-	case ipld.Kind_Bool:
+	case datamodel.Kind_Bool:
 		v, err := n.AsBool()
 		if err != nil {
 			return err
@@ -98,7 +98,7 @@ func marshal(n ipld.Node, tk *tok.Token, sink shared.TokenSink, options EncodeOp
 		tk.Bool = v
 		_, err = sink.Step(tk)
 		return err
-	case ipld.Kind_Int:
+	case datamodel.Kind_Int:
 		v, err := n.AsInt()
 		if err != nil {
 			return err
@@ -107,7 +107,7 @@ func marshal(n ipld.Node, tk *tok.Token, sink shared.TokenSink, options EncodeOp
 		tk.Int = int64(v)
 		_, err = sink.Step(tk)
 		return err
-	case ipld.Kind_Float:
+	case datamodel.Kind_Float:
 		v, err := n.AsFloat()
 		if err != nil {
 			return err
@@ -116,7 +116,7 @@ func marshal(n ipld.Node, tk *tok.Token, sink shared.TokenSink, options EncodeOp
 		tk.Float64 = v
 		_, err = sink.Step(tk)
 		return err
-	case ipld.Kind_String:
+	case datamodel.Kind_String:
 		v, err := n.AsString()
 		if err != nil {
 			return err
@@ -125,7 +125,7 @@ func marshal(n ipld.Node, tk *tok.Token, sink shared.TokenSink, options EncodeOp
 		tk.Str = v
 		_, err = sink.Step(tk)
 		return err
-	case ipld.Kind_Bytes:
+	case datamodel.Kind_Bytes:
 		v, err := n.AsBytes()
 		if err != nil {
 			return err
@@ -134,7 +134,7 @@ func marshal(n ipld.Node, tk *tok.Token, sink shared.TokenSink, options EncodeOp
 		tk.Bytes = v
 		_, err = sink.Step(tk)
 		return err
-	case ipld.Kind_Link:
+	case datamodel.Kind_Link:
 		if !options.AllowLinks {
 			return fmt.Errorf("cannot Marshal ipld links to CBOR")
 		}
@@ -159,7 +159,7 @@ func marshal(n ipld.Node, tk *tok.Token, sink shared.TokenSink, options EncodeOp
 	}
 }
 
-func marshalMap(n ipld.Node, tk *tok.Token, sink shared.TokenSink, options EncodeOptions) error {
+func marshalMap(n datamodel.Node, tk *tok.Token, sink shared.TokenSink, options EncodeOptions) error {
 	// Emit start of map.
 	tk.Type = tok.TMapOpen
 	tk.Length = int(n.Length()) // TODO: overflow check
@@ -170,7 +170,7 @@ func marshalMap(n ipld.Node, tk *tok.Token, sink shared.TokenSink, options Encod
 		// Collect map entries, then sort by key
 		type entry struct {
 			key   string
-			value ipld.Node
+			value datamodel.Node
 		}
 		entries := []entry{}
 		for itr := n.MapIterator(); !itr.Done(); {

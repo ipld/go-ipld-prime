@@ -3,7 +3,7 @@ package tests
 import (
 	"testing"
 
-	"github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/schema"
 )
 
@@ -41,12 +41,12 @@ func SchemaTestUnionStringprefix(t *testing.T, engine Engine) {
 			typeJson: `{"String":"whee"}`,
 			reprJson: `"simple:whee"`,
 			typePoints: []testcasePoint{
-				{"", ipld.Kind_Map},
+				{"", datamodel.Kind_Map},
 				{"String", "whee"},
-				//{"SmolStruct", ipld.ErrNotExists{}}, // TODO: need better error typing from traversal package.
+				//{"SmolStruct", datamodel.ErrNotExists{}}, // TODO: need better error typing from traversal package.
 			},
 			reprPoints: []testcasePoint{
-				{"", ipld.Kind_String},
+				{"", datamodel.Kind_String},
 				{"", "simple:whee"},
 			},
 		},
@@ -55,14 +55,14 @@ func SchemaTestUnionStringprefix(t *testing.T, engine Engine) {
 			typeJson: `{"SmolStruct":{"a":"whee","b":"woo"}}`,
 			reprJson: `"complex:whee:woo"`,
 			typePoints: []testcasePoint{
-				{"", ipld.Kind_Map},
-				//{"String", ipld.ErrNotExists{}}, // TODO: need better error typing from traversal package.
-				{"SmolStruct", ipld.Kind_Map},
+				{"", datamodel.Kind_Map},
+				//{"String", datamodel.ErrNotExists{}}, // TODO: need better error typing from traversal package.
+				{"SmolStruct", datamodel.Kind_Map},
 				{"SmolStruct/a", "whee"},
 				{"SmolStruct/b", "woo"},
 			},
 			reprPoints: []testcasePoint{
-				{"", ipld.Kind_String},
+				{"", datamodel.Kind_String},
 				{"", "complex:whee:woo"},
 			},
 		},

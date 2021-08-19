@@ -1,7 +1,7 @@
 package schema
 
 import (
-	ipld "github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/datamodel"
 )
 
 // typesystem.Type is an union interface; each of the `Type*` concrete types
@@ -55,7 +55,7 @@ type Type interface {
 	// The returned value is a 1:1 association with which of the concrete
 	// "schema.Type*" structs this interface can be cast to.
 	//
-	// Note that a schema.TypeKind is a different enum than ipld.Kind;
+	// Note that a schema.TypeKind is a different enum than datamodel.Kind;
 	// and furthermore, there's no strict relationship between them.
 	// schema.TypedNode values can be described by *two* distinct Kinds:
 	// one which describes how the Node itself will act,
@@ -83,5 +83,5 @@ type Type interface {
 	// You may also be interested in a related property that might have been called "TypeBehavior".
 	// However, this method doesn't exist, because it's a deterministic property of `TypeKind()`!
 	// You can use `TypeKind.ActsLike()` to get type-level behavioral information.
-	RepresentationBehavior() ipld.Kind
+	RepresentationBehavior() datamodel.Kind
 }

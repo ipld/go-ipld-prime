@@ -5,10 +5,10 @@ import (
 
 	. "github.com/warpfork/go-wish"
 
-	ipld "github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/fluent"
 	"github.com/ipld/go-ipld-prime/must"
-	basicnode "github.com/ipld/go-ipld-prime/node/basic"
+	"github.com/ipld/go-ipld-prime/node/basicnode"
 )
 
 func TestBuild(t *testing.T) {
@@ -16,13 +16,13 @@ func TestBuild(t *testing.T) {
 		n := fluent.MustBuild(basicnode.Prototype__String{}, func(fna fluent.NodeAssembler) {
 			fna.AssignString("fine")
 		})
-		Wish(t, n.Kind(), ShouldEqual, ipld.Kind_String)
+		Wish(t, n.Kind(), ShouldEqual, datamodel.Kind_String)
 		v2, err := n.AsString()
 		Wish(t, err, ShouldEqual, nil)
 		Wish(t, v2, ShouldEqual, "fine")
 	})
 	t.Run("map build should work", func(t *testing.T) {
-		n := fluent.MustBuild(basicnode.Prototype__Map{}, func(fna fluent.NodeAssembler) {
+		n := fluent.MustBuild(basicnode.Prototype.Map, func(fna fluent.NodeAssembler) {
 			fna.CreateMap(3, func(fma fluent.MapAssembler) {
 				fma.AssembleEntry("k1").AssignString("fine")
 				fma.AssembleEntry("k2").AssignString("super")
@@ -33,7 +33,7 @@ func TestBuild(t *testing.T) {
 				})
 			})
 		})
-		Wish(t, n.Kind(), ShouldEqual, ipld.Kind_Map)
+		Wish(t, n.Kind(), ShouldEqual, datamodel.Kind_Map)
 		Wish(t, n.Length(), ShouldEqual, int64(3))
 		Wish(t, must.String(must.Node(n.LookupByString("k1"))), ShouldEqual, "fine")
 		Wish(t, must.String(must.Node(n.LookupByString("k2"))), ShouldEqual, "super")
@@ -44,7 +44,7 @@ func TestBuild(t *testing.T) {
 		Wish(t, must.String(must.Node(n.LookupByString("k33"))), ShouldEqual, "asking")
 	})
 	t.Run("list build should work", func(t *testing.T) {
-		n := fluent.MustBuild(basicnode.Prototype__List{}, func(fna fluent.NodeAssembler) {
+		n := fluent.MustBuild(basicnode.Prototype.List, func(fna fluent.NodeAssembler) {
 			fna.CreateList(1, func(fla fluent.ListAssembler) {
 				fla.AssembleValue().CreateList(1, func(fla fluent.ListAssembler) {
 					fla.AssembleValue().CreateList(1, func(fla fluent.ListAssembler) {
@@ -55,19 +55,19 @@ func TestBuild(t *testing.T) {
 				})
 			})
 		})
-		Wish(t, n.Kind(), ShouldEqual, ipld.Kind_List)
+		Wish(t, n.Kind(), ShouldEqual, datamodel.Kind_List)
 		Wish(t, n.Length(), ShouldEqual, int64(1))
 		n = must.Node(n.LookupByIndex(0))
-		Wish(t, n.Kind(), ShouldEqual, ipld.Kind_List)
+		Wish(t, n.Kind(), ShouldEqual, datamodel.Kind_List)
 		Wish(t, n.Length(), ShouldEqual, int64(1))
 		n = must.Node(n.LookupByIndex(0))
-		Wish(t, n.Kind(), ShouldEqual, ipld.Kind_List)
+		Wish(t, n.Kind(), ShouldEqual, datamodel.Kind_List)
 		Wish(t, n.Length(), ShouldEqual, int64(1))
 		n = must.Node(n.LookupByIndex(0))
-		Wish(t, n.Kind(), ShouldEqual, ipld.Kind_List)
+		Wish(t, n.Kind(), ShouldEqual, datamodel.Kind_List)
 		Wish(t, n.Length(), ShouldEqual, int64(1))
 		n = must.Node(n.LookupByIndex(0))
-		Wish(t, n.Kind(), ShouldEqual, ipld.Kind_Int)
+		Wish(t, n.Kind(), ShouldEqual, datamodel.Kind_Int)
 		Wish(t, must.Int(n), ShouldEqual, int64(2))
 	})
 }

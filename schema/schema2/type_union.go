@@ -1,7 +1,7 @@
 package schema
 
 import (
-	"github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/datamodel"
 	schemadmt "github.com/ipld/go-ipld-prime/schema/dmt"
 )
 
@@ -63,20 +63,20 @@ func (t *TypeUnion) Name() TypeName {
 	return t.name
 }
 
-func (t TypeUnion) RepresentationBehavior() ipld.Kind {
+func (t TypeUnion) RepresentationBehavior() datamodel.Kind {
 	switch t.dmt.FieldRepresentation().AsInterface().(type) {
 	case schemadmt.UnionRepresentation_Keyed:
-		return ipld.Kind_Map
+		return datamodel.Kind_Map
 	case schemadmt.UnionRepresentation_Kinded:
-		return ipld.Kind_Invalid // you can't know with this one, until you see the value (and thus can see its inhabitant's behavior)!
+		return datamodel.Kind_Invalid // you can't know with this one, until you see the value (and thus can see its inhabitant's behavior)!
 	case schemadmt.UnionRepresentation_Envelope:
-		return ipld.Kind_Map
+		return datamodel.Kind_Map
 	case schemadmt.UnionRepresentation_Inline:
-		return ipld.Kind_Map
+		return datamodel.Kind_Map
 	case schemadmt.UnionRepresentation_StringPrefix:
-		return ipld.Kind_String
+		return datamodel.Kind_String
 	case schemadmt.UnionRepresentation_BytePrefix:
-		return ipld.Kind_Bytes
+		return datamodel.Kind_Bytes
 	default:
 		panic("unreachable")
 	}
@@ -120,7 +120,7 @@ func (r UnionRepresentation_Keyed) GetDiscriminantForType(t Type) string {
 
 // GetMember returns type info for the member matching the kind argument,
 // or may return nil if that kind is not mapped to a member of this union.
-func (r UnionRepresentation_Kinded) GetMember(k ipld.Kind) Type {
+func (r UnionRepresentation_Kinded) GetMember(k datamodel.Kind) Type {
 	rkdmt, _ := schemadmt.Type.RepresentationKind.FromString(k.String()) // FUTURE: this is currently awkward because we used a string where we should use an enum; this can be fixed when codegen for enums is implemented.
 	tn := r.dmt.Lookup(rkdmt)
 	if tn == nil {

@@ -4,13 +4,13 @@ import (
 	"testing"
 
 	"github.com/ipld/go-ipld-prime/fluent"
-	basicnode "github.com/ipld/go-ipld-prime/node/basic"
+	"github.com/ipld/go-ipld-prime/node/basicnode"
 	"github.com/ipld/go-ipld-prime/traversal/selector"
 	. "github.com/warpfork/go-wish"
 )
 
 func TestBuildingSelectors(t *testing.T) {
-	np := basicnode.Prototype__Any{}
+	np := basicnode.Prototype.Any
 	ssb := NewSelectorSpecBuilder(np)
 	t.Run("Matcher builds matcher nodes", func(t *testing.T) {
 		sn := ssb.Matcher().Node()

@@ -59,7 +59,7 @@ func (g structReprStringjoinReprGenerator) EmitNodeType(w io.Writer) {
 
 func (g structReprStringjoinReprGenerator) EmitNodeTypeAssertions(w io.Writer) {
 	doTemplate(`
-		var _ ipld.Node = &_{{ .Type | TypeSymbol }}__Repr{}
+		var _ datamodel.Node = &_{{ .Type | TypeSymbol }}__Repr{}
 	`, w, g.AdjCfg, g)
 }
 
@@ -153,12 +153,12 @@ func (g structReprStringjoinReprBuilderGenerator) EmitNodeBuilderMethods(w io.Wr
 		func (_{{ .Type | TypeSymbol }}__ReprPrototype) fromString(w *_{{ .Type | TypeSymbol }}, v string) error {
 			ss, err := mixins.SplitExact(v, "{{ .Type.RepresentationStrategy.GetDelim }}", {{ len .Type.Fields }})
 			if err != nil {
-				return ipld.ErrUnmatchable{TypeName:"{{ .PkgName }}.{{ .Type.Name }}.Repr", Reason: err}
+				return schema.ErrUnmatchable{TypeName:"{{ .PkgName }}.{{ .Type.Name }}.Repr", Reason: err}
 			}
 			{{- $dot := . -}} {{- /* ranging modifies dot, unhelpfully */ -}}
 			{{- range $i, $field := .Type.Fields }}
 			if err := (_{{ $field.Type | TypeSymbol }}__ReprPrototype{}).fromString(&w.{{ $field | FieldSymbolLower }}, ss[{{ $i }}]); err != nil {
-				return ipld.ErrUnmatchable{TypeName:"{{ $dot.PkgName }}.{{ $dot.Type.Name }}.Repr", Reason: err}
+				return schema.ErrUnmatchable{TypeName:"{{ $dot.PkgName }}.{{ $dot.Type.Name }}.Repr", Reason: err}
 			}
 			{{- end}}
 			return nil
@@ -208,7 +208,7 @@ func (g structReprStringjoinReprBuilderGenerator) EmitNodeAssemblerMethodAssignN
 	// 2. is it our own type?  Handle specially -- we might be able to do efficient things.
 	// 3. is it the right kind to morph into us?  Do so.
 	doTemplate(`
-		func (na *_{{ .Type | TypeSymbol }}__ReprAssembler) AssignNode(v ipld.Node) error {
+		func (na *_{{ .Type | TypeSymbol }}__ReprAssembler) AssignNode(v datamodel.Node) error {
 			if v.IsNull() {
 				return na.AssignNull()
 			}

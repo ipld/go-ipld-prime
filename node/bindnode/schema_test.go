@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/node/bindnode"
 	"github.com/ipld/go-ipld-prime/node/tests"
 	"github.com/ipld/go-ipld-prime/schema"
@@ -38,7 +38,7 @@ func (e *bindEngine) Init(t *testing.T, ts schema.TypeSystem) {
 	e.ts = ts
 }
 
-func (e *bindEngine) PrototypeByName(name string) ipld.NodePrototype {
+func (e *bindEngine) PrototypeByName(name string) datamodel.NodePrototype {
 	wantRepr := strings.HasSuffix(name, ".Repr")
 	if wantRepr {
 		name = strings.TrimSuffix(name, ".Repr")

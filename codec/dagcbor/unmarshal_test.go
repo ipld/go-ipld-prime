@@ -6,7 +6,7 @@ import (
 
 	. "github.com/warpfork/go-wish"
 
-	basicnode "github.com/ipld/go-ipld-prime/node/basic"
+	"github.com/ipld/go-ipld-prime/node/basicnode"
 )
 
 func TestFunBlocks(t *testing.T) {

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"io"
 
-	ipld "github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/datamodel"
 )
 
 func max(a, b int) int { // honestly golang
@@ -14,7 +14,7 @@ func max(a, b int) int { // honestly golang
 	return b
 }
 
-func mustFirstKeyAsString(mapNode ipld.Node) string {
+func mustFirstKeyAsString(mapNode datamodel.Node) string {
 	itr := mapNode.MapIterator()
 	k, _, err := itr.Next()
 	if err != nil {
@@ -37,7 +37,7 @@ func indexOf(list []columnName, cn columnName) int {
 }
 
 type codecAborted struct {
-	p ipld.Path
+	p datamodel.Path
 	e error
 }
 
@@ -50,7 +50,7 @@ func (e codecAborted) Error() string {
 // a better system might also count byte and line offsets in the serial form (but this would require also integrating with the serial code pretty closely).
 // a spectacularly general system might be ready to count serial offsets *twice* *or* path offsets *twice* (but this is simply waiting for someone's enthusiasm).
 func recordErrorPosition(ctx *state, e error) error {
-	return codecAborted{ipld.Path{ /*TODO*/ }, e}
+	return codecAborted{datamodel.Path{ /*TODO*/ }, e}
 }
 
 // not yet used, but you'd probably want this for better error position purposes.

@@ -3,7 +3,7 @@ package selector
 import (
 	"fmt"
 
-	ipld "github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/datamodel"
 )
 
 // ExploreRange traverses a list, and for each element in the range specified,
@@ -12,18 +12,18 @@ type ExploreRange struct {
 	next     Selector // selector for element we're interested in
 	start    int64
 	end      int64
-	interest []ipld.PathSegment // index of element we're interested in
+	interest []datamodel.PathSegment // index of element we're interested in
 }
 
 // Interests for ExploreRange are all path segments within the iteration range
-func (s ExploreRange) Interests() []ipld.PathSegment {
+func (s ExploreRange) Interests() []datamodel.PathSegment {
 	return s.interest
 }
 
 // Explore returns the node's selector if
 // the path matches an index in the range of this selector
-func (s ExploreRange) Explore(n ipld.Node, p ipld.PathSegment) (Selector, error) {
-	if n.Kind() != ipld.Kind_List {
+func (s ExploreRange) Explore(n datamodel.Node, p datamodel.PathSegment) (Selector, error) {
+	if n.Kind() != datamodel.Kind_List {
 		return nil, nil
 	}
 	index, err := p.Index()
@@ -37,14 +37,14 @@ func (s ExploreRange) Explore(n ipld.Node, p ipld.PathSegment) (Selector, error)
 }
 
 // Decide always returns false because this is not a matcher
-func (s ExploreRange) Decide(n ipld.Node) bool {
+func (s ExploreRange) Decide(n datamodel.Node) bool {
 	return false
 }
 
 // ParseExploreRange assembles a Selector
 // from a ExploreRange selector node
-func (pc ParseContext) ParseExploreRange(n ipld.Node) (Selector, error) {
-	if n.Kind() != ipld.Kind_Map {
+func (pc ParseContext) ParseExploreRange(n datamodel.Node) (Selector, error) {
+	if n.Kind() != datamodel.Kind_Map {
 		return nil, fmt.Errorf("selector spec parse rejected: selector body must be a map")
 	}
 	startNode, err := n.LookupByString(SelectorKey_Start)
@@ -78,10 +78,10 @@ func (pc ParseContext) ParseExploreRange(n ipld.Node) (Selector, error) {
 		selector,
 		startValue,
 		endValue,
-		make([]ipld.PathSegment, 0, endValue-startValue),
+		make([]datamodel.PathSegment, 0, endValue-startValue),
 	}
 	for i := startValue; i < endValue; i++ {
-		x.interest = append(x.interest, ipld.PathSegmentOfInt(i))
+		x.interest = append(x.interest, datamodel.PathSegmentOfInt(i))
 	}
 	return x, nil
 }

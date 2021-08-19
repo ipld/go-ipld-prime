@@ -4,22 +4,22 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/ipld/go-ipld-prime"
 	"github.com/ipld/go-ipld-prime/codec/dagjson"
+	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/fluent"
 	"github.com/ipld/go-ipld-prime/fluent/qp"
-	basicnode "github.com/ipld/go-ipld-prime/node/basic"
+	"github.com/ipld/go-ipld-prime/node/basicnode"
 )
 
 func BenchmarkQp(b *testing.B) {
 	b.ReportAllocs()
 
-	f2 := func(na ipld.NodeAssembler, a string, b string, c string, d []string) {
-		qp.Map(4, func(ma ipld.MapAssembler) {
+	f2 := func(na datamodel.NodeAssembler, a string, b string, c string, d []string) {
+		qp.Map(4, func(ma datamodel.MapAssembler) {
 			qp.MapEntry(ma, "destination", qp.String(a))
 			qp.MapEntry(ma, "type", qp.String(b))
 			qp.MapEntry(ma, "source", qp.String(c))
-			qp.MapEntry(ma, "options", qp.List(int64(len(d)), func(la ipld.ListAssembler) {
+			qp.MapEntry(ma, "options", qp.List(int64(len(d)), func(la datamodel.ListAssembler) {
 				for _, s := range d {
 					qp.ListEntry(la, qp.String(s))
 				}
@@ -27,7 +27,7 @@ func BenchmarkQp(b *testing.B) {
 		})(na)
 	}
 	for i := 0; i < b.N; i++ {
-		n, err := qp.BuildList(basicnode.Prototype.Any, -1, func(la ipld.ListAssembler) {
+		n, err := qp.BuildList(basicnode.Prototype.Any, -1, func(la datamodel.ListAssembler) {
 			f2(la.AssembleValue(), // TODO: forgot to check error?
 				"/",
 				"overlay",
@@ -49,7 +49,7 @@ func BenchmarkQp(b *testing.B) {
 func BenchmarkUnmarshal(b *testing.B) {
 	b.ReportAllocs()
 
-	var n ipld.Node
+	var n datamodel.Node
 	var err error
 	serial := `[{
 		"destination": "/",
@@ -77,7 +77,7 @@ func BenchmarkUnmarshal(b *testing.B) {
 func BenchmarkFluent(b *testing.B) {
 	b.ReportAllocs()
 
-	var n ipld.Node
+	var n datamodel.Node
 	var err error
 	for i := 0; i < b.N; i++ {
 		n, err = fluent.BuildList(basicnode.Prototype.Any, -1, func(la fluent.ListAssembler) {
@@ -102,7 +102,7 @@ func BenchmarkFluent(b *testing.B) {
 func BenchmarkReflect(b *testing.B) {
 	b.ReportAllocs()
 
-	var n ipld.Node
+	var n datamodel.Node
 	var err error
 	val := []interface{}{
 		map[string]interface{}{
@@ -128,7 +128,7 @@ func BenchmarkReflect(b *testing.B) {
 func BenchmarkReflectIncludingInitialization(b *testing.B) {
 	b.ReportAllocs()
 
-	var n ipld.Node
+	var n datamodel.Node
 	var err error
 	for i := 0; i < b.N; i++ {
 		n, err = fluent.Reflect(basicnode.Prototype.Any, []interface{}{
@@ -153,7 +153,7 @@ func BenchmarkReflectIncludingInitialization(b *testing.B) {
 func BenchmarkAgonizinglyBare(b *testing.B) {
 	b.ReportAllocs()
 
-	var n ipld.Node
+	var n datamodel.Node
 	var err error
 	for i := 0; i < b.N; i++ {
 		n, err = fab()
@@ -164,7 +164,7 @@ func BenchmarkAgonizinglyBare(b *testing.B) {
 	}
 }
 
-func fab() (ipld.Node, error) {
+func fab() (datamodel.Node, error) {
 	nb := basicnode.Prototype.Any.NewBuilder()
 	la1, err := nb.BeginList(-1)
 	if err != nil {

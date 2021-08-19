@@ -63,7 +63,7 @@ func (g listReprListReprGenerator) EmitNodeType(w io.Writer) {
 
 func (g listReprListReprGenerator) EmitNodeTypeAssertions(w io.Writer) {
 	doTemplate(`
-		var _ ipld.Node = &_{{ .Type | TypeSymbol }}__Repr{}
+		var _ datamodel.Node = &_{{ .Type | TypeSymbol }}__Repr{}
 	`, w, g.AdjCfg, g)
 }
 
@@ -72,9 +72,9 @@ func (g listReprListReprGenerator) EmitNodeMethodLookupByNode(w io.Writer) {
 	// REVIEW: these unchecked casts are definitely safe at compile time, but I'm not sure if the compiler considers that provable,
 	//  so we should investigate if there's any runtime checks injected here that waste time.  If so: write this with more gsloc to avoid :(
 	doTemplate(`
-		func (nr *_{{ .Type | TypeSymbol }}__Repr) LookupByNode(k ipld.Node) (ipld.Node, error) {
+		func (nr *_{{ .Type | TypeSymbol }}__Repr) LookupByNode(k datamodel.Node) (datamodel.Node, error) {
 			v, err := ({{ .Type | TypeSymbol }})(nr).LookupByNode(k)
-			if err != nil || v == ipld.Null {
+			if err != nil || v == datamodel.Null {
 				return v, err
 			}
 			return v.({{ .Type.ValueType | TypeSymbol}}).Representation(), nil
@@ -85,9 +85,9 @@ func (g listReprListReprGenerator) EmitNodeMethodLookupByNode(w io.Writer) {
 
 func (g listReprListReprGenerator) EmitNodeMethodLookupByIndex(w io.Writer) {
 	doTemplate(`
-		func (nr *_{{ .Type | TypeSymbol }}__Repr) LookupByIndex(idx int64) (ipld.Node, error) {
+		func (nr *_{{ .Type | TypeSymbol }}__Repr) LookupByIndex(idx int64) (datamodel.Node, error) {
 			v, err := ({{ .Type | TypeSymbol }})(nr).LookupByIndex(idx)
-			if err != nil || v == ipld.Null {
+			if err != nil || v == datamodel.Null {
 				return v, err
 			}
 			return v.({{ .Type.ValueType | TypeSymbol}}).Representation(), nil
@@ -98,15 +98,15 @@ func (g listReprListReprGenerator) EmitNodeMethodLookupByIndex(w io.Writer) {
 func (g listReprListReprGenerator) EmitNodeMethodListIterator(w io.Writer) {
 	// FUTURE: trying to get this to share the preallocated memory if we get iterators wedged into their node slab will be ... fun.
 	doTemplate(`
-		func (nr *_{{ .Type | TypeSymbol }}__Repr) ListIterator() ipld.ListIterator {
+		func (nr *_{{ .Type | TypeSymbol }}__Repr) ListIterator() datamodel.ListIterator {
 			return &_{{ .Type | TypeSymbol }}__ReprListItr{({{ .Type | TypeSymbol }})(nr), 0}
 		}
 
 		type _{{ .Type | TypeSymbol }}__ReprListItr _{{ .Type | TypeSymbol }}__ListItr
 
-		func (itr *_{{ .Type | TypeSymbol }}__ReprListItr) Next() (idx int64, v ipld.Node, err error) {
+		func (itr *_{{ .Type | TypeSymbol }}__ReprListItr) Next() (idx int64, v datamodel.Node, err error) {
 			idx, v, err = (*_{{ .Type | TypeSymbol }}__ListItr)(itr).Next()
-			if err != nil || v == ipld.Null {
+			if err != nil || v == datamodel.Null {
 				return
 			}
 			return idx, v.({{ .Type.ValueType | TypeSymbol}}).Representation(), nil
