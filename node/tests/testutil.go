@@ -1,7 +1,7 @@
 package tests
 
 import (
-	"github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/datamodel"
 )
 
 // This file is full of helper functions.  Most are moderately embarassing.
@@ -10,14 +10,14 @@ import (
 //  they'd probably be much less fragile and give better error messages that way.
 //  On the other hand, the functions for condensing two-arg returns wouldn't go away anyway.
 
-func plz(n ipld.Node, e error) ipld.Node {
+func plz(n datamodel.Node, e error) datamodel.Node {
 	if e != nil {
 		panic(e)
 	}
 	return n
 }
 
-func plzStr(n ipld.Node, e error) string {
+func plzStr(n datamodel.Node, e error) string {
 	if e != nil {
 		panic(e)
 	}
@@ -28,7 +28,7 @@ func plzStr(n ipld.Node, e error) string {
 	}
 }
 
-func str(n ipld.Node) string {
+func str(n datamodel.Node) string {
 	if s, ok := n.AsString(); ok == nil {
 		return s
 	} else {
@@ -36,7 +36,7 @@ func str(n ipld.Node) string {
 	}
 }
 
-func erp(n ipld.Node, e error) interface{} {
+func erp(n datamodel.Node, e error) interface{} {
 	if e != nil {
 		return e
 	}
@@ -44,6 +44,6 @@ func erp(n ipld.Node, e error) interface{} {
 }
 
 // purely to syntactically flip large inline closures so we can see the argument at the top rather than the bottom of the block.
-func withNode(n ipld.Node, cb func(n ipld.Node)) {
+func withNode(n datamodel.Node, cb func(n datamodel.Node)) {
 	cb(n)
 }

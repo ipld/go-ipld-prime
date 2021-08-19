@@ -3,31 +3,31 @@ package codectools
 import (
 	"fmt"
 
-	"github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/datamodel"
 )
 
 type Token struct {
 	Kind TokenKind
 
-	Length int64     // Present for MapOpen or ListOpen.  May be -1 for "unknown" (e.g. a json tokenizer will yield this).
-	Bool   bool      // Value.  Union: only has meaning if Kind is TokenKind_Bool.
-	Int    int64     // Value.  Union: only has meaning if Kind is TokenKind_Int.
-	Float  float64   // Value.  Union: only has meaning if Kind is TokenKind_Float.
-	Str    string    // Value.  Union: only has meaning if Kind is TokenKind_String.  ('Str' rather than 'String' to avoid collision with method.)
-	Bytes  []byte    // Value.  Union: only has meaning if Kind is TokenKind_Bytes.
-	Link   ipld.Link // Value.  Union: only has meaning if Kind is TokenKind_Link.
+	Length int64          // Present for MapOpen or ListOpen.  May be -1 for "unknown" (e.g. a json tokenizer will yield this).
+	Bool   bool           // Value.  Union: only has meaning if Kind is TokenKind_Bool.
+	Int    int64          // Value.  Union: only has meaning if Kind is TokenKind_Int.
+	Float  float64        // Value.  Union: only has meaning if Kind is TokenKind_Float.
+	Str    string         // Value.  Union: only has meaning if Kind is TokenKind_String.  ('Str' rather than 'String' to avoid collision with method.)
+	Bytes  []byte         // Value.  Union: only has meaning if Kind is TokenKind_Bytes.
+	Link   datamodel.Link // Value.  Union: only has meaning if Kind is TokenKind_Link.
 
-	Node ipld.Node // Direct pointer to the original data, if this token is used to communicate data during a walk of existing in-memory data.  Absent when token is being used during deserialization.
+	Node datamodel.Node // Direct pointer to the original data, if this token is used to communicate data during a walk of existing in-memory data.  Absent when token is being used during deserialization.
 
 	// The following fields all track position and progress:
 	// (These may be useful to copy into any error messages if errors arise.)
 	// (Implementations may assume token reuse and treat these as state keeping;
 	// you may experience position accounting accuracy problems if *not* reusing tokens or if zeroing these fields.)
 
-	pth          []ipld.PathSegment // Set by token producers (whether marshallers or deserializers) to track logical position.
-	offset       int64              // Set by deserializers (for both textual or binary formats alike) to track progress.
-	lineOffset   int64              // Set by deserializers that work with textual data.  May be ignored by binary deserializers.
-	columnOffset int64              // Set by deserializers that work with textual data.  May be ignored by binary deserializers.
+	pth          []datamodel.PathSegment // Set by token producers (whether marshallers or deserializers) to track logical position.
+	offset       int64                   // Set by deserializers (for both textual or binary formats alike) to track progress.
+	lineOffset   int64                   // Set by deserializers that work with textual data.  May be ignored by binary deserializers.
+	columnOffset int64                   // Set by deserializers that work with textual data.  May be ignored by binary deserializers.
 }
 
 func (tk Token) String() string {

@@ -4,27 +4,27 @@ import (
 	"fmt"
 
 	cid "github.com/ipfs/go-cid"
-	"github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/datamodel"
 	multihash "github.com/multiformats/go-multihash"
 )
 
 var (
-	_ ipld.Link          = Link{}
-	_ ipld.LinkPrototype = LinkPrototype{}
+	_ datamodel.Link          = Link{}
+	_ datamodel.LinkPrototype = LinkPrototype{}
 )
 
-// Link implements the ipld.Link interface using a CID.
+// Link implements the datamodel.Link interface using a CID.
 // See https://github.com/ipfs/go-cid for more information about CIDs.
 //
 // When using this value, typically you'll use it as `Link`, and not `*Link`.
-// This includes when handling the value as an `ipld.Link` interface -- the non-pointer form is typically preferable.
-// This is because the ipld.Link inteface is often desirable to be able to use as a golang map key,
+// This includes when handling the value as an `datamodel.Link` interface -- the non-pointer form is typically preferable.
+// This is because the datamodel.Link inteface is often desirable to be able to use as a golang map key,
 // and in that context, pointers would not result in the desired behavior.
 type Link struct {
 	cid.Cid
 }
 
-func (lnk Link) Prototype() ipld.LinkPrototype {
+func (lnk Link) Prototype() datamodel.LinkPrototype {
 	return LinkPrototype{lnk.Cid.Prefix()}
 }
 func (lnk Link) String() string {
@@ -35,7 +35,7 @@ type LinkPrototype struct {
 	cid.Prefix
 }
 
-func (lp LinkPrototype) BuildLink(hashsum []byte) ipld.Link {
+func (lp LinkPrototype) BuildLink(hashsum []byte) datamodel.Link {
 	// Does this method body look surprisingly complex?  I agree.
 	//  We actually have to do all this work.  The go-cid package doesn't expose a constructor that just lets us directly set the bytes and the prefix numbers next to each other.
 	//  No, `cid.Prefix.Sum` is not the method you are looking for: that expects the whole data body.

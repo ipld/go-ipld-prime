@@ -10,7 +10,7 @@ import (
 	"github.com/polydawn/refmt/shared"
 	"github.com/polydawn/refmt/tok"
 
-	"github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/datamodel"
 	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
 )
 
@@ -34,11 +34,11 @@ type DecodeOptions struct {
 	ParseBytes bool
 }
 
-// Decode deserializes data from the given io.Reader and feeds it into the given ipld.NodeAssembler.
+// Decode deserializes data from the given io.Reader and feeds it into the given datamodel.NodeAssembler.
 // Decode fits the codec.Decoder function interface.
 //
 // The behavior of the decoder can be customized by setting fields in the DecodeOptions struct before calling this method.
-func (cfg DecodeOptions) Decode(na ipld.NodeAssembler, r io.Reader) error {
+func (cfg DecodeOptions) Decode(na datamodel.NodeAssembler, r io.Reader) error {
 	err := Unmarshal(na, json.NewDecoder(r), cfg)
 	if err != nil {
 		return err
@@ -75,7 +75,7 @@ func (cfg DecodeOptions) Decode(na ipld.NodeAssembler, r io.Reader) error {
 
 // Unmarshal is a deprecated function.
 // Please consider switching to DecodeOptions.Decode instead.
-func Unmarshal(na ipld.NodeAssembler, tokSrc shared.TokenSource, options DecodeOptions) error {
+func Unmarshal(na datamodel.NodeAssembler, tokSrc shared.TokenSource, options DecodeOptions) error {
 	var st unmarshalState
 	st.options = options
 	done, err := tokSrc.Step(&st.tk[0])
@@ -172,7 +172,7 @@ func (st *unmarshalState) ensure(tokSrc shared.TokenSource, lookahead int) error
 // in case of error, the error should just rise.
 // If the bool return is true, we got a link, and you should not
 // continue to attempt to build a map.
-func (st *unmarshalState) linkLookahead(na ipld.NodeAssembler, tokSrc shared.TokenSource) (bool, error) {
+func (st *unmarshalState) linkLookahead(na datamodel.NodeAssembler, tokSrc shared.TokenSource) (bool, error) {
 	// Peek next token.  If it's a "/" string, link is still a possibility
 	if err := st.ensure(tokSrc, 1); err != nil {
 		return false, err
@@ -214,7 +214,7 @@ func (st *unmarshalState) linkLookahead(na ipld.NodeAssembler, tokSrc shared.Tok
 	return true, nil
 }
 
-func (st *unmarshalState) bytesLookahead(na ipld.NodeAssembler, tokSrc shared.TokenSource) (bool, error) {
+func (st *unmarshalState) bytesLookahead(na datamodel.NodeAssembler, tokSrc shared.TokenSource) (bool, error) {
 	// Peek next token.  If it's a "/" string, bytes is still a possibility
 	if err := st.ensure(tokSrc, 1); err != nil {
 		return false, err
@@ -278,7 +278,7 @@ func (st *unmarshalState) bytesLookahead(na ipld.NodeAssembler, tokSrc shared.To
 
 // starts with the first token already primed.  Necessary to get recursion
 //  to flow right without a peek+unpeek system.
-func (st *unmarshalState) unmarshal(na ipld.NodeAssembler, tokSrc shared.TokenSource) error {
+func (st *unmarshalState) unmarshal(na datamodel.NodeAssembler, tokSrc shared.TokenSource) error {
 	// FUTURE: check for schema.TypedNodeBuilder that's going to parse a Link (they can slurp any token kind they want).
 	switch st.tk[0].Type {
 	case tok.TMapOpen:

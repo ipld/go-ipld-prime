@@ -3,7 +3,7 @@ package tests
 import (
 	"fmt"
 
-	"github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/must"
 )
 
@@ -22,7 +22,7 @@ func init() {
 }
 
 // extracted for reuse between correctness tests and benchmarks
-func buildMapStrIntN3(np ipld.NodePrototype) ipld.Node {
+func buildMapStrIntN3(np datamodel.NodePrototype) datamodel.Node {
 	nb := np.NewBuilder()
 	ma, err := nb.BeginMap(3)
 	must.NotError(err)
@@ -37,7 +37,7 @@ func buildMapStrIntN3(np ipld.NodePrototype) ipld.Node {
 }
 
 // extracted for reuse across benchmarks
-func buildMapStrIntN25(np ipld.NodePrototype) ipld.Node {
+func buildMapStrIntN25(np datamodel.NodePrototype) datamodel.Node {
 	nb := np.NewBuilder()
 	ma, err := nb.BeginMap(25)
 	must.NotError(err)

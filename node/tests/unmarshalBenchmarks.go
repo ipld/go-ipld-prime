@@ -6,8 +6,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/ipld/go-ipld-prime"
 	"github.com/ipld/go-ipld-prime/codec/json"
+	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/node/tests/corpus"
 )
 
@@ -20,7 +20,7 @@ import (
 // - we can make direct comparisons to the standard library json marshalling
 //    and unmarshalling, thus having a back-of-the-envelope baseline to compare.
 
-func BenchmarkSpec_Unmarshal_Map3StrInt(b *testing.B, np ipld.NodePrototype) {
+func BenchmarkSpec_Unmarshal_Map3StrInt(b *testing.B, np datamodel.NodePrototype) {
 	var err error
 	for i := 0; i < b.N; i++ {
 		nb := np.NewBuilder()
@@ -32,13 +32,13 @@ func BenchmarkSpec_Unmarshal_Map3StrInt(b *testing.B, np ipld.NodePrototype) {
 	}
 }
 
-func BenchmarkSpec_Unmarshal_MapNStrMap3StrInt(b *testing.B, np ipld.NodePrototype) {
+func BenchmarkSpec_Unmarshal_MapNStrMap3StrInt(b *testing.B, np datamodel.NodePrototype) {
 	for _, n := range []int{0, 1, 2, 4, 8, 16, 32} {
 		b.Run(fmt.Sprintf("n=%d", n), func(b *testing.B) {
 			msg := corpus.MapNStrMap3StrInt(n)
 			b.ResetTimer()
 
-			var node ipld.Node
+			var node datamodel.Node
 			var err error
 			nb := np.NewBuilder()
 			for i := 0; i < b.N; i++ {

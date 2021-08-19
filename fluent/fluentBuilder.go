@@ -1,10 +1,10 @@
 package fluent
 
 import (
-	"github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/datamodel"
 )
 
-func Build(np ipld.NodePrototype, fn func(NodeAssembler)) (ipld.Node, error) {
+func Build(np datamodel.NodePrototype, fn func(NodeAssembler)) (datamodel.Node, error) {
 	nb := np.NewBuilder()
 	fna := WrapAssembler(nb)
 	err := Recover(func() {
@@ -15,26 +15,26 @@ func Build(np ipld.NodePrototype, fn func(NodeAssembler)) (ipld.Node, error) {
 	}
 	return nb.Build(), nil
 }
-func BuildMap(np ipld.NodePrototype, sizeHint int64, fn func(MapAssembler)) (ipld.Node, error) {
+func BuildMap(np datamodel.NodePrototype, sizeHint int64, fn func(MapAssembler)) (datamodel.Node, error) {
 	return Build(np, func(fna NodeAssembler) { fna.CreateMap(sizeHint, fn) })
 }
-func BuildList(np ipld.NodePrototype, sizeHint int64, fn func(ListAssembler)) (ipld.Node, error) {
+func BuildList(np datamodel.NodePrototype, sizeHint int64, fn func(ListAssembler)) (datamodel.Node, error) {
 	return Build(np, func(fna NodeAssembler) { fna.CreateList(sizeHint, fn) })
 }
 
-func MustBuild(np ipld.NodePrototype, fn func(NodeAssembler)) ipld.Node {
+func MustBuild(np datamodel.NodePrototype, fn func(NodeAssembler)) datamodel.Node {
 	nb := np.NewBuilder()
 	fn(WrapAssembler(nb))
 	return nb.Build()
 }
-func MustBuildMap(np ipld.NodePrototype, sizeHint int64, fn func(MapAssembler)) ipld.Node {
+func MustBuildMap(np datamodel.NodePrototype, sizeHint int64, fn func(MapAssembler)) datamodel.Node {
 	return MustBuild(np, func(fna NodeAssembler) { fna.CreateMap(sizeHint, fn) })
 }
-func MustBuildList(np ipld.NodePrototype, sizeHint int64, fn func(ListAssembler)) ipld.Node {
+func MustBuildList(np datamodel.NodePrototype, sizeHint int64, fn func(ListAssembler)) datamodel.Node {
 	return MustBuild(np, func(fna NodeAssembler) { fna.CreateList(sizeHint, fn) })
 }
 
-func WrapAssembler(na ipld.NodeAssembler) NodeAssembler {
+func WrapAssembler(na datamodel.NodeAssembler) NodeAssembler {
 	return &nodeAssembler{na}
 }
 
@@ -52,10 +52,10 @@ type NodeAssembler interface {
 	AssignFloat(float64)
 	AssignString(string)
 	AssignBytes([]byte)
-	AssignLink(ipld.Link)
-	AssignNode(ipld.Node)
+	AssignLink(datamodel.Link)
+	AssignNode(datamodel.Node)
 
-	Prototype() ipld.NodePrototype
+	Prototype() datamodel.NodePrototype
 }
 
 // MapAssembler is the same as the interface in the core package, except:
@@ -69,8 +69,8 @@ type MapAssembler interface {
 
 	AssembleEntry(k string) NodeAssembler
 
-	KeyPrototype() ipld.NodePrototype
-	ValuePrototype(k string) ipld.NodePrototype
+	KeyPrototype() datamodel.NodePrototype
+	ValuePrototype(k string) datamodel.NodePrototype
 }
 
 // ListAssembler is the same as the interface in the core package, except:
@@ -81,11 +81,11 @@ type MapAssembler interface {
 type ListAssembler interface {
 	AssembleValue() NodeAssembler
 
-	ValuePrototype(idx int64) ipld.NodePrototype
+	ValuePrototype(idx int64) datamodel.NodePrototype
 }
 
 type nodeAssembler struct {
-	na ipld.NodeAssembler
+	na datamodel.NodeAssembler
 }
 
 func (fna *nodeAssembler) CreateMap(sizeHint int64, fn func(MapAssembler)) {
@@ -138,22 +138,22 @@ func (fna *nodeAssembler) AssignBytes(v []byte) {
 		panic(Error{err})
 	}
 }
-func (fna *nodeAssembler) AssignLink(v ipld.Link) {
+func (fna *nodeAssembler) AssignLink(v datamodel.Link) {
 	if err := fna.na.AssignLink(v); err != nil {
 		panic(Error{err})
 	}
 }
-func (fna *nodeAssembler) AssignNode(v ipld.Node) {
+func (fna *nodeAssembler) AssignNode(v datamodel.Node) {
 	if err := fna.na.AssignNode(v); err != nil {
 		panic(Error{err})
 	}
 }
-func (fna *nodeAssembler) Prototype() ipld.NodePrototype {
+func (fna *nodeAssembler) Prototype() datamodel.NodePrototype {
 	return fna.na.Prototype()
 }
 
 type mapNodeAssembler struct {
-	ma ipld.MapAssembler
+	ma datamodel.MapAssembler
 }
 
 func (fma *mapNodeAssembler) AssembleKey() NodeAssembler {
@@ -169,20 +169,20 @@ func (fma *mapNodeAssembler) AssembleEntry(k string) NodeAssembler {
 	}
 	return &nodeAssembler{va}
 }
-func (fma *mapNodeAssembler) KeyPrototype() ipld.NodePrototype {
+func (fma *mapNodeAssembler) KeyPrototype() datamodel.NodePrototype {
 	return fma.ma.KeyPrototype()
 }
-func (fma *mapNodeAssembler) ValuePrototype(k string) ipld.NodePrototype {
+func (fma *mapNodeAssembler) ValuePrototype(k string) datamodel.NodePrototype {
 	return fma.ma.ValuePrototype(k)
 }
 
 type listNodeAssembler struct {
-	la ipld.ListAssembler
+	la datamodel.ListAssembler
 }
 
 func (fla *listNodeAssembler) AssembleValue() NodeAssembler {
 	return &nodeAssembler{fla.la.AssembleValue()}
 }
-func (fla *listNodeAssembler) ValuePrototype(idx int64) ipld.NodePrototype {
+func (fla *listNodeAssembler) ValuePrototype(idx int64) datamodel.NodePrototype {
 	return fla.la.ValuePrototype(idx)
 }

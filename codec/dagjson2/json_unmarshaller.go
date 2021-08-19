@@ -3,9 +3,9 @@ package dagjson
 import (
 	"io"
 
-	"github.com/ipld/go-ipld-prime"
 	"github.com/ipld/go-ipld-prime/codec/codectools"
 	jsontoken "github.com/ipld/go-ipld-prime/codec/dagjson2/token"
+	"github.com/ipld/go-ipld-prime/datamodel"
 )
 
 // Unmarshal reads data from input, parses it as DAG-JSON,
@@ -17,7 +17,7 @@ import (
 //
 // This function is the same as the function found for DAG-JSON
 // in the default multicodec registry.
-func Unmarshal(into ipld.NodeAssembler, input io.Reader) error {
+func Unmarshal(into datamodel.NodeAssembler, input io.Reader) error {
 	// FUTURE: consider doing a whole sync.Pool jazz around this.
 	r := ReusableUnmarshaller{}
 	r.SetDecoderConfig(jsontoken.DecoderConfig{
@@ -49,7 +49,7 @@ func (r *ReusableUnmarshaller) SetInitialBudget(budget int64) {
 	r.InitialBudget = budget
 }
 
-func (r *ReusableUnmarshaller) Unmarshal(into ipld.NodeAssembler, input io.Reader) error {
+func (r *ReusableUnmarshaller) Unmarshal(into datamodel.NodeAssembler, input io.Reader) error {
 	r.d.Init(input)
 	return codectools.TokenAssemble(into, r.d.Step, r.InitialBudget)
 }

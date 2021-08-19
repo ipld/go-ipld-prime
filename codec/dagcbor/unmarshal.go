@@ -11,7 +11,7 @@ import (
 	"github.com/polydawn/refmt/shared"
 	"github.com/polydawn/refmt/tok"
 
-	"github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/datamodel"
 	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
 )
 
@@ -36,11 +36,11 @@ type DecodeOptions struct {
 	AllowLinks bool
 }
 
-// Decode deserializes data from the given io.Reader and feeds it into the given ipld.NodeAssembler.
+// Decode deserializes data from the given io.Reader and feeds it into the given datamodel.NodeAssembler.
 // Decode fits the codec.Decoder function interface.
 //
 // The behavior of the decoder can be customized by setting fields in the DecodeOptions struct before calling this method.
-func (cfg DecodeOptions) Decode(na ipld.NodeAssembler, r io.Reader) error {
+func (cfg DecodeOptions) Decode(na datamodel.NodeAssembler, r io.Reader) error {
 	// Probe for a builtin fast path.  Shortcut to that if possible.
 	type detectFastPath interface {
 		DecodeDagCbor(io.Reader) error
@@ -59,7 +59,7 @@ func (cfg DecodeOptions) Decode(na ipld.NodeAssembler, r io.Reader) error {
 
 // Unmarshal is a deprecated function.
 // Please consider switching to DecodeOptions.Decode instead.
-func Unmarshal(na ipld.NodeAssembler, tokSrc shared.TokenSource, options DecodeOptions) error {
+func Unmarshal(na datamodel.NodeAssembler, tokSrc shared.TokenSource, options DecodeOptions) error {
 	// Have a gas budget, which will be decremented as we allocate memory, and an error returned when execeeded (or about to be exceeded).
 	//  This is a DoS defense mechanism.
 	//  It's *roughly* in units of bytes (but only very, VERY roughly) -- it also treats words as 1 in many cases.
@@ -68,7 +68,7 @@ func Unmarshal(na ipld.NodeAssembler, tokSrc shared.TokenSource, options DecodeO
 	return unmarshal1(na, tokSrc, &gas, options)
 }
 
-func unmarshal1(na ipld.NodeAssembler, tokSrc shared.TokenSource, gas *int, options DecodeOptions) error {
+func unmarshal1(na datamodel.NodeAssembler, tokSrc shared.TokenSource, gas *int, options DecodeOptions) error {
 	var tk tok.Token
 	done, err := tokSrc.Step(&tk)
 	if err != nil {
@@ -82,7 +82,7 @@ func unmarshal1(na ipld.NodeAssembler, tokSrc shared.TokenSource, gas *int, opti
 
 // starts with the first token already primed.  Necessary to get recursion
 //  to flow right without a peek+unpeek system.
-func unmarshal2(na ipld.NodeAssembler, tokSrc shared.TokenSource, tk *tok.Token, gas *int, options DecodeOptions) error {
+func unmarshal2(na datamodel.NodeAssembler, tokSrc shared.TokenSource, tk *tok.Token, gas *int, options DecodeOptions) error {
 	// FUTURE: check for schema.TypedNodeBuilder that's going to parse a Link (they can slurp any token kind they want).
 	switch tk.Type {
 	case tok.TMapOpen:

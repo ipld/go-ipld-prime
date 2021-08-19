@@ -1,14 +1,14 @@
 package codectools
 
 import (
-	"github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/fluent"
 	"github.com/ipld/go-ipld-prime/must"
 	"github.com/ipld/go-ipld-prime/node/basicnode"
 )
 
 var tokenFixtures = []struct {
-	value    ipld.Node
+	value    datamodel.Node
 	sequence []Token
 }{
 	{
