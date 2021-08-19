@@ -22,18 +22,18 @@ func (s ExploreRange) Interests() []ipld.PathSegment {
 
 // Explore returns the node's selector if
 // the path matches an index in the range of this selector
-func (s ExploreRange) Explore(n ipld.Node, p ipld.PathSegment) Selector {
+func (s ExploreRange) Explore(n ipld.Node, p ipld.PathSegment) (Selector, error) {
 	if n.Kind() != ipld.Kind_List {
-		return nil
+		return nil, nil
 	}
 	index, err := p.Index()
 	if err != nil {
-		return nil
+		return nil, nil
 	}
 	if index < s.start || index >= s.end {
-		return nil
+		return nil, nil
 	}
-	return s.next
+	return s.next, nil
 }
 
 // Decide always returns false because this is not a matcher

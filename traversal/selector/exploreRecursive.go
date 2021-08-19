@@ -86,28 +86,34 @@ func (s ExploreRecursive) Interests() []ipld.PathSegment {
 }
 
 // Explore returns the node's selector for all fields
-func (s ExploreRecursive) Explore(n ipld.Node, p ipld.PathSegment) Selector {
-	if s.stopAt != nil && s.stopAt.Match(n) {
-		return nil
+func (s ExploreRecursive) Explore(n ipld.Node, p ipld.PathSegment) (Selector, error) {
+	if s.stopAt != nil {
+		target, err := n.LookupBySegment(p)
+		if err != nil {
+			return nil, err
+		}
+		if s.stopAt.Match(target) {
+			return nil, nil
+		}
 	}
 
-	nextSelector := s.current.Explore(n, p)
+	nextSelector, _ := s.current.Explore(n, p)
 	limit := s.limit
 
 	if nextSelector == nil {
-		return nil
+		return nil, nil
 	}
 	if !s.hasRecursiveEdge(nextSelector) {
-		return ExploreRecursive{s.sequence, nextSelector, limit, s.stopAt}
+		return ExploreRecursive{s.sequence, nextSelector, limit, s.stopAt}, nil
 	}
 	switch limit.mode {
 	case RecursionLimit_Depth:
 		if limit.depth < 2 {
-			return s.replaceRecursiveEdge(nextSelector, nil)
+			return s.replaceRecursiveEdge(nextSelector, nil), nil
 		}
-		return ExploreRecursive{s.sequence, s.replaceRecursiveEdge(nextSelector, s.sequence), RecursionLimit{RecursionLimit_Depth, limit.depth - 1}, s.stopAt}
+		return ExploreRecursive{s.sequence, s.replaceRecursiveEdge(nextSelector, s.sequence), RecursionLimit{RecursionLimit_Depth, limit.depth - 1}, s.stopAt}, nil
 	case RecursionLimit_None:
-		return ExploreRecursive{s.sequence, s.replaceRecursiveEdge(nextSelector, s.sequence), limit, s.stopAt}
+		return ExploreRecursive{s.sequence, s.replaceRecursiveEdge(nextSelector, s.sequence), limit, s.stopAt}, nil
 	default:
 		panic("Unsupported recursion limit type")
 	}

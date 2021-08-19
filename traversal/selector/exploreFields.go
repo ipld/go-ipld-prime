@@ -29,8 +29,8 @@ func (s ExploreFields) Interests() []ipld.PathSegment {
 
 // Explore returns the selector for the given path if it is a field in
 // the selector node or nil if not
-func (s ExploreFields) Explore(n ipld.Node, p ipld.PathSegment) Selector {
-	return s.selections[p.String()]
+func (s ExploreFields) Explore(n ipld.Node, p ipld.PathSegment) (Selector, error) {
+	return s.selections[p.String()], nil
 }
 
 // Decide always returns false because this is not a matcher

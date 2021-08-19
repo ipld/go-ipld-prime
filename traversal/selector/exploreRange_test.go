@@ -106,7 +106,7 @@ func TestExploreRangeExplore(t *testing.T) {
 	s := ExploreRange{Matcher{}, 3, 4, []ipld.PathSegment{ipld.PathSegmentOfInt(3)}}
 	t.Run("exploring should return nil unless node is a list", func(t *testing.T) {
 		n := fluent.MustBuildMap(basicnode.Prototype__Map{}, 0, func(na fluent.MapAssembler) {})
-		returnedSelector := s.Explore(n, ipld.PathSegmentOfInt(3))
+		returnedSelector, _ := s.Explore(n, ipld.PathSegmentOfInt(3))
 		Wish(t, returnedSelector, ShouldEqual, nil)
 	})
 	n := fluent.MustBuildList(basicnode.Prototype__List{}, 4, func(na fluent.ListAssembler) {
@@ -116,15 +116,15 @@ func TestExploreRangeExplore(t *testing.T) {
 		na.AssembleValue().AssignInt(3)
 	})
 	t.Run("exploring should return nil when given a path segment out of range", func(t *testing.T) {
-		returnedSelector := s.Explore(n, ipld.PathSegmentOfInt(2))
+		returnedSelector, _ := s.Explore(n, ipld.PathSegmentOfInt(2))
 		Wish(t, returnedSelector, ShouldEqual, nil)
 	})
 	t.Run("exploring should return nil when given a path segment that isn't an index", func(t *testing.T) {
-		returnedSelector := s.Explore(n, ipld.PathSegmentOfString("cheese"))
+		returnedSelector, _ := s.Explore(n, ipld.PathSegmentOfString("cheese"))
 		Wish(t, returnedSelector, ShouldEqual, nil)
 	})
 	t.Run("exploring should return the next selector when given a path segment with index in range", func(t *testing.T) {
-		returnedSelector := s.Explore(n, ipld.PathSegmentOfInt(3))
+		returnedSelector, _ := s.Explore(n, ipld.PathSegmentOfInt(3))
 		Wish(t, returnedSelector, ShouldEqual, Matcher{})
 	})
 }

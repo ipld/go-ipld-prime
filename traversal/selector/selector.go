@@ -98,7 +98,7 @@ type Selector interface {
 	// Remember that Explore does **not** iterate `node` itself; the visits to any children of `node` will be driven from the outside, by the traversal function.
 	// (The Selector's job is just guiding that process by returning information.)
 	// The architecture works this way so that a sufficiently clever traversal function could consider several reasons for exploring a node before deciding whether to do so.
-	Explore(node ipld.Node, child ipld.PathSegment) (subsequent Selector)
+	Explore(node ipld.Node, child ipld.PathSegment) (subsequent Selector, err error)
 
 	// Decide returns true if the subject node is "matched".
 	//

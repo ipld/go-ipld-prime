@@ -42,22 +42,25 @@ func (s ExploreUnion) Interests() []ipld.PathSegment {
 // - a new union selector if more than one member returns a selector
 // - if exactly one member returns a selector, that selector
 // - nil if no members return a selector
-func (s ExploreUnion) Explore(n ipld.Node, p ipld.PathSegment) Selector {
+func (s ExploreUnion) Explore(n ipld.Node, p ipld.PathSegment) (Selector, error) {
 	// TODO: memory efficient?
 	nonNilResults := make([]Selector, 0, len(s.Members))
 	for _, member := range s.Members {
-		resultSelector := member.Explore(n, p)
+		resultSelector, err := member.Explore(n, p)
+		if err != nil {
+			return nil, err
+		}
 		if resultSelector != nil {
 			nonNilResults = append(nonNilResults, resultSelector)
 		}
 	}
 	if len(nonNilResults) == 0 {
-		return nil
+		return nil, nil
 	}
 	if len(nonNilResults) == 1 {
-		return nonNilResults[0]
+		return nonNilResults[0], nil
 	}
-	return ExploreUnion{nonNilResults}
+	return ExploreUnion{nonNilResults}, nil
 }
 
 // Decide returns true for a Union selector if any of the member selectors

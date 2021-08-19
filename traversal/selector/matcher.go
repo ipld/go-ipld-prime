@@ -25,8 +25,8 @@ func (s Matcher) Interests() []ipld.PathSegment {
 }
 
 // Explore will return nil because a matcher is a terminal selector
-func (s Matcher) Explore(n ipld.Node, p ipld.PathSegment) Selector {
-	return nil
+func (s Matcher) Explore(n ipld.Node, p ipld.PathSegment) (Selector, error) {
+	return nil, nil
 }
 
 // Decide is always true for a match cause it's in the result set

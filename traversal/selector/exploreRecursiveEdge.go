@@ -22,7 +22,7 @@ func (s ExploreRecursiveEdge) Interests() []ipld.PathSegment {
 }
 
 // Explore should ultimately never get called for an ExploreRecursiveEdge selector
-func (s ExploreRecursiveEdge) Explore(n ipld.Node, p ipld.PathSegment) Selector {
+func (s ExploreRecursiveEdge) Explore(n ipld.Node, p ipld.PathSegment) (Selector, error) {
 	panic("Traversed Explore Recursive Edge Node With No Parent")
 }
 
