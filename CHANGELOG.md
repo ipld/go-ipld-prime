@@ -44,6 +44,84 @@ When a release tag is made, this block of bullet points will just slide down to 
 Released Changes
 ----------------
 
+### v0.12.0
+
+_2021 August 19_
+
+This release is a momentous one.  It contains a sizable refactor:
+we've extracted some of the most key interfaces to a new package, called `datamodel`!
+
+It's also an even numbered release tag, which we generally use to indicate "upgrading should be smooth sailing".
+Surprisingly, despite the magnitude of the refactor, we mean that, too.
+Golang's "alias" feature has been used _heavily_ for this change process,
+and downstream code that worked on the previous release should continue to work on this release too, without syntactic changes.
+
+Why did we do this?
+
+The root package, `ipld`, is now going to be a place where we can put helpful functions.
+Synthesis functions that put all the pieces of IPLD together for you.
+The functions you're probably looking for; the high-level stuff that gets work done.
+
+Previously, the root package was _guts_: the lowest level interfaces, the more core stuff...
+which was cool to see (arguably), but tended not to be the things you'd want to see _first_ as a new user.
+And because everything _else_ in the world depended on those interface,
+we could never put interesting high-level functions in the same package
+(or if we tried, compilation would fail, because of import cycles)...
+which meant any time we wanted to add helper functions for getting useful work done,
+we'd be stuck cramming them off into subpackages somewhere.
+While this worked, the discoverability for a new user was terribly arduous.
+
+We hope this pivot to how we organize the code helps you find your way through IPLD!
+
+We haven't yet added many of the new helper features to the updated root package.
+Those will come in the very near future.
+(Follow along with commits on the master branch if you want to try the new APIs early!)
+This release is being made just to cover the refactor, before we steam along any further.
+
+Your existing code should continue working without changes because the root `ipld` package
+still contains all the same types -- just as aliases.
+You can choose to update your code to use the types where they've moved to
+(which is mostly the `datamodel` package), or, if you prefer... just leave it as-is.
+Some aliases may be removed over time; if so, they'll be marked with a comment to that effect,
+and there should be plenty of warning and time to change.
+
+In some cases, continuing to use the `ipld` package directly will remain acceptable indefinitely.
+The new intention is that common work should often be possible to do only by
+importing the `ipld` package, and users should only need to dive into
+the more specific subpackages if they been to need direct access to more detailed APIs
+for performance or other reasons.
+
+That's it for the big refactor news.
+
+There's also some sweet new features in bindnode,
+and a few other important fixes to recently introduced features.
+
+In detail:
+
+- Changed: that massive refactor, described above.  Gosh it's big.
+  [[#228](https://github.com/ipld/go-ipld-prime/pull/228)]
+- New: the selectors system is tested against the language-agnostic selector specs, from the IPLD specs+docs repo!
+  [[#231](https://github.com/ipld/go-ipld-prime/pull/231)]
+	- This uses a new fixture format, called [testmark](https://github.com/warpfork/go-testmark#what-is-the-testmark-format), which is managed by a library called [go-testmark](https://pkg.go.dev/github.com/warpfork/go-testmark).
+	- The fixtures are drawn in by a git submodule.  The actual fixture content remains in the [ipld/ipld](https://github.com/ipld/ipld/) repo.
+	- These new tests will be run if you have cloned the git submodule (and of course, by CI).  If you do not clone the submodule that contains the fixtures, the tests will quietly skip.
+	- We hope this will be a template for how to do more testing in the future, while keeping it closely coordinated with specs, and in sync with other implementations of IPLD in other languages!
+- Improved: bindnode: in a variety of ways.
+  [[#226](https://github.com/ipld/go-ipld-prime/pull/226)]
+	- Several error messages are improved.
+	- Kinded unions support complex recipients even for string kinds.  (E.g., putting a struct with stringjoin representation inside a kinded union now works correctly.)
+	- Stringprefix unions now work even with no explicit delimiter.
+	- Please note that bindnode is, and remains, considered experimental.  While we're improving it, it's still something to use at your own risk.
+- Changed/Improved: bindnode: unions are now handled completely differently (and much better).
+  [[#223](https://github.com/ipld/go-ipld-prime/pull/223)]
+	- In short: now they expect a golang struct which has a field for each of the possible members, and each of them should be a pointer.  This is type safe and works reasonably idiomatically in golang.
+	- This is a fairly huge improvement, because it fixes the "bindnode unions force downshift into anonymous types" problem, which was tracked as [issue#210](https://github.com/ipld/go-ipld-prime/issues/210).
+- Fixed: the selector `ExploreRecursive.stopAt` feature now actually... works.  It was completely broken when it was introduced in the last release.  (Tests.  They're important.)
+  [[#229](https://github.com/ipld/go-ipld-prime/pull/229)]
+	- Notice how we've also now got selector tests driven by fixtures appearing in this release.  Hopefully that decreases the odds of something like this happening again.
+
+
+
 ### v0.11.0
 
 _2021 August 12_
