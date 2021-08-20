@@ -464,12 +464,12 @@ func (w *_assemblerRepr) asKinded(stg schema.UnionRepresentation_Kinded, kind da
 
 		// Layer a new finish func on top, to set Index/Value.
 		w2.finish = func() error {
+			unionSetMember(w.val, idx, valPtr)
 			if w.finish != nil {
 				if err := w.finish(); err != nil {
 					return err
 				}
 			}
-			unionSetMember(w.val, idx, valPtr)
 			return nil
 		}
 		return &w2
@@ -614,12 +614,12 @@ func (w *_assemblerRepr) AssignString(s string) error {
 			w2.val = valPtr.Elem()
 			w2.schemaType = member
 			w2.finish = func() error {
+				unionSetMember(w.val, idx, valPtr)
 				if w.finish != nil {
 					if err := w.finish(); err != nil {
 						return err
 					}
 				}
-				unionSetMember(w.val, idx, valPtr)
 				return nil
 			}
 			return w2.AssignString(remainder)
