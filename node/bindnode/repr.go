@@ -53,7 +53,7 @@ func (w *_nodeRepr) Kind() datamodel.Kind {
 		return datamodel.Kind_Map
 	case schema.UnionRepresentation_Kinded:
 		haveIdx, _ := unionMember(w.val)
-		mtyp := w.schemaType.(*schema.TypeUnion).Members()[haveIdx]
+		mtyp := w.schemaType.(*schema.TypeUnion).Members()[haveIdx] // TODO this is fragile: panics with index-out-of-range if the user has nil'd all fields.
 		return mtyp.TypeKind().ActsLike()
 	case schema.UnionRepresentation_Stringprefix:
 		return datamodel.Kind_String
