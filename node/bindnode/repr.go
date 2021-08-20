@@ -257,9 +257,24 @@ func (w *_mapIteratorRepr) Done() bool {
 
 func (w *_nodeRepr) ListIterator() datamodel.ListIterator {
 	if reprStrategy(w.schemaType) == nil {
-		return (*_node)(w).ListIterator()
+		return (*_listIteratorRepr)((*_node)(w).ListIterator().(*_listIterator))
 	}
+	// TODO this is probably failing silently for structs with tuple representation.
 	return nil
+}
+
+type _listIteratorRepr _listIterator
+
+func (w *_listIteratorRepr) Next() (index int64, value datamodel.Node, _ error) {
+	idx, v, err := (*_listIterator)(w).Next()
+	if err != nil {
+		return idx, nil, err
+	}
+	return idx, v.(schema.TypedNode).Representation(), nil
+}
+
+func (w *_listIteratorRepr) Done() bool {
+	return w.nextIndex >= w.val.Len()
 }
 
 func (w *_nodeRepr) lengthMinusTrailingAbsents() int64 {
