@@ -155,6 +155,9 @@ func UnmarshalStreaming(r io.Reader, decFn Decoder, bind interface{}, typ schema
 	// Decode is fairly straightforward.
 	np := bindnode.Prototype(bind, typ)
 	n, err := DecodeStreamingUsingPrototype(r, decFn, np.Representation())
+	if err != nil {
+		return nil, err
+	}
 	// ... but our approach above allocated new memory, and we have to copy it back out.
 	// In the future, the bindnode API could be improved to make this easier.
 	if !reflect.ValueOf(bind).IsNil() {
