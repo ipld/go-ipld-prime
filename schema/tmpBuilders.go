@@ -101,6 +101,8 @@ func SpawnStruct(name TypeName, fields []StructField, repr StructRepresentation)
 				panic("neither nullable nor optional is supported on struct stringjoin representation")
 			}
 		}
+	case nil:
+		v.representation = SpawnStructRepresentationMap(nil)
 	}
 	return v
 }

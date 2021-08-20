@@ -226,10 +226,33 @@ func (w *_nodeRepr) MapIterator() datamodel.MapIterator {
 		itr := (*_node)(w).MapIterator().(*_unionIterator)
 		return (*_unionIteratorRepr)(itr)
 	case nil:
-		return (*_node)(w).MapIterator()
+		switch st := (w.schemaType).(type) {
+		case *schema.TypeMap:
+			return &_mapIteratorRepr{
+				schemaType: st,
+				keysVal:    w.val.FieldByName("Keys"),
+				valuesVal:  w.val.FieldByName("Values"),
+			}
+		default:
+			panic(fmt.Sprintf("TODO: mapitr.repr for typekind %s", w.schemaType.TypeKind()))
+		}
 	default:
 		panic(fmt.Sprintf("TODO: %T", stg))
 	}
+}
+
+type _mapIteratorRepr _mapIterator
+
+func (w *_mapIteratorRepr) Next() (key, value datamodel.Node, _ error) {
+	k, v, err := (*_mapIterator)(w).Next()
+	if err != nil {
+		return nil, nil, err
+	}
+	return k.(schema.TypedNode).Representation(), v.(schema.TypedNode).Representation(), nil
+}
+
+func (w *_mapIteratorRepr) Done() bool {
+	return w.nextIndex >= w.keysVal.Len()
 }
 
 func (w *_nodeRepr) ListIterator() datamodel.ListIterator {
