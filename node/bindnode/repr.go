@@ -394,13 +394,15 @@ func (w *_nodeRepr) AsString() (string, error) {
 		name := stg.GetDiscriminant(mtyp)
 		return name + stg.GetDelim() + s, nil
 	case schema.UnionRepresentation_Kinded:
-		w = w.asKinded(stg, datamodel.Kind_String)
-		// continues below
+		return w.asKinded(stg, datamodel.Kind_String).AsString()
 	case nil:
 		// continues below
 	default:
 		panic(fmt.Sprintf("TODO: %T", stg))
 	}
+	// Things that have reached here, should be only those things that have string kind naturally,
+	// and so using the same method as the type level is correct.
+	// TODO is this applicable for anything other than... strings?
 	return (*_node)(w).AsString()
 }
 
