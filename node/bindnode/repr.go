@@ -183,9 +183,10 @@ func (w *_nodeRepr) LookupBySegment(seg datamodel.PathSegment) (datamodel.Node, 
 		return w.LookupByIndex(idx)
 	}
 	return nil, datamodel.ErrWrongKind{
-		TypeName:   w.schemaType.Name().String(),
-		MethodName: "LookupBySegment",
-		// TODO
+		TypeName:        w.schemaType.Name().String(),
+		MethodName:      "LookupBySegment",
+		AppropriateKind: datamodel.KindSet_Recursive,
+		ActualKind:      w.Kind(),
 	}
 }
 
@@ -205,9 +206,10 @@ func (w *_nodeRepr) LookupByNode(key datamodel.Node) (datamodel.Node, error) {
 		return w.LookupByIndex(i)
 	}
 	return nil, datamodel.ErrWrongKind{
-		TypeName:   w.schemaType.Name().String(),
-		MethodName: "LookupByNode",
-		// TODO
+		TypeName:        w.schemaType.Name().String(),
+		MethodName:      "LookupByNode",
+		AppropriateKind: datamodel.KindSet_Recursive,
+		ActualKind:      w.Kind(),
 	}
 }
 
@@ -291,7 +293,7 @@ func (w *_nodeRepr) AsBool() (bool, error) {
 		TypeName:        w.schemaType.Name().String(),
 		MethodName:      "AsBool",
 		AppropriateKind: datamodel.KindSet_JustBool,
-		// TODO
+		ActualKind:      w.Kind(),
 	}
 }
 
@@ -303,7 +305,7 @@ func (w *_nodeRepr) AsInt() (int64, error) {
 		TypeName:        w.schemaType.Name().String(),
 		MethodName:      "AsInt",
 		AppropriateKind: datamodel.KindSet_JustInt,
-		// TODO
+		ActualKind:      w.Kind(),
 	}
 }
 
@@ -315,7 +317,7 @@ func (w *_nodeRepr) AsFloat() (float64, error) {
 		TypeName:        w.schemaType.Name().String(),
 		MethodName:      "AsFloat",
 		AppropriateKind: datamodel.KindSet_JustFloat,
-		// TODO
+		ActualKind:      w.Kind(),
 	}
 }
 
@@ -372,7 +374,7 @@ func (w *_nodeRepr) AsBytes() ([]byte, error) {
 		TypeName:        w.schemaType.Name().String(),
 		MethodName:      "AsBytes",
 		AppropriateKind: datamodel.KindSet_JustBytes,
-		// TODO
+		ActualKind:      w.Kind(),
 	}
 }
 
@@ -384,7 +386,7 @@ func (w *_nodeRepr) AsLink() (datamodel.Link, error) {
 		TypeName:        w.schemaType.Name().String(),
 		MethodName:      "AsLink",
 		AppropriateKind: datamodel.KindSet_JustLink,
-		// TODO
+		ActualKind:      w.Kind(),
 	}
 }
 
