@@ -30,6 +30,9 @@ type ErrWrongKind struct {
 	// In the case of typed nodes, this will typically refer to the 'natural'
 	// data-model kind for such a type (e.g., structs will say 'map' here).
 	ActualKind Kind
+
+	// TODO: it may be desirable for this error to be able to describe the schema typekind, too, if applicable.
+	// Of course this presents certain package import graph problems.  Solution to this that maximizes user usability is unclear.
 }
 
 func (e ErrWrongKind) Error() string {

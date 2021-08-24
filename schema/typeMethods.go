@@ -42,6 +42,8 @@ func (t TypeUnion) RepresentationBehavior() datamodel.Kind {
 		return datamodel.Kind_Map
 	case UnionRepresentation_Inline:
 		return datamodel.Kind_Map
+	case UnionRepresentation_Stringprefix:
+		return datamodel.Kind_String
 	default:
 		panic("unreachable")
 	}

@@ -53,8 +53,8 @@ func (w *_nodeRepr) Kind() datamodel.Kind {
 		return datamodel.Kind_Map
 	case schema.UnionRepresentation_Kinded:
 		haveIdx, _ := unionMember(w.val)
-		mtyp := w.schemaType.(*schema.TypeUnion).Members()[haveIdx]
-		return mtyp.TypeKind().ActsLike()
+		mtyp := w.schemaType.(*schema.TypeUnion).Members()[haveIdx] // TODO this is fragile: panics with index-out-of-range if the user has nil'd all fields.
+		return mtyp.RepresentationBehavior()
 	case schema.UnionRepresentation_Stringprefix:
 		return datamodel.Kind_String
 	case nil:
@@ -183,9 +183,10 @@ func (w *_nodeRepr) LookupBySegment(seg datamodel.PathSegment) (datamodel.Node, 
 		return w.LookupByIndex(idx)
 	}
 	return nil, datamodel.ErrWrongKind{
-		TypeName:   w.schemaType.Name().String(),
-		MethodName: "LookupBySegment",
-		// TODO
+		TypeName:        w.schemaType.Name().String(),
+		MethodName:      "LookupBySegment",
+		AppropriateKind: datamodel.KindSet_Recursive,
+		ActualKind:      w.Kind(),
 	}
 }
 
@@ -205,9 +206,10 @@ func (w *_nodeRepr) LookupByNode(key datamodel.Node) (datamodel.Node, error) {
 		return w.LookupByIndex(i)
 	}
 	return nil, datamodel.ErrWrongKind{
-		TypeName:   w.schemaType.Name().String(),
-		MethodName: "LookupByNode",
-		// TODO
+		TypeName:        w.schemaType.Name().String(),
+		MethodName:      "LookupByNode",
+		AppropriateKind: datamodel.KindSet_Recursive,
+		ActualKind:      w.Kind(),
 	}
 }
 
@@ -224,17 +226,55 @@ func (w *_nodeRepr) MapIterator() datamodel.MapIterator {
 		itr := (*_node)(w).MapIterator().(*_unionIterator)
 		return (*_unionIteratorRepr)(itr)
 	case nil:
-		return (*_node)(w).MapIterator()
+		switch st := (w.schemaType).(type) {
+		case *schema.TypeMap:
+			return &_mapIteratorRepr{
+				schemaType: st,
+				keysVal:    w.val.FieldByName("Keys"),
+				valuesVal:  w.val.FieldByName("Values"),
+			}
+		default:
+			panic(fmt.Sprintf("TODO: mapitr.repr for typekind %s", w.schemaType.TypeKind()))
+		}
 	default:
 		panic(fmt.Sprintf("TODO: %T", stg))
 	}
 }
 
+type _mapIteratorRepr _mapIterator
+
+func (w *_mapIteratorRepr) Next() (key, value datamodel.Node, _ error) {
+	k, v, err := (*_mapIterator)(w).Next()
+	if err != nil {
+		return nil, nil, err
+	}
+	return k.(schema.TypedNode).Representation(), v.(schema.TypedNode).Representation(), nil
+}
+
+func (w *_mapIteratorRepr) Done() bool {
+	return w.nextIndex >= w.keysVal.Len()
+}
+
 func (w *_nodeRepr) ListIterator() datamodel.ListIterator {
 	if reprStrategy(w.schemaType) == nil {
-		return (*_node)(w).ListIterator()
+		return (*_listIteratorRepr)((*_node)(w).ListIterator().(*_listIterator))
 	}
+	// TODO this is probably failing silently for structs with tuple representation.
 	return nil
+}
+
+type _listIteratorRepr _listIterator
+
+func (w *_listIteratorRepr) Next() (index int64, value datamodel.Node, _ error) {
+	idx, v, err := (*_listIterator)(w).Next()
+	if err != nil {
+		return idx, nil, err
+	}
+	return idx, v.(schema.TypedNode).Representation(), nil
+}
+
+func (w *_listIteratorRepr) Done() bool {
+	return w.nextIndex >= w.val.Len()
 }
 
 func (w *_nodeRepr) lengthMinusTrailingAbsents() int64 {
@@ -291,7 +331,7 @@ func (w *_nodeRepr) AsBool() (bool, error) {
 		TypeName:        w.schemaType.Name().String(),
 		MethodName:      "AsBool",
 		AppropriateKind: datamodel.KindSet_JustBool,
-		// TODO
+		ActualKind:      w.Kind(),
 	}
 }
 
@@ -303,7 +343,7 @@ func (w *_nodeRepr) AsInt() (int64, error) {
 		TypeName:        w.schemaType.Name().String(),
 		MethodName:      "AsInt",
 		AppropriateKind: datamodel.KindSet_JustInt,
-		// TODO
+		ActualKind:      w.Kind(),
 	}
 }
 
@@ -315,7 +355,7 @@ func (w *_nodeRepr) AsFloat() (float64, error) {
 		TypeName:        w.schemaType.Name().String(),
 		MethodName:      "AsFloat",
 		AppropriateKind: datamodel.KindSet_JustFloat,
-		// TODO
+		ActualKind:      w.Kind(),
 	}
 }
 
@@ -354,13 +394,15 @@ func (w *_nodeRepr) AsString() (string, error) {
 		name := stg.GetDiscriminant(mtyp)
 		return name + stg.GetDelim() + s, nil
 	case schema.UnionRepresentation_Kinded:
-		w = w.asKinded(stg, datamodel.Kind_String)
-		// continues below
+		return w.asKinded(stg, datamodel.Kind_String).AsString()
 	case nil:
 		// continues below
 	default:
 		panic(fmt.Sprintf("TODO: %T", stg))
 	}
+	// Things that have reached here, should be only those things that have string kind naturally,
+	// and so using the same method as the type level is correct.
+	// TODO is this applicable for anything other than... strings?
 	return (*_node)(w).AsString()
 }
 
@@ -372,7 +414,7 @@ func (w *_nodeRepr) AsBytes() ([]byte, error) {
 		TypeName:        w.schemaType.Name().String(),
 		MethodName:      "AsBytes",
 		AppropriateKind: datamodel.KindSet_JustBytes,
-		// TODO
+		ActualKind:      w.Kind(),
 	}
 }
 
@@ -384,7 +426,7 @@ func (w *_nodeRepr) AsLink() (datamodel.Link, error) {
 		TypeName:        w.schemaType.Name().String(),
 		MethodName:      "AsLink",
 		AppropriateKind: datamodel.KindSet_JustLink,
-		// TODO
+		ActualKind:      w.Kind(),
 	}
 }
 
@@ -439,12 +481,12 @@ func (w *_assemblerRepr) asKinded(stg schema.UnionRepresentation_Kinded, kind da
 
 		// Layer a new finish func on top, to set Index/Value.
 		w2.finish = func() error {
+			unionSetMember(w.val, idx, valPtr)
 			if w.finish != nil {
 				if err := w.finish(); err != nil {
 					return err
 				}
 			}
-			unionSetMember(w.val, idx, valPtr)
 			return nil
 		}
 		return &w2
@@ -589,12 +631,12 @@ func (w *_assemblerRepr) AssignString(s string) error {
 			w2.val = valPtr.Elem()
 			w2.schemaType = member
 			w2.finish = func() error {
+				unionSetMember(w.val, idx, valPtr)
 				if w.finish != nil {
 					if err := w.finish(); err != nil {
 						return err
 					}
 				}
-				unionSetMember(w.val, idx, valPtr)
 				return nil
 			}
 			return w2.AssignString(remainder)

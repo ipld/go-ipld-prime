@@ -174,9 +174,10 @@ func (w *_node) LookupByString(key string) (datamodel.Node, error) {
 		return node, nil
 	}
 	return nil, datamodel.ErrWrongKind{
-		TypeName:   w.schemaType.Name().String(),
-		MethodName: "LookupByString",
-		// TODO
+		TypeName:        w.schemaType.Name().String(),
+		MethodName:      "LookupByString",
+		AppropriateKind: datamodel.KindSet_JustMap,
+		ActualKind:      w.Kind(),
 	}
 }
 
@@ -218,9 +219,10 @@ func (w *_node) LookupByIndex(idx int64) (datamodel.Node, error) {
 		return &_node{schemaType: typ.ValueType(), val: val}, nil
 	}
 	return nil, datamodel.ErrWrongKind{
-		TypeName:   w.schemaType.Name().String(),
-		MethodName: "LookupByIndex",
-		// TODO
+		TypeName:        w.schemaType.Name().String(),
+		MethodName:      "LookupByIndex",
+		AppropriateKind: datamodel.KindSet_JustList,
+		ActualKind:      w.Kind(),
 	}
 }
 
@@ -236,9 +238,10 @@ func (w *_node) LookupBySegment(seg datamodel.PathSegment) (datamodel.Node, erro
 		return w.LookupByIndex(idx)
 	}
 	return nil, datamodel.ErrWrongKind{
-		TypeName:   w.schemaType.Name().String(),
-		MethodName: "LookupBySegment",
-		// TODO
+		TypeName:        w.schemaType.Name().String(),
+		MethodName:      "LookupBySegment",
+		AppropriateKind: datamodel.KindSet_Recursive,
+		ActualKind:      w.Kind(),
 	}
 }
 
@@ -258,9 +261,10 @@ func (w *_node) LookupByNode(key datamodel.Node) (datamodel.Node, error) {
 		return w.LookupByIndex(i)
 	}
 	return nil, datamodel.ErrWrongKind{
-		TypeName:   w.schemaType.Name().String(),
-		MethodName: "LookupByNode",
-		// TODO
+		TypeName:        w.schemaType.Name().String(),
+		MethodName:      "LookupByNode",
+		AppropriateKind: datamodel.KindSet_Recursive,
+		ActualKind:      w.Kind(),
 	}
 }
 
@@ -331,9 +335,10 @@ func (w *_node) IsNull() bool {
 func (w *_node) AsBool() (bool, error) {
 	if w.Kind() != datamodel.Kind_Bool {
 		return false, datamodel.ErrWrongKind{
-			TypeName:   w.schemaType.Name().String(),
-			MethodName: "AsBool",
-			// TODO
+			TypeName:        w.schemaType.Name().String(),
+			MethodName:      "AsBool",
+			AppropriateKind: datamodel.KindSet_JustBool,
+			ActualKind:      w.Kind(),
 		}
 	}
 	return w.val.Bool(), nil
@@ -342,9 +347,10 @@ func (w *_node) AsBool() (bool, error) {
 func (w *_node) AsInt() (int64, error) {
 	if w.Kind() != datamodel.Kind_Int {
 		return 0, datamodel.ErrWrongKind{
-			TypeName:   w.schemaType.Name().String(),
-			MethodName: "AsInt",
-			// TODO
+			TypeName:        w.schemaType.Name().String(),
+			MethodName:      "AsInt",
+			AppropriateKind: datamodel.KindSet_JustInt,
+			ActualKind:      w.Kind(),
 		}
 	}
 	return w.val.Int(), nil
@@ -353,9 +359,10 @@ func (w *_node) AsInt() (int64, error) {
 func (w *_node) AsFloat() (float64, error) {
 	if w.Kind() != datamodel.Kind_Float {
 		return 0, datamodel.ErrWrongKind{
-			TypeName:   w.schemaType.Name().String(),
-			MethodName: "AsFloat",
-			// TODO
+			TypeName:        w.schemaType.Name().String(),
+			MethodName:      "AsFloat",
+			AppropriateKind: datamodel.KindSet_JustFloat,
+			ActualKind:      w.Kind(),
 		}
 	}
 	return w.val.Float(), nil
@@ -364,9 +371,10 @@ func (w *_node) AsFloat() (float64, error) {
 func (w *_node) AsString() (string, error) {
 	if w.Kind() != datamodel.Kind_String {
 		return "", datamodel.ErrWrongKind{
-			TypeName:   w.schemaType.Name().String(),
-			MethodName: "AsString",
-			// TODO
+			TypeName:        w.schemaType.Name().String(),
+			MethodName:      "AsString",
+			AppropriateKind: datamodel.KindSet_JustString,
+			ActualKind:      w.Kind(),
 		}
 	}
 	return w.val.String(), nil
@@ -375,9 +383,10 @@ func (w *_node) AsString() (string, error) {
 func (w *_node) AsBytes() ([]byte, error) {
 	if w.Kind() != datamodel.Kind_Bytes {
 		return nil, datamodel.ErrWrongKind{
-			TypeName:   w.schemaType.Name().String(),
-			MethodName: "AsBytes",
-			// TODO
+			TypeName:        w.schemaType.Name().String(),
+			MethodName:      "AsBytes",
+			AppropriateKind: datamodel.KindSet_JustBytes,
+			ActualKind:      w.Kind(),
 		}
 	}
 	return w.val.Bytes(), nil
@@ -386,9 +395,10 @@ func (w *_node) AsBytes() ([]byte, error) {
 func (w *_node) AsLink() (datamodel.Link, error) {
 	if w.Kind() != datamodel.Kind_Link {
 		return nil, datamodel.ErrWrongKind{
-			TypeName:   w.schemaType.Name().String(),
-			MethodName: "AsLink",
-			// TODO
+			TypeName:        w.schemaType.Name().String(),
+			MethodName:      "AsLink",
+			AppropriateKind: datamodel.KindSet_JustLink,
+			ActualKind:      w.Kind(),
 		}
 	}
 	link, _ := w.val.Interface().(datamodel.Link)
@@ -471,9 +481,10 @@ func (w *_assembler) BeginMap(sizeHint int64) (datamodel.MapAssembler, error) {
 		}, nil
 	}
 	return nil, datamodel.ErrWrongKind{
-		TypeName:   w.schemaType.Name().String(),
-		MethodName: "BeginMap",
-		// TODO
+		TypeName:        w.schemaType.Name().String(),
+		MethodName:      "BeginMap",
+		AppropriateKind: datamodel.KindSet_JustMap,
+		ActualKind:      w.kind(),
 	}
 }
 
@@ -488,9 +499,10 @@ func (w *_assembler) BeginList(sizeHint int64) (datamodel.ListAssembler, error) 
 		}, nil
 	}
 	return nil, datamodel.ErrWrongKind{
-		TypeName:   w.schemaType.Name().String(),
-		MethodName: "BeginList",
-		// TODO
+		TypeName:        w.schemaType.Name().String(),
+		MethodName:      "BeginList",
+		AppropriateKind: datamodel.KindSet_JustList,
+		ActualKind:      w.kind(),
 	}
 }
 
@@ -600,9 +612,10 @@ func (w *_assembler) AssignLink(link datamodel.Link) error {
 	newVal := reflect.ValueOf(link)
 	if !newVal.Type().AssignableTo(w.val.Type()) {
 		return datamodel.ErrWrongKind{
-			TypeName:   w.schemaType.Name().String(),
-			MethodName: "AssignLink",
-			// TODO
+			TypeName:        w.schemaType.Name().String(),
+			MethodName:      "AssignLink",
+			AppropriateKind: datamodel.KindSet_JustLink,
+			ActualKind:      w.kind(),
 		}
 	}
 	w.nonPtrVal().Set(newVal)
