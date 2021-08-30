@@ -87,17 +87,10 @@ func TestTypedData(t *testing.T) {
 				{"z", "z"}: "b",
 			},
 		}, ts.TypeByName("WowMap"))
-		// This is fairly nasty on the eye, but certainly accurate.
 		qt.Check(t, Sprint(n), qt.Equals, wish.Dedent(`
 			map<WowMap>{
-				struct<FooBar>{
-					foo: string<String>{"x"}
-					bar: string<String>{"y"}
-				}: string<String>{"a"}
-				struct<FooBar>{
-					foo: string<String>{"z"}
-					bar: string<String>{"z"}
-				}: string<String>{"b"}
+				struct<FooBar>{foo: string<String>{"x"}, bar: string<String>{"y"}}: string<String>{"a"}
+				struct<FooBar>{foo: string<String>{"z"}, bar: string<String>{"z"}}: string<String>{"b"}
 			}`,
 		))
 	})

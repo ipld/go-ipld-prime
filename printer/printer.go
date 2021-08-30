@@ -149,18 +149,32 @@ func (z *printBuf) doString(indentLevel int, printState uint8, n datamodel.Node)
 			// continue -- the data-model driven behavior is sufficient to handle the content.
 		case schema.TypeKind_Struct:
 			// Very similar to a map, but keys aren't quoted.
-			// TODO: this should probably one-line itself if we're in printState_isKey.
-			z.writeString("{\n")
+			// Also, because it's possible for structs to be keys in a map themselves, they potentially need oneline emission.
+			oneline := z.Config.oneline(tn.Type(), printState == printState_isKey)
+			z.writeString("{")
+			if !oneline {
+				z.writeString("\n")
+			}
 			for itr := n.MapIterator(); !itr.Done(); {
 				k, v, _ := itr.Next()
-				z.doIndent(indentLevel + 1)
+				if !oneline {
+					z.doIndent(indentLevel + 1)
+				}
 				fn, _ := k.AsString()
 				z.writeString(fn)
 				z.writeString(": ")
 				z.doString(indentLevel+1, printState_isValue, v)
-				z.writeString("\n")
+				if oneline {
+					if !itr.Done() {
+						z.writeString(", ")
+					}
+				} else {
+					z.writeString("\n")
+				}
 			}
-			z.doIndent(indentLevel)
+			if !oneline {
+				z.doIndent(indentLevel)
+			}
 			z.writeString("}")
 			return
 		case schema.TypeKind_Union:
