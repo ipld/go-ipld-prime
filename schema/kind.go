@@ -32,31 +32,31 @@ const (
 func (k TypeKind) String() string {
 	switch k {
 	case TypeKind_Invalid:
-		return "Invalid"
+		return "invalid"
 	case TypeKind_Map:
-		return "Map"
+		return "map"
 	case TypeKind_List:
-		return "List"
+		return "list"
 	case TypeKind_Unit:
-		return "Unit"
+		return "unit"
 	case TypeKind_Bool:
-		return "Bool"
+		return "bool"
 	case TypeKind_Int:
-		return "Int"
+		return "int"
 	case TypeKind_Float:
-		return "Float"
+		return "float"
 	case TypeKind_String:
-		return "String"
+		return "string"
 	case TypeKind_Bytes:
-		return "Bytes"
+		return "bytes"
 	case TypeKind_Link:
-		return "Link"
+		return "link"
 	case TypeKind_Struct:
-		return "Struct"
+		return "struct"
 	case TypeKind_Union:
-		return "Union"
+		return "union"
 	case TypeKind_Enum:
-		return "Enum"
+		return "enum"
 	default:
 		panic("invalid enumeration value!")
 	}
