@@ -94,5 +94,86 @@ func TestTypedData(t *testing.T) {
 			}`,
 		))
 	})
+	t.Run("map-with-nested-struct-keys", func(t *testing.T) {
+		type Baz struct {
+			Baz string
+		}
+		type FooBar struct {
+			Foo string
+			Bar Baz
+			Baz Baz
+		}
+		type WowMap struct {
+			Keys   []FooBar
+			Values map[FooBar]Baz
+		}
+		ts := schema.MustTypeSystem(
+			schema.SpawnString("String"),
+			schema.SpawnStruct("FooBar", []schema.StructField{
+				schema.SpawnStructField("foo", "String", false, false),
+				schema.SpawnStructField("bar", "Baz", false, false),
+				schema.SpawnStructField("baz", "Baz", false, false),
+			}, schema.SpawnStructRepresentationStringjoin(":")),
+			schema.SpawnStruct("Baz", []schema.StructField{
+				schema.SpawnStructField("baz", "String", false, false),
+			}, schema.SpawnStructRepresentationStringjoin(":")),
+			schema.SpawnMap("WowMap", "FooBar", "Baz", false),
+		)
+		n := bindnode.Wrap(&WowMap{
+			Keys: []FooBar{{"x", Baz{"y"}, Baz{"y"}}, {"z", Baz{"z"}, Baz{"z"}}},
+			Values: map[FooBar]Baz{
+				{"x", Baz{"y"}, Baz{"y"}}: Baz{"a"},
+				{"z", Baz{"z"}, Baz{"z"}}: Baz{"b"},
+			},
+		}, ts.TypeByName("WowMap"))
+		t.Run("complex-keys-in-effect", func(t *testing.T) {
+			cfg := Config{
+				AlwaysUseMapComplexStyle: true,
+			}
+			qt.Check(t, cfg.Sprint(n), qt.Equals, wish.Dedent(`
+				map<WowMap>{
+					struct<FooBar>{
+							foo: string<String>{"x"}
+							bar: struct<Baz>{
+								baz: string<String>{"y"}
+							}
+							baz: struct<Baz>{
+								baz: string<String>{"y"}
+							}
+					}: struct<Baz>{
+						baz: string<String>{"a"}
+					}
+					struct<FooBar>{
+							foo: string<String>{"z"}
+							bar: struct<Baz>{
+								baz: string<String>{"z"}
+							}
+							baz: struct<Baz>{
+								baz: string<String>{"z"}
+							}
+					}: struct<Baz>{
+						baz: string<String>{"b"}
+					}
+				}`,
+			))
+		})
+		t.Run("complex-keys-in-disabled", func(t *testing.T) {
+			cfg := Config{
+				SpecificMapComplexStyle: map[schema.TypeName]bool{
+					"WowMap": false,
+				},
+			}
+			qt.Check(t, cfg.Sprint(n), qt.Equals, wish.Dedent(`
+				map<WowMap>{
+					struct<FooBar>{foo: string<String>{"x"}, bar: struct<Baz>{baz: string<String>{"y"}}, baz: struct<Baz>{baz: string<String>{"y"}}}: struct<Baz>{
+						baz: string<String>{"a"}
+					}
+					struct<FooBar>{foo: string<String>{"z"}, bar: struct<Baz>{baz: string<String>{"z"}}, baz: struct<Baz>{baz: string<String>{"z"}}}: struct<Baz>{
+						baz: string<String>{"b"}
+					}
+				}`,
+			))
+		})
+	})
 
 }
