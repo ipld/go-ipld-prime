@@ -119,6 +119,8 @@ func (z *printBuf) doString(indentLevel int, printState uint8, n datamodel.Node)
 		z.doIndent(indentLevel)
 	}
 	// Second: the typekind and type name; or, just the kind, if there's no type.
+	//  Note: this can be somewhat overbearing -- for example, typed strings are going to get called out as `string<String>{"value"}`.
+	//   This is rather agonizingly verbose, but also accurate; I'm not sure if we'd want to elide information about typed-vs-untyped entirely.
 	if tn, ok := n.(schema.TypedNode); ok {
 		z.writeString(tn.Type().TypeKind().String())
 		z.writeString("<")
@@ -146,7 +148,21 @@ func (z *printBuf) doString(indentLevel int, printState uint8, n datamodel.Node)
 		case schema.TypeKind_Link:
 			// continue -- the data-model driven behavior is sufficient to handle the content.
 		case schema.TypeKind_Struct:
-			panic("TODO")
+			// Very similar to a map, but keys aren't quoted.
+			// TODO: this should probably one-line itself if we're in printState_isKey.
+			z.writeString("{\n")
+			for itr := n.MapIterator(); !itr.Done(); {
+				k, v, _ := itr.Next()
+				z.doIndent(indentLevel + 1)
+				fn, _ := k.AsString()
+				z.writeString(fn)
+				z.writeString(": ")
+				z.doString(indentLevel+1, printState_isValue, v)
+				z.writeString("\n")
+			}
+			z.doIndent(indentLevel)
+			z.writeString("}")
+			return
 		case schema.TypeKind_Union:
 			panic("TODO")
 		case schema.TypeKind_Enum:
