@@ -234,6 +234,10 @@ func (z *printBuf) doString(indentLevel int, printState uint8, n datamodel.Node)
 			panic("unreachable")
 		}
 	} else {
+		if n.IsAbsent() {
+			z.writeString("absent")
+			return
+		}
 		z.writeString(n.Kind().String())
 	}
 	// Third: all the actual content.
@@ -287,17 +291,13 @@ func (z *printBuf) doString(indentLevel int, printState uint8, n datamodel.Node)
 		z.doIndent(indentLevel)
 		z.writeString("}")
 	case datamodel.Kind_Null:
-		if n.IsAbsent() {
-			z.writeString("absent\n")
-		} else {
-			z.writeString("null\n")
-		}
+		// nothing: we already wrote the word "null" when we wrote the kind info prefix.
 	case datamodel.Kind_Bool:
 		z.writeString("{")
 		if b, _ := n.AsBool(); b {
-			z.writeString("true\n")
+			z.writeString("true")
 		} else {
-			z.writeString("false\n")
+			z.writeString("false")
 		}
 		z.writeString("}")
 	case datamodel.Kind_Int:
