@@ -227,7 +227,14 @@ func (z *printBuf) doString(indentLevel int, printState uint8, n datamodel.Node)
 			z.writeString("}")
 			return
 		case schema.TypeKind_Union:
-			panic("TODO")
+			// There will only be one thing in it, but we still have to use an iterator
+			//  to figure out what that is if we're doing this generically.
+			//  We can ignore the key and just look at the value type again though (even though those are the same in practice).
+			_, v, _ := n.MapIterator().Next()
+			z.writeString("{")
+			z.doString(indentLevel, printState_isValue, v)
+			z.writeString("}")
+			return
 		case schema.TypeKind_Enum:
 			panic("TODO")
 		default:
