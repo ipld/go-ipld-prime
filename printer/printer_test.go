@@ -26,7 +26,7 @@ func TestSimpleData(t *testing.T) {
 			qp.ListEntry(la, qp.Int(2))
 		}))
 	})
-	qt.Check(t, Sprint(n), qt.Equals, wish.Dedent(`
+	qt.Check(t, Sprint(n), qt.CmpEquals(), wish.Dedent(`
 		map{
 			string{"some key"}: string{"some value"}
 			string{"another key"}: string{"another value"}
@@ -56,7 +56,7 @@ func TestTypedData(t *testing.T) {
 			}, nil),
 		)
 		n := bindnode.Wrap(&FooBar{"x", "y"}, ts.TypeByName("FooBar"))
-		qt.Check(t, Sprint(n), qt.Equals, wish.Dedent(`
+		qt.Check(t, Sprint(n), qt.CmpEquals(), wish.Dedent(`
 			struct<FooBar>{
 				foo: string<String>{"x"}
 				bar: string<String>{"y"}
@@ -87,7 +87,7 @@ func TestTypedData(t *testing.T) {
 				{"z", "z"}: "b",
 			},
 		}, ts.TypeByName("WowMap"))
-		qt.Check(t, Sprint(n), qt.Equals, wish.Dedent(`
+		qt.Check(t, Sprint(n), qt.CmpEquals(), wish.Dedent(`
 			map<WowMap>{
 				struct<FooBar>{foo: string<String>{"x"}, bar: string<String>{"y"}}: string<String>{"a"}
 				struct<FooBar>{foo: string<String>{"z"}, bar: string<String>{"z"}}: string<String>{"b"}
@@ -130,7 +130,7 @@ func TestTypedData(t *testing.T) {
 			cfg := Config{
 				AlwaysUseMapComplexStyle: true,
 			}
-			qt.Check(t, cfg.Sprint(n), qt.Equals, wish.Dedent(`
+			qt.Check(t, cfg.Sprint(n), qt.CmpEquals(), wish.Dedent(`
 				map<WowMap>{
 					struct<FooBar>{
 							foo: string<String>{"x"}
@@ -163,7 +163,7 @@ func TestTypedData(t *testing.T) {
 					"WowMap": false,
 				},
 			}
-			qt.Check(t, cfg.Sprint(n), qt.Equals, wish.Dedent(`
+			qt.Check(t, cfg.Sprint(n), qt.CmpEquals(), wish.Dedent(`
 				map<WowMap>{
 					struct<FooBar>{foo: string<String>{"x"}, bar: struct<Baz>{baz: string<String>{"y"}}, baz: struct<Baz>{baz: string<String>{"y"}}}: struct<Baz>{
 						baz: string<String>{"a"}
