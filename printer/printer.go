@@ -72,9 +72,24 @@ type Config struct {
 	// Not yet supported.
 	AlwaysMarkStrings bool
 
-	AlwaysUseMapComplexStyle bool
+	// Set to true if you want type info to be skipped for any type that's in the Prelude
+	// (e.g. instead of `string<String>{` seeing only `string{` is preferred, etc).
+	//
+	// Not yet supported.
+	ElidePreludeTypeInfo bool
 
-	SpecificMapComplexStyle map[schema.TypeName]bool
+	// Set to true if you want maps to use "complex"-style printouts:
+	// meaning they will print their keys on separate lines than their values,
+	// and keys may spread across mutiple lines if appropriate.
+	//
+	// If not set, a heuristic will be used based on if the map is known to
+	// have keys that are complex enough that rendering them as oneline seems likely to overload.
+	// See Config.useCmplxKeys for exactly how that's deteremined.
+	UseMapComplexStyleAlways bool
+
+	// For maps to use "complex"-style printouts (or not) per type.
+	// See docs on UseMapComplexStyleAlways for the overview of what "complex"-style means.
+	UseMapComplexStyleOnType map[schema.TypeName]bool
 }
 
 func (cfg *Config) init() {
@@ -101,14 +116,14 @@ func (cfg Config) useRepr(typ schema.Type, isInKey bool) bool {
 
 // useCmplxKeys decides if a map should print itself using a multi-line and extra-indented style for keys.
 func (cfg Config) useCmplxKeys(mapn datamodel.Node) bool {
-	if cfg.AlwaysUseMapComplexStyle {
+	if cfg.UseMapComplexStyleAlways {
 		return true
 	}
 	tn, ok := mapn.(schema.TypedNode)
 	if !ok {
 		return false
 	}
-	force, ok := cfg.SpecificMapComplexStyle[tn.Type().Name()]
+	force, ok := cfg.UseMapComplexStyleOnType[tn.Type().Name()]
 	if ok {
 		return force
 	}

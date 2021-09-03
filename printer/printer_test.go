@@ -128,7 +128,7 @@ func TestTypedData(t *testing.T) {
 		}, ts.TypeByName("WowMap"))
 		t.Run("complex-keys-in-effect", func(t *testing.T) {
 			cfg := Config{
-				AlwaysUseMapComplexStyle: true,
+				UseMapComplexStyleAlways: true,
 			}
 			qt.Check(t, cfg.Sprint(n), qt.CmpEquals(), wish.Dedent(`
 				map<WowMap>{
@@ -159,7 +159,7 @@ func TestTypedData(t *testing.T) {
 		})
 		t.Run("complex-keys-in-disabled", func(t *testing.T) {
 			cfg := Config{
-				SpecificMapComplexStyle: map[schema.TypeName]bool{
+				UseMapComplexStyleOnType: map[schema.TypeName]bool{
 					"WowMap": false,
 				},
 			}
