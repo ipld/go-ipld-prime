@@ -364,6 +364,7 @@ func (w *_nodeRepr) AsString() (string, error) {
 	case schema.StructRepresentation_Stringjoin:
 		var b strings.Builder
 		itr := (*_node)(w).MapIterator()
+		first := true
 		for !itr.Done() {
 			_, v, err := itr.Next()
 			if err != nil {
@@ -373,7 +374,9 @@ func (w *_nodeRepr) AsString() (string, error) {
 			if err != nil {
 				return "", err
 			}
-			if b.Len() > 0 {
+			if first {
+				first = false
+			} else {
 				b.WriteString(stg.GetDelim())
 			}
 			b.WriteString(s)

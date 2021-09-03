@@ -98,6 +98,35 @@ func SchemaTestStructReprStringjoin(t *testing.T, engine Engine) {
 		})
 	})
 
+	t.Run("first field empty string works", func(t *testing.T) {
+		np := engine.PrototypeByName("ManystringStruct")
+		nrp := engine.PrototypeByName("ManystringStruct.Repr")
+		var n schema.TypedNode
+		t.Run("typed-create", func(t *testing.T) {
+			n = fluent.MustBuildMap(np, 2, func(ma fluent.MapAssembler) {
+				ma.AssembleEntry("foo").AssignString("")
+				ma.AssembleEntry("bar").AssignString("v2")
+			}).(schema.TypedNode)
+			t.Run("typed-read", func(t *testing.T) {
+				Require(t, n.Kind(), ShouldEqual, datamodel.Kind_Map)
+				Wish(t, n.Length(), ShouldEqual, int64(2))
+				Wish(t, must.String(must.Node(n.LookupByString("foo"))), ShouldEqual, "")
+				Wish(t, must.String(must.Node(n.LookupByString("bar"))), ShouldEqual, "v2")
+			})
+			t.Run("repr-read", func(t *testing.T) {
+				nr := n.Representation()
+				Require(t, nr.Kind(), ShouldEqual, datamodel.Kind_String)
+				Wish(t, must.String(nr), ShouldEqual, ":v2") // Note the leading colon is still present.
+			})
+		})
+		t.Run("repr-create", func(t *testing.T) {
+			nr := fluent.MustBuild(nrp, func(na fluent.NodeAssembler) {
+				na.AssignString(":v2")
+			})
+			Wish(t, datamodel.DeepEqual(n, nr), ShouldEqual, true)
+		})
+	})
+
 	t.Run("nested stringjoin structs work", func(t *testing.T) {
 		np := engine.PrototypeByName("Recurzorator")
 		nrp := engine.PrototypeByName("Recurzorator.Repr")
