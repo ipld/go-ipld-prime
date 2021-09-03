@@ -20,6 +20,7 @@ const (
 	SelectorKey_LimitDepth           = "depth"
 	SelectorKey_LimitNone            = "none"
 	SelectorKey_StopAt               = "!"
+	SelectorKey_Bypass               = ":x"
 	SelectorKey_Condition            = "&"
 	// not filling conditional keys since it's not complete
 )

@@ -30,8 +30,16 @@ func TestParseCondition(t *testing.T) {
 		})
 		_, err := ParseContext{}.ParseCondition(sn)
 		Wish(t, err, ShouldEqual, fmt.Errorf("selector spec parse rejected: condition_link must be a link"))
+
+		// Condition_HasField
+		sn = fluent.MustBuildMap(basicnode.Prototype.Map, 1, func(na fluent.MapAssembler) {
+			na.AssembleEntry(string(ConditionMode_HasField)).AssignInt(0)
+		})
+		_, err = ParseContext{}.ParseCondition(sn)
+		Wish(t, err, ShouldEqual, fmt.Errorf("selector spec parse rejected: condition_hasField must be a string"))
 	})
 	t.Run("parsing map node with condition field with valid selector node should parse", func(t *testing.T) {
+		//Condition_Link
 		lnk := cidlink.Link{Cid: cid.Undef}
 		sn := fluent.MustBuildMap(basicnode.Prototype.Map, 1, func(na fluent.MapAssembler) {
 			na.AssembleEntry(string(ConditionMode_Link)).AssignLink(lnk)
@@ -40,5 +48,14 @@ func TestParseCondition(t *testing.T) {
 		Wish(t, err, ShouldEqual, nil)
 		lnkNode := basicnode.NewLink(lnk)
 		Wish(t, s, ShouldEqual, Condition{mode: ConditionMode_Link, match: lnkNode})
+
+		//Condition_HasField
+		sn = fluent.MustBuildMap(basicnode.Prototype.Map, 1, func(na fluent.MapAssembler) {
+			na.AssembleEntry(string(ConditionMode_HasField)).AssignString("field")
+		})
+		s, err = ParseContext{}.ParseCondition(sn)
+		Wish(t, err, ShouldEqual, nil)
+		strNode := basicnode.NewString("field")
+		Wish(t, s, ShouldEqual, Condition{mode: ConditionMode_HasField, match: strNode})
 	})
 }

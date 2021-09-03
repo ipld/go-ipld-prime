@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/ipld/go-ipld-prime/datamodel"
+	"github.com/ipld/go-ipld-prime/node/basicnode"
 )
 
 // ExploreRecursive traverses some structure recursively.
@@ -36,6 +37,8 @@ type ExploreRecursive struct {
 	current  Selector       // selector to apply to the current node
 	limit    RecursionLimit // the limit for this recursive selector
 	stopAt   *Condition     // a condition for not exploring the node or children
+	bypass   *Condition     // when a node with this fieldNode is found, we don't traverse it.
+
 }
 
 // RecursionLimit_Mode is an enum that represents the type of a recursion limit
@@ -104,16 +107,24 @@ func (s ExploreRecursive) Explore(n datamodel.Node, p datamodel.PathSegment) (Se
 		return nil, nil
 	}
 	if !s.hasRecursiveEdge(nextSelector) {
-		return ExploreRecursive{s.sequence, nextSelector, limit, s.stopAt}, nil
+		return ExploreRecursive{s.sequence, nextSelector, limit, s.stopAt, s.bypass}, nil
+	}
+	if s.bypass != nil {
+		path := p.String()
+		// If we're in the field specified in bypass
+		if s.bypass.Match(basicnode.NewString(path)) {
+			// Stop recursing deeper
+			return s.replaceRecursiveEdge(nextSelector, nil), nil
+		}
 	}
 	switch limit.mode {
 	case RecursionLimit_Depth:
 		if limit.depth < 2 {
 			return s.replaceRecursiveEdge(nextSelector, nil), nil
 		}
-		return ExploreRecursive{s.sequence, s.replaceRecursiveEdge(nextSelector, s.sequence), RecursionLimit{RecursionLimit_Depth, limit.depth - 1}, s.stopAt}, nil
+		return ExploreRecursive{s.sequence, s.replaceRecursiveEdge(nextSelector, s.sequence), RecursionLimit{RecursionLimit_Depth, limit.depth - 1}, s.stopAt, s.bypass}, nil
 	case RecursionLimit_None:
-		return ExploreRecursive{s.sequence, s.replaceRecursiveEdge(nextSelector, s.sequence), limit, s.stopAt}, nil
+		return ExploreRecursive{s.sequence, s.replaceRecursiveEdge(nextSelector, s.sequence), limit, s.stopAt, s.bypass}, nil
 	default:
 		panic("Unsupported recursion limit type")
 	}
@@ -212,7 +223,16 @@ func (pc ParseContext) ParseExploreRecursive(n datamodel.Node) (Selector, error)
 		}
 		stopCondition = &condition
 	}
-	return ExploreRecursive{selector, selector, limit, stopCondition}, nil
+	var bypassCondition *Condition
+	bypass, err := n.LookupByString(SelectorKey_Bypass)
+	if err == nil {
+		condition, err := pc.ParseCondition(bypass)
+		if err != nil {
+			return nil, err
+		}
+		bypassCondition = &condition
+	}
+	return ExploreRecursive{selector, selector, limit, stopCondition, bypassCondition}, nil
 }
 
 func parseLimit(n datamodel.Node) (RecursionLimit, error) {
