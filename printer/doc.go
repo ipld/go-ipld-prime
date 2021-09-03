@@ -4,67 +4,70 @@ Printer provides features for printing out IPLD nodes and their contained data i
 Outputs should look like...
 
 	map{
-		"foo": "bar"
-		"zot": struct<Foobar>{
+		string{"foo"}: string{"bar"}
+		string{"zot"}: struct<Foobar>{
 			someFieldName: list{
-				0: "this"
-				1: "is untyped"
+				0: string{"this list is untyped"}
+				1: string{"and contains a mixture of kinds of values"}
 				2: int{400}
 				3: bool{true}
 			}
 			otherField: list<ANamedListType>{
-				0: "mind you: 'ANamedListType' is the name of the *list type*."
-				1: "it is not the name of the value types.  those are not actually shown here."
-				2: "you'd have to look at the schema for that information."
+				0: string<String>{"mind you: 'ANamedListType' is the name of the *list type*."}
+				1: string<String>{"it is not the name of the types of the value."}
+				2: string<String>{"you'd have to look at the schema for that information."}
+				3: string<String>{"or, of course, you can see it at the start of each of these entries, since they are also each annotated."}
 			}
 			moreField: list<[nullable String]>{
-				0: "this is a typed list"
-				1: "but anonymous"
+				0: string<String>{"this is a typed list"}
+				1: string<String>{"but anonymous (meaning you see the value type in the 'name' of it)"}
 				2: null
 			}
 		}
-		"frog": map<{String:String}>{
-			"as you have probably imagined": "this is a typed (but anonymous type) map"
+		string{"frog"}: map<{String:String}>{
+			string<String>{"as you have probably imagined"}: string<String>{"this is a typed (but anonymous type) map"}
 		}
-		"numbers": int{1}
-		"binary": bytes{ABCDEF0123456789}
-		"typed numbers": int<MyNamedTypeInt>{9000}
-		"typed string": string<MyNamedTypeString>{"okay, this one needed some marker prefixes."}
-		"map with typed keys": map<{MyNamedTypeString:MyNamedTypeString}>{
-			"despite being typed": string<MyNamedTypeString>{"map keys still never need prefixes; there's no ambiguity"}
-			"but for the values": string<MyNamedTypeString>{"we still use them"}
-			"well, maybe": string<MyNamedTypeString>{"this might actually be worth debating; it doesn't seem necessary (unless the map value is a variant type, but that's then already addressed by another case)"}
+		string{"numbers"}: int{1}
+		string{"binary"}: bytes{ABCDEF0123456789}
+		string{"typed numbers"}: int<MyNamedTypeInt>{9000}
+		string{"typed string"}: string<MyNamedTypeString>{"okay, this one needed some marker prefixes."}
+		string{"map with typed keys"}: map<{MyNamedTypeString:MyNamedTypeString}>{
+			string<MyNamedStringType>{"work just fine"}: string<MyNamedTypeString>{"there's no ambiguity"}
+			string<MyNamedStringType>{"you could elide key type info"}: string<MyNamedTypeString>{"as long as its a string kind, anyway"}
+			string<MyNamedStringType>{"but we don't by default"}: string<MyNamedTypeString>{"explicit is good, especially in a debug tool!"}
 		}
-		"structs": struct<FooBar>{
-			foo: "do not need to have quoted field names"
-			bar: "because (unlike map keys) their character range is already restricted"
+		string{"structs"}: struct<FooBar>{
+			foo: string<String>{"do not need to have quoted field names"}
+			bar: string<String>{"because (unlike map keys) their character range is already restricted"}
 		}
-		"unit types": unit<TheTypeName>
-		"notice unit types": "have no braces at all, because they have literally no further details.  they're all type info."
-		"variants": variant<TheUnionName>{string<TheInhabitant>{
+		string{"unit types"}: unit<TheTypeName>
+		string{"notice unit types"}: string{"have no braces at all, because they have literally no further details.  they're all type info."}
+		string{"unions"}: union<TheUnionName>{string<TheInhabitant>{
 			"that was wild, wasn't it.  Check out these double closing braces, coming up, too!  also the string got forced to a new line, even though it usually would've clung closer to its type and kind marker."
 		}}
-		"enums": enum<TheEnumName>{"inhabitant name"}
-		"typed bools": bool<TheBoolName>{true}
-		"map with struct keys": map<{FooBar:String}>{
-			struct<FooBar>{foo:"foo", bar:"bar"}: "that one probably surprised you, didn't it?"
-			struct<FooBar>{foo:"hmmm", bar:"maybe"}: "we might be able to get away without the kind+type marker, actually.  but we need the one-liner struct content printing, at least, for sure."
+		string{"enums"}: enum<TheEnumName>{"inhabitant name"}
+		string{"typed bools"}: bool<TheBoolName>{true}
+		string{"map with struct keys"{: map<{FooBar:String}>{
+			struct<FooBar>{foo:"foo", bar:"bar"}: string<String>{"that one probably surprised you, didn't it?"}
+			struct<FooBar>{foo:"hmmm", bar:"maybe"}: string<String>{"we might be able to get away without the kind+type marker, actually.  but we need the one-liner struct content printing, at least, for sure."}
 		}
-		"map with really wicked keys": map<{WickedNestedUnion:String}>{
-			variant<WickedNestedUnion>{variant<AnotherUnion>{string<TheInhabitant>{"wow"}}}: "yeah, that happens sometimes"
+		string{"map with really wicked keys"}: map<{WickedNestedUnion:String}>{
+			union<WickedNestedUnion>{union<AnotherUnion>{string<TheInhabitant>{"wow"}}}: "yeah, that happens sometimes"
 		}
 	}
 
+The pattern is a preamble saying what kind the value is (and what type, if applicable), followed by the actual value content, in braces.
+For untyped nodes, this means `kindname{"value"}` (so: `string{"foo"}` and `int{12}` and `bool{true}` etc),
+or for typed nodes, we get `typekindname<TheTypeName>{"value"}`.
+In addition to the example above, you can check out the tests for a few more examples of how it looks.
 
-Notice that strings can be emitted without a kind indicator.
-This is optional, and configurable, but a default, because strings are so common
-(and also, that the quotation marks already make them sufficiently clear)
-that it's neither necessary nor desirable to burden every string with a kind indicator.
-Everything else *does* have an explicit leading indicator that names the data's kind.
-Maps and lists already need enough syntactic weight that adding another few characters isn't a significant weight.
-For the various number kinds... well, it seems better to be clear, with those.  (Number parsers are otherwise often an annoying lookahead problem.)
-For bytes, the need is obvious.  (Among other things, the hexidecimal up until the first letter could be confused with an integer, if we didn't label both of them.)
-Anything that's typed also gets a leading indicator section again, even if its kind is something we'd otherwise elide, like string.
+Some configuration options are available to elide some information.
+For example, some configuration can reduce the amount of annotational weight around strings
+(which is possible to do without getting completely vague because the quotation markings for strings already are syntatically distinctive).
+Not all things can be configured for elision, however.
+For example, for the various number kinds, the kind preambles are always required.  (Number parsers are otherwise often an annoying lookahead problem.)
+Similarly, for bytes, the kind preamble is always required.  (Among other things, the hexidecimal up until the first letter could be confused with an integer, if we didn't label both of them.)
+Anything that's typed also gets a preamble with the type and kind information, even if its kind is something we'd otherwise elide, like string.
 
 Notice that struct fields aren't quoted.  (It's not necessary, because field names are already constrained.)
 But map keys are.  (They need quoting because they can be any string.)
