@@ -1,5 +1,7 @@
-//go:build cgo && !skipgenbehavtests
-// +build cgo,!skipgenbehavtests
+// Remember that buildmode=plugin does not work on windows.
+
+//go:build cgo && !windows && !skipgenbehavtests
+// +build cgo,!windows,!skipgenbehavtests
 
 package gengo
 

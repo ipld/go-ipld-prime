@@ -1,5 +1,6 @@
-//go:build !cgo && !skipgenbehavtests
-// +build !cgo,!skipgenbehavtests
+//go:build (!cgo || windows) && !skipgenbehavtests
+// +build !cgo windows
+// +build !skipgenbehavtests
 
 // Confession:
 // This build tag specification is NOT sufficient nor necessarily correct --

@@ -4,11 +4,8 @@ jobs:
   test:
     strategy:
       matrix:
-        go-version: [1.14.x, 1.15.x]
-        # TODO(mvdan): fix and enable windows
-        # TODO(mvdan): mac seems to timeout too often
-        # os: [ubuntu-latest, macos-latest, windows-latest]
-        os: [ubuntu-latest]
+        go-version: [1.17.x]
+        os: [ubuntu-latest, macos-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     steps:
     - name: Install Go
