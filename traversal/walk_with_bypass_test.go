@@ -99,7 +99,6 @@ func TestBypass(t *testing.T) {
 				LinkTargetNodePrototypeChooser: basicnode.Chooser,
 			},
 		}.WalkMatching(rootNode, s, func(prog traversal.Progress, n datamodel.Node) error {
-			// fmt.Println("Order", order, prog.Path.String())
 			switch order {
 			case 0:
 				// Root
@@ -112,6 +111,7 @@ func TestBypass(t *testing.T) {
 			case 3:
 				Wish(t, prog.Path.String(), ShouldEqual, "linkedList")
 			// We are starting to traverse the linkedList, we passed through the map already
+			// because we don't want to recurse deeper.
 			case 4:
 				Wish(t, prog.Path.String(), ShouldEqual, "linkedList/0")
 			}
@@ -123,10 +123,11 @@ func TestBypass(t *testing.T) {
 	})
 }
 
-// mkChain creates a DAG that represent a chain of subDAGs.
-// The stopAt condition is extremely appealing for these use cases, as we can
-// partially sync a chain using ExploreRecursive without having to sync the
-// chain from scratch if we are already partially synced
+// mkGitlike creates a DAG that represent a chain of subDAGs.
+// All of the nodes of the chain are the same, and the bypass
+// condition should prevent from recursing in specific fields.
+// We will traverse the full chain but prevent recursion for
+// certain fields
 func mkGitLike() (datamodel.Node, []datamodel.Link) {
 	leafAlpha, leafAlphaLnk = encode(basicnode.NewString("alpha"))
 	leafBeta, leafBetaLnk = encode(basicnode.NewString("beta"))
@@ -189,6 +190,8 @@ func TestBypassGitLike(t *testing.T) {
 				LinkTargetNodePrototypeChooser: basicnode.Chooser,
 			},
 		}.WalkMatching(chainNode, s, func(prog traversal.Progress, n datamodel.Node) error {
+			// If we come across the alink and nonlink paths it means that we
+			// are recursing the field where we shouldn't go deeper.
 			if prog.Path.String() == "alink" || prog.Path.String() == "nonlink" {
 				t.Fatal("we shouldn't have reecursed when seeing nested field")
 			}
