@@ -71,6 +71,9 @@ func Unmarshal(na datamodel.NodeAssembler, tokSrc shared.TokenSource, options De
 func unmarshal1(na datamodel.NodeAssembler, tokSrc shared.TokenSource, gas *int, options DecodeOptions) error {
 	var tk tok.Token
 	done, err := tokSrc.Step(&tk)
+	if err == io.EOF {
+		return io.ErrUnexpectedEOF
+	}
 	if err != nil {
 		return err
 	}
