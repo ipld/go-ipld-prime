@@ -70,6 +70,8 @@ func (r *Registry) ListEncoders() []uint64 {
 	return encoders
 }
 
+// TODO(mvdan): turn most of these uint64s into multicodec.Code
+
 // RegisterDecoder updates a simple map of multicodec indicator number to codec.Decoder function.
 // The decoder functions registered can be subsequently looked up using LookupDecoder.
 func (r *Registry) RegisterDecoder(indicator uint64, decodeFunc codec.Decoder) {

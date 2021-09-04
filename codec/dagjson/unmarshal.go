@@ -79,6 +79,9 @@ func Unmarshal(na datamodel.NodeAssembler, tokSrc shared.TokenSource, options De
 	var st unmarshalState
 	st.options = options
 	done, err := tokSrc.Step(&st.tk[0])
+	if err == io.EOF {
+		return io.ErrUnexpectedEOF
+	}
 	if err != nil {
 		return err
 	}
