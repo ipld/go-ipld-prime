@@ -23,7 +23,7 @@ func EmitInternalEnums(packageName string, w io.Writer) {
 		import (
 			"fmt"
 
-			"github.com/ipld/go-ipld-prime"
+			"github.com/ipld/go-ipld-prime/datamodel"
 			"github.com/ipld/go-ipld-prime/schema"
 		)
 
@@ -65,23 +65,23 @@ func EmitInternalEnums(packageName string, w io.Writer) {
 	`))
 
 	// We occasionally need this erroring thunk to be able to snake an error out from some assembly processes.
-	// It implements all of ipld.NodeAssembler, but all of its methods return errors when used.
+	// It implements all of datamodel.NodeAssembler, but all of its methods return errors when used.
 	fmt.Fprint(w, wish.Dedent(`
 		type _ErrorThunkAssembler struct {
 			e error
 		}
 
-		func (ea _ErrorThunkAssembler) BeginMap(_ int64) (ipld.MapAssembler, error) { return nil, ea.e }
-		func (ea _ErrorThunkAssembler) BeginList(_ int64) (ipld.ListAssembler, error) { return nil, ea.e }
+		func (ea _ErrorThunkAssembler) BeginMap(_ int64) (datamodel.MapAssembler, error) { return nil, ea.e }
+		func (ea _ErrorThunkAssembler) BeginList(_ int64) (datamodel.ListAssembler, error) { return nil, ea.e }
 		func (ea _ErrorThunkAssembler) AssignNull() error { return ea.e }
 		func (ea _ErrorThunkAssembler) AssignBool(bool) error { return ea.e }
 		func (ea _ErrorThunkAssembler) AssignInt(int64) error { return ea.e }
 		func (ea _ErrorThunkAssembler) AssignFloat(float64) error { return ea.e }
 		func (ea _ErrorThunkAssembler) AssignString(string) error { return ea.e }
 		func (ea _ErrorThunkAssembler) AssignBytes([]byte) error { return ea.e }
-		func (ea _ErrorThunkAssembler) AssignLink(ipld.Link) error { return ea.e }
-		func (ea _ErrorThunkAssembler) AssignNode(ipld.Node) error { return ea.e }
-		func (ea _ErrorThunkAssembler) Prototype() ipld.NodePrototype {
+		func (ea _ErrorThunkAssembler) AssignLink(datamodel.Link) error { return ea.e }
+		func (ea _ErrorThunkAssembler) AssignNode(datamodel.Node) error { return ea.e }
+		func (ea _ErrorThunkAssembler) Prototype() datamodel.NodePrototype {
 			panic(fmt.Errorf("cannot get prototype from error-carrying assembler: already derailed with error: %w", ea.e))
 		}
 	`))

@@ -25,7 +25,7 @@ func emitNodeAssemblerMethodBeginList_listoid(w io.Writer, adjCfg *AdjunctCfg, d
 	//  Would also want to examine if that makes desirable trades in gsloc/asmsize/speed/debuggability.
 	//  Only seems to apply to case of list-repr-list, so unclear if worth the effort.
 	doTemplate(`
-		func (na *_{{ .Type | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Assembler) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
+		func (na *_{{ .Type | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Assembler) BeginList(sizeHint int64) (datamodel.ListAssembler, error) {
 			switch *na.m {
 			case schema.Maybe_Value, schema.Maybe_Null:
 				panic("invalid state: cannot assign into assembler that's already finished")
@@ -60,7 +60,7 @@ func emitNodeAssemblerMethodAssignNode_listoid(w io.Writer, adjCfg *AdjunctCfg, 
 	// This works easily for both type-level and representational nodes because
 	//  any divergences that have to do with the child value are nicely hidden behind `AssembleValue`.
 	doTemplate(`
-		func (na *_{{ .Type | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Assembler) AssignNode(v ipld.Node) error {
+		func (na *_{{ .Type | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Assembler) AssignNode(v datamodel.Node) error {
 			if v.IsNull() {
 				return na.AssignNull()
 			}
@@ -82,8 +82,8 @@ func emitNodeAssemblerMethodAssignNode_listoid(w io.Writer, adjCfg *AdjunctCfg, 
 				*na.m = schema.Maybe_Value
 				return nil
 			}
-			if v.Kind() != ipld.Kind_List {
-				return ipld.ErrWrongKind{TypeName: "{{ .PkgName }}.{{ .Type.Name }}{{ if .IsRepr }}.Repr{{end}}", MethodName: "AssignNode", AppropriateKind: ipld.KindSet_JustList, ActualKind: v.Kind()}
+			if v.Kind() != datamodel.Kind_List {
+				return datamodel.ErrWrongKind{TypeName: "{{ .PkgName }}.{{ .Type.Name }}{{ if .IsRepr }}.Repr{{end}}", MethodName: "AssignNode", AppropriateKind: datamodel.KindSet_JustList, ActualKind: v.Kind()}
 			}
 			itr := v.ListIterator()
 			for !itr.Done() {
@@ -154,7 +154,7 @@ func emitNodeAssemblerHelper_listoid_listAssemblerMethods(w io.Writer, adjCfg *A
 	// DRY(nope): Can this be extracted to a shared function in the output?
 	//  Same story as the tidy helper -- it touches `la.va` concretely in several places, and that blocks extraction.
 	doTemplate(`
-		func (la *_{{ .Type | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Assembler) AssembleValue() ipld.NodeAssembler {
+		func (la *_{{ .Type | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Assembler) AssembleValue() datamodel.NodeAssembler {
 			switch la.state {
 			case laState_initial:
 				// carry on
@@ -199,7 +199,7 @@ func emitNodeAssemblerHelper_listoid_listAssemblerMethods(w io.Writer, adjCfg *A
 		}
 	`, w, adjCfg, data)
 	doTemplate(`
-		func (la *_{{ .Type | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Assembler) ValuePrototype(_ int64) ipld.NodePrototype {
+		func (la *_{{ .Type | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Assembler) ValuePrototype(_ int64) datamodel.NodePrototype {
 			return _{{ .Type.ValueType | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Prototype{}
 		}
 	`, w, adjCfg, data)

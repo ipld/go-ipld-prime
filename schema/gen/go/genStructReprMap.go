@@ -74,25 +74,25 @@ func (g structReprMapReprGenerator) EmitNodeType(w io.Writer) {
 
 func (g structReprMapReprGenerator) EmitNodeTypeAssertions(w io.Writer) {
 	doTemplate(`
-		var _ ipld.Node = &_{{ .Type | TypeSymbol }}__Repr{}
+		var _ datamodel.Node = &_{{ .Type | TypeSymbol }}__Repr{}
 	`, w, g.AdjCfg, g)
 }
 
 func (g structReprMapReprGenerator) EmitNodeMethodLookupByString(w io.Writer) {
 	// Similar to the type-level method, except any absent fields also return ErrNotExists.
 	doTemplate(`
-		func (n *_{{ .Type | TypeSymbol }}__Repr) LookupByString(key string) (ipld.Node, error) {
+		func (n *_{{ .Type | TypeSymbol }}__Repr) LookupByString(key string) (datamodel.Node, error) {
 			switch key {
 			{{- range $field := .Type.Fields }}
 			case "{{ $field | $field.Parent.RepresentationStrategy.GetFieldKey }}":
 				{{- if $field.IsOptional }}
 				if n.{{ $field | FieldSymbolLower }}.m == schema.Maybe_Absent {
-					return ipld.Absent, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
+					return datamodel.Absent, datamodel.ErrNotExists{Segment: datamodel.PathSegmentOfString(key)}
 				}
 				{{- end}}
 				{{- if $field.IsNullable }}
 				if n.{{ $field | FieldSymbolLower }}.m == schema.Maybe_Null {
-					return ipld.Null, nil
+					return datamodel.Null, nil
 				}
 				{{- end}}
 				{{- if $field.IsMaybe }}
@@ -102,7 +102,7 @@ func (g structReprMapReprGenerator) EmitNodeMethodLookupByString(w io.Writer) {
 				{{- end}}
 			{{- end}}
 			default:
-				return nil, schema.ErrNoSuchField{Type: nil /*TODO*/, Field: ipld.PathSegmentOfString(key)}
+				return nil, schema.ErrNoSuchField{Type: nil /*TODO*/, Field: datamodel.PathSegmentOfString(key)}
 			}
 		}
 	`, w, g.AdjCfg, g)
@@ -110,7 +110,7 @@ func (g structReprMapReprGenerator) EmitNodeMethodLookupByString(w io.Writer) {
 
 func (g structReprMapReprGenerator) EmitNodeMethodLookupByNode(w io.Writer) {
 	doTemplate(`
-		func (n *_{{ .Type | TypeSymbol }}__Repr) LookupByNode(key ipld.Node) (ipld.Node, error) {
+		func (n *_{{ .Type | TypeSymbol }}__Repr) LookupByNode(key datamodel.Node) (datamodel.Node, error) {
 			ks, err := key.AsString()
 			if err != nil {
 				return nil, err
@@ -153,7 +153,7 @@ func (g structReprMapReprGenerator) EmitNodeMethodMapIterator(w io.Writer) {
 
 	// Now: finally we can get on with the actual templating.
 	doTemplate(`
-		func (n *_{{ .Type | TypeSymbol }}__Repr) MapIterator() ipld.MapIterator {
+		func (n *_{{ .Type | TypeSymbol }}__Repr) MapIterator() datamodel.MapIterator {
 			{{- if .HaveTrailingOptionals }}
 			end := {{ len .Type.Fields }}`+
 		func() string { // this next part was too silly in templates due to lack of reverse ranging.
@@ -179,14 +179,14 @@ func (g structReprMapReprGenerator) EmitNodeMethodMapIterator(w io.Writer) {
 			{{if .HaveTrailingOptionals }}end int{{end}}
 		}
 
-		func (itr *_{{ .Type | TypeSymbol }}__ReprMapItr) Next() (k ipld.Node, v ipld.Node, _ error) {
+		func (itr *_{{ .Type | TypeSymbol }}__ReprMapItr) Next() (k datamodel.Node, v datamodel.Node, _ error) {
 			{{- if not .Type.Fields }}
 			{{- /* TODO: deduplicate all these methods which just error */ -}}
-			return nil, nil, ipld.ErrIteratorOverread{}
+			return nil, nil, datamodel.ErrIteratorOverread{}
 			{{ else -}}
 			{{ if .HaveOptionals }}advance:{{end -}}
 			if itr.idx >= {{ len .Type.Fields }} {
-				return nil, nil, ipld.ErrIteratorOverread{}
+				return nil, nil, datamodel.ErrIteratorOverread{}
 			}
 			switch itr.idx {
 			{{- $type := .Type -}} {{- /* ranging modifies dot, unhelpfully */ -}}
@@ -201,7 +201,7 @@ func (g structReprMapReprGenerator) EmitNodeMethodMapIterator(w io.Writer) {
 				{{- end}}
 				{{- if $field.IsNullable }}
 				if itr.n.{{ $field | FieldSymbolLower }}.m == schema.Maybe_Null {
-					v = ipld.Null
+					v = datamodel.Null
 					break
 				}
 				{{- end}}
@@ -342,7 +342,7 @@ func (g structReprMapReprBuilderGenerator) EmitNodeAssemblerMethodAssignNode(w i
 	//
 	// We do not set m=midvalue in phase 3 -- it shouldn't matter unless you're trying to pull off concurrent access, which is wrong and unsafe regardless.
 	doTemplate(`
-		func (na *_{{ .Type | TypeSymbol }}__ReprAssembler) AssignNode(v ipld.Node) error {
+		func (na *_{{ .Type | TypeSymbol }}__ReprAssembler) AssignNode(v datamodel.Node) error {
 			if v.IsNull() {
 				return na.AssignNull()
 			}
@@ -364,8 +364,8 @@ func (g structReprMapReprBuilderGenerator) EmitNodeAssemblerMethodAssignNode(w i
 				*na.m = schema.Maybe_Value
 				return nil
 			}
-			if v.Kind() != ipld.Kind_Map {
-				return ipld.ErrWrongKind{TypeName: "{{ .PkgName }}.{{ .Type.Name }}.Repr", MethodName: "AssignNode", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
+			if v.Kind() != datamodel.Kind_Map {
+				return datamodel.ErrWrongKind{TypeName: "{{ .PkgName }}.{{ .Type.Name }}.Repr", MethodName: "AssignNode", AppropriateKind: datamodel.KindSet_JustMap, ActualKind: v.Kind()}
 			}
 			itr := v.MapIterator()
 			for !itr.Done() {
@@ -445,7 +445,7 @@ func (g structReprMapReprBuilderGenerator) emitMapAssemblerChildTidyHelper(w io.
 func (g structReprMapReprBuilderGenerator) emitMapAssemblerMethods(w io.Writer) {
 	// FUTURE: some of the setup of the child assemblers could probably be DRY'd up.
 	doTemplate(`
-		func (ma *_{{ .Type | TypeSymbol }}__ReprAssembler) AssembleEntry(k string) (ipld.NodeAssembler, error) {
+		func (ma *_{{ .Type | TypeSymbol }}__ReprAssembler) AssembleEntry(k string) (datamodel.NodeAssembler, error) {
 			switch ma.state {
 			case maState_initial:
 				// carry on
@@ -466,7 +466,7 @@ func (g structReprMapReprBuilderGenerator) emitMapAssemblerMethods(w io.Writer) 
 			{{- range $i, $field := .Type.Fields }}
 			case "{{ $field | $type.RepresentationStrategy.GetFieldKey }}":
 				if ma.s & fieldBit__{{ $type | TypeSymbol }}_{{ $field | FieldSymbolUpper }} != 0 {
-					return nil, ipld.ErrRepeatedMapKey{Key: &fieldName__{{ $type | TypeSymbol }}_{{ $field | FieldSymbolUpper }}_serial}
+					return nil, datamodel.ErrRepeatedMapKey{Key: &fieldName__{{ $type | TypeSymbol }}_{{ $field | FieldSymbolUpper }}_serial}
 				}
 				ma.s += fieldBit__{{ $type | TypeSymbol }}_{{ $field | FieldSymbolUpper }}
 				ma.state = maState_midValue
@@ -484,9 +484,9 @@ func (g structReprMapReprBuilderGenerator) emitMapAssemblerMethods(w io.Writer) 
 			default:
 			}
 			{{- end}}
-			return nil, ipld.ErrInvalidKey{TypeName:"{{ .PkgName }}.{{ .Type.Name }}.Repr", Key:&_String{k}}
+			return nil, schema.ErrInvalidKey{TypeName:"{{ .PkgName }}.{{ .Type.Name }}.Repr", Key:&_String{k}}
 		}
-		func (ma *_{{ .Type | TypeSymbol }}__ReprAssembler) AssembleKey() ipld.NodeAssembler {
+		func (ma *_{{ .Type | TypeSymbol }}__ReprAssembler) AssembleKey() datamodel.NodeAssembler {
 			switch ma.state {
 			case maState_initial:
 				// carry on
@@ -504,7 +504,7 @@ func (g structReprMapReprBuilderGenerator) emitMapAssemblerMethods(w io.Writer) 
 			ma.state = maState_midKey
 			return (*_{{ .Type | TypeSymbol }}__ReprKeyAssembler)(ma)
 		}
-		func (ma *_{{ .Type | TypeSymbol }}__ReprAssembler) AssembleValue() ipld.NodeAssembler {
+		func (ma *_{{ .Type | TypeSymbol }}__ReprAssembler) AssembleValue() datamodel.NodeAssembler {
 			switch ma.state {
 			case maState_initial:
 				panic("invalid state: AssembleValue cannot be called when no key is primed")
@@ -551,7 +551,7 @@ func (g structReprMapReprBuilderGenerator) emitMapAssemblerMethods(w io.Writer) 
 				panic("invalid state: Finish cannot be called on an assembler that's already finished")
 			}
 			if ma.s & fieldBits__{{ $type | TypeSymbol }}_sufficient != fieldBits__{{ $type | TypeSymbol }}_sufficient {
-				err := ipld.ErrMissingRequiredField{Missing: make([]string, 0)}
+				err := schema.ErrMissingRequiredField{Missing: make([]string, 0)}
 				{{- range $i, $field := .Type.Fields }}
 				{{- if not $field.IsMaybe}}
 				if ma.s & fieldBit__{{ $type | TypeSymbol }}_{{ $field | FieldSymbolUpper }} == 0 {
@@ -569,10 +569,10 @@ func (g structReprMapReprBuilderGenerator) emitMapAssemblerMethods(w io.Writer) 
 			*ma.m = schema.Maybe_Value
 			return nil
 		}
-		func (ma *_{{ .Type | TypeSymbol }}__ReprAssembler) KeyPrototype() ipld.NodePrototype {
+		func (ma *_{{ .Type | TypeSymbol }}__ReprAssembler) KeyPrototype() datamodel.NodePrototype {
 			return _String__Prototype{}
 		}
-		func (ma *_{{ .Type | TypeSymbol }}__ReprAssembler) ValuePrototype(k string) ipld.NodePrototype {
+		func (ma *_{{ .Type | TypeSymbol }}__ReprAssembler) ValuePrototype(k string) datamodel.NodePrototype {
 			panic("todo structbuilder mapassembler repr valueprototype")
 		}
 	`, w, g.AdjCfg, g)
@@ -605,7 +605,7 @@ func (g structReprMapReprBuilderGenerator) emitKeyAssembler(w io.Writer) {
 			{{- range $i, $field := .Type.Fields }}
 			case "{{ $field | $type.RepresentationStrategy.GetFieldKey }}":
 				if ka.s & fieldBit__{{ $type | TypeSymbol }}_{{ $field | FieldSymbolUpper }} != 0 {
-					return ipld.ErrRepeatedMapKey{Key: &fieldName__{{ $type | TypeSymbol }}_{{ $field | FieldSymbolUpper }}_serial}
+					return datamodel.ErrRepeatedMapKey{Key: &fieldName__{{ $type | TypeSymbol }}_{{ $field | FieldSymbolUpper }}_serial}
 				}
 				ka.s += fieldBit__{{ $type | TypeSymbol }}_{{ $field | FieldSymbolUpper }}
 				ka.state = maState_expectValue
@@ -614,20 +614,20 @@ func (g structReprMapReprBuilderGenerator) emitKeyAssembler(w io.Writer) {
 			{{- end }}
 			}
 			{{- end }}
-			return ipld.ErrInvalidKey{TypeName:"{{ .PkgName }}.{{ .Type.Name }}.Repr", Key:&_String{k}}
+			return schema.ErrInvalidKey{TypeName:"{{ .PkgName }}.{{ .Type.Name }}.Repr", Key:&_String{k}}
 		}
 	`, w, g.AdjCfg, g)
 	stubs.EmitNodeAssemblerMethodAssignBytes(w)
 	stubs.EmitNodeAssemblerMethodAssignLink(w)
 	doTemplate(`
-		func (ka *_{{ .Type | TypeSymbol }}__ReprKeyAssembler) AssignNode(v ipld.Node) error {
+		func (ka *_{{ .Type | TypeSymbol }}__ReprKeyAssembler) AssignNode(v datamodel.Node) error {
 			if v2, err := v.AsString(); err != nil {
 				return err
 			} else {
 				return ka.AssignString(v2)
 			}
 		}
-		func (_{{ .Type | TypeSymbol }}__ReprKeyAssembler) Prototype() ipld.NodePrototype {
+		func (_{{ .Type | TypeSymbol }}__ReprKeyAssembler) Prototype() datamodel.NodePrototype {
 			return _String__Prototype{}
 		}
 	`, w, g.AdjCfg, g)

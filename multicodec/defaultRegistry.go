@@ -1,7 +1,7 @@
 package multicodec
 
 import (
-	"github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/codec"
 )
 
 // DefaultRegistry is a multicodec.Registry instance which is global to the program,
@@ -22,7 +22,7 @@ import (
 // and eschew using the global default.
 var DefaultRegistry = Registry{}
 
-// RegisterEncoder updates the global DefaultRegistry to map a multicodec indicator number to the given ipld.Encoder function.
+// RegisterEncoder updates the global DefaultRegistry to map a multicodec indicator number to the given codec.Encoder function.
 // The encoder functions registered can be subsequently looked up using LookupEncoder.
 // It is a shortcut to the RegisterEncoder method on the global DefaultRegistry.
 //
@@ -40,20 +40,20 @@ var DefaultRegistry = Registry{}
 // This should have the desired effect because the root of the import tree has its init time effect last.
 // Alternatively, one can just avoid use of this registry entirely:
 // do this by making a LinkSystem that uses a custom EncoderChooser function.
-func RegisterEncoder(indicator uint64, encodeFunc ipld.Encoder) {
+func RegisterEncoder(indicator uint64, encodeFunc codec.Encoder) {
 	DefaultRegistry.RegisterEncoder(indicator, encodeFunc)
 }
 
-// LookupEncoder yields an ipld.Encoder function matching a multicodec indicator code number.
+// LookupEncoder yields a codec.Encoder function matching a multicodec indicator code number.
 // It is a shortcut to the LookupEncoder method on the global DefaultRegistry.
 //
 // To be available from this lookup function, an encoder must have been registered
 // for this indicator number by an earlier call to the RegisterEncoder function.
-func LookupEncoder(indicator uint64) (ipld.Encoder, error) {
+func LookupEncoder(indicator uint64) (codec.Encoder, error) {
 	return DefaultRegistry.LookupEncoder(indicator)
 }
 
-// ListEncoders returns a list of multicodec indicators for which an ipld.Encoder is registered.
+// ListEncoders returns a list of multicodec indicators for which a codec.Encoder is registered.
 // The list is in no particular order.
 // It is a shortcut to the ListEncoders method on the global DefaultRegistry.
 //
@@ -69,7 +69,7 @@ func ListEncoders() []uint64 {
 	return DefaultRegistry.ListEncoders()
 }
 
-// RegisterDecoder updates the global DefaultRegistry a map a multicodec indicator number to the given ipld.Decoder function.
+// RegisterDecoder updates the global DefaultRegistry a map a multicodec indicator number to the given codec.Decoder function.
 // The decoder functions registered can be subsequently looked up using LookupDecoder.
 // It is a shortcut to the RegisterDecoder method on the global DefaultRegistry.
 //
@@ -87,20 +87,20 @@ func ListEncoders() []uint64 {
 // This should have the desired effect because the root of the import tree has its init time effect last.
 // Alternatively, one can just avoid use of this registry entirely:
 // do this by making a LinkSystem that uses a custom DecoderChooser function.
-func RegisterDecoder(indicator uint64, decodeFunc ipld.Decoder) {
+func RegisterDecoder(indicator uint64, decodeFunc codec.Decoder) {
 	DefaultRegistry.RegisterDecoder(indicator, decodeFunc)
 }
 
-// LookupDecoder yields an ipld.Decoder function matching a multicodec indicator code number.
+// LookupDecoder yields a codec.Decoder function matching a multicodec indicator code number.
 // It is a shortcut to the LookupDecoder method on the global DefaultRegistry.
 //
 // To be available from this lookup function, an decoder must have been registered
 // for this indicator number by an earlier call to the RegisterDecoder function.
-func LookupDecoder(indicator uint64) (ipld.Decoder, error) {
+func LookupDecoder(indicator uint64) (codec.Decoder, error) {
 	return DefaultRegistry.LookupDecoder(indicator)
 }
 
-// ListDecoders returns a list of multicodec indicators for which an ipld.Decoder is registered.
+// ListDecoders returns a list of multicodec indicators for which a codec.Decoder is registered.
 // The list is in no particular order.
 // It is a shortcut to the ListDecoders method on the global DefaultRegistry.
 //

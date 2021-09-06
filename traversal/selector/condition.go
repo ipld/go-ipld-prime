@@ -3,7 +3,7 @@ package selector
 import (
 	"fmt"
 
-	ipld "github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/datamodel"
 	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
 )
 
@@ -14,7 +14,7 @@ import (
 // is sufficient for initial pressing use cases.
 type Condition struct {
 	mode  ConditionMode
-	match ipld.Node
+	match datamodel.Node
 }
 
 // A ConditionMode is the keyed representation for the union that is the condition
@@ -24,11 +24,11 @@ const (
 	ConditionMode_Link ConditionMode = "/"
 )
 
-// Match decides if a given ipld.Node matches the condition.
-func (c *Condition) Match(n ipld.Node) bool {
+// Match decides if a given datamodel.Node matches the condition.
+func (c *Condition) Match(n datamodel.Node) bool {
 	switch c.mode {
 	case ConditionMode_Link:
-		if n.Kind() != ipld.Kind_Link {
+		if n.Kind() != datamodel.Kind_Link {
 			return false
 		}
 		lnk, err := n.AsLink()
@@ -51,8 +51,8 @@ func (c *Condition) Match(n ipld.Node) bool {
 }
 
 // ParseCondition assembles a Condition from a condition selector node
-func (pc ParseContext) ParseCondition(n ipld.Node) (Condition, error) {
-	if n.Kind() != ipld.Kind_Map {
+func (pc ParseContext) ParseCondition(n datamodel.Node) (Condition, error) {
+	if n.Kind() != datamodel.Kind_Map {
 		return Condition{}, fmt.Errorf("selector spec parse rejected: condition body must be a map")
 	}
 	if n.Length() != 1 {

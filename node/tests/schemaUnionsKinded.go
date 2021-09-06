@@ -3,7 +3,7 @@ package tests
 import (
 	"testing"
 
-	"github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/schema"
 )
 
@@ -24,9 +24,9 @@ func SchemaTestUnionKinded(t *testing.T, engine Engine) {
 			"String",
 			"SmolStruct",
 		},
-		schema.SpawnUnionRepresentationKinded(map[ipld.Kind]schema.TypeName{
-			ipld.Kind_String: "String",
-			ipld.Kind_Map:    "SmolStruct",
+		schema.SpawnUnionRepresentationKinded(map[datamodel.Kind]schema.TypeName{
+			datamodel.Kind_String: "String",
+			datamodel.Kind_Map:    "SmolStruct",
 		}),
 	))
 	engine.Init(t, ts)
@@ -39,12 +39,12 @@ func SchemaTestUnionKinded(t *testing.T, engine Engine) {
 			typeJson: `{"String":"whee"}`,
 			reprJson: `"whee"`,
 			typePoints: []testcasePoint{
-				{"", ipld.Kind_Map},
+				{"", datamodel.Kind_Map},
 				{"String", "whee"},
-				//{"SmolStruct", ipld.ErrNotExists{}}, // TODO: need better error typing from traversal package.
+				//{"SmolStruct", datamodel.ErrNotExists{}}, // TODO: need better error typing from traversal package.
 			},
 			reprPoints: []testcasePoint{
-				{"", ipld.Kind_String},
+				{"", datamodel.Kind_String},
 				{"", "whee"},
 			},
 		},
@@ -53,13 +53,13 @@ func SchemaTestUnionKinded(t *testing.T, engine Engine) {
 			typeJson: `{"SmolStruct":{"s":"whee"}}`,
 			reprJson: `{"q":"whee"}`,
 			typePoints: []testcasePoint{
-				{"", ipld.Kind_Map},
-				//{"String", ipld.ErrNotExists{}}, // TODO: need better error typing from traversal package.
-				{"SmolStruct", ipld.Kind_Map},
+				{"", datamodel.Kind_Map},
+				//{"String", datamodel.ErrNotExists{}}, // TODO: need better error typing from traversal package.
+				{"SmolStruct", datamodel.Kind_Map},
 				{"SmolStruct/s", "whee"},
 			},
 			reprPoints: []testcasePoint{
-				{"", ipld.Kind_Map},
+				{"", datamodel.Kind_Map},
 				{"q", "whee"},
 			},
 		},

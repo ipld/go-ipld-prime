@@ -324,7 +324,7 @@ and defensive checks to ensure we don't leak mutable references would not
 come for free; reducing the number of points we might need to do this makes
 it possible to create a more efficient system overall.)
 
-The documentation on the ipld.NodeAssembler type gives some general
+The documentation on the datamodel.NodeAssembler type gives some general
 description of this.
 
 NodeBuilder types end up being just a NodeAssembler embed, plus a few methods

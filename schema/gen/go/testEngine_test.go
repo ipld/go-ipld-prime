@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/node/tests"
 	"github.com/ipld/go-ipld-prime/schema"
 )
@@ -19,15 +19,15 @@ type genAndCompileEngine struct {
 
 	adjCfg AdjunctCfg
 
-	prototypeByName func(string) ipld.NodePrototype
+	prototypeByName func(string) datamodel.NodePrototype
 }
 
-var tmpGenBuildDir = filepath.Join(os.TempDir(), "go-ipld-prime-gengo")
+var tmpGenBuildDir = filepath.Join(os.TempDir(), "test-go-ipld-prime-gengo")
 
 func (e *genAndCompileEngine) Init(t *testing.T, ts schema.TypeSystem) {
 	// Make directories for the package we're about to generate.
 	// They will live in a temporary directory, usually
-	// /tmp/go-ipld-prime-gengo on Linux. It can be removed at any time.
+	// /tmp/test-go-ipld-prime-gengo on Linux. It can be removed at any time.
 	// We don't by default because it's nicer to let go's builds of things cache.
 	// If you change the names of types, though, you'll have garbage files leftover,
 	// and that's currently a manual cleanup problem.  Sorry.
@@ -49,9 +49,9 @@ func (e *genAndCompileEngine) Init(t *testing.T, ts schema.TypeSystem) {
 		doTemplate(`
 			package `+pkgName+`
 
-			import "github.com/ipld/go-ipld-prime"
+			import "github.com/ipld/go-ipld-prime/datamodel"
 
-			func GetPrototypeByName(name string) ipld.NodePrototype {
+			func GetPrototypeByName(name string) datamodel.NodePrototype {
 				switch name {
 				{{- range . }}
 				case "{{ .Name }}":
@@ -76,6 +76,6 @@ func (e *genAndCompileEngine) Init(t *testing.T, ts schema.TypeSystem) {
 	e.prototypeByName = fnPrototypeByName(e.prefix)
 }
 
-func (e *genAndCompileEngine) PrototypeByName(name string) ipld.NodePrototype {
+func (e *genAndCompileEngine) PrototypeByName(name string) datamodel.NodePrototype {
 	return e.prototypeByName(name)
 }

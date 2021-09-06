@@ -65,17 +65,17 @@ func (x *Foomp) LookupByNode(k *Foo) (*Bar) { /*...*/ }
 
 Such specialized methods are often much shorter, much more efficient to execute,
 and involve much less error handling to use than their more generalized
-counterparts on the `ipld.Node` interface.
+counterparts on the `datamodel.Node` interface.
 
 Note that when named scalars appear in the signitures of specialized methods,
 they always appear as pointers.  They will never be `nil`, but there is still
 a reason that pointers are used here, and it's based on performance.
 (The details don't matter as a user, but: it means if those values need to be
-regarded as the `ipld.Node` interface again in the future, that boxing is
+regarded as the `datamodel.Node` interface again in the future, that boxing is
 inexpensive since we already have a (heap-escaped long ago) pointer.
 By contrast, copying by value in more places is likely to result in more
 heap escapes and thus additional undesirable new allocation costs in the
-(entirely common!) case that the values end up handled as `ipld.Node` later.)
+(entirely common!) case that the values end up handled as `datamodel.Node` later.)
 
 #### named scalars have a specialized method which unboxes them to a native primitive unconditionally
 
@@ -126,7 +126,7 @@ as a type identifier.
 At any rate, it seems clear that you can mentally capitalize the 's'
 at any time you see this debatable syntax.
 
-(We should resolve this issue in the specs, which are in the `ipld/specs` repo.)
+(We should resolve this issue in the specs, which are in the `datamodel.specs` repo.)
 
 #### plain scalars appear in specialized method argument types and return types
 
@@ -150,15 +150,15 @@ The type might carry less semantic information than it does when a
 named scalar shows up in the same position, but we still use a generated
 type (and a pointer) here for two reasons: first of all, and more simply,
 consistency; but secondly, for the same performance reasons as applied
-to named scalars (if we need to treat this value as an `ipld.Node` again
+to named scalars (if we need to treat this value as an `datamodel.Node` again
 in the future, it's much better if we already have a heap pointer rather
 than a bare primitive value (`runtime.convT*` functions are often not your
 favorite thing to see in a pprof flamegraph)).
 
 (FUTURE: this is still worth review.  We might actually want to use
 bare primitives in a lot of these cases, because surely, if you're about
-to want to treat something as an `ipld.Node` again, then you can use the
-generalized methods conforming to `ipld.Node` which already yield that...?
+to want to treat something as an `datamodel.Node` again, then you can use the
+generalized methods conforming to `datamodel.Node` which already yield that...?
 We'll get more information and impressions about this after trying to use
 codegen in bulk (especially the specialized methods).)
 
@@ -174,11 +174,11 @@ Code reuse for plain scalars
 ----------------------------
 
 We *always* need some type that can contain a plain scalar while also
-implementing all the `ipld.Node` methods.  Even if we didn't export it
+implementing all the `datamodel.Node` methods.  Even if we didn't export it
 or show it in any method signitures anywhere at all, we'd *still* need it
 for internal implementation of other types, because it's important those
 types be able to return a pointer to their fields in their implements of
-the `ipld.Node` contract (otherwise, they'd be terribly slow and alloc-heavy).
+the `datamodel.Node` contract (otherwise, they'd be terribly slow and alloc-heavy).
 
 ### can we reuse another package's plain scalars?
 
@@ -213,7 +213,7 @@ However, there are *many* "cons" which outweight that single "pro":
 
 There are also a few bits that aren't entirely known (at least, at the time of this writing):
 namely, how 'any' types are going to be handled in codegen.
-Probably, though, the answer is: it's just treated as 'ipld.Node',
+Probably, though, the answer is: it's just treated as 'datamodel.Node',
 and the codegen package doesn't export *any* more types which regard this situation because that's already sufficient.
 
 Long story short?  It's better to have plain scalar types in codegen output,

@@ -6,7 +6,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/schema"
 	gengo "github.com/ipld/go-ipld-prime/schema/gen/go"
 )
@@ -81,9 +81,9 @@ func main() {
 			"TypeName",
 			"TypeDefnInline",
 		},
-		schema.SpawnUnionRepresentationKinded(map[ipld.Kind]schema.TypeName{
-			ipld.Kind_String: "TypeName",
-			ipld.Kind_Map:    "TypeDefnInline",
+		schema.SpawnUnionRepresentationKinded(map[datamodel.Kind]schema.TypeName{
+			datamodel.Kind_String: "TypeName",
+			datamodel.Kind_Map:    "TypeDefnInline",
 		}),
 	))
 	ts.Accumulate(schema.SpawnUnion("TypeDefnInline", // n.b. previously called "TypeTerm".
@@ -371,12 +371,12 @@ func main() {
 			"Int",
 			"Float",
 		},
-		schema.SpawnUnionRepresentationKinded(map[ipld.Kind]schema.TypeName{
-			ipld.Kind_Bool:   "Bool",
-			ipld.Kind_String: "String",
-			ipld.Kind_Bytes:  "Bytes",
-			ipld.Kind_Int:    "Int",
-			ipld.Kind_Float:  "Float",
+		schema.SpawnUnionRepresentationKinded(map[datamodel.Kind]schema.TypeName{
+			datamodel.Kind_Bool:   "Bool",
+			datamodel.Kind_String: "String",
+			datamodel.Kind_Bytes:  "Bytes",
+			datamodel.Kind_Int:    "Int",
+			datamodel.Kind_Float:  "Float",
 		}),
 	))
 

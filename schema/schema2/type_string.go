@@ -1,7 +1,7 @@
 package schema
 
 import (
-	"github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/datamodel"
 	schemadmt "github.com/ipld/go-ipld-prime/schema/dmt"
 )
 
@@ -29,6 +29,6 @@ func (t *TypeString) Name() TypeName {
 	return t.name
 }
 
-func (t TypeString) RepresentationBehavior() ipld.Kind {
-	return ipld.Kind_String
+func (t TypeString) RepresentationBehavior() datamodel.Kind {
+	return datamodel.Kind_String
 }

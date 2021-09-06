@@ -89,7 +89,7 @@ func (g mapGenerator) EmitNativeAccessors(w io.Writer) {
 	`, w, g.AdjCfg, g)
 
 	// Generate a speciated iterator.
-	//  The main advantage of this over the general ipld.MapIterator is of course keeping types visible (and concrete, to the compiler's eyes in optimizations, too).
+	//  The main advantage of this over the general datamodel.MapIterator is of course keeping types visible (and concrete, to the compiler's eyes in optimizations, too).
 	//  It also elides the error return from the iterator's Next method.  (Overreads will result in nil keys; this is both easily avoidable, and unambiguous if you do goof and hit it.)
 	doTemplate(`
 		func (n {{ .Type | TypeSymbol }}) Iterator() *{{ .Type | TypeSymbol }}__Itr {
@@ -165,7 +165,7 @@ func (g mapGenerator) EmitNodeMethodLookupByString(w io.Writer) {
 	//   For that to work out, it means if the key type doesn't have a string type kind, we must be willing to reach into its representation and use the fromString there.
 	//  If the key type *does* have a string kind at the type level, we'll use that; no need to consider going through the representation.
 	doTemplate(`
-		func (n {{ .Type | TypeSymbol }}) LookupByString(k string) (ipld.Node, error) {
+		func (n {{ .Type | TypeSymbol }}) LookupByString(k string) (datamodel.Node, error) {
 			var k2 _{{ .Type.KeyType | TypeSymbol }}
 			{{- if eq .Type.KeyType.TypeKind.String "String" }}
 			if err := (_{{ .Type.KeyType | TypeSymbol }}__Prototype{}).fromString(&k2, k); err != nil {
@@ -178,11 +178,11 @@ func (g mapGenerator) EmitNodeMethodLookupByString(w io.Writer) {
 			{{- end}}
 			v, exists := n.m[k2]
 			if !exists {
-				return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(k)}
+				return nil, datamodel.ErrNotExists{Segment: datamodel.PathSegmentOfString(k)}
 			}
 			{{- if .Type.ValueIsNullable }}
 			if v.m == schema.Maybe_Null {
-				return ipld.Null, nil
+				return datamodel.Null, nil
 			}
 			return {{ if not (MaybeUsesPtr .Type.ValueType) }}&{{end}}v.v, nil
 			{{- else}}
@@ -198,19 +198,19 @@ func (g mapGenerator) EmitNodeMethodLookupByNode(w io.Writer) {
 	//   if you used a Node here, you should've meant it.
 	// REVIEW: by comparison structs will coerce anything stringish silently...!  so we should figure out if that inconsistency is acceptable, and at least document it if so.
 	doTemplate(`
-		func (n {{ .Type | TypeSymbol }}) LookupByNode(k ipld.Node) (ipld.Node, error) {
+		func (n {{ .Type | TypeSymbol }}) LookupByNode(k datamodel.Node) (datamodel.Node, error) {
 			k2, ok := k.({{ .Type.KeyType | TypeSymbol }})
 			if !ok {
 				panic("todo invalid key type error")
-				// 'ipld.ErrInvalidKey{TypeName:"{{ .PkgName }}.{{ .Type.Name }}", Key:&_String{k}}' doesn't quite cut it: need room to explain the type, and it's not guaranteed k can be turned into a string at all
+				// 'schema.ErrInvalidKey{TypeName:"{{ .PkgName }}.{{ .Type.Name }}", Key:&_String{k}}' doesn't quite cut it: need room to explain the type, and it's not guaranteed k can be turned into a string at all
 			}
 			v, exists := n.m[*k2]
 			if !exists {
-				return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(k2.String())}
+				return nil, datamodel.ErrNotExists{Segment: datamodel.PathSegmentOfString(k2.String())}
 			}
 			{{- if .Type.ValueIsNullable }}
 			if v.m == schema.Maybe_Null {
-				return ipld.Null, nil
+				return datamodel.Null, nil
 			}
 			return {{ if not (MaybeUsesPtr .Type.ValueType) }}&{{end}}v.v, nil
 			{{- else}}
@@ -222,7 +222,7 @@ func (g mapGenerator) EmitNodeMethodLookupByNode(w io.Writer) {
 
 func (g mapGenerator) EmitNodeMethodMapIterator(w io.Writer) {
 	doTemplate(`
-		func (n {{ .Type | TypeSymbol }}) MapIterator() ipld.MapIterator {
+		func (n {{ .Type | TypeSymbol }}) MapIterator() datamodel.MapIterator {
 			return &_{{ .Type | TypeSymbol }}__MapItr{n, 0}
 		}
 
@@ -231,16 +231,16 @@ func (g mapGenerator) EmitNodeMethodMapIterator(w io.Writer) {
 			idx  int
 		}
 
-		func (itr *_{{ .Type | TypeSymbol }}__MapItr) Next() (k ipld.Node, v ipld.Node, _ error) {
+		func (itr *_{{ .Type | TypeSymbol }}__MapItr) Next() (k datamodel.Node, v datamodel.Node, _ error) {
 			if itr.idx >= len(itr.n.t) {
-				return nil, nil, ipld.ErrIteratorOverread{}
+				return nil, nil, datamodel.ErrIteratorOverread{}
 			}
 			x := &itr.n.t[itr.idx]
 			k = &x.k
 			{{- if .Type.ValueIsNullable }}
 			switch x.v.m {
 			case schema.Maybe_Null:
-				v = ipld.Null
+				v = datamodel.Null
 			case schema.Maybe_Value:
 				v = {{ if not (MaybeUsesPtr .Type.ValueType) }}&{{end}}x.v.v
 			}

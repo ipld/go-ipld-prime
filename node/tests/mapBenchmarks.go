@@ -3,17 +3,17 @@ package tests
 import (
 	"testing"
 
-	ipld "github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/must"
 )
 
-func SpecBenchmarkMapStrInt_3n_AssembleStandard(b *testing.B, np ipld.NodePrototype) {
+func SpecBenchmarkMapStrInt_3n_AssembleStandard(b *testing.B, np datamodel.NodePrototype) {
 	for i := 0; i < b.N; i++ {
 		sink = buildMapStrIntN3(np)
 	}
 }
 
-func SpecBenchmarkMapStrInt_3n_AssembleEntry(b *testing.B, np ipld.NodePrototype) {
+func SpecBenchmarkMapStrInt_3n_AssembleEntry(b *testing.B, np datamodel.NodePrototype) {
 	for i := 0; i < b.N; i++ {
 		nb := np.NewBuilder()
 		ma, err := nb.BeginMap(3)
@@ -40,7 +40,7 @@ func SpecBenchmarkMapStrInt_3n_AssembleEntry(b *testing.B, np ipld.NodePrototype
 	}
 }
 
-func SpecBenchmarkMapStrInt_3n_Iteration(b *testing.B, np ipld.NodePrototype) {
+func SpecBenchmarkMapStrInt_3n_Iteration(b *testing.B, np datamodel.NodePrototype) {
 	n := buildMapStrIntN3(np)
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
@@ -54,13 +54,13 @@ func SpecBenchmarkMapStrInt_3n_Iteration(b *testing.B, np ipld.NodePrototype) {
 
 // n25 -->
 
-func SpecBenchmarkMapStrInt_25n_AssembleStandard(b *testing.B, np ipld.NodePrototype) {
+func SpecBenchmarkMapStrInt_25n_AssembleStandard(b *testing.B, np datamodel.NodePrototype) {
 	for i := 0; i < b.N; i++ {
 		sink = buildMapStrIntN25(np)
 	}
 }
 
-func SpecBenchmarkMapStrInt_25n_AssembleEntry(b *testing.B, np ipld.NodePrototype) {
+func SpecBenchmarkMapStrInt_25n_AssembleEntry(b *testing.B, np datamodel.NodePrototype) {
 	for i := 0; i < b.N; i++ {
 		nb := np.NewBuilder()
 		ma, err := nb.BeginMap(25)
@@ -79,7 +79,7 @@ func SpecBenchmarkMapStrInt_25n_AssembleEntry(b *testing.B, np ipld.NodePrototyp
 	}
 }
 
-func SpecBenchmarkMapStrInt_25n_Iteration(b *testing.B, np ipld.NodePrototype) {
+func SpecBenchmarkMapStrInt_25n_Iteration(b *testing.B, np datamodel.NodePrototype) {
 	n := buildMapStrIntN25(np)
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {

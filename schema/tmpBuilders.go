@@ -3,7 +3,7 @@ package schema
 import (
 	"fmt"
 
-	"github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/datamodel"
 )
 
 // Everything in this file is __a temporary hack__ and will be __removed__.
@@ -27,6 +27,25 @@ import (
 //  And having the AST gen'd types be... just... the thing... sounds nice.  It could save a lot of work.
 //   (It would mean the golang types don't tell you whether the values have been checked for global properties or not, but, eh.)
 //   (It's not really compatible with "Prototype and Type are the same thing for codegen'd stuff", either (or, we need more interfaces, and to *really* lean into them), but maybe that's okay.)
+
+func SpawnTypeSystem(types ...Type) (*TypeSystem, []error) {
+	ts := TypeSystem{}
+	ts.Init()
+	for _, typ := range types {
+		ts.Accumulate(typ)
+	}
+	if errs := ts.ValidateGraph(); errs != nil {
+		return nil, errs
+	}
+	return &ts, nil
+}
+func MustTypeSystem(types ...Type) *TypeSystem {
+	if ts, err := SpawnTypeSystem(types...); err != nil {
+		panic(err)
+	} else {
+		return ts
+	}
+}
 
 func SpawnString(name TypeName) *TypeString {
 	return &TypeString{typeBase{name, nil}}
@@ -82,6 +101,8 @@ func SpawnStruct(name TypeName, fields []StructField, repr StructRepresentation)
 				panic("neither nullable nor optional is supported on struct stringjoin representation")
 			}
 		}
+	case nil:
+		v.representation = SpawnStructRepresentationMap(nil)
 	}
 	return v
 }
@@ -104,7 +125,7 @@ func SpawnUnion(name TypeName, members []TypeName, repr UnionRepresentation) *Ty
 func SpawnUnionRepresentationKeyed(table map[string]TypeName) UnionRepresentation_Keyed {
 	return UnionRepresentation_Keyed{table}
 }
-func SpawnUnionRepresentationKinded(table map[ipld.Kind]TypeName) UnionRepresentation_Kinded {
+func SpawnUnionRepresentationKinded(table map[datamodel.Kind]TypeName) UnionRepresentation_Kinded {
 	return UnionRepresentation_Kinded{table}
 }
 func SpawnUnionRepresentationStringprefix(delim string, table map[string]TypeName) UnionRepresentation_Stringprefix {
@@ -154,7 +175,7 @@ func (ts TypeSystem) ValidateGraph() []error {
 		case *TypeStruct:
 			for _, f := range t2.fields {
 				if _, ok := ts.namedTypes[f.typ]; !ok {
-					ee = append(ee, fmt.Errorf("type %s refers to missing type %s (in field %s)", tn, f.typ, f.name))
+					ee = append(ee, fmt.Errorf("type %s refers to missing type %s (in field %q)", tn, f.typ, f.name))
 				}
 			}
 		case *TypeMap:
@@ -162,11 +183,11 @@ func (ts TypeSystem) ValidateGraph() []error {
 				ee = append(ee, fmt.Errorf("type %s refers to missing type %s (as key type)", tn, t2.keyType))
 			}
 			if _, ok := ts.namedTypes[t2.valueType]; !ok {
-				ee = append(ee, fmt.Errorf("type %s refers to missing type %s (as key type)", tn, t2.valueType))
+				ee = append(ee, fmt.Errorf("type %s refers to missing type %s (as value type)", tn, t2.valueType))
 			}
 		case *TypeList:
 			if _, ok := ts.namedTypes[t2.valueType]; !ok {
-				ee = append(ee, fmt.Errorf("type %s refers to missing type %s (as key type)", tn, t2.valueType))
+				ee = append(ee, fmt.Errorf("type %s refers to missing type %s (as value type)", tn, t2.valueType))
 			}
 		case *TypeUnion:
 			for _, mn := range t2.members {

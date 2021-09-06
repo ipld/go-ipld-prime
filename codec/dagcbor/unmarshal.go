@@ -3,13 +3,15 @@ package dagcbor
 import (
 	"errors"
 	"fmt"
+	"io"
 	"math"
 
 	cid "github.com/ipfs/go-cid"
+	"github.com/polydawn/refmt/cbor"
 	"github.com/polydawn/refmt/shared"
 	"github.com/polydawn/refmt/tok"
 
-	ipld "github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/datamodel"
 	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
 )
 
@@ -27,12 +29,37 @@ const (
 // except for the `case tok.TBytes` block,
 // which has dag-cbor's special sauce for detecting schemafree links.
 
-type UnmarshalOptions struct {
+// DecodeOptions can be used to customize the behavior of a decoding function.
+// The Decode method on this struct fits the codec.Decoder function interface.
+type DecodeOptions struct {
 	// If true, parse DAG-CBOR tag(42) as Link nodes, otherwise reject them
 	AllowLinks bool
 }
 
-func Unmarshal(na ipld.NodeAssembler, tokSrc shared.TokenSource, options UnmarshalOptions) error {
+// Decode deserializes data from the given io.Reader and feeds it into the given datamodel.NodeAssembler.
+// Decode fits the codec.Decoder function interface.
+//
+// The behavior of the decoder can be customized by setting fields in the DecodeOptions struct before calling this method.
+func (cfg DecodeOptions) Decode(na datamodel.NodeAssembler, r io.Reader) error {
+	// Probe for a builtin fast path.  Shortcut to that if possible.
+	type detectFastPath interface {
+		DecodeDagCbor(io.Reader) error
+	}
+	if na2, ok := na.(detectFastPath); ok {
+		return na2.DecodeDagCbor(r)
+	}
+	// Okay, generic builder path.
+	return Unmarshal(na, cbor.NewDecoder(cbor.DecodeOptions{}, r), cfg)
+}
+
+// Future work: we would like to remove the Unmarshal function,
+// and in particular, stop seeing types from refmt (like shared.TokenSource) be visible.
+// Right now, some kinds of configuration (e.g. for whitespace and prettyprint) are only available through interacting with the refmt types;
+// we should improve our API so that this can be done with only our own types in this package.
+
+// Unmarshal is a deprecated function.
+// Please consider switching to DecodeOptions.Decode instead.
+func Unmarshal(na datamodel.NodeAssembler, tokSrc shared.TokenSource, options DecodeOptions) error {
 	// Have a gas budget, which will be decremented as we allocate memory, and an error returned when execeeded (or about to be exceeded).
 	//  This is a DoS defense mechanism.
 	//  It's *roughly* in units of bytes (but only very, VERY roughly) -- it also treats words as 1 in many cases.
@@ -41,13 +68,13 @@ func Unmarshal(na ipld.NodeAssembler, tokSrc shared.TokenSource, options Unmarsh
 	return unmarshal1(na, tokSrc, &gas, options)
 }
 
-func unmarshal1(na ipld.NodeAssembler, tokSrc shared.TokenSource, gas *int, options UnmarshalOptions) error {
+func unmarshal1(na datamodel.NodeAssembler, tokSrc shared.TokenSource, gas *int, options DecodeOptions) error {
 	var tk tok.Token
 	done, err := tokSrc.Step(&tk)
 	if err != nil {
 		return err
 	}
-	if done && !tk.Type.IsValue() {
+	if done && !tk.Type.IsValue() && tk.Type != tok.TNull {
 		return fmt.Errorf("unexpected eof")
 	}
 	return unmarshal2(na, tokSrc, &tk, gas, options)
@@ -55,7 +82,7 @@ func unmarshal1(na ipld.NodeAssembler, tokSrc shared.TokenSource, gas *int, opti
 
 // starts with the first token already primed.  Necessary to get recursion
 //  to flow right without a peek+unpeek system.
-func unmarshal2(na ipld.NodeAssembler, tokSrc shared.TokenSource, tk *tok.Token, gas *int, options UnmarshalOptions) error {
+func unmarshal2(na datamodel.NodeAssembler, tokSrc shared.TokenSource, tk *tok.Token, gas *int, options DecodeOptions) error {
 	// FUTURE: check for schema.TypedNodeBuilder that's going to parse a Link (they can slurp any token kind they want).
 	switch tk.Type {
 	case tok.TMapOpen:

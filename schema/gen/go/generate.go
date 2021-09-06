@@ -93,9 +93,9 @@ func Generate(pth string, pkgName string, ts schema.TypeSystem, adjCfg *AdjunctC
 		fmt.Fprintf(f, "package %s\n\n", pkgName)
 		fmt.Fprintf(f, doNotEditComment+"\n\n")
 		fmt.Fprintf(f, "import (\n")
-		fmt.Fprintf(f, "\tipld \"github.com/ipld/go-ipld-prime\"\n") // referenced for links
+		fmt.Fprintf(f, "\t\"github.com/ipld/go-ipld-prime/datamodel\"\n") // referenced for links
 		fmt.Fprintf(f, ")\n")
-		fmt.Fprintf(f, "var _ ipld.Node = nil // suppress errors when this dependency is not referenced\n")
+		fmt.Fprintf(f, "var _ datamodel.Node = nil // suppress errors when this dependency is not referenced\n")
 
 		// Emit the type table.
 		EmitTypeTable(pkgName, ts, adjCfg, f)
@@ -117,7 +117,7 @@ func Generate(pth string, pkgName string, ts schema.TypeSystem, adjCfg *AdjunctC
 		fmt.Fprintf(f, "package %s\n\n", pkgName)
 		fmt.Fprintf(f, doNotEditComment+"\n\n")
 		fmt.Fprintf(f, "import (\n")
-		fmt.Fprintf(f, "\tipld \"github.com/ipld/go-ipld-prime\"\n")        // referenced everywhere.
+		fmt.Fprintf(f, "\t\"github.com/ipld/go-ipld-prime/datamodel\"\n")   // referenced everywhere.
 		fmt.Fprintf(f, "\t\"github.com/ipld/go-ipld-prime/node/mixins\"\n") // referenced by node implementation guts.
 		fmt.Fprintf(f, "\t\"github.com/ipld/go-ipld-prime/schema\"\n")      // referenced by maybes (and surprisingly little else).
 		fmt.Fprintf(f, ")\n\n")

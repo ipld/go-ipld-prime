@@ -3,7 +3,7 @@ package tests
 import (
 	"testing"
 
-	"github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/schema"
 )
 
@@ -18,5 +18,5 @@ import (
 // their representation prototypes can be obtained by appending ".Repr".
 type Engine interface {
 	Init(t *testing.T, ts schema.TypeSystem)
-	PrototypeByName(name string) ipld.NodePrototype
+	PrototypeByName(name string) datamodel.NodePrototype
 }

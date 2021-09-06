@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"sort"
 
-	"github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/datamodel"
 )
 
 // Reflect creates a new Node by looking at a golang value with reflection
@@ -47,13 +47,13 @@ import (
 // Other features in the fluent package will typically out-perform this,
 // and using NodeAssemblers directly (without any fluent tools) will be much faster.
 // Only use this function if performance is not of consequence.
-func Reflect(np ipld.NodePrototype, i interface{}) (ipld.Node, error) {
+func Reflect(np datamodel.NodePrototype, i interface{}) (datamodel.Node, error) {
 	return defaultReflector.Reflect(np, i)
 }
 
 // MustReflect is a shortcut for Reflect but panics on any error.
 // It is useful if you need a single return value for function composition purposes.
-func MustReflect(np ipld.NodePrototype, i interface{}) ipld.Node {
+func MustReflect(np datamodel.NodePrototype, i interface{}) datamodel.Node {
 	n, err := Reflect(np, i)
 	if err != nil {
 		panic(err)
@@ -66,7 +66,7 @@ func MustReflect(np ipld.NodePrototype, i interface{}) ipld.Node {
 // This may be useful if you need more direct control over allocations,
 // or want to fill in only part of a larger node assembly process using the reflect tool.
 // Data is accumulated by the NodeAssembler parameter, so no Node is returned.
-func ReflectIntoAssembler(na ipld.NodeAssembler, i interface{}) error {
+func ReflectIntoAssembler(na datamodel.NodeAssembler, i interface{}) error {
 	return defaultReflector.ReflectIntoAssembler(na, i)
 }
 
@@ -92,7 +92,7 @@ type Reflector struct {
 // Reflect is as per the package-scope function of the same name and signature,
 // but using the configuration in the Reflector struct.
 // See the package-scope function for documentation.
-func (rcfg Reflector) Reflect(np ipld.NodePrototype, i interface{}) (ipld.Node, error) {
+func (rcfg Reflector) Reflect(np datamodel.NodePrototype, i interface{}) (datamodel.Node, error) {
 	nb := np.NewBuilder()
 	if err := rcfg.ReflectIntoAssembler(nb, i); err != nil {
 		return nil, err
@@ -103,7 +103,7 @@ func (rcfg Reflector) Reflect(np ipld.NodePrototype, i interface{}) (ipld.Node, 
 // ReflectIntoAssembler is as per the package-scope function of the same name and signature,
 // but using the configuration in the Reflector struct.
 // See the package-scope function for documentation.
-func (rcfg Reflector) ReflectIntoAssembler(na ipld.NodeAssembler, i interface{}) error {
+func (rcfg Reflector) ReflectIntoAssembler(na datamodel.NodeAssembler, i interface{}) error {
 	// Cover the most common values with a type-switch, as it's faster than reflection.
 	switch x := i.(type) {
 	case map[string]string:

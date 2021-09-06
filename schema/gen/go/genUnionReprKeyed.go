@@ -73,32 +73,32 @@ func (g unionReprKeyedReprGenerator) EmitNodeType(w io.Writer) {
 
 func (g unionReprKeyedReprGenerator) EmitNodeTypeAssertions(w io.Writer) {
 	doTemplate(`
-		var _ ipld.Node = &_{{ .Type | TypeSymbol }}__Repr{}
+		var _ datamodel.Node = &_{{ .Type | TypeSymbol }}__Repr{}
 	`, w, g.AdjCfg, g)
 }
 
 func (g unionReprKeyedReprGenerator) EmitNodeMethodLookupByString(w io.Writer) {
 	// Similar to the type-level method, except uses discriminant values as keys instead of the member type names.
 	doTemplate(`
-		func (n *_{{ .Type | TypeSymbol }}__Repr) LookupByString(key string) (ipld.Node, error) {
+		func (n *_{{ .Type | TypeSymbol }}__Repr) LookupByString(key string) (datamodel.Node, error) {
 			switch key {
 			{{- range $i, $member := .Type.Members }}
 			case "{{ $member | dot.Type.RepresentationStrategy.GetDiscriminant }}":
 				{{- if (eq (dot.AdjCfg.UnionMemlayout dot.Type) "embedAll") }}
 				if n.tag != {{ add $i 1 }} {
-					return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
+					return nil, datamodel.ErrNotExists{Segment: datamodel.PathSegmentOfString(key)}
 				}
 				return n.x{{ add $i 1 }}.Representation(), nil
 				{{- else if (eq (dot.AdjCfg.UnionMemlayout dot.Type) "interface") }}
 				if n2, ok := n.x.({{ $member | TypeSymbol }}); ok {
 					return n2.Representation(), nil
 				} else {
-					return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfString(key)}
+					return nil, datamodel.ErrNotExists{Segment: datamodel.PathSegmentOfString(key)}
 				}
 				{{- end}}
 			{{- end}}
 			default:
-				return nil, schema.ErrNoSuchField{Type: nil /*TODO*/, Field: ipld.PathSegmentOfString(key)}
+				return nil, schema.ErrNoSuchField{Type: nil /*TODO*/, Field: datamodel.PathSegmentOfString(key)}
 			}
 		}
 	`, w, g.AdjCfg, g)
@@ -106,7 +106,7 @@ func (g unionReprKeyedReprGenerator) EmitNodeMethodLookupByString(w io.Writer) {
 
 func (g unionReprKeyedReprGenerator) EmitNodeMethodLookupByNode(w io.Writer) {
 	doTemplate(`
-		func (n *_{{ .Type | TypeSymbol }}__Repr) LookupByNode(key ipld.Node) (ipld.Node, error) {
+		func (n *_{{ .Type | TypeSymbol }}__Repr) LookupByNode(key datamodel.Node) (datamodel.Node, error) {
 			ks, err := key.AsString()
 			if err != nil {
 				return nil, err
@@ -119,7 +119,7 @@ func (g unionReprKeyedReprGenerator) EmitNodeMethodLookupByNode(w io.Writer) {
 func (g unionReprKeyedReprGenerator) EmitNodeMethodMapIterator(w io.Writer) {
 	// Similar to the type-level method, except yields discriminant values as keys instead of the member type names.
 	doTemplate(`
-		func (n *_{{ .Type | TypeSymbol }}__Repr) MapIterator() ipld.MapIterator {
+		func (n *_{{ .Type | TypeSymbol }}__Repr) MapIterator() datamodel.MapIterator {
 			return &_{{ .Type | TypeSymbol }}__ReprMapItr{n, false}
 		}
 
@@ -128,9 +128,9 @@ func (g unionReprKeyedReprGenerator) EmitNodeMethodMapIterator(w io.Writer) {
 			done bool
 		}
 
-		func (itr *_{{ .Type | TypeSymbol }}__ReprMapItr) Next() (k ipld.Node, v ipld.Node, _ error) {
+		func (itr *_{{ .Type | TypeSymbol }}__ReprMapItr) Next() (k datamodel.Node, v datamodel.Node, _ error) {
 			if itr.done {
-				return nil, nil, ipld.ErrIteratorOverread{}
+				return nil, nil, datamodel.ErrIteratorOverread{}
 			}
 			{{- if (eq (.AdjCfg.UnionMemlayout .Type) "embedAll") }}
 			switch itr.n.tag {
@@ -251,7 +251,7 @@ func (g unionReprKeyedReprBuilderGenerator) EmitNodeAssemblerMethodAssignNull(w 
 func (g unionReprKeyedReprBuilderGenerator) EmitNodeAssemblerMethodAssignNode(w io.Writer) {
 	// DRY: this is once again not-coincidentally very nearly equal to the type-level method.  Would be good to dedup them... after we do the get-to-the-point-in-phase-3 improvement.
 	doTemplate(`
-		func (na *_{{ .Type | TypeSymbol }}__ReprAssembler) AssignNode(v ipld.Node) error {
+		func (na *_{{ .Type | TypeSymbol }}__ReprAssembler) AssignNode(v datamodel.Node) error {
 			if v.IsNull() {
 				return na.AssignNull()
 			}
@@ -273,8 +273,8 @@ func (g unionReprKeyedReprBuilderGenerator) EmitNodeAssemblerMethodAssignNode(w 
 				*na.m = schema.Maybe_Value
 				return nil
 			}
-			if v.Kind() != ipld.Kind_Map {
-				return ipld.ErrWrongKind{TypeName: "{{ .PkgName }}.{{ .Type.Name }}.Repr", MethodName: "AssignNode", AppropriateKind: ipld.KindSet_JustMap, ActualKind: v.Kind()}
+			if v.Kind() != datamodel.Kind_Map {
+				return datamodel.ErrWrongKind{TypeName: "{{ .PkgName }}.{{ .Type.Name }}.Repr", MethodName: "AssignNode", AppropriateKind: datamodel.KindSet_JustMap, ActualKind: v.Kind()}
 			}
 			itr := v.MapIterator()
 			for !itr.Done() {
@@ -320,7 +320,7 @@ func (g unionReprKeyedReprBuilderGenerator) emitMapAssemblerMethods(w io.Writer)
 	// DRY: the number of times these `ma.state` switches are appearing is truly intense!  This is starting to look like one of them most important things to shrink the GSLOC/ASM size of!
 
 	doTemplate(`
-		func (ma *_{{ .Type | TypeSymbol }}__ReprAssembler) AssembleEntry(k string) (ipld.NodeAssembler, error) {
+		func (ma *_{{ .Type | TypeSymbol }}__ReprAssembler) AssembleEntry(k string) (datamodel.NodeAssembler, error) {
 			switch ma.state {
 			case maState_initial:
 				// carry on
@@ -362,12 +362,12 @@ func (g unionReprKeyedReprBuilderGenerator) emitMapAssemblerMethods(w io.Writer)
 			{{- end}}
 			}
 			{{- end}}
-			return nil, ipld.ErrInvalidKey{TypeName:"{{ .PkgName }}.{{ .Type.Name }}.Repr", Key:&_String{k}}
+			return nil, schema.ErrInvalidKey{TypeName:"{{ .PkgName }}.{{ .Type.Name }}.Repr", Key:&_String{k}}
 		}
 	`, w, g.AdjCfg, g)
 
 	doTemplate(`
-		func (ma *_{{ .Type | TypeSymbol }}__ReprAssembler) AssembleKey() ipld.NodeAssembler {
+		func (ma *_{{ .Type | TypeSymbol }}__ReprAssembler) AssembleKey() datamodel.NodeAssembler {
 			switch ma.state {
 			case maState_initial:
 				// carry on
@@ -388,7 +388,7 @@ func (g unionReprKeyedReprBuilderGenerator) emitMapAssemblerMethods(w io.Writer)
 	`, w, g.AdjCfg, g)
 
 	doTemplate(`
-		func (ma *_{{ .Type | TypeSymbol }}__ReprAssembler) AssembleValue() ipld.NodeAssembler {
+		func (ma *_{{ .Type | TypeSymbol }}__ReprAssembler) AssembleValue() datamodel.NodeAssembler {
 			switch ma.state {
 			case maState_initial:
 				panic("invalid state: AssembleValue cannot be called when no key is primed")
@@ -452,10 +452,10 @@ func (g unionReprKeyedReprBuilderGenerator) emitMapAssemblerMethods(w io.Writer)
 	`, w, g.AdjCfg, g)
 
 	doTemplate(`
-		func (ma *_{{ .Type | TypeSymbol }}__ReprAssembler) KeyPrototype() ipld.NodePrototype {
+		func (ma *_{{ .Type | TypeSymbol }}__ReprAssembler) KeyPrototype() datamodel.NodePrototype {
 			return _String__Prototype{}
 		}
-		func (ma *_{{ .Type | TypeSymbol }}__ReprAssembler) ValuePrototype(k string) ipld.NodePrototype {
+		func (ma *_{{ .Type | TypeSymbol }}__ReprAssembler) ValuePrototype(k string) datamodel.NodePrototype {
 			switch k {
 			{{- range $i, $member := .Type.Members }}
 			case "{{ $member.Name }}":
@@ -502,20 +502,20 @@ func (g unionReprKeyedReprBuilderGenerator) emitKeyAssembler(w io.Writer) {
 				return nil
 			{{- end}}
 			}
-			return ipld.ErrInvalidKey{TypeName:"{{ .PkgName }}.{{ .Type.Name }}.Repr", Key:&_String{k}} // TODO: error quality: ErrInvalidUnionDiscriminant ?
+			return schema.ErrInvalidKey{TypeName:"{{ .PkgName }}.{{ .Type.Name }}.Repr", Key:&_String{k}} // TODO: error quality: ErrInvalidUnionDiscriminant ?
 		}
 	`, w, g.AdjCfg, g)
 	stubs.EmitNodeAssemblerMethodAssignBytes(w)
 	stubs.EmitNodeAssemblerMethodAssignLink(w)
 	doTemplate(`
-		func (ka *_{{ .Type | TypeSymbol }}__ReprKeyAssembler) AssignNode(v ipld.Node) error {
+		func (ka *_{{ .Type | TypeSymbol }}__ReprKeyAssembler) AssignNode(v datamodel.Node) error {
 			if v2, err := v.AsString(); err != nil {
 				return err
 			} else {
 				return ka.AssignString(v2)
 			}
 		}
-		func (_{{ .Type | TypeSymbol }}__ReprKeyAssembler) Prototype() ipld.NodePrototype {
+		func (_{{ .Type | TypeSymbol }}__ReprKeyAssembler) Prototype() datamodel.NodePrototype {
 			return _String__Prototype{}
 		}
 	`, w, g.AdjCfg, g)

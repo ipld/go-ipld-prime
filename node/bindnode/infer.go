@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"strings"
 
-	ipld "github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/schema"
 )
 
@@ -15,7 +15,7 @@ var (
 	goTypeFloat  = reflect.TypeOf(0.0)
 	goTypeString = reflect.TypeOf("")
 	goTypeBytes  = reflect.TypeOf([]byte{})
-	goTypeLink   = reflect.TypeOf((*ipld.Link)(nil)).Elem()
+	goTypeLink   = reflect.TypeOf((*datamodel.Link)(nil)).Elem()
 
 	schemaTypeBool   = schema.SpawnBool("Bool")
 	schemaTypeInt    = schema.SpawnInt("Int")
@@ -89,12 +89,21 @@ func inferGoType(typ schema.Type) reflect.Type {
 		}
 		return reflect.SliceOf(etyp)
 	case *schema.TypeUnion:
-		// We need an extra field to record what member we stored.
-		type goUnion struct {
-			Index int // 0..len(typ.Members)-1
-			Value interface{}
+		// type goUnion struct {
+		// 	Type1 *Type1
+		// 	Type2 *Type2
+		// 	...
+		// }
+		members := typ.Members()
+		fieldsGo := make([]reflect.StructField, len(members))
+		for i, ftyp := range members {
+			ftypGo := inferGoType(ftyp)
+			fieldsGo[i] = reflect.StructField{
+				Name: fieldNameFromSchema(string(ftyp.Name())),
+				Type: reflect.PtrTo(ftypGo),
+			}
 		}
-		return reflect.TypeOf(goUnion{})
+		return reflect.StructOf(fieldsGo)
 	}
 	panic(fmt.Sprintf("%T\n", typ))
 }

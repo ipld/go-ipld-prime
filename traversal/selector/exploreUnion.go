@@ -3,7 +3,7 @@ package selector
 import (
 	"fmt"
 
-	ipld "github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/datamodel"
 )
 
 // ExploreUnion allows selection to continue with two or more distinct selectors
@@ -20,7 +20,7 @@ type ExploreUnion struct {
 // Interests for ExploreUnion is:
 // - nil (aka all) if any member selector has nil interests
 // - the union of values returned by all member selectors otherwise
-func (s ExploreUnion) Interests() []ipld.PathSegment {
+func (s ExploreUnion) Interests() []datamodel.PathSegment {
 	// Check for any high-cardinality selectors first; if so, shortcircuit.
 	//  (n.b. we're assuming the 'Interests' method is cheap here.)
 	for _, m := range s.Members {
@@ -30,7 +30,7 @@ func (s ExploreUnion) Interests() []ipld.PathSegment {
 	}
 	// Accumulate the whitelist of interesting path segments.
 	// TODO: Dedup?
-	v := []ipld.PathSegment{}
+	v := []datamodel.PathSegment{}
 	for _, m := range s.Members {
 		v = append(v, m.Interests()...)
 	}
@@ -42,27 +42,30 @@ func (s ExploreUnion) Interests() []ipld.PathSegment {
 // - a new union selector if more than one member returns a selector
 // - if exactly one member returns a selector, that selector
 // - nil if no members return a selector
-func (s ExploreUnion) Explore(n ipld.Node, p ipld.PathSegment) Selector {
+func (s ExploreUnion) Explore(n datamodel.Node, p datamodel.PathSegment) (Selector, error) {
 	// TODO: memory efficient?
 	nonNilResults := make([]Selector, 0, len(s.Members))
 	for _, member := range s.Members {
-		resultSelector := member.Explore(n, p)
+		resultSelector, err := member.Explore(n, p)
+		if err != nil {
+			return nil, err
+		}
 		if resultSelector != nil {
 			nonNilResults = append(nonNilResults, resultSelector)
 		}
 	}
 	if len(nonNilResults) == 0 {
-		return nil
+		return nil, nil
 	}
 	if len(nonNilResults) == 1 {
-		return nonNilResults[0]
+		return nonNilResults[0], nil
 	}
-	return ExploreUnion{nonNilResults}
+	return ExploreUnion{nonNilResults}, nil
 }
 
 // Decide returns true for a Union selector if any of the member selectors
 // return true
-func (s ExploreUnion) Decide(n ipld.Node) bool {
+func (s ExploreUnion) Decide(n datamodel.Node) bool {
 	for _, m := range s.Members {
 		if m.Decide(n) {
 			return true
@@ -73,8 +76,8 @@ func (s ExploreUnion) Decide(n ipld.Node) bool {
 
 // ParseExploreUnion assembles a Selector
 // from an ExploreUnion selector node
-func (pc ParseContext) ParseExploreUnion(n ipld.Node) (Selector, error) {
-	if n.Kind() != ipld.Kind_List {
+func (pc ParseContext) ParseExploreUnion(n datamodel.Node) (Selector, error) {
+	if n.Kind() != datamodel.Kind_List {
 		return nil, fmt.Errorf("selector spec parse rejected: explore union selector must be a list")
 	}
 	x := ExploreUnion{

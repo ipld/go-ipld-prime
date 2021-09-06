@@ -1,10 +1,7 @@
 // go-ipld-prime is a series of go interfaces for manipulating IPLD data.
 //
-// See https://github.com/ipld/specs for more information about the basics
+// See https://ipld.io/ for more information about the basics
 // of "What is IPLD?".
-//
-// See https://github.com/ipld/go-ipld-prime/tree/master/doc/README.md
-// for more documentation about go-ipld-prime's architecture and usage.
 //
 // Here in the godoc, the first couple of types to look at should be:
 //
@@ -43,30 +40,30 @@
 // Methods on the LinkSystem then provide the functions typically used
 // to get data in and out of Nodes so you can work with it.
 //
-// This root package only provides the essential interfaces,
-// as well as a Path implementation, and a variety of error types.
-// Most actual functionality is found in subpackages.
+// This root package gathers some of the most important ease-of-use functions
+// all in one place, but is mostly aliases out to features originally found
+// in other more specific sub-packages.  (If you're interested in keeping
+// your binary sizes small, and don't use some of the features of this library,
+// you'll probably want to look into using the relevant sub-packages directly.)
 //
 // Particularly interesting subpackages include:
 //
-//   - node/* -- various Node + NodeBuilder implementations
-//   - node/basic -- the first Node implementation you should try
-//   - codec/* -- functions for serializing and deserializing Nodes
-//   - linking/* -- various Link + LinkBuilder implementations
-//   - traversal -- functions for walking Node graphs (including
-//        automatic link loading) and visiting
-//   - must -- helpful functions for streamlining error handling
-//   - fluent -- alternative Node interfaces that flip errors to panics
-//   - schema -- interfaces for working with IPLD Schemas and Nodes
-//        which use Schema types and constraints
-//
-// Note that since interfaces in this package are the core of the library,
-// choices made here maximize correctness and performance -- these choices
-// are *not* always the choices that would maximize ergonomics.
-// (Ergonomics can come on top; performance generally can't.)
-// You can check out the 'must' or 'fluent' packages for more ergonomics;
-// 'traversal' provides some ergnomics features for certain uses;
-// any use of schemas with codegen tooling will provide more ergnomic options;
-// or you can make your own function decorators that do what *you* need.
+//   - datamodel -- the most essential interfaces for describing data live here,
+//        describing Node, NodePrototype, NodeBuilder, Link, and Path.
+//   - node/* -- various Node + NodeBuilder implementations.
+//   - node/basicnode -- the first Node implementation you should try.
+//   - codec/* -- functions for serializing and deserializing Nodes.
+//   - linking -- the LinkSystem, which is a facade to all data loading and storing and hashing.
+//   - linking/* -- ways to bind concrete Link implementations (namely,
+//        the linking/cidlink package, which connects the go-cid library to our datamodel.Link interface).
+//   - traversal -- functions for walking Node graphs (including automatic link loading)
+//        and visiting them programmatically.
+//   - traversal/selector -- functions for working with IPLD Selectors,
+//        which are a language-agnostic declarative format for describing graph walks.
+//   - fluent/* -- various options for making datamodel Node and NodeBuilder easier to work with.
+//   - schema -- interfaces for working with IPLD Schemas, which can bring constraints
+//        and validation systems to otherwise schemaless and unstructured IPLD data.
+//   - adl/* -- examples of creating and using Advanced Data Layouts (in short, custom Node implementations)
+//        to do complex data structures transparently within the IPLD Data Model.
 //
 package ipld

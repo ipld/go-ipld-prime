@@ -8,10 +8,10 @@ import (
 	. "github.com/warpfork/go-wish"
 
 	"github.com/ipld/go-ipld-prime/fluent"
-	basicnode "github.com/ipld/go-ipld-prime/node/basic"
+	"github.com/ipld/go-ipld-prime/node/basicnode"
 )
 
-var n = fluent.MustBuildMap(basicnode.Prototype__Map{}, 4, func(na fluent.MapAssembler) {
+var n = fluent.MustBuildMap(basicnode.Prototype.Map, 4, func(na fluent.MapAssembler) {
 	na.AssembleEntry("plain").AssignString("olde string")
 	na.AssembleEntry("map").CreateMap(2, func(na fluent.MapAssembler) {
 		na.AssembleEntry("one").AssignInt(1)
@@ -39,7 +39,7 @@ func TestRoundtrip(t *testing.T) {
 	})
 	t.Run("decoding", func(t *testing.T) {
 		buf := strings.NewReader(serial)
-		nb := basicnode.Prototype__Map{}.NewBuilder()
+		nb := basicnode.Prototype.Map.NewBuilder()
 		err := Decode(nb, buf)
 		Require(t, err, ShouldEqual, nil)
 		Wish(t, nb.Build(), ShouldEqual, n)

@@ -8,7 +8,7 @@ import (
 	. "github.com/warpfork/go-wish"
 
 	"github.com/ipld/go-ipld-prime/codec/dagjson"
-	basicnode "github.com/ipld/go-ipld-prime/node/basic"
+	"github.com/ipld/go-ipld-prime/node/basicnode"
 )
 
 func TestSimple(t *testing.T) {

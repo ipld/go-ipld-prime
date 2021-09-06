@@ -3,7 +3,7 @@ package selector
 import (
 	"fmt"
 
-	ipld "github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/datamodel"
 )
 
 // ExploreRecursiveEdge is a special sentinel value which is used to mark
@@ -17,24 +17,24 @@ import (
 type ExploreRecursiveEdge struct{}
 
 // Interests should ultimately never get called for an ExploreRecursiveEdge selector
-func (s ExploreRecursiveEdge) Interests() []ipld.PathSegment {
+func (s ExploreRecursiveEdge) Interests() []datamodel.PathSegment {
 	panic("Traversed Explore Recursive Edge Node With No Parent")
 }
 
 // Explore should ultimately never get called for an ExploreRecursiveEdge selector
-func (s ExploreRecursiveEdge) Explore(n ipld.Node, p ipld.PathSegment) Selector {
+func (s ExploreRecursiveEdge) Explore(n datamodel.Node, p datamodel.PathSegment) (Selector, error) {
 	panic("Traversed Explore Recursive Edge Node With No Parent")
 }
 
 // Decide should ultimately never get called for an ExploreRecursiveEdge selector
-func (s ExploreRecursiveEdge) Decide(n ipld.Node) bool {
+func (s ExploreRecursiveEdge) Decide(n datamodel.Node) bool {
 	panic("Traversed Explore Recursive Edge Node With No Parent")
 }
 
 // ParseExploreRecursiveEdge assembles a Selector
 // from a exploreRecursiveEdge selector node
-func (pc ParseContext) ParseExploreRecursiveEdge(n ipld.Node) (Selector, error) {
-	if n.Kind() != ipld.Kind_Map {
+func (pc ParseContext) ParseExploreRecursiveEdge(n datamodel.Node) (Selector, error) {
+	if n.Kind() != datamodel.Kind_Map {
 		return nil, fmt.Errorf("selector spec parse rejected: selector body must be a map")
 	}
 	s := ExploreRecursiveEdge{}

@@ -1,19 +1,19 @@
 package json
 
 import (
-	"fmt"
 	"io"
 
 	rfmtjson "github.com/polydawn/refmt/json"
 
-	"github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/codec"
 	"github.com/ipld/go-ipld-prime/codec/dagjson"
+	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/multicodec"
 )
 
 var (
-	_ ipld.Decoder = Decode
-	_ ipld.Encoder = Encode
+	_ codec.Decoder = Decode
+	_ codec.Encoder = Encode
 )
 
 func init() {
@@ -21,50 +21,31 @@ func init() {
 	multicodec.RegisterDecoder(0x0200, Decode)
 }
 
-func Decode(na ipld.NodeAssembler, r io.Reader) error {
-	// Shell out directly to generic builder path.
-	//  (There's not really any fastpaths of note for json.)
-	err := dagjson.Unmarshal(na, rfmtjson.NewDecoder(r), dagjson.UnmarshalOptions{
+// Decode deserializes data from the given io.Reader and feeds it into the given datamodel.NodeAssembler.
+// Decode fits the codec.Decoder function interface.
+//
+// This is the function that will be registered in the default multicodec registry during package init time.
+func Decode(na datamodel.NodeAssembler, r io.Reader) error {
+	return dagjson.DecodeOptions{
 		ParseLinks: false,
 		ParseBytes: false,
-	})
-	if err != nil {
-		return err
-	}
-	// Slurp any remaining whitespace.
-	//  (This is relevant if our reader is tee'ing bytes to a hasher, and
-	//   the json contained any trailing whitespace.)
-	//  (We can't actually support multiple objects per reader from here;
-	//   we can't unpeek if we find a non-whitespace token, so our only
-	//    option is to error if this reader seems to contain more content.)
-	var buf [1]byte
-	for {
-		_, err := r.Read(buf[:])
-		switch buf[0] {
-		case ' ', 0x0, '\t', '\r', '\n': // continue
-		default:
-			return fmt.Errorf("unexpected content after end of json object")
-		}
-		if err == nil {
-			continue
-		} else if err == io.EOF {
-			return nil
-		} else {
-			return err
-		}
-	}
+	}.Decode(na, r)
 }
 
-func Encode(n ipld.Node, w io.Writer) error {
+// Encode walks the given datamodel.Node and serializes it to the given io.Writer.
+// Encode fits the codec.Encoder function interface.
+//
+// This is the function that will be registered in the default multicodec registry during package init time.
+func Encode(n datamodel.Node, w io.Writer) error {
 	// Shell out directly to generic inspection path.
 	//  (There's not really any fastpaths of note for json.)
 	// Write another function if you need to tune encoding options about whitespace.
 	return dagjson.Marshal(n, rfmtjson.NewEncoder(w, rfmtjson.EncodeOptions{
 		Line:   []byte{'\n'},
 		Indent: []byte{'\t'},
-	}), dagjson.MarshalOptions{
+	}), dagjson.EncodeOptions{
 		EncodeLinks: false,
 		EncodeBytes: false,
-		SortMapKeys: false,
+		MapSortMode: codec.MapSortMode_None,
 	})
 }

@@ -5,11 +5,11 @@ import (
 
 	. "github.com/warpfork/go-wish"
 
-	ipld "github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/must"
 )
 
-func SpecTestMapStrInt(t *testing.T, np ipld.NodePrototype) {
+func SpecTestMapStrInt(t *testing.T, np datamodel.NodePrototype) {
 	t.Run("map<str,int>, 3 entries", func(t *testing.T) {
 		n := buildMapStrIntN3(np)
 		t.Run("reads back out", func(t *testing.T) {
@@ -68,13 +68,13 @@ func SpecTestMapStrInt(t *testing.T, np ipld.NodePrototype) {
 
 			Wish(t, itr.Done(), ShouldEqual, true)
 			k, v, err = itr.Next()
-			Wish(t, err, ShouldEqual, ipld.ErrIteratorOverread{})
+			Wish(t, err, ShouldEqual, datamodel.ErrIteratorOverread{})
 			Wish(t, k, ShouldEqual, nil)
 			Wish(t, v, ShouldEqual, nil)
 		})
 		t.Run("reads for absent keys error sensibly", func(t *testing.T) {
 			v, err := n.LookupByString("nope")
-			Wish(t, err, ShouldBeSameTypeAs, ipld.ErrNotExists{})
+			Wish(t, err, ShouldBeSameTypeAs, datamodel.ErrNotExists{})
 			Wish(t, err.Error(), ShouldEqual, `key not found: "nope"`)
 			Wish(t, v, ShouldEqual, nil)
 		})
@@ -92,7 +92,7 @@ func SpecTestMapStrInt(t *testing.T, np ipld.NodePrototype) {
 			panic(err)
 		}
 		if err := ma.AssembleKey().AssignString("whee"); err != nil {
-			Wish(t, err, ShouldBeSameTypeAs, ipld.ErrRepeatedMapKey{})
+			Wish(t, err, ShouldBeSameTypeAs, datamodel.ErrRepeatedMapKey{})
 			// No string assertion at present -- how that should be presented for typed stuff is unsettled
 			//  (and if it's clever, it'll differ from untyped, which will mean no assertion possible!).
 		}
@@ -136,13 +136,13 @@ func SpecTestMapStrInt(t *testing.T, np ipld.NodePrototype) {
 	})
 }
 
-func SpecTestMapStrMapStrInt(t *testing.T, np ipld.NodePrototype) {
+func SpecTestMapStrMapStrInt(t *testing.T, np datamodel.NodePrototype) {
 	t.Run("map<str,map<str,int>>", func(t *testing.T) {
 		nb := np.NewBuilder()
 		ma, err := nb.BeginMap(3)
 		must.NotError(err)
 		must.NotError(ma.AssembleKey().AssignString("whee"))
-		func(ma ipld.MapAssembler, err error) {
+		func(ma datamodel.MapAssembler, err error) {
 			must.NotError(ma.AssembleKey().AssignString("m1k1"))
 			must.NotError(ma.AssembleValue().AssignInt(1))
 			must.NotError(ma.AssembleKey().AssignString("m1k2"))
@@ -150,7 +150,7 @@ func SpecTestMapStrMapStrInt(t *testing.T, np ipld.NodePrototype) {
 			must.NotError(ma.Finish())
 		}(ma.AssembleValue().BeginMap(2))
 		must.NotError(ma.AssembleKey().AssignString("woot"))
-		func(ma ipld.MapAssembler, err error) {
+		func(ma datamodel.MapAssembler, err error) {
 			must.NotError(ma.AssembleKey().AssignString("m2k1"))
 			must.NotError(ma.AssembleValue().AssignInt(3))
 			must.NotError(ma.AssembleKey().AssignString("m2k2"))
@@ -158,7 +158,7 @@ func SpecTestMapStrMapStrInt(t *testing.T, np ipld.NodePrototype) {
 			must.NotError(ma.Finish())
 		}(ma.AssembleValue().BeginMap(2))
 		must.NotError(ma.AssembleKey().AssignString("waga"))
-		func(ma ipld.MapAssembler, err error) {
+		func(ma datamodel.MapAssembler, err error) {
 			must.NotError(ma.AssembleKey().AssignString("m3k1"))
 			must.NotError(ma.AssembleValue().AssignInt(5))
 			must.NotError(ma.AssembleKey().AssignString("m3k2"))
@@ -187,26 +187,26 @@ func SpecTestMapStrMapStrInt(t *testing.T, np ipld.NodePrototype) {
 	})
 }
 
-func SpecTestMapStrListStr(t *testing.T, np ipld.NodePrototype) {
+func SpecTestMapStrListStr(t *testing.T, np datamodel.NodePrototype) {
 	t.Run("map<str,list<str>>", func(t *testing.T) {
 		nb := np.NewBuilder()
 		ma, err := nb.BeginMap(3)
 		must.NotError(err)
 		must.NotError(ma.AssembleKey().AssignString("asdf"))
-		func(la ipld.ListAssembler, err error) {
+		func(la datamodel.ListAssembler, err error) {
 			must.NotError(la.AssembleValue().AssignString("eleven"))
 			must.NotError(la.AssembleValue().AssignString("twelve"))
 			must.NotError(la.AssembleValue().AssignString("thirteen"))
 			must.NotError(la.Finish())
 		}(ma.AssembleValue().BeginList(3))
 		must.NotError(ma.AssembleKey().AssignString("qwer"))
-		func(la ipld.ListAssembler, err error) {
+		func(la datamodel.ListAssembler, err error) {
 			must.NotError(la.AssembleValue().AssignString("twentyone"))
 			must.NotError(la.AssembleValue().AssignString("twentytwo"))
 			must.NotError(la.Finish())
 		}(ma.AssembleValue().BeginList(2))
 		must.NotError(ma.AssembleKey().AssignString("zxcv"))
-		func(la ipld.ListAssembler, err error) {
+		func(la datamodel.ListAssembler, err error) {
 			must.NotError(la.AssembleValue().AssignString("thirtyone"))
 			must.NotError(la.Finish())
 		}(ma.AssembleValue().BeginList(1))

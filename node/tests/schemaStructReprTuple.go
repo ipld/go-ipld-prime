@@ -5,7 +5,7 @@ import (
 
 	. "github.com/warpfork/go-wish"
 
-	"github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/fluent"
 	"github.com/ipld/go-ipld-prime/must"
 	"github.com/ipld/go-ipld-prime/schema"
@@ -41,13 +41,13 @@ func SchemaTestStructReprTuple(t *testing.T, engine Engine) {
 				ma.AssembleEntry("field").AssignString("valoo")
 			}).(schema.TypedNode)
 			t.Run("typed-read", func(t *testing.T) {
-				Require(t, n.Kind(), ShouldEqual, ipld.Kind_Map)
+				Require(t, n.Kind(), ShouldEqual, datamodel.Kind_Map)
 				Wish(t, n.Length(), ShouldEqual, int64(1))
 				Wish(t, must.String(must.Node(n.LookupByString("field"))), ShouldEqual, "valoo")
 			})
 			t.Run("repr-read", func(t *testing.T) {
 				nr := n.Representation()
-				Require(t, nr.Kind(), ShouldEqual, ipld.Kind_List)
+				Require(t, nr.Kind(), ShouldEqual, datamodel.Kind_List)
 				Wish(t, nr.Length(), ShouldEqual, int64(1))
 				Wish(t, must.String(must.Node(nr.LookupByIndex(0))), ShouldEqual, "valoo")
 			})
@@ -56,7 +56,7 @@ func SchemaTestStructReprTuple(t *testing.T, engine Engine) {
 			nr := fluent.MustBuildList(nrp, 1, func(la fluent.ListAssembler) {
 				la.AssembleValue().AssignString("valoo")
 			})
-			Wish(t, ipld.DeepEqual(n, nr), ShouldEqual, true)
+			Wish(t, datamodel.DeepEqual(n, nr), ShouldEqual, true)
 		})
 	})
 
@@ -72,7 +72,7 @@ func SchemaTestStructReprTuple(t *testing.T, engine Engine) {
 				ma.AssembleEntry("qux").AssignString("3")
 			}).(schema.TypedNode)
 			t.Run("typed-read", func(t *testing.T) {
-				Require(t, n.Kind(), ShouldEqual, ipld.Kind_Map)
+				Require(t, n.Kind(), ShouldEqual, datamodel.Kind_Map)
 				Wish(t, n.Length(), ShouldEqual, int64(4))
 				Wish(t, must.String(must.Node(n.LookupByString("foo"))), ShouldEqual, "0")
 				Wish(t, must.String(must.Node(n.LookupByString("bar"))), ShouldEqual, "1")
@@ -81,7 +81,7 @@ func SchemaTestStructReprTuple(t *testing.T, engine Engine) {
 			})
 			t.Run("repr-read", func(t *testing.T) {
 				nr := n.Representation()
-				Require(t, nr.Kind(), ShouldEqual, ipld.Kind_List)
+				Require(t, nr.Kind(), ShouldEqual, datamodel.Kind_List)
 				Wish(t, nr.Length(), ShouldEqual, int64(4))
 				Wish(t, must.String(must.Node(nr.LookupByIndex(0))), ShouldEqual, "0")
 				Wish(t, must.String(must.Node(nr.LookupByIndex(1))), ShouldEqual, "1")
@@ -96,7 +96,7 @@ func SchemaTestStructReprTuple(t *testing.T, engine Engine) {
 				la.AssembleValue().AssignString("2")
 				la.AssembleValue().AssignString("3")
 			})
-			Wish(t, ipld.DeepEqual(n, nr), ShouldEqual, true)
+			Wish(t, datamodel.DeepEqual(n, nr), ShouldEqual, true)
 		})
 	})
 
@@ -110,19 +110,19 @@ func SchemaTestStructReprTuple(t *testing.T, engine Engine) {
 				ma.AssembleEntry("bar").AssignNull()
 			}).(schema.TypedNode)
 			t.Run("typed-read", func(t *testing.T) {
-				Require(t, n.Kind(), ShouldEqual, ipld.Kind_Map)
+				Require(t, n.Kind(), ShouldEqual, datamodel.Kind_Map)
 				Wish(t, n.Length(), ShouldEqual, int64(4))
 				Wish(t, must.String(must.Node(n.LookupByString("foo"))), ShouldEqual, "0")
-				Wish(t, must.Node(n.LookupByString("bar")), ShouldEqual, ipld.Null)
-				Wish(t, must.Node(n.LookupByString("baz")), ShouldEqual, ipld.Absent)
-				Wish(t, must.Node(n.LookupByString("qux")), ShouldEqual, ipld.Absent)
+				Wish(t, must.Node(n.LookupByString("bar")), ShouldEqual, datamodel.Null)
+				Wish(t, must.Node(n.LookupByString("baz")), ShouldEqual, datamodel.Absent)
+				Wish(t, must.Node(n.LookupByString("qux")), ShouldEqual, datamodel.Absent)
 			})
 			t.Run("repr-read", func(t *testing.T) {
 				nr := n.Representation()
-				Require(t, nr.Kind(), ShouldEqual, ipld.Kind_List)
+				Require(t, nr.Kind(), ShouldEqual, datamodel.Kind_List)
 				Wish(t, nr.Length(), ShouldEqual, int64(2))
 				Wish(t, must.String(must.Node(nr.LookupByIndex(0))), ShouldEqual, "0")
-				Wish(t, must.Node(nr.LookupByIndex(1)), ShouldEqual, ipld.Null)
+				Wish(t, must.Node(nr.LookupByIndex(1)), ShouldEqual, datamodel.Null)
 			})
 		})
 		t.Run("repr-create", func(t *testing.T) {
@@ -130,7 +130,7 @@ func SchemaTestStructReprTuple(t *testing.T, engine Engine) {
 				la.AssembleValue().AssignString("0")
 				la.AssembleValue().AssignNull()
 			})
-			Wish(t, ipld.DeepEqual(n, nr), ShouldEqual, true)
+			Wish(t, datamodel.DeepEqual(n, nr), ShouldEqual, true)
 		})
 	})
 }

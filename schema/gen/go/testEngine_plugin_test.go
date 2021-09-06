@@ -10,7 +10,7 @@ import (
 	"plugin"
 	"testing"
 
-	"github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/datamodel"
 )
 
 func objPath(prefix string) string {
@@ -35,7 +35,7 @@ func buildGennedCode(t *testing.T, prefix string, _ string) {
 	}
 }
 
-func fnPrototypeByName(prefix string) func(string) ipld.NodePrototype {
+func fnPrototypeByName(prefix string) func(string) datamodel.NodePrototype {
 	plg, err := plugin.Open(objPath(prefix))
 	if err != nil {
 		panic(err) // Panic because if this was going to flunk, we expected it to flunk earlier when we ran 'go build'.
@@ -44,5 +44,5 @@ func fnPrototypeByName(prefix string) func(string) ipld.NodePrototype {
 	if err != nil {
 		panic(err)
 	}
-	return sym.(func(string) ipld.NodePrototype)
+	return sym.(func(string) datamodel.NodePrototype)
 }

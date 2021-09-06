@@ -5,16 +5,16 @@ import (
 	"reflect"
 	"strings"
 
-	ipld "github.com/ipld/go-ipld-prime"
-	basicnode "github.com/ipld/go-ipld-prime/node/basic"
+	"github.com/ipld/go-ipld-prime/datamodel"
+	"github.com/ipld/go-ipld-prime/node/basicnode"
 	"github.com/ipld/go-ipld-prime/schema"
 )
 
-func reprNode(node ipld.Node) ipld.Node {
+func reprNode(node datamodel.Node) datamodel.Node {
 	if node, ok := node.(schema.TypedNode); ok {
 		return node.Representation()
 	}
-	// ipld.Absent and ipld.Null are not typed.
+	// datamodel.Absent and datamodel.Null are not typed.
 	// TODO: is this a problem? surely a typed struct's fields are always
 	// typed, even when absent or null.
 	return node
@@ -32,7 +32,7 @@ func reprStrategy(typ schema.Type) interface{} {
 
 type _prototypeRepr _prototype
 
-func (w *_prototypeRepr) NewBuilder() ipld.NodeBuilder {
+func (w *_prototypeRepr) NewBuilder() datamodel.NodeBuilder {
 	return &_builderRepr{_assemblerRepr{
 		schemaType: w.schemaType,
 		val:        reflect.New(w.goType).Elem(),
@@ -41,22 +41,22 @@ func (w *_prototypeRepr) NewBuilder() ipld.NodeBuilder {
 
 type _nodeRepr _node
 
-func (w *_nodeRepr) Kind() ipld.Kind {
+func (w *_nodeRepr) Kind() datamodel.Kind {
 	switch stg := reprStrategy(w.schemaType).(type) {
 	case schema.StructRepresentation_Stringjoin:
-		return ipld.Kind_String
+		return datamodel.Kind_String
 	case schema.StructRepresentation_Map:
-		return ipld.Kind_Map
+		return datamodel.Kind_Map
 	case schema.StructRepresentation_Tuple:
-		return ipld.Kind_List
+		return datamodel.Kind_List
 	case schema.UnionRepresentation_Keyed:
-		return ipld.Kind_Map
+		return datamodel.Kind_Map
 	case schema.UnionRepresentation_Kinded:
-		haveIdx := int(w.val.FieldByName("Index").Int())
-		mtyp := w.schemaType.(*schema.TypeUnion).Members()[haveIdx]
-		return mtyp.TypeKind().ActsLike()
+		haveIdx, _ := unionMember(w.val)
+		mtyp := w.schemaType.(*schema.TypeUnion).Members()[haveIdx] // TODO this is fragile: panics with index-out-of-range if the user has nil'd all fields.
+		return mtyp.RepresentationBehavior()
 	case schema.UnionRepresentation_Stringprefix:
-		return ipld.Kind_String
+		return datamodel.Kind_String
 	case nil:
 		return (*_node)(w).Kind()
 	default:
@@ -105,24 +105,24 @@ func inboundMappedType(typ *schema.TypeUnion, stg schema.UnionRepresentation_Key
 	return key // fallback to the same key
 }
 
-func (w *_nodeRepr) asKinded(stg schema.UnionRepresentation_Kinded, kind ipld.Kind) *_nodeRepr {
+func (w *_nodeRepr) asKinded(stg schema.UnionRepresentation_Kinded, kind datamodel.Kind) *_nodeRepr {
 	name := stg.GetMember(kind)
 	members := w.schemaType.(*schema.TypeUnion).Members()
-	for _, member := range members {
+	for i, member := range members {
 		if member.Name() != name {
 			continue
 		}
 		w2 := *w
-		w2.val = w.val.FieldByName("Value").Elem()
+		w2.val = w.val.Field(i).Elem()
 		w2.schemaType = member
 		return &w2
 	}
 	return nil
 }
 
-func (w *_nodeRepr) LookupByString(key string) (ipld.Node, error) {
+func (w *_nodeRepr) LookupByString(key string) (datamodel.Node, error) {
 	if stg, ok := reprStrategy(w.schemaType).(schema.UnionRepresentation_Kinded); ok {
-		w = w.asKinded(stg, ipld.Kind_Map)
+		w = w.asKinded(stg, datamodel.Kind_Map)
 	}
 	switch stg := reprStrategy(w.schemaType).(type) {
 	case schema.StructRepresentation_Map:
@@ -150,7 +150,7 @@ func (w *_nodeRepr) LookupByString(key string) (ipld.Node, error) {
 	}
 }
 
-func (w *_nodeRepr) LookupByIndex(idx int64) (ipld.Node, error) {
+func (w *_nodeRepr) LookupByIndex(idx int64) (datamodel.Node, error) {
 	switch stg := reprStrategy(w.schemaType).(type) {
 	case schema.StructRepresentation_Tuple:
 		fields := w.schemaType.(*schema.TypeStruct).Fields()
@@ -171,49 +171,51 @@ func (w *_nodeRepr) LookupByIndex(idx int64) (ipld.Node, error) {
 	}
 }
 
-func (w *_nodeRepr) LookupBySegment(seg ipld.PathSegment) (ipld.Node, error) {
+func (w *_nodeRepr) LookupBySegment(seg datamodel.PathSegment) (datamodel.Node, error) {
 	switch w.Kind() {
-	case ipld.Kind_Map:
+	case datamodel.Kind_Map:
 		return w.LookupByString(seg.String())
-	case ipld.Kind_List:
+	case datamodel.Kind_List:
 		idx, err := seg.Index()
 		if err != nil {
 			return nil, err
 		}
 		return w.LookupByIndex(idx)
 	}
-	return nil, ipld.ErrWrongKind{
-		TypeName:   w.schemaType.Name().String(),
-		MethodName: "LookupBySegment",
-		// TODO
+	return nil, datamodel.ErrWrongKind{
+		TypeName:        w.schemaType.Name().String(),
+		MethodName:      "LookupBySegment",
+		AppropriateKind: datamodel.KindSet_Recursive,
+		ActualKind:      w.Kind(),
 	}
 }
 
-func (w *_nodeRepr) LookupByNode(key ipld.Node) (ipld.Node, error) {
+func (w *_nodeRepr) LookupByNode(key datamodel.Node) (datamodel.Node, error) {
 	switch w.Kind() {
-	case ipld.Kind_Map:
+	case datamodel.Kind_Map:
 		s, err := key.AsString()
 		if err != nil {
 			return nil, err
 		}
 		return w.LookupByString(s)
-	case ipld.Kind_List:
+	case datamodel.Kind_List:
 		i, err := key.AsInt()
 		if err != nil {
 			return nil, err
 		}
 		return w.LookupByIndex(i)
 	}
-	return nil, ipld.ErrWrongKind{
-		TypeName:   w.schemaType.Name().String(),
-		MethodName: "LookupByNode",
-		// TODO
+	return nil, datamodel.ErrWrongKind{
+		TypeName:        w.schemaType.Name().String(),
+		MethodName:      "LookupByNode",
+		AppropriateKind: datamodel.KindSet_Recursive,
+		ActualKind:      w.Kind(),
 	}
 }
 
-func (w *_nodeRepr) MapIterator() ipld.MapIterator {
+func (w *_nodeRepr) MapIterator() datamodel.MapIterator {
 	if stg, ok := reprStrategy(w.schemaType).(schema.UnionRepresentation_Kinded); ok {
-		w = w.asKinded(stg, ipld.Kind_Map)
+		w = w.asKinded(stg, datamodel.Kind_Map)
 	}
 	switch stg := reprStrategy(w.schemaType).(type) {
 	case schema.StructRepresentation_Map:
@@ -224,17 +226,55 @@ func (w *_nodeRepr) MapIterator() ipld.MapIterator {
 		itr := (*_node)(w).MapIterator().(*_unionIterator)
 		return (*_unionIteratorRepr)(itr)
 	case nil:
-		return (*_node)(w).MapIterator()
+		switch st := (w.schemaType).(type) {
+		case *schema.TypeMap:
+			return &_mapIteratorRepr{
+				schemaType: st,
+				keysVal:    w.val.FieldByName("Keys"),
+				valuesVal:  w.val.FieldByName("Values"),
+			}
+		default:
+			panic(fmt.Sprintf("TODO: mapitr.repr for typekind %s", w.schemaType.TypeKind()))
+		}
 	default:
 		panic(fmt.Sprintf("TODO: %T", stg))
 	}
 }
 
-func (w *_nodeRepr) ListIterator() ipld.ListIterator {
-	if reprStrategy(w.schemaType) == nil {
-		return (*_node)(w).ListIterator()
+type _mapIteratorRepr _mapIterator
+
+func (w *_mapIteratorRepr) Next() (key, value datamodel.Node, _ error) {
+	k, v, err := (*_mapIterator)(w).Next()
+	if err != nil {
+		return nil, nil, err
 	}
+	return k.(schema.TypedNode).Representation(), v.(schema.TypedNode).Representation(), nil
+}
+
+func (w *_mapIteratorRepr) Done() bool {
+	return w.nextIndex >= w.keysVal.Len()
+}
+
+func (w *_nodeRepr) ListIterator() datamodel.ListIterator {
+	if reprStrategy(w.schemaType) == nil {
+		return (*_listIteratorRepr)((*_node)(w).ListIterator().(*_listIterator))
+	}
+	// TODO this is probably failing silently for structs with tuple representation.
 	return nil
+}
+
+type _listIteratorRepr _listIterator
+
+func (w *_listIteratorRepr) Next() (index int64, value datamodel.Node, _ error) {
+	idx, v, err := (*_listIterator)(w).Next()
+	if err != nil {
+		return idx, nil, err
+	}
+	return idx, v.(schema.TypedNode).Representation(), nil
+}
+
+func (w *_listIteratorRepr) Done() bool {
+	return w.nextIndex >= w.val.Len()
 }
 
 func (w *_nodeRepr) lengthMinusTrailingAbsents() int64 {
@@ -287,11 +327,11 @@ func (w *_nodeRepr) AsBool() (bool, error) {
 	if reprStrategy(w.schemaType) == nil {
 		return (*_node)(w).AsBool()
 	}
-	return false, ipld.ErrWrongKind{
+	return false, datamodel.ErrWrongKind{
 		TypeName:        w.schemaType.Name().String(),
 		MethodName:      "AsBool",
-		AppropriateKind: ipld.KindSet_JustBool,
-		// TODO
+		AppropriateKind: datamodel.KindSet_JustBool,
+		ActualKind:      w.Kind(),
 	}
 }
 
@@ -299,11 +339,11 @@ func (w *_nodeRepr) AsInt() (int64, error) {
 	if reprStrategy(w.schemaType) == nil {
 		return (*_node)(w).AsInt()
 	}
-	return 0, ipld.ErrWrongKind{
+	return 0, datamodel.ErrWrongKind{
 		TypeName:        w.schemaType.Name().String(),
 		MethodName:      "AsInt",
-		AppropriateKind: ipld.KindSet_JustInt,
-		// TODO
+		AppropriateKind: datamodel.KindSet_JustInt,
+		ActualKind:      w.Kind(),
 	}
 }
 
@@ -311,11 +351,11 @@ func (w *_nodeRepr) AsFloat() (float64, error) {
 	if reprStrategy(w.schemaType) == nil {
 		return (*_node)(w).AsFloat()
 	}
-	return 0, ipld.ErrWrongKind{
+	return 0, datamodel.ErrWrongKind{
 		TypeName:        w.schemaType.Name().String(),
 		MethodName:      "AsFloat",
-		AppropriateKind: ipld.KindSet_JustFloat,
-		// TODO
+		AppropriateKind: datamodel.KindSet_JustFloat,
+		ActualKind:      w.Kind(),
 	}
 }
 
@@ -324,6 +364,7 @@ func (w *_nodeRepr) AsString() (string, error) {
 	case schema.StructRepresentation_Stringjoin:
 		var b strings.Builder
 		itr := (*_node)(w).MapIterator()
+		first := true
 		for !itr.Done() {
 			_, v, err := itr.Next()
 			if err != nil {
@@ -333,18 +374,20 @@ func (w *_nodeRepr) AsString() (string, error) {
 			if err != nil {
 				return "", err
 			}
-			if b.Len() > 0 {
+			if first {
+				first = false
+			} else {
 				b.WriteString(stg.GetDelim())
 			}
 			b.WriteString(s)
 		}
 		return b.String(), nil
 	case schema.UnionRepresentation_Stringprefix:
-		haveIdx := int(w.val.FieldByName("Index").Int())
+		haveIdx, mval := unionMember(w.val)
 		mtyp := w.schemaType.(*schema.TypeUnion).Members()[haveIdx]
 
 		w2 := *w
-		w2.val = w.val.FieldByName("Value").Elem()
+		w2.val = mval
 		w2.schemaType = mtyp
 		s, err := w2.AsString()
 		if err != nil {
@@ -354,13 +397,15 @@ func (w *_nodeRepr) AsString() (string, error) {
 		name := stg.GetDiscriminant(mtyp)
 		return name + stg.GetDelim() + s, nil
 	case schema.UnionRepresentation_Kinded:
-		w = w.asKinded(stg, ipld.Kind_String)
-		// continues below
+		return w.asKinded(stg, datamodel.Kind_String).AsString()
 	case nil:
 		// continues below
 	default:
 		panic(fmt.Sprintf("TODO: %T", stg))
 	}
+	// Things that have reached here, should be only those things that have string kind naturally,
+	// and so using the same method as the type level is correct.
+	// TODO is this applicable for anything other than... strings?
 	return (*_node)(w).AsString()
 }
 
@@ -368,27 +413,27 @@ func (w *_nodeRepr) AsBytes() ([]byte, error) {
 	if reprStrategy(w.schemaType) == nil {
 		return (*_node)(w).AsBytes()
 	}
-	return nil, ipld.ErrWrongKind{
+	return nil, datamodel.ErrWrongKind{
 		TypeName:        w.schemaType.Name().String(),
 		MethodName:      "AsBytes",
-		AppropriateKind: ipld.KindSet_JustBytes,
-		// TODO
+		AppropriateKind: datamodel.KindSet_JustBytes,
+		ActualKind:      w.Kind(),
 	}
 }
 
-func (w *_nodeRepr) AsLink() (ipld.Link, error) {
+func (w *_nodeRepr) AsLink() (datamodel.Link, error) {
 	if reprStrategy(w.schemaType) == nil {
 		return (*_node)(w).AsLink()
 	}
-	return nil, ipld.ErrWrongKind{
+	return nil, datamodel.ErrWrongKind{
 		TypeName:        w.schemaType.Name().String(),
 		MethodName:      "AsLink",
-		AppropriateKind: ipld.KindSet_JustLink,
-		// TODO
+		AppropriateKind: datamodel.KindSet_JustLink,
+		ActualKind:      w.Kind(),
 	}
 }
 
-func (w *_nodeRepr) Prototype() ipld.NodePrototype {
+func (w *_nodeRepr) Prototype() datamodel.NodePrototype {
 	panic("TODO: Prototype")
 }
 
@@ -402,7 +447,7 @@ type _builderRepr struct {
 // The solution might be to add a way to go from the repr node to its parent
 // typed node.
 
-func (w *_builderRepr) Build() ipld.Node {
+func (w *_builderRepr) Build() datamodel.Node {
 	// TODO: see the notes above.
 	// return &_nodeRepr{schemaType: w.schemaType, val: w.val}
 	return &_node{schemaType: w.schemaType, val: w.val}
@@ -420,11 +465,11 @@ type _assemblerRepr struct {
 	nullable bool
 }
 
-func assemblerRepr(am ipld.NodeAssembler) *_assemblerRepr {
+func assemblerRepr(am datamodel.NodeAssembler) *_assemblerRepr {
 	return (*_assemblerRepr)(am.(*_assembler))
 }
 
-func (w *_assemblerRepr) asKinded(stg schema.UnionRepresentation_Kinded, kind ipld.Kind) *_assemblerRepr {
+func (w *_assemblerRepr) asKinded(stg schema.UnionRepresentation_Kinded, kind datamodel.Kind) *_assemblerRepr {
 	name := stg.GetMember(kind)
 	members := w.schemaType.(*schema.TypeUnion).Members()
 	for idx, member := range members {
@@ -432,19 +477,19 @@ func (w *_assemblerRepr) asKinded(stg schema.UnionRepresentation_Kinded, kind ip
 			continue
 		}
 		w2 := *w
-		goType := inferGoType(member) // TODO: do this upfront
-		w2.val = reflect.New(goType).Elem()
+		goType := w.val.Field(idx).Type().Elem()
+		valPtr := reflect.New(goType)
+		w2.val = valPtr.Elem()
 		w2.schemaType = member
 
 		// Layer a new finish func on top, to set Index/Value.
 		w2.finish = func() error {
+			unionSetMember(w.val, idx, valPtr)
 			if w.finish != nil {
 				if err := w.finish(); err != nil {
 					return err
 				}
 			}
-			w.val.FieldByName("Index").SetInt(int64(idx))
-			w.val.FieldByName("Value").Set(w2.val)
 			return nil
 		}
 		return &w2
@@ -452,9 +497,9 @@ func (w *_assemblerRepr) asKinded(stg schema.UnionRepresentation_Kinded, kind ip
 	return nil
 }
 
-func (w *_assemblerRepr) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
+func (w *_assemblerRepr) BeginMap(sizeHint int64) (datamodel.MapAssembler, error) {
 	if stg, ok := reprStrategy(w.schemaType).(schema.UnionRepresentation_Kinded); ok {
-		w = w.asKinded(stg, ipld.Kind_Map)
+		w = w.asKinded(stg, datamodel.Kind_Map)
 	}
 	asm, err := (*_assembler)(w).BeginMap(sizeHint)
 	if err != nil {
@@ -472,7 +517,7 @@ func (w *_assemblerRepr) BeginMap(sizeHint int64) (ipld.MapAssembler, error) {
 	}
 }
 
-func (w *_assemblerRepr) BeginList(sizeHint int64) (ipld.ListAssembler, error) {
+func (w *_assemblerRepr) BeginList(sizeHint int64) (datamodel.ListAssembler, error) {
 	switch stg := reprStrategy(w.schemaType).(type) {
 	case schema.StructRepresentation_Tuple:
 		asm, err := (*_assembler)(w).BeginMap(sizeHint)
@@ -551,47 +596,55 @@ func (w *_assemblerRepr) AssignString(s string) error {
 		}
 		return mapAsm.Finish()
 	case schema.UnionRepresentation_Kinded:
-		name := stg.GetMember(ipld.Kind_String)
-		members := w.schemaType.(*schema.TypeUnion).Members()
-		for idx, member := range members {
-			if member.Name() != name {
-				continue
-			}
-			w.val.FieldByName("Index").SetInt(int64(idx))
-			w.val.FieldByName("Value").Set(reflect.ValueOf(s))
-			return nil
+		w2 := w.asKinded(stg, datamodel.Kind_String)
+		if w2 == nil {
+			panic("TODO: GetMember result is missing?")
 		}
-		panic("TODO: GetMember result is missing?")
+		return w2.AssignString(s)
 	case schema.UnionRepresentation_Stringprefix:
-		parts := strings.SplitN(s, stg.GetDelim(), 2)
-		if len(parts) != 2 {
-			panic("TODO: bad format")
+		hasDelim := stg.GetDelim() != ""
+
+		var prefix, remainder string
+		if hasDelim {
+			parts := strings.SplitN(s, stg.GetDelim(), 2)
+			if len(parts) != 2 {
+				return fmt.Errorf("schema rejects data: the union type %s expects delimiter %q, and it was not found in the data %q", w.schemaType.Name(), stg.GetDelim(), s)
+			}
+			prefix, remainder = parts[0], parts[1]
 		}
-		name, value := parts[0], parts[1]
+
 		members := w.schemaType.(*schema.TypeUnion).Members()
 		for idx, member := range members {
-			if stg.GetDiscriminant(member) != name {
-				continue
+			descrm := stg.GetDiscriminant(member)
+			if hasDelim {
+				if stg.GetDiscriminant(member) != prefix {
+					continue
+				}
+			} else {
+				if !strings.HasPrefix(s, descrm) {
+					continue
+				}
+				remainder = s[len(descrm):]
 			}
 
+			// TODO: DRY: this has much in common with the asKinded method; it differs only in that we picked idx already in a different way.
 			w2 := *w
-			goType := inferGoType(member) // TODO: do this upfront
-			w2.val = reflect.New(goType).Elem()
+			goType := w.val.Field(idx).Type().Elem()
+			valPtr := reflect.New(goType)
+			w2.val = valPtr.Elem()
 			w2.schemaType = member
 			w2.finish = func() error {
+				unionSetMember(w.val, idx, valPtr)
 				if w.finish != nil {
 					if err := w.finish(); err != nil {
 						return err
 					}
 				}
-				w.val.FieldByName("Index").SetInt(int64(idx))
-				w.val.FieldByName("Value").Set(w2.val)
 				return nil
 			}
-
-			return w2.AssignString(value)
+			return w2.AssignString(remainder)
 		}
-		panic("TODO: GetMember result is missing?")
+		return fmt.Errorf("schema rejects data: the union type %s requires a known prefix, and it was not found in the data %q", w.schemaType.Name(), s)
 	case nil:
 		return (*_assembler)(w).AssignString(s)
 	default:
@@ -608,7 +661,7 @@ func (w *_assemblerRepr) AssignBytes(p []byte) error {
 	}
 }
 
-func (w *_assemblerRepr) AssignLink(link ipld.Link) error {
+func (w *_assemblerRepr) AssignLink(link datamodel.Link) error {
 	switch stg := reprStrategy(w.schemaType).(type) {
 	case nil:
 		return (*_assembler)(w).AssignLink(link)
@@ -617,7 +670,7 @@ func (w *_assemblerRepr) AssignLink(link ipld.Link) error {
 	}
 }
 
-func (w *_assemblerRepr) AssignNode(node ipld.Node) error {
+func (w *_assemblerRepr) AssignNode(node datamodel.Node) error {
 	switch stg := reprStrategy(w.schemaType).(type) {
 	case nil:
 		return (*_assembler)(w).AssignNode(node)
@@ -626,22 +679,39 @@ func (w *_assemblerRepr) AssignNode(node ipld.Node) error {
 	}
 }
 
-func (w *_assemblerRepr) Prototype() ipld.NodePrototype {
+func (w *_assemblerRepr) Prototype() datamodel.NodePrototype {
 	panic("TODO: Assembler.Prototype")
 }
 
 type _structAssemblerRepr _structAssembler
 
-func (w *_structAssemblerRepr) AssembleKey() ipld.NodeAssembler {
+func (w *_structAssemblerRepr) AssembleKey() datamodel.NodeAssembler {
 	switch stg := reprStrategy(w.schemaType).(type) {
 	case schema.StructRepresentation_Map:
 		return (*_structAssembler)(w).AssembleKey()
+	case schema.StructRepresentation_Stringjoin,
+		schema.StructRepresentation_StringPairs:
+		// TODO an error-carrying "NodeAssembler" is needed so that this can refrain from panicking.
+		// TODO perhaps the ErrorWrongKind type should also be extended to explicitly describe whether the method was applied on bare DM, type-level, or repr-level.
+		panic(&datamodel.ErrWrongKind{
+			TypeName:        string(w.schemaType.Name()) + ".Repr",
+			MethodName:      "AssembleKey",
+			AppropriateKind: datamodel.KindSet_JustMap,
+			ActualKind:      datamodel.Kind_String,
+		})
+	case schema.StructRepresentation_Tuple:
+		panic(&datamodel.ErrWrongKind{
+			TypeName:        string(w.schemaType.Name()) + ".Repr",
+			MethodName:      "AssembleKey",
+			AppropriateKind: datamodel.KindSet_JustMap,
+			ActualKind:      datamodel.Kind_List,
+		})
 	default:
 		panic(fmt.Sprintf("TODO: %T", stg))
 	}
 }
 
-func (w *_structAssemblerRepr) AssembleValue() ipld.NodeAssembler {
+func (w *_structAssemblerRepr) AssembleValue() datamodel.NodeAssembler {
 	switch stg := reprStrategy(w.schemaType).(type) {
 	case schema.StructRepresentation_Map:
 		key := w.curKey.val.String()
@@ -656,7 +726,7 @@ func (w *_structAssemblerRepr) AssembleValue() ipld.NodeAssembler {
 	}
 }
 
-func (w *_structAssemblerRepr) AssembleEntry(k string) (ipld.NodeAssembler, error) {
+func (w *_structAssemblerRepr) AssembleEntry(k string) (datamodel.NodeAssembler, error) {
 	if err := w.AssembleKey().AssignString(k); err != nil {
 		return nil, err
 	}
@@ -668,7 +738,7 @@ func (w *_structAssemblerRepr) Finish() error {
 	switch stg := reprStrategy(w.schemaType).(type) {
 	case schema.StructRepresentation_Map:
 		err := (*_structAssembler)(w).Finish()
-		if err, ok := err.(ipld.ErrMissingRequiredField); ok {
+		if err, ok := err.(schema.ErrMissingRequiredField); ok {
 			for i, name := range err.Missing {
 				serial := outboundMappedKey(stg, name)
 				if serial != name {
@@ -682,17 +752,17 @@ func (w *_structAssemblerRepr) Finish() error {
 	}
 }
 
-func (w *_structAssemblerRepr) KeyPrototype() ipld.NodePrototype {
+func (w *_structAssemblerRepr) KeyPrototype() datamodel.NodePrototype {
 	panic("TODO")
 }
 
-func (w *_structAssemblerRepr) ValuePrototype(k string) ipld.NodePrototype {
+func (w *_structAssemblerRepr) ValuePrototype(k string) datamodel.NodePrototype {
 	panic("TODO: struct ValuePrototype")
 }
 
 type _mapAssemblerRepr _mapAssembler
 
-func (w *_mapAssemblerRepr) AssembleKey() ipld.NodeAssembler {
+func (w *_mapAssemblerRepr) AssembleKey() datamodel.NodeAssembler {
 	switch stg := reprStrategy(w.schemaType).(type) {
 	case nil:
 		asm := (*_mapAssembler)(w).AssembleKey()
@@ -702,7 +772,7 @@ func (w *_mapAssemblerRepr) AssembleKey() ipld.NodeAssembler {
 	}
 }
 
-func (w *_mapAssemblerRepr) AssembleValue() ipld.NodeAssembler {
+func (w *_mapAssemblerRepr) AssembleValue() datamodel.NodeAssembler {
 	switch stg := reprStrategy(w.schemaType).(type) {
 	case nil:
 		asm := (*_mapAssembler)(w).AssembleValue()
@@ -712,7 +782,7 @@ func (w *_mapAssemblerRepr) AssembleValue() ipld.NodeAssembler {
 	}
 }
 
-func (w *_mapAssemblerRepr) AssembleEntry(k string) (ipld.NodeAssembler, error) {
+func (w *_mapAssemblerRepr) AssembleEntry(k string) (datamodel.NodeAssembler, error) {
 	if err := w.AssembleKey().AssignString(k); err != nil {
 		return nil, err
 	}
@@ -729,17 +799,17 @@ func (w *_mapAssemblerRepr) Finish() error {
 	}
 }
 
-func (w *_mapAssemblerRepr) KeyPrototype() ipld.NodePrototype {
+func (w *_mapAssemblerRepr) KeyPrototype() datamodel.NodePrototype {
 	panic("TODO")
 }
 
-func (w *_mapAssemblerRepr) ValuePrototype(k string) ipld.NodePrototype {
+func (w *_mapAssemblerRepr) ValuePrototype(k string) datamodel.NodePrototype {
 	panic("TODO: struct ValuePrototype")
 }
 
 type _listStructAssemblerRepr _structAssembler
 
-func (w *_listStructAssemblerRepr) AssembleValue() ipld.NodeAssembler {
+func (w *_listStructAssemblerRepr) AssembleValue() datamodel.NodeAssembler {
 	switch stg := reprStrategy(w.schemaType).(type) {
 	case schema.StructRepresentation_Tuple:
 		fields := w.schemaType.Fields()
@@ -766,14 +836,14 @@ func (w *_listStructAssemblerRepr) Finish() error {
 	}
 }
 
-func (w *_listStructAssemblerRepr) ValuePrototype(idx int64) ipld.NodePrototype {
+func (w *_listStructAssemblerRepr) ValuePrototype(idx int64) datamodel.NodePrototype {
 	panic("TODO: list ValuePrototype")
 }
 
 // Note that lists do not have any representation strategy right now.
 type _listAssemblerRepr _listAssembler
 
-func (w *_listAssemblerRepr) AssembleValue() ipld.NodeAssembler {
+func (w *_listAssemblerRepr) AssembleValue() datamodel.NodeAssembler {
 	asm := (*_listAssembler)(w).AssembleValue()
 	return (*_assemblerRepr)(asm.(*_assembler))
 }
@@ -782,13 +852,13 @@ func (w *_listAssemblerRepr) Finish() error {
 	return (*_listAssembler)(w).Finish()
 }
 
-func (w *_listAssemblerRepr) ValuePrototype(idx int64) ipld.NodePrototype {
+func (w *_listAssemblerRepr) ValuePrototype(idx int64) datamodel.NodePrototype {
 	panic("TODO: list ValuePrototype")
 }
 
 type _unionAssemblerRepr _unionAssembler
 
-func (w *_unionAssemblerRepr) AssembleKey() ipld.NodeAssembler {
+func (w *_unionAssemblerRepr) AssembleKey() datamodel.NodeAssembler {
 	switch stg := reprStrategy(w.schemaType).(type) {
 	case schema.UnionRepresentation_Keyed:
 		return (*_unionAssembler)(w).AssembleKey()
@@ -797,7 +867,7 @@ func (w *_unionAssemblerRepr) AssembleKey() ipld.NodeAssembler {
 	}
 }
 
-func (w *_unionAssemblerRepr) AssembleValue() ipld.NodeAssembler {
+func (w *_unionAssemblerRepr) AssembleValue() datamodel.NodeAssembler {
 	switch stg := reprStrategy(w.schemaType).(type) {
 	case schema.UnionRepresentation_Keyed:
 		key := w.curKey.val.String()
@@ -812,7 +882,7 @@ func (w *_unionAssemblerRepr) AssembleValue() ipld.NodeAssembler {
 	}
 }
 
-func (w *_unionAssemblerRepr) AssembleEntry(k string) (ipld.NodeAssembler, error) {
+func (w *_unionAssemblerRepr) AssembleEntry(k string) (datamodel.NodeAssembler, error) {
 	if err := w.AssembleKey().AssignString(k); err != nil {
 		return nil, err
 	}
@@ -829,17 +899,17 @@ func (w *_unionAssemblerRepr) Finish() error {
 	}
 }
 
-func (w *_unionAssemblerRepr) KeyPrototype() ipld.NodePrototype {
+func (w *_unionAssemblerRepr) KeyPrototype() datamodel.NodePrototype {
 	panic("TODO")
 }
 
-func (w *_unionAssemblerRepr) ValuePrototype(k string) ipld.NodePrototype {
+func (w *_unionAssemblerRepr) ValuePrototype(k string) datamodel.NodePrototype {
 	panic("TODO: struct ValuePrototype")
 }
 
 type _structIteratorRepr _structIterator
 
-func (w *_structIteratorRepr) Next() (key, value ipld.Node, _ error) {
+func (w *_structIteratorRepr) Next() (key, value datamodel.Node, _ error) {
 	switch stg := reprStrategy(w.schemaType).(type) {
 	case schema.StructRepresentation_Map:
 	_skipAbsent:
@@ -874,7 +944,7 @@ func (w *_structIteratorRepr) Done() bool {
 
 type _unionIteratorRepr _unionIterator
 
-func (w *_unionIteratorRepr) Next() (key, value ipld.Node, _ error) {
+func (w *_unionIteratorRepr) Next() (key, value datamodel.Node, _ error) {
 	switch stg := reprStrategy(w.schemaType).(type) {
 	case schema.UnionRepresentation_Keyed:
 		key, value, err := (*_unionIterator)(w).Next()

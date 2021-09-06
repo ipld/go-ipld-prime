@@ -1,6 +1,6 @@
 /*
 	The 'node' package gathers various general purpose Node implementations;
-	the first one you should jump to is 'node/basic'.
+	the first one you should jump to is 'node/basicnode'.
 
 	There's no code in this package itself; it's just for grouping.
 

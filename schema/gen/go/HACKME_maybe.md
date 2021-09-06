@@ -9,7 +9,7 @@ background
 ----------
 
 You'll need to understand what the `nullable` and `optional` modifiers in IPLD schemas mean.
-The https://specs.ipld.io/ site has more content about that.
+The https://specs.datamodel.io/ site has more content about that.
 
 ### how this works outside of schemas
 
@@ -17,7 +17,7 @@ There are concepts of null and of absent present in the core `Node` and `NodeAss
 `Node` specifies `IsNull() bool` and `IsAbsent() bool` predicates;
 and `NodeAssembler` specifies an `AssignNull` function.
 
-There are also singleton values available called `ipld.Null` and `ipld.Absent`
+There are also singleton values available called `datamodel.Null` and `datamodel.Absent`
 which report true for `IsNull` and `IsAbsent`, respectively.
 These singletons can be used by an function that need to return a null or absence indicator.
 
@@ -25,27 +25,27 @@ There's really no reason for any package full of `Node` implementations need to 
 since the singletons are always fine to use.
 However, there's also nothing stopping a `Node` implementation from doing interesting
 custom internal memory layouts to describe whether they contain nulls, etc --
-and there's nothing particularly blessed about the `ipld.Null` singleton.
-Any value reporting `IsNull` to be `true` must be treated indistinguishably from `ipld.Null`.
+and there's nothing particularly blessed about the `datamodel.Null` singleton.
+Any value reporting `IsNull` to be `true` must be treated indistinguishably from `datamodel.Null`.
 
 This indistinguishability is bidirectional.
 For example, if you have some `myFancyNodeType`, and it answers `IsNull` as `true`,
 and you insert this into a `basicnode.Map`, then ask for that value back from the map later...
-you're very likely to get `ipld.Null`, and not your concrete value of `myFancyNodeType` back again.
+you're very likely to get `datamodel.Null`, and not your concrete value of `myFancyNodeType` back again.
 (This contract is important because some node implementations may compress
 the concept of null into a bitmask, or otherwise similarly optimize things internally.)
 
 #### null
 
 The concept of "null" has a Kind in the IPLD Data Model.
-It's implemented by the `ipld.nullNode` type (which has no fields -- it's a "unit" type),
-and is exposed as the `ipld.Null` singleton value.
+It's implemented by the `datamodel.nullNode` type (which has no fields -- it's a "unit" type),
+and is exposed as the `datamodel.Null` singleton value.
 
-(More generally, `ipld.Node` can be null by having its `Kind()` method return `ipld.Kind_Null`,
+(More generally, `datamodel.Node` can be null by having its `Kind()` method return `datamodel.Kind_Null`,
 and having the `IsNull()` method return `true`.
-However, most code prefers to return the `ipld.Null` singleton value whenever it can.)
+However, most code prefers to return the `datamodel.Null` singleton value whenever it can.)
 
-Null values can be easily produced: the `AssignNull()` method on `ipld.NodeAssembler` produces nulls;
+Null values can be easily produced: the `AssignNull()` method on `datamodel.NodeAssembler` produces nulls;
 and many codecs have some concept of null, meaning deserialization can produce them.
 
 Null values work essentially the same way in both the plain Data Model and when working with Schemas.
@@ -58,48 +58,48 @@ There's also a concept of "absent".
 (Those familiar with javascript might note that javascript also has concepts of "null" versus "undefined".
 It's the same idea -- we just call it "absent" instead of "undefined".)
 
-Absent is implemented by the `ipld.absentNode` type (which has no fields -- it's a "unit" type),
-and is exposed as the `ipld.Absent` singleton value.
+Absent is implemented by the `datamodel.absentNode` type (which has no fields -- it's a "unit" type),
+and is exposed as the `datamodel.Absent` singleton value.
 
-(More generally, an `ipld.Node` can describe itself as containing "absent" by having the `IsAbsent()` method return `true`.
-(The `Kind()` method still returns `ipld.Kind_Null`, for lack of better option.)
-However, most code prefers to return the `ipld.Absent` singleton value whenever it can.)
+(More generally, an `datamodel.Node` can describe itself as containing "absent" by having the `IsAbsent()` method return `true`.
+(The `Kind()` method still returns `datamodel.Kind_Null`, for lack of better option.)
+However, most code prefers to return the `datamodel.Absent` singleton value whenever it can.)
 
 Absent values aren't really used at the Data Model level.
 If you ask for a map key that isn't present in the map, the lookup method will return `nil` and `ErrNotExists`.
 
 Absent values *do* show up at the Schema level, however.
 Specifically, in structs: a struct can have a field which is `optional`,
-one of the values such an optional field may report itself as having is `ipld.Absent`.
+one of the values such an optional field may report itself as having is `datamodel.Absent`.
 This represents when a value *wasn't present* in the serialized form of the struct,
 even though the schema lets us know that it could be, and that it's part of the struct's type.
 (Accordingly, no `ErrNotExists` is returned for a lookup of that field --
 the field is always considered to _exist_... the value is just _absent_.)
-Iterators will also return the field name key, together with `ipld.Absent` as the value.
+Iterators will also return the field name key, together with `datamodel.Absent` as the value.
 
 However, absent values can't really be *created*.
-There's no such thing as an `AssignAbsent` or `AssignAbsent` method on the `ipld.NodeAssembler` interface.
-Codecs similarly can't produce absent as a value (obviously -- codecs work over `ipld.NodeAssembler`, so how could they?).
+There's no such thing as an `AssignAbsent` or `AssignAbsent` method on the `datamodel.NodeAssembler` interface.
+Codecs similarly can't produce absent as a value (obviously -- codecs work over `datamodel.NodeAssembler`, so how could they?).
 Absent values are just produced by implication, when a field is defined, but its value isn't set.
 
 Despite absent values not being used or produced at the Data Model, we still have methods like `IsAbsent` specified
-as part of the `ipld.Node` interface so that it's possible to write code which is generic over
+as part of the `datamodel.Node` interface so that it's possible to write code which is generic over
 either plain Data Model or Schema data while using just that interface.
 
 ### the above is all regarding generic interfaces
 
-As long as we're talking about the `ipld.Node` _interface_,
-we talk about the `ipld.Null` and `ipld.Absent` singletons, and their contracts in terms of the interface.
+As long as we're talking about the `datamodel.Node` _interface_,
+we talk about the `datamodel.Null` and `datamodel.Absent` singletons, and their contracts in terms of the interface.
 
 (Part of the reason this works is because an interface, in golang,
 comes in two parts: a pointer to the typeinfo of the inhabitant value,
 and a pointer to the value itself.
-This means anywhere we have an `ipld.Node` return type, we can toss `ipld.Null`
-or `ipld.Absent` into it with no additional overhead!)
+This means anywhere we have an `datamodel.Node` return type, we can toss `datamodel.Null`
+or `datamodel.Absent` into it with no additional overhead!)
 
-When we talk about concrete types, rather than the `ipld.Node` _interface_ --
+When we talk about concrete types, rather than the `datamodel.Node` _interface_ --
 as we're going to, in codegen -- it's a different scenario.
-We can't just return `ipld.Null` pointers for a `genresult.Foo` value;
+We can't just return `datamodel.Null` pointers for a `genresult.Foo` value;
 if `genresult.Foo` is a concrete type, that's just flat out a compile error.
 
 So what shall we do?
@@ -111,13 +111,13 @@ We introduce the "maybe" types.
 the maybe types
 ---------------
 
-The general rule of "return `ipld.Null` whenever you have a null value"
-holds up only as long as our API is returning monomorphized `ipld.Node` interfaces --
-in that situation, `ipld.Null` fits within `ipld.Node`, and there's no trouble.
+The general rule of "return `datamodel.Null` whenever you have a null value"
+holds up only as long as our API is returning monomorphized `datamodel.Node` interfaces --
+in that situation, `datamodel.Null` fits within `datamodel.Node`, and there's no trouble.
 
 This doesn't hold up when we get to codegen.
 Or rather, more specifically, it even holds up for codegen...
-as long as we're still returning monomorphized `ipld.Node` interfaces (and a decent amount of the API surface still does so).
+as long as we're still returning monomorphized `datamodel.Node` interfaces (and a decent amount of the API surface still does so).
 At the moment we want to return a concrete native type, it breaks.
 
 We call methods created by codegen that use specific types
@@ -131,7 +131,7 @@ So we have to decide how to handle null and absent for these speciated methods.
 There are a couple of things we want to accomplish with the maybe types:
 
 - Be able to have speciated methods that return a specific type (for doc, editor autocomplete, etc purposes).
-- Be able to have speciated methods that return specific *concrete* type (i.e. not only do we want to be more specific than `ipld.Node`, we don't want an interface _at all_ -- so that the compiler can do inlining and optimization and so forth).
+- Be able to have speciated methods that return specific *concrete* type (i.e. not only do we want to be more specific than `datamodel.Node`, we don't want an interface _at all_ -- so that the compiler can do inlining and optimization and so forth).
 - Make reading and writing code that uses speciated methods and handles nullable or optional fields be reasonably ergonomic (and as always, this may vary by "taste").
 
 And we'll consider one more fourth, bonus goal:
@@ -166,7 +166,7 @@ but these are prefixed in such a way as to make collision not a concern.)
 
 ### maybe types don't implement the full Node interface
 
-The "maybe" types don't implement the full `ipld.Node` interface.
+The "maybe" types don't implement the full `datamodel.Node` interface.
 They could have!  They don't.
 
 Arguments that went in favor of implementing `Node`:

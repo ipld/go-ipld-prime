@@ -74,7 +74,7 @@ func (g listGenerator) EmitNativeAccessors(w io.Writer) {
 	`, w, g.AdjCfg, g)
 
 	// Generate a speciated iterator.
-	//  The main advantage of this over the general ipld.ListIterator is of course keeping types visible (and concrete, to the compiler's eyes in optimizations, too).
+	//  The main advantage of this over the general datamodel.ListIterator is of course keeping types visible (and concrete, to the compiler's eyes in optimizations, too).
 	//  It also elides the error return from the iterator's Next method.  (Overreads will result in -1 as an index and nil values; this is both easily avoidable, and unambiguous if you do goof and hit it.)
 	doTemplate(`
 		func (n {{ .Type | TypeSymbol }}) Iterator() *{{ .Type | TypeSymbol }}__Itr {
@@ -144,14 +144,14 @@ func (g listGenerator) EmitNodeTypeAssertions(w io.Writer) {
 
 func (g listGenerator) EmitNodeMethodLookupByIndex(w io.Writer) {
 	doTemplate(`
-		func (n {{ .Type | TypeSymbol }}) LookupByIndex(idx int64) (ipld.Node, error) {
+		func (n {{ .Type | TypeSymbol }}) LookupByIndex(idx int64) (datamodel.Node, error) {
 			if n.Length() <= idx {
-				return nil, ipld.ErrNotExists{Segment: ipld.PathSegmentOfInt(idx)}
+				return nil, datamodel.ErrNotExists{Segment: datamodel.PathSegmentOfInt(idx)}
 			}
 			v := &n.x[idx]
 			{{- if .Type.ValueIsNullable }}
 			if v.m == schema.Maybe_Null {
-				return ipld.Null, nil
+				return datamodel.Null, nil
 			}
 			return {{ if not (MaybeUsesPtr .Type.ValueType) }}&{{end}}v.v, nil
 			{{- else}}
@@ -165,7 +165,7 @@ func (g listGenerator) EmitNodeMethodLookupByNode(w io.Writer) {
 	// LookupByNode will procede by coercing to int64 if it can; or fail; those are really the only options.
 	// REVIEW: how much coercion is done by other types varies quite wildly.  so we should figure out if that inconsistency is acceptable, and at least document it if so.
 	doTemplate(`
-		func (n {{ .Type | TypeSymbol }}) LookupByNode(k ipld.Node) (ipld.Node, error) {
+		func (n {{ .Type | TypeSymbol }}) LookupByNode(k datamodel.Node) (datamodel.Node, error) {
 			idx, err := k.AsInt()
 			if err != nil {
 				return nil, err
@@ -177,7 +177,7 @@ func (g listGenerator) EmitNodeMethodLookupByNode(w io.Writer) {
 
 func (g listGenerator) EmitNodeMethodListIterator(w io.Writer) {
 	doTemplate(`
-		func (n {{ .Type | TypeSymbol }}) ListIterator() ipld.ListIterator {
+		func (n {{ .Type | TypeSymbol }}) ListIterator() datamodel.ListIterator {
 			return &_{{ .Type | TypeSymbol }}__ListItr{n, 0}
 		}
 
@@ -186,16 +186,16 @@ func (g listGenerator) EmitNodeMethodListIterator(w io.Writer) {
 			idx  int
 		}
 
-		func (itr *_{{ .Type | TypeSymbol }}__ListItr) Next() (idx int64, v ipld.Node, _ error) {
+		func (itr *_{{ .Type | TypeSymbol }}__ListItr) Next() (idx int64, v datamodel.Node, _ error) {
 			if itr.idx >= len(itr.n.x) {
-				return -1, nil, ipld.ErrIteratorOverread{}
+				return -1, nil, datamodel.ErrIteratorOverread{}
 			}
 			idx = int64(itr.idx)
 			x := &itr.n.x[itr.idx]
 			{{- if .Type.ValueIsNullable }}
 			switch x.m {
 			case schema.Maybe_Null:
-				v = ipld.Null
+				v = datamodel.Null
 			case schema.Maybe_Value:
 				v = {{ if not (MaybeUsesPtr .Type.ValueType) }}&{{end}}x.v
 			}

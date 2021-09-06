@@ -6,12 +6,11 @@ import (
 
 	. "github.com/warpfork/go-wish"
 
-	"github.com/ipld/go-ipld-prime"
-	"github.com/ipld/go-ipld-prime/codec/dagjson"
 	_ "github.com/ipld/go-ipld-prime/codec/dagjson"
+	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/fluent"
 	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
-	basicnode "github.com/ipld/go-ipld-prime/node/basic"
+	"github.com/ipld/go-ipld-prime/node/basicnode"
 	"github.com/ipld/go-ipld-prime/traversal"
 	"github.com/ipld/go-ipld-prime/traversal/selector"
 	"github.com/ipld/go-ipld-prime/traversal/selector/builder"
@@ -21,7 +20,7 @@ import (
 var (
 	leafAlpha, leafAlphaLnk         = encode(basicnode.NewString("alpha"))
 	leafBeta, leafBetaLnk           = encode(basicnode.NewString("beta"))
-	middleMapNode, middleMapNodeLnk = encode(fluent.MustBuildMap(basicnode.Prototype__Map{}, 3, func(na fluent.MapAssembler) {
+	middleMapNode, middleMapNodeLnk = encode(fluent.MustBuildMap(basicnode.Prototype.Map, 3, func(na fluent.MapAssembler) {
 		na.AssembleEntry("foo").AssignBool(true)
 		na.AssembleEntry("bar").AssignBool(false)
 		na.AssembleEntry("nested").CreateMap(2, func(na fluent.MapAssembler) {
@@ -29,13 +28,13 @@ var (
 			na.AssembleEntry("nonlink").AssignString("zoo")
 		})
 	}))
-	middleListNode, middleListNodeLnk = encode(fluent.MustBuildList(basicnode.Prototype__List{}, 4, func(na fluent.ListAssembler) {
+	middleListNode, middleListNodeLnk = encode(fluent.MustBuildList(basicnode.Prototype.List, 4, func(na fluent.ListAssembler) {
 		na.AssembleValue().AssignLink(leafAlphaLnk)
 		na.AssembleValue().AssignLink(leafAlphaLnk)
 		na.AssembleValue().AssignLink(leafBetaLnk)
 		na.AssembleValue().AssignLink(leafAlphaLnk)
 	}))
-	rootNode, rootNodeLnk = encode(fluent.MustBuildMap(basicnode.Prototype__Map{}, 4, func(na fluent.MapAssembler) {
+	rootNode, rootNodeLnk = encode(fluent.MustBuildMap(basicnode.Prototype.Map, 4, func(na fluent.MapAssembler) {
 		na.AssembleEntry("plain").AssignString("olde string")
 		na.AssembleEntry("linkedString").AssignLink(leafAlphaLnk)
 		na.AssembleEntry("linkedMap").AssignLink(middleMapNodeLnk)
@@ -48,19 +47,19 @@ var (
 // all cases here use one already-loaded Node; no link-loading exercised.
 
 func TestWalkMatching(t *testing.T) {
-	ssb := builder.NewSelectorSpecBuilder(basicnode.Prototype__Any{})
+	ssb := builder.NewSelectorSpecBuilder(basicnode.Prototype.Any)
 	t.Run("traverse selecting true should visit the root", func(t *testing.T) {
-		err := traversal.WalkMatching(basicnode.NewString("x"), selector.Matcher{}, func(prog traversal.Progress, n ipld.Node) error {
+		err := traversal.WalkMatching(basicnode.NewString("x"), selector.Matcher{}, func(prog traversal.Progress, n datamodel.Node) error {
 			Wish(t, n, ShouldEqual, basicnode.NewString("x"))
-			Wish(t, prog.Path.String(), ShouldEqual, ipld.Path{}.String())
+			Wish(t, prog.Path.String(), ShouldEqual, datamodel.Path{}.String())
 			return nil
 		})
 		Wish(t, err, ShouldEqual, nil)
 	})
 	t.Run("traverse selecting true should visit only the root and no deeper", func(t *testing.T) {
-		err := traversal.WalkMatching(middleMapNode, selector.Matcher{}, func(prog traversal.Progress, n ipld.Node) error {
+		err := traversal.WalkMatching(middleMapNode, selector.Matcher{}, func(prog traversal.Progress, n datamodel.Node) error {
 			Wish(t, n, ShouldEqual, middleMapNode)
-			Wish(t, prog.Path.String(), ShouldEqual, ipld.Path{}.String())
+			Wish(t, prog.Path.String(), ShouldEqual, datamodel.Path{}.String())
 			return nil
 		})
 		Wish(t, err, ShouldEqual, nil)
@@ -73,7 +72,7 @@ func TestWalkMatching(t *testing.T) {
 		s, err := ss.Selector()
 		Require(t, err, ShouldEqual, nil)
 		var order int
-		err = traversal.WalkMatching(middleMapNode, s, func(prog traversal.Progress, n ipld.Node) error {
+		err = traversal.WalkMatching(middleMapNode, s, func(prog traversal.Progress, n datamodel.Node) error {
 			switch order {
 			case 0:
 				Wish(t, n, ShouldEqual, basicnode.NewBool(true))
@@ -98,7 +97,7 @@ func TestWalkMatching(t *testing.T) {
 		s, err := ss.Selector()
 		Require(t, err, ShouldEqual, nil)
 		var order int
-		err = traversal.WalkMatching(middleMapNode, s, func(prog traversal.Progress, n ipld.Node) error {
+		err = traversal.WalkMatching(middleMapNode, s, func(prog traversal.Progress, n datamodel.Node) error {
 			switch order {
 			case 0:
 				Wish(t, n, ShouldEqual, basicnode.NewBool(true))
@@ -127,7 +126,7 @@ func TestWalkMatching(t *testing.T) {
 				LinkSystem:                     lsys,
 				LinkTargetNodePrototypeChooser: basicnode.Chooser,
 			},
-		}.WalkMatching(middleMapNode, s, func(prog traversal.Progress, n ipld.Node) error {
+		}.WalkMatching(middleMapNode, s, func(prog traversal.Progress, n datamodel.Node) error {
 			switch order {
 			case 0:
 				Wish(t, n, ShouldEqual, middleMapNode)
@@ -139,7 +138,7 @@ func TestWalkMatching(t *testing.T) {
 				Wish(t, n, ShouldEqual, basicnode.NewBool(false))
 				Wish(t, prog.Path.String(), ShouldEqual, "bar")
 			case 3:
-				Wish(t, n, ShouldEqual, fluent.MustBuildMap(basicnode.Prototype__Map{}, 2, func(na fluent.MapAssembler) {
+				Wish(t, n, ShouldEqual, fluent.MustBuildMap(basicnode.Prototype.Map, 2, func(na fluent.MapAssembler) {
 					na.AssembleEntry("alink").AssignLink(leafAlphaLnk)
 					na.AssembleEntry("nonlink").AssignString("zoo")
 				}))
@@ -225,7 +224,7 @@ func TestWalkMatching(t *testing.T) {
 				LinkSystem:                     lsys,
 				LinkTargetNodePrototypeChooser: basicnode.Chooser,
 			},
-		}.WalkMatching(middleListNode, s, func(prog traversal.Progress, n ipld.Node) error {
+		}.WalkMatching(middleListNode, s, func(prog traversal.Progress, n datamodel.Node) error {
 			switch order {
 			case 0:
 				Wish(t, n, ShouldEqual, basicnode.NewString("alpha"))
@@ -268,7 +267,7 @@ func TestWalkMatching(t *testing.T) {
 				LinkSystem:                     lsys,
 				LinkTargetNodePrototypeChooser: basicnode.Chooser,
 			},
-		}.WalkMatching(rootNode, s, func(prog traversal.Progress, n ipld.Node) error {
+		}.WalkMatching(rootNode, s, func(prog traversal.Progress, n datamodel.Node) error {
 			switch order {
 			case 0:
 				Wish(t, n, ShouldEqual, basicnode.NewString("alpha"))

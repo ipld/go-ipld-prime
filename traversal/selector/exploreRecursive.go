@@ -3,7 +3,7 @@ package selector
 import (
 	"fmt"
 
-	ipld "github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/datamodel"
 )
 
 // ExploreRecursive traverses some structure recursively.
@@ -81,33 +81,39 @@ func RecursionLimitNone() RecursionLimit {
 }
 
 // Interests for ExploreRecursive is empty (meaning traverse everything)
-func (s ExploreRecursive) Interests() []ipld.PathSegment {
+func (s ExploreRecursive) Interests() []datamodel.PathSegment {
 	return s.current.Interests()
 }
 
 // Explore returns the node's selector for all fields
-func (s ExploreRecursive) Explore(n ipld.Node, p ipld.PathSegment) Selector {
-	if s.stopAt != nil && s.stopAt.Match(n) {
-		return nil
+func (s ExploreRecursive) Explore(n datamodel.Node, p datamodel.PathSegment) (Selector, error) {
+	if s.stopAt != nil {
+		target, err := n.LookupBySegment(p)
+		if err != nil {
+			return nil, err
+		}
+		if s.stopAt.Match(target) {
+			return nil, nil
+		}
 	}
 
-	nextSelector := s.current.Explore(n, p)
+	nextSelector, _ := s.current.Explore(n, p)
 	limit := s.limit
 
 	if nextSelector == nil {
-		return nil
+		return nil, nil
 	}
 	if !s.hasRecursiveEdge(nextSelector) {
-		return ExploreRecursive{s.sequence, nextSelector, limit, s.stopAt}
+		return ExploreRecursive{s.sequence, nextSelector, limit, s.stopAt}, nil
 	}
 	switch limit.mode {
 	case RecursionLimit_Depth:
 		if limit.depth < 2 {
-			return s.replaceRecursiveEdge(nextSelector, nil)
+			return s.replaceRecursiveEdge(nextSelector, nil), nil
 		}
-		return ExploreRecursive{s.sequence, s.replaceRecursiveEdge(nextSelector, s.sequence), RecursionLimit{RecursionLimit_Depth, limit.depth - 1}, s.stopAt}
+		return ExploreRecursive{s.sequence, s.replaceRecursiveEdge(nextSelector, s.sequence), RecursionLimit{RecursionLimit_Depth, limit.depth - 1}, s.stopAt}, nil
 	case RecursionLimit_None:
-		return ExploreRecursive{s.sequence, s.replaceRecursiveEdge(nextSelector, s.sequence), limit, s.stopAt}
+		return ExploreRecursive{s.sequence, s.replaceRecursiveEdge(nextSelector, s.sequence), limit, s.stopAt}, nil
 	default:
 		panic("Unsupported recursion limit type")
 	}
@@ -155,7 +161,7 @@ func (s ExploreRecursive) replaceRecursiveEdge(nextSelector Selector, replacemen
 }
 
 // Decide if a node directly matches
-func (s ExploreRecursive) Decide(n ipld.Node) bool {
+func (s ExploreRecursive) Decide(n datamodel.Node) bool {
 	return s.current.Decide(n)
 }
 
@@ -172,8 +178,8 @@ func (erc *exploreRecursiveContext) Link(s Selector) bool {
 }
 
 // ParseExploreRecursive assembles a Selector from a ExploreRecursive selector node
-func (pc ParseContext) ParseExploreRecursive(n ipld.Node) (Selector, error) {
-	if n.Kind() != ipld.Kind_Map {
+func (pc ParseContext) ParseExploreRecursive(n datamodel.Node) (Selector, error) {
+	if n.Kind() != datamodel.Kind_Map {
 		return nil, fmt.Errorf("selector spec parse rejected: selector body must be a map")
 	}
 
@@ -209,8 +215,8 @@ func (pc ParseContext) ParseExploreRecursive(n ipld.Node) (Selector, error) {
 	return ExploreRecursive{selector, selector, limit, stopCondition}, nil
 }
 
-func parseLimit(n ipld.Node) (RecursionLimit, error) {
-	if n.Kind() != ipld.Kind_Map {
+func parseLimit(n datamodel.Node) (RecursionLimit, error) {
+	if n.Kind() != datamodel.Kind_Map {
 		return RecursionLimit{}, fmt.Errorf("selector spec parse rejected: limit in ExploreRecursive is a keyed union and thus must be a map")
 	}
 	if n.Length() != 1 {

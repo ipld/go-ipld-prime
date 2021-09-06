@@ -17,7 +17,7 @@
 package must
 
 import (
-	ipld "github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/schema"
 )
 
@@ -38,7 +38,7 @@ func NotError(e error) {
 //
 //		must.Node(SomeNodeBuilder{}.CreateString("a"))
 //
-func Node(n ipld.Node, e error) ipld.Node {
+func Node(n datamodel.Node, e error) datamodel.Node {
 	if e != nil {
 		panic(e)
 	}
@@ -47,14 +47,14 @@ func Node(n ipld.Node, e error) ipld.Node {
 
 // must.TypedNode helps write pointfree/chainable-style code
 // by taking a Node and an error and transforming any error into a panic.
-// It will also cast the `ipld.Node` to a `schema.TypedNode`, panicking if impossible.
+// It will also cast the `datamodel.Node` to a `schema.TypedNode`, panicking if impossible.
 //
 // Because golang supports implied destructuring of multiple-return functions
 // into arguments for another funtion of matching arity, it can be used like this:
 //
 //		must.TypedNode(SomeNodeBuilder{}.CreateString("a"))
 //
-func TypedNode(n ipld.Node, e error) schema.TypedNode {
+func TypedNode(n datamodel.Node, e error) schema.TypedNode {
 	if e != nil {
 		panic(e)
 	}
@@ -71,7 +71,7 @@ func True(v bool) {
 // must.String unboxes the given Node via AsString,
 // panicking in the case that the Node isn't of string kind,
 // and otherwise returning the bare native string.
-func String(n ipld.Node) string {
+func String(n datamodel.Node) string {
 	if v, err := n.AsString(); err != nil {
 		panic(err)
 	} else {
@@ -82,7 +82,7 @@ func String(n ipld.Node) string {
 // must.Int unboxes the given Node via AsInt,
 // panicking in the case that the Node isn't of int kind,
 // and otherwise returning the bare native int.
-func Int(n ipld.Node) int64 {
+func Int(n datamodel.Node) int64 {
 	if v, err := n.AsInt(); err != nil {
 		panic(err)
 	} else {

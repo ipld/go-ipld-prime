@@ -3,16 +3,15 @@ package cbor
 import (
 	"io"
 
-	"github.com/polydawn/refmt/cbor"
-
-	"github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/codec"
 	"github.com/ipld/go-ipld-prime/codec/dagcbor"
+	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/multicodec"
 )
 
 var (
-	_ ipld.Decoder = Decode
-	_ ipld.Encoder = Encode
+	_ codec.Decoder = Decode
+	_ codec.Encoder = Encode
 )
 
 func init() {
@@ -20,12 +19,22 @@ func init() {
 	multicodec.RegisterDecoder(0x51, Decode)
 }
 
-func Decode(na ipld.NodeAssembler, r io.Reader) error {
-	return dagcbor.Unmarshal(na, cbor.NewDecoder(cbor.DecodeOptions{}, r),
-		dagcbor.UnmarshalOptions{AllowLinks: false})
+// Decode deserializes data from the given io.Reader and feeds it into the given datamodel.NodeAssembler.
+// Decode fits the codec.Decoder function interface.
+//
+// This is the function that will be registered in the default multicodec registry during package init time.
+func Decode(na datamodel.NodeAssembler, r io.Reader) error {
+	return dagcbor.DecodeOptions{
+		AllowLinks: false,
+	}.Decode(na, r)
 }
 
-func Encode(n ipld.Node, w io.Writer) error {
-	return dagcbor.Marshal(n, cbor.NewEncoder(w),
-		dagcbor.MarshalOptions{AllowLinks: false})
+// Encode walks the given datamodel.Node and serializes it to the given io.Writer.
+// Encode fits the codec.Encoder function interface.
+//
+// This is the function that will be registered in the default multicodec registry during package init time.
+func Encode(n datamodel.Node, w io.Writer) error {
+	return dagcbor.EncodeOptions{
+		AllowLinks: false,
+	}.Encode(n, w)
 }
