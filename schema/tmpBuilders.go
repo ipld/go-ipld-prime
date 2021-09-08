@@ -139,13 +139,21 @@ func (ts *TypeSystem) Init() {
 }
 func (ts *TypeSystem) Accumulate(typ Type) {
 	typ._Type(ts)
-	ts.namedTypes[typ.Name()] = typ
+	name := typ.Name()
+	if _, ok := ts.namedTypes[name]; ok {
+		panic(fmt.Sprintf("duplicate type name: %s", name))
+	}
+	ts.namedTypes[name] = typ
+	ts.names = append(ts.names, name)
 }
 func (ts TypeSystem) GetTypes() map[TypeName]Type {
 	return ts.namedTypes
 }
 func (ts TypeSystem) TypeByName(n string) Type {
 	return ts.namedTypes[TypeName(n)]
+}
+func (ts TypeSystem) Names() []TypeName {
+	return ts.names
 }
 
 // ValidateGraph checks that all type names referenced are defined.
