@@ -1,28 +1,34 @@
-//go:build ignore
-// +build ignore
+package schemadmt
 
-package main
+//go:generate go test -run=Generate -vet=off -tags=bindnodegen
 
 import (
 	"fmt"
 
 	"github.com/ipld/go-ipld-prime/datamodel"
+	"github.com/ipld/go-ipld-prime/node/bindnode"
 	"github.com/ipld/go-ipld-prime/schema"
-	gengo "github.com/ipld/go-ipld-prime/schema/gen/go"
 )
 
-func main() {
-	ts := schema.TypeSystem{}
+// This schema follows https://ipld.io/specs/schemas/schema-schema.ipldsch.
+
+var Type struct {
+	Schema schema.TypedPrototype
+}
+
+var schemaTypeSystem schema.TypeSystem
+
+func init() {
+	var ts schema.TypeSystem
 	ts.Init()
-	adjCfg := &gengo.AdjunctCfg{
-		FieldSymbolLowerOverrides: map[gengo.FieldTuple]string{
-			{"StructField", "type"}: "typ",
-			{"TypeEnum", "type"}:    "typ",
-		},
-		CfgUnionMemlayout: map[schema.TypeName]string{
-			"TypeDefnInline": "interface", // breaks cycles in embeddery that would otherwise be problematic.
-		},
-	}
+	// adjCfg := &gengo.AdjunctCfg{
+	// 	FieldSymbolLowerOverrides: map[gengo.FieldTuple]string{
+	// 		{"StructField", "type"}: "typ",
+	// 	},
+	// 	CfgUnionMemlayout: map[schema.TypeName]string{
+	// 		"InlineDefn": "interface", // breaks cycles in embeddery that would otherwise be problematic.
+	// 	},
+	// }
 
 	// I've elided all references to Advancedlayouts stuff for the moment.
 	// (Not because it's particularly hard or problematic; I just want to draw a slightly smaller circle first.)
@@ -35,6 +41,12 @@ func main() {
 	ts.Accumulate(schema.SpawnBytes("Bytes"))
 
 	// Schema-schema!
+	// In the same order as the spec's ipldsch file.
+	// Note that ADL stuff is excluded for now, as per above.
+	ts.Accumulate(schema.SpawnString("TypeName"))
+	ts.Accumulate(schema.SpawnMap("SchemaMap",
+		"TypeName", "TypeDefn", false,
+	))
 	ts.Accumulate(schema.SpawnStruct("Schema",
 		[]schema.StructField{
 			schema.SpawnStructField("types", "SchemaMap", false, false),
@@ -42,11 +54,7 @@ func main() {
 		},
 		schema.StructRepresentation_Map{},
 	))
-	ts.Accumulate(schema.SpawnString("TypeName"))
-	ts.Accumulate(schema.SpawnMap("SchemaMap",
-		"TypeName", "TypeDefn", false,
-	))
-	ts.Accumulate(schema.SpawnUnion("TypeDefn",
+	ts.Accumulate(schema.SpawnUnion("TypeDefn", // TODO: spec's name is "Type"; conflicts with codegen's "var Type typeSlab"
 		[]schema.TypeName{
 			"TypeBool",
 			"TypeString",
@@ -61,6 +69,7 @@ func main() {
 			"TypeEnum",
 			"TypeCopy",
 		},
+		// TODO: spec uses inline repr.
 		schema.SpawnUnionRepresentationKeyed(map[string]schema.TypeName{
 			"bool":   "TypeBool",
 			"string": "TypeString",
@@ -76,21 +85,22 @@ func main() {
 			"copy":   "TypeCopy",
 		}),
 	))
-	ts.Accumulate(schema.SpawnUnion("TypeNameOrInlineDefn",
+	ts.Accumulate(schema.SpawnUnion("TypeTerm",
 		[]schema.TypeName{
 			"TypeName",
-			"TypeDefnInline",
+			"InlineDefn",
 		},
 		schema.SpawnUnionRepresentationKinded(map[datamodel.Kind]schema.TypeName{
 			datamodel.Kind_String: "TypeName",
-			datamodel.Kind_Map:    "TypeDefnInline",
+			datamodel.Kind_Map:    "InlineDefn",
 		}),
 	))
-	ts.Accumulate(schema.SpawnUnion("TypeDefnInline", // n.b. previously called "TypeTerm".
+	ts.Accumulate(schema.SpawnUnion("InlineDefn",
 		[]schema.TypeName{
 			"TypeMap",
 			"TypeList",
 		},
+		// TODO: spec uses inline repr.
 		schema.SpawnUnionRepresentationKeyed(map[string]schema.TypeName{
 			"map":  "TypeMap",
 			"list": "TypeList",
@@ -106,6 +116,7 @@ func main() {
 	))
 	ts.Accumulate(schema.SpawnStruct("TypeBytes",
 		[]schema.StructField{},
+		// No BytesRepresentation, since we omit ADL stuff.
 		schema.StructRepresentation_Map{},
 	))
 	ts.Accumulate(schema.SpawnStruct("TypeInt",
@@ -116,17 +127,11 @@ func main() {
 		[]schema.StructField{},
 		schema.StructRepresentation_Map{},
 	))
-	ts.Accumulate(schema.SpawnStruct("TypeLink",
-		[]schema.StructField{
-			schema.SpawnStructField("expectedType", "TypeName", true, false), // todo: this uses an implicit with a value of 'any' in the schema-schema, but that's been questioned before.  maybe it should simply be an optional.
-		},
-		schema.StructRepresentation_Map{},
-	))
 	ts.Accumulate(schema.SpawnStruct("TypeMap",
 		[]schema.StructField{
 			schema.SpawnStructField("keyType", "TypeName", false, false),
-			schema.SpawnStructField("valueType", "TypeNameOrInlineDefn", false, false),
-			schema.SpawnStructField("valueNullable", "Bool", false, false), // todo: wants to use the "implicit" feature, but not supported yet
+			schema.SpawnStructField("valueType", "TypeTerm", false, false),
+			schema.SpawnStructField("valueNullable", "Bool", false, false), // TODO: wants to use the "implicit" feature, but not supported yet
 			schema.SpawnStructField("representation", "MapRepresentation", false, false),
 		},
 		schema.StructRepresentation_Map{},
@@ -160,8 +165,8 @@ func main() {
 	))
 	ts.Accumulate(schema.SpawnStruct("TypeList",
 		[]schema.StructField{
-			schema.SpawnStructField("valueType", "TypeNameOrInlineDefn", false, false),
-			schema.SpawnStructField("valueNullable", "Bool", false, false), // todo: wants to use the "implicit" feature, but not supported yet
+			schema.SpawnStructField("valueType", "TypeTerm", false, false),
+			schema.SpawnStructField("valueNullable", "Bool", false, false), // TODO: wants to use the "implicit" feature, but not supported yet
 			schema.SpawnStructField("representation", "ListRepresentation", false, false),
 		},
 		schema.StructRepresentation_Map{},
@@ -180,7 +185,7 @@ func main() {
 	))
 	ts.Accumulate(schema.SpawnStruct("TypeUnion",
 		[]schema.StructField{
-			// n.b. we could conceivably allow TypeNameOrInlineDefn here rather than just TypeName.  but... we'd rather not: imagine what that means about the type-level behavior of the union: the name munge for the anonymous type would suddenly become load-bearing.  would rather not.
+			// n.b. we could conceivably allow TypeTerm here rather than just TypeName.  but... we'd rather not: imagine what that means about the type-level behavior of the union: the name munge for the anonymous type would suddenly become load-bearing.  would rather not.
 			schema.SpawnStructField("members", "List__TypeName", false, false), // todo: this is a slight hack: should be using an inline defn, but we banged it with name munge coincidents to simplify bootstrap.
 			schema.SpawnStructField("representation", "UnionRepresentation", false, false),
 		},
@@ -188,6 +193,12 @@ func main() {
 	))
 	ts.Accumulate(schema.SpawnList("List__TypeName", // todo: this is a slight hack: should be an anon inside TypeUnion.members.
 		"TypeName", false,
+	))
+	ts.Accumulate(schema.SpawnStruct("TypeLink",
+		[]schema.StructField{
+			schema.SpawnStructField("expectedType", "TypeName", true, false), // todo: this uses an implicit with a value of 'any' in the schema-schema, but that's been questioned before.  maybe it should simply be an optional.
+		},
+		schema.StructRepresentation_Map{},
 	))
 	ts.Accumulate(schema.SpawnUnion("UnionRepresentation",
 		[]schema.TypeName{
@@ -261,7 +272,7 @@ func main() {
 	ts.Accumulate(schema.SpawnString("FieldName"))
 	ts.Accumulate(schema.SpawnStruct("StructField",
 		[]schema.StructField{
-			schema.SpawnStructField("type", "TypeNameOrInlineDefn", false, false),
+			schema.SpawnStructField("type", "TypeTerm", false, false),
 			schema.SpawnStructField("optional", "Bool", false, false), // todo: wants to use the "implicit" feature, but not supported yet
 			schema.SpawnStructField("nullable", "Bool", false, false), // todo: wants to use the "implicit" feature, but not supported yet
 		},
@@ -387,5 +398,10 @@ func main() {
 		panic("not happening")
 	}
 
-	gengo.Generate(".", "schemadmt", ts, adjCfg)
+	schemaTypeSystem = ts
+
+	Type.Schema = bindnode.Prototype(
+		(*Schema)(nil),
+		schemaTypeSystem.TypeByName("Schema"),
+	)
 }

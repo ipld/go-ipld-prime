@@ -117,7 +117,7 @@ func (w *_nodeRepr) asKinded(stg schema.UnionRepresentation_Kinded, kind datamod
 		w2.schemaType = member
 		return &w2
 	}
-	return nil
+	panic("TODO: GetMember result is missing?")
 }
 
 func (w *_nodeRepr) LookupByString(key string) (datamodel.Node, error) {
@@ -547,6 +547,8 @@ func (w *_assemblerRepr) AssignNull() error {
 
 func (w *_assemblerRepr) AssignBool(b bool) error {
 	switch stg := reprStrategy(w.schemaType).(type) {
+	case schema.UnionRepresentation_Kinded:
+		return w.asKinded(stg, datamodel.Kind_Bool).AssignBool(b)
 	case nil:
 		return (*_assembler)(w).AssignBool(b)
 	default:
@@ -596,11 +598,7 @@ func (w *_assemblerRepr) AssignString(s string) error {
 		}
 		return mapAsm.Finish()
 	case schema.UnionRepresentation_Kinded:
-		w2 := w.asKinded(stg, datamodel.Kind_String)
-		if w2 == nil {
-			panic("TODO: GetMember result is missing?")
-		}
-		return w2.AssignString(s)
+		return w.asKinded(stg, datamodel.Kind_String).AssignString(s)
 	case schema.UnionRepresentation_Stringprefix:
 		hasDelim := stg.GetDelim() != ""
 

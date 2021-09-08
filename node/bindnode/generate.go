@@ -1,0 +1,136 @@
+//go:build bindnodegen
+// +build bindnodegen
+
+// TODO: move this to a "package main" in node/bindnode/bindnodegen
+// once we are able to parse a schema file from disk.
+
+package bindnode
+
+import (
+	"bytes"
+	"fmt"
+	"go/format"
+	"io"
+	"sort"
+	"strings"
+
+	"github.com/ipld/go-ipld-prime/schema"
+)
+
+// TODO(mvdan): deduplicate with inferGoType once reflect supports creating named types
+
+func produceGoType(goTypes map[string]string, typ schema.Type) (name, src string) {
+	if typ, ok := typ.(interface{ IsAnonymous() bool }); ok {
+		if typ.IsAnonymous() {
+			panic("TODO: does this ever happen?")
+		}
+	}
+
+	name = string(typ.Name())
+
+	switch typ.(type) {
+	case *schema.TypeBool:
+		return goTypeBool.String(), ""
+	case *schema.TypeInt:
+		return goTypeInt.String(), ""
+	case *schema.TypeFloat:
+		return goTypeFloat.String(), ""
+	case *schema.TypeString:
+		return goTypeString.String(), ""
+	case *schema.TypeBytes:
+		return goTypeBytes.String(), ""
+	}
+
+	// Results are cached in goTypes.
+	if src := goTypes[name]; src != "" {
+		return name, src
+	}
+
+	src = produceGoTypeInner(goTypes, name, typ)
+	goTypes[name] = src
+	return name, src
+}
+
+func produceGoTypeInner(goTypes map[string]string, name string, typ schema.Type) (src string) {
+	// Avoid infinite cycles.
+	// produceGoType will fill in the final type later.
+	goTypes[name] = "WIP"
+
+	switch typ := typ.(type) {
+	case *schema.TypeStruct:
+		var b strings.Builder
+		fmt.Fprintf(&b, "struct {\n")
+		fields := typ.Fields()
+		for _, field := range fields {
+			fmt.Fprintf(&b, "%s ", fieldNameFromSchema(field.Name()))
+			ftypGo, _ := produceGoType(goTypes, field.Type())
+			if field.IsNullable() {
+				fmt.Fprintf(&b, "*")
+			}
+			if field.IsOptional() {
+				fmt.Fprintf(&b, "*")
+			}
+			fmt.Fprintf(&b, "%s\n", ftypGo)
+		}
+		fmt.Fprintf(&b, "\n}")
+		return b.String()
+	case *schema.TypeMap:
+		ktyp, _ := produceGoType(goTypes, typ.KeyType())
+		vtyp, _ := produceGoType(goTypes, typ.ValueType())
+		if typ.ValueIsNullable() {
+			vtyp = "*" + vtyp
+		}
+		return fmt.Sprintf(`struct {
+			Keys []%s
+			Values map[%s]%s
+		}`, ktyp, ktyp, vtyp)
+	case *schema.TypeList:
+		etyp, _ := produceGoType(goTypes, typ.ValueType())
+		if typ.ValueIsNullable() {
+			etyp = "*" + etyp
+		}
+		return fmt.Sprintf("[]%s", etyp)
+	case *schema.TypeUnion:
+		var b strings.Builder
+		fmt.Fprintf(&b, "struct{\n")
+		members := typ.Members()
+		for _, ftyp := range members {
+			ftypGo, _ := produceGoType(goTypes, ftyp)
+			fmt.Fprintf(&b, "%s ", fieldNameFromSchema(string(ftyp.Name())))
+			fmt.Fprintf(&b, "*%s\n", ftypGo)
+		}
+		fmt.Fprintf(&b, "\n}")
+		return b.String()
+	}
+	panic(fmt.Sprintf("%T\n", typ))
+}
+
+func ProduceGoTypes(w io.Writer, schemaTypes map[schema.TypeName]schema.Type) error {
+	goTypes := make(map[string]string)
+	for name, schemaType := range schemaTypes {
+		if name != schemaType.Name() {
+			panic(fmt.Sprintf("%s vs %s", name, schemaType.Name()))
+		}
+		produceGoType(goTypes, schemaType)
+	}
+
+	sortedNames := make([]string, 0, len(goTypes))
+	for name := range goTypes {
+		sortedNames = append(sortedNames, name)
+	}
+	sort.Strings(sortedNames)
+
+	var buf bytes.Buffer
+	for _, name := range sortedNames {
+		fmt.Fprintf(&buf, "type %s %s\n", name, goTypes[name])
+	}
+	src, err := format.Source(buf.Bytes())
+	if err != nil {
+		return err
+	}
+	// ioutil.WriteFile("/tmp/out.go", src, 0o666)
+	if _, err := w.Write(src); err != nil {
+		return err
+	}
+	return nil
+}
