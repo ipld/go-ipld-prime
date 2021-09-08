@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/ipld/go-ipld-prime/codec/dagjson"
+	"github.com/ipld/go-ipld-prime/node/bindnode"
 	schemadmt "github.com/ipld/go-ipld-prime/schema/dmt"
 	// "github.com/ipld/go-ipld-prime/schema/schema2"
 )
@@ -34,7 +35,7 @@ import (
 //    explicitly stated, where it should be sufficient to leave these implicit.
 //
 func TestSchemaSchemaParse(t *testing.T) {
-	nb := schemadmt.Type.Schema__Repr.NewBuilder()
+	nb := schemadmt.Type.Schema.Representation().NewBuilder()
 	if err := dagjson.Decode(nb, strings.NewReader(`
 {
 	"types": {
@@ -862,12 +863,19 @@ func TestSchemaSchemaParse(t *testing.T) {
 	`)); err != nil {
 		t.Error(err)
 	}
-	// n := nb.Build().(schemadmt.Schema)
+	node := nb.Build()
+	sch := bindnode.Unwrap(node).(*schemadmt.Schema)
+	_ = sch
 
-	// Reify that thang!
-	// TODO: not yet :) anonymous types used in the above data are not yet implemented.
-	// _, errs := schema.BuildTypeSystem(n)
-	// if errs != nil {
-	// t.Error(errs)
-	// }
+	// TODO: re-enable testing Compile once it's finished
+	/*
+		var ts schema.TypeSystem
+		ts.Init()
+		if err := schemadmt.Compile(&ts, sch); err != nil {
+			t.Fatal(err)
+		}
+
+		typeStruct := ts.TypeByName("TypeStruct")
+		println(typeStruct)
+	*/
 }
