@@ -21,14 +21,6 @@ var schemaTypeSystem schema.TypeSystem
 func init() {
 	var ts schema.TypeSystem
 	ts.Init()
-	// adjCfg := &gengo.AdjunctCfg{
-	// 	FieldSymbolLowerOverrides: map[gengo.FieldTuple]string{
-	// 		{"StructField", "type"}: "typ",
-	// 	},
-	// 	CfgUnionMemlayout: map[schema.TypeName]string{
-	// 		"InlineDefn": "interface", // breaks cycles in embeddery that would otherwise be problematic.
-	// 	},
-	// }
 
 	// I've elided all references to Advancedlayouts stuff for the moment.
 	// (Not because it's particularly hard or problematic; I just want to draw a slightly smaller circle first.)

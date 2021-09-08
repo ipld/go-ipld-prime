@@ -17,7 +17,7 @@ func TestGenerate(t *testing.T) {
 		t.Fatal(err)
 	}
 	fmt.Fprintf(f, "package schemadmt\n\n")
-	if err := bindnode.ProduceGoTypes(f, schemaTypeSystem.GetTypes()); err != nil {
+	if err := bindnode.ProduceGoTypes(f, &schemaTypeSystem); err != nil {
 		t.Fatal(err)
 	}
 	if err := f.Close(); err != nil {

@@ -11,7 +11,6 @@ import (
 	"fmt"
 	"go/format"
 	"io"
-	"sort"
 	"strings"
 
 	"github.com/ipld/go-ipld-prime/schema"
@@ -105,30 +104,25 @@ func produceGoTypeInner(goTypes map[string]string, name string, typ schema.Type)
 	panic(fmt.Sprintf("%T\n", typ))
 }
 
-func ProduceGoTypes(w io.Writer, schemaTypes map[schema.TypeName]schema.Type) error {
+func ProduceGoTypes(w io.Writer, ts *schema.TypeSystem) error {
 	goTypes := make(map[string]string)
-	for name, schemaType := range schemaTypes {
+	var buf bytes.Buffer
+	for _, name := range ts.Names() {
+		schemaType := ts.TypeByName(string(name))
 		if name != schemaType.Name() {
 			panic(fmt.Sprintf("%s vs %s", name, schemaType.Name()))
 		}
-		produceGoType(goTypes, schemaType)
+		_, src := produceGoType(goTypes, schemaType)
+		if src == "" {
+			continue // scalar type used directly
+		}
+		fmt.Fprintf(&buf, "type %s %s\n", name, src)
 	}
 
-	sortedNames := make([]string, 0, len(goTypes))
-	for name := range goTypes {
-		sortedNames = append(sortedNames, name)
-	}
-	sort.Strings(sortedNames)
-
-	var buf bytes.Buffer
-	for _, name := range sortedNames {
-		fmt.Fprintf(&buf, "type %s %s\n", name, goTypes[name])
-	}
 	src, err := format.Source(buf.Bytes())
 	if err != nil {
 		return err
 	}
-	// ioutil.WriteFile("/tmp/out.go", src, 0o666)
 	if _, err := w.Write(src); err != nil {
 		return err
 	}
