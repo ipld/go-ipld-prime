@@ -754,7 +754,7 @@ func (w *_structAssembler) AssembleValue() datamodel.NodeAssembler {
 	name := w.curKey.val.String()
 	field := w.schemaType.Field(name)
 	if field == nil {
-		panic(name)
+		panic(fmt.Sprintf("TODO: missing field %s in %s", name, w.schemaType.Name()))
 		// return nil, datamodel.ErrInvalidKey{
 		// 	TypeName: w.schemaType.Name().String(),
 		// 	Key:      basicnode.NewString(name),
@@ -947,7 +947,7 @@ func (w *_unionAssembler) AssembleValue() datamodel.NodeAssembler {
 		}
 	}
 	if mtyp == nil {
-		panic("TODO: missing member")
+		panic(fmt.Sprintf("TODO: missing member %s in %s", name, w.schemaType.Name()))
 		// return nil, datamodel.ErrInvalidKey{
 		// 	TypeName: w.schemaType.Name().String(),
 		// 	Key:      basicnode.NewString(name),

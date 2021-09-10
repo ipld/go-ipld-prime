@@ -1,49 +1,52 @@
 package schemadmt
 
-type SchemaMap struct {
+type Schema struct {
+	Types Map__TypeName__TypeDefn
+}
+type Map__TypeName__TypeDefn struct {
 	Keys   []string
 	Values map[string]TypeDefn
 }
-type Schema struct {
-	Types SchemaMap
-}
 type TypeDefn struct {
-	TypeBool   *TypeBool
-	TypeString *TypeString
-	TypeBytes  *TypeBytes
-	TypeInt    *TypeInt
-	TypeFloat  *TypeFloat
-	TypeMap    *TypeMap
-	TypeList   *TypeList
-	TypeLink   *TypeLink
-	TypeUnion  *TypeUnion
-	TypeStruct *TypeStruct
-	TypeEnum   *TypeEnum
-	TypeCopy   *TypeCopy
+	TypeDefnBool   *TypeDefnBool
+	TypeDefnString *TypeDefnString
+	TypeDefnBytes  *TypeDefnBytes
+	TypeDefnInt    *TypeDefnInt
+	TypeDefnFloat  *TypeDefnFloat
+	TypeDefnMap    *TypeDefnMap
+	TypeDefnList   *TypeDefnList
+	TypeDefnLink   *TypeDefnLink
+	TypeDefnUnion  *TypeDefnUnion
+	TypeDefnStruct *TypeDefnStruct
+	TypeDefnEnum   *TypeDefnEnum
+	TypeDefnUnit   *TypeDefnUnit
+	TypeDefnAny    *TypeDefnAny
+	TypeDefnCopy   *TypeDefnCopy
 }
-type TypeTerm struct {
+type TypeNameOrInlineDefn struct {
 	TypeName   *string
 	InlineDefn *InlineDefn
 }
 type InlineDefn struct {
-	TypeMap  *TypeMap
-	TypeList *TypeList
+	TypeDefnMap  *TypeDefnMap
+	TypeDefnList *TypeDefnList
+	TypeDefnLink *TypeDefnLink
 }
-type TypeBool struct {
+type TypeDefnBool struct {
 }
-type TypeString struct {
+type TypeDefnString struct {
 }
-type TypeBytes struct {
+type TypeDefnBytes struct {
 }
-type TypeInt struct {
+type TypeDefnInt struct {
 }
-type TypeFloat struct {
+type TypeDefnFloat struct {
 }
-type TypeMap struct {
+type TypeDefnMap struct {
 	KeyType        string
-	ValueType      TypeTerm
-	ValueNullable  bool
-	Representation MapRepresentation
+	ValueType      TypeNameOrInlineDefn
+	ValueNullable  *bool
+	Representation *MapRepresentation
 }
 type MapRepresentation struct {
 	MapRepresentation_Map         *MapRepresentation_Map
@@ -58,22 +61,30 @@ type MapRepresentation_Stringpairs struct {
 }
 type MapRepresentation_Listpairs struct {
 }
-type TypeList struct {
-	ValueType      TypeTerm
-	ValueNullable  bool
-	Representation ListRepresentation
+type TypeDefnList struct {
+	ValueType      TypeNameOrInlineDefn
+	ValueNullable  *bool
+	Representation *ListRepresentation
 }
 type ListRepresentation struct {
 	ListRepresentation_List *ListRepresentation_List
 }
 type ListRepresentation_List struct {
 }
-type TypeUnion struct {
-	Members        List__TypeName
+type TypeDefnUnion struct {
+	Members        List__UnionMember
 	Representation UnionRepresentation
 }
+type List__UnionMember []UnionMember
+type UnionMember struct {
+	TypeName              *string
+	UnionMemberInlineDefn *UnionMemberInlineDefn
+}
+type UnionMemberInlineDefn struct {
+	TypeDefnLink *TypeDefnLink
+}
 type List__TypeName []string
-type TypeLink struct {
+type TypeDefnLink struct {
 	ExpectedType *string
 }
 type UnionRepresentation struct {
@@ -82,30 +93,38 @@ type UnionRepresentation struct {
 	UnionRepresentation_Envelope     *UnionRepresentation_Envelope
 	UnionRepresentation_Inline       *UnionRepresentation_Inline
 	UnionRepresentation_StringPrefix *UnionRepresentation_StringPrefix
-	UnionRepresentation_BytePrefix   *UnionRepresentation_BytePrefix
+	UnionRepresentation_BytesPrefix  *UnionRepresentation_BytesPrefix
 }
 type UnionRepresentation_Kinded struct {
 	Keys   []string
-	Values map[string]string
+	Values map[string]UnionMember
 }
 type UnionRepresentation_Keyed struct {
 	Keys   []string
-	Values map[string]string
+	Values map[string]UnionMember
+}
+type Map__String__UnionMember struct {
+	Keys   []string
+	Values map[string]TypeDefn
 }
 type UnionRepresentation_Envelope struct {
 	DiscriminantKey   string
 	ContentKey        string
-	DiscriminantTable Map__String__TypeName
+	DiscriminantTable Map__String__UnionMember
 }
 type UnionRepresentation_Inline struct {
 	DiscriminantKey   string
 	DiscriminantTable Map__String__TypeName
 }
 type UnionRepresentation_StringPrefix struct {
-	DiscriminantTable Map__String__TypeName
+	Prefixes Map__String__TypeName
 }
-type UnionRepresentation_BytePrefix struct {
-	DiscriminantTable Map__TypeName__Int
+type UnionRepresentation_BytesPrefix struct {
+	Prefixes Map__HexString__TypeName
+}
+type Map__HexString__TypeName struct {
+	Keys   []string
+	Values map[string]string
 }
 type Map__String__TypeName struct {
 	Keys   []string
@@ -115,7 +134,7 @@ type Map__TypeName__Int struct {
 	Keys   []string
 	Values map[string]int
 }
-type TypeStruct struct {
+type TypeDefnStruct struct {
 	Fields         Map__FieldName__StructField
 	Representation StructRepresentation
 }
@@ -124,9 +143,9 @@ type Map__FieldName__StructField struct {
 	Values map[string]StructField
 }
 type StructField struct {
-	Type     TypeTerm
-	Optional bool
-	Nullable bool
+	Type     TypeNameOrInlineDefn
+	Optional *bool
+	Nullable *bool
 }
 type StructRepresentation struct {
 	StructRepresentation_Map         *StructRepresentation_Map
@@ -160,16 +179,13 @@ type StructRepresentation_Stringjoin struct {
 }
 type StructRepresentation_Listpairs struct {
 }
-type TypeEnum struct {
-	Members        Map__EnumValue__Unit
+type TypeDefnEnum struct {
+	Members        List__EnumMember
 	Representation EnumRepresentation
-}
-type Map__EnumValue__Unit struct {
-	Keys   []string
-	Values map[string]Unit
 }
 type Unit struct {
 }
+type List__EnumMember []string
 type EnumRepresentation struct {
 	EnumRepresentation_String *EnumRepresentation_String
 	EnumRepresentation_Int    *EnumRepresentation_Int
@@ -182,7 +198,12 @@ type EnumRepresentation_Int struct {
 	Keys   []string
 	Values map[string]int
 }
-type TypeCopy struct {
+type TypeDefnUnit struct {
+	Representation string
+}
+type TypeDefnAny struct {
+}
+type TypeDefnCopy struct {
 	FromType string
 }
 type AnyScalar struct {
