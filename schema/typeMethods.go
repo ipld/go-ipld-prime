@@ -259,6 +259,10 @@ func (t TypeEnum) Members() []string {
 	return a
 }
 
+func (t TypeEnum) RepresentationStrategy() EnumRepresentation {
+	return t.representation
+}
+
 // Links can keep a referenced type, which is a hint only about the data on the
 // other side of the link, no something that can be explicitly validated without
 // loading the link
