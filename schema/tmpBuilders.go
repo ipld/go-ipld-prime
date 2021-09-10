@@ -112,6 +112,9 @@ func SpawnStructField(name string, typ TypeName, optional bool, nullable bool) S
 func SpawnStructRepresentationMap(renames map[string]string) StructRepresentation_Map {
 	return StructRepresentation_Map{renames, nil}
 }
+func SpawnStructRepresentationMap2(renames map[string]string, implicits map[string]ImplicitValue) StructRepresentation_Map {
+	return StructRepresentation_Map{renames, implicits}
+}
 func SpawnStructRepresentationTuple() StructRepresentation_Tuple {
 	return StructRepresentation_Tuple{}
 }

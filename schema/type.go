@@ -248,7 +248,14 @@ type EnumRepresentation_Int map[string]int
 // but if so, only its empty value is valid here).
 type ImplicitValue interface{ _ImplicitValue() }
 
+func (ImplicitValue_EmptyList) _ImplicitValue() {}
+func (ImplicitValue_EmptyMap) _ImplicitValue()  {}
+func (ImplicitValue_String) _ImplicitValue()    {}
+func (ImplicitValue_Int) _ImplicitValue()       {}
+func (ImplicitValue_Bool) _ImplicitValue()      {}
+
 type ImplicitValue_EmptyList struct{}
 type ImplicitValue_EmptyMap struct{}
-type ImplicitValue_String struct{ x string }
-type ImplicitValue_Int struct{ x int }
+type ImplicitValue_String string
+type ImplicitValue_Int int
+type ImplicitValue_Bool bool

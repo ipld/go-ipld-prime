@@ -246,6 +246,18 @@ func (r StructRepresentation_Map) FieldHasRename(field StructField) bool {
 	return ok
 }
 
+// FieldImplicit returns the 'implicit' value for a field, or nil, if there isn't one.
+//
+// Because this returns the golang ImplicitValue type, which is an interface,
+// golang type switching is needed to distinguish what it holds.
+// (In other words, be warned that this function is not very friendly to use from templating engines.)
+func (r StructRepresentation_Map) FieldImplicit(field StructField) ImplicitValue {
+	if r.implicits == nil {
+		return nil
+	}
+	return r.implicits[field.name]
+}
+
 func (r StructRepresentation_Stringjoin) GetDelim() string {
 	return r.sep
 }
