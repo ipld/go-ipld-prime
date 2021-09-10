@@ -132,6 +132,10 @@ func SpawnUnionRepresentationStringprefix(delim string, table map[string]TypeNam
 	return UnionRepresentation_Stringprefix{delim, table}
 }
 
+func SpawnEnum(name TypeName, members []string, repr EnumRepresentation) *TypeEnum {
+	return &TypeEnum{typeBase{name, nil}, members, repr}
+}
+
 // The methods relating to TypeSystem are also mutation-heavy and placeholdery.
 
 func (ts *TypeSystem) Init() {

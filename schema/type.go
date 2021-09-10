@@ -230,8 +230,17 @@ type StructRepresentation_Stringjoin struct{ sep string }
 
 type TypeEnum struct {
 	typeBase
-	members []string
+	members        []string
+	representation EnumRepresentation
 }
+
+type EnumRepresentation interface{ _EnumRepresentation() }
+
+func (EnumRepresentation_String) _EnumRepresentation() {}
+func (EnumRepresentation_Int) _EnumRepresentation()    {}
+
+type EnumRepresentation_String map[string]string
+type EnumRepresentation_Int map[string]int
 
 // ImplicitValue is an sum type holding values that are implicits.
 // It's not an 'Any' value because it can't be recursive
