@@ -36,7 +36,7 @@ func Generate(pth string, pkgName string, ts schema.TypeSystem, adjCfg *AdjunctC
 		types := ts.GetTypes()
 		keys := make(sortableTypeNames, 0, len(types))
 		for tn := range types {
-			if _, exists := externs[tn.String()]; !exists {
+			if _, exists := externs[tn]; !exists {
 				keys = append(keys, tn)
 			}
 		}

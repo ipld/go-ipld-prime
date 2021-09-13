@@ -19,7 +19,6 @@ func Compile(ts *schema.TypeSystem, node *Schema) error {
 	for _, name := range node.Types.Keys {
 		defn := node.Types.Values[name]
 
-		name := schema.TypeName(name)
 		// TODO: once we support anon types, remove the ts argument.
 		typ, err := spawnType(ts, name, defn)
 		if err != nil {
@@ -87,7 +86,7 @@ func spawnType(ts *schema.TypeSystem, name schema.TypeName, defn TypeDefn) (sche
 			return nil, fmt.Errorf("TODO: support non-default map repr in schema package")
 		}
 		return schema.SpawnList(name,
-			schema.TypeName(*typ.ValueType.TypeName),
+			*typ.ValueType.TypeName,
 			todoFromImplicitlyFalseBool(typ.ValueNullable),
 		), nil
 	case defn.TypeDefnMap != nil:
@@ -103,8 +102,8 @@ func spawnType(ts *schema.TypeSystem, name schema.TypeName, defn TypeDefn) (sche
 			return nil, fmt.Errorf("TODO: support non-default map repr in schema package")
 		}
 		return schema.SpawnMap(name,
-			schema.TypeName(typ.KeyType),
-			schema.TypeName(*typ.ValueType.TypeName),
+			typ.KeyType,
+			*typ.ValueType.TypeName,
 			todoFromImplicitlyFalseBool(typ.ValueNullable),
 		), nil
 	case defn.TypeDefnStruct != nil:
@@ -112,27 +111,24 @@ func spawnType(ts *schema.TypeSystem, name schema.TypeName, defn TypeDefn) (sche
 		var fields []schema.StructField
 		for _, fname := range typ.Fields.Keys {
 			field := typ.Fields.Values[fname]
-			var typeName schema.TypeName
+			tname := ""
 			if field.Type.TypeName != nil {
-				typeName = schema.TypeName(*field.Type.TypeName)
-			} else if tname := todoAnonTypeName(field.Type); ts.TypeByName(tname) == nil {
-				typeName = schema.TypeName(tname)
+				tname = *field.Type.TypeName
+			} else if tname = todoAnonTypeName(field.Type); ts.TypeByName(tname) == nil {
 				// Note that TypeDefn and InlineDefn aren't the same enum.
 				anonDefn := TypeDefn{
 					TypeDefnMap:  field.Type.InlineDefn.TypeDefnMap,
 					TypeDefnList: field.Type.InlineDefn.TypeDefnList,
 					TypeDefnLink: field.Type.InlineDefn.TypeDefnLink,
 				}
-				anonType, err := spawnType(ts, typeName, anonDefn)
+				anonType, err := spawnType(ts, tname, anonDefn)
 				if err != nil {
 					return nil, err
 				}
 				ts.Accumulate(anonType)
-			} else {
-				typeName = schema.TypeName(tname)
 			}
 			fields = append(fields, schema.SpawnStructField(fname,
-				schema.TypeName(typeName),
+				tname,
 				todoFromImplicitlyFalseBool(field.Optional),
 				todoFromImplicitlyFalseBool(field.Nullable),
 			))
@@ -146,7 +142,7 @@ func spawnType(ts *schema.TypeSystem, name schema.TypeName, defn TypeDefn) (sche
 		var members []schema.TypeName
 		for _, member := range typ.Members {
 			if member.TypeName != nil {
-				members = append(members, schema.TypeName(*member.TypeName))
+				members = append(members, *member.TypeName)
 			} else {
 				panic("TODO: inline union members")
 			}

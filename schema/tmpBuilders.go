@@ -157,7 +157,7 @@ func (ts TypeSystem) GetTypes() map[TypeName]Type {
 	return ts.namedTypes
 }
 func (ts TypeSystem) TypeByName(n string) Type {
-	return ts.namedTypes[TypeName(n)]
+	return ts.namedTypes[n]
 }
 func (ts TypeSystem) Names() []TypeName {
 	return ts.names

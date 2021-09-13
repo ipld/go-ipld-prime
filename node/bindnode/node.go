@@ -89,7 +89,7 @@ func (w *_node) LookupByString(key string) (datamodel.Node, error) {
 		field := typ.Field(key)
 		if field == nil {
 			return nil, schema.ErrInvalidKey{
-				TypeName: typ.Name().String(),
+				TypeName: typ.Name(),
 				Key:      basicnode.NewString(key),
 			}
 		}
@@ -153,7 +153,7 @@ func (w *_node) LookupByString(key string) (datamodel.Node, error) {
 		var idx int
 		var mtyp schema.Type
 		for i, member := range typ.Members() {
-			if member.Name().String() == key {
+			if member.Name() == key {
 				idx = i
 				mtyp = member
 				break
@@ -174,7 +174,7 @@ func (w *_node) LookupByString(key string) (datamodel.Node, error) {
 		return node, nil
 	}
 	return nil, datamodel.ErrWrongKind{
-		TypeName:        w.schemaType.Name().String(),
+		TypeName:        w.schemaType.Name(),
 		MethodName:      "LookupByString",
 		AppropriateKind: datamodel.KindSet_JustMap,
 		ActualKind:      w.Kind(),
@@ -219,7 +219,7 @@ func (w *_node) LookupByIndex(idx int64) (datamodel.Node, error) {
 		return &_node{schemaType: typ.ValueType(), val: val}, nil
 	}
 	return nil, datamodel.ErrWrongKind{
-		TypeName:        w.schemaType.Name().String(),
+		TypeName:        w.schemaType.Name(),
 		MethodName:      "LookupByIndex",
 		AppropriateKind: datamodel.KindSet_JustList,
 		ActualKind:      w.Kind(),
@@ -238,7 +238,7 @@ func (w *_node) LookupBySegment(seg datamodel.PathSegment) (datamodel.Node, erro
 		return w.LookupByIndex(idx)
 	}
 	return nil, datamodel.ErrWrongKind{
-		TypeName:        w.schemaType.Name().String(),
+		TypeName:        w.schemaType.Name(),
 		MethodName:      "LookupBySegment",
 		AppropriateKind: datamodel.KindSet_Recursive,
 		ActualKind:      w.Kind(),
@@ -261,7 +261,7 @@ func (w *_node) LookupByNode(key datamodel.Node) (datamodel.Node, error) {
 		return w.LookupByIndex(i)
 	}
 	return nil, datamodel.ErrWrongKind{
-		TypeName:        w.schemaType.Name().String(),
+		TypeName:        w.schemaType.Name(),
 		MethodName:      "LookupByNode",
 		AppropriateKind: datamodel.KindSet_Recursive,
 		ActualKind:      w.Kind(),
@@ -335,7 +335,7 @@ func (w *_node) IsNull() bool {
 func (w *_node) AsBool() (bool, error) {
 	if w.Kind() != datamodel.Kind_Bool {
 		return false, datamodel.ErrWrongKind{
-			TypeName:        w.schemaType.Name().String(),
+			TypeName:        w.schemaType.Name(),
 			MethodName:      "AsBool",
 			AppropriateKind: datamodel.KindSet_JustBool,
 			ActualKind:      w.Kind(),
@@ -347,7 +347,7 @@ func (w *_node) AsBool() (bool, error) {
 func (w *_node) AsInt() (int64, error) {
 	if w.Kind() != datamodel.Kind_Int {
 		return 0, datamodel.ErrWrongKind{
-			TypeName:        w.schemaType.Name().String(),
+			TypeName:        w.schemaType.Name(),
 			MethodName:      "AsInt",
 			AppropriateKind: datamodel.KindSet_JustInt,
 			ActualKind:      w.Kind(),
@@ -359,7 +359,7 @@ func (w *_node) AsInt() (int64, error) {
 func (w *_node) AsFloat() (float64, error) {
 	if w.Kind() != datamodel.Kind_Float {
 		return 0, datamodel.ErrWrongKind{
-			TypeName:        w.schemaType.Name().String(),
+			TypeName:        w.schemaType.Name(),
 			MethodName:      "AsFloat",
 			AppropriateKind: datamodel.KindSet_JustFloat,
 			ActualKind:      w.Kind(),
@@ -371,7 +371,7 @@ func (w *_node) AsFloat() (float64, error) {
 func (w *_node) AsString() (string, error) {
 	if w.Kind() != datamodel.Kind_String {
 		return "", datamodel.ErrWrongKind{
-			TypeName:        w.schemaType.Name().String(),
+			TypeName:        w.schemaType.Name(),
 			MethodName:      "AsString",
 			AppropriateKind: datamodel.KindSet_JustString,
 			ActualKind:      w.Kind(),
@@ -383,7 +383,7 @@ func (w *_node) AsString() (string, error) {
 func (w *_node) AsBytes() ([]byte, error) {
 	if w.Kind() != datamodel.Kind_Bytes {
 		return nil, datamodel.ErrWrongKind{
-			TypeName:        w.schemaType.Name().String(),
+			TypeName:        w.schemaType.Name(),
 			MethodName:      "AsBytes",
 			AppropriateKind: datamodel.KindSet_JustBytes,
 			ActualKind:      w.Kind(),
@@ -395,7 +395,7 @@ func (w *_node) AsBytes() ([]byte, error) {
 func (w *_node) AsLink() (datamodel.Link, error) {
 	if w.Kind() != datamodel.Kind_Link {
 		return nil, datamodel.ErrWrongKind{
-			TypeName:        w.schemaType.Name().String(),
+			TypeName:        w.schemaType.Name(),
 			MethodName:      "AsLink",
 			AppropriateKind: datamodel.KindSet_JustLink,
 			ActualKind:      w.Kind(),
@@ -481,7 +481,7 @@ func (w *_assembler) BeginMap(sizeHint int64) (datamodel.MapAssembler, error) {
 		}, nil
 	}
 	return nil, datamodel.ErrWrongKind{
-		TypeName:        w.schemaType.Name().String(),
+		TypeName:        w.schemaType.Name(),
 		MethodName:      "BeginMap",
 		AppropriateKind: datamodel.KindSet_JustMap,
 		ActualKind:      w.kind(),
@@ -499,7 +499,7 @@ func (w *_assembler) BeginList(sizeHint int64) (datamodel.ListAssembler, error) 
 		}, nil
 	}
 	return nil, datamodel.ErrWrongKind{
-		TypeName:        w.schemaType.Name().String(),
+		TypeName:        w.schemaType.Name(),
 		MethodName:      "BeginList",
 		AppropriateKind: datamodel.KindSet_JustList,
 		ActualKind:      w.kind(),
@@ -509,7 +509,7 @@ func (w *_assembler) BeginList(sizeHint int64) (datamodel.ListAssembler, error) 
 func (w *_assembler) AssignNull() error {
 	if !w.nullable {
 		return datamodel.ErrWrongKind{
-			TypeName:   w.schemaType.Name().String(),
+			TypeName:   w.schemaType.Name(),
 			MethodName: "AssignNull",
 			// TODO
 		}
@@ -526,7 +526,7 @@ func (w *_assembler) AssignNull() error {
 func (w *_assembler) AssignBool(b bool) error {
 	if w.kind() != datamodel.Kind_Bool {
 		return datamodel.ErrWrongKind{
-			TypeName:        w.schemaType.Name().String(),
+			TypeName:        w.schemaType.Name(),
 			MethodName:      "AssignBool",
 			AppropriateKind: datamodel.KindSet{datamodel.Kind_Bool},
 			ActualKind:      w.kind(),
@@ -544,7 +544,7 @@ func (w *_assembler) AssignBool(b bool) error {
 func (w *_assembler) AssignInt(i int64) error {
 	if w.kind() != datamodel.Kind_Int {
 		return datamodel.ErrWrongKind{
-			TypeName:        w.schemaType.Name().String(),
+			TypeName:        w.schemaType.Name(),
 			MethodName:      "AssignInt",
 			AppropriateKind: datamodel.KindSet{datamodel.Kind_Int},
 			ActualKind:      w.kind(),
@@ -562,7 +562,7 @@ func (w *_assembler) AssignInt(i int64) error {
 func (w *_assembler) AssignFloat(f float64) error {
 	if w.kind() != datamodel.Kind_Float {
 		return datamodel.ErrWrongKind{
-			TypeName:        w.schemaType.Name().String(),
+			TypeName:        w.schemaType.Name(),
 			MethodName:      "AssignFloat",
 			AppropriateKind: datamodel.KindSet{datamodel.Kind_Float},
 			ActualKind:      w.kind(),
@@ -580,7 +580,7 @@ func (w *_assembler) AssignFloat(f float64) error {
 func (w *_assembler) AssignString(s string) error {
 	if w.kind() != datamodel.Kind_String {
 		return datamodel.ErrWrongKind{
-			TypeName:        w.schemaType.Name().String(),
+			TypeName:        w.schemaType.Name(),
 			MethodName:      "AssignString",
 			AppropriateKind: datamodel.KindSet{datamodel.Kind_String},
 			ActualKind:      w.kind(),
@@ -598,7 +598,7 @@ func (w *_assembler) AssignString(s string) error {
 func (w *_assembler) AssignBytes(p []byte) error {
 	if w.kind() != datamodel.Kind_Bytes {
 		return datamodel.ErrWrongKind{
-			TypeName:        w.schemaType.Name().String(),
+			TypeName:        w.schemaType.Name(),
 			MethodName:      "AssignBytes",
 			AppropriateKind: datamodel.KindSet{datamodel.Kind_Bytes},
 			ActualKind:      w.kind(),
@@ -612,7 +612,7 @@ func (w *_assembler) AssignLink(link datamodel.Link) error {
 	newVal := reflect.ValueOf(link)
 	if !newVal.Type().AssignableTo(w.val.Type()) {
 		return datamodel.ErrWrongKind{
-			TypeName:        w.schemaType.Name().String(),
+			TypeName:        w.schemaType.Name(),
 			MethodName:      "AssignLink",
 			AppropriateKind: datamodel.KindSet_JustLink,
 			ActualKind:      w.kind(),
@@ -756,7 +756,7 @@ func (w *_structAssembler) AssembleValue() datamodel.NodeAssembler {
 	if field == nil {
 		panic(fmt.Sprintf("TODO: missing field %s in %s", name, w.schemaType.Name()))
 		// return nil, datamodel.ErrInvalidKey{
-		// 	TypeName: w.schemaType.Name().String(),
+		// 	TypeName: w.schemaType.Name(),
 		// 	Key:      basicnode.NewString(name),
 		// }
 	}
@@ -940,7 +940,7 @@ func (w *_unionAssembler) AssembleValue() datamodel.NodeAssembler {
 	var idx int
 	var mtyp schema.Type
 	for i, member := range w.schemaType.Members() {
-		if member.Name().String() == name {
+		if member.Name() == name {
 			idx = i
 			mtyp = member
 			break
@@ -949,7 +949,7 @@ func (w *_unionAssembler) AssembleValue() datamodel.NodeAssembler {
 	if mtyp == nil {
 		panic(fmt.Sprintf("TODO: missing member %s in %s", name, w.schemaType.Name()))
 		// return nil, datamodel.ErrInvalidKey{
-		// 	TypeName: w.schemaType.Name().String(),
+		// 	TypeName: w.schemaType.Name(),
 		// 	Key:      basicnode.NewString(name),
 		// }
 	}
@@ -1119,7 +1119,7 @@ func (w *_unionIterator) Next() (key, value datamodel.Node, _ error) {
 		schemaType: mtyp,
 		val:        mval,
 	}
-	key = basicnode.NewString(mtyp.Name().String())
+	key = basicnode.NewString(mtyp.Name())
 	return key, node, nil
 }
 
