@@ -182,7 +182,7 @@ type linkParam struct {
 }
 
 func (l linkParam) Assemble(na datamodel.NodeAssembler) {
-	if err := na.AssignLink(datamodel.Link(l.x)); err != nil {
+	if err := na.AssignLink(l.x); err != nil {
 		panic(err)
 	}
 }
@@ -196,7 +196,7 @@ type nodeParam struct {
 }
 
 func (n nodeParam) Assemble(na datamodel.NodeAssembler) {
-	if err := na.AssignNode(datamodel.Node(n.x)); err != nil {
+	if err := na.AssignNode(n.x); err != nil {
 		panic(err)
 	}
 }

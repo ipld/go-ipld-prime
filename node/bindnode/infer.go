@@ -99,7 +99,7 @@ func inferGoType(typ schema.Type) reflect.Type {
 		for i, ftyp := range members {
 			ftypGo := inferGoType(ftyp)
 			fieldsGo[i] = reflect.StructField{
-				Name: fieldNameFromSchema(string(ftyp.Name())),
+				Name: fieldNameFromSchema(ftyp.Name()),
 				Type: reflect.PtrTo(ftypGo),
 			}
 		}
@@ -158,7 +158,7 @@ func inferSchema(typ reflect.Type) schema.Type {
 				false,
 			)
 		}
-		name := schema.TypeName(typ.Name())
+		name := typ.Name()
 		if name == "" {
 			panic("TODO: anonymous composite types")
 		}
@@ -178,7 +178,7 @@ func inferSchema(typ reflect.Type) schema.Type {
 			nullable = true
 		}
 		etypSchema := inferSchema(typ.Elem())
-		name := schema.TypeName(typ.Name())
+		name := typ.Name()
 		if name == "" {
 			name = "List_" + etypSchema.Name()
 		}

@@ -4,9 +4,7 @@ import (
 	"github.com/ipld/go-ipld-prime/datamodel"
 )
 
-type TypeName string // = ast.TypeName
-
-func (tn TypeName) String() string { return string(tn) }
+type TypeName = string
 
 // typesystem.Type is an union interface; each of the `Type*` concrete types
 // in this package are one of its members.

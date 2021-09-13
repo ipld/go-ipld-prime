@@ -87,7 +87,7 @@ func inboundMappedKey(typ *schema.TypeStruct, stg schema.StructRepresentation_Ma
 
 func outboundMappedType(stg schema.UnionRepresentation_Keyed, key string) string {
 	// TODO: why doesn't stg just allow us to "get" by the key string?
-	typ := schema.SpawnBool(schema.TypeName(key))
+	typ := schema.SpawnBool(key)
 	mappedKey := stg.GetDiscriminant(typ)
 	return mappedKey
 }
@@ -98,7 +98,7 @@ func inboundMappedType(typ *schema.TypeUnion, stg schema.UnionRepresentation_Key
 		mappedKey := stg.GetDiscriminant(member)
 		if key == mappedKey {
 			// println(key, "rev-mapped to", field.Name())
-			return member.Name().String()
+			return member.Name()
 		}
 	}
 	// println(key, "had no mapping")
@@ -183,7 +183,7 @@ func (w *_nodeRepr) LookupBySegment(seg datamodel.PathSegment) (datamodel.Node, 
 		return w.LookupByIndex(idx)
 	}
 	return nil, datamodel.ErrWrongKind{
-		TypeName:        w.schemaType.Name().String(),
+		TypeName:        w.schemaType.Name(),
 		MethodName:      "LookupBySegment",
 		AppropriateKind: datamodel.KindSet_Recursive,
 		ActualKind:      w.Kind(),
@@ -206,7 +206,7 @@ func (w *_nodeRepr) LookupByNode(key datamodel.Node) (datamodel.Node, error) {
 		return w.LookupByIndex(i)
 	}
 	return nil, datamodel.ErrWrongKind{
-		TypeName:        w.schemaType.Name().String(),
+		TypeName:        w.schemaType.Name(),
 		MethodName:      "LookupByNode",
 		AppropriateKind: datamodel.KindSet_Recursive,
 		ActualKind:      w.Kind(),
@@ -328,7 +328,7 @@ func (w *_nodeRepr) AsBool() (bool, error) {
 		return (*_node)(w).AsBool()
 	}
 	return false, datamodel.ErrWrongKind{
-		TypeName:        w.schemaType.Name().String(),
+		TypeName:        w.schemaType.Name(),
 		MethodName:      "AsBool",
 		AppropriateKind: datamodel.KindSet_JustBool,
 		ActualKind:      w.Kind(),
@@ -340,7 +340,7 @@ func (w *_nodeRepr) AsInt() (int64, error) {
 		return (*_node)(w).AsInt()
 	}
 	return 0, datamodel.ErrWrongKind{
-		TypeName:        w.schemaType.Name().String(),
+		TypeName:        w.schemaType.Name(),
 		MethodName:      "AsInt",
 		AppropriateKind: datamodel.KindSet_JustInt,
 		ActualKind:      w.Kind(),
@@ -352,7 +352,7 @@ func (w *_nodeRepr) AsFloat() (float64, error) {
 		return (*_node)(w).AsFloat()
 	}
 	return 0, datamodel.ErrWrongKind{
-		TypeName:        w.schemaType.Name().String(),
+		TypeName:        w.schemaType.Name(),
 		MethodName:      "AsFloat",
 		AppropriateKind: datamodel.KindSet_JustFloat,
 		ActualKind:      w.Kind(),
@@ -414,7 +414,7 @@ func (w *_nodeRepr) AsBytes() ([]byte, error) {
 		return (*_node)(w).AsBytes()
 	}
 	return nil, datamodel.ErrWrongKind{
-		TypeName:        w.schemaType.Name().String(),
+		TypeName:        w.schemaType.Name(),
 		MethodName:      "AsBytes",
 		AppropriateKind: datamodel.KindSet_JustBytes,
 		ActualKind:      w.Kind(),
@@ -426,7 +426,7 @@ func (w *_nodeRepr) AsLink() (datamodel.Link, error) {
 		return (*_node)(w).AsLink()
 	}
 	return nil, datamodel.ErrWrongKind{
-		TypeName:        w.schemaType.Name().String(),
+		TypeName:        w.schemaType.Name(),
 		MethodName:      "AsLink",
 		AppropriateKind: datamodel.KindSet_JustLink,
 		ActualKind:      w.Kind(),
@@ -692,14 +692,14 @@ func (w *_structAssemblerRepr) AssembleKey() datamodel.NodeAssembler {
 		// TODO an error-carrying "NodeAssembler" is needed so that this can refrain from panicking.
 		// TODO perhaps the ErrorWrongKind type should also be extended to explicitly describe whether the method was applied on bare DM, type-level, or repr-level.
 		panic(&datamodel.ErrWrongKind{
-			TypeName:        string(w.schemaType.Name()) + ".Repr",
+			TypeName:        w.schemaType.Name() + ".Repr",
 			MethodName:      "AssembleKey",
 			AppropriateKind: datamodel.KindSet_JustMap,
 			ActualKind:      datamodel.Kind_String,
 		})
 	case schema.StructRepresentation_Tuple:
 		panic(&datamodel.ErrWrongKind{
-			TypeName:        string(w.schemaType.Name()) + ".Repr",
+			TypeName:        w.schemaType.Name() + ".Repr",
 			MethodName:      "AssembleKey",
 			AppropriateKind: datamodel.KindSet_JustMap,
 			ActualKind:      datamodel.Kind_List,

@@ -176,7 +176,7 @@ func (z *printBuf) doString(indentLevel int, printState uint8, n datamodel.Node)
 	if tn, ok := n.(schema.TypedNode); ok {
 		z.writeString(tn.Type().TypeKind().String())
 		z.writeString("<")
-		z.writeString(string(tn.Type().Name()))
+		z.writeString(tn.Type().Name())
 		z.writeString(">")
 		switch tn.Type().TypeKind() {
 		case schema.TypeKind_Invalid:
