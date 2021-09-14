@@ -139,7 +139,7 @@ func (prog Progress) walkAdv_iterateAll(n datamodel.Node, s selector.Selector, f
 				v, err = progNext.loadLink(v, n)
 				if err != nil {
 					if _, ok := err.(SkipMe); ok {
-						return nil
+						continue
 					}
 					return err
 				}
@@ -174,7 +174,7 @@ func (prog Progress) walkAdv_iterateSelective(n datamodel.Node, attn []datamodel
 				v, err = progNext.loadLink(v, n)
 				if err != nil {
 					if _, ok := err.(SkipMe); ok {
-						return nil
+						continue
 					}
 					return err
 				}
