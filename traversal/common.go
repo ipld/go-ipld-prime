@@ -34,6 +34,9 @@ func (prog *Progress) init() {
 		prog.Cfg = &Config{}
 	}
 	prog.Cfg.init()
+	if !prog.Cfg.LinkRevisit {
+		prog.SeenLinks = make(map[datamodel.Link]struct{})
+	}
 }
 
 // asPathSegment figures out how to coerce a node into a PathSegment.
