@@ -134,6 +134,12 @@ func (prog Progress) walkAdv_iterateAll(n datamodel.Node, s selector.Selector, f
 			progNext.Path = prog.Path.AppendSegment(ps)
 			if v.Kind() == datamodel.Kind_Link {
 				lnk, _ := v.AsLink()
+				if !prog.Cfg.LinkRevisit {
+					if _, seen := prog.SeenLinks[lnk]; seen {
+						continue
+					}
+					prog.SeenLinks[lnk] = struct{}{}
+				}
 				progNext.LastBlock.Path = progNext.Path
 				progNext.LastBlock.Link = lnk
 				v, err = progNext.loadLink(v, n)
@@ -169,6 +175,12 @@ func (prog Progress) walkAdv_iterateSelective(n datamodel.Node, attn []datamodel
 			progNext.Path = prog.Path.AppendSegment(ps)
 			if v.Kind() == datamodel.Kind_Link {
 				lnk, _ := v.AsLink()
+				if !prog.Cfg.LinkRevisit {
+					if _, seen := prog.SeenLinks[lnk]; seen {
+						continue
+					}
+					prog.SeenLinks[lnk] = struct{}{}
+				}
 				progNext.LastBlock.Path = progNext.Path
 				progNext.LastBlock.Link = lnk
 				v, err = progNext.loadLink(v, n)
