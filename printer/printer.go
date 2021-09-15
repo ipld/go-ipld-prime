@@ -216,7 +216,7 @@ func (z *printBuf) doString(indentLevel int, printState uint8, n datamodel.Node)
 				childState = printState_isCmplxValue
 			}
 			z.writeString("{")
-			if !oneline {
+			if !oneline && n.Length() > 0 {
 				z.writeString("\n")
 			}
 			for itr := n.MapIterator(); !itr.Done(); {
@@ -276,7 +276,13 @@ func (z *printBuf) doString(indentLevel int, printState uint8, n datamodel.Node)
 		if cmplxKeys {
 			childKeyState = printState_isCmplxKey
 		}
-		z.writeString("{\n")
+		z.writeString("{")
+		if n.Length() > 0 {
+			z.writeString("\n")
+		} else {
+			z.writeString("}")
+			return
+		}
 		for itr := n.MapIterator(); !itr.Done(); {
 			k, v, err := itr.Next()
 			if err != nil {
@@ -294,7 +300,13 @@ func (z *printBuf) doString(indentLevel int, printState uint8, n datamodel.Node)
 		z.doIndent(indentLevel)
 		z.writeString("}")
 	case datamodel.Kind_List:
-		z.writeString("{\n")
+		z.writeString("{")
+		if n.Length() > 0 {
+			z.writeString("\n")
+		} else {
+			z.writeString("}")
+			return
+		}
 		for itr := n.ListIterator(); !itr.Done(); {
 			idx, v, err := itr.Next()
 			if err != nil {
