@@ -98,6 +98,7 @@ func TestStopAtLink(t *testing.T) {
 			Cfg: &traversal.Config{
 				LinkSystem:                     lsys,
 				LinkTargetNodePrototypeChooser: basicnode.Chooser,
+				LinkRevisit:                    true,
 			},
 		}.WalkMatching(rootNode, s, func(prog traversal.Progress, n datamodel.Node) error {
 			// fmt.Println("Order", order, prog.Path.String())
@@ -224,6 +225,7 @@ func stopAtInChainTest(t *testing.T, chainNode datamodel.Node, stopLnk datamodel
 			Cfg: &traversal.Config{
 				LinkSystem:                     lsys,
 				LinkTargetNodePrototypeChooser: basicnode.Chooser,
+				LinkRevisit:                    true,
 			},
 		}.WalkMatching(chainNode, s, func(prog traversal.Progress, n datamodel.Node) error {
 			//fmt.Println("Order", order, prog.Path.String())
