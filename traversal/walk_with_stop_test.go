@@ -168,16 +168,46 @@ func mkChain() (datamodel.Node, []datamodel.Link) {
 func TestStopInChain(t *testing.T) {
 	chainNode, chainLnks := mkChain()
 	// Stay in head
-	stopAtInChainTest(t, chainNode, chainLnks[1], 2)
+	stopAtInChainTest(t, chainNode, chainLnks[1], []string{"", "plain"})
 	// Get head and following block
-	stopAtInChainTest(t, chainNode, chainLnks[2], 4)
+	stopAtInChainTest(t, chainNode, chainLnks[2], []string{"", "plain", "ch3", "ch3/linkedString"})
 	// One more
-	stopAtInChainTest(t, chainNode, chainLnks[3], 11)
+	stopAtInChainTest(t, chainNode, chainLnks[3], []string{
+		"",
+		"plain",
+		"ch3",
+		"ch3/linkedString",
+		"ch3/ch2",
+		"ch3/ch2/linkedMap",
+		"ch3/ch2/linkedMap/foo",
+		"ch3/ch2/linkedMap/bar",
+		"ch3/ch2/linkedMap/nested",
+		"ch3/ch2/linkedMap/nested/alink",
+		"ch3/ch2/linkedMap/nested/nonlink",
+	})
 	// Get the full chain
-	stopAtInChainTest(t, chainNode, nil, 17)
+	stopAtInChainTest(t, chainNode, nil, []string{
+		"",
+		"plain",
+		"ch3",
+		"ch3/linkedString",
+		"ch3/ch2",
+		"ch3/ch2/linkedMap",
+		"ch3/ch2/linkedMap/foo",
+		"ch3/ch2/linkedMap/bar",
+		"ch3/ch2/linkedMap/nested",
+		"ch3/ch2/linkedMap/nested/alink",
+		"ch3/ch2/linkedMap/nested/nonlink",
+		"ch3/ch2/ch1",
+		"ch3/ch2/ch1/linkedList",
+		"ch3/ch2/ch1/linkedList/0",
+		"ch3/ch2/ch1/linkedList/1",
+		"ch3/ch2/ch1/linkedList/2",
+		"ch3/ch2/ch1/linkedList/3",
+	})
 }
 
-func stopAtInChainTest(t *testing.T, chainNode datamodel.Node, stopLnk datamodel.Link, numSeen int) {
+func stopAtInChainTest(t *testing.T, chainNode datamodel.Node, stopLnk datamodel.Link, expectedPaths []string) {
 	ssb := builder.NewSelectorSpecBuilder(basicnode.Prototype__Any{})
 	t.Run(fmt.Sprintf("test ExploreRecursive stopAt in chain with stoplink: %s", stopLnk), func(t *testing.T) {
 		s, err := selector.CompileSelector(ExploreRecursiveWithStop(
@@ -197,44 +227,12 @@ func stopAtInChainTest(t *testing.T, chainNode datamodel.Node, stopLnk datamodel
 			},
 		}.WalkMatching(chainNode, s, func(prog traversal.Progress, n datamodel.Node) error {
 			//fmt.Println("Order", order, prog.Path.String())
-			switch order {
-			case 0:
-				// Root
-				Wish(t, prog.Path.String(), ShouldEqual, "")
-			case 1:
-				Wish(t, prog.Path.String(), ShouldEqual, "plain")
-				Wish(t, n, ShouldEqual, basicnode.NewString("olde string"))
-			case 2:
-				Wish(t, prog.Path.String(), ShouldEqual, "ch3")
-			case 3:
-				if numSeen > 4 {
-					Wish(t, prog.Path.String(), ShouldEqual, "ch3/ch2")
-				} else {
-					Wish(t, prog.Path.String(), ShouldEqual, "ch3/linkedString")
-				}
-			case 4:
-				if numSeen > 11 {
-					Wish(t, prog.Path.String(), ShouldEqual, "ch3/ch2/ch1")
-				} else {
-					Wish(t, prog.Path.String(), ShouldEqual, "ch3/ch2/linkedMap")
-				}
-			case 5:
-				if numSeen > 11 {
-					Wish(t, prog.Path.String(), ShouldEqual, "ch3/ch2/ch1/linkedList")
-				} else {
-					Wish(t, prog.Path.String(), ShouldEqual, "ch3/ch2/linkedMap/bar")
-				}
-			case 10:
-				if numSeen > 11 {
-					Wish(t, prog.Path.String(), ShouldEqual, "ch3/ch2/linkedMap")
-				} else {
-					Wish(t, prog.Path.String(), ShouldEqual, "ch3/linkedString")
-				}
-			}
+			Wish(t, order < len(expectedPaths), ShouldEqual, true)
+			Wish(t, prog.Path.String(), ShouldEqual, expectedPaths[order])
 			order++
 			return nil
 		})
 		Wish(t, err, ShouldEqual, nil)
-		Wish(t, order, ShouldEqual, numSeen)
+		Wish(t, order, ShouldEqual, len(expectedPaths))
 	})
 }
