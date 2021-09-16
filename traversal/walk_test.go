@@ -1,6 +1,9 @@
 package traversal_test
 
 import (
+	"io"
+	"log"
+	"strings"
 	"testing"
 
 	qt "github.com/frankban/quicktest"
@@ -9,11 +12,13 @@ import (
 	_ "github.com/ipld/go-ipld-prime/codec/dagjson"
 	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/fluent"
+	"github.com/ipld/go-ipld-prime/linking"
 	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
 	"github.com/ipld/go-ipld-prime/node/basicnode"
 	"github.com/ipld/go-ipld-prime/traversal"
 	"github.com/ipld/go-ipld-prime/traversal/selector"
 	"github.com/ipld/go-ipld-prime/traversal/selector/builder"
+	selectorparse "github.com/ipld/go-ipld-prime/traversal/selector/parse"
 )
 
 /* Remember, we've got the following fixtures in scope:
@@ -320,5 +325,127 @@ func TestWalkBudgets(t *testing.T) {
 		qt.Check(t, order, qt.Equals, 3)
 		qt.Assert(t, err, qt.Not(qt.Equals), nil)
 		qt.Check(t, err.Error(), qt.Equals, `traversal budget exceeded: budget for links reached zero while on path "3" (link: "baguqeeyexkjwnfy")`)
+	})
+}
+
+func TestWalkBlockLoadOrder(t *testing.T) {
+	// a more nested root that we can use to test SkipMe as well
+	newRootNode, newRootLink := encode(fluent.MustBuildList(basicnode.Prototype.List, 6, func(na fluent.ListAssembler) {
+		na.AssembleValue().AssignLink(rootNodeLnk)
+		na.AssembleValue().AssignLink(middleListNodeLnk)
+		na.AssembleValue().AssignLink(rootNodeLnk)
+		na.AssembleValue().AssignLink(middleListNodeLnk)
+		na.AssembleValue().AssignLink(rootNodeLnk)
+		na.AssembleValue().AssignLink(middleListNodeLnk)
+	}))
+
+	linkNames := make(map[datamodel.Link]string)
+	linkNames[newRootLink] = "newRootLink"
+	linkNames[rootNodeLnk] = "rootNodeLnk"
+	linkNames[leafAlphaLnk] = "leafAlphaLnk"
+	linkNames[middleMapNodeLnk] = "middleMapNodeLnk"
+	linkNames[leafAlphaLnk] = "leafAlphaLnk"
+	linkNames[middleListNodeLnk] = "middleListNodeLnk"
+	linkNames[leafAlphaLnk] = "leafAlphaLnk"
+	linkNames[leafBetaLnk] = "leafBetaLnk"
+	// the links that we expect from the root node, starting _at_ the root node itself
+	rootNodeExpectedLinks := []datamodel.Link{
+		rootNodeLnk,
+		leafAlphaLnk,
+		middleMapNodeLnk,
+		leafAlphaLnk,
+		middleListNodeLnk,
+		leafAlphaLnk,
+		leafAlphaLnk,
+		leafBetaLnk,
+		leafAlphaLnk,
+	}
+	// same thing but for middleListNode
+	middleListNodeLinks := []datamodel.Link{
+		middleListNodeLnk,
+		leafAlphaLnk,
+		leafAlphaLnk,
+		leafBetaLnk,
+		leafAlphaLnk,
+	}
+	// our newRootNode is a list that contains 3 consecutive links to rootNode
+	expectedAllBlocks := make([]datamodel.Link, 3*(len(rootNodeExpectedLinks)+len(middleListNodeLinks)))
+	for i := 0; i < 3; i++ {
+		copy(expectedAllBlocks[i*len(rootNodeExpectedLinks)+i*len(middleListNodeLinks):], rootNodeExpectedLinks[:])
+		copy(expectedAllBlocks[(i+1)*len(rootNodeExpectedLinks)+i*len(middleListNodeLinks):], middleListNodeLinks[:])
+	}
+
+	verifySelectorLoads := func(t *testing.T, expected []datamodel.Link, s selector.Selector, readFn func(lc linking.LinkContext, l datamodel.Link) (io.Reader, error)) {
+		var count int
+		lsys := cidlink.DefaultLinkSystem()
+		lsys.StorageReadOpener = func(lc linking.LinkContext, l datamodel.Link) (io.Reader, error) {
+			Wish(t, l.String(), ShouldEqual, expected[count].String())
+			log.Printf("%v (%v) %s<> %v (%v)\n", l, linkNames[l], strings.Repeat(" ", 17-len(linkNames[l])), expected[count], linkNames[expected[count]])
+			count++
+			return readFn(lc, l)
+		}
+		err := traversal.Progress{
+			Cfg: &traversal.Config{
+				LinkSystem:                     lsys,
+				LinkTargetNodePrototypeChooser: basicnode.Chooser,
+			},
+		}.WalkMatching(newRootNode, s, func(prog traversal.Progress, n datamodel.Node) error {
+			return nil
+		})
+		Wish(t, err, ShouldEqual, nil)
+		Wish(t, count, ShouldEqual, len(expected))
+	}
+
+	t.Run("CommonSelector_MatchAllRecursively", func(t *testing.T) {
+		s := selectorparse.CommonSelector_MatchAllRecursively
+		verifySelectorLoads(t, expectedAllBlocks, s, (&store).OpenRead)
+	})
+
+	t.Run("CommonSelector_ExploreAllRecursively", func(t *testing.T) {
+		s := selectorparse.CommonSelector_ExploreAllRecursively
+		verifySelectorLoads(t, expectedAllBlocks, s, (&store).OpenRead)
+	})
+
+	t.Run("constructed explore-all selector", func(t *testing.T) {
+		// used commonly in Filecoin and other places to "visit all blocks in stable order"
+		ssb := builder.NewSelectorSpecBuilder(basicnode.Prototype.Any)
+		s, err := selector.CompileSelector(ssb.ExploreRecursive(selector.RecursionLimitNone(),
+			ssb.ExploreAll(ssb.ExploreRecursiveEdge())).
+			Node())
+		Wish(t, err, ShouldEqual, nil)
+		verifySelectorLoads(t, expectedAllBlocks, s, (&store).OpenRead)
+	})
+
+	t.Run("explore-all with duplicate load skips", func(t *testing.T) {
+		// when we use SkipMe to skip loading of already visited blocks we expect
+		// to see the links show up in Loads but the lack of the links inside rootNode
+		// and middleListNode in this list beyond the first set of loads show that
+		// the block is not traversed when the SkipMe is received
+		expectedSkipMeBlocks := []datamodel.Link{
+			rootNodeLnk,
+			leafAlphaLnk,
+			middleMapNodeLnk,
+			leafAlphaLnk,
+			middleListNodeLnk,
+			leafAlphaLnk,
+			leafAlphaLnk,
+			leafBetaLnk,
+			leafAlphaLnk,
+			middleListNodeLnk,
+			rootNodeLnk,
+			middleListNodeLnk,
+			rootNodeLnk,
+			middleListNodeLnk,
+		}
+		s := selectorparse.CommonSelector_ExploreAllRecursively
+		visited := make(map[datamodel.Link]bool)
+		verifySelectorLoads(t, expectedSkipMeBlocks, s, func(lc linking.LinkContext, l datamodel.Link) (io.Reader, error) {
+			log.Printf("load %v [%v]\n", l, visited[l])
+			if visited[l] {
+				return nil, traversal.SkipMe{}
+			}
+			visited[l] = true
+			return (&store).OpenRead(lc, l)
+		})
 	})
 }
