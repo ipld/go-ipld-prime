@@ -21,7 +21,8 @@ type Condition struct {
 type ConditionMode string
 
 const (
-	ConditionMode_Link ConditionMode = "/"
+	ConditionMode_Link     ConditionMode = "/"
+	ConditionMode_HasField ConditionMode = "hasField"
 )
 
 // Match decides if a given datamodel.Node matches the condition.
@@ -45,6 +46,19 @@ func (c *Condition) Match(n datamodel.Node) bool {
 			return cidmatch.Equals(cidlnk.Cid)
 		}
 		return match.String() == lnk.String()
+	case ConditionMode_HasField:
+		if n.Kind() != datamodel.Kind_String {
+			return false
+		}
+		match, err := c.match.AsString()
+		if err != nil {
+			return false
+		}
+		field, err := n.AsString()
+		if err != nil {
+			return false
+		}
+		return match == field
 	default:
 		return false
 	}
@@ -68,6 +82,11 @@ func (pc ParseContext) ParseCondition(n datamodel.Node) (Condition, error) {
 			return Condition{}, fmt.Errorf("selector spec parse rejected: condition_link must be a link")
 		}
 		return Condition{mode: ConditionMode_Link, match: v}, nil
+	case ConditionMode_HasField:
+		if _, err := v.AsString(); err != nil {
+			return Condition{}, fmt.Errorf("selector spec parse rejected: condition_hasField must be a string")
+		}
+		return Condition{mode: ConditionMode_HasField, match: v}, nil
 	default:
 		return Condition{}, fmt.Errorf("selector spec parse rejected: %q is not a known member of the condition union", kstr)
 	}
