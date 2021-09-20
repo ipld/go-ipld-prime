@@ -193,7 +193,7 @@ func (prog Progress) loadLink(v datamodel.Node, parent datamodel.Node) (datamode
 	// Pick what in-memory format we will build.
 	np, err := prog.Cfg.LinkTargetNodePrototypeChooser(lnk, lnkCtx)
 	if err != nil {
-		return nil, fmt.Errorf("error traversing node at %q: could not load link %q: %s", prog.Path, lnk, err)
+		return nil, fmt.Errorf("error traversing node at %q: could not load link %q: %w", prog.Path, lnk, err)
 	}
 	// Load link!
 	n, err := prog.Cfg.LinkSystem.Load(lnkCtx, lnk, np)
@@ -201,7 +201,7 @@ func (prog Progress) loadLink(v datamodel.Node, parent datamodel.Node) (datamode
 		if _, ok := err.(SkipMe); ok {
 			return nil, err
 		}
-		return nil, fmt.Errorf("error traversing node at %q: could not load link %q: %s", prog.Path, lnk, err)
+		return nil, fmt.Errorf("error traversing node at %q: could not load link %q: %w", prog.Path, lnk, err)
 	}
 	return n, nil
 }
