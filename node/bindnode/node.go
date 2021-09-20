@@ -754,11 +754,13 @@ func (w *_structAssembler) AssembleValue() datamodel.NodeAssembler {
 	name := w.curKey.val.String()
 	field := w.schemaType.Field(name)
 	if field == nil {
-		panic(fmt.Sprintf("TODO: missing field %s in %s", name, w.schemaType.Name()))
-		// return nil, datamodel.ErrInvalidKey{
+		// TODO: should've been raised when the key was submitted (we have room to return errors there, but can only panic at this point in the game).
+		// TODO: should make well-typed errors for this.
+		panic(fmt.Sprintf("TODO: invalid key: %q is not a field in type %s", name, w.schemaType.Name()))
+		// panic(schema.ErrInvalidKey{
 		// 	TypeName: w.schemaType.Name(),
 		// 	Key:      basicnode.NewString(name),
-		// }
+		// })
 	}
 	ftyp, ok := w.val.Type().FieldByName(fieldNameFromSchema(name))
 	if !ok {

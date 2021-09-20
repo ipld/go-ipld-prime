@@ -540,7 +540,7 @@ func (g unionBuilderGenerator) emitMapAssemblerMethods(w io.Writer) {
 			ma.state = maState_midValue
 			switch ma.ca {
 			{{- range $i, $member := .Type.Members }}
-			case {{ $i }}:
+			case {{ add $i 1 }}:
 				{{- if (eq (dot.AdjCfg.UnionMemlayout dot.Type) "embedAll") }}
 				ma.ca{{ add $i 1 }}.w = &ma.w.x{{ add $i 1 }}
 				ma.ca{{ add $i 1 }}.m = &ma.cm
