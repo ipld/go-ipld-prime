@@ -86,7 +86,7 @@ func (pc ParseContext) ParseExploreUnion(n datamodel.Node) (Selector, error) {
 	for itr := n.ListIterator(); !itr.Done(); {
 		_, v, err := itr.Next()
 		if err != nil {
-			return nil, fmt.Errorf("error during selector spec parse: %s", err)
+			return nil, fmt.Errorf("error during selector spec parse: %w", err)
 		}
 		member, err := pc.ParseSelector(v)
 		if err != nil {

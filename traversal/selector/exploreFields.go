@@ -58,7 +58,7 @@ func (pc ParseContext) ParseExploreFields(n datamodel.Node) (Selector, error) {
 	for itr := fields.MapIterator(); !itr.Done(); {
 		kn, v, err := itr.Next()
 		if err != nil {
-			return nil, fmt.Errorf("error during selector spec parse: %s", err)
+			return nil, fmt.Errorf("error during selector spec parse: %w", err)
 		}
 
 		kstr, _ := kn.AsString()

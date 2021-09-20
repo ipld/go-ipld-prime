@@ -94,7 +94,7 @@ func (prog *Progress) get(n datamodel.Node, p datamodel.Path, trackProgress bool
 		case datamodel.Kind_Map:
 			next, err := n.LookupByString(seg.String())
 			if err != nil {
-				return nil, fmt.Errorf("error traversing segment %q on node at %q: %s", seg, p.Truncate(i), err)
+				return nil, fmt.Errorf("error traversing segment %q on node at %q: %w", seg, p.Truncate(i), err)
 			}
 			prev, n = n, next
 		case datamodel.Kind_List:
@@ -104,11 +104,11 @@ func (prog *Progress) get(n datamodel.Node, p datamodel.Path, trackProgress bool
 			}
 			next, err := n.LookupByIndex(intSeg)
 			if err != nil {
-				return nil, fmt.Errorf("error traversing segment %q on node at %q: %s", seg, p.Truncate(i), err)
+				return nil, fmt.Errorf("error traversing segment %q on node at %q: %w", seg, p.Truncate(i), err)
 			}
 			prev, n = n, next
 		default:
-			return nil, fmt.Errorf("cannot traverse node at %q: %s", p.Truncate(i), fmt.Errorf("cannot traverse terminals"))
+			return nil, fmt.Errorf("cannot traverse node at %q: %w", p.Truncate(i), fmt.Errorf("cannot traverse terminals"))
 		}
 		// Dereference any links.
 		for n.Kind() == datamodel.Kind_Link {
@@ -122,13 +122,13 @@ func (prog *Progress) get(n datamodel.Node, p datamodel.Path, trackProgress bool
 			// Pick what in-memory format we will build.
 			np, err := prog.Cfg.LinkTargetNodePrototypeChooser(lnk, lnkCtx)
 			if err != nil {
-				return nil, fmt.Errorf("error traversing node at %q: could not load link %q: %s", p.Truncate(i+1), lnk, err)
+				return nil, fmt.Errorf("error traversing node at %q: could not load link %q: %w", p.Truncate(i+1), lnk, err)
 			}
 			// Load link!
 			prev = n
 			n, err = prog.Cfg.LinkSystem.Load(lnkCtx, lnk, np)
 			if err != nil {
-				return nil, fmt.Errorf("error traversing node at %q: could not load link %q: %s", p.Truncate(i+1), lnk, err)
+				return nil, fmt.Errorf("error traversing node at %q: could not load link %q: %w", p.Truncate(i+1), lnk, err)
 			}
 			if trackProgress {
 				prog.LastBlock.Path = p.Truncate(i + 1)
@@ -329,7 +329,7 @@ func (prog Progress) focusedTransform(n datamodel.Node, na datamodel.NodeAssembl
 		// Pick what in-memory format we will build.
 		np, err := prog.Cfg.LinkTargetNodePrototypeChooser(lnk, lnkCtx)
 		if err != nil {
-			return fmt.Errorf("transform: error traversing node at %q: could not load link %q: %s", prog.Path, lnk, err)
+			return fmt.Errorf("transform: error traversing node at %q: could not load link %q: %w", prog.Path, lnk, err)
 		}
 		// Load link!
 		//  We'll use LinkSystem.Fill here rather than Load,
@@ -337,7 +337,7 @@ func (prog Progress) focusedTransform(n datamodel.Node, na datamodel.NodeAssembl
 		nb := np.NewBuilder()
 		err = prog.Cfg.LinkSystem.Fill(lnkCtx, lnk, nb)
 		if err != nil {
-			return fmt.Errorf("transform: error traversing node at %q: could not load link %q: %s", prog.Path, lnk, err)
+			return fmt.Errorf("transform: error traversing node at %q: could not load link %q: %w", prog.Path, lnk, err)
 		}
 		prog.LastBlock.Path = prog.Path
 		prog.LastBlock.Link = lnk
@@ -354,7 +354,7 @@ func (prog Progress) focusedTransform(n datamodel.Node, na datamodel.NodeAssembl
 		n = nb.Build()
 		lnk, err = prog.Cfg.LinkSystem.Store(lnkCtx, lnk.Prototype(), n)
 		if err != nil {
-			return fmt.Errorf("transform: error storing transformed node at %q: %s", prog.Path, err)
+			return fmt.Errorf("transform: error storing transformed node at %q: %w", prog.Path, err)
 		}
 		return na.AssignLink(lnk)
 	default:
