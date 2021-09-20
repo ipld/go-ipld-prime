@@ -56,7 +56,7 @@ func ParseAndCompileJSONSelector(jsonStr string) (selector.Selector, error) {
 	}
 }
 
-func must(s selector.Selector, e error) selector.Selector {
+func must(s datamodel.Node, e error) datamodel.Node {
 	if e != nil {
 		panic(e)
 	}
@@ -67,13 +67,13 @@ func must(s selector.Selector, e error) selector.Selector {
 // It doesn't walk anywhere at all.
 //
 // This is not a very useful selector, but is an example of how selectors can be written.
-var CommonSelector_MatchPoint = must(ParseAndCompileJSONSelector(`{".":{}}`))
+var CommonSelector_MatchPoint = must(ParseJSONSelector(`{".":{}}`))
 
 // CommonSelector_MatchChildren will examine the node it is applied to,
 // walk to each of its children, and match the children.
 // It does not recurse.
 // Note that the root node itself is visited (necessarily!) but it is not "matched".
-var CommonSelector_MatchChildren = must(ParseAndCompileJSONSelector(`{"a":{">":{".":{}}}}`))
+var CommonSelector_MatchChildren = must(ParseJSONSelector(`{"a":{">":{".":{}}}}`))
 
 // CommonSelector_ExploreAllRecursively is a selector that walks over a graph of data,
 // recursively, without limit (!) until it reaches every part of the graph.
@@ -85,10 +85,10 @@ var CommonSelector_MatchChildren = must(ParseAndCompileJSONSelector(`{"a":{">":{
 // That means if you're intercepting block loads (e.g. you're looking at calls to LinkSystem.StorageReadOpener), you'll see them;
 // and if you're using `traversal.AdvVisitFn`, you'll still hear about nodes visited during the exploration;
 // however, if you're using just `traversal.VisitFn`, nothing is considered "matched", so that callback will never be called.
-var CommonSelector_ExploreAllRecursively = must(ParseAndCompileJSONSelector(`{"R":{"l":{"none":{}},":>":{"a":{">":{"@":{}}}}}}`))
+var CommonSelector_ExploreAllRecursively = must(ParseJSONSelector(`{"R":{"l":{"none":{}},":>":{"a":{">":{"@":{}}}}}}`))
 
 // CommonSelector_MatchAllRecursively is like CommonSelector_ExploreAllRecursively, but also matching everything it touches.
 // The first thing inside the recursion is an ExploreUnion clause (which means the selection continues with multiple logical paths);
 // the first thing inside that union clause is a Matcher clause;
 // the second thing inside that union is the ExploreAll clause, which gets us deeper, and then that contains the ExploreRecursiveEdge.
-var CommonSelector_MatchAllRecursively = must(ParseAndCompileJSONSelector(`{"R":{"l":{"none":{}},":>":{"|":[{".":{}},{"a":{">":{"@":{}}}}]}}}`))
+var CommonSelector_MatchAllRecursively = must(ParseJSONSelector(`{"R":{"l":{"none":{}},":>":{"|":[{".":{}},{"a":{">":{"@":{}}}}]}}}`))
