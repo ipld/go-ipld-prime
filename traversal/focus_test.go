@@ -2,20 +2,16 @@ package traversal_test
 
 import (
 	"fmt"
-	"io"
 	"testing"
 
 	. "github.com/warpfork/go-wish"
 
 	"github.com/ipfs/go-cid"
-	"github.com/ipld/go-ipld-prime/codec"
-	"github.com/ipld/go-ipld-prime/codec/dagjson"
 	_ "github.com/ipld/go-ipld-prime/codec/dagjson"
 	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/fluent"
 	"github.com/ipld/go-ipld-prime/linking"
 	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
-	"github.com/ipld/go-ipld-prime/multicodec"
 	"github.com/ipld/go-ipld-prime/must"
 	"github.com/ipld/go-ipld-prime/node/basicnode"
 	"github.com/ipld/go-ipld-prime/storage"
@@ -27,11 +23,11 @@ import (
 
 var store = storage.Memory{}
 var (
-	// bagaibqabcmclve3gs4
+	// baguqeeyexkjwnfy
 	leafAlpha, leafAlphaLnk = encode(basicnode.NewString("alpha"))
-	// bagaibqabcmcikrpz5q
+	// baguqeeyeqvc7t3a
 	leafBeta, leafBetaLnk = encode(basicnode.NewString("beta"))
-	// bagaibqabcmcaymeikm
+	// baguqeeyezhlahvq
 	middleMapNode, middleMapNodeLnk = encode(fluent.MustBuildMap(basicnode.Prototype.Map, 3, func(na fluent.MapAssembler) {
 		na.AssembleEntry("foo").AssignBool(true)
 		na.AssembleEntry("bar").AssignBool(false)
@@ -40,14 +36,19 @@ var (
 			na.AssembleEntry("nonlink").AssignString("zoo")
 		})
 	}))
-	// bagaibqabcmcdgcuooe
+	// baguqeeyehfkkfwa
 	middleListNode, middleListNodeLnk = encode(fluent.MustBuildList(basicnode.Prototype.List, 4, func(na fluent.ListAssembler) {
 		na.AssembleValue().AssignLink(leafAlphaLnk)
 		na.AssembleValue().AssignLink(leafAlphaLnk)
 		na.AssembleValue().AssignLink(leafBetaLnk)
 		na.AssembleValue().AssignLink(leafAlphaLnk)
 	}))
-	// bagaibqabcmcbiztlhi
+	// note that using `rootNode` directly will have a different field ordering than
+	// the encoded form if you were to load `rootNodeLnk` due to dag-json field
+	// reordering on encode, beware the difference for traversal order between
+	// created, in-memory nodes and those that have passed through a codec with
+	// field ordering rules
+	// baguqeeyeie4ajfy
 	rootNode, rootNodeLnk = encode(fluent.MustBuildMap(basicnode.Prototype.Map, 4, func(na fluent.MapAssembler) {
 		na.AssembleEntry("plain").AssignString("olde string")
 		na.AssembleEntry("linkedString").AssignLink(leafAlphaLnk)
@@ -56,40 +57,24 @@ var (
 	}))
 )
 
-func UnorderedDagJsonEncode(n datamodel.Node, w io.Writer) error {
-	return dagjson.EncodeOptions{
-		EncodeLinks: true,
-		EncodeBytes: true,
-		MapSortMode: codec.MapSortMode_None,
-	}.Encode(n, w)
-}
-
 // encode hardcodes some encoding choices for ease of use in fixture generation;
 // just gimme a link and stuff the bytes in a map.
 // (also return the node again for convenient assignment.)
 func encode(n datamodel.Node) (datamodel.Node, datamodel.Link) {
-	multicodec.RegisterEncoder(0x300000, UnorderedDagJsonEncode)
-	multicodec.RegisterDecoder(0x300000, dagjson.Decode)
-
 	lp := cidlink.LinkPrototype{Prefix: cid.Prefix{
 		Version:  1,
-		Codec:    0x300000,
+		Codec:    0x0129,
 		MhType:   0x13,
 		MhLength: 4,
 	}}
 	lsys := cidlink.DefaultLinkSystem()
 	lsys.StorageWriteOpener = (&store).OpenWrite
-	lsys.StorageReadOpener = (&store).OpenRead
 
 	lnk, err := lsys.Store(linking.LinkContext{}, lp, n)
 	if err != nil {
 		panic(err)
 	}
-	loaded, err := lsys.Load(linking.LinkContext{}, lnk, basicnode.Prototype.Any)
-	if err != nil {
-		panic(err)
-	}
-	return loaded, lnk
+	return n, lnk
 }
 
 // covers Focus used on one already-loaded Node; no link-loading exercised.
@@ -344,7 +329,7 @@ func TestFocusedTransformWithLinks(t *testing.T) {
 			Wish(t, progress.Path.String(), ShouldEqual, "linkedMap/nested/nonlink")
 			Wish(t, must.String(prev), ShouldEqual, "zoo")
 			Wish(t, progress.LastBlock.Path.String(), ShouldEqual, "linkedMap")
-			Wish(t, progress.LastBlock.Link.String(), ShouldEqual, "bagaibqabcmcaymeikm")
+			Wish(t, progress.LastBlock.Link.String(), ShouldEqual, "baguqeeyezhlahvq")
 			nb := prev.Prototype().NewBuilder()
 			nb.AssignString("new string!")
 			return nb.Build(), nil

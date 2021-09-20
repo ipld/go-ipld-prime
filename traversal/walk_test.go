@@ -1,6 +1,7 @@
 package traversal_test
 
 import (
+	"fmt"
 	"io"
 	"log"
 	"strings"
@@ -23,8 +24,11 @@ import (
 
 /* Remember, we've got the following fixtures in scope:
 var (
-	leafAlpha, leafAlphaLnk         = encode(basicnode.NewString("alpha"))
-	leafBeta, leafBetaLnk           = encode(basicnode.NewString("beta"))
+	// baguqeeyexkjwnfy
+	leafAlpha, leafAlphaLnk = encode(basicnode.NewString("alpha"))
+	// baguqeeyeqvc7t3a
+	leafBeta, leafBetaLnk = encode(basicnode.NewString("beta"))
+	// baguqeeyezhlahvq
 	middleMapNode, middleMapNodeLnk = encode(fluent.MustBuildMap(basicnode.Prototype.Map, 3, func(na fluent.MapAssembler) {
 		na.AssembleEntry("foo").AssignBool(true)
 		na.AssembleEntry("bar").AssignBool(false)
@@ -33,19 +37,20 @@ var (
 			na.AssembleEntry("nonlink").AssignString("zoo")
 		})
 	}))
+	// baguqeeyehfkkfwa
 	middleListNode, middleListNodeLnk = encode(fluent.MustBuildList(basicnode.Prototype.List, 4, func(na fluent.ListAssembler) {
 		na.AssembleValue().AssignLink(leafAlphaLnk)
 		na.AssembleValue().AssignLink(leafAlphaLnk)
 		na.AssembleValue().AssignLink(leafBetaLnk)
 		na.AssembleValue().AssignLink(leafAlphaLnk)
 	}))
+	// baguqeeyeie4ajfy
 	rootNode, rootNodeLnk = encode(fluent.MustBuildMap(basicnode.Prototype.Map, 4, func(na fluent.MapAssembler) {
 		na.AssembleEntry("plain").AssignString("olde string")
 		na.AssembleEntry("linkedString").AssignLink(leafAlphaLnk)
 		na.AssembleEntry("linkedMap").AssignLink(middleMapNodeLnk)
 		na.AssembleEntry("linkedList").AssignLink(middleListNodeLnk)
-	}))
-)
+	})))
 */
 
 // covers traverse using a variety of selectors.
@@ -330,6 +335,8 @@ func TestWalkBudgets(t *testing.T) {
 
 func TestWalkBlockLoadOrder(t *testing.T) {
 	// a more nested root that we can use to test SkipMe as well
+	// note that in using `rootNodeLnk` here rather than `rootNode` we're using the
+	// dag-json round-trip version which will have different field ordering
 	newRootNode, newRootLink := encode(fluent.MustBuildList(basicnode.Prototype.List, 6, func(na fluent.ListAssembler) {
 		na.AssembleValue().AssignLink(rootNodeLnk)
 		na.AssembleValue().AssignLink(middleListNodeLnk)
@@ -348,16 +355,19 @@ func TestWalkBlockLoadOrder(t *testing.T) {
 	linkNames[middleListNodeLnk] = "middleListNodeLnk"
 	linkNames[leafAlphaLnk] = "leafAlphaLnk"
 	linkNames[leafBetaLnk] = "leafBetaLnk"
+	for v, n := range linkNames {
+		fmt.Printf("n:%v:%v\n", n, v)
+	}
 	// the links that we expect from the root node, starting _at_ the root node itself
 	rootNodeExpectedLinks := []datamodel.Link{
 		rootNodeLnk,
-		leafAlphaLnk,
-		middleMapNodeLnk,
-		leafAlphaLnk,
 		middleListNodeLnk,
 		leafAlphaLnk,
 		leafAlphaLnk,
 		leafBetaLnk,
+		leafAlphaLnk,
+		middleMapNodeLnk,
+		leafAlphaLnk,
 		leafAlphaLnk,
 	}
 	// same thing but for middleListNode
@@ -423,13 +433,13 @@ func TestWalkBlockLoadOrder(t *testing.T) {
 		// the block is not traversed when the SkipMe is received
 		expectedSkipMeBlocks := []datamodel.Link{
 			rootNodeLnk,
-			leafAlphaLnk,
-			middleMapNodeLnk,
-			leafAlphaLnk,
 			middleListNodeLnk,
 			leafAlphaLnk,
 			leafAlphaLnk,
 			leafBetaLnk,
+			leafAlphaLnk,
+			middleMapNodeLnk,
+			leafAlphaLnk,
 			leafAlphaLnk,
 			middleListNodeLnk,
 			rootNodeLnk,
