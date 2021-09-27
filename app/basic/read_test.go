@@ -18,7 +18,7 @@ func TestRead(t *testing.T) {
 	os.MkdirAll("/tmp/ipld-test/bin/", 0755)
 	exec.Command("go", "build", "-o", "/tmp/ipld-test/bin/ipld", "../cmd/ipld/ipld.go").Run()
 
-	filename := "./read.md"
+	filename := "../docs/read.md"
 	doc, err := testmark.ReadFile(filename)
 	if err != nil {
 		t.Fatalf("spec file parse failed?!: %s", err)
