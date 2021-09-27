@@ -1,8 +1,20 @@
 package basic
 
 import (
+	"bufio"
 	"fmt"
+	"io"
+	"os"
+	"strings"
 
+	"github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/codec"
+	"github.com/ipld/go-ipld-prime/codec/dagjson"
+	"github.com/ipld/go-ipld-prime/datamodel"
+	"github.com/ipld/go-ipld-prime/node/basicnode"
+	"github.com/ipld/go-ipld-prime/printer"
+	"github.com/ipld/go-ipld-prime/schema"
+	"github.com/ipld/go-ipld-prime/traversal"
 	"github.com/urfave/cli/v2"
 )
 
@@ -60,9 +72,125 @@ var Cmd_Read = &cli.Command{
 			Usage:       `Defines what format the output should use.  Valid arguments are "debug", "raw", "html", or the word "codec:" followed by a multicodec name, or "codec:0x" followed by a multicodec indicator number in hexidecimal.`,
 			DefaultText: "debug",
 		},
+		&cli.StringFlag{
+			Name:  "input",
+			Usage: `Defines what format the input should be expected to be in.  Only relevant in the input is from a file or stdin; if the data source is a CID, that already implies a codec.  Valid arguments must start with "codec:" followed by a multicodec name, or "codec:0x" followed by a multicodec indicator number in hexidecimal.`,
+		},
 		// TODO more
 	},
 	Action: func(args *cli.Context) error {
-		return fmt.Errorf("not yet implemented")
+		// Parse positional args.
+		var sourceArg string
+		var pathArg string
+		switch args.Args().Len() {
+		case 2:
+			pathArg = args.Args().Get(1)
+			fallthrough
+		case 1:
+			sourceArg = args.Args().Get(0)
+		default:
+			fmt.Errorf("read command needs one or two positional arguments")
+		}
+
+		// Let's get some data!
+		var reader *bufio.Reader
+		var link datamodel.Link
+		switch {
+		case sourceArg == "-": // stdin
+			reader = bufio.NewReader(os.Stdin) // FIXME does this cli package not have a way to attach a stream so I don't have to use a global for this?
+		case looksPathish(sourceArg): // looks like a filename
+			panic("todo")
+		default: // hope this is a CID
+			panic("todo")
+		}
+
+		// Determine the input codec.
+		//  This can involve peeking at the bytes, if there's no explicit statements.
+		// The dominance is:
+		//  1. Listen to the flag, if there is one.
+		//  2. Listen to the CID, if that was the data source.
+		//  3. Peek and guess as a last resort.
+		//  4. If we can't guess usefully, give up and error.
+		var decoder codec.Decoder
+		switch {
+		case args.IsSet("input"):
+			panic("todo")
+		case link != nil:
+			panic("todo")
+		default:
+			peeked, err := reader.Peek(1)
+			if err != nil {
+				return err
+			}
+			switch peeked[0] {
+			case '{': // it's probably json.  we'll assume dag-json.
+				decoder = dagjson.Decode
+			default:
+				return fmt.Errorf("no input codec specified by args, and gave up trying to guess one from the content")
+			}
+		}
+
+		// Was there a schema?  Load that, compile it, and get a NodePrototype from that.
+		// Otherwise?  Basicnode will do.
+		np := basicnode.Prototype.Any
+
+		// Was there an ADL hint?  Haven't implemented that yet,
+		//  but we'd probably at least parse it here.
+
+		// Figure out the output format too.
+		//  We don't need this yet, but it's good practice to at make sure all the args are sane and we know what to do with them before starting real work.
+		var encoder codec.Encoder
+		switch args.String("output") {
+		case "", "debug":
+			encoder = func(n datamodel.Node, wr io.Writer) error {
+				printer.Fprint(wr, n)
+				return nil
+			}
+		case "raw":
+		case "html":
+		default:
+			switch {
+			case strings.HasPrefix(args.String("output"), "codec:0x"):
+				panic("todo")
+			case strings.HasPrefix(args.String("output"), "codec:"):
+				panic("todo")
+			default:
+				return fmt.Errorf("output argument format not recognized")
+			}
+		}
+
+		// Finally, we have the codec, the input stream, and the NodePrototype.
+		// And all the other args-parsing we'll need by the end is done too.
+		// Let's go!
+		n, err := ipld.DecodeStreamingUsingPrototype(reader, decoder, np)
+		if err != nil {
+			return err
+		}
+
+		// Pathing time!
+		//  Drop back down to representation level first, too, if we had types, and also the flag requesting representation-level pathing.
+		if tn, ok := n.(schema.TypedNode); ok && args.String("path-mode") == "representation" {
+			n = tn.Representation()
+		}
+		n, err = traversal.Get(n, datamodel.ParsePath(pathArg))
+		if err != nil {
+			return err
+		}
+
+		// TODO: can we... actually readily switch back up to type-view after pathing at repr level?  I feel like that should be possible (at least in some cases; not all).
+
+		// Finally: print back out whatever we've read (and possibly transformed, and pathed to).
+		err = ipld.EncodeStreaming(args.App.Writer, n, encoder)
+
+		// And push one last trailing linebreak out, because that's considered a normative ending thing in most CLI composition.
+		args.App.Writer.Write([]byte{'\n'})
+
+		return err
 	},
+}
+
+func looksPathish(x string) bool {
+	return strings.HasPrefix(x, "./") ||
+		strings.HasPrefix(x, "../") ||
+		strings.HasPrefix(x, "/")
 }

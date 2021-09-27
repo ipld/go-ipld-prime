@@ -66,6 +66,7 @@ CATEGORY:
 
 OPTIONS:
    --output value  Defines what format the output should use.  Valid arguments are "debug", "raw", "html", or the word "codec:" followed by a multicodec name, or "codec:0x" followed by a multicodec indicator number in hexidecimal. (default: debug)
+   --input value   Defines what format the input should be expected to be in.  Only relevant in the input is from a file or stdin; if the data source is a CID, that already implies a codec.  Valid arguments must start with "codec:" followed by a multicodec name, or "codec:0x" followed by a multicodec indicator number in hexidecimal.
    --help, -h      show help (default: false)
    
 ```
@@ -79,12 +80,13 @@ Let's start with a very simple example of using the `ipld read` command:
 piping some data into the command, and getting the debug representation of the same data printed back out:
 
 [testmark]:# (hello-read/script)
-```
-# TODO: this is not exercised yet
-echo '{}' | ipld read - --input-codec=json
+```bash
+echo '{"hello": "world"}' | ipld read -
 ```
 
 [testmark]:# (hello-read/output)
 ```text
-map{}
+map{
+	string{"hello"}: string{"world"}
+}
 ```
