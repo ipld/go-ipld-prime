@@ -84,9 +84,32 @@ piping some data into the command, and getting the debug representation of the s
 echo '{"hello": "world"}' | ipld read -
 ```
 
+The dash ("`-`") argument here meant "read from stdin".
+
+What's printed out is the same data, in a debug representation:
+
 [testmark]:# (hello-read/output)
 ```text
 map{
 	string{"hello"}: string{"world"}
 }
+```
+
+### Pathing
+
+We can also "path" through data -- stepping through a structure and looking at only a point that interests us.
+
+This is done with a second argument:
+
+[testmark]:# (hello-path/script)
+```bash
+echo '{"hello": {"pathing": "world"}}' | ipld read - hello/pathing
+```
+
+As you probably expected: asking the `ipld read` command to step through the "hello" and "pathing" keys in that object
+reached the value (the string `"world"`):
+
+[testmark]:# (hello-path/output)
+```text
+string{"world"}
 ```
