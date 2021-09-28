@@ -87,6 +87,13 @@ func (prog *Progress) get(n datamodel.Node, p datamodel.Path, trackProgress bool
 	segments := p.Segments()
 	var prev datamodel.Node // for LinkContext
 	for i, seg := range segments {
+		// Check the budget!
+		if prog.Budget != nil {
+			prog.Budget.NodeBudget--
+			if prog.Budget.NodeBudget <= 0 {
+				return nil, fmt.Errorf("traversal budget for nodes visited exceeded")
+			}
+		}
 		// Traverse the segment.
 		switch n.Kind() {
 		case datamodel.Kind_Invalid:
@@ -112,6 +119,14 @@ func (prog *Progress) get(n datamodel.Node, p datamodel.Path, trackProgress bool
 		}
 		// Dereference any links.
 		for n.Kind() == datamodel.Kind_Link {
+			// Check the budget!
+			if prog.Budget != nil {
+				prog.Budget.LinkBudget--
+				if prog.Budget.LinkBudget <= 0 {
+					return nil, fmt.Errorf("traversal budget for links exceeded")
+				}
+			}
+			// Put together the context info we'll offer to the loader and prototypeChooser.
 			lnk, _ := n.AsLink()
 			lnkCtx := linking.LinkContext{
 				Ctx:        prog.Cfg.Ctx,
@@ -201,6 +216,13 @@ func (prog Progress) focusedTransform(n datamodel.Node, na datamodel.NodeAssembl
 		return na.AssignNode(n2)
 	}
 	seg, p2 := p.Shift()
+	// Check the budget!
+	if prog.Budget != nil {
+		prog.Budget.NodeBudget--
+		if prog.Budget.NodeBudget <= 0 {
+			return fmt.Errorf("traversal budget for nodes visited exceeded")
+		}
+	}
 	// Special branch for if we've entered createParent mode in an earlier step.
 	//  This needs slightly different logic because there's no prior node to reference
 	//   (and we wouldn't want to waste time creating a dummy one).
@@ -319,6 +341,14 @@ func (prog Progress) focusedTransform(n datamodel.Node, na datamodel.NodeAssembl
 		}
 		return la.Finish()
 	case datamodel.Kind_Link:
+		// Check the budget!
+		if prog.Budget != nil {
+			prog.Budget.LinkBudget--
+			if prog.Budget.LinkBudget <= 0 {
+				return fmt.Errorf("traversal budget for links exceeded")
+			}
+		}
+		// Put together the context info we'll offer to the loader and prototypeChooser.
 		lnkCtx := linking.LinkContext{
 			Ctx:        prog.Cfg.Ctx,
 			LinkPath:   prog.Path,

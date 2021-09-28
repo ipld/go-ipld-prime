@@ -86,6 +86,14 @@ func (prog Progress) WalkAdv(n datamodel.Node, s selector.Selector, fn AdvVisitF
 }
 
 func (prog Progress) walkAdv(n datamodel.Node, s selector.Selector, fn AdvVisitFn) error {
+	// Check the budget!
+	if prog.Budget != nil {
+		prog.Budget.NodeBudget--
+		if prog.Budget.NodeBudget <= 0 {
+			return fmt.Errorf("traversal budget for nodes visited exceeded")
+		}
+	}
+	// Decide if this node is matched -- do callbacks as appropriate.
 	if s.Decide(n) {
 		if err := fn(prog, n, VisitReason_SelectionMatch); err != nil {
 			return err
@@ -95,12 +103,14 @@ func (prog Progress) walkAdv(n datamodel.Node, s selector.Selector, fn AdvVisitF
 			return err
 		}
 	}
+	// If we're handling scalars (e.g. not maps and lists) we can return now.
 	nk := n.Kind()
 	switch nk {
 	case datamodel.Kind_Map, datamodel.Kind_List: // continue
 	default:
 		return nil
 	}
+	// For maps and lists: recurse (in one of two ways, depending on if the selector also states specific interests).
 	attn := s.Interests()
 	if attn == nil {
 		return prog.walkAdv_iterateAll(n, s, fn)
@@ -180,6 +190,14 @@ func (prog Progress) walkAdv_iterateSelective(n datamodel.Node, attn []datamodel
 }
 
 func (prog Progress) loadLink(v datamodel.Node, parent datamodel.Node) (datamodel.Node, error) {
+	// Check the budget!
+	if prog.Budget != nil {
+		prog.Budget.LinkBudget--
+		if prog.Budget.LinkBudget <= 0 {
+			return nil, fmt.Errorf("traversal budget for links exceeded")
+		}
+	}
+	// Put together the context info we'll offer to the loader and prototypeChooser.
 	lnk, err := v.AsLink()
 	if err != nil {
 		return nil, err
