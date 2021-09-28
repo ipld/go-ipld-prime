@@ -2,6 +2,7 @@ package traversal
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/linking"
@@ -79,4 +80,18 @@ type SkipMe struct{}
 
 func (SkipMe) Error() string {
 	return "skip"
+}
+
+type ErrBudgetExceeded struct {
+	BudgetKind string // "node"|"link"
+	Path       datamodel.Path
+	Link       datamodel.Link // only present if BudgetKind=="link"
+}
+
+func (e *ErrBudgetExceeded) Error() string {
+	msg := fmt.Sprintf("traversal budget exceeded: budget for %ss reached zero as we reached path %q", e.BudgetKind, e.Path)
+	if e.Link != nil {
+		msg += fmt.Sprintf(" (link: %q)", e.Link)
+	}
+	return msg
 }

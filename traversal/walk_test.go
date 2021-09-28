@@ -3,6 +3,7 @@ package traversal_test
 import (
 	"testing"
 
+	qt "github.com/frankban/quicktest"
 	. "github.com/warpfork/go-wish"
 
 	_ "github.com/ipld/go-ipld-prime/codec/dagjson"
@@ -255,5 +256,69 @@ func TestWalkMatching(t *testing.T) {
 		})
 		Wish(t, err, ShouldEqual, nil)
 		Wish(t, order, ShouldEqual, 7)
+	})
+}
+
+func TestWalkBudgets(t *testing.T) {
+	ssb := builder.NewSelectorSpecBuilder(basicnode.Prototype.Any)
+	t.Run("node-budget-halts", func(t *testing.T) {
+		ss := ssb.ExploreFields(func(efsb builder.ExploreFieldsSpecBuilder) {
+			efsb.Insert("foo", ssb.Matcher())
+			efsb.Insert("bar", ssb.Matcher())
+		})
+		s, err := ss.Selector()
+		qt.Assert(t, err, qt.Equals, nil)
+		var order int
+		prog := traversal.Progress{}
+		prog.Budget = &traversal.Budget{
+			NodeBudget: 2, // should reach root, then "foo", then stop.
+		}
+		err = prog.WalkMatching(middleMapNode, s, func(prog traversal.Progress, n datamodel.Node) error {
+			switch order {
+			case 0:
+				qt.Assert(t, n, qt.CmpEquals(), basicnode.NewBool(true))
+				qt.Assert(t, prog.Path.String(), qt.Equals, "foo")
+			}
+			order++
+			return nil
+		})
+		qt.Check(t, order, qt.Equals, 1) // because it should've stopped early
+		qt.Assert(t, err, qt.Not(qt.Equals), nil)
+		qt.Check(t, err.Error(), qt.Equals, `traversal budget exceeded: budget for nodes reached zero as we reached path "bar"`)
+	})
+	t.Run("link-budget-halts", func(t *testing.T) {
+		ss := ssb.ExploreAll(ssb.Matcher())
+		s, err := ss.Selector()
+		qt.Assert(t, err, qt.Equals, nil)
+		var order int
+		lsys := cidlink.DefaultLinkSystem()
+		lsys.StorageReadOpener = (&store).OpenRead
+		err = traversal.Progress{
+			Cfg: &traversal.Config{
+				LinkSystem:                     lsys,
+				LinkTargetNodePrototypeChooser: basicnode.Chooser,
+			},
+			Budget: &traversal.Budget{
+				NodeBudget: 9000,
+				LinkBudget: 3,
+			},
+		}.WalkMatching(middleListNode, s, func(prog traversal.Progress, n datamodel.Node) error {
+			switch order {
+			case 0:
+				qt.Assert(t, n, qt.CmpEquals(), basicnode.NewString("alpha"))
+				qt.Assert(t, prog.Path.String(), qt.Equals, "0")
+			case 1:
+				qt.Assert(t, n, qt.CmpEquals(), basicnode.NewString("alpha"))
+				qt.Assert(t, prog.Path.String(), qt.Equals, "1")
+			case 2:
+				qt.Assert(t, n, qt.CmpEquals(), basicnode.NewString("beta"))
+				qt.Assert(t, prog.Path.String(), qt.Equals, "2")
+			}
+			order++
+			return nil
+		})
+		qt.Check(t, order, qt.Equals, 3)
+		qt.Assert(t, err, qt.Not(qt.Equals), nil)
+		qt.Check(t, err.Error(), qt.Equals, `traversal budget exceeded: budget for links reached zero as we reached path "3" (link: "baguqeeyexkjwnfy")`)
 	})
 }

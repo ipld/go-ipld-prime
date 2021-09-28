@@ -88,10 +88,10 @@ func (prog Progress) WalkAdv(n datamodel.Node, s selector.Selector, fn AdvVisitF
 func (prog Progress) walkAdv(n datamodel.Node, s selector.Selector, fn AdvVisitFn) error {
 	// Check the budget!
 	if prog.Budget != nil {
-		prog.Budget.NodeBudget--
 		if prog.Budget.NodeBudget <= 0 {
-			return fmt.Errorf("traversal budget for nodes visited exceeded")
+			return &ErrBudgetExceeded{BudgetKind: "node", Path: prog.Path}
 		}
+		prog.Budget.NodeBudget--
 	}
 	// Decide if this node is matched -- do callbacks as appropriate.
 	if s.Decide(n) {
@@ -190,18 +190,18 @@ func (prog Progress) walkAdv_iterateSelective(n datamodel.Node, attn []datamodel
 }
 
 func (prog Progress) loadLink(v datamodel.Node, parent datamodel.Node) (datamodel.Node, error) {
-	// Check the budget!
-	if prog.Budget != nil {
-		prog.Budget.LinkBudget--
-		if prog.Budget.LinkBudget <= 0 {
-			return nil, fmt.Errorf("traversal budget for links exceeded")
-		}
-	}
-	// Put together the context info we'll offer to the loader and prototypeChooser.
 	lnk, err := v.AsLink()
 	if err != nil {
 		return nil, err
 	}
+	// Check the budget!
+	if prog.Budget != nil {
+		if prog.Budget.LinkBudget <= 0 {
+			return nil, &ErrBudgetExceeded{BudgetKind: "link", Path: prog.Path, Link: lnk}
+		}
+		prog.Budget.LinkBudget--
+	}
+	// Put together the context info we'll offer to the loader and prototypeChooser.
 	lnkCtx := linking.LinkContext{
 		Ctx:        prog.Cfg.Ctx,
 		LinkPath:   prog.Path,
