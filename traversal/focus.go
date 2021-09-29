@@ -87,6 +87,13 @@ func (prog *Progress) get(n datamodel.Node, p datamodel.Path, trackProgress bool
 	segments := p.Segments()
 	var prev datamodel.Node // for LinkContext
 	for i, seg := range segments {
+		// Check the budget!
+		if prog.Budget != nil {
+			prog.Budget.NodeBudget--
+			if prog.Budget.NodeBudget <= 0 {
+				return nil, &ErrBudgetExceeded{BudgetKind: "node", Path: prog.Path}
+			}
+		}
 		// Traverse the segment.
 		switch n.Kind() {
 		case datamodel.Kind_Invalid:
@@ -113,6 +120,14 @@ func (prog *Progress) get(n datamodel.Node, p datamodel.Path, trackProgress bool
 		// Dereference any links.
 		for n.Kind() == datamodel.Kind_Link {
 			lnk, _ := n.AsLink()
+			// Check the budget!
+			if prog.Budget != nil {
+				if prog.Budget.LinkBudget <= 0 {
+					return nil, &ErrBudgetExceeded{BudgetKind: "link", Path: prog.Path, Link: lnk}
+				}
+				prog.Budget.LinkBudget--
+			}
+			// Put together the context info we'll offer to the loader and prototypeChooser.
 			lnkCtx := linking.LinkContext{
 				Ctx:        prog.Cfg.Ctx,
 				LinkPath:   p.Truncate(i),
@@ -201,6 +216,13 @@ func (prog Progress) focusedTransform(n datamodel.Node, na datamodel.NodeAssembl
 		return na.AssignNode(n2)
 	}
 	seg, p2 := p.Shift()
+	// Check the budget!
+	if prog.Budget != nil {
+		if prog.Budget.NodeBudget <= 0 {
+			return &ErrBudgetExceeded{BudgetKind: "node", Path: prog.Path}
+		}
+		prog.Budget.NodeBudget--
+	}
 	// Special branch for if we've entered createParent mode in an earlier step.
 	//  This needs slightly different logic because there's no prior node to reference
 	//   (and we wouldn't want to waste time creating a dummy one).
@@ -319,13 +341,21 @@ func (prog Progress) focusedTransform(n datamodel.Node, na datamodel.NodeAssembl
 		}
 		return la.Finish()
 	case datamodel.Kind_Link:
+		lnk, _ := n.AsLink()
+		// Check the budget!
+		if prog.Budget != nil {
+			if prog.Budget.LinkBudget <= 0 {
+				return &ErrBudgetExceeded{BudgetKind: "link", Path: prog.Path, Link: lnk}
+			}
+			prog.Budget.LinkBudget--
+		}
+		// Put together the context info we'll offer to the loader and prototypeChooser.
 		lnkCtx := linking.LinkContext{
 			Ctx:        prog.Cfg.Ctx,
 			LinkPath:   prog.Path,
 			LinkNode:   n,
 			ParentNode: nil, // TODO inconvenient that we don't have this.  maybe this whole case should be a helper function.
 		}
-		lnk, _ := n.AsLink()
 		// Pick what in-memory format we will build.
 		np, err := prog.Cfg.LinkTargetNodePrototypeChooser(lnk, lnkCtx)
 		if err != nil {

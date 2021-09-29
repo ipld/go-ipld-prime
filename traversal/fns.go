@@ -2,6 +2,7 @@ package traversal
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/linking"
@@ -36,12 +37,25 @@ type Progress struct {
 		Path datamodel.Path
 		Link datamodel.Link
 	}
+	Budget *Budget // If present, tracks "budgets" for how many more steps we're willing to take before we should halt.
 }
 
 type Config struct {
 	Ctx                            context.Context                // Context carried through a traversal.  Optional; use it if you need cancellation.
 	LinkSystem                     linking.LinkSystem             // LinkSystem used for automatic link loading, and also any storing if mutation features (e.g. traversal.Transform) are used.
 	LinkTargetNodePrototypeChooser LinkTargetNodePrototypeChooser // Chooser for Node implementations to produce during automatic link traversal.
+}
+
+type Budget struct {
+	// Fields below are described as "monotonically-decrementing", because that's what the traversal library will do with them,
+	// but they are user-accessable and can be reset to higher numbers again by code in the visitor callbacks.  This is not recommended (why?), but possible.
+
+	// If you set any budgets (by having a non-nil Progress.Budget field), you must set some value for all of them.
+	// Traversal halts when _any_ of the budgets reaches zero.
+	// The max value of an int (math.MaxInt64) is acceptable for any budget you don't care about.
+
+	NodeBudget int64 // A monotonically-decrementing "budget" for how many more nodes we're willing to visit before halting.
+	LinkBudget int64 // A monotonically-decrementing "budget" for how many more links we're willing to load before halting.  (This is not aware of any caching; it's purely in terms of links encountered and traversed.)
 }
 
 // LinkTargetNodePrototypeChooser is a function that returns a NodePrototype based on
@@ -66,4 +80,18 @@ type SkipMe struct{}
 
 func (SkipMe) Error() string {
 	return "skip"
+}
+
+type ErrBudgetExceeded struct {
+	BudgetKind string // "node"|"link"
+	Path       datamodel.Path
+	Link       datamodel.Link // only present if BudgetKind=="link"
+}
+
+func (e *ErrBudgetExceeded) Error() string {
+	msg := fmt.Sprintf("traversal budget exceeded: budget for %ss reached zero while on path %q", e.BudgetKind, e.Path)
+	if e.Link != nil {
+		msg += fmt.Sprintf(" (link: %q)", e.Link)
+	}
+	return msg
 }
