@@ -169,7 +169,6 @@ func TestWalkMatching(t *testing.T) {
 			Cfg: &traversal.Config{
 				LinkSystem:                     lsys,
 				LinkTargetNodePrototypeChooser: basicnode.Chooser,
-				LinkRevisit:                    true,
 			},
 		}.WalkMatching(middleListNode, s, func(prog traversal.Progress, n datamodel.Node) error {
 			switch order {
@@ -213,7 +212,6 @@ func TestWalkMatching(t *testing.T) {
 			Cfg: &traversal.Config{
 				LinkSystem:                     lsys,
 				LinkTargetNodePrototypeChooser: basicnode.Chooser,
-				LinkRevisit:                    true,
 			},
 		}.WalkMatching(rootNode, s, func(prog traversal.Progress, n datamodel.Node) error {
 			switch order {
@@ -299,7 +297,6 @@ func TestWalkBudgets(t *testing.T) {
 			Cfg: &traversal.Config{
 				LinkSystem:                     lsys,
 				LinkTargetNodePrototypeChooser: basicnode.Chooser,
-				LinkRevisit:                    true,
 			},
 			Budget: &traversal.Budget{
 				NodeBudget: 9000,

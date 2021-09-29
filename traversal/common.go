@@ -34,7 +34,7 @@ func (prog *Progress) init() {
 		prog.Cfg = &Config{}
 	}
 	prog.Cfg.init()
-	if !prog.Cfg.LinkRevisit {
+	if prog.Cfg.LinkVisitOnlyOnce {
 		prog.SeenLinks = make(map[datamodel.Link]struct{})
 	}
 }

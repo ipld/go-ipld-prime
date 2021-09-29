@@ -38,14 +38,14 @@ type Progress struct {
 		Link datamodel.Link
 	}
 	Budget    *Budget                     // If present, tracks "budgets" for how many more steps we're willing to take before we should halt.
-	SeenLinks map[datamodel.Link]struct{} // Set used to remember which links have been visited before, if Cfg.LinkRevisit is true.
+	SeenLinks map[datamodel.Link]struct{} // Set used to remember which links have been visited before, if Cfg.LinkVisitOnlyOnce is true.
 }
 
 type Config struct {
 	Ctx                            context.Context                // Context carried through a traversal.  Optional; use it if you need cancellation.
 	LinkSystem                     linking.LinkSystem             // LinkSystem used for automatic link loading, and also any storing if mutation features (e.g. traversal.Transform) are used.
 	LinkTargetNodePrototypeChooser LinkTargetNodePrototypeChooser // Chooser for Node implementations to produce during automatic link traversal.
-	LinkRevisit                    bool                           // If true, visit across links if we see them again in a new path in the walk, even if we've visited them before.  (If true, we also don't spend memory bothering to track Progress.SeenLinks during the walk.)  Note that sufficiently complex selectors may require valid revisiting of some links, so a false value here should be used with care.
+	LinkVisitOnlyOnce              bool                           // By default, we visit across links wherever we see them again, even if we've visited them before, because the reason for visiting might be different than it was before since we got to it via a different path.  If set to true, track links we've seen before in Progress.SeenLinks and do not visit them again.  Note that sufficiently complex selectors may require valid revisiting of some links, so setting this to true can change behavior noticably and should be done with care.
 }
 
 type Budget struct {
