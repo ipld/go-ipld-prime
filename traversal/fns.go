@@ -89,7 +89,7 @@ type ErrBudgetExceeded struct {
 }
 
 func (e *ErrBudgetExceeded) Error() string {
-	msg := fmt.Sprintf("traversal budget exceeded: budget for %ss reached zero as we reached path %q", e.BudgetKind, e.Path)
+	msg := fmt.Sprintf("traversal budget exceeded: budget for %ss reached zero while on path %q", e.BudgetKind, e.Path)
 	if e.Link != nil {
 		msg += fmt.Sprintf(" (link: %q)", e.Link)
 	}

@@ -284,7 +284,7 @@ func TestWalkBudgets(t *testing.T) {
 		})
 		qt.Check(t, order, qt.Equals, 1) // because it should've stopped early
 		qt.Assert(t, err, qt.Not(qt.Equals), nil)
-		qt.Check(t, err.Error(), qt.Equals, `traversal budget exceeded: budget for nodes reached zero as we reached path "bar"`)
+		qt.Check(t, err.Error(), qt.Equals, `traversal budget exceeded: budget for nodes reached zero while on path "bar"`)
 	})
 	t.Run("link-budget-halts", func(t *testing.T) {
 		ss := ssb.ExploreAll(ssb.Matcher())
@@ -319,6 +319,6 @@ func TestWalkBudgets(t *testing.T) {
 		})
 		qt.Check(t, order, qt.Equals, 3)
 		qt.Assert(t, err, qt.Not(qt.Equals), nil)
-		qt.Check(t, err.Error(), qt.Equals, `traversal budget exceeded: budget for links reached zero as we reached path "3" (link: "baguqeeyexkjwnfy")`)
+		qt.Check(t, err.Error(), qt.Equals, `traversal budget exceeded: budget for links reached zero while on path "3" (link: "baguqeeyexkjwnfy")`)
 	})
 }
