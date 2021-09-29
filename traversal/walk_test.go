@@ -385,7 +385,7 @@ func TestWalkBlockLoadOrder(t *testing.T) {
 		copy(expectedAllBlocks[(i+1)*len(rootNodeExpectedLinks)+i*len(middleListNodeLinks):], middleListNodeLinks[:])
 	}
 
-	verifySelectorLoads := func(t *testing.T, expected []datamodel.Link, s selector.Selector, readFn func(lc linking.LinkContext, l datamodel.Link) (io.Reader, error)) {
+	verifySelectorLoads := func(t *testing.T, expected []datamodel.Link, s datamodel.Node, readFn func(lc linking.LinkContext, l datamodel.Link) (io.Reader, error)) {
 		var count int
 		lsys := cidlink.DefaultLinkSystem()
 		lsys.StorageReadOpener = func(lc linking.LinkContext, l datamodel.Link) (io.Reader, error) {
@@ -394,12 +394,14 @@ func TestWalkBlockLoadOrder(t *testing.T) {
 			count++
 			return readFn(lc, l)
 		}
-		err := traversal.Progress{
+		sel, err := selector.CompileSelector(s)
+		Wish(t, err, ShouldEqual, nil)
+		err = traversal.Progress{
 			Cfg: &traversal.Config{
 				LinkSystem:                     lsys,
 				LinkTargetNodePrototypeChooser: basicnode.Chooser,
 			},
-		}.WalkMatching(newRootNode, s, func(prog traversal.Progress, n datamodel.Node) error {
+		}.WalkMatching(newRootNode, sel, func(prog traversal.Progress, n datamodel.Node) error {
 			return nil
 		})
 		Wish(t, err, ShouldEqual, nil)
@@ -419,10 +421,9 @@ func TestWalkBlockLoadOrder(t *testing.T) {
 	t.Run("constructed explore-all selector", func(t *testing.T) {
 		// used commonly in Filecoin and other places to "visit all blocks in stable order"
 		ssb := builder.NewSelectorSpecBuilder(basicnode.Prototype.Any)
-		s, err := selector.CompileSelector(ssb.ExploreRecursive(selector.RecursionLimitNone(),
+		s := ssb.ExploreRecursive(selector.RecursionLimitNone(),
 			ssb.ExploreAll(ssb.ExploreRecursiveEdge())).
-			Node())
-		Wish(t, err, ShouldEqual, nil)
+			Node()
 		verifySelectorLoads(t, expectedAllBlocks, s, (&store).OpenRead)
 	})
 
