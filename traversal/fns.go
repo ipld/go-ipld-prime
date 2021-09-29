@@ -45,7 +45,7 @@ type Config struct {
 	Ctx                            context.Context                // Context carried through a traversal.  Optional; use it if you need cancellation.
 	LinkSystem                     linking.LinkSystem             // LinkSystem used for automatic link loading, and also any storing if mutation features (e.g. traversal.Transform) are used.
 	LinkTargetNodePrototypeChooser LinkTargetNodePrototypeChooser // Chooser for Node implementations to produce during automatic link traversal.
-	LinkRevisit                    bool                           // If true, visit across links if we see them again in a new path in the walk, even if we've visited them before.  (If true, we also don't spend memory bothering to track Progress.SeenLinks during the walk.)
+	LinkRevisit                    bool                           // If true, visit across links if we see them again in a new path in the walk, even if we've visited them before.  (If true, we also don't spend memory bothering to track Progress.SeenLinks during the walk.) Note that sufficiently complex selectors may require valid revisiting of some links, so a false value here should be used with care.
 }
 
 type Budget struct {

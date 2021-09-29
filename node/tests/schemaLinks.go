@@ -106,6 +106,7 @@ func SchemaTestLinks(t *testing.T, engine Engine) {
 					}
 					return basicnode.Prototype.Any, nil
 				},
+				LinkRevisit: true,
 			},
 		}.WalkMatching(linkStructNode, s, func(prog traversal.Progress, n datamodel.Node) error {
 			buf := new(bytes.Buffer)

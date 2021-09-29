@@ -309,6 +309,7 @@ func TestWalkBudgets(t *testing.T) {
 			Cfg: &traversal.Config{
 				LinkSystem:                     lsys,
 				LinkTargetNodePrototypeChooser: basicnode.Chooser,
+				LinkRevisit:                    true,
 			},
 			Budget: &traversal.Budget{
 				NodeBudget: 9000,
@@ -387,7 +388,12 @@ func TestWalkBlockLoadOrder(t *testing.T) {
 		copy(expectedAllBlocks[(i+1)*len(rootNodeExpectedLinks)+i*len(middleListNodeLinks):], middleListNodeLinks[:])
 	}
 
-	verifySelectorLoads := func(t *testing.T, expected []datamodel.Link, s datamodel.Node, readFn func(lc linking.LinkContext, l datamodel.Link) (io.Reader, error)) {
+	verifySelectorLoads := func(t *testing.T,
+		expected []datamodel.Link,
+		s datamodel.Node,
+		linkRevisit bool,
+		readFn func(lc linking.LinkContext, l datamodel.Link) (io.Reader, error)) {
+
 		var count int
 		lsys := cidlink.DefaultLinkSystem()
 		lsys.StorageReadOpener = func(lc linking.LinkContext, l datamodel.Link) (io.Reader, error) {
@@ -402,6 +408,7 @@ func TestWalkBlockLoadOrder(t *testing.T) {
 			Cfg: &traversal.Config{
 				LinkSystem:                     lsys,
 				LinkTargetNodePrototypeChooser: basicnode.Chooser,
+				LinkRevisit:                    linkRevisit,
 			},
 		}.WalkMatching(newRootNode, sel, func(prog traversal.Progress, n datamodel.Node) error {
 			return nil
@@ -412,12 +419,12 @@ func TestWalkBlockLoadOrder(t *testing.T) {
 
 	t.Run("CommonSelector_MatchAllRecursively", func(t *testing.T) {
 		s := selectorparse.CommonSelector_MatchAllRecursively
-		verifySelectorLoads(t, expectedAllBlocks, s, (&store).OpenRead)
+		verifySelectorLoads(t, expectedAllBlocks, s, true, (&store).OpenRead)
 	})
 
 	t.Run("CommonSelector_ExploreAllRecursively", func(t *testing.T) {
 		s := selectorparse.CommonSelector_ExploreAllRecursively
-		verifySelectorLoads(t, expectedAllBlocks, s, (&store).OpenRead)
+		verifySelectorLoads(t, expectedAllBlocks, s, true, (&store).OpenRead)
 	})
 
 	t.Run("constructed explore-all selector", func(t *testing.T) {
@@ -426,12 +433,12 @@ func TestWalkBlockLoadOrder(t *testing.T) {
 		s := ssb.ExploreRecursive(selector.RecursionLimitNone(),
 			ssb.ExploreAll(ssb.ExploreRecursiveEdge())).
 			Node()
-		verifySelectorLoads(t, expectedAllBlocks, s, (&store).OpenRead)
+		verifySelectorLoads(t, expectedAllBlocks, s, true, (&store).OpenRead)
 	})
 
-	t.Run("explore-all with duplicate load skips", func(t *testing.T) {
-		// when we use SkipMe to skip loading of already visited blocks we expect
-		// to see the links show up in Loads but the lack of the links inside rootNode
+	t.Run("explore-all with duplicate load skips via SkipMe", func(t *testing.T) {
+		// when we use SkipMe to skip loading of already visited blocks we expect to
+		// see the links show up in Loads but the lack of the links inside rootNode
 		// and middleListNode in this list beyond the first set of loads show that
 		// the block is not traversed when the SkipMe is received
 		expectedSkipMeBlocks := []datamodel.Link{
@@ -450,9 +457,10 @@ func TestWalkBlockLoadOrder(t *testing.T) {
 			rootNodeLnk,
 			middleListNodeLnk,
 		}
+
 		s := selectorparse.CommonSelector_ExploreAllRecursively
 		visited := make(map[datamodel.Link]bool)
-		verifySelectorLoads(t, expectedSkipMeBlocks, s, func(lc linking.LinkContext, l datamodel.Link) (io.Reader, error) {
+		verifySelectorLoads(t, expectedSkipMeBlocks, s, true, func(lc linking.LinkContext, l datamodel.Link) (io.Reader, error) {
 			log.Printf("load %v [%v]\n", l, visited[l])
 			if visited[l] {
 				return nil, traversal.SkipMe{}
@@ -460,5 +468,20 @@ func TestWalkBlockLoadOrder(t *testing.T) {
 			visited[l] = true
 			return (&store).OpenRead(lc, l)
 		})
+	})
+
+	t.Run("explore-all with duplicate load skips via LinkRevisit:false", func(t *testing.T) {
+		// when using LinkRevisit:false to skip duplicate block loads, our loader
+		// doesn't even get to see the load attempts (unlike SkipMe, where the
+		// loader signals the skips)
+		expectedLinkRevisitBlocks := []datamodel.Link{
+			rootNodeLnk,
+			middleListNodeLnk,
+			leafAlphaLnk,
+			leafBetaLnk,
+			middleMapNodeLnk,
+		}
+		s := selectorparse.CommonSelector_ExploreAllRecursively
+		verifySelectorLoads(t, expectedLinkRevisitBlocks, s, false, (&store).OpenRead)
 	})
 }
