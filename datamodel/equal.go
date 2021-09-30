@@ -26,7 +26,7 @@ package datamodel
 // It is generally not recommended to call DeepEqual on ADL nodes.
 func DeepEqual(x, y Node) bool {
 	if x == nil || y == nil {
-		return false
+		return x == y
 	}
 	xk, yk := x.Kind(), y.Kind()
 	if xk != yk {
