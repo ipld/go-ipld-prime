@@ -40,7 +40,7 @@ USAGE:
 
    Any IPLD codec can be used, by saying "--output=codec:<multicodec-name>" or "--output=codec:0x<multicodec-hex>".
 
-   Another special output format, activated with "--output=raw", can be used in order to get the original raw serial stream, directly as it was loaded.  In this case, no codec is used at all, and the data is not validated or mutated in any way.
+   Another special output format, activated with "--output=raw", can be used in order to get the original raw serial stream, directly as it was loaded.  In this case, no codec is used at all, and the data is not validated or mutated in any way.  (Raw mode does not stack with most other features, including pathing.)
 
    An HTML output can be produced with "--output=html", which has similar purpose to the default textual debug format, but may include clickable links, etc.
 
@@ -113,3 +113,22 @@ reached the value (the string `"world"`):
 ```text
 string{"world"}
 ```
+
+### Raw passthrough mode
+
+The read command can be operated in a "raw" mode, in which it returns whatever data it loads, without modification.
+
+[testmark]:# (hello-raw/script)
+```bash
+echo '{"hello": "world"}' | ipld read --output=raw -
+```
+
+(Caution: the args parser requests `--arguments` to become before positional arguments.)
+
+[testmark]:# (hello-raw/output)
+```text
+{"hello": "world"}
+```
+
+This example is someone mundane, because we're passing data into stdin already, so the read command is doing essentially nothing.
+However, this can also be used with other forms of input, like a link for loading, which is more useful.

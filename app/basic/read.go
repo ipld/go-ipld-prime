@@ -47,7 +47,7 @@ var Cmd_Read = &cli.Command{
 		"\n" +
 		`   Any IPLD codec can be used, by saying "--output=codec:<multicodec-name>" or "--output=codec:0x<multicodec-hex>".` + "\n" +
 		"\n" +
-		`   Another special output format, activated with "--output=raw", can be used in order to get the original raw serial stream, directly as it was loaded.  In this case, no codec is used at all, and the data is not validated or mutated in any way.` + "\n" +
+		`   Another special output format, activated with "--output=raw", can be used in order to get the original raw serial stream, directly as it was loaded.  In this case, no codec is used at all, and the data is not validated or mutated in any way.  (Raw mode does not stack with most other features, including pathing.)` + "\n" +
 		"\n" +
 		`   An HTML output can be produced with "--output=html", which has similar purpose to the default textual debug format, but may include clickable links, etc.` + "\n" +
 		"\n" +
@@ -104,6 +104,13 @@ var Cmd_Read = &cli.Command{
 			panic("todo")
 		}
 
+		// Early exit: if "raw" mode is requested, pass the data through direction.  Skip *everything* else.  (No need to determine codec, nothing.)
+		//  (Future: maybe we can path.  However, it would only work as long as the lands on a block edge.  Unclear how useful this would be; PRs welcome.)
+		if args.String("output") == "raw" {
+			_, err := io.Copy(args.App.Writer, reader)
+			return err
+		}
+
 		// Determine the input codec.
 		//  This can involve peeking at the bytes, if there's no explicit statements.
 		// The dominance is:
@@ -147,7 +154,9 @@ var Cmd_Read = &cli.Command{
 				return nil
 			}
 		case "raw":
+			panic("unreachable (already handled this case earlier)")
 		case "html":
+			panic("todo")
 		default:
 			switch {
 			case strings.HasPrefix(args.String("output"), "codec:0x"):
