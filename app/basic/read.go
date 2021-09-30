@@ -1,13 +1,12 @@
 package basic
 
 import (
-	"bufio"
 	"fmt"
 	"io"
-	"os"
 	"strings"
 
 	"github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/app/shared"
 	"github.com/ipld/go-ipld-prime/codec"
 	"github.com/ipld/go-ipld-prime/codec/dagjson"
 	"github.com/ipld/go-ipld-prime/datamodel"
@@ -93,16 +92,7 @@ var Cmd_Read = &cli.Command{
 		}
 
 		// Let's get some data!
-		var reader *bufio.Reader
-		var link datamodel.Link
-		switch {
-		case sourceArg == "-": // stdin
-			reader = bufio.NewReader(os.Stdin) // FIXME does this cli package not have a way to attach a stream so I don't have to use a global for this?
-		case looksPathish(sourceArg): // looks like a filename
-			panic("todo")
-		default: // hope this is a CID
-			panic("todo")
-		}
+		reader, link := shared.ParseDataSourceArg(sourceArg)
 
 		// Early exit: if "raw" mode is requested, pass the data through direction.  Skip *everything* else.  (No need to determine codec, nothing.)
 		//  (Future: maybe we can path.  However, it would only work as long as the lands on a block edge.  Unclear how useful this would be; PRs welcome.)
@@ -196,10 +186,4 @@ var Cmd_Read = &cli.Command{
 
 		return err
 	},
-}
-
-func looksPathish(x string) bool {
-	return strings.HasPrefix(x, "./") ||
-		strings.HasPrefix(x, "../") ||
-		strings.HasPrefix(x, "/")
 }

@@ -8,6 +8,7 @@ import (
 	"github.com/urfave/cli/v2"
 
 	"github.com/ipld/go-ipld-prime/app/basic"
+	"github.com/ipld/go-ipld-prime/app/schema"
 	"github.com/ipld/go-ipld-prime/app/welcome"
 )
 
@@ -21,6 +22,7 @@ func Main(args []string, stdin io.Reader, stdout, stderr io.Writer) (int, error)
 			welcome.Cmd_Hello,
 			basic.Cmd_Put,
 			basic.Cmd_Read,
+			schema.Cmd_Schema,
 		},
 	}
 
