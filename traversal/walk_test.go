@@ -388,7 +388,7 @@ func TestWalkBlockLoadOrder(t *testing.T) {
 	verifySelectorLoads := func(t *testing.T,
 		expected []datamodel.Link,
 		s datamodel.Node,
-		linkRevisit bool,
+		linkVisitOnce bool,
 		readFn func(lc linking.LinkContext, l datamodel.Link) (io.Reader, error)) {
 
 		var count int
@@ -405,7 +405,7 @@ func TestWalkBlockLoadOrder(t *testing.T) {
 			Cfg: &traversal.Config{
 				LinkSystem:                     lsys,
 				LinkTargetNodePrototypeChooser: basicnode.Chooser,
-				LinkRevisit:                    linkRevisit,
+				LinkVisitOnlyOnce:              linkVisitOnce,
 			},
 		}.WalkMatching(newRootNode, sel, func(prog traversal.Progress, n datamodel.Node) error {
 			return nil
@@ -416,12 +416,12 @@ func TestWalkBlockLoadOrder(t *testing.T) {
 
 	t.Run("CommonSelector_MatchAllRecursively", func(t *testing.T) {
 		s := selectorparse.CommonSelector_MatchAllRecursively
-		verifySelectorLoads(t, expectedAllBlocks, s, true, (&store).OpenRead)
+		verifySelectorLoads(t, expectedAllBlocks, s, false, (&store).OpenRead)
 	})
 
 	t.Run("CommonSelector_ExploreAllRecursively", func(t *testing.T) {
 		s := selectorparse.CommonSelector_ExploreAllRecursively
-		verifySelectorLoads(t, expectedAllBlocks, s, true, (&store).OpenRead)
+		verifySelectorLoads(t, expectedAllBlocks, s, false, (&store).OpenRead)
 	})
 
 	t.Run("constructed explore-all selector", func(t *testing.T) {
@@ -430,7 +430,7 @@ func TestWalkBlockLoadOrder(t *testing.T) {
 		s := ssb.ExploreRecursive(selector.RecursionLimitNone(),
 			ssb.ExploreAll(ssb.ExploreRecursiveEdge())).
 			Node()
-		verifySelectorLoads(t, expectedAllBlocks, s, true, (&store).OpenRead)
+		verifySelectorLoads(t, expectedAllBlocks, s, false, (&store).OpenRead)
 	})
 
 	t.Run("explore-all with duplicate load skips via SkipMe", func(t *testing.T) {
@@ -457,7 +457,7 @@ func TestWalkBlockLoadOrder(t *testing.T) {
 
 		s := selectorparse.CommonSelector_ExploreAllRecursively
 		visited := make(map[datamodel.Link]bool)
-		verifySelectorLoads(t, expectedSkipMeBlocks, s, true, func(lc linking.LinkContext, l datamodel.Link) (io.Reader, error) {
+		verifySelectorLoads(t, expectedSkipMeBlocks, s, false, func(lc linking.LinkContext, l datamodel.Link) (io.Reader, error) {
 			log.Printf("load %v [%v]\n", l, visited[l])
 			if visited[l] {
 				return nil, traversal.SkipMe{}
@@ -467,7 +467,7 @@ func TestWalkBlockLoadOrder(t *testing.T) {
 		})
 	})
 
-	t.Run("explore-all with duplicate load skips via LinkRevisit:false", func(t *testing.T) {
+	t.Run("explore-all with duplicate load skips via LinkVisitOnlyOnce:true", func(t *testing.T) {
 		// when using LinkRevisit:false to skip duplicate block loads, our loader
 		// doesn't even get to see the load attempts (unlike SkipMe, where the
 		// loader signals the skips)
@@ -479,6 +479,6 @@ func TestWalkBlockLoadOrder(t *testing.T) {
 			middleMapNodeLnk,
 		}
 		s := selectorparse.CommonSelector_ExploreAllRecursively
-		verifySelectorLoads(t, expectedLinkRevisitBlocks, s, false, (&store).OpenRead)
+		verifySelectorLoads(t, expectedLinkRevisitBlocks, s, true, (&store).OpenRead)
 	})
 }
