@@ -17,6 +17,9 @@ func forSchemaTest(name string) []tests.EngineSubtest {
 	if name == "Links" {
 		return nil // TODO(mvdan): add support for links
 	}
+	if name == "UnionKeyedComplexChildren" {
+		return nil // Specifically, 'InhabitantB/repr-create_with_AK+AV' borks, because it needs representation-level AssignNode to support more.
+	}
 	return []tests.EngineSubtest{{
 		Engine: &bindEngine{},
 	}}

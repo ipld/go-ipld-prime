@@ -147,13 +147,6 @@ func (tcase testcase) Test(t *testing.T, np, npr datamodel.NodePrototype) {
 			})
 		}
 
-		// Copy the node.  This exercises the AssembleKey+AssembleValue path for maps, as opposed to the AssembleEntry path (which was exercised by the creation via unmarshal).
-		//  This isn't especially informative for anything other than maps, but we do it universally anyway (it's not a significant time cost).
-		// TODO
-
-		// Copy the node, now at repr level.  Again, this is for exercising AssembleKey+AssembleValue paths.
-		// TODO
-
 		// Serialize the type-level node, and check that we get the original json again.
 		//  This exercises iterators on the type-level node.
 		//  OR, if typeItr is present, do that instead (this is necessary when handling maps with complex keys or handling structs with absent values, since both of those are unserializable).
@@ -186,7 +179,57 @@ func (tcase testcase) Test(t *testing.T, np, npr datamodel.NodePrototype) {
 				testMarshal(t, n.(schema.TypedNode).Representation(), tcase.reprJson)
 			})
 		}
+
+		// Copy the node.  If it's a map-like.
+		//  This exercises the AssembleKey+AssembleValue path for maps (or things that act as maps, such as structs and unions),
+		//   as opposed to the AssembleEntry path (which is what was exercised by the creation via unmarshal).
+		// Assumes that the iterators are working correctly.
+		if n.Kind() == datamodel.Kind_Map {
+			t.Run("type-create with AK+AV", func(t *testing.T) {
+				n3, err := shallowCopyMap(np, n)
+				Wish(t, err, ShouldEqual, nil)
+				Wish(t, datamodel.DeepEqual(n, n3), ShouldEqual, true)
+			})
+		}
+
+		// Copy the node, now at repr level.  Again, this is for exercising AssembleKey+AssembleValue paths.
+		// Assumes that the iterators are working correctly.
+		if n.(schema.TypedNode).Representation().Kind() == datamodel.Kind_Map {
+			t.Run("repr-create with AK+AV", func(t *testing.T) {
+				n3, err := shallowCopyMap(npr, n.(schema.TypedNode).Representation())
+				Wish(t, err, ShouldEqual, nil)
+				Wish(t, datamodel.DeepEqual(n, n3), ShouldEqual, true)
+			})
+		}
+
 	})
+}
+
+func shallowCopyMap(np datamodel.NodePrototype, n datamodel.Node) (datamodel.Node, error) {
+	nb := np.NewBuilder()
+	ma, err := nb.BeginMap(n.Length())
+	if err != nil {
+		return nil, err
+	}
+	for itr := n.MapIterator(); !itr.Done(); {
+		k, v, err := itr.Next()
+		if err != nil {
+			return nil, err
+		}
+		if v.IsAbsent() {
+			continue
+		}
+		if err := ma.AssembleKey().AssignNode(k); err != nil {
+			return nil, err
+		}
+		if err := ma.AssembleValue().AssignNode(v); err != nil {
+			return nil, err
+		}
+	}
+	if err := ma.Finish(); err != nil {
+		return nil, err
+	}
+	return nb.Build(), nil
 }
 
 func testUnmarshal(t *testing.T, np datamodel.NodePrototype, data string, expectFail error) datamodel.Node {

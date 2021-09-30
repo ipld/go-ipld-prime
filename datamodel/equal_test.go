@@ -40,6 +40,8 @@ var deepEqualTests = []struct {
 	// Repeated basicnode.New invocations might return different pointers.
 	{"SameNodeDiffPointer", basic.NewString("same"), basic.NewString("same"), true},
 
+	{"NilVsNil", nil, nil, true},
+	{"NilVsNull", nil, datamodel.Null, false},
 	{"SameKindNull", datamodel.Null, datamodel.Null, true},
 	{"DiffKindNull", datamodel.Null, datamodel.Absent, false},
 	{"SameKindBool", basic.NewBool(true), basic.NewBool(true), true},

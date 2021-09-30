@@ -25,6 +25,9 @@ package datamodel
 // so an error should only happen if a Node implementation breaks that contract.
 // It is generally not recommended to call DeepEqual on ADL nodes.
 func DeepEqual(x, y Node) bool {
+	if x == nil || y == nil {
+		return x == y
+	}
 	xk, yk := x.Kind(), y.Kind()
 	if xk != yk {
 		return false
