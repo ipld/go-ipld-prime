@@ -14,8 +14,6 @@ import (
 )
 
 func TestSchema(t *testing.T) {
-	t.Skip("numerous unimplementing things yet")
-
 	// Just real quick compile the whole app.  We need this so we can test it in scripts.
 	os.MkdirAll("/tmp/ipld-test/bin/", 0755)
 	exec.Command("go", "build", "-o", "/tmp/ipld-test/bin/ipld", "../cmd/ipld/ipld.go").Run()

@@ -92,7 +92,10 @@ var Cmd_Read = &cli.Command{
 		}
 
 		// Let's get some data!
-		reader, link := shared.ParseDataSourceArg(sourceArg)
+		reader, link, err := shared.ParseDataSourceArg(sourceArg)
+		if err != nil {
+			return err
+		}
 
 		// Early exit: if "raw" mode is requested, pass the data through direction.  Skip *everything* else.  (No need to determine codec, nothing.)
 		//  (Future: maybe we can path.  However, it would only work as long as the lands on a block edge.  Unclear how useful this would be; PRs welcome.)

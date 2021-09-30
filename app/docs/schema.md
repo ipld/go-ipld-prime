@@ -36,13 +36,13 @@ To demonstrate the `ipld schema parse` command, we'll first need a small schema 
 
 We'll put this in a file called "`theschema.ipldsch`":
 
-[testmark]:# (hello-parse/files/theschema.ipldsch)
+[testmark]:# (hello-parse/fs/theschema.ipldsch)
 ```bash
 type Hello string
 
-type World struct {
-	field Hello
-}
+#type World struct {
+#	field Hello
+#}
 ```
 
 The parse command simply takes the usual kinds of inputs: a link, or a filename, or "-" for standard input.
@@ -57,5 +57,11 @@ This prints out the parsed DMT form of the schema:
 
 [testmark]:# (hello-parse/output)
 ```text
-oioioi
+{
+	"types": {
+		"Hello": {
+			"string": {}
+		}
+	}
+}
 ```

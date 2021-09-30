@@ -5,7 +5,11 @@ import (
 
 	"github.com/urfave/cli/v2"
 
+	"github.com/ipld/go-ipld-prime"
 	"github.com/ipld/go-ipld-prime/app/shared"
+	"github.com/ipld/go-ipld-prime/codec"
+	"github.com/ipld/go-ipld-prime/codec/json"
+	"github.com/ipld/go-ipld-prime/node/bindnode"
 	"github.com/ipld/go-ipld-prime/schema"
 	schemadmt "github.com/ipld/go-ipld-prime/schema/dmt"
 	schemadsl "github.com/ipld/go-ipld-prime/schema/dsl"
@@ -44,7 +48,10 @@ var Cmd_Schema = &cli.Command{
 			}
 
 			// Let's get some data!
-			inputReader, _ := shared.ParseDataSourceArg(sourceArg)
+			inputReader, _, err := shared.ParseDataSourceArg(sourceArg)
+			if err != nil {
+				return err
+			}
 
 			// Parse!
 			dmt, err := schemadsl.Parse(sourceArg, inputReader)
@@ -59,7 +66,17 @@ var Cmd_Schema = &cli.Command{
 				return err // TODO probably need an error tagging strategy here.
 			}
 
-			return nil
+			// Regard the DMT as a node (which we'll need for either printout or for saving it).
+			dmtn := bindnode.Wrap(dmt, schemadmt.Type.Schema.Type())
+
+			// Figure out the output format.
+			// FIXME: should use very similar logic to the 'ipld read' subcommand.  Is hardcoded for tonight.
+			var encoder codec.Encoder
+			encoder = json.Encode
+
+			// Print out the DMT.
+			// TODO: or do something else if the "save" flag is set.
+			return ipld.EncodeStreaming(args.App.Writer, dmtn, encoder)
 		},
 	}, {
 		Name:  "compile",
