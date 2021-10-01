@@ -7,10 +7,10 @@ import (
 	"testing"
 
 	"github.com/frankban/quicktest"
-	"github.com/ipld/go-ipld-prime/app"
-
 	"github.com/warpfork/go-testmark"
 	"github.com/warpfork/go-testmark/testexec"
+
+	"github.com/ipld/go-ipld-prime/app"
 )
 
 func TestSchema(t *testing.T) {

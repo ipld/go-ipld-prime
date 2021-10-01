@@ -5,6 +5,8 @@ import (
 	"io"
 	"strings"
 
+	"github.com/urfave/cli/v2"
+
 	"github.com/ipld/go-ipld-prime"
 	"github.com/ipld/go-ipld-prime/app/shared"
 	"github.com/ipld/go-ipld-prime/codec"
@@ -14,7 +16,6 @@ import (
 	"github.com/ipld/go-ipld-prime/printer"
 	"github.com/ipld/go-ipld-prime/schema"
 	"github.com/ipld/go-ipld-prime/traversal"
-	"github.com/urfave/cli/v2"
 )
 
 var Cmd_Read = &cli.Command{
