@@ -12,8 +12,8 @@ github.com/gopherjs/gopherjs v0.0.0-20181017120253-0766667cb4d1 h1:EGx4pi6eqNxGa
 github.com/gopherjs/gopherjs v0.0.0-20181017120253-0766667cb4d1/go.mod h1:wJfORRmW1u3UXTncJ5qlYoELFm8eSnnEO6hX4iZ3EWY=
 github.com/ipfs/go-cid v0.0.4 h1:UlfXKrZx1DjZoBhQHmNHLC1fK1dUJDN20Y28A7s+gJ8=
 github.com/ipfs/go-cid v0.0.4/go.mod h1:4LLaPOQwmk5z9LBgQnpkivrx8BJjUyGwTXCd5Xfj6+M=
-github.com/ipld/go-ipld-prime v0.12.3-0.20210930132912-0b3aef3ca569 h1:UDHkozLpTefhQzyu/2BWVRvsFHjhzvL387KsfFqE1vc=
-github.com/ipld/go-ipld-prime v0.12.3-0.20210930132912-0b3aef3ca569/go.mod h1:PaeLYq8k6dJLmDUSLrzkEpoGV4PEfe/1OtFN/eALOc8=
+github.com/ipld/go-ipld-prime v0.12.4-0.20211004141641-7acd7c0cf0ad h1:Wr2ljc1hQIQaQOopOHTi0hPzFNYI+I4P6tltNUSagMw=
+github.com/ipld/go-ipld-prime v0.12.4-0.20211004141641-7acd7c0cf0ad/go.mod h1:PaeLYq8k6dJLmDUSLrzkEpoGV4PEfe/1OtFN/eALOc8=
 github.com/jtolds/gls v4.20.0+incompatible h1:xdiiI2gbIgH/gLH7ADydsJ1uDOEzR8yvV7C0MuV77Wo=
 github.com/jtolds/gls v4.20.0+incompatible/go.mod h1:QJZ7F/aHp+rZTRtaJ1ow/lLfFfVYBRgL+9YlvaHOwJU=
 github.com/klauspost/cpuid/v2 v2.0.4 h1:g0I61F2K2DjRHz1cnxlkNSBIaePVoJIjjnHui8QHbiw=
