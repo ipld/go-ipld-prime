@@ -293,7 +293,8 @@ func (p *parser) typeStruct() (*dmt.TypeDefnStruct, error) {
 		}
 
 		if tok == "}" {
-			// TODO: repr
+			// TODO: repr.  currently hardcoded to map repr.
+			defn.Representation.StructRepresentation_Map = repr
 			return defn, nil
 		}
 		name := tok
