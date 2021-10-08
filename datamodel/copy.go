@@ -90,7 +90,7 @@ func Copy(n Node, na NodeAssembler) error {
 		if err != nil {
 			return err
 		}
-		itr := n.MapIterator()
+		itr := n.ListIterator()
 		for !itr.Done() {
 			_, v, err := itr.Next()
 			if err != nil {
