@@ -34,6 +34,19 @@ type Link interface {
 	// There is no contract that requires that the string be able to be parsed back into a Link value,
 	// but the string should be unique (e.g. not elide any parts of the hash).
 	String() string
+
+	// Binary should return the densest possible encoding of the Link.
+	// The value need not be printable or human-readable;
+	// the golang string type is used for immutability and for ease of use as a map key.
+	// As with the String method, the returned value may not elide any parts of the hash.
+	//
+	// Note that there is still no contract that the returned value be able to be parsed back into a Link value;
+	// not even in the case of `lnk.Prototype().BuildLink(lnk.Binary()[:])`.
+	// This is because the value returned by this method may contain data that the LinkPrototype would also restate.
+	// (For a concrete example: if using CIDs, this method will return a binary string that includes
+	// the cid version indicator, the multicodec and multihash indicators, etc, in addition to the hash itself --
+	// whereas the LinkPrototype.BuildLink function still expects to receive only the hash itself alone.)
+	Binary() string
 }
 
 // LinkPrototype encapsulates any implementation details and parameters
