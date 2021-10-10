@@ -14,14 +14,14 @@ import (
 	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
 	"github.com/ipld/go-ipld-prime/must"
 	"github.com/ipld/go-ipld-prime/node/basicnode"
-	"github.com/ipld/go-ipld-prime/storage"
+	"github.com/ipld/go-ipld-prime/storage/memstore"
 	"github.com/ipld/go-ipld-prime/traversal"
 )
 
 // Do some fixture fabrication.
 // We assume all the builders and serialization must Just Work here.
 
-var store = storage.Memory{}
+var store = memstore.Store{}
 var (
 	// baguqeeyexkjwnfy
 	leafAlpha, leafAlphaLnk = encode(basicnode.NewString("alpha"))
@@ -314,7 +314,7 @@ func TestFocusedTransform(t *testing.T) {
 }
 
 func TestFocusedTransformWithLinks(t *testing.T) {
-	var store2 = storage.Memory{}
+	var store2 = memstore.Store{}
 	lsys := cidlink.DefaultLinkSystem()
 	lsys.StorageReadOpener = (&store).OpenRead
 	lsys.StorageWriteOpener = (&store2).OpenWrite
@@ -339,7 +339,7 @@ func TestFocusedTransformWithLinks(t *testing.T) {
 		// there should be a new object in our new storage!
 		Wish(t, len(store2.Bag), ShouldEqual, 1)
 		// cleanup for next test
-		store2 = storage.Memory{}
+		store2 = memstore.Store{}
 	})
 	t.Run("UpdateNotBeyondLink", func(t *testing.T) {
 		// This is replacing a link with a non-link.  Doing so shouldn't hit storage.
@@ -356,7 +356,7 @@ func TestFocusedTransformWithLinks(t *testing.T) {
 		// there should be no new objects in our new storage!
 		Wish(t, len(store2.Bag), ShouldEqual, 0)
 		// cleanup for next test
-		store2 = storage.Memory{}
+		store2 = memstore.Store{}
 	})
 
 	// link traverse to scalar // this is unspecifiable using the current path syntax!  you'll just end up replacing the link with the scalar!

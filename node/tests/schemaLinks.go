@@ -15,13 +15,13 @@ import (
 	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
 	"github.com/ipld/go-ipld-prime/node/basicnode"
 	"github.com/ipld/go-ipld-prime/schema"
-	"github.com/ipld/go-ipld-prime/storage"
+	"github.com/ipld/go-ipld-prime/storage/memstore"
 	"github.com/ipld/go-ipld-prime/traversal"
 	"github.com/ipld/go-ipld-prime/traversal/selector"
 	"github.com/ipld/go-ipld-prime/traversal/selector/builder"
 )
 
-var store = storage.Memory{}
+var store = memstore.Store{}
 
 func encode(n datamodel.Node) (datamodel.Node, datamodel.Link) {
 	lp := cidlink.LinkPrototype{cid.Prefix{

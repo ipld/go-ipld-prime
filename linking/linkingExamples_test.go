@@ -10,7 +10,7 @@ import (
 	"github.com/ipld/go-ipld-prime/linking"
 	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
 	"github.com/ipld/go-ipld-prime/node/basicnode"
-	"github.com/ipld/go-ipld-prime/storage"
+	"github.com/ipld/go-ipld-prime/storage/memstore"
 )
 
 // storage is a map where we'll store serialized IPLD data.
@@ -20,7 +20,7 @@ import (
 //
 // In a real program, you'll probably make functions to load and store from disk,
 // or some network storage, or... whatever you want, really :)
-var store = storage.Memory{}
+var store = memstore.Store{}
 
 // TODO: These examples are really heavy on CIDs and the multicodec and multihash magic tables.
 // It would be good to have examples that create and use less magical LinkSystem constructions, too.
