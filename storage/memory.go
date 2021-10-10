@@ -9,6 +9,8 @@ import (
 	"github.com/ipld/go-ipld-prime/linking"
 )
 
+// TODO: move me
+
 // Memory is a simple in-memory storage for data indexed by datamodel.Link.
 // (It's little more than a map -- in fact, the map is exported,
 // and you can poke it directly.)
