@@ -36,8 +36,8 @@ func ExampleLinkSystem_Store() {
 	// We want to store the serialized data somewhere.
 	//  We'll use an in-memory store for this.  (It's a package scoped variable.)
 	//  You can use any kind of storage system here;
-	//   you just need a function that conforms to the datamodel.BlockWriteOpener interface.
-	lsys.StorageWriteOpener = (&store).OpenWrite
+	//   or if you need even more control, you could also write a function that conforms to the linking.BlockWriteOpener interface.
+	lsys.SetWriteStorage(&store)
 
 	// To create any links, first we need a LinkPrototype.
 	// This gathers together any parameters that might be needed when making a link.
@@ -103,8 +103,8 @@ func ExampleLinkSystem_Load() {
 	//  We'll use an in-memory store for this.  (It's a package scoped variable.)
 	//   (This particular memory store was filled with the data we'll load earlier, during ExampleLinkSystem_Store.)
 	//  You can use any kind of storage system here;
-	//   you just need a function that conforms to the datamodel.BlockReadOpener interface.
-	lsys.StorageReadOpener = (&store).OpenRead
+	//   or if you need even more control, you could also write a function that conforms to the linking.BlockReadOpener interface.
+	lsys.SetReadStorage(&store)
 
 	// We'll need to decide what in-memory implementation of datamodel.Node we want to use.
 	//  Here, we'll use the "basicnode" implementation.  This is a good getting-started choice.

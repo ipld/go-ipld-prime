@@ -93,7 +93,7 @@ func TestStopAtLink(t *testing.T) {
 		}
 		var order int
 		lsys := cidlink.DefaultLinkSystem()
-		lsys.StorageReadOpener = (&store).OpenRead
+		lsys.SetReadStorage(&store)
 		err = traversal.Progress{
 			Cfg: &traversal.Config{
 				LinkSystem:                     lsys,
@@ -219,7 +219,7 @@ func stopAtInChainTest(t *testing.T, chainNode datamodel.Node, stopLnk datamodel
 
 		var order int
 		lsys := cidlink.DefaultLinkSystem()
-		lsys.StorageReadOpener = (&store).OpenRead
+		lsys.SetReadStorage(&store)
 		err = traversal.Progress{
 			Cfg: &traversal.Config{
 				LinkSystem:                     lsys,

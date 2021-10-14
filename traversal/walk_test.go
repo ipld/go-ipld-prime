@@ -16,6 +16,7 @@ import (
 	"github.com/ipld/go-ipld-prime/linking"
 	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
 	"github.com/ipld/go-ipld-prime/node/basicnode"
+	"github.com/ipld/go-ipld-prime/storage"
 	"github.com/ipld/go-ipld-prime/traversal"
 	"github.com/ipld/go-ipld-prime/traversal/selector"
 	"github.com/ipld/go-ipld-prime/traversal/selector/builder"
@@ -130,7 +131,7 @@ func TestWalkMatching(t *testing.T) {
 		s, err := ss.Selector()
 		var order int
 		lsys := cidlink.DefaultLinkSystem()
-		lsys.StorageReadOpener = (&store).OpenRead
+		lsys.SetReadStorage(&store)
 		err = traversal.Progress{
 			Cfg: &traversal.Config{
 				LinkSystem:                     lsys,
@@ -174,7 +175,7 @@ func TestWalkMatching(t *testing.T) {
 		s, err := ss.Selector()
 		var order int
 		lsys := cidlink.DefaultLinkSystem()
-		lsys.StorageReadOpener = (&store).OpenRead
+		lsys.SetReadStorage(&store)
 		err = traversal.Progress{
 			Cfg: &traversal.Config{
 				LinkSystem:                     lsys,
@@ -217,7 +218,7 @@ func TestWalkMatching(t *testing.T) {
 		s, err := ss.Selector()
 		var order int
 		lsys := cidlink.DefaultLinkSystem()
-		lsys.StorageReadOpener = (&store).OpenRead
+		lsys.SetReadStorage(&store)
 		err = traversal.Progress{
 			Cfg: &traversal.Config{
 				LinkSystem:                     lsys,
@@ -302,7 +303,7 @@ func TestWalkBudgets(t *testing.T) {
 		qt.Assert(t, err, qt.Equals, nil)
 		var order int
 		lsys := cidlink.DefaultLinkSystem()
-		lsys.StorageReadOpener = (&store).OpenRead
+		lsys.SetReadStorage(&store)
 		err = traversal.Progress{
 			Cfg: &traversal.Config{
 				LinkSystem:                     lsys,
@@ -416,12 +417,16 @@ func TestWalkBlockLoadOrder(t *testing.T) {
 
 	t.Run("CommonSelector_MatchAllRecursively", func(t *testing.T) {
 		s := selectorparse.CommonSelector_MatchAllRecursively
-		verifySelectorLoads(t, expectedAllBlocks, s, false, (&store).OpenRead)
+		verifySelectorLoads(t, expectedAllBlocks, s, false, func(lctx linking.LinkContext, lnk datamodel.Link) (io.Reader, error) {
+			return storage.GetStream(lctx.Ctx, &store, lnk.Binary())
+		})
 	})
 
 	t.Run("CommonSelector_ExploreAllRecursively", func(t *testing.T) {
 		s := selectorparse.CommonSelector_ExploreAllRecursively
-		verifySelectorLoads(t, expectedAllBlocks, s, false, (&store).OpenRead)
+		verifySelectorLoads(t, expectedAllBlocks, s, false, func(lctx linking.LinkContext, lnk datamodel.Link) (io.Reader, error) {
+			return storage.GetStream(lctx.Ctx, &store, lnk.Binary())
+		})
 	})
 
 	t.Run("constructed explore-all selector", func(t *testing.T) {
@@ -430,7 +435,9 @@ func TestWalkBlockLoadOrder(t *testing.T) {
 		s := ssb.ExploreRecursive(selector.RecursionLimitNone(),
 			ssb.ExploreAll(ssb.ExploreRecursiveEdge())).
 			Node()
-		verifySelectorLoads(t, expectedAllBlocks, s, false, (&store).OpenRead)
+		verifySelectorLoads(t, expectedAllBlocks, s, false, func(lctx linking.LinkContext, lnk datamodel.Link) (io.Reader, error) {
+			return storage.GetStream(lctx.Ctx, &store, lnk.Binary())
+		})
 	})
 
 	t.Run("explore-all with duplicate load skips via SkipMe", func(t *testing.T) {
@@ -463,7 +470,7 @@ func TestWalkBlockLoadOrder(t *testing.T) {
 				return nil, traversal.SkipMe{}
 			}
 			visited[l] = true
-			return (&store).OpenRead(lc, l)
+			return storage.GetStream(lc.Ctx, &store, l.Binary())
 		})
 	})
 
@@ -479,6 +486,8 @@ func TestWalkBlockLoadOrder(t *testing.T) {
 			middleMapNodeLnk,
 		}
 		s := selectorparse.CommonSelector_ExploreAllRecursively
-		verifySelectorLoads(t, expectedLinkRevisitBlocks, s, true, (&store).OpenRead)
+		verifySelectorLoads(t, expectedLinkRevisitBlocks, s, true, func(lctx linking.LinkContext, lnk datamodel.Link) (io.Reader, error) {
+			return storage.GetStream(lctx.Ctx, &store, lnk.Binary())
+		})
 	})
 }

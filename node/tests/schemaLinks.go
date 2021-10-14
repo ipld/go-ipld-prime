@@ -31,7 +31,7 @@ func encode(n datamodel.Node) (datamodel.Node, datamodel.Link) {
 		MhLength: 4,
 	}}
 	lsys := cidlink.DefaultLinkSystem()
-	lsys.StorageWriteOpener = (&store).OpenWrite
+	lsys.SetWriteStorage(&store)
 
 	lnk, err := lsys.Store(linking.LinkContext{}, lp, n)
 	if err != nil {
@@ -96,7 +96,7 @@ func SchemaTestLinks(t *testing.T, engine Engine) {
 
 		var order int
 		lsys := cidlink.DefaultLinkSystem()
-		lsys.StorageReadOpener = (&store).OpenRead
+		lsys.SetReadStorage(&store)
 		err = traversal.Progress{
 			Cfg: &traversal.Config{
 				LinkSystem: lsys,

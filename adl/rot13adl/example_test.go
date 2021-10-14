@@ -65,8 +65,8 @@ func ExampleReify_loadingToADL() {
 	}}
 	linkSystem := cidlink.DefaultLinkSystem()
 	storage := &memstore.Store{}
-	linkSystem.StorageReadOpener = storage.OpenRead
-	linkSystem.StorageWriteOpener = storage.OpenWrite
+	linkSystem.SetReadStorage(storage)
+	linkSystem.SetWriteStorage(storage)
 	linkSystem.NodeReifier = func(_ linking.LinkContext, nd datamodel.Node, _ *linking.LinkSystem) (datamodel.Node, error) {
 		return rot13adl.Reify(nd)
 	}

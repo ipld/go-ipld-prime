@@ -68,7 +68,7 @@ func encode(n datamodel.Node) (datamodel.Node, datamodel.Link) {
 		MhLength: 4,
 	}}
 	lsys := cidlink.DefaultLinkSystem()
-	lsys.StorageWriteOpener = (&store).OpenWrite
+	lsys.SetWriteStorage(&store)
 
 	lnk, err := lsys.Store(linking.LinkContext{}, lp, n)
 	if err != nil {
@@ -144,7 +144,7 @@ func TestFocusWithLinkLoading(t *testing.T) {
 	})
 	t.Run("link traversal with loader should work", func(t *testing.T) {
 		lsys := cidlink.DefaultLinkSystem()
-		lsys.StorageReadOpener = (&store).OpenRead
+		lsys.SetReadStorage(&store)
 		err := traversal.Progress{
 			Cfg: &traversal.Config{
 				LinkSystem:                     lsys,
@@ -174,7 +174,7 @@ func TestGetWithLinkLoading(t *testing.T) {
 	})
 	t.Run("link traversal with loader should work", func(t *testing.T) {
 		lsys := cidlink.DefaultLinkSystem()
-		lsys.StorageReadOpener = (&store).OpenRead
+		lsys.SetReadStorage(&store)
 		n, err := traversal.Progress{
 			Cfg: &traversal.Config{
 				LinkSystem:                     lsys,
@@ -316,8 +316,8 @@ func TestFocusedTransform(t *testing.T) {
 func TestFocusedTransformWithLinks(t *testing.T) {
 	var store2 = memstore.Store{}
 	lsys := cidlink.DefaultLinkSystem()
-	lsys.StorageReadOpener = (&store).OpenRead
-	lsys.StorageWriteOpener = (&store2).OpenWrite
+	lsys.SetReadStorage(&store)
+	lsys.SetWriteStorage(&store2)
 	cfg := traversal.Config{
 		LinkSystem:                     lsys,
 		LinkTargetNodePrototypeChooser: basicnode.Chooser,
