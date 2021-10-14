@@ -3,16 +3,36 @@ package datamodel
 // NodeAssembler is the interface that describes all the ways we can set values
 // in a node that's under construction.
 //
-// To create a Node, you should start with a NodeBuilder (which contains a
+// A NodeAssembler is about filling in data.
+// To create a new Node, you should start with a NodeBuilder (which contains a
 // superset of the NodeAssembler methods, and can return the finished Node
 // from its `Build` method).
+// While continuing to build a recursive structure from there,
+// you'll see NodeAssembler for all the child values.
+//
+// For filling scalar data, there's a `Assign{Kind}` method for each kind;
+// after calling one of these methods, the data is filled in, and the assembler is done.
+// For recursives, there are `BeginMap` and `BeginList` methods,
+// which return an object that needs further manipulation to fill in the contents.
+//
+// There is also one special method: `AssignNode`.
+// `AssignNode` takes another `Node` as a parameter,
+// and should should internally call one of the other `Assign*` or `Begin*` (and subsequent) functions
+// as appropriate for the kind of the `Node` it is given.
+// This is roughly equivalent to using the `Copy` function (and is often implemented using it!), but
+// `AssignNode` may also try to take faster shortcuts in some implementations, when it detects they're possible.
+// (For example, for typed nodes, if they're the same type, lots of checking can be skipped.
+// For nodes implemented with pointers, lots of copying can be skipped.
+// For nodes that can detect the argument has the same memory layout, faster copy mechanisms can be used; etc.)
 //
 // Why do both this and the NodeBuilder interface exist?
-// When creating trees of nodes, recursion works over the NodeAssembler interface.
-// This is important to efficient library internals, because avoiding the
+// In short: NodeBuilder is when you want to cause an allocation;
+// NodeAssembler can be used to just "fill in" memory.
+// (In the internal gritty details: separate interfaces, one of which lacks a
+// `Build` method, helps us write efficient library internals: avoiding the
 // requirement to be able to return a Node at any random point in the process
 // relieves internals from needing to implement 'freeze' features.
-// (This is useful in turn because implementing those 'freeze' features in a
+// This is useful in turn because implementing those 'freeze' features in a
 // language without first-class/compile-time support for them (as golang is)
 // would tend to push complexity and costs to execution time; we'd rather not.)
 type NodeAssembler interface {
@@ -69,7 +89,8 @@ type MapAssembler interface {
 	// just feed data and check errors), but it's here.
 	//
 	// For all Data Model maps, this will answer with a basic concept of "string".
-	// For Schema typed maps, this may answer with a more complex type (potentially even a struct type).
+	// For Schema typed maps, this may answer with a more complex type
+	// (potentially even a struct type or union type -- anything that can have a string representation).
 	KeyPrototype() NodePrototype
 
 	// ValuePrototype returns a NodePrototype that knows how to build values this map can contain.
