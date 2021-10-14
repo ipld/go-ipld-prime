@@ -30,6 +30,9 @@ func (lnk Link) Prototype() datamodel.LinkPrototype {
 func (lnk Link) String() string {
 	return lnk.Cid.String()
 }
+func (lnk Link) Binary() string {
+	return lnk.Cid.KeyString()
+}
 
 type LinkPrototype struct {
 	cid.Prefix

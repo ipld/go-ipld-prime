@@ -14,7 +14,7 @@ import (
 	"github.com/ipld/go-ipld-prime/linking"
 	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
 	"github.com/ipld/go-ipld-prime/must"
-	"github.com/ipld/go-ipld-prime/storage"
+	"github.com/ipld/go-ipld-prime/storage/memstore"
 )
 
 func ExampleReify_unmarshallingToADL() {
@@ -64,9 +64,9 @@ func ExampleReify_loadingToADL() {
 		MhLength: 4,
 	}}
 	linkSystem := cidlink.DefaultLinkSystem()
-	storage := &storage.Memory{}
-	linkSystem.StorageReadOpener = storage.OpenRead
-	linkSystem.StorageWriteOpener = storage.OpenWrite
+	storage := &memstore.Store{}
+	linkSystem.SetReadStorage(storage)
+	linkSystem.SetWriteStorage(storage)
 	linkSystem.NodeReifier = func(_ linking.LinkContext, nd datamodel.Node, _ *linking.LinkSystem) (datamodel.Node, error) {
 		return rot13adl.Reify(nd)
 	}
