@@ -73,8 +73,16 @@ type VectorWritableStorage interface {
 // The PeekableStorage.Peek method is essentially the same as ReadableStorage.Get --
 // but by contrast, ReadableStorage is expected to return a safe copy.
 // PeekableStorage can be used when the caller knows they will not mutate the returned slice.
+//
+// An io.Closer is returned along with the byte slice.
+// The Close method on the Closer must be called when the caller is done with the byte slice;
+// otherwise, memory leaks may result.
+// (Implementers of this interface may be expecting to reuse the byte slice after Close is called.)
+//
+// Note that Peek does not imply that the caller can use the byte slice freely;
+// doing so may result in storage corruption or other undefined behavior.
 type PeekableStorage interface {
-	Peek(ctx context.Context, key string) ([]byte, error)
+	Peek(ctx context.Context, key string) ([]byte, io.Closer, error)
 }
 
 // the following are all hypothetical additional future interfaces (in varying degress of speculativeness):

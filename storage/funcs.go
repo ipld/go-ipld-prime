@@ -95,11 +95,21 @@ func PutVec(ctx context.Context, store WritableStorage, key string, blobVec [][]
 // This function will feature-detect the PeekableStorage interface, and use that if possible;
 // otherwise it will fall back to using basic ReadableStorage methods transparently
 // (meaning that a no-copy fastpath simply wasn't available).
-func Peek(ctx context.Context, store ReadableStorage, key string) ([]byte, error) {
+//
+// An io.Closer is returned along with the byte slice.
+// The Close method on the Closer must be called when the caller is done with the byte slice;
+// otherwise, memory leaks may result.
+// (Implementers of this interface may be expecting to reuse the byte slice after Close is called.)
+func Peek(ctx context.Context, store ReadableStorage, key string) ([]byte, io.Closer, error) {
 	// Prefer the feature itself, first.
 	if peekable, ok := store.(PeekableStorage); ok {
 		return peekable.Peek(ctx, key)
 	}
 	// Fallback to basic.
-	return store.Get(ctx, key)
+	bs, err := store.Get(ctx, key)
+	return bs, noopCloser{}, err
 }
+
+type noopCloser struct{}
+
+func (noopCloser) Close() error { return nil }
