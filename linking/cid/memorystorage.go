@@ -12,6 +12,11 @@ import (
 
 // Memory is a simple in-memory storage for cidlinks. It's the same as `storage.Memory`
 // but uses typical multihash semantics used when reading/writing cidlinks.
+//
+// Using multihash as the storage key rather than the whole CID will remove the
+// distinction between CIDv0 and their CIDv1 counterpart. It also removes the
+// distinction between CIDs where the multihash is the same but the codec is
+// different, e.g. `dag-cbor` and a `raw` version of the same data.
 type Memory struct {
 	Bag map[string][]byte
 }
