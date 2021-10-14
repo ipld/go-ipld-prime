@@ -30,6 +30,17 @@
 // If implementing a storage system, you should find it possible to do so *without* importing this package.
 // Because only standard library types are present in the interface contracts,
 // it's possible to implement types that align with the interfaces without refering to them.
+//
+// Note that where keys are discussed in this package, they use the golang string type --
+// however, they may be binary.  (The golang string type allows arbitrary bytes in general,
+// and here, we both use that, and explicitly disavow the usual "norm" that the string type implies UTF-8.
+// This is roughly the same as the practical truth that appears when using e.g. os.OpenFile and other similar functions.)
+// If you are creating a storage implementation where the underlying medium does not support arbitrary binary keys,
+// then it is strongly recommend that your storage implementation should support being configured with
+// an "escaping function", which should typically simply be of the form `func(string) string`.
+// Additional, your storage implementation's documentation should also clearly describe its internal limitations,
+// so that users have enough information to write an escaping function which
+// maps their domain into the domain your storage implementation can handle.
 package storage
 
 // also note:
