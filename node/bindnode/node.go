@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"reflect"
 
+	"github.com/ipfs/go-cid"
 	"github.com/ipld/go-ipld-prime/datamodel"
+	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
 	"github.com/ipld/go-ipld-prime/node/basicnode"
 	"github.com/ipld/go-ipld-prime/schema"
 )
@@ -401,8 +403,14 @@ func (w *_node) AsLink() (datamodel.Link, error) {
 			ActualKind:      w.Kind(),
 		}
 	}
-	link, _ := w.val.Interface().(datamodel.Link)
-	return link, nil
+	switch val := w.val.Interface().(type) {
+	case datamodel.Link:
+		return val, nil
+	case cid.Cid:
+		return cidlink.Link{Cid: val}, nil
+	default:
+		panic("TODO: unexpected link type")
+	}
 }
 
 func (w *_node) Prototype() datamodel.NodePrototype {
@@ -611,11 +619,17 @@ func (w *_assembler) AssignBytes(p []byte) error {
 func (w *_assembler) AssignLink(link datamodel.Link) error {
 	newVal := reflect.ValueOf(link)
 	if !newVal.Type().AssignableTo(w.val.Type()) {
-		return datamodel.ErrWrongKind{
-			TypeName:        w.schemaType.Name(),
-			MethodName:      "AssignLink",
-			AppropriateKind: datamodel.KindSet_JustLink,
-			ActualKind:      w.kind(),
+		if newVal.Type() == goTypeCidLink && goTypeCid.AssignableTo(w.val.Type()) {
+			// Unbox a cidlink.Link to assign to a go-cid.Cid value.
+			newVal = newVal.FieldByName("Cid")
+		} else {
+			// The target value cannot be assigned a ipld.Link or go-cid.Cid.
+			return datamodel.ErrWrongKind{
+				TypeName:        w.schemaType.Name(),
+				MethodName:      "AssignLink",
+				AppropriateKind: datamodel.KindSet_JustLink,
+				ActualKind:      w.kind(),
+			}
 		}
 	}
 	w.nonPtrVal().Set(newVal)

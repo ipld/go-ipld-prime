@@ -19,7 +19,7 @@ import (
 //
 // If either the Go type or schema type are nil, we infer the missing type from
 // the other provided type. For example, we can infer an unnamed Go struct type
-// for a schema struct tyep, and we can infer a schema Int type for a Go int64
+// for a schema struct type, and we can infer a schema Int type for a Go int64
 // type. The inferring logic is still a work in progress and subject to change.
 // At this time, inferring IPLD Unions and Enums from Go types is not supported.
 //
