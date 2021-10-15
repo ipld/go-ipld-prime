@@ -16,6 +16,7 @@ func Compile(ts *schema.TypeSystem, node *Schema) error {
 	ts.Accumulate(schema.SpawnFloat("Float"))
 	ts.Accumulate(schema.SpawnString("String"))
 	ts.Accumulate(schema.SpawnBytes("Bytes"))
+	ts.Accumulate(schema.SpawnLink("Link"))
 	for _, name := range node.Types.Keys {
 		defn := node.Types.Values[name]
 

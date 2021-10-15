@@ -269,7 +269,7 @@ func Marshal(n datamodel.Node, sink shared.TokenSink, options EncodeOptions) err
 			}
 			return nil
 		default:
-			return fmt.Errorf("schemafree link emission only supported by this codec for CID type links")
+			return fmt.Errorf("schemafree link emission only supported by this codec for CID type links; got type %T", lnk)
 		}
 	default:
 		panic("unreachable")

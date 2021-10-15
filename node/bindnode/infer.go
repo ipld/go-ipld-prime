@@ -5,17 +5,21 @@ import (
 	"reflect"
 	"strings"
 
+	"github.com/ipfs/go-cid"
 	"github.com/ipld/go-ipld-prime/datamodel"
+	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
 	"github.com/ipld/go-ipld-prime/schema"
 )
 
 var (
-	goTypeBool   = reflect.TypeOf(false)
-	goTypeInt    = reflect.TypeOf(int(0))
-	goTypeFloat  = reflect.TypeOf(0.0)
-	goTypeString = reflect.TypeOf("")
-	goTypeBytes  = reflect.TypeOf([]byte{})
-	goTypeLink   = reflect.TypeOf((*datamodel.Link)(nil)).Elem()
+	goTypeBool    = reflect.TypeOf(false)
+	goTypeInt     = reflect.TypeOf(int(0))
+	goTypeFloat   = reflect.TypeOf(0.0)
+	goTypeString  = reflect.TypeOf("")
+	goTypeBytes   = reflect.TypeOf([]byte{})
+	goTypeLink    = reflect.TypeOf((*datamodel.Link)(nil)).Elem()
+	goTypeCidLink = reflect.TypeOf((*cidlink.Link)(nil)).Elem()
+	goTypeCid     = reflect.TypeOf((*cid.Cid)(nil)).Elem()
 
 	schemaTypeBool   = schema.SpawnBool("Bool")
 	schemaTypeInt    = schema.SpawnInt("Int")
