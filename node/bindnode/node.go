@@ -1129,6 +1129,9 @@ func (w *_unionIterator) Next() (key, value datamodel.Node, _ error) {
 	w.done = true
 
 	haveIdx, mval := unionMember(w.val)
+	if haveIdx < 0 {
+		return nil, nil, fmt.Errorf("bindnode: union %s has no member", w.val.Type())
+	}
 	mtyp := w.members[haveIdx]
 
 	node := &_node{

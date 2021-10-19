@@ -152,6 +152,10 @@ func (p *parser) consumeToken() (string, error) {
 			sb.WriteByte(b)
 			for {
 				b, err := p.br.ReadByte()
+				if err == io.EOF {
+					// Token ends at the end of the whole input.
+					return sb.String(), nil
+				}
 				if err != nil {
 					return "", p.forwardError(err)
 				}
@@ -294,6 +298,10 @@ func (p *parser) typeStruct() (*dmt.TypeDefnStruct, error) {
 
 		if tok == "}" {
 			// TODO: repr.  currently hardcoded to map repr.
+			if len(repr.Fields.Keys) == 0 {
+				// Fields is optional; omit it if empty.
+				repr.Fields = nil
+			}
 			defn.Representation.StructRepresentation_Map = repr
 			return defn, nil
 		}
@@ -353,6 +361,8 @@ func (p *parser) typeStruct() (*dmt.TypeDefnStruct, error) {
 			case scalar == "true", scalar == "false": // bool
 				t := scalar == "true"
 				anyScalar.Bool = &t
+			default:
+				panic("TODO: implicit: " + scalar)
 			}
 
 			details := dmt.StructRepresentation_Map_FieldDetails{}
@@ -548,6 +558,35 @@ func (p *parser) typeEnum() (*dmt.TypeDefnEnum, error) {
 		if err := p.consumeRequired(")"); err != nil {
 			return defn, err
 		}
+	}
+
+	reprName := "string" // default repr
+	if tok, err := p.peekToken(); err != nil {
+		return nil, err
+	} else if tok == "representation" {
+		p.consumePeeked()
+		name, err := p.consumeName()
+		if err != nil {
+			return nil, err
+		}
+		reprName = name
+	}
+	switch reprName {
+	case "string":
+		repr := &dmt.EnumRepresentation_String{}
+		for i, key := range reprKeys {
+			if key[0] != '"' {
+				return nil, p.errf("enum string representation used with non-string key: %s", key)
+			}
+			unquoted, err := strconv.Unquote(key)
+			if err != nil {
+				return nil, p.forwardError(err)
+			}
+			mapAppend(repr, unquoted, defn.Members[i])
+		}
+		defn.Representation.EnumRepresentation_String = repr
+	default:
+		return nil, p.errf("unknown enum repr: %q", reprName)
 	}
 	// TODO: repr
 	return defn, nil
