@@ -19,6 +19,14 @@ import (
 
 // TODO: tests where an IPLD schema and Go type do not match
 
+type anyScalar struct {
+	Bool   *bool
+	Int    *int64
+	Float  *float64
+	String *string
+	Bytes  *[]byte
+}
+
 var prototypeTests = []struct {
 	name      string
 	schemaSrc string
@@ -30,12 +38,12 @@ var prototypeTests = []struct {
 	{
 		name: "Scalars",
 		schemaSrc: `type Root struct {
-			bool   Bool
-			int    Int
-			float  Float
-			string String
-			bytes  Bytes
-		}`,
+				bool   Bool
+				int    Int
+				float  Float
+				string String
+				bytes  Bytes
+			}`,
 		ptrType: (*struct {
 			Bool   bool
 			Int    int64
@@ -54,9 +62,9 @@ var prototypeTests = []struct {
 	{
 		name: "Links",
 		schemaSrc: `type Root struct {
-			linkGeneric Link
-			linkCID     Link
-		}`,
+				linkGeneric Link
+				linkCID     Link
+			}`,
 		ptrType: (*struct {
 			LinkGeneric ipld.Link
 			LinkCID     cid.Cid
@@ -64,6 +72,28 @@ var prototypeTests = []struct {
 		prettyDagJSON: `{
 			"linkCID":     {"/": "bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi"},
 			"linkGeneric": {"/": "bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi"}
+		}`,
+	},
+	{
+		name: "ScalarUnions",
+		// TODO: should we use an "Any" type from the prelude?
+		// TODO: include fields for all scalars
+		schemaSrc: `type Root struct {
+				boolAny AnyScalar
+			}
+
+			type AnyScalar union {
+				| Bool bool
+				| Int int
+				| Float float
+				| String string
+				| Bytes bytes
+			} representation kinded`,
+		ptrType: (*struct {
+			BoolAny anyScalar
+		})(nil),
+		prettyDagJSON: `{
+			"boolAny": true
 		}`,
 	},
 }
@@ -118,11 +148,14 @@ func TestPrototype(t *testing.T) {
 			proto := bindnode.Prototype(test.ptrType, schemaType)
 
 			wantEncoded := compactJSON(t, test.prettyDagJSON)
-			node := dagjsonDecode(t, proto, wantEncoded)
+			node := dagjsonDecode(t, proto.Representation(), wantEncoded).(schema.TypedNode)
 			// TODO: assert node type matches ptrType
 
-			encoded := dagjsonEncode(t, node)
+			encoded := dagjsonEncode(t, node.Representation())
 			qt.Assert(t, encoded, qt.Equals, wantEncoded)
+
+			// Verify that doing a dag-json encode of the non-repr node works.
+			_ = dagjsonEncode(t, node)
 
 			// TODO: also check that just using the schema works?
 		})

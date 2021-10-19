@@ -3,6 +3,7 @@ package schemadmt
 import (
 	"fmt"
 
+	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/schema"
 )
 
@@ -36,6 +37,7 @@ func Compile(ts *schema.TypeSystem, node *Schema) error {
 	return nil
 }
 
+// Note that the parser and compiler support defaults. We're lacking support in bindnode.
 func todoFromImplicitlyFalseBool(b *bool) bool {
 	if b == nil {
 		return false
@@ -57,6 +59,31 @@ func todoAnonTypeName(nameOrDefn TypeNameOrInlineDefn) string {
 		return fmt.Sprintf("List__%s", todoAnonTypeName(defn.ValueType))
 	default:
 		panic(fmt.Errorf("%#v", defn))
+	}
+}
+
+func parseKind(s string) datamodel.Kind {
+	switch s {
+	case "map":
+		return datamodel.Kind_Map
+	case "list":
+		return datamodel.Kind_List
+	case "null":
+		return datamodel.Kind_Null
+	case "bool":
+		return datamodel.Kind_Bool
+	case "int":
+		return datamodel.Kind_Int
+	case "float":
+		return datamodel.Kind_Float
+	case "string":
+		return datamodel.Kind_String
+	case "bytes":
+		return datamodel.Kind_Bytes
+	case "link":
+		return datamodel.Kind_Link
+	default:
+		return datamodel.Kind_Invalid
 	}
 }
 
@@ -84,7 +111,7 @@ func spawnType(ts *schema.TypeSystem, name schema.TypeName, defn TypeDefn) (sche
 			typ.Representation.ListRepresentation_List != nil:
 			// default behavior
 		default:
-			return nil, fmt.Errorf("TODO: support non-default map repr in schema package")
+			return nil, fmt.Errorf("TODO: support other map repr in schema package")
 		}
 		return schema.SpawnList(name,
 			*typ.ValueType.TypeName,
@@ -100,7 +127,7 @@ func spawnType(ts *schema.TypeSystem, name schema.TypeName, defn TypeDefn) (sche
 			typ.Representation.MapRepresentation_Map != nil:
 			// default behavior
 		default:
-			return nil, fmt.Errorf("TODO: support non-default map repr in schema package")
+			return nil, fmt.Errorf("TODO: support other map repr in schema package")
 		}
 		return schema.SpawnMap(name,
 			typ.KeyType,
@@ -134,9 +161,42 @@ func spawnType(ts *schema.TypeSystem, name schema.TypeName, defn TypeDefn) (sche
 				todoFromImplicitlyFalseBool(field.Nullable),
 			))
 		}
+		var repr schema.StructRepresentation
+		switch {
+		case typ.Representation.StructRepresentation_Map != nil:
+			rp := typ.Representation.StructRepresentation_Map
+			if rp.Fields == nil {
+				repr = schema.SpawnStructRepresentationMap2(nil, nil)
+				break
+			}
+			renames := make(map[string]string, len(rp.Fields.Keys))
+			implicits := make(map[string]schema.ImplicitValue, len(rp.Fields.Keys))
+			for _, name := range rp.Fields.Keys {
+				details := rp.Fields.Values[name]
+				if details.Rename != nil {
+					renames[name] = *details.Rename
+				}
+				if imp := details.Implicit; imp != nil {
+					var sumVal schema.ImplicitValue
+					switch {
+					case imp.Bool != nil:
+						sumVal = schema.ImplicitValue_Bool(*imp.Bool)
+					case imp.String != nil:
+						sumVal = schema.ImplicitValue_String(*imp.String)
+					default:
+						panic("TODO: implicit value kind")
+					}
+					implicits[name] = sumVal
+				}
+
+			}
+			repr = schema.SpawnStructRepresentationMap2(renames, implicits)
+		default:
+			return nil, fmt.Errorf("TODO: support other struct repr in schema package")
+		}
 		return schema.SpawnStruct(name,
 			fields,
-			nil, // TODO: struct repr
+			repr,
 		), nil
 	case defn.TypeDefnUnion != nil:
 		typ := defn.TypeDefnUnion
@@ -148,15 +208,55 @@ func spawnType(ts *schema.TypeSystem, name schema.TypeName, defn TypeDefn) (sche
 				panic("TODO: inline union members")
 			}
 		}
+		var repr schema.UnionRepresentation
+		switch {
+		case typ.Representation.UnionRepresentation_Kinded != nil:
+			rp := typ.Representation.UnionRepresentation_Kinded
+			table := make(map[datamodel.Kind]schema.TypeName, len(rp.Keys))
+			for _, kindStr := range rp.Keys {
+				kind := parseKind(kindStr)
+				member := rp.Values[kindStr]
+				switch {
+				case member.TypeName != nil:
+					table[kind] = *member.TypeName
+				case member.UnionMemberInlineDefn != nil:
+					panic("TODO: inline defn support")
+				}
+			}
+			repr = schema.SpawnUnionRepresentationKinded(table)
+		case typ.Representation.UnionRepresentation_Keyed != nil:
+			rp := typ.Representation.UnionRepresentation_Keyed
+			table := make(map[string]schema.TypeName, len(rp.Keys))
+			for _, key := range rp.Keys {
+				member := rp.Values[key]
+				switch {
+				case member.TypeName != nil:
+					table[key] = *member.TypeName
+				case member.UnionMemberInlineDefn != nil:
+					panic("TODO: inline defn support")
+				}
+			}
+			repr = schema.SpawnUnionRepresentationKeyed(table)
+		default:
+			return nil, fmt.Errorf("TODO: support other union repr in schema package")
+		}
 		return schema.SpawnUnion(name,
 			members,
-			nil, // TODO: union repr
+			repr,
 		), nil
 	case defn.TypeDefnEnum != nil:
 		typ := defn.TypeDefnEnum
+		var repr schema.EnumRepresentation
+		switch {
+		case typ.Representation.EnumRepresentation_String != nil:
+			rp := typ.Representation.EnumRepresentation_String
+			repr = schema.EnumRepresentation_String(rp.Values)
+		default:
+			return nil, fmt.Errorf("TODO: support other enum repr in schema package")
+		}
 		return schema.SpawnEnum(name,
 			typ.Members,
-			nil, // TODO: enum repr
+			repr,
 		), nil
 	default:
 		panic(fmt.Errorf("%#v", defn))

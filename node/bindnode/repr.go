@@ -324,14 +324,13 @@ func (w *_nodeRepr) IsNull() bool {
 }
 
 func (w *_nodeRepr) AsBool() (bool, error) {
-	if reprStrategy(w.schemaType) == nil {
+	switch stg := reprStrategy(w.schemaType).(type) {
+	case schema.UnionRepresentation_Kinded:
+		return w.asKinded(stg, datamodel.Kind_Bool).AsBool()
+	case nil:
 		return (*_node)(w).AsBool()
-	}
-	return false, datamodel.ErrWrongKind{
-		TypeName:        w.schemaType.Name(),
-		MethodName:      "AsBool",
-		AppropriateKind: datamodel.KindSet_JustBool,
-		ActualKind:      w.Kind(),
+	default:
+		panic(fmt.Sprintf("TODO: %T", stg))
 	}
 }
 
