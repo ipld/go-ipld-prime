@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"flag"
 	"io/ioutil"
+	"path/filepath"
+	"strings"
 	"testing"
 
 	ipldjson "github.com/ipld/go-ipld-prime/codec/json"
@@ -11,6 +13,7 @@ import (
 	"github.com/ipld/go-ipld-prime/schema"
 	schemadmt "github.com/ipld/go-ipld-prime/schema/dmt"
 	schemadsl "github.com/ipld/go-ipld-prime/schema/dsl"
+	"gopkg.in/yaml.v2"
 
 	qt "github.com/frankban/quicktest"
 )
@@ -35,6 +38,62 @@ func TestParseSchemaSchema(t *testing.T) {
 	})
 }
 
+type yamlFixture struct {
+	Schema          string
+	Canonical       string `yaml:",omitempty"`
+	Expected        string
+	ExpectedParsed  interface{}        `yaml:",omitempty"`
+	Blocks          []yamlFixtureBlock `yaml:",omitempty"`
+	BadBlocks       []string           `yaml:"badBlocks,omitempty"`
+	BadBlocksParsed []interface{}      `yaml:",omitempty"`
+}
+
+type yamlFixtureBlock struct {
+	Actual         string      `yaml:",omitempty"`
+	ActualParsed   interface{} `yaml:",omitempty"`
+	Expected       string      `yaml:",omitempty"`
+	ExpectedParsed interface{} `yaml:",omitempty"`
+}
+
+func TestParse(t *testing.T) {
+	t.Parallel()
+
+	matches, err := filepath.Glob("../../.ipld/specs/schemas/tests/*.yml")
+	qt.Assert(t, err, qt.IsNil)
+	qt.Assert(t, matches, qt.Not(qt.HasLen), 0)
+
+	for _, ymlPath := range matches {
+		ymlPath := ymlPath // do not reuse range var
+		name := filepath.Base(ymlPath)
+
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			data, err := ioutil.ReadFile(ymlPath)
+			qt.Assert(t, err, qt.IsNil)
+
+			var fixt yamlFixture
+			err = yaml.Unmarshal(data, &fixt)
+			qt.Assert(t, err, qt.IsNil)
+
+			inJSON := strings.Replace(fixt.Expected, "  ", "\t", -1)
+
+			testParse(t, fixt.Schema, inJSON, func(updated string) {
+				updated = strings.Replace(updated, "\t", "  ", -1)
+				fixt.Expected = updated
+
+				data, err = yaml.Marshal(&fixt)
+				qt.Assert(t, err, qt.IsNil)
+
+				// Note that this will strip comments.
+				// Probably don't commit its changes straight away.
+				err = ioutil.WriteFile(ymlPath, data, 0777)
+				qt.Assert(t, err, qt.IsNil)
+			})
+		})
+	}
+}
+
 func testParse(t *testing.T, inSchema, inJSON string, updateFn func(string)) {
 	t.Helper()
 
@@ -48,10 +107,7 @@ func testParse(t *testing.T, inSchema, inJSON string, updateFn func(string)) {
 		err := schemadmt.Compile(&ts, sch)
 		qt.Assert(t, err, qt.IsNil)
 
-		typeStruct := ts.TypeByName("TypeDefnStruct")
-		if typeStruct == nil {
-			t.Fatal("TypeStruct not found")
-		}
+		qt.Assert(t, ts.Names(), qt.Not(qt.HasLen), 0)
 	}
 
 	// Ensure we can encode the schema as the json codec,

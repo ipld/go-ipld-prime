@@ -11,4 +11,5 @@ require (
 	github.com/smartystreets/goconvey v1.6.4 // indirect
 	github.com/warpfork/go-testmark v0.3.0
 	github.com/warpfork/go-wish v0.0.0-20200122115046-b9ea61034e4a
+	gopkg.in/yaml.v2 v2.4.0
 )

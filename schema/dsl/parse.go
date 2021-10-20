@@ -115,7 +115,7 @@ func (p *parser) consumeToken() (string, error) {
 		// TODO: use runes for better unicode support
 		b, err := p.br.ReadByte()
 		if err == io.EOF {
-			return "", err
+			return "", err // TODO: ErrUnexpectedEOF?
 		}
 		if err != nil {
 			return "", p.forwardError(err)
@@ -189,6 +189,12 @@ func (p *parser) peekToken() (string, error) {
 	}
 	tok, err := p.consumeToken()
 	if err != nil {
+		if err == io.EOF {
+			// peekToken is often used when a token is optional.
+			// If we hit io.EOF, that's not an error.
+			// TODO: consider making peekToken just not return an error?
+			return "", nil
+		}
 		return "", err
 	}
 	p.peekedToken = tok
@@ -266,6 +272,12 @@ func (p *parser) typeDefn() (dmt.TypeDefn, error) {
 		defn.TypeDefnInt = &dmt.TypeDefnInt{}
 	case "link":
 		defn.TypeDefnLink = &dmt.TypeDefnLink{}
+	case "&":
+		target, err := p.consumeName()
+		if err != nil {
+			return defn, err
+		}
+		defn.TypeDefnLink = &dmt.TypeDefnLink{ExpectedType: &target}
 	case "string":
 		defn.TypeDefnString = &dmt.TypeDefnString{}
 	case "{":
@@ -341,36 +353,53 @@ func (p *parser) typeStruct() (*dmt.TypeDefnStruct, error) {
 			return nil, err
 		}
 		if tok == "(" {
-			p.consumePeeked()
-			if err := p.consumeRequired("implicit"); err != nil {
-				return nil, err
-			}
-
-			scalar, err := p.consumeToken()
-			if err != nil {
-				return nil, err
-			}
-			var anyScalar dmt.AnyScalar
-			switch {
-			case scalar[0] == '"': // string
-				s, err := strconv.Unquote(scalar)
-				if err != nil {
-					return nil, p.forwardError(err)
-				}
-				anyScalar.String = &s
-			case scalar == "true", scalar == "false": // bool
-				t := scalar == "true"
-				anyScalar.Bool = &t
-			default:
-				panic("TODO: implicit: " + scalar)
-			}
-
 			details := dmt.StructRepresentation_Map_FieldDetails{}
-			details.Implicit = &anyScalar
-			mapAppend(repr.Fields, name, details)
-			if err := p.consumeRequired(")"); err != nil {
-				return nil, err
+			p.consumePeeked()
+		parenLoop:
+			for {
+				tok, err = p.consumeToken()
+				if err != nil {
+					return nil, err
+				}
+				switch tok {
+				case ")":
+					break parenLoop
+				case "rename":
+					str, err := p.consumeString()
+					if err != nil {
+						return nil, err
+					}
+					details.Rename = &str
+				case "implicit":
+					scalar, err := p.consumeToken()
+					if err != nil {
+						return nil, err
+					}
+					var anyScalar dmt.AnyScalar
+					switch {
+					case scalar[0] == '"': // string
+						s, err := strconv.Unquote(scalar)
+						if err != nil {
+							return nil, p.forwardError(err)
+						}
+						anyScalar.String = &s
+					case scalar == "true", scalar == "false": // bool
+						t := scalar == "true"
+						anyScalar.Bool = &t
+					case scalar[0] >= '0' && scalar[0] <= '0':
+						n, err := strconv.Atoi(scalar)
+						if err != nil {
+							return nil, p.forwardError(err)
+						}
+						anyScalar.Int = &n
+					default:
+						return nil, fmt.Errorf("unsupported implicit scalar: %s", scalar)
+					}
+
+					details.Implicit = &anyScalar
+				}
 			}
+			mapAppend(repr.Fields, name, details)
 		}
 
 		mapAppend(&defn.Fields, name, field)
@@ -547,23 +576,23 @@ func (p *parser) typeEnum() (*dmt.TypeDefnEnum, error) {
 		}
 		defn.Members = append(defn.Members, name)
 
-		if err := p.consumeRequired("("); err != nil {
-			return defn, err
-		}
-		key, err := p.consumeToken()
-		if err != nil {
-			return nil, err
-		}
-		reprKeys = append(reprKeys, key)
-		if err := p.consumeRequired(")"); err != nil {
-			return defn, err
+		if tok, err := p.peekToken(); err == nil && tok == "(" {
+			p.consumePeeked()
+			key, err := p.consumeToken()
+			if err != nil {
+				return nil, err
+			}
+			reprKeys = append(reprKeys, key)
+			if err := p.consumeRequired(")"); err != nil {
+				return defn, err
+			}
+		} else {
+			reprKeys = append(reprKeys, "")
 		}
 	}
 
 	reprName := "string" // default repr
-	if tok, err := p.peekToken(); err != nil {
-		return nil, err
-	} else if tok == "representation" {
+	if tok, err := p.peekToken(); err == nil && tok == "representation" {
 		p.consumePeeked()
 		name, err := p.consumeName()
 		if err != nil {
@@ -575,6 +604,9 @@ func (p *parser) typeEnum() (*dmt.TypeDefnEnum, error) {
 	case "string":
 		repr := &dmt.EnumRepresentation_String{}
 		for i, key := range reprKeys {
+			if key == "" {
+				continue // no key; defaults to the name
+			}
 			if key[0] != '"' {
 				return nil, p.errf("enum string representation used with non-string key: %s", key)
 			}
@@ -582,7 +614,7 @@ func (p *parser) typeEnum() (*dmt.TypeDefnEnum, error) {
 			if err != nil {
 				return nil, p.forwardError(err)
 			}
-			mapAppend(repr, unquoted, defn.Members[i])
+			mapAppend(repr, defn.Members[i], unquoted)
 		}
 		defn.Representation.EnumRepresentation_String = repr
 	default:

@@ -12,16 +12,33 @@ import (
 // Note that this API is EXPERIMENTAL and will likely change.
 // It is also unfinished and buggy.
 func Compile(ts *schema.TypeSystem, node *Schema) error {
-	ts.Accumulate(schema.SpawnBool("Bool"))
-	ts.Accumulate(schema.SpawnInt("Int"))
-	ts.Accumulate(schema.SpawnFloat("Float"))
-	ts.Accumulate(schema.SpawnString("String"))
-	ts.Accumulate(schema.SpawnBytes("Bytes"))
-	ts.Accumulate(schema.SpawnLink("Link"))
+	// Prelude; probably belongs elsewhere.
+	{
+		ts.Accumulate(schema.SpawnBool("Bool"))
+		ts.Accumulate(schema.SpawnInt("Int"))
+		ts.Accumulate(schema.SpawnFloat("Float"))
+		ts.Accumulate(schema.SpawnString("String"))
+		ts.Accumulate(schema.SpawnBytes("Bytes"))
+
+		// TODO: schema package lacks support?
+		// ts.Accumulate(schema.SpawnAny("Any"))
+
+		// Blocked on "Any".
+		// ts.Accumulate(schema.SpawnMap("Map", "String", "Any", false))
+		// ts.Accumulate(schema.SpawnList("List", "Any", false))
+		// ts.Accumulate(schema.SpawnList("List", "Any", false))
+
+		// Should be &Any, really.
+		ts.Accumulate(schema.SpawnLink("Link"))
+
+		// TODO: schema package lacks support?
+		// ts.Accumulate(schema.SpawnUnit("Null", NullRepr))
+	}
+
 	for _, name := range node.Types.Keys {
 		defn := node.Types.Values[name]
 
-		// TODO: once we support anon types, remove the ts argument.
+		// TODO: once ./schema supports anonymous/inline types, remove the ts argument.
 		typ, err := spawnType(ts, name, defn)
 		if err != nil {
 			return err
@@ -30,6 +47,7 @@ func Compile(ts *schema.TypeSystem, node *Schema) error {
 	}
 
 	if errs := ts.ValidateGraph(); errs != nil {
+		// Return the first error.
 		for _, err := range errs {
 			return err
 		}
@@ -183,6 +201,8 @@ func spawnType(ts *schema.TypeSystem, name schema.TypeName, defn TypeDefn) (sche
 						sumVal = schema.ImplicitValue_Bool(*imp.Bool)
 					case imp.String != nil:
 						sumVal = schema.ImplicitValue_String(*imp.String)
+					case imp.Int != nil:
+						sumVal = schema.ImplicitValue_Int(*imp.Int)
 					default:
 						panic("TODO: implicit value kind")
 					}
@@ -258,6 +278,12 @@ func spawnType(ts *schema.TypeSystem, name schema.TypeName, defn TypeDefn) (sche
 			typ.Members,
 			repr,
 		), nil
+	case defn.TypeDefnLink != nil:
+		typ := defn.TypeDefnLink
+		if typ.ExpectedType == nil {
+			return schema.SpawnLink(name), nil
+		}
+		return schema.SpawnLinkReference(name, *typ.ExpectedType), nil
 	default:
 		panic(fmt.Errorf("%#v", defn))
 	}
