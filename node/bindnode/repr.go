@@ -335,14 +335,13 @@ func (w *_nodeRepr) AsBool() (bool, error) {
 }
 
 func (w *_nodeRepr) AsInt() (int64, error) {
-	if reprStrategy(w.schemaType) == nil {
+	switch stg := reprStrategy(w.schemaType).(type) {
+	case schema.UnionRepresentation_Kinded:
+		return w.asKinded(stg, datamodel.Kind_Int).AsInt()
+	case nil:
 		return (*_node)(w).AsInt()
-	}
-	return 0, datamodel.ErrWrongKind{
-		TypeName:        w.schemaType.Name(),
-		MethodName:      "AsInt",
-		AppropriateKind: datamodel.KindSet_JustInt,
-		ActualKind:      w.Kind(),
+	default:
+		panic(fmt.Sprintf("TODO: %T", stg))
 	}
 }
 
@@ -557,6 +556,8 @@ func (w *_assemblerRepr) AssignBool(b bool) error {
 
 func (w *_assemblerRepr) AssignInt(i int64) error {
 	switch stg := reprStrategy(w.schemaType).(type) {
+	case schema.UnionRepresentation_Kinded:
+		return w.asKinded(stg, datamodel.Kind_Int).AssignInt(i)
 	case nil:
 		return (*_assembler)(w).AssignInt(i)
 	default:
