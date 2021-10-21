@@ -29,7 +29,7 @@ import (
 //     proto := bindnode.Prototype((*goType)(nil), schemaType)
 func Prototype(ptrType interface{}, schemaType schema.Type) schema.TypedPrototype {
 	if ptrType == nil && schemaType == nil {
-		panic("either ptrType or schemaType must not be nil")
+		panic("bindnode: either ptrType or schemaType must not be nil")
 	}
 
 	// TODO: if both are supplied, verify that they are compatible
@@ -40,7 +40,7 @@ func Prototype(ptrType interface{}, schemaType schema.Type) schema.TypedPrototyp
 	} else {
 		goPtrType := reflect.TypeOf(ptrType)
 		if goPtrType.Kind() != reflect.Ptr {
-			panic("ptrType must be a pointer")
+			panic("bindnode: ptrType must be a pointer")
 		}
 		goType = goPtrType.Elem()
 	}
@@ -62,14 +62,15 @@ func Prototype(ptrType interface{}, schemaType schema.Type) schema.TypedPrototyp
 // with the Go type, and otherwise it's inferred from the Go type.
 func Wrap(ptrVal interface{}, schemaType schema.Type) schema.TypedNode {
 	if ptrVal == nil {
-		panic("ptrVal must not be nil")
+		panic("bindnode: ptrVal must not be nil")
 	}
 	goPtrVal := reflect.ValueOf(ptrVal)
 	if goPtrVal.Kind() != reflect.Ptr {
-		panic("ptrVal must be a pointer")
+		panic("bindnode: ptrVal must be a pointer")
 	}
 	if goPtrVal.IsNil() {
-		panic("ptrVal must not be nil")
+		// Note that this can happen if ptrVal was a typed nil.
+		panic("bindnode: ptrVal must not be nil")
 	}
 	goVal := goPtrVal.Elem()
 	if schemaType == nil {
@@ -93,7 +94,7 @@ func Unwrap(node datamodel.Node) (ptr interface{}) {
 		return nil
 	}
 	if val.Kind() == reflect.Ptr {
-		panic("didn't expect val to be a pointer")
+		panic("bindnode: didn't expect val to be a pointer")
 	}
 	return val.Addr().Interface()
 }
