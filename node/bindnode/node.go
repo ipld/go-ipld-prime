@@ -189,6 +189,9 @@ func unionMember(val reflect.Value) (int, reflect.Value) {
 	// The first non-nil field is a match.
 	for i := 0; i < val.NumField(); i++ {
 		elemVal := val.Field(i)
+		if elemVal.Kind() != reflect.Ptr {
+			panic("found unexpected non-pointer in a union field")
+		}
 		if elemVal.IsNil() {
 			continue
 		}
@@ -613,6 +616,11 @@ func (w *_assembler) AssignBytes(p []byte) error {
 		}
 	}
 	w.nonPtrVal().SetBytes(p)
+	if w.finish != nil {
+		if err := w.finish(); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 

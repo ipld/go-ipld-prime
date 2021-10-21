@@ -25,6 +25,7 @@ type anyScalar struct {
 	Float  *float64
 	String *string
 	Bytes  *[]byte
+	Link   *datamodel.Link
 }
 
 var prototypeTests = []struct {
@@ -77,23 +78,38 @@ var prototypeTests = []struct {
 	{
 		name: "ScalarUnions",
 		// TODO: should we use an "Any" type from the prelude?
-		// TODO: include fields for all scalars
 		schemaSrc: `type Root struct {
-				boolAny AnyScalar
+				boolAny   AnyScalar
+				intAny    AnyScalar
+				floatAny  AnyScalar
+				stringAny AnyScalar
+				bytesAny  AnyScalar
+				linkAny   AnyScalar
 			}
 
 			type AnyScalar union {
-				| Bool bool
-				| Int int
-				| Float float
+				| Bool   bool
+				| Int    int
+				| Float  float
 				| String string
-				| Bytes bytes
+				| Bytes  bytes
+				| Link   link
 			} representation kinded`,
 		ptrType: (*struct {
-			BoolAny anyScalar
+			BoolAny   anyScalar
+			IntAny    anyScalar
+			FloatAny  anyScalar
+			StringAny anyScalar
+			BytesAny  anyScalar
+			LinkAny   anyScalar
 		})(nil),
 		prettyDagJSON: `{
-			"boolAny": true
+			"boolAny":   true,
+			"bytesAny":  {"/": {"bytes": "34cd"}},
+			"floatAny":  12.5,
+			"intAny":    3,
+			"linkAny":   {"/": "bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi"},
+			"stringAny": "foo"
 		}`,
 	},
 }
