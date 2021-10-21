@@ -157,23 +157,31 @@ func TestPrototype(t *testing.T) {
 	for _, test := range prototypeTests {
 		test := test // don't reuse the range var
 
-		t.Run(test.name, func(t *testing.T) {
-			t.Parallel()
+		for _, onlySchema := range []bool{false, true} {
+			suffix := ""
+			if onlySchema {
+				suffix = "_onlySchema"
+			}
+			t.Run(test.name+suffix, func(t *testing.T) {
+				t.Parallel()
 
-			schemaType := loadSchema(t, test.schemaSrc)
-			proto := bindnode.Prototype(test.ptrType, schemaType)
+				schemaType := loadSchema(t, test.schemaSrc)
 
-			wantEncoded := compactJSON(t, test.prettyDagJSON)
-			node := dagjsonDecode(t, proto.Representation(), wantEncoded).(schema.TypedNode)
-			// TODO: assert node type matches ptrType
+				if onlySchema {
+					test.ptrType = nil
+				}
+				proto := bindnode.Prototype(test.ptrType, schemaType)
 
-			encoded := dagjsonEncode(t, node.Representation())
-			qt.Assert(t, encoded, qt.Equals, wantEncoded)
+				wantEncoded := compactJSON(t, test.prettyDagJSON)
+				node := dagjsonDecode(t, proto.Representation(), wantEncoded).(schema.TypedNode)
+				// TODO: assert node type matches ptrType
 
-			// Verify that doing a dag-json encode of the non-repr node works.
-			_ = dagjsonEncode(t, node)
+				encoded := dagjsonEncode(t, node.Representation())
+				qt.Assert(t, encoded, qt.Equals, wantEncoded)
 
-			// TODO: also check that just using the schema works?
-		})
+				// Verify that doing a dag-json encode of the non-repr node works.
+				_ = dagjsonEncode(t, node)
+			})
+		}
 	}
 }
