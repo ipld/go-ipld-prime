@@ -53,7 +53,10 @@ func (w *_nodeRepr) Kind() datamodel.Kind {
 		return datamodel.Kind_Map
 	case schema.UnionRepresentation_Kinded:
 		haveIdx, _ := unionMember(w.val)
-		mtyp := w.schemaType.(*schema.TypeUnion).Members()[haveIdx] // TODO this is fragile: panics with index-out-of-range if the user has nil'd all fields.
+		if haveIdx < 0 {
+			panic(fmt.Sprintf("bindnode: kinded union %s has no member", w.val.Type()))
+		}
+		mtyp := w.schemaType.(*schema.TypeUnion).Members()[haveIdx]
 		return mtyp.RepresentationBehavior()
 	case schema.UnionRepresentation_Stringprefix:
 		return datamodel.Kind_String
@@ -346,14 +349,13 @@ func (w *_nodeRepr) AsInt() (int64, error) {
 }
 
 func (w *_nodeRepr) AsFloat() (float64, error) {
-	if reprStrategy(w.schemaType) == nil {
+	switch stg := reprStrategy(w.schemaType).(type) {
+	case schema.UnionRepresentation_Kinded:
+		return w.asKinded(stg, datamodel.Kind_Float).AsFloat()
+	case nil:
 		return (*_node)(w).AsFloat()
-	}
-	return 0, datamodel.ErrWrongKind{
-		TypeName:        w.schemaType.Name(),
-		MethodName:      "AsFloat",
-		AppropriateKind: datamodel.KindSet_JustFloat,
-		ActualKind:      w.Kind(),
+	default:
+		panic(fmt.Sprintf("TODO: %T", stg))
 	}
 }
 
@@ -408,26 +410,24 @@ func (w *_nodeRepr) AsString() (string, error) {
 }
 
 func (w *_nodeRepr) AsBytes() ([]byte, error) {
-	if reprStrategy(w.schemaType) == nil {
+	switch stg := reprStrategy(w.schemaType).(type) {
+	case schema.UnionRepresentation_Kinded:
+		return w.asKinded(stg, datamodel.Kind_Bytes).AsBytes()
+	case nil:
 		return (*_node)(w).AsBytes()
-	}
-	return nil, datamodel.ErrWrongKind{
-		TypeName:        w.schemaType.Name(),
-		MethodName:      "AsBytes",
-		AppropriateKind: datamodel.KindSet_JustBytes,
-		ActualKind:      w.Kind(),
+	default:
+		panic(fmt.Sprintf("TODO: %T", stg))
 	}
 }
 
 func (w *_nodeRepr) AsLink() (datamodel.Link, error) {
-	if reprStrategy(w.schemaType) == nil {
+	switch stg := reprStrategy(w.schemaType).(type) {
+	case schema.UnionRepresentation_Kinded:
+		return w.asKinded(stg, datamodel.Kind_Link).AsLink()
+	case nil:
 		return (*_node)(w).AsLink()
-	}
-	return nil, datamodel.ErrWrongKind{
-		TypeName:        w.schemaType.Name(),
-		MethodName:      "AsLink",
-		AppropriateKind: datamodel.KindSet_JustLink,
-		ActualKind:      w.Kind(),
+	default:
+		panic(fmt.Sprintf("TODO: %T", stg))
 	}
 }
 
@@ -567,6 +567,8 @@ func (w *_assemblerRepr) AssignInt(i int64) error {
 
 func (w *_assemblerRepr) AssignFloat(f float64) error {
 	switch stg := reprStrategy(w.schemaType).(type) {
+	case schema.UnionRepresentation_Kinded:
+		return w.asKinded(stg, datamodel.Kind_Float).AssignFloat(f)
 	case nil:
 		return (*_assembler)(w).AssignFloat(f)
 	default:
@@ -652,6 +654,8 @@ func (w *_assemblerRepr) AssignString(s string) error {
 
 func (w *_assemblerRepr) AssignBytes(p []byte) error {
 	switch stg := reprStrategy(w.schemaType).(type) {
+	case schema.UnionRepresentation_Kinded:
+		return w.asKinded(stg, datamodel.Kind_Bytes).AssignBytes(p)
 	case nil:
 		return (*_assembler)(w).AssignBytes(p)
 	default:
@@ -661,6 +665,8 @@ func (w *_assemblerRepr) AssignBytes(p []byte) error {
 
 func (w *_assemblerRepr) AssignLink(link datamodel.Link) error {
 	switch stg := reprStrategy(w.schemaType).(type) {
+	case schema.UnionRepresentation_Kinded:
+		return w.asKinded(stg, datamodel.Kind_Link).AssignLink(link)
 	case nil:
 		return (*_assembler)(w).AssignLink(link)
 	default:
