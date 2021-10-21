@@ -28,6 +28,11 @@ type anyScalar struct {
 	Link   *datamodel.Link
 }
 
+type anyRecursive struct {
+	List *[]string
+	Map  *map[string]string
+}
+
 var prototypeTests = []struct {
 	name      string
 	schemaSrc string
@@ -76,7 +81,7 @@ var prototypeTests = []struct {
 		}`,
 	},
 	{
-		name: "ScalarUnions",
+		name: "ScalarKindedUnions",
 		// TODO: should we use an "Any" type from the prelude?
 		schemaSrc: `type Root struct {
 				boolAny   AnyScalar
@@ -110,6 +115,32 @@ var prototypeTests = []struct {
 			"intAny":    3,
 			"linkAny":   {"/": "bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi"},
 			"stringAny": "foo"
+		}`,
+	},
+	{
+		name: "RecursiveKindedUnions",
+		// TODO: should we use an "Any" type from the prelude?
+		// Especially since we use String map/list element types.
+		// TODO: use inline map/list defs once schema and dsl+dmt support it.
+		schemaSrc: `type Root struct {
+				listAny AnyRecursive
+				mapAny  AnyRecursive
+			}
+
+			type List_String [String]
+			type Map_String {String:String}
+
+			type AnyRecursive union {
+				| List_String list
+				| Map_String  map
+			} representation kinded`,
+		ptrType: (*struct {
+			ListAny anyRecursive
+			MapAny  anyRecursive
+		})(nil),
+		prettyDagJSON: `{
+			"listAny": ["foo", "bar"],
+			"mapAny":  {"a": "x", "b": "y"}
 		}`,
 	},
 }

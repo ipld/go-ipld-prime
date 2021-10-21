@@ -155,6 +155,8 @@ func (w *_nodeRepr) LookupByString(key string) (datamodel.Node, error) {
 
 func (w *_nodeRepr) LookupByIndex(idx int64) (datamodel.Node, error) {
 	switch stg := reprStrategy(w.schemaType).(type) {
+	case schema.UnionRepresentation_Kinded:
+		return w.asKinded(stg, datamodel.Kind_List).LookupByIndex(idx)
 	case schema.StructRepresentation_Tuple:
 		fields := w.schemaType.(*schema.TypeStruct).Fields()
 		field := fields[idx]
@@ -517,6 +519,8 @@ func (w *_assemblerRepr) BeginMap(sizeHint int64) (datamodel.MapAssembler, error
 
 func (w *_assemblerRepr) BeginList(sizeHint int64) (datamodel.ListAssembler, error) {
 	switch stg := reprStrategy(w.schemaType).(type) {
+	case schema.UnionRepresentation_Kinded:
+		return w.asKinded(stg, datamodel.Kind_List).BeginList(sizeHint)
 	case schema.StructRepresentation_Tuple:
 		asm, err := (*_assembler)(w).BeginMap(sizeHint)
 		if err != nil {
