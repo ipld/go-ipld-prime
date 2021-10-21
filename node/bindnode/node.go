@@ -190,7 +190,7 @@ func unionMember(val reflect.Value) (int, reflect.Value) {
 	for i := 0; i < val.NumField(); i++ {
 		elemVal := val.Field(i)
 		if elemVal.Kind() != reflect.Ptr {
-			panic("found unexpected non-pointer in a union field")
+			panic("bindnode: found unexpected non-pointer in a union field")
 		}
 		if elemVal.IsNil() {
 			continue
@@ -412,7 +412,7 @@ func (w *_node) AsLink() (datamodel.Link, error) {
 	case cid.Cid:
 		return cidlink.Link{Cid: val}, nil
 	default:
-		panic("TODO: unexpected link type")
+		panic(fmt.Sprintf("bindnode: unexpected link type %T", val))
 	}
 }
 
@@ -734,12 +734,11 @@ func (w *_assembler) AssignNode(node datamodel.Node) error {
 	case datamodel.Kind_Null:
 		return w.AssignNull()
 	}
-	// fmt.Println(w.val.Type(), reflect.TypeOf(node))
-	panic(fmt.Sprintf("TODO: %v %v", w.val.Type(), node.Kind()))
+	return fmt.Errorf("AssignNode TODO: %v %v", w.val.Type(), node.Kind())
 }
 
 func (w *_assembler) Prototype() datamodel.NodePrototype {
-	panic("TODO: Assembler.Prototype")
+	return &_prototype{schemaType: w.schemaType, goType: w.val.Type()}
 }
 
 type _structAssembler struct {
@@ -787,7 +786,7 @@ func (w *_structAssembler) AssembleValue() datamodel.NodeAssembler {
 	ftyp, ok := w.val.Type().FieldByName(fieldNameFromSchema(name))
 	if !ok {
 		// It is unfortunate this is not detected proactively earlier during bind.
-		panic(fmt.Errorf("schema type %q has field %q, we expect go struct to have field %q", w.schemaType.Name(), field.Name(), fieldNameFromSchema(name)))
+		panic(fmt.Sprintf("schema type %q has field %q, we expect go struct to have field %q", w.schemaType.Name(), field.Name(), fieldNameFromSchema(name)))
 	}
 	if len(ftyp.Index) > 1 {
 		panic("TODO: embedded fields")
@@ -906,7 +905,7 @@ func (w *_mapAssembler) KeyPrototype() datamodel.NodePrototype {
 }
 
 func (w *_mapAssembler) ValuePrototype(k string) datamodel.NodePrototype {
-	panic("TODO: struct ValuePrototype")
+	return &_prototype{schemaType: w.schemaType.ValueType(), goType: w.valuesVal.Type().Elem()}
 }
 
 type _listAssembler struct {
@@ -936,7 +935,7 @@ func (w *_listAssembler) Finish() error {
 }
 
 func (w *_listAssembler) ValuePrototype(idx int64) datamodel.NodePrototype {
-	panic("TODO: list ValuePrototype")
+	return &_prototype{schemaType: w.schemaType.ValueType(), goType: w.val.Type().Elem()}
 }
 
 type _unionAssembler struct {
@@ -1014,7 +1013,7 @@ func (w *_unionAssembler) KeyPrototype() datamodel.NodePrototype {
 }
 
 func (w *_unionAssembler) ValuePrototype(k string) datamodel.NodePrototype {
-	panic("TODO: struct ValuePrototype")
+	panic("TODO: union ValuePrototype")
 }
 
 type _structIterator struct {

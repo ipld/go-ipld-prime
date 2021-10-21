@@ -511,7 +511,7 @@ func (w *_assemblerRepr) BeginMap(sizeHint int64) (datamodel.MapAssembler, error
 	case *_unionAssembler:
 		return (*_unionAssemblerRepr)(asm), nil
 	default:
-		panic(fmt.Sprintf("%T", asm))
+		panic(fmt.Sprintf("bindnode: unexpected assembler type: %T", asm))
 	}
 }
 
@@ -908,7 +908,7 @@ func (w *_unionAssemblerRepr) KeyPrototype() datamodel.NodePrototype {
 }
 
 func (w *_unionAssemblerRepr) ValuePrototype(k string) datamodel.NodePrototype {
-	panic("TODO: struct ValuePrototype")
+	panic("TODO: union ValuePrototype")
 }
 
 type _structIteratorRepr _structIterator
