@@ -9,8 +9,8 @@ import (
 	qt "github.com/frankban/quicktest"
 	"github.com/ipfs/go-cid"
 
-	"github.com/ipld/go-ipld-prime"
 	"github.com/ipld/go-ipld-prime/codec/dagjson"
+	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/node/bindnode"
 	"github.com/ipld/go-ipld-prime/schema"
 	schemadmt "github.com/ipld/go-ipld-prime/schema/dmt"
@@ -66,7 +66,7 @@ var prototypeTests = []struct {
 				linkCID     Link
 			}`,
 		ptrType: (*struct {
-			LinkGeneric ipld.Link
+			LinkGeneric datamodel.Link
 			LinkCID     cid.Cid
 		})(nil),
 		prettyDagJSON: `{
@@ -121,14 +121,14 @@ func compactJSON(t *testing.T, pretty string) string {
 	return buf.String()
 }
 
-func dagjsonEncode(t *testing.T, node ipld.Node) string {
+func dagjsonEncode(t *testing.T, node datamodel.Node) string {
 	var sb strings.Builder
 	err := dagjson.Encode(node, &sb)
 	qt.Assert(t, err, qt.IsNil)
 	return sb.String()
 }
 
-func dagjsonDecode(t *testing.T, proto ipld.NodePrototype, src string) ipld.Node {
+func dagjsonDecode(t *testing.T, proto datamodel.NodePrototype, src string) datamodel.Node {
 	nb := proto.NewBuilder()
 	err := dagjson.Decode(nb, strings.NewReader(src))
 	qt.Assert(t, err, qt.IsNil)

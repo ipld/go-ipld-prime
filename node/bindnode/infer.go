@@ -108,6 +108,8 @@ func inferGoType(typ schema.Type) reflect.Type {
 			}
 		}
 		return reflect.StructOf(fieldsGo)
+	case *schema.TypeLink:
+		return goTypeLink
 	}
 	panic(fmt.Sprintf("%T\n", typ))
 }

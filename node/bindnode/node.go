@@ -414,7 +414,7 @@ func (w *_node) AsLink() (datamodel.Link, error) {
 }
 
 func (w *_node) Prototype() datamodel.NodePrototype {
-	panic("TODO: Prototype")
+	return &_prototype{schemaType: w.schemaType, goType: w.val.Type()}
 }
 
 type _builder struct {
@@ -623,7 +623,7 @@ func (w *_assembler) AssignLink(link datamodel.Link) error {
 			// Unbox a cidlink.Link to assign to a go-cid.Cid value.
 			newVal = newVal.FieldByName("Cid")
 		} else {
-			// The target value cannot be assigned a ipld.Link or go-cid.Cid.
+			// The target value cannot be assigned a datamodel.Link or go-cid.Cid.
 			return datamodel.ErrWrongKind{
 				TypeName:        w.schemaType.Name(),
 				MethodName:      "AssignLink",
