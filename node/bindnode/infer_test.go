@@ -10,12 +10,11 @@ import (
 	qt "github.com/frankban/quicktest"
 	"github.com/ipfs/go-cid"
 
+	"github.com/ipld/go-ipld-prime"
 	"github.com/ipld/go-ipld-prime/codec/dagjson"
 	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/node/bindnode"
 	"github.com/ipld/go-ipld-prime/schema"
-	schemadmt "github.com/ipld/go-ipld-prime/schema/dmt"
-	schemadsl "github.com/ipld/go-ipld-prime/schema/dsl"
 )
 
 type anyScalar struct {
@@ -144,22 +143,6 @@ var prototypeTests = []struct {
 	},
 }
 
-func loadSchema(t *testing.T, src string) schema.Type {
-	t.Helper()
-
-	dmt, err := schemadsl.Parse("", strings.NewReader(src))
-	qt.Assert(t, err, qt.IsNil)
-
-	var ts schema.TypeSystem
-	ts.Init()
-	err = schemadmt.Compile(&ts, dmt)
-	qt.Assert(t, err, qt.IsNil)
-
-	typ := ts.TypeByName("Root")
-	qt.Assert(t, typ, qt.Not(qt.IsNil))
-	return typ
-}
-
 func compactJSON(t *testing.T, pretty string) string {
 	var buf bytes.Buffer
 	err := json.Compact(&buf, []byte(pretty))
@@ -195,7 +178,10 @@ func TestPrototype(t *testing.T) {
 			t.Run(test.name+suffix, func(t *testing.T) {
 				t.Parallel()
 
-				schemaType := loadSchema(t, test.schemaSrc)
+				ts, err := ipld.LoadSchemaBytes([]byte(test.schemaSrc))
+				qt.Assert(t, err, qt.IsNil)
+				schemaType := ts.TypeByName("Root")
+				qt.Assert(t, schemaType, qt.Not(qt.IsNil))
 
 				if onlySchema {
 					test.ptrType = nil

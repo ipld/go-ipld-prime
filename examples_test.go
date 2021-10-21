@@ -5,8 +5,10 @@ import (
 	"os"
 	"strings"
 
+	"github.com/ipld/go-ipld-prime"
 	"github.com/ipld/go-ipld-prime/codec/dagjson"
 	"github.com/ipld/go-ipld-prime/node/basicnode"
+	"github.com/ipld/go-ipld-prime/schema"
 )
 
 // Example_createDataAndMarshal shows how you can feed data into a NodeBuilder,
@@ -50,4 +52,24 @@ func Example_unmarshalData() {
 	// Output:
 	// the data decoded was a map kind
 	// the length of the node is 2
+}
+
+func ExampleLoadSchema() {
+	ts, err := ipld.LoadSchema("sample.ipldsch", strings.NewReader(`
+		type Root struct {
+			foo Int
+			bar nullable String
+		}
+		`))
+	if err != nil {
+		panic(err)
+	}
+	typeRoot := ts.TypeByName("Root").(*schema.TypeStruct)
+	for _, field := range typeRoot.Fields() {
+		fmt.Printf("field name=%q nullable=%t type=%v\n",
+			field.Name(), field.IsNullable(), field.Type().Name())
+	}
+	// Output:
+	// field name="foo" nullable=false type=Int
+	// field name="bar" nullable=true type=String
 }
