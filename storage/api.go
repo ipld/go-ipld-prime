@@ -15,6 +15,25 @@ type WritableStorage interface {
 	Put(ctx context.Context, key string, content []byte) error
 }
 
+// RWStorage is a type that can be used to advertise support for
+// both ReadableStorage and WritableStorage at the same time.
+//
+// Typically, this interface is seen in the return type of constructor functions
+// for storage systems that can be used both readable and writably,
+// but where the constructor function doesn't want to return a concrete type.
+// It is not often seen otherwise.
+//
+// APIs that take storage systems as a parameter should typically use
+// either ReadableStorage or WritableStorage explicitly,
+// and accept parameters for both, rather than using this interface.
+// (This two-parameter approach allows the user to provide
+// a pointer to the same storage for both, or provide different pointers,
+// or provide only a read pointer with no write pointer, etc, at their option.)
+type RWStorage interface {
+	ReadableStorage
+	WritableStorage
+}
+
 // --- streaming --->
 
 type StreamingReadableStorage interface {
