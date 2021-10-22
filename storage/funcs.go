@@ -17,6 +17,11 @@ import (
 	regardless of how much explicit support the storage implementation has for the exact behavior you requested.
 */
 
+func Has(ctx context.Context, store Storage, key string) (bool, error) {
+	// Okay, not much going on here -- this function is only here for consistency of style.
+	return store.Has(ctx, key)
+}
+
 func Get(ctx context.Context, store ReadableStorage, key string) ([]byte, error) {
 	// Okay, not much going on here -- this function is only here for consistency of style.
 	return store.Get(ctx, key)

@@ -39,6 +39,15 @@ func (store *Store) beInitialized() {
 	store.Bag = make(map[string][]byte)
 }
 
+// Has implements go-ipld-prime/storage.Storage.Has.
+func (store *Store) Has(ctx context.Context, key string) (bool, error) {
+	if store.Bag == nil {
+		return false, nil
+	}
+	_, exists := store.Bag[key]
+	return exists, nil
+}
+
 // Get implements go-ipld-prime/storage.ReadableStorage.Get.
 //
 // Note that this internally performs a defensive copy;

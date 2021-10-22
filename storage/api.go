@@ -7,11 +7,17 @@ import (
 
 // --- basics --->
 
+type Storage interface {
+	Has(ctx context.Context, key string) (bool, error)
+}
+
 type ReadableStorage interface {
+	Storage
 	Get(ctx context.Context, key string) ([]byte, error)
 }
 
 type WritableStorage interface {
+	Storage
 	Put(ctx context.Context, key string, content []byte) error
 }
 
