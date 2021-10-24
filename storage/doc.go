@@ -5,25 +5,51 @@
 //
 // In IPLD, you can often avoid dealing with storage directly yourself,
 // and instead use linking.LinkSystem to handle serialization, hashing, and storage all at once.
-// You'll hand some values that match interfaces from this package to LinkSystem when configuring it.
+// (You'll hand some values that match interfaces from this package to LinkSystem when configuring it.)
+// It's probably best to work at that level and above as much as possible.
+// If you do need to interact with storage more directly, the read on.
 //
 // The most basic APIs are ReadableStorage and WritableStorage.
+// When writing code that works with storage systems, these two interfaces should be seen in almost all situations:
+// user code is recommended to think in terms of these types;
+// functions provided by this package will accept parameters of these types and work on them;
+// implementations are expected to provide these types first;
+// and any new library code is recommended to keep with the theme: use these interfaces preferentially.
+//
+// Users should decide which actions they want to take using a storage system,
+// find the appropriate function in this package (n.b., package function -- not a method on an interface!
+// You will likely find one of each, with the same name: pick the package function!),
+// and use that function, providing it the storage system (e.g. either ReadableStorage, WritableStorage, or sometimes just Storage)
+// as a parameter.
+// That function will then use feature-detection (checking for matches to the other,
+// more advanced and more specific interfaces in this package) and choose the best way
+// to satisfy the request; or, if it can't feature-detect any relevant features,
+// the function will fall back to synthesizing the requested behavior out of the most basic API.
+// Using the package functions, and letting them do the feature detection for you,
+// should provide the most consistent user experience and minimize the amount of work you need to do.
+// (Bonus: It also gives us a convenient place to smooth out any future library migrations for you!)
+//
+// If writing new APIs that are meant to work reusably for any storage implementation:
 // APIs should usually be designed around accepting ReadableStorage or WritableStorage as parameters
-// (depending on which direction of data flow the API is regarding),
+// (depending on which direction of data flow the API is regarding).
 // and use the other interfaces (e.g. StreamingReadableStorage) thereafter internally for feature detection.
-// Similarly, implementers of storage systems should implement ReadableStorage or WritableStorage
-// before any other features.
+// For APIs which may sometimes be found relating to either a read or a write direction of data flow,
+// the Storage interface may be used in order to define a function that should accept either ReadableStorage or WritableStorage.
+// In other words: when writing reusable APIs, one should follow the same pattern as this package's own functions do.
+//
+// Similarly, implementers of storage systems should always implement either ReadableStorage or WritableStorage first.
+// Only after satisfying one of those should the implementation then move on to further supporting
+// additional interfaces in this package (all of which are meant to support feature-detection).
+// Beyond one of the basic two, all the other interfaces are optional:
+// you can implement them if you want to advertise additional features,
+// or advertise fastpaths that your storage system supports;
+// but you don't have implement any of those additional interfaces if you don't want to,
+// or if your implementation can't offer useful fastpaths for them.
 //
 // Storage systems as described by this package are allowed to make some interesting trades.
 // Generally, write operations are allowed to be first-write-wins.
 // Furthermore, there is no requirement that the system return an error if a subsequent write to the same key has different content.
-// These rules are reasonable for a content-addressed storage system, and allow great optimizitions to be made.
-//
-// If implementing a storage system, you should implement packages from this interface.
-// Beyond the basic two (described above), all the other interfaces are optional:
-// you can implement them if you want to advertise additional features,
-// or advertise fastpaths that your storage system supports;
-// but you don't have implement any of the additional interfaces if you don't want to.
+// These rules are reasonable for a content-addressed storage system, and allow great optimizations to be made.
 //
 // Note that all of the interfaces in this package only use types that are present in the golang standard library.
 // This is intentional, and was done very carefully.

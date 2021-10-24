@@ -7,15 +7,80 @@ import (
 
 // --- basics --->
 
+// Storage is one of the base interfaces in the storage APIs.
+// This type is rarely seen by itself alone (and never useful to implement alone),
+// but is included in both ReadableStorage and WritableStorage.
+// Because it's included in both the of the other two useful base interfaces,
+// you can define functions that work on either one of them
+// by using this type to describe your function's parameters.
+//
+// Library functions that work with storage systems should take either
+// ReadableStorage, or WritableStorage, or Storage, as a parameter,
+// depending on whether the function deals with the reading of data,
+// or the writing of data, or may be found on either, respectively.
+//
+// An implementation of Storage may also support many other methods.
+// At the very least, it should also support one of either ReadableStorage or WritableStorage.
+// It may support even more interfaces beyond that for additional feature detection.
+// See the package-wide docs for more discussion of this design.
+//
+// The Storage interface does not include much of use in itself alone,
+// because ReadableStorage and WritableStorage are meant to be the most used types in declarations.
+// However, it does include the Has function, because that function is reasonable to require ubiquitously from all implementations,
+// and it serves as a reasonable marker to make sure the Storage interface is not trivially satisfied.
 type Storage interface {
 	Has(ctx context.Context, key string) (bool, error)
 }
 
+// ReadableStorage is one of the base interfaces in the storage APIs;
+// a storage system should implement at minimum either this, or WritableStorage,
+// depending on whether it supports reading or writing.
+// (One type may also implement both.)
+//
+// ReadableStorage implementations must at minimum provide
+// a way to ask the store whether it contains a key,
+// and a way to ask it to return the value.
+//
+// Library functions that work with storage systems should take either
+// ReadableStorage, or WritableStorage, or Storage, as a parameter,
+// depending on whether the function deals with the reading of data,
+// or the writing of data, or may be found on either, respectively.
+//
+// An implementation of ReadableStorage may also support many other methods --
+// for example, it may additionally match StreamingReadableStorage, or yet more interfaces.
+// Usually, you should not need to check for this yourself; instead,
+// you should use the storage package's functions to ask for the desired mode of interaction.
+// Those functions will will accept any ReadableStorage as an argument,
+// detect the additional interfaces automatically and use them if present,
+// or, fall back to synthesizing equivalent behaviors from the basics.
+// See the package-wide docs for more discussion of this design.
 type ReadableStorage interface {
 	Storage
 	Get(ctx context.Context, key string) ([]byte, error)
 }
 
+// WritableStorage is one of the base interfaces in the storage APIs;
+// a storage system should implement at minimum either this, or ReadableStorage,
+// depending on whether it supports reading or writing.
+// (One type may also implement both.)
+//
+// WritableStorage implementations must at minimum provide
+// a way to ask the store whether it contains a key,
+// and a way to put a value into storage indexed by some key.
+//
+// Library functions that work with storage systems should take either
+// ReadableStorage, or WritableStorage, or Storage, as a parameter,
+// depending on whether the function deals with the reading of data,
+// or the writing of data, or may be found on either, respectively.
+//
+// An implementation of WritableStorage may also support many other methods --
+// for example, it may additionally match StreamingWritableStorage, or yet more interfaces.
+// Usually, you should not need to check for this yourself; instead,
+// you should use the storage package's functions to ask for the desired mode of interaction.
+// Those functions will will accept any WritableStorage as an argument,
+// detect the additional interfaces automatically and use them if present,
+// or, fall back to synthesizing equivalent behaviors from the basics.
+// See the package-wide docs for more discussion of this design.
 type WritableStorage interface {
 	Storage
 	Put(ctx context.Context, key string, content []byte) error
