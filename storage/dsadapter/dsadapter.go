@@ -26,6 +26,34 @@ type Adapter struct {
 	EscapingFunc func(string) string
 }
 
+// Has implements go-ipld-prime/storage.Storage.Has.
+func (a *Adapter) Has(ctx context.Context, key string) (bool, error) {
+	// Return early if the context is already closed.
+	// This is also the last time we'll check the context,
+	// since go-datastore doesn't take them.
+	if ctx.Err() != nil {
+		return false, ctx.Err()
+	}
+
+	// If we have an EscapingFunc, apply it.
+	if a.EscapingFunc != nil {
+		key = a.EscapingFunc(key)
+	}
+
+	// Wrap the key into go-datastore's concrete type that it requires.
+	// Note that this does a bunch of actual work, which may be surprising.
+	// The key may be transformed (as per path.Clean).
+	// There will also be an allocation, if the key doesn't start with "/".
+	// (Avoiding these performance drags is part of why we started
+	// new interfaces in go-ipld-prime/storage.)
+	k := datastore.NewKey(key)
+
+	// Delegate the has call.
+	// Note that for some datastore implementations, this will do *yet more*
+	// validation on the key, and may return errors from that.
+	return a.Wrapped.Has(k)
+}
+
 // Get implements go-ipld-prime/storage.ReadableStorage.Get.
 func (a *Adapter) Get(ctx context.Context, key string) ([]byte, error) {
 	// Return early if the context is already closed.
