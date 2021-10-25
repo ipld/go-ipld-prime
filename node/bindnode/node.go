@@ -1152,13 +1152,3 @@ func (w *_unionIterator) Next() (key, value datamodel.Node, _ error) {
 func (w *_unionIterator) Done() bool {
 	return w.done
 }
-
-// TODO: consider making our own Node interface, like:
-//
-// type WrappedNode interface {
-//     datamodel.Node
-//     Unwrap() (ptr interface)
-// }
-//
-// Pros: API is easier to understand, harder to mix up with other datamodel.Nodes.
-// Cons: One usually only has an datamodel.Node, and type assertions can be weird.
