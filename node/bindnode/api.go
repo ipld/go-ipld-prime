@@ -43,10 +43,12 @@ func Prototype(ptrType interface{}, schemaType schema.Type) schema.TypedPrototyp
 			panic("bindnode: ptrType must be a pointer")
 		}
 		goType = goPtrType.Elem()
-	}
 
-	if schemaType == nil {
-		schemaType = inferSchema(goType)
+		if schemaType == nil {
+			schemaType = inferSchema(goType)
+		} else {
+			verifyCompatibility(make(map[seenEntry]bool), goType, schemaType)
+		}
 	}
 
 	return &_prototype{schemaType: schemaType, goType: goType}
@@ -75,15 +77,27 @@ func Wrap(ptrVal interface{}, schemaType schema.Type) schema.TypedNode {
 	goVal := goPtrVal.Elem()
 	if schemaType == nil {
 		schemaType = inferSchema(goVal.Type())
+	} else {
+		verifyCompatibility(make(map[seenEntry]bool), goVal.Type(), schemaType)
 	}
 	return &_node{val: goVal, schemaType: schemaType}
 }
+
+// TODO: consider making our own Node interface, like:
+//
+// type WrappedNode interface {
+//     datamodel.Node
+//     Unwrap() (ptrVal interface)
+// }
+//
+// Pros: API is easier to understand, harder to mix up with other datamodel.Nodes.
+// Cons: One usually only has an datamodel.Node, and type assertions can be weird.
 
 // Unwrap takes an datamodel.Node implemented by Prototype or Wrap,
 // and returns a pointer to the inner Go value.
 //
 // Unwrap returns nil if the node isn't implemented by this package.
-func Unwrap(node datamodel.Node) (ptr interface{}) {
+func Unwrap(node datamodel.Node) (ptrVal interface{}) {
 	var val reflect.Value
 	switch node := node.(type) {
 	case *_node:

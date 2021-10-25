@@ -3,6 +3,7 @@ package bindnode_test
 import (
 	"bytes"
 	"encoding/json"
+	"reflect"
 	"strings"
 	"testing"
 
@@ -16,8 +17,6 @@ import (
 	schemadmt "github.com/ipld/go-ipld-prime/schema/dmt"
 	schemadsl "github.com/ipld/go-ipld-prime/schema/dsl"
 )
-
-// TODO: tests where an IPLD schema and Go type do not match
 
 type anyScalar struct {
 	Bool   *bool
@@ -214,5 +213,208 @@ func TestPrototype(t *testing.T) {
 				_ = dagjsonEncode(t, node)
 			})
 		}
+	}
+}
+
+type verifyBadType struct {
+	ptrType     interface{}
+	panicRegexp string
+}
+
+type (
+	namedBool    bool
+	namedInt64   int64
+	namedFloat64 float64
+	namedString  string
+	namedBytes   []byte
+)
+
+var verifyTests = []struct {
+	name      string
+	schemaSrc string
+
+	goodTypes []interface{}
+	badTypes  []verifyBadType
+}{
+	{
+		name:      "Bool",
+		schemaSrc: `type Root bool`,
+		goodTypes: []interface{}{
+			(*bool)(nil),
+			(*namedBool)(nil),
+		},
+		badTypes: []verifyBadType{
+			{(*string)(nil), `.*type Root .* type string: kind mismatch`},
+		},
+	},
+	{
+		name:      "Int",
+		schemaSrc: `type Root int`,
+		goodTypes: []interface{}{
+			(*int)(nil),
+			(*namedInt64)(nil),
+			(*int8)(nil),
+			(*int16)(nil),
+			(*int32)(nil),
+			(*int64)(nil),
+		},
+		badTypes: []verifyBadType{
+			{(*string)(nil), `.*type Root .* type string: kind mismatch`},
+		},
+	},
+	{
+		name:      "Float",
+		schemaSrc: `type Root float`,
+		goodTypes: []interface{}{
+			(*float64)(nil),
+			(*namedFloat64)(nil),
+			(*float32)(nil),
+		},
+		badTypes: []verifyBadType{
+			{(*string)(nil), `.*type Root .* type string: kind mismatch`},
+		},
+	},
+	{
+		name:      "String",
+		schemaSrc: `type Root string`,
+		goodTypes: []interface{}{
+			(*string)(nil),
+			(*namedString)(nil),
+		},
+		badTypes: []verifyBadType{
+			{(*int)(nil), `.*type Root .* type int: kind mismatch`},
+		},
+	},
+	{
+		name:      "Bytes",
+		schemaSrc: `type Root bytes`,
+		goodTypes: []interface{}{
+			(*[]byte)(nil),
+			(*namedBytes)(nil),
+			(*[]uint8)(nil), // alias of byte
+		},
+		badTypes: []verifyBadType{
+			{(*int)(nil), `.*type Root .* type int: kind mismatch`},
+			{(*[]int)(nil), `.*type Root .* type \[\]int: kind mismatch`},
+		},
+	},
+	{
+		name:      "List",
+		schemaSrc: `type Root [String]`,
+		goodTypes: []interface{}{
+			(*[]string)(nil),
+			(*[]namedString)(nil),
+		},
+		badTypes: []verifyBadType{
+			{(*string)(nil), `.*type Root .* type string: kind mismatch`},
+			{(*[]int)(nil), `.*type String .* type int: kind mismatch`},
+			{(*[3]string)(nil), `.*type Root .* type \[3\]string: kind mismatch`},
+		},
+	},
+	{
+		name: "Struct",
+		schemaSrc: `type Root struct {
+				int Int
+			}`,
+		goodTypes: []interface{}{
+			(*struct{ Int int })(nil),
+			(*struct{ Int namedInt64 })(nil),
+		},
+		badTypes: []verifyBadType{
+			{(*string)(nil), `.*type Root .* type string: kind mismatch`},
+			{(*struct{ Int bool })(nil), `.*type Int .* type bool: kind mismatch`},
+			{(*struct{ Int1, Int2 int })(nil), `.*type Root .* type struct {.*}: 2 vs 1 fields`},
+		},
+	},
+	{
+		name:      "Map",
+		schemaSrc: `type Root {String:Int}`,
+		goodTypes: []interface{}{
+			(*struct {
+				Keys   []string
+				Values map[string]int
+			})(nil),
+			(*struct {
+				Keys   []namedString
+				Values map[namedString]namedInt64
+			})(nil),
+		},
+		badTypes: []verifyBadType{
+			{(*string)(nil), `.*type Root .* type string: kind mismatch`},
+			{(*struct{ Keys []string })(nil), `.*type Root .*: 1 vs 2 fields`},
+			{(*struct{ Values map[string]int })(nil), `.*type Root .*: 1 vs 2 fields`},
+			{(*struct {
+				Keys   string
+				Values map[string]int
+			})(nil), `.*type Root .*: kind mismatch`},
+			{(*struct {
+				Keys   []string
+				Values string
+			})(nil), `.*type Root .*: kind mismatch`},
+		},
+	},
+	{
+		name: "Union",
+		schemaSrc: `type Root union {
+				| List_String list
+				| String      string
+			} representation kinded
+
+			type List_String [String]
+			`,
+		goodTypes: []interface{}{
+			(*struct {
+				List   *[]string
+				String *string
+			})(nil),
+			(*struct {
+				List   *[]namedString
+				String *namedString
+			})(nil),
+		},
+		badTypes: []verifyBadType{
+			{(*string)(nil), `.*type Root .* type string: kind mismatch`},
+			{(*struct{ List *[]string })(nil), `.*type Root .*: 1 vs 2 members`},
+			{(*struct {
+				List   *[]string
+				String string
+			})(nil), `.*type Root .*: union members must be pointers`},
+			{(*struct {
+				List   *[]string
+				String *int
+			})(nil), `.*type String .*: kind mismatch`},
+		},
+	},
+}
+
+func TestSchemaVerify(t *testing.T) {
+	t.Parallel()
+
+	for _, test := range verifyTests {
+		test := test // don't reuse the range var
+
+		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
+
+			schemaType := loadSchema(t, test.schemaSrc)
+
+			for _, ptrType := range test.goodTypes {
+				proto := bindnode.Prototype(ptrType, schemaType)
+				qt.Assert(t, proto, qt.Not(qt.IsNil))
+
+				ptrVal := reflect.New(reflect.TypeOf(ptrType).Elem()).Interface()
+				node := bindnode.Wrap(ptrVal, schemaType)
+				qt.Assert(t, node, qt.Not(qt.IsNil))
+			}
+
+			for _, bad := range test.badTypes {
+				qt.Check(t, func() { bindnode.Prototype(bad.ptrType, schemaType) },
+					qt.PanicMatches, bad.panicRegexp)
+
+				ptrVal := reflect.New(reflect.TypeOf(bad.ptrType).Elem()).Interface()
+				qt.Check(t, func() { bindnode.Wrap(ptrVal, schemaType) },
+					qt.PanicMatches, bad.panicRegexp)
+			}
+		})
 	}
 }

@@ -31,6 +31,148 @@ var (
 
 // Consider exposing these APIs later, if they might be useful.
 
+type seenEntry struct {
+	goType     reflect.Type
+	schemaType schema.Type
+}
+
+func verifyCompatibility(seen map[seenEntry]bool, goType reflect.Type, schemaType schema.Type) {
+	// Avoid endless loops.
+	//
+	// TODO(mvdan): this is easy but fairly allocation-happy.
+	// Plus, one map per call means we don't reuse work.
+	if seen[seenEntry{goType, schemaType}] {
+		return
+	}
+	seen[seenEntry{goType, schemaType}] = true
+
+	doPanic := func(format string, args ...interface{}) {
+		panicFormat := "bindnode: schema type %s is not compatible with Go type %s"
+		panicArgs := []interface{}{schemaType.Name(), goType.String()}
+
+		if format != "" {
+			panicFormat += ": " + format
+		}
+		panicArgs = append(panicArgs, args...)
+		panic(fmt.Sprintf(panicFormat, panicArgs...))
+	}
+	switch schemaType := schemaType.(type) {
+	case *schema.TypeBool:
+		if goType.Kind() != reflect.Bool {
+			doPanic("kind mismatch")
+		}
+	case *schema.TypeInt:
+		// TODO: allow uints?
+		switch goType.Kind() {
+		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+		default:
+			doPanic("kind mismatch")
+		}
+	case *schema.TypeFloat:
+		switch goType.Kind() {
+		case reflect.Float32, reflect.Float64:
+		default:
+			doPanic("kind mismatch")
+		}
+	case *schema.TypeString:
+		// TODO: allow []byte?
+		if goType.Kind() != reflect.String {
+			doPanic("kind mismatch")
+		}
+	case *schema.TypeBytes:
+		// TODO: allow string?
+		if goType.Kind() != reflect.Slice {
+			doPanic("kind mismatch")
+		}
+		if goType.Elem().Kind() != reflect.Uint8 {
+			doPanic("kind mismatch")
+		}
+	case *schema.TypeList:
+		if goType.Kind() != reflect.Slice {
+			doPanic("kind mismatch")
+		}
+		goType = goType.Elem()
+		if schemaType.ValueIsNullable() {
+			if goType.Kind() != reflect.Ptr {
+				doPanic("nullable types must be pointers")
+			}
+			goType = goType.Elem()
+		}
+		verifyCompatibility(seen, goType, schemaType.ValueType())
+	case *schema.TypeMap:
+		//	struct {
+		//		Keys   []K
+		//		Values map[K]V
+		//	}
+		if goType.Kind() != reflect.Struct {
+			doPanic("kind mismatch")
+		}
+		if goType.NumField() != 2 {
+			doPanic("%d vs 2 fields", goType.NumField())
+		}
+
+		fieldKeys := goType.Field(0)
+		if fieldKeys.Type.Kind() != reflect.Slice {
+			doPanic("kind mismatch")
+		}
+		verifyCompatibility(seen, fieldKeys.Type.Elem(), schemaType.KeyType())
+
+		fieldValues := goType.Field(1)
+		if fieldValues.Type.Kind() != reflect.Map {
+			doPanic("kind mismatch")
+		}
+		verifyCompatibility(seen, fieldValues.Type.Key(), schemaType.KeyType())
+		verifyCompatibility(seen, fieldValues.Type.Elem(), schemaType.ValueType())
+	case *schema.TypeStruct:
+		if goType.Kind() != reflect.Struct {
+			doPanic("kind mismatch")
+		}
+
+		schemaFields := schemaType.Fields()
+		if goType.NumField() != len(schemaFields) {
+			doPanic("%d vs %d fields", goType.NumField(), len(schemaFields))
+		}
+		for i, schemaField := range schemaFields {
+			schemaType := schemaField.Type()
+			goType := goType.Field(i).Type
+			// TODO: allow "is nilable" to some degree?
+			if schemaField.IsNullable() {
+				if goType.Kind() != reflect.Ptr {
+					doPanic("nullable types must be pointers")
+				}
+				goType = goType.Elem()
+			}
+			if schemaField.IsOptional() {
+				if goType.Kind() != reflect.Ptr {
+					doPanic("optional types must be pointers")
+				}
+				goType = goType.Elem()
+			}
+			verifyCompatibility(seen, goType, schemaType)
+		}
+	case *schema.TypeUnion:
+		if goType.Kind() != reflect.Struct {
+			doPanic("kind mismatch")
+		}
+
+		schemaMembers := schemaType.Members()
+		if goType.NumField() != len(schemaMembers) {
+			doPanic("%d vs %d members", goType.NumField(), len(schemaMembers))
+		}
+
+		for i, schemaType := range schemaMembers {
+			goType := goType.Field(i).Type
+			if goType.Kind() != reflect.Ptr {
+				doPanic("union members must be pointers")
+			}
+			goType = goType.Elem()
+			verifyCompatibility(seen, goType, schemaType)
+		}
+	default:
+		panic(fmt.Sprintf("%T", schemaType))
+	}
+}
+
 func inferGoType(typ schema.Type) reflect.Type {
 	switch typ := typ.(type) {
 	case *schema.TypeBool:
@@ -111,7 +253,7 @@ func inferGoType(typ schema.Type) reflect.Type {
 	case *schema.TypeLink:
 		return goTypeLink
 	}
-	panic(fmt.Sprintf("%T\n", typ))
+	panic(fmt.Sprintf("%T", typ))
 }
 
 // from IPLD Schema field names like "foo" to Go field names like "Foo".
@@ -192,5 +334,5 @@ func inferSchema(typ reflect.Type) schema.Type {
 		defaultTypeSystem.Accumulate(typSchema)
 		return typSchema
 	}
-	panic(fmt.Sprintf("%s\n", typ.Kind()))
+	panic(fmt.Sprintf("%s", typ.Kind()))
 }
