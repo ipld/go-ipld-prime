@@ -21,6 +21,9 @@ import (
 // The go-datastore.Datastore may internally have other configuration,
 // such as key sharding functions, etc, and we don't interfere with that here;
 // such configuration should be handled when creating the go-datastore value.
+//
+// Contexts given to this system are checked for errors at the beginning of an operation,
+// but otherwise have no effect, because the Datastore API doesn't accept context parameters.
 type Adapter struct {
 	Wrapped      datastore.Datastore
 	EscapingFunc func(string) string
