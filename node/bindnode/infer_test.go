@@ -382,7 +382,10 @@ func TestSchemaVerify(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
-			schemaType := loadSchema(t, test.schemaSrc)
+			ts, err := ipld.LoadSchemaBytes([]byte(test.schemaSrc))
+			qt.Assert(t, err, qt.IsNil)
+			schemaType := ts.TypeByName("Root")
+			qt.Assert(t, schemaType, qt.Not(qt.IsNil))
 
 			for _, ptrType := range test.goodTypes {
 				proto := bindnode.Prototype(ptrType, schemaType)
