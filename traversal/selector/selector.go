@@ -120,7 +120,7 @@ type ParseContext struct {
 	parentStack []ParsedParent
 }
 
-// CompileSelector accepts an datamodel.Node which should contain data that declares a Selector.
+// CompileSelector accepts a datamodel.Node which should contain data that declares a Selector.
 // The data layout expected for this declaration is documented in https://datamodel.io/specs/selectors/ .
 //
 // If the Selector is compiled successfully, it is returned.

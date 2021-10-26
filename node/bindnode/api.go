@@ -1,4 +1,4 @@
-// Package bindnode provides an datamodel.Node implementation via Go reflection.
+// Package bindnode provides a datamodel.Node implementation via Go reflection.
 //
 // This package is EXPERIMENTAL; its behavior and API might change as it's still
 // in development.
@@ -12,7 +12,7 @@ import (
 )
 
 // Prototype implements a schema.TypedPrototype given a Go pointer type and an
-// IPLD schema type. Note that the result is also an datamodel.NodePrototype.
+// IPLD schema type. Note that the result is also a datamodel.NodePrototype.
 //
 // If both the Go type and schema type are supplied, it is assumed that they are
 // compatible with one another.
@@ -55,7 +55,7 @@ func Prototype(ptrType interface{}, schemaType schema.Type) schema.TypedPrototyp
 }
 
 // Wrap implements a schema.TypedNode given a non-nil pointer to a Go value and an
-// IPLD schema type. Note that the result is also an datamodel.Node.
+// IPLD schema type. Note that the result is also a datamodel.Node.
 //
 // Wrap is meant to be used when one already has a Go value with data.
 // As such, ptrVal must not be nil.
@@ -91,9 +91,9 @@ func Wrap(ptrVal interface{}, schemaType schema.Type) schema.TypedNode {
 // }
 //
 // Pros: API is easier to understand, harder to mix up with other datamodel.Nodes.
-// Cons: One usually only has an datamodel.Node, and type assertions can be weird.
+// Cons: One usually only has a datamodel.Node, and type assertions can be weird.
 
-// Unwrap takes an datamodel.Node implemented by Prototype or Wrap,
+// Unwrap takes a datamodel.Node implemented by Prototype or Wrap,
 // and returns a pointer to the inner Go value.
 //
 // Unwrap returns nil if the node isn't implemented by this package.

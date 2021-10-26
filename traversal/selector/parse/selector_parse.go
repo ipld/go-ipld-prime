@@ -16,7 +16,7 @@ import (
 )
 
 // ParseJSONSelector accepts a string of json which will be parsed as a selector,
-// and returns an datamodel.Node of the parsed Data Model.
+// and returns a datamodel.Node of the parsed Data Model.
 // The returned datamodel.Node is suitable to hand to `selector.CompileSelector`,
 // or, could be composed programmatically with other Data Model selector clauses
 // and then compiled later.

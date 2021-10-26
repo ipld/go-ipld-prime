@@ -29,7 +29,7 @@ func Get(n datamodel.Node, p datamodel.Path) (datamodel.Node, error) {
 	return Progress{}.Get(n, p)
 }
 
-// FocusedTransform traverses an datamodel.Node graph, reaches a single Node,
+// FocusedTransform traverses a datamodel.Node graph, reaches a single Node,
 // and calls the given TransformFn to decide what new node to replace the visited node with.
 // A new Node tree will be returned (the original is unchanged).
 //
@@ -157,7 +157,7 @@ func (prog *Progress) get(n datamodel.Node, p datamodel.Path, trackProgress bool
 	return n, nil
 }
 
-// FocusedTransform traverses an datamodel.Node graph, reaches a single Node,
+// FocusedTransform traverses a datamodel.Node graph, reaches a single Node,
 // and calls the given TransformFn to decide what new node to replace the visited node with.
 // A new Node tree will be returned (the original is unchanged).
 //

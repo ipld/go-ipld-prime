@@ -286,9 +286,9 @@ func wishPoint(t *testing.T, n datamodel.Node, point testcasePoint) {
 //
 // If the expected value is a primitive string, it'll AsStrong on the Node; etc.
 //
-// Using an datamodel.Kind value is also possible, which will just check the kind and not the value contents.
+// Using a datamodel.Kind value is also possible, which will just check the kind and not the value contents.
 //
-// If an datamodel.Node is the expected value, a full deep ShouldEqual is used as normal.
+// If a datamodel.Node is the expected value, a full deep ShouldEqual is used as normal.
 func closeEnough(actual, expected interface{}) (string, bool) {
 	if expected == nil {
 		return ShouldEqual(actual, nil)
