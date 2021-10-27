@@ -47,7 +47,7 @@ type _Map__String__Msg3__entry struct {
 	v _Msg3
 }
 
-// Msg3 matches the IPLD Schema type "Msg3".  It has Struct type-kind, and may be interrogated like map kind.
+// Msg3 matches the IPLD Schema type "Msg3".  It has struct type-kind, and may be interrogated like map kind.
 type Msg3 = *_Msg3
 type _Msg3 struct {
 	whee _Int

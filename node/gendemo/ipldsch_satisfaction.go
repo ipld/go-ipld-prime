@@ -298,7 +298,7 @@ func (Map__String__Msg3) Kind() datamodel.Kind {
 }
 func (n Map__String__Msg3) LookupByString(k string) (datamodel.Node, error) {
 	var k2 _String
-	if err := (_String__Prototype{}).fromString(&k2, k); err != nil {
+	if err := (_String__ReprPrototype{}).fromString(&k2, k); err != nil {
 		return nil, err // TODO wrap in some kind of ErrInvalidKey
 	}
 	v, exists := n.m[k2]
@@ -552,7 +552,7 @@ func (ma *_Map__String__Msg3__Assembler) AssembleEntry(k string) (datamodel.Node
 	}
 
 	var k2 _String
-	if err := (_String__Prototype{}).fromString(&k2, k); err != nil {
+	if err := (_String__ReprPrototype{}).fromString(&k2, k); err != nil {
 		return nil, err // TODO wrap in some kind of ErrInvalidKey
 	}
 	if _, exists := ma.w.m[k2]; exists {
