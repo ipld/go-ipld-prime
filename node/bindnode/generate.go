@@ -1,9 +1,3 @@
-//go:build bindnodegen
-// +build bindnodegen
-
-// TODO: move this to a "package main" in node/bindnode/bindnodegen
-// once we are able to parse a schema file from disk.
-
 package bindnode
 
 import (
@@ -104,6 +98,13 @@ func produceGoTypeInner(goTypes map[string]string, name string, typ schema.Type)
 	panic(fmt.Sprintf("%T\n", typ))
 }
 
+// ProduceGoTypes infers Go types from an IPLD schema in ts
+// and writes their Go source code type declarations to w.
+// Note that no package declaration line is written.
+//
+// This gives a good starting point when wanting to use bindnode with Go types,
+// but users will generally want to own and modify the types afterward,
+// so they can add documentation or tweak the types as needed.
 func ProduceGoTypes(w io.Writer, ts *schema.TypeSystem) error {
 	goTypes := make(map[string]string)
 	var buf bytes.Buffer
