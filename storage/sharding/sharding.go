@@ -96,6 +96,9 @@ func Shard_r122(key string, shards *[]string) {
 // If the shards parameter is a pointer to a slice that starts at zero length
 // and a capacity of at least 2, this function will operate with no allocations.
 //
+// Shard_r122 is functionally equivalent to "flatfs/shard/v1/next-to-last/2",
+// as it's known in some other code -- it may be familiar as the default
+// for block storage in go-ipfs.
 func Shard_r12(key string, shards *[]string) {
 	l := len(key)
 	switch {

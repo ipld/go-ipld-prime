@@ -35,10 +35,8 @@ type Store struct {
 func (store *Store) InitDefaults(basepath string) error {
 	return store.Init(
 		basepath,
-		func(raw string) string {
-			return base32.StdEncoding.WithPadding(base32.NoPadding).EncodeToString([]byte(raw))
-		},
-		sharding.Shard_r133,
+		b32enc,             // The same function as go-ipfs uses: see https://github.com/ipfs/go-ipfs-ds-help/blob/48b9cc210923d23b39582b5fa6670ed0d08dc2af/key.go#L20-L22 .
+		sharding.Shard_r12, // Equivalent to what go-ipfs uses by default with flatfs: see https://github.com/ipfs/go-ipfs/blob/52a747763f6c4e85b33ca051cda9cc4b75c815f9/docs/config.md#datastorespec and grep for "shard/v1/next-to-last/2".
 	)
 }
 
@@ -65,6 +63,12 @@ func (store *Store) Init(
 
 	// That's it for setup on this one.
 	return nil
+}
+
+var b32encoder = base32.StdEncoding.WithPadding(base32.NoPadding)
+
+func b32enc(in string) string {
+	return b32encoder.EncodeToString([]byte(in))
 }
 
 // pathForKey applies sharding funcs as well as adds the basepath prefix,
