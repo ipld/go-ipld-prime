@@ -10,6 +10,8 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+
+	"github.com/ipld/go-ipld-prime/storage/sharding"
 )
 
 // Store is implements storage.ReadableStorage and storage.WritableStorage,
@@ -36,17 +38,7 @@ func (store *Store) InitDefaults(basepath string) error {
 		func(raw string) string {
 			return base32.StdEncoding.WithPadding(base32.NoPadding).EncodeToString([]byte(raw))
 		},
-		func(key string, shards *[]string) {
-			l := len(key)
-			switch {
-			case l > 6:
-				*shards = append(*shards, key[l-7:l-4], key[l-4:l-1], key)
-			case l > 3:
-				*shards = append(*shards, "000", key[l-4:l-1], key)
-			default:
-				*shards = append(*shards, "000", "000", key)
-			}
-		},
+		sharding.Shard_r133,
 	)
 }
 
