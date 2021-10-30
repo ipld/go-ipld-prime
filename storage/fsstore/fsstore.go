@@ -7,6 +7,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 )
@@ -96,6 +97,16 @@ func (store *Store) Has(ctx context.Context, key string) (bool, error) {
 	return false, err
 }
 
+// Get implements go-ipld-prime/storage.ReadableStorage.Get.
+func (store *Store) Get(ctx context.Context, key string) ([]byte, error) {
+	f, err := store.GetStream(ctx, key)
+	if err != nil {
+		return nil, err
+	}
+	defer f.(io.Closer).Close()
+	return ioutil.ReadAll(f)
+}
+
 // Put implements go-ipld-prime/storage.WritableStorage.Put.
 func (store *Store) Put(ctx context.Context, key string, content []byte) error {
 	// We can't improve much on what we get by wrapping the stream interface;
@@ -114,6 +125,24 @@ func (store *Store) Put(ctx context.Context, key string, content []byte) error {
 	}
 	// Commit.
 	return wrCommitter(key)
+}
+
+// GetStream implements go-ipld-prime/storage.StreamingReadableStorage.GetStream.
+//
+// Note that the returned reader will also be an io.Closer;
+// if the caller does not check for that, and call Close appropriately, as StreamingReadableStorage documents is appropriate,
+// then there may be resource leaks.
+func (store *Store) GetStream(ctx context.Context, key string) (io.Reader, error) {
+	if ctx.Err() != nil {
+		return nil, ctx.Err()
+	}
+
+	// Figure out where we expect it to be.
+	destpath := store.pathForKey(key)
+
+	// Open and return.
+	// TODO: we should normalize things like "not exists" errors before hurling them up the stack.
+	return os.OpenFile(destpath, os.O_RDONLY, 0)
 }
 
 // PutStream implements go-ipld-prime/storage.StreamingWritableStorage.PutStream.
