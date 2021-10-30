@@ -164,6 +164,18 @@ func (store *Store) PutStream(ctx context.Context) (io.Writer, func(string) erro
 				return os.Remove(stagepath)
 			}
 			// n.b. there is a lack of fsync here.  I am going to choose to believe that a sane filesystem will not let me do a 'move' without flushing somewhere in between.
+			// Fun little note: there are some times in history where this belief is not backed -- but, mostly, the evolution of kernel and filesystem development seems to have considered that a mistake,
+			// and things do again typically take 'move' as a strong cue to flush, unless you've actively configured your system oddly.
+			// See https://en.wikipedia.org/wiki/Ext4#Delayed_allocation_and_potential_data_loss for some fun history regarding Ext4;
+			// but ultimately, note that the kernel decided to again make 'move' cause flush, and has done so since 2.6.30, which came out sometime in 2009.
+			// Accordingly, our lack of fsync here seems justified.
+			// However, if you *really* find a system in the wild where this is problematic,
+			// *and* you cannot make your application recover gracefully (which should be relatively easy, because... content addressing; you can't have inconsistency, at least!),
+			// *and* you cannot configure your filesystem to have the level of durability and sanity that you want, so you must fix it in application land...
+			// then... patches welcome.  :)
+			//
+			// History also seems to indicate that if we add fsyncs hereabouts, people will usually just turn around and seek to disable them for performance reasons;
+			// so by default, it seems best to just not do the dance of having a default that people hate.
 
 			// Figure out where we want it to go.
 			destpath := store.pathForKey(key)
