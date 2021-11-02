@@ -29,10 +29,10 @@ Many of these storage systems use the disk in some way.
 Why is the module structured like this?
 ----------------------------------------
 
-See similar discussion in the `../dsadapter` module.
+Because many of the storage implementations are also their own modules,
+and we don't want to have the go-ipld-prime module pull in a huge universe of transitive dependencies.
 
-Long story short: to keep legacy dependencies from appearing in modern dependency trees,
-even though we want to test them, and want to do it without spawning yet more git repos.
+See similar discussion in `../README_adapters.md`.
 
 It may be worth pulling this out into a new git repo in the future,
 especially if we want to add more and more implementations to what we benchmark,
