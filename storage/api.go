@@ -29,6 +29,15 @@ import (
 // However, it does include the Has function, because that function is reasonable to require ubiquitously from all implementations,
 // and it serves as a reasonable marker to make sure the Storage interface is not trivially satisfied.
 type Storage interface {
+	// Has should simply return a boolean for whether the requested key has a value associated with it in the storage.
+	//
+	// Errors:
+	//
+	//   - ipld-storage-cancelled -- if the context is cancelled before or during the operation.
+	//   - ipld-storage-disconnected -- if the underlying storage is somehow broken or disconnected.
+	//
+	// Note that Has should never return ipld-storage-entry-not-available as an error,
+	// unlike most other functions in the stoage APIs -- for Has, that's just (false, nil).
 	Has(ctx context.Context, key string) (bool, error)
 }
 
@@ -56,6 +65,14 @@ type Storage interface {
 // See the package-wide docs for more discussion of this design.
 type ReadableStorage interface {
 	Storage
+
+	// Get reads some data from storage into a single new contiguous byte slice.
+	//
+	// Errors:
+	//
+	//   - ipld-storage-cancelled -- if the context is cancelled before or during the operation.
+	//   - ipld-storage-entry-not-available -- if the key isn't present in this storage.
+	//   - ipld-storage-disconnected -- if the underlying storage is somehow broken or disconnected.
 	Get(ctx context.Context, key string) ([]byte, error)
 }
 
@@ -83,13 +100,30 @@ type ReadableStorage interface {
 // See the package-wide docs for more discussion of this design.
 type WritableStorage interface {
 	Storage
+
+	// Put writes some from single contiguous byte slice into storage.
+	//
+	// Errors:
+	//
+	//   - ipld-storage-cancelled -- if the context is cancelled before or during the operation.
+	//   - ipld-storage-disconnected -- if the underlying storage is somehow broken or disconnected.
 	Put(ctx context.Context, key string, content []byte) error
 }
 
 // --- streaming --->
 
 type StreamingReadableStorage interface {
-	// Note that the returned io.Reader may also be an io.ReadCloser -- check for this.
+	// GetStream begins reading some data from storage and returns an io.Reader to continue the operation.
+	//
+	// Note that the returned io.Reader may also be an io.Closer --
+	// the caller should check for this, and close it when done reading if so,
+	// or resources may be leaked.
+	//
+	// Errors:
+	//
+	//   - ipld-storage-cancelled -- if the context is cancelled before or during the operation.
+	//   - ipld-storage-entry-not-available -- if the key isn't present in this storage.
+	//   - ipld-storage-disconnected -- if the underlying storage is somehow broken or disconnected.
 	GetStream(ctx context.Context, key string) (io.Reader, error)
 }
 
@@ -126,6 +160,16 @@ type StreamingReadableStorage interface {
 // Continuing to write to the io.Writer after calling the WriteCommitter function will result in errors.
 // Calling the WriteCommitter function more than once will result in errors.
 type StreamingWritableStorage interface {
+	// PutStream opens a write stream to storage and returns an io.Writer to continue the operation,
+	// as well as a "WriteCommitter" callback which must be used to finalize the write and assign the value's key.
+	//
+	// Errors:
+	//
+	//   - ipld-storage-cancelled -- if the context is cancelled before or during the operation.
+	//   - ipld-storage-disconnected -- if the underlying storage is somehow broken or disconnected.
+	//
+	// Note that the WriteCommitter callback may also return the same errors as PutStream.
+	// (Unfortunately, we can't annotate it for the same reason we can't give that callback a named type.)
 	PutStream(ctx context.Context) (io.Writer, func(key string) error, error)
 }
 
