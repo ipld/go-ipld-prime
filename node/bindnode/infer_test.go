@@ -3,6 +3,10 @@ package bindnode_test
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
+	"io/ioutil"
+	"os/exec"
+	"path/filepath"
 	"reflect"
 	"strings"
 	"testing"
@@ -409,6 +413,38 @@ func TestSchemaVerify(t *testing.T) {
 				qt.Check(t, func() { bindnode.Wrap(ptrVal, schemaType) },
 					qt.PanicMatches, bad.panicRegexp)
 			}
+		})
+	}
+}
+
+func TestProduceGoTypes(t *testing.T) {
+	t.Parallel()
+
+	for _, test := range prototypeTests {
+		test := test // don't reuse the range var
+
+		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
+
+			ts, err := ipld.LoadSchemaBytes([]byte(test.schemaSrc))
+			qt.Assert(t, err, qt.IsNil)
+
+			// Include a package line and the datamodel import.
+			buf := new(bytes.Buffer)
+			fmt.Fprintln(buf, `package p`)
+			fmt.Fprintln(buf, `import "github.com/ipld/go-ipld-prime/datamodel"`)
+			fmt.Fprintln(buf, `var _ datamodel.Link // always used`)
+			err = bindnode.ProduceGoTypes(buf, ts)
+			qt.Assert(t, err, qt.IsNil)
+
+			// Ensure that the output builds, i.e. typechecks.
+			genPath := filepath.Join(t.TempDir(), "gen.go")
+			err = ioutil.WriteFile(genPath, buf.Bytes(), 0666)
+			qt.Assert(t, err, qt.IsNil)
+
+			out, err := exec.Command("go", "build", genPath).CombinedOutput()
+			qt.Assert(t, err, qt.IsNil, qt.Commentf("output: %s", out))
+
 		})
 	}
 }
