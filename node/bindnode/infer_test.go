@@ -28,7 +28,10 @@ type anyScalar struct {
 
 type anyRecursive struct {
 	List *[]string
-	Map  *map[string]string
+	Map  *struct {
+		Keys   []string
+		Values map[string]string
+	}
 }
 
 var prototypeTests = []struct {
@@ -171,6 +174,7 @@ func TestPrototype(t *testing.T) {
 		test := test // don't reuse the range var
 
 		for _, onlySchema := range []bool{false, true} {
+			onlySchema := onlySchema // don't reuse the range var
 			suffix := ""
 			if onlySchema {
 				suffix = "_onlySchema"
@@ -183,10 +187,11 @@ func TestPrototype(t *testing.T) {
 				schemaType := ts.TypeByName("Root")
 				qt.Assert(t, schemaType, qt.Not(qt.IsNil))
 
+				ptrType := test.ptrType // don't write to the shared test value
 				if onlySchema {
-					test.ptrType = nil
+					ptrType = nil
 				}
-				proto := bindnode.Prototype(test.ptrType, schemaType)
+				proto := bindnode.Prototype(ptrType, schemaType)
 
 				wantEncoded := compactJSON(t, test.prettyDagJSON)
 				node := dagjsonDecode(t, proto.Representation(), wantEncoded).(schema.TypedNode)
