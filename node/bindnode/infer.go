@@ -168,6 +168,10 @@ func verifyCompatibility(seen map[seenEntry]bool, goType reflect.Type, schemaTyp
 			goType = goType.Elem()
 			verifyCompatibility(seen, goType, schemaType)
 		}
+	case *schema.TypeLink:
+		if goType != goTypeLink && goType != goTypeCid {
+			doPanic("links in Go must be datamodel.Link or cid.Cid")
+		}
 	default:
 		panic(fmt.Sprintf("%T", schemaType))
 	}
