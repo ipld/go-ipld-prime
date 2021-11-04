@@ -122,8 +122,8 @@ func TestTypedData(t *testing.T) {
 		n := bindnode.Wrap(&WowMap{
 			Keys: []FooBar{{"x", Baz{"y"}, Baz{"y"}}, {"z", Baz{"z"}, Baz{"z"}}},
 			Values: map[FooBar]Baz{
-				{"x", Baz{"y"}, Baz{"y"}}: Baz{"a"},
-				{"z", Baz{"z"}, Baz{"z"}}: Baz{"b"},
+				{"x", Baz{"y"}, Baz{"y"}}: {"a"},
+				{"z", Baz{"z"}, Baz{"z"}}: {"b"},
 			},
 		}, ts.TypeByName("WowMap"))
 		t.Run("complex-keys-in-effect", func(t *testing.T) {
