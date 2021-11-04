@@ -168,7 +168,7 @@ func emitNodeBuilderMethods_typical(w io.Writer, adjCfg *AdjunctCfg, data interf
 			return nb.w
 		}
 		func (nb *_{{ .Type | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Builder) Reset() {
-			var w _{{ .Type | TypeSymbol }}
+			var w _{{ .Type | TypeSymbol }}{{ if .IsRepr }}__Repr{{end}}
 			var m schema.Maybe
 			*nb = _{{ .Type | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Builder{_{{ .Type | TypeSymbol }}__{{ if .IsRepr }}Repr{{end}}Assembler{w: &w, m: &m}}
 		}

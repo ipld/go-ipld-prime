@@ -168,7 +168,7 @@ func (g structReprStringjoinReprBuilderGenerator) EmitNodeBuilderMethods(w io.Wr
 func (g structReprStringjoinReprBuilderGenerator) EmitNodeAssemblerType(w io.Writer) {
 	doTemplate(`
 		type _{{ .Type | TypeSymbol }}__ReprAssembler struct {
-			w *_{{ .Type | TypeSymbol }}
+			w *_{{ .Type | TypeSymbol }}__Repr
 			m *schema.Maybe
 		}
 
@@ -190,7 +190,7 @@ func (g structReprStringjoinReprBuilderGenerator) EmitNodeAssemblerMethodAssignS
 			}
 			{{- if .Type | MaybeUsesPtr }}
 			if na.w == nil {
-				na.w = &_{{ .Type | TypeSymbol }}{}
+				na.w = &_{{ .Type | TypeSymbol }}__Repr{}
 			}
 			{{- end}}
 			if err := (_{{ .Type | TypeSymbol }}__ReprPrototype{}).fromString(na.w, v); err != nil {
@@ -212,7 +212,7 @@ func (g structReprStringjoinReprBuilderGenerator) EmitNodeAssemblerMethodAssignN
 			if v.IsNull() {
 				return na.AssignNull()
 			}
-			if v2, ok := v.(*_{{ .Type | TypeSymbol }}); ok {
+			if v2, ok := v.(*_{{ .Type | TypeSymbol }}__Repr); ok {
 				switch *na.m {
 				case schema.Maybe_Value, schema.Maybe_Null:
 					panic("invalid state: cannot assign into assembler that's already finished")

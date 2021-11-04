@@ -209,7 +209,7 @@ func (g unionReprKeyedReprBuilderGenerator) EmitNodeAssemblerType(w io.Writer) {
 	//  (which is a very minor difference textually, but means this structure can end up with a pretty wildly different resident memory size than the type-level one).
 	doTemplate(`
 		type _{{ .Type | TypeSymbol }}__ReprAssembler struct {
-			w *_{{ .Type | TypeSymbol }}
+			w *_{{ .Type | TypeSymbol }}__Repr
 			m *schema.Maybe
 			state maState
 
@@ -255,7 +255,7 @@ func (g unionReprKeyedReprBuilderGenerator) EmitNodeAssemblerMethodAssignNode(w 
 			if v.IsNull() {
 				return na.AssignNull()
 			}
-			if v2, ok := v.(*_{{ .Type | TypeSymbol }}); ok {
+			if v2, ok := v.(*_{{ .Type | TypeSymbol }}__Repr); ok {
 				switch *na.m {
 				case schema.Maybe_Value, schema.Maybe_Null:
 					panic("invalid state: cannot assign into assembler that's already finished")

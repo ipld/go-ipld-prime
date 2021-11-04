@@ -375,7 +375,7 @@ func (g unionKindedReprBuilderGenerator) EmitNodeAssemblerType(w io.Writer) {
 	// 'ca' is as it is in the type-level assembler: technically, not super necessary, except that it allows minimizing the amount of work that resetting needs to do.
 	doTemplate(`
 		type _{{ .Type | TypeSymbol }}__ReprAssembler struct {
-			w *_{{ .Type | TypeSymbol }}
+			w *_{{ .Type | TypeSymbol }}__Repr
 			m *schema.Maybe
 
 			{{- range $i, $member := .Type.Members }}
@@ -435,7 +435,7 @@ func kindedUnionNodeAssemblerMethodTemplateMunge(
 			` + condClause + `
 				{{- if dot.Type | MaybeUsesPtr }}
 					if na.w == nil {
-						na.w = &_{{ dot.Type | TypeSymbol }}{}
+						na.w = &_{{ dot.Type | TypeSymbol }}__Repr{}
 					}
 				{{- end}}
 				na.ca = {{ add $i 1 }}
@@ -559,7 +559,7 @@ func (g unionKindedReprBuilderGenerator) EmitNodeAssemblerMethodAssignNode(w io.
 			if v.IsNull() {
 				return na.AssignNull()
 			}
-			if v2, ok := v.(*_{{ .Type | TypeSymbol }}); ok {
+			if v2, ok := v.(*_{{ .Type | TypeSymbol }}__Repr); ok {
 				switch *na.m {
 				case schema.Maybe_Value, schema.Maybe_Null:
 					panic("invalid state: cannot assign into assembler that's already finished")

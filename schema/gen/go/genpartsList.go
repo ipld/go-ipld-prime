@@ -38,7 +38,7 @@ func emitNodeAssemblerMethodBeginList_listoid(w io.Writer, adjCfg *AdjunctCfg, d
 			}
 			{{- if .Type | MaybeUsesPtr }}
 			if na.w == nil {
-				na.w = &_{{ .Type | TypeSymbol }}{}
+				na.w = &_{{ .Type | TypeSymbol }}{{ if .IsRepr }}__Repr{{end}}{}
 			}
 			{{- end}}
 			if sizeHint > 0 {
@@ -64,7 +64,7 @@ func emitNodeAssemblerMethodAssignNode_listoid(w io.Writer, adjCfg *AdjunctCfg, 
 			if v.IsNull() {
 				return na.AssignNull()
 			}
-			if v2, ok := v.(*_{{ .Type | TypeSymbol }}); ok {
+			if v2, ok := v.(*_{{ .Type | TypeSymbol }}{{ if .IsRepr }}__Repr{{end}}); ok {
 				switch *na.m {
 				case schema.Maybe_Value, schema.Maybe_Null:
 					panic("invalid state: cannot assign into assembler that's already finished")
@@ -175,7 +175,7 @@ func emitNodeAssemblerHelper_listoid_listAssemblerMethods(w io.Writer, adjCfg *A
 			la.va.m = &row.m
 			row.m = allowNull
 			{{- else}}
-			la.va.w = row
+			la.va.w = (*_{{ .Type.ValueType | TypeSymbol }}{{ if .IsRepr }}__Repr{{end}})(row)
 			la.va.m = &la.cm
 			{{- end}}
 			return &la.va

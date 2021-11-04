@@ -29,7 +29,7 @@ func emitNodeAssemblerMethodBeginMap_mapoid(w io.Writer, adjCfg *AdjunctCfg, dat
 			}
 			{{- if .Type | MaybeUsesPtr }}
 			if na.w == nil {
-				na.w = &_{{ .Type | TypeSymbol }}{}
+				na.w = &_{{ .Type | TypeSymbol }}{{ if .IsRepr }}__Repr{{end}}{}
 			}
 			{{- end}}
 			na.w.m = make(map[_{{ .Type.KeyType | TypeSymbol }}]{{if .Type.ValueIsNullable }}Maybe{{else}}*_{{end}}{{ .Type.ValueType | TypeSymbol }}, sizeHint)
@@ -54,7 +54,7 @@ func emitNodeAssemblerMethodAssignNode_mapoid(w io.Writer, adjCfg *AdjunctCfg, d
 			if v.IsNull() {
 				return na.AssignNull()
 			}
-			if v2, ok := v.(*_{{ .Type | TypeSymbol }}); ok {
+			if v2, ok := v.(*_{{ .Type | TypeSymbol }}{{ if .IsRepr }}__Repr{{end}}); ok {
 				switch *na.m {
 				case schema.Maybe_Value, schema.Maybe_Null:
 					panic("invalid state: cannot assign into assembler that's already finished")

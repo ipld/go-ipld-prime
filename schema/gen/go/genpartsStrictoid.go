@@ -26,7 +26,7 @@ func emitNodeAssemblerMethodBeginMap_strictoid(w io.Writer, adjCfg *AdjunctCfg, 
 			*na.m = midvalue
 			{{- if .Type | MaybeUsesPtr }}
 			if na.w == nil {
-				na.w = &_{{ .Type | TypeSymbol }}{}
+				na.w = &_{{ .Type | TypeSymbol }}{{ if .IsRepr }}__Repr{{end}}{}
 			}
 			{{- end}}
 			return na, nil

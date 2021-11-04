@@ -307,7 +307,7 @@ func (g structReprMapReprBuilderGenerator) EmitNodeAssemblerType(w io.Writer) {
 	// - the 'ca_*' fields embed **c**hild **a**ssemblers -- these are embedded so we can yield pointers to them without causing new allocations.
 	doTemplate(`
 		type _{{ .Type | TypeSymbol }}__ReprAssembler struct {
-			w *_{{ .Type | TypeSymbol }}
+			w *_{{ .Type | TypeSymbol }}__Repr
 			m *schema.Maybe
 			state maState
 			s int
@@ -346,7 +346,7 @@ func (g structReprMapReprBuilderGenerator) EmitNodeAssemblerMethodAssignNode(w i
 			if v.IsNull() {
 				return na.AssignNull()
 			}
-			if v2, ok := v.(*_{{ .Type | TypeSymbol }}); ok {
+			if v2, ok := v.(*_{{ .Type | TypeSymbol }}__Repr); ok {
 				switch *na.m {
 				case schema.Maybe_Value, schema.Maybe_Null:
 					panic("invalid state: cannot assign into assembler that's already finished")
@@ -472,11 +472,15 @@ func (g structReprMapReprBuilderGenerator) emitMapAssemblerMethods(w io.Writer) 
 				ma.state = maState_midValue
 				ma.f = {{ $i }}
 				{{- if $field.IsMaybe }}
-				ma.ca_{{ $field | FieldSymbolLower }}.w = {{if not (MaybeUsesPtr $field.Type) }}&{{end}}ma.w.{{ $field | FieldSymbolLower }}.v
+				{{- if not (MaybeUsesPtr $field.Type) }}
+				ma.ca_{{ $field | FieldSymbolLower }}.w = (*_{{ $field.Type | TypeSymbol }}__Repr)(&ma.w.{{ $field | FieldSymbolLower }}.v)
+				{{- else}}
+				ma.ca_{{ $field | FieldSymbolLower }}.w = ma.w.{{ $field | FieldSymbolLower }}.v
+				{{- end}}
 				ma.ca_{{ $field | FieldSymbolLower }}.m = &ma.w.{{ $field | FieldSymbolLower }}.m
 				{{if $field.IsNullable }}ma.w.{{ $field | FieldSymbolLower }}.m = allowNull{{end}}
 				{{- else}}
-				ma.ca_{{ $field | FieldSymbolLower }}.w = &ma.w.{{ $field | FieldSymbolLower }}
+				ma.ca_{{ $field | FieldSymbolLower }}.w = (*_{{ $field.Type | TypeSymbol }}__Repr)(&ma.w.{{ $field | FieldSymbolLower }})
 				ma.ca_{{ $field | FieldSymbolLower }}.m = &ma.cm
 				{{- end}}
 				return &ma.ca_{{ $field | FieldSymbolLower }}, nil
@@ -522,11 +526,15 @@ func (g structReprMapReprBuilderGenerator) emitMapAssemblerMethods(w io.Writer) 
 			{{- range $i, $field := .Type.Fields }}
 			case {{ $i }}:
 				{{- if $field.IsMaybe }}
-				ma.ca_{{ $field | FieldSymbolLower }}.w = {{if not (MaybeUsesPtr $field.Type) }}&{{end}}ma.w.{{ $field | FieldSymbolLower }}.v
+				{{- if not (MaybeUsesPtr $field.Type) }}
+				ma.ca_{{ $field | FieldSymbolLower }}.w = (*_{{ $field.Type | TypeSymbol }}__Repr)(&ma.w.{{ $field | FieldSymbolLower }}.v)
+				{{- else}}
+				ma.ca_{{ $field | FieldSymbolLower }}.w = ma.w.{{ $field | FieldSymbolLower }}.v
+				{{- end}}
 				ma.ca_{{ $field | FieldSymbolLower }}.m = &ma.w.{{ $field | FieldSymbolLower }}.m
 				{{if $field.IsNullable }}ma.w.{{ $field | FieldSymbolLower }}.m = allowNull{{end}}
 				{{- else}}
-				ma.ca_{{ $field | FieldSymbolLower }}.w = &ma.w.{{ $field | FieldSymbolLower }}
+				ma.ca_{{ $field | FieldSymbolLower }}.w = (*_{{ $field.Type | TypeSymbol }}__Repr)(&ma.w.{{ $field | FieldSymbolLower }})
 				ma.ca_{{ $field | FieldSymbolLower }}.m = &ma.cm
 				{{- end}}
 				return &ma.ca_{{ $field | FieldSymbolLower }}

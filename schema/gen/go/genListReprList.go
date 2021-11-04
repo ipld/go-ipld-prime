@@ -177,7 +177,7 @@ func (g listReprListReprBuilderGenerator) EmitNodeAssemblerType(w io.Writer) {
 	//  it might be *significantly* different in size and memory layout in that trailing part of the struct.
 	doTemplate(`
 		type _{{ .Type | TypeSymbol }}__ReprAssembler struct {
-			w *_{{ .Type | TypeSymbol }}
+			w *_{{ .Type | TypeSymbol }}__Repr
 			m *schema.Maybe
 			state laState
 

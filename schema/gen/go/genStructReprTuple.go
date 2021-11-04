@@ -289,7 +289,7 @@ func (g structReprTupleReprBuilderGenerator) EmitNodeAssemblerType(w io.Writer) 
 	//  it might be *significantly* different in size and memory layout in that trailing part of the struct.
 	doTemplate(`
 		type _{{ .Type | TypeSymbol }}__ReprAssembler struct {
-			w *_{{ .Type | TypeSymbol }}
+			w *_{{ .Type | TypeSymbol }}__Repr
 			m *schema.Maybe
 			state laState
 			f int
@@ -322,7 +322,7 @@ func (g structReprTupleReprBuilderGenerator) EmitNodeAssemblerMethodBeginList(w 
 			*na.m = midvalue
 			{{- if .Type | MaybeUsesPtr }}
 			if na.w == nil {
-				na.w = &_{{ .Type | TypeSymbol }}{}
+				na.w = &_{{ .Type | TypeSymbol }}__Repr{}
 			}
 			{{- end}}
 			return na, nil
