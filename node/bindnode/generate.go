@@ -32,6 +32,8 @@ func produceGoType(goTypes map[string]string, typ schema.Type) (name, src string
 		return goTypeString.String(), ""
 	case *schema.TypeBytes:
 		return goTypeBytes.String(), ""
+	case *schema.TypeLink:
+		return goTypeLink.String(), "" // datamodel.Link
 	}
 
 	// Results are cached in goTypes.
@@ -100,7 +102,8 @@ func produceGoTypeInner(goTypes map[string]string, name string, typ schema.Type)
 
 // ProduceGoTypes infers Go types from an IPLD schema in ts
 // and writes their Go source code type declarations to w.
-// Note that no package declaration line is written.
+// Note that just the types are written,
+// without a package declaration nor any imports.
 //
 // This gives a good starting point when wanting to use bindnode with Go types,
 // but users will generally want to own and modify the types afterward,
