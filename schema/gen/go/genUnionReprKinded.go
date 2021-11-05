@@ -445,12 +445,12 @@ func kindedUnionNodeAssemblerMethodTemplateMunge(
 					na.ca{{ add $i 1 }}.m = na.m
 					return na.ca{{ add $i 1 }}` + retClause + `
 				{{- else if (eq (dot.AdjCfg.UnionMemlayout dot.Type) "interface") }}
-					x := &_{{ $member | TypeSymbol }}{}
+					x := &_{{ $member | TypeSymbol }}__Repr{}
 					na.w.x = x
 					if na.ca{{ add $i 1 }} == nil {
 						na.ca{{ add $i 1 }} = &_{{ $member | TypeSymbol }}__ReprAssembler{}
 					}
-					na.ca{{ add $i 1 }}.w = x
+					na.ca{{ add $i 1 }}.w = (*_{{ $member | TypeSymbol }}__Repr)(x)
 					na.ca{{ add $i 1 }}.m = na.m
 					return na.ca{{ add $i 1 }}` + retClause + `
 				{{- end}}

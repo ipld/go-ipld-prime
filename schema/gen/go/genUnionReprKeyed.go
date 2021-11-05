@@ -350,12 +350,12 @@ func (g unionReprKeyedReprBuilderGenerator) emitMapAssemblerMethods(w io.Writer)
 				ma.ca{{ add $i 1 }}.m = &ma.cm
 				return &ma.ca{{ add $i 1 }}, nil
 				{{- else if (eq (dot.AdjCfg.UnionMemlayout dot.Type) "interface") }}
-				x := &_{{ $member | TypeSymbol }}{}
+				x := &_{{ $member | TypeSymbol }}__Repr{}
 				ma.w.x = x
 				if ma.ca{{ add $i 1 }} == nil {
 					ma.ca{{ add $i 1 }} = &_{{ $member | TypeSymbol }}__ReprAssembler{}
 				}
-				ma.ca{{ add $i 1 }}.w = x
+				ma.ca{{ add $i 1 }}.w = (*_{{ $member | TypeSymbol }}__Repr)(x)
 				ma.ca{{ add $i 1 }}.m = &ma.cm
 				return ma.ca{{ add $i 1 }}, nil
 				{{- end}}
@@ -410,12 +410,12 @@ func (g unionReprKeyedReprBuilderGenerator) emitMapAssemblerMethods(w io.Writer)
 				ma.ca{{ add $i 1 }}.m = &ma.cm
 				return &ma.ca{{ add $i 1 }}
 				{{- else if (eq (dot.AdjCfg.UnionMemlayout dot.Type) "interface") }}
-				x := &_{{ $member | TypeSymbol }}{}
+				x := &_{{ $member | TypeSymbol }}__Repr{}
 				ma.w.x = x
 				if ma.ca{{ add $i 1 }} == nil {
 					ma.ca{{ add $i 1 }} = &_{{ $member | TypeSymbol }}__ReprAssembler{}
 				}
-				ma.ca{{ add $i 1 }}.w = x
+				ma.ca{{ add $i 1 }}.w = (*_{{ $member | TypeSymbol }}__Repr)(x)
 				ma.ca{{ add $i 1 }}.m = &ma.cm
 				return ma.ca{{ add $i 1 }}
 				{{- end}}
