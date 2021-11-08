@@ -92,6 +92,13 @@ We now consider many of the earlier golang IPLD libraries to be defacto deprecat
 and you should expect new features *here*, rather than in those libraries.
 (Those libraries still won't be going away anytime soon, but we really don't recomend new construction on them.)
 
+### migrating
+
+**For recommendations on where to start when migrating:**
+see [README_migrationGuide](./README_migrationGuide.md).
+That document will provide examples of which old concepts and API names map to which new APIs,
+and should help set you on the right track.
+
 ### unixfsv1
 
 Be advised that faculties for dealing with unixfsv1 data are still limited.
