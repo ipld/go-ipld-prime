@@ -57,37 +57,35 @@ func BenchmarkPut(b *testing.B) {
 		},
 	}}
 	for _, ttr := range tt {
-		b.Run(ttr.storeName, func(b *testing.B) {
-			for _, scale := range []int{
-				1 << 8, // probably too small to be useful; b.N will always be much bigger than this.
-				1 << 12,
-				1 << 16,
-				//1 << 20, // already getting too big to fit the setup phase into the default benchmark time windows when using disk storage.
-				//1 << 24,
-			} {
-				b.Run(fmt.Sprintf("scale=%d", scale), func(b *testing.B) {
-					// Make a tempdir.  Change cwd to it.
-					//  We'll assume the storage system, if it needs filesystem, can use the cwd.
-					dir, err := ioutil.TempDir("", "storagebench")
-					if err != nil {
-						panic(err)
-					}
-					defer os.RemoveAll(dir)
-					retreat, err := os.Getwd()
-					if err != nil {
-						panic(err)
-					}
-					defer os.Chdir(retreat)
-					if err := os.Chdir(dir); err != nil {
-						panic(err)
-					}
+		for _, scale := range []int{
+			// 1 << 8, // probably too small to be useful; b.N will always be much bigger than this.
+			1 << 12,
+			1 << 16,
+			// 1 << 20, // already getting too big to fit the setup phase into the default benchmark time windows when using disk storage.
+			// 1 << 24,
+		} {
+			b.Run(fmt.Sprintf("%s/scale=%d", ttr.storeName, scale), func(b *testing.B) {
+				// Make a tempdir.  Change cwd to it.
+				//  We'll assume the storage system, if it needs filesystem, can use the cwd.
+				dir, err := ioutil.TempDir("", "storagebench")
+				if err != nil {
+					panic(err)
+				}
+				defer os.RemoveAll(dir)
+				retreat, err := os.Getwd()
+				if err != nil {
+					panic(err)
+				}
+				defer os.Chdir(retreat)
+				if err := os.Chdir(dir); err != nil {
+					panic(err)
+				}
 
-					// Create the store, and put it to work!
-					store := ttr.storeConstructor()
-					gen := tests.NewCounterGen(1000000) // Use a large enough number that any sharding function kicks in (e.g. the b10 string is >=7 chars).
-					tests.BenchPut(b, store, gen, scale)
-				})
-			}
-		})
+				// Create the store, and put it to work!
+				store := ttr.storeConstructor()
+				gen := tests.NewCounterGen(1000000) // Use a large enough number that any sharding function kicks in (e.g. the b10 string is >=7 chars).
+				tests.BenchPut(b, store, gen, scale)
+			})
+		}
 	}
 }
