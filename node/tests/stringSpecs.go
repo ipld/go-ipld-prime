@@ -3,7 +3,7 @@ package tests
 import (
 	"testing"
 
-	. "github.com/warpfork/go-wish"
+	qt "github.com/frankban/quicktest"
 
 	"github.com/ipld/go-ipld-prime/datamodel"
 )
@@ -12,13 +12,13 @@ func SpecTestString(t *testing.T, np datamodel.NodePrototype) {
 	t.Run("string node", func(t *testing.T) {
 		nb := np.NewBuilder()
 		err := nb.AssignString("asdf")
-		Wish(t, err, ShouldEqual, nil)
+		qt.Check(t, err, qt.IsNil)
 		n := nb.Build()
 
-		Wish(t, n.Kind(), ShouldEqual, datamodel.Kind_String)
-		Wish(t, n.IsNull(), ShouldEqual, false)
+		qt.Check(t, n.Kind(), qt.Equals, datamodel.Kind_String)
+		qt.Check(t, n.IsNull(), qt.IsFalse)
 		x, err := n.AsString()
-		Wish(t, err, ShouldEqual, nil)
-		Wish(t, x, ShouldEqual, "asdf")
+		qt.Check(t, err, qt.IsNil)
+		qt.Check(t, x, qt.Equals, "asdf")
 	})
 }

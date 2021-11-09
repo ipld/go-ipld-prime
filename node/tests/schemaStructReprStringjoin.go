@@ -3,7 +3,7 @@ package tests
 import (
 	"testing"
 
-	. "github.com/warpfork/go-wish"
+	qt "github.com/frankban/quicktest"
 
 	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/fluent"
@@ -51,21 +51,21 @@ func SchemaTestStructReprStringjoin(t *testing.T, engine Engine) {
 				ma.AssembleEntry("field").AssignString("valoo")
 			}).(schema.TypedNode)
 			t.Run("typed-read", func(t *testing.T) {
-				Require(t, n.Kind(), ShouldEqual, datamodel.Kind_Map)
-				Wish(t, n.Length(), ShouldEqual, int64(1))
-				Wish(t, must.String(must.Node(n.LookupByString("field"))), ShouldEqual, "valoo")
+				qt.Assert(t, n.Kind(), qt.Equals, datamodel.Kind_Map)
+				qt.Check(t, n.Length(), qt.Equals, int64(1))
+				qt.Check(t, must.String(must.Node(n.LookupByString("field"))), qt.Equals, "valoo")
 			})
 			t.Run("repr-read", func(t *testing.T) {
 				nr := n.Representation()
-				Require(t, nr.Kind(), ShouldEqual, datamodel.Kind_String)
-				Wish(t, must.String(nr), ShouldEqual, "valoo")
+				qt.Assert(t, nr.Kind(), qt.Equals, datamodel.Kind_String)
+				qt.Check(t, must.String(nr), qt.Equals, "valoo")
 			})
 		})
 		t.Run("repr-create", func(t *testing.T) {
 			nr := fluent.MustBuild(nrp, func(na fluent.NodeAssembler) {
 				na.AssignString("valoo")
 			})
-			Wish(t, datamodel.DeepEqual(n, nr), ShouldEqual, true)
+			qt.Check(t, datamodel.DeepEqual(n, nr), qt.IsTrue)
 		})
 	})
 
@@ -79,22 +79,22 @@ func SchemaTestStructReprStringjoin(t *testing.T, engine Engine) {
 				ma.AssembleEntry("bar").AssignString("v2")
 			}).(schema.TypedNode)
 			t.Run("typed-read", func(t *testing.T) {
-				Require(t, n.Kind(), ShouldEqual, datamodel.Kind_Map)
-				Wish(t, n.Length(), ShouldEqual, int64(2))
-				Wish(t, must.String(must.Node(n.LookupByString("foo"))), ShouldEqual, "v1")
-				Wish(t, must.String(must.Node(n.LookupByString("bar"))), ShouldEqual, "v2")
+				qt.Assert(t, n.Kind(), qt.Equals, datamodel.Kind_Map)
+				qt.Check(t, n.Length(), qt.Equals, int64(2))
+				qt.Check(t, must.String(must.Node(n.LookupByString("foo"))), qt.Equals, "v1")
+				qt.Check(t, must.String(must.Node(n.LookupByString("bar"))), qt.Equals, "v2")
 			})
 			t.Run("repr-read", func(t *testing.T) {
 				nr := n.Representation()
-				Require(t, nr.Kind(), ShouldEqual, datamodel.Kind_String)
-				Wish(t, must.String(nr), ShouldEqual, "v1:v2")
+				qt.Assert(t, nr.Kind(), qt.Equals, datamodel.Kind_String)
+				qt.Check(t, must.String(nr), qt.Equals, "v1:v2")
 			})
 		})
 		t.Run("repr-create", func(t *testing.T) {
 			nr := fluent.MustBuild(nrp, func(na fluent.NodeAssembler) {
 				na.AssignString("v1:v2")
 			})
-			Wish(t, datamodel.DeepEqual(n, nr), ShouldEqual, true)
+			qt.Check(t, datamodel.DeepEqual(n, nr), qt.IsTrue)
 		})
 	})
 
@@ -108,22 +108,22 @@ func SchemaTestStructReprStringjoin(t *testing.T, engine Engine) {
 				ma.AssembleEntry("bar").AssignString("v2")
 			}).(schema.TypedNode)
 			t.Run("typed-read", func(t *testing.T) {
-				Require(t, n.Kind(), ShouldEqual, datamodel.Kind_Map)
-				Wish(t, n.Length(), ShouldEqual, int64(2))
-				Wish(t, must.String(must.Node(n.LookupByString("foo"))), ShouldEqual, "")
-				Wish(t, must.String(must.Node(n.LookupByString("bar"))), ShouldEqual, "v2")
+				qt.Assert(t, n.Kind(), qt.Equals, datamodel.Kind_Map)
+				qt.Check(t, n.Length(), qt.Equals, int64(2))
+				qt.Check(t, must.String(must.Node(n.LookupByString("foo"))), qt.Equals, "")
+				qt.Check(t, must.String(must.Node(n.LookupByString("bar"))), qt.Equals, "v2")
 			})
 			t.Run("repr-read", func(t *testing.T) {
 				nr := n.Representation()
-				Require(t, nr.Kind(), ShouldEqual, datamodel.Kind_String)
-				Wish(t, must.String(nr), ShouldEqual, ":v2") // Note the leading colon is still present.
+				qt.Assert(t, nr.Kind(), qt.Equals, datamodel.Kind_String)
+				qt.Check(t, must.String(nr), qt.Equals, ":v2") // Note the leading colon is still present.
 			})
 		})
 		t.Run("repr-create", func(t *testing.T) {
 			nr := fluent.MustBuild(nrp, func(na fluent.NodeAssembler) {
 				na.AssignString(":v2")
 			})
-			Wish(t, datamodel.DeepEqual(n, nr), ShouldEqual, true)
+			qt.Check(t, datamodel.DeepEqual(n, nr), qt.IsTrue)
 		})
 	})
 
@@ -141,26 +141,26 @@ func SchemaTestStructReprStringjoin(t *testing.T, engine Engine) {
 				ma.AssembleEntry("bar").AssignString("v4")
 			}).(schema.TypedNode)
 			t.Run("typed-read", func(t *testing.T) {
-				Require(t, n.Kind(), ShouldEqual, datamodel.Kind_Map)
-				Wish(t, n.Length(), ShouldEqual, int64(3))
-				Wish(t, must.String(must.Node(n.LookupByString("foo"))), ShouldEqual, "v1")
-				Wish(t, must.String(must.Node(n.LookupByString("bar"))), ShouldEqual, "v4")
+				qt.Assert(t, n.Kind(), qt.Equals, datamodel.Kind_Map)
+				qt.Check(t, n.Length(), qt.Equals, int64(3))
+				qt.Check(t, must.String(must.Node(n.LookupByString("foo"))), qt.Equals, "v1")
+				qt.Check(t, must.String(must.Node(n.LookupByString("bar"))), qt.Equals, "v4")
 				n2 := must.Node(n.LookupByString("zap"))
-				Wish(t, n2.Length(), ShouldEqual, int64(2))
-				Wish(t, must.String(must.Node(n2.LookupByString("foo"))), ShouldEqual, "v2")
-				Wish(t, must.String(must.Node(n2.LookupByString("bar"))), ShouldEqual, "v3")
+				qt.Check(t, n2.Length(), qt.Equals, int64(2))
+				qt.Check(t, must.String(must.Node(n2.LookupByString("foo"))), qt.Equals, "v2")
+				qt.Check(t, must.String(must.Node(n2.LookupByString("bar"))), qt.Equals, "v3")
 			})
 			t.Run("repr-read", func(t *testing.T) {
 				nr := n.Representation()
-				Require(t, nr.Kind(), ShouldEqual, datamodel.Kind_String)
-				Wish(t, must.String(nr), ShouldEqual, "v1-v2:v3-v4")
+				qt.Assert(t, nr.Kind(), qt.Equals, datamodel.Kind_String)
+				qt.Check(t, must.String(nr), qt.Equals, "v1-v2:v3-v4")
 			})
 		})
 		t.Run("repr-create", func(t *testing.T) {
 			nr := fluent.MustBuild(nrp, func(na fluent.NodeAssembler) {
 				na.AssignString("v1-v2:v3-v4")
 			})
-			Wish(t, datamodel.DeepEqual(n, nr), ShouldEqual, true)
+			qt.Check(t, datamodel.DeepEqual(n, nr), qt.IsTrue)
 		})
 	})
 }

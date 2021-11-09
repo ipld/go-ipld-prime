@@ -3,7 +3,7 @@ package tests
 import (
 	"testing"
 
-	. "github.com/warpfork/go-wish"
+	qt "github.com/frankban/quicktest"
 
 	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/fluent"
@@ -41,22 +41,22 @@ func SchemaTestStructReprTuple(t *testing.T, engine Engine) {
 				ma.AssembleEntry("field").AssignString("valoo")
 			}).(schema.TypedNode)
 			t.Run("typed-read", func(t *testing.T) {
-				Require(t, n.Kind(), ShouldEqual, datamodel.Kind_Map)
-				Wish(t, n.Length(), ShouldEqual, int64(1))
-				Wish(t, must.String(must.Node(n.LookupByString("field"))), ShouldEqual, "valoo")
+				qt.Assert(t, n.Kind(), qt.Equals, datamodel.Kind_Map)
+				qt.Check(t, n.Length(), qt.Equals, int64(1))
+				qt.Check(t, must.String(must.Node(n.LookupByString("field"))), qt.Equals, "valoo")
 			})
 			t.Run("repr-read", func(t *testing.T) {
 				nr := n.Representation()
-				Require(t, nr.Kind(), ShouldEqual, datamodel.Kind_List)
-				Wish(t, nr.Length(), ShouldEqual, int64(1))
-				Wish(t, must.String(must.Node(nr.LookupByIndex(0))), ShouldEqual, "valoo")
+				qt.Assert(t, nr.Kind(), qt.Equals, datamodel.Kind_List)
+				qt.Check(t, nr.Length(), qt.Equals, int64(1))
+				qt.Check(t, must.String(must.Node(nr.LookupByIndex(0))), qt.Equals, "valoo")
 			})
 		})
 		t.Run("repr-create", func(t *testing.T) {
 			nr := fluent.MustBuildList(nrp, 1, func(la fluent.ListAssembler) {
 				la.AssembleValue().AssignString("valoo")
 			})
-			Wish(t, datamodel.DeepEqual(n, nr), ShouldEqual, true)
+			qt.Check(t, datamodel.DeepEqual(n, nr), qt.IsTrue)
 		})
 	})
 
@@ -72,21 +72,21 @@ func SchemaTestStructReprTuple(t *testing.T, engine Engine) {
 				ma.AssembleEntry("qux").AssignString("3")
 			}).(schema.TypedNode)
 			t.Run("typed-read", func(t *testing.T) {
-				Require(t, n.Kind(), ShouldEqual, datamodel.Kind_Map)
-				Wish(t, n.Length(), ShouldEqual, int64(4))
-				Wish(t, must.String(must.Node(n.LookupByString("foo"))), ShouldEqual, "0")
-				Wish(t, must.String(must.Node(n.LookupByString("bar"))), ShouldEqual, "1")
-				Wish(t, must.String(must.Node(n.LookupByString("baz"))), ShouldEqual, "2")
-				Wish(t, must.String(must.Node(n.LookupByString("qux"))), ShouldEqual, "3")
+				qt.Assert(t, n.Kind(), qt.Equals, datamodel.Kind_Map)
+				qt.Check(t, n.Length(), qt.Equals, int64(4))
+				qt.Check(t, must.String(must.Node(n.LookupByString("foo"))), qt.Equals, "0")
+				qt.Check(t, must.String(must.Node(n.LookupByString("bar"))), qt.Equals, "1")
+				qt.Check(t, must.String(must.Node(n.LookupByString("baz"))), qt.Equals, "2")
+				qt.Check(t, must.String(must.Node(n.LookupByString("qux"))), qt.Equals, "3")
 			})
 			t.Run("repr-read", func(t *testing.T) {
 				nr := n.Representation()
-				Require(t, nr.Kind(), ShouldEqual, datamodel.Kind_List)
-				Wish(t, nr.Length(), ShouldEqual, int64(4))
-				Wish(t, must.String(must.Node(nr.LookupByIndex(0))), ShouldEqual, "0")
-				Wish(t, must.String(must.Node(nr.LookupByIndex(1))), ShouldEqual, "1")
-				Wish(t, must.String(must.Node(nr.LookupByIndex(2))), ShouldEqual, "2")
-				Wish(t, must.String(must.Node(nr.LookupByIndex(3))), ShouldEqual, "3")
+				qt.Assert(t, nr.Kind(), qt.Equals, datamodel.Kind_List)
+				qt.Check(t, nr.Length(), qt.Equals, int64(4))
+				qt.Check(t, must.String(must.Node(nr.LookupByIndex(0))), qt.Equals, "0")
+				qt.Check(t, must.String(must.Node(nr.LookupByIndex(1))), qt.Equals, "1")
+				qt.Check(t, must.String(must.Node(nr.LookupByIndex(2))), qt.Equals, "2")
+				qt.Check(t, must.String(must.Node(nr.LookupByIndex(3))), qt.Equals, "3")
 			})
 		})
 		t.Run("repr-create", func(t *testing.T) {
@@ -96,7 +96,7 @@ func SchemaTestStructReprTuple(t *testing.T, engine Engine) {
 				la.AssembleValue().AssignString("2")
 				la.AssembleValue().AssignString("3")
 			})
-			Wish(t, datamodel.DeepEqual(n, nr), ShouldEqual, true)
+			qt.Check(t, datamodel.DeepEqual(n, nr), qt.IsTrue)
 		})
 	})
 
@@ -110,19 +110,19 @@ func SchemaTestStructReprTuple(t *testing.T, engine Engine) {
 				ma.AssembleEntry("bar").AssignNull()
 			}).(schema.TypedNode)
 			t.Run("typed-read", func(t *testing.T) {
-				Require(t, n.Kind(), ShouldEqual, datamodel.Kind_Map)
-				Wish(t, n.Length(), ShouldEqual, int64(4))
-				Wish(t, must.String(must.Node(n.LookupByString("foo"))), ShouldEqual, "0")
-				Wish(t, must.Node(n.LookupByString("bar")), ShouldEqual, datamodel.Null)
-				Wish(t, must.Node(n.LookupByString("baz")), ShouldEqual, datamodel.Absent)
-				Wish(t, must.Node(n.LookupByString("qux")), ShouldEqual, datamodel.Absent)
+				qt.Assert(t, n.Kind(), qt.Equals, datamodel.Kind_Map)
+				qt.Check(t, n.Length(), qt.Equals, int64(4))
+				qt.Check(t, must.String(must.Node(n.LookupByString("foo"))), qt.Equals, "0")
+				qt.Check(t, must.Node(n.LookupByString("bar")), qt.Equals, datamodel.Null)
+				qt.Check(t, must.Node(n.LookupByString("baz")), qt.Equals, datamodel.Absent)
+				qt.Check(t, must.Node(n.LookupByString("qux")), qt.Equals, datamodel.Absent)
 			})
 			t.Run("repr-read", func(t *testing.T) {
 				nr := n.Representation()
-				Require(t, nr.Kind(), ShouldEqual, datamodel.Kind_List)
-				Wish(t, nr.Length(), ShouldEqual, int64(2))
-				Wish(t, must.String(must.Node(nr.LookupByIndex(0))), ShouldEqual, "0")
-				Wish(t, must.Node(nr.LookupByIndex(1)), ShouldEqual, datamodel.Null)
+				qt.Assert(t, nr.Kind(), qt.Equals, datamodel.Kind_List)
+				qt.Check(t, nr.Length(), qt.Equals, int64(2))
+				qt.Check(t, must.String(must.Node(nr.LookupByIndex(0))), qt.Equals, "0")
+				qt.Check(t, must.Node(nr.LookupByIndex(1)), qt.Equals, datamodel.Null)
 			})
 		})
 		t.Run("repr-create", func(t *testing.T) {
@@ -130,7 +130,7 @@ func SchemaTestStructReprTuple(t *testing.T, engine Engine) {
 				la.AssembleValue().AssignString("0")
 				la.AssembleValue().AssignNull()
 			})
-			Wish(t, datamodel.DeepEqual(n, nr), ShouldEqual, true)
+			qt.Check(t, datamodel.DeepEqual(n, nr), qt.IsTrue)
 		})
 	})
 }

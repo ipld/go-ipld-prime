@@ -2,13 +2,14 @@ package tests
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"strings"
 	"testing"
 
+	qt "github.com/frankban/quicktest"
 	"github.com/polydawn/refmt/json"
 	"github.com/polydawn/refmt/shared"
-	. "github.com/warpfork/go-wish"
 
 	"github.com/ipld/go-ipld-prime/codec"
 	"github.com/ipld/go-ipld-prime/codec/dagjson"
@@ -125,7 +126,7 @@ func (tcase testcase) Test(t *testing.T, np, npr datamodel.NodePrototype) {
 		}
 		if n2 != nil {
 			t.Run("type-create and repr-create match", func(t *testing.T) {
-				Wish(t, datamodel.DeepEqual(n, n2), ShouldEqual, true)
+				qt.Check(t, datamodel.DeepEqual(n, n2), qt.IsTrue)
 			})
 		}
 
@@ -155,17 +156,17 @@ func (tcase testcase) Test(t *testing.T, np, npr datamodel.NodePrototype) {
 			//  because the only kind of thing that needs this style of testing are some instances of maps and some instances of structs.
 			itr := n.MapIterator()
 			for _, entry := range tcase.typeItr {
-				Wish(t, itr.Done(), ShouldEqual, false)
+				qt.Check(t, itr.Done(), qt.IsFalse)
 				k, v, err := itr.Next()
-				Wish(t, k, closeEnough, entry.key)
-				Wish(t, v, closeEnough, entry.value)
-				Wish(t, err, ShouldEqual, nil)
+				qt.Check(t, k, closeEnough, entry.key)
+				qt.Check(t, v, closeEnough, entry.value)
+				qt.Check(t, err, qt.IsNil)
 			}
-			Wish(t, itr.Done(), ShouldEqual, true)
+			qt.Check(t, itr.Done(), qt.IsTrue)
 			k, v, err := itr.Next()
-			Wish(t, k, ShouldEqual, nil)
-			Wish(t, v, ShouldEqual, nil)
-			Wish(t, err, ShouldEqual, datamodel.ErrIteratorOverread{})
+			qt.Check(t, k, qt.IsNil)
+			qt.Check(t, v, qt.IsNil)
+			qt.Check(t, err, qt.Equals, datamodel.ErrIteratorOverread{})
 		} else if tcase.typeJson != "" {
 			t.Run("type-marshal", func(t *testing.T) {
 				testMarshal(t, n, tcase.typeJson)
@@ -187,8 +188,8 @@ func (tcase testcase) Test(t *testing.T, np, npr datamodel.NodePrototype) {
 		if n.Kind() == datamodel.Kind_Map {
 			t.Run("type-create with AK+AV", func(t *testing.T) {
 				n3, err := shallowCopyMap(np, n)
-				Wish(t, err, ShouldEqual, nil)
-				Wish(t, datamodel.DeepEqual(n, n3), ShouldEqual, true)
+				qt.Check(t, err, qt.IsNil)
+				qt.Check(t, datamodel.DeepEqual(n, n3), qt.IsTrue)
 			})
 		}
 
@@ -197,8 +198,11 @@ func (tcase testcase) Test(t *testing.T, np, npr datamodel.NodePrototype) {
 		if n.(schema.TypedNode).Representation().Kind() == datamodel.Kind_Map {
 			t.Run("repr-create with AK+AV", func(t *testing.T) {
 				n3, err := shallowCopyMap(npr, n.(schema.TypedNode).Representation())
-				Wish(t, err, ShouldEqual, nil)
-				Wish(t, datamodel.DeepEqual(n, n3), ShouldEqual, true)
+				qt.Check(t, err, qt.IsNil)
+				// TODO: Improve checking mechanism; hits:
+				// -  expose datamodel.DeepEqual as a go-cmp Comparer, or
+				// - use the printer package and then do string diff on the results
+				qt.Check(t, datamodel.DeepEqual(n, n3), qt.IsTrue)
 			})
 		}
 
@@ -242,7 +246,7 @@ func testUnmarshal(t *testing.T, np datamodel.NodePrototype, data string, expect
 	case expectFail == nil && err == nil:
 		// carry on
 	case expectFail != nil && err != nil:
-		Wish(t, err, ShouldBeSameTypeAs, expectFail)
+		qt.Check(t, err, qt.ErrorAs, expectFail)
 	case expectFail != nil && err == nil:
 		t.Errorf("expected creation to fail with a %T error, but got no error", expectFail)
 	}
@@ -262,7 +266,7 @@ func testMarshal(t *testing.T, n datamodel.Node, data string) {
 	if err != nil {
 		t.Errorf("marshal failed: %s", err)
 	}
-	Wish(t, buf.String(), ShouldEqual, reformat(data, prettyprint))
+	qt.Check(t, buf.String(), qt.Equals, reformat(data, prettyprint))
 }
 
 func wishPoint(t *testing.T, n datamodel.Node, point testcasePoint) {
@@ -270,52 +274,63 @@ func wishPoint(t *testing.T, n datamodel.Node, point testcasePoint) {
 	reached, err := traversal.Get(n, datamodel.ParsePath(point.path))
 	switch point.expect.(type) {
 	case error:
-		Wish(t, err, ShouldBeSameTypeAs, point.expect)
-		Wish(t, err, ShouldEqual, point.expect)
+		qt.Check(t, err, qt.ErrorAs, point.expect)
+		qt.Check(t, err, qt.Equals, point.expect)
 	default:
-		Wish(t, err, ShouldEqual, nil)
+		qt.Check(t, err, qt.IsNil)
 		if reached == nil {
 			return
 		}
-		Wish(t, reached, closeEnough, point.expect)
+		qt.Check(t, reached, closeEnough, point.expect)
 	}
 }
 
-// closeEnough conforms to wish.Checker (so we can use it in Wish invocations),
+// closeEnough conforms to quicktest.Checker (so we can use it in quicktest invocations),
 // and lets Nodes be compared to primitives in convenient ways.
 //
 // If the expected value is a primitive string, it'll AsStrong on the Node; etc.
 //
 // Using a datamodel.Kind value is also possible, which will just check the kind and not the value contents.
 //
-// If a datamodel.Node is the expected value, a full deep ShouldEqual is used as normal.
-func closeEnough(actual, expected interface{}) (string, bool) {
+// If a datamodel.Node is the expected value, a full deep qt.Equals is used as normal.
+var closeEnough = &closeEnoughChecker{}
+
+var _ qt.Checker = (*closeEnoughChecker)(nil)
+
+type closeEnoughChecker struct{}
+
+func (c *closeEnoughChecker) ArgNames() []string {
+	return []string{"got", "want"}
+}
+
+func (c *closeEnoughChecker) Check(actual interface{}, args []interface{}, note func(key string, value interface{})) (err error) {
+	expected := args[0]
 	if expected == nil {
-		return ShouldEqual(actual, nil)
+		return qt.IsNil.Check(actual, args, note)
 	}
 	a, ok := actual.(datamodel.Node)
 	if !ok {
-		return "this checker only supports checking datamodel.Node values", false
+		return errors.New("this checker only supports checking datamodel.Node values")
 	}
 	switch expected.(type) {
 	case datamodel.Kind:
-		return ShouldEqual(a.Kind(), expected)
+		return qt.Equals.Check(a.Kind(), args, note)
 	case string:
 		if a.Kind() != datamodel.Kind_String {
-			return fmt.Sprintf("expected something with kind string, got kind %s", a.Kind()), false
+			return fmt.Errorf("expected something with kind string, got kind %s", a.Kind())
 		}
 		x, _ := a.AsString()
-		return ShouldEqual(x, expected)
+		return qt.Equals.Check(x, args, note)
 	case int:
 		if a.Kind() != datamodel.Kind_Int {
-			return fmt.Sprintf("expected something with kind int, got kind %s", a.Kind()), false
+			return fmt.Errorf("expected something with kind int, got kind %s", a.Kind())
 		}
 		x, _ := a.AsInt()
-		return ShouldEqual(x, expected)
+		return qt.Equals.Check(x, args, note)
 	case datamodel.Node:
-		return ShouldEqual(actual, expected)
+		return qt.Equals.Check(actual, args, note)
 	default:
-		return fmt.Sprintf("this checker doesn't support an expected value of type %T", expected), false
+		return fmt.Errorf("this checker doesn't support an expected value of type %T", expected)
 	}
 }
 

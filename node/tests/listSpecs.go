@@ -3,7 +3,7 @@ package tests
 import (
 	"testing"
 
-	. "github.com/warpfork/go-wish"
+	qt "github.com/frankban/quicktest"
 
 	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/fluent"
@@ -18,46 +18,46 @@ func SpecTestListString(t *testing.T, np datamodel.NodePrototype) {
 			la.AssembleValue().AssignString("three")
 		})
 		t.Run("reads back out", func(t *testing.T) {
-			Wish(t, n.Length(), ShouldEqual, int64(3))
+			qt.Check(t, n.Length(), qt.Equals, int64(3))
 
 			v, err := n.LookupByIndex(0)
-			Wish(t, err, ShouldEqual, nil)
-			Wish(t, must.String(v), ShouldEqual, "one")
+			qt.Check(t, err, qt.IsNil)
+			qt.Check(t, must.String(v), qt.Equals, "one")
 
 			v, err = n.LookupByIndex(1)
-			Wish(t, err, ShouldEqual, nil)
-			Wish(t, must.String(v), ShouldEqual, "two")
+			qt.Check(t, err, qt.IsNil)
+			qt.Check(t, must.String(v), qt.Equals, "two")
 
 			v, err = n.LookupByIndex(2)
-			Wish(t, err, ShouldEqual, nil)
-			Wish(t, must.String(v), ShouldEqual, "three")
+			qt.Check(t, err, qt.IsNil)
+			qt.Check(t, must.String(v), qt.Equals, "three")
 		})
 		t.Run("reads via iteration", func(t *testing.T) {
 			itr := n.ListIterator()
 
-			Wish(t, itr.Done(), ShouldEqual, false)
+			qt.Check(t, itr.Done(), qt.IsFalse)
 			idx, v, err := itr.Next()
-			Wish(t, err, ShouldEqual, nil)
-			Wish(t, idx, ShouldEqual, int64(0))
-			Wish(t, must.String(v), ShouldEqual, "one")
+			qt.Check(t, err, qt.IsNil)
+			qt.Check(t, idx, qt.Equals, int64(0))
+			qt.Check(t, must.String(v), qt.Equals, "one")
 
-			Wish(t, itr.Done(), ShouldEqual, false)
+			qt.Check(t, itr.Done(), qt.IsFalse)
 			idx, v, err = itr.Next()
-			Wish(t, err, ShouldEqual, nil)
-			Wish(t, idx, ShouldEqual, int64(1))
-			Wish(t, must.String(v), ShouldEqual, "two")
+			qt.Check(t, err, qt.IsNil)
+			qt.Check(t, idx, qt.Equals, int64(1))
+			qt.Check(t, must.String(v), qt.Equals, "two")
 
-			Wish(t, itr.Done(), ShouldEqual, false)
+			qt.Check(t, itr.Done(), qt.IsFalse)
 			idx, v, err = itr.Next()
-			Wish(t, err, ShouldEqual, nil)
-			Wish(t, idx, ShouldEqual, int64(2))
-			Wish(t, must.String(v), ShouldEqual, "three")
+			qt.Check(t, err, qt.IsNil)
+			qt.Check(t, idx, qt.Equals, int64(2))
+			qt.Check(t, must.String(v), qt.Equals, "three")
 
-			Wish(t, itr.Done(), ShouldEqual, true)
+			qt.Check(t, itr.Done(), qt.IsTrue)
 			idx, v, err = itr.Next()
-			Wish(t, err, ShouldEqual, datamodel.ErrIteratorOverread{})
-			Wish(t, idx, ShouldEqual, int64(-1))
-			Wish(t, v, ShouldEqual, nil)
+			qt.Check(t, err, qt.Equals, datamodel.ErrIteratorOverread{})
+			qt.Check(t, idx, qt.Equals, int64(-1))
+			qt.Check(t, v, qt.IsNil)
 		})
 	})
 }

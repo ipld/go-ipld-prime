@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"testing"
 
-	. "github.com/warpfork/go-wish"
+	qt "github.com/frankban/quicktest"
 
 	"github.com/ipfs/go-cid"
 	"github.com/ipld/go-ipld-prime/codec/dagjson"
@@ -92,7 +92,7 @@ func SchemaTestLinks(t *testing.T, engine Engine) {
 			ssb.ExploreAll(ssb.ExploreRecursiveEdge()),
 		))
 		s, err := ss.Selector()
-		Wish(t, err, ShouldEqual, nil)
+		qt.Check(t, err, qt.IsNil)
 
 		var order int
 		lsys := cidlink.DefaultLinkSystem()
@@ -113,26 +113,26 @@ func SchemaTestLinks(t *testing.T, engine Engine) {
 			fmt.Printf("Walked %d: %v\n", order, buf.String())
 			switch order {
 			case 0: // root
-				Wish(t, n.Prototype(), ShouldEqual, engine.PrototypeByName("LinkStruct"))
+				qt.Check(t, n.Prototype(), qt.Equals, engine.PrototypeByName("LinkStruct"))
 			case 1: // from an &Any
-				Wish(t, n.Prototype(), ShouldEqual, basicnode.Prototype__String{})
+				qt.Check(t, n.Prototype(), qt.Equals, basicnode.Prototype__String{})
 			case 2: // &Int
-				Wish(t, n.Prototype(), ShouldEqual, engine.PrototypeByName("Int"))
+				qt.Check(t, n.Prototype(), qt.Equals, engine.PrototypeByName("Int"))
 			case 3: // &String
-				Wish(t, n.Prototype(), ShouldEqual, engine.PrototypeByName("String"))
+				qt.Check(t, n.Prototype(), qt.Equals, engine.PrototypeByName("String"))
 			case 4: // &ListOfStrings
-				Wish(t, n.Prototype(), ShouldEqual, engine.PrototypeByName("ListOfStrings"))
+				qt.Check(t, n.Prototype(), qt.Equals, engine.PrototypeByName("ListOfStrings"))
 			case 5:
 				fallthrough
 			case 6:
 				fallthrough
 			case 7:
-				Wish(t, n.Prototype(), ShouldEqual, engine.PrototypeByName("String"))
+				qt.Check(t, n.Prototype(), qt.Equals, engine.PrototypeByName("String"))
 			}
 			order++
 			return nil
 		})
-		Wish(t, err, ShouldEqual, nil)
-		Wish(t, order, ShouldEqual, 8)
+		qt.Check(t, err, qt.IsNil)
+		qt.Check(t, order, qt.Equals, 8)
 	})
 }
