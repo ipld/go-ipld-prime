@@ -65,7 +65,7 @@ func SchemaTestStructReprStringjoin(t *testing.T, engine Engine) {
 			nr := fluent.MustBuild(nrp, func(na fluent.NodeAssembler) {
 				na.AssignString("valoo")
 			})
-			qt.Check(t, datamodel.DeepEqual(n, nr), qt.IsTrue)
+			qt.Check(t, n, NodeContentEquals, nr)
 		})
 	})
 
@@ -94,7 +94,7 @@ func SchemaTestStructReprStringjoin(t *testing.T, engine Engine) {
 			nr := fluent.MustBuild(nrp, func(na fluent.NodeAssembler) {
 				na.AssignString("v1:v2")
 			})
-			qt.Check(t, datamodel.DeepEqual(n, nr), qt.IsTrue)
+			qt.Check(t, n, NodeContentEquals, nr)
 		})
 	})
 
@@ -123,7 +123,7 @@ func SchemaTestStructReprStringjoin(t *testing.T, engine Engine) {
 			nr := fluent.MustBuild(nrp, func(na fluent.NodeAssembler) {
 				na.AssignString(":v2")
 			})
-			qt.Check(t, datamodel.DeepEqual(n, nr), qt.IsTrue)
+			qt.Check(t, n, NodeContentEquals, nr)
 		})
 	})
 
@@ -160,7 +160,7 @@ func SchemaTestStructReprStringjoin(t *testing.T, engine Engine) {
 			nr := fluent.MustBuild(nrp, func(na fluent.NodeAssembler) {
 				na.AssignString("v1-v2:v3-v4")
 			})
-			qt.Check(t, datamodel.DeepEqual(n, nr), qt.IsTrue)
+			qt.Check(t, n, NodeContentEquals, nr)
 		})
 	})
 }

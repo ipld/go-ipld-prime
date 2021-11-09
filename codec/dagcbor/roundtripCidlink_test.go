@@ -5,13 +5,14 @@ import (
 	"io"
 	"testing"
 
-	. "github.com/warpfork/go-wish"
+	qt "github.com/frankban/quicktest"
 
 	cid "github.com/ipfs/go-cid"
 	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/linking"
 	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
 	"github.com/ipld/go-ipld-prime/node/basicnode"
+	nodetests "github.com/ipld/go-ipld-prime/node/tests"
 )
 
 func TestRoundtripCidlink(t *testing.T) {
@@ -32,9 +33,9 @@ func TestRoundtripCidlink(t *testing.T) {
 	}
 
 	lnk, err := lsys.Store(linking.LinkContext{}, lp, n)
-	Require(t, err, ShouldEqual, nil)
+	qt.Assert(t, err, qt.IsNil)
 
 	n2, err := lsys.Load(linking.LinkContext{}, lnk, basicnode.Prototype.Any)
-	Require(t, err, ShouldEqual, nil)
-	Wish(t, n2, ShouldEqual, nSorted)
+	qt.Assert(t, err, qt.IsNil)
+	qt.Check(t, n2, nodetests.NodeContentEquals, nSorted)
 }

@@ -56,7 +56,7 @@ func SchemaTestStructReprTuple(t *testing.T, engine Engine) {
 			nr := fluent.MustBuildList(nrp, 1, func(la fluent.ListAssembler) {
 				la.AssembleValue().AssignString("valoo")
 			})
-			qt.Check(t, datamodel.DeepEqual(n, nr), qt.IsTrue)
+			qt.Check(t, n, NodeContentEquals, nr)
 		})
 	})
 
@@ -96,7 +96,7 @@ func SchemaTestStructReprTuple(t *testing.T, engine Engine) {
 				la.AssembleValue().AssignString("2")
 				la.AssembleValue().AssignString("3")
 			})
-			qt.Check(t, datamodel.DeepEqual(n, nr), qt.IsTrue)
+			qt.Check(t, n, NodeContentEquals, nr)
 		})
 	})
 
@@ -130,7 +130,7 @@ func SchemaTestStructReprTuple(t *testing.T, engine Engine) {
 				la.AssembleValue().AssignString("0")
 				la.AssembleValue().AssignNull()
 			})
-			qt.Check(t, datamodel.DeepEqual(n, nr), qt.IsTrue)
+			qt.Check(t, n, NodeContentEquals, nr)
 		})
 	})
 }

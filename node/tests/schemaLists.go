@@ -64,7 +64,7 @@ func SchemaTestListsContainingMaybe(t *testing.T, engine Engine) {
 				la.AssembleValue().AssignString("1")
 				la.AssembleValue().AssignString("2")
 			})
-			qt.Check(t, datamodel.DeepEqual(n, nr), qt.IsTrue)
+			qt.Check(t, n, NodeContentEquals, nr)
 		})
 	})
 	t.Run("nullable", func(t *testing.T) {
@@ -99,7 +99,7 @@ func SchemaTestListsContainingMaybe(t *testing.T, engine Engine) {
 				la.AssembleValue().AssignString("1")
 				la.AssembleValue().AssignNull()
 			})
-			qt.Check(t, datamodel.DeepEqual(n, nr), qt.IsTrue)
+			qt.Check(t, n, NodeContentEquals, nr)
 		})
 	})
 }
@@ -186,6 +186,6 @@ func SchemaTestListsContainingLists(t *testing.T, engine Engine) {
 				la.AssembleValue().CreateMap(1, func(ma fluent.MapAssembler) { ma.AssembleEntry("encoded").AssignString("32") })
 			})
 		})
-		qt.Check(t, datamodel.DeepEqual(n, nr), qt.IsTrue)
+		qt.Check(t, n, NodeContentEquals, nr)
 	})
 }

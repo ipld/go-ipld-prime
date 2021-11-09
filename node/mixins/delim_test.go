@@ -2,9 +2,11 @@ package mixins
 
 import (
 	"fmt"
+	"github.com/google/go-cmp/cmp"
+	"reflect"
 	"testing"
 
-	. "github.com/warpfork/go-wish"
+	qt "github.com/frankban/quicktest"
 )
 
 func TestSplitExact(t *testing.T) {
@@ -29,6 +31,6 @@ func TestSplitExact(t *testing.T) {
 	} {
 		value, err := SplitExact(ent.s, ent.sep, ent.count)
 		ent2 := tcase{ent.s, ent.sep, ent.count, expect{value, err}}
-		Wish(t, ent2, ShouldEqual, ent)
+		qt.Check(t, ent2, qt.CmpEquals(cmp.Exporter(func(reflect.Type) bool { return true })), ent)
 	}
 }
