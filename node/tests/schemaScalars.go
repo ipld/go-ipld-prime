@@ -77,17 +77,17 @@ func SchemaTestScalars(t *testing.T, engine Engine) {
 
 						// Assigning null, a list, or a map, should always fail.
 						err := nb.AssignNull()
-						qt.Assert(t, err, qt.Not(qt.IsNil))
+						qt.Check(t, err, qt.Not(qt.IsNil))
 						_, err = nb.BeginMap(-1)
-						qt.Assert(t, err, qt.Not(qt.IsNil))
+						qt.Check(t, err, qt.Not(qt.IsNil))
 						_, err = nb.BeginList(-1)
-						qt.Assert(t, err, qt.Not(qt.IsNil))
+						qt.Check(t, err, qt.Not(qt.IsNil))
 
 						// Assigning the right value for the kind should succeed.
 						if useAssignNode {
 							np2 := engine.PrototypeByName(testAssign.name)
 							nb2 := np2.NewBuilder()
-							qt.Assert(t, assignValue(nb2, testAssign.value), qt.IsNil)
+							qt.Check(t, assignValue(nb2, testAssign.value), qt.IsNil)
 							n2 := nb2.Build()
 
 							err = nb.AssignNode(n2)
@@ -95,13 +95,13 @@ func SchemaTestScalars(t *testing.T, engine Engine) {
 							err = assignValue(nb, testAssign.value)
 						}
 						if testAssign.kind == testProto.kind {
-							qt.Assert(t, err, qt.IsNil)
+							qt.Check(t, err, qt.IsNil)
 						} else {
-							qt.Assert(t, err, qt.Not(qt.IsNil))
+							qt.Check(t, err, qt.Not(qt.IsNil))
 
 							// Assign something anyway, just so we can Build later.
 							err := assignValue(nb, testProto.value)
-							qt.Assert(t, err, qt.IsNil)
+							qt.Check(t, err, qt.IsNil)
 						}
 
 						n := nb.Build()
@@ -123,24 +123,24 @@ func SchemaTestScalars(t *testing.T, engine Engine) {
 							t.Fatal(testAssign.kind)
 						}
 						if testAssign.kind == testProto.kind {
-							qt.Assert(t, err, qt.IsNil)
-							qt.Assert(t, gotValue, qt.DeepEquals, testAssign.value)
+							qt.Check(t, err, qt.IsNil)
+							qt.Check(t, gotValue, qt.DeepEquals, testAssign.value)
 						} else {
-							qt.Assert(t, err, qt.Not(qt.IsNil))
+							qt.Check(t, err, qt.Not(qt.IsNil))
 						}
 
 						// Using Node methods which should never
 						// work on scalar kinds.
 
 						_, err = n.LookupByString("foo")
-						qt.Assert(t, err, qt.Not(qt.IsNil))
+						qt.Check(t, err, qt.Not(qt.IsNil))
 						_, err = n.LookupByIndex(3)
-						qt.Assert(t, err, qt.Not(qt.IsNil))
-						qt.Assert(t, n.MapIterator(), qt.IsNil)
-						qt.Assert(t, n.ListIterator(), qt.IsNil)
-						qt.Assert(t, n.Length(), qt.Equals, int64(-1))
-						qt.Assert(t, n.IsAbsent(), qt.IsFalse)
-						qt.Assert(t, n.IsNull(), qt.IsFalse)
+						qt.Check(t, err, qt.Not(qt.IsNil))
+						qt.Check(t, n.MapIterator(), qt.IsNil)
+						qt.Check(t, n.ListIterator(), qt.IsNil)
+						qt.Check(t, n.Length(), qt.Equals, int64(-1))
+						qt.Check(t, n.IsAbsent(), qt.IsFalse)
+						qt.Check(t, n.IsNull(), qt.IsFalse)
 					})
 				}
 			}

@@ -3,7 +3,7 @@ package tests
 import (
 	"testing"
 
-	. "github.com/warpfork/go-wish"
+	qt "github.com/frankban/quicktest"
 
 	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/fluent"
@@ -43,8 +43,8 @@ func SchemaTestRequiredFields(t *testing.T, engine Engine) {
 		ma, _ := nb.BeginMap(0)
 		err := ma.Finish()
 
-		Wish(t, err, ShouldBeSameTypeAs, schema.ErrMissingRequiredField{})
-		Wish(t, err.Error(), ShouldEqual, `missing required fields: a,b`)
+		qt.Check(t, err, qt.ErrorAs, &schema.ErrMissingRequiredField{})
+		qt.Check(t, err.Error(), qt.Equals, `missing required fields: a,b`)
 	})
 	t.Run("building-representation-without-required-fields-errors", func(t *testing.T) {
 		nrp := engine.PrototypeByName("StructOne.Repr")
@@ -53,8 +53,8 @@ func SchemaTestRequiredFields(t *testing.T, engine Engine) {
 		ma, _ := nb.BeginMap(0)
 		err := ma.Finish()
 
-		Wish(t, err, ShouldBeSameTypeAs, schema.ErrMissingRequiredField{})
-		Wish(t, err.Error(), ShouldEqual, `missing required fields: a,b`)
+		qt.Check(t, err, qt.ErrorAs, &schema.ErrMissingRequiredField{})
+		qt.Check(t, err.Error(), qt.Equals, `missing required fields: a,b`)
 	})
 	t.Run("building-representation-with-renames-without-required-fields-errors", func(t *testing.T) {
 		nrp := engine.PrototypeByName("StructTwo.Repr")
@@ -63,8 +63,8 @@ func SchemaTestRequiredFields(t *testing.T, engine Engine) {
 		ma, _ := nb.BeginMap(0)
 		err := ma.Finish()
 
-		Wish(t, err, ShouldBeSameTypeAs, schema.ErrMissingRequiredField{})
-		Wish(t, err.Error(), ShouldEqual, `missing required fields: a,b (serial:"z")`)
+		qt.Check(t, err, qt.ErrorAs, &schema.ErrMissingRequiredField{})
+		qt.Check(t, err.Error(), qt.Equals, `missing required fields: a,b (serial:"z")`)
 	})
 }
 
@@ -100,35 +100,35 @@ func SchemaTestStructNesting(t *testing.T, engine Engine) {
 			})
 		}).(schema.TypedNode)
 		t.Run("typed-read", func(t *testing.T) {
-			Require(t, n.Kind(), ShouldEqual, datamodel.Kind_Map)
-			Wish(t, n.Length(), ShouldEqual, int64(1))
+			qt.Assert(t, n.Kind(), qt.Equals, datamodel.Kind_Map)
+			qt.Check(t, n.Length(), qt.Equals, int64(1))
 
 			n2 := must.Node(n.LookupByString("x"))
-			Require(t, n2.Kind(), ShouldEqual, datamodel.Kind_Map)
+			qt.Assert(t, n2.Kind(), qt.Equals, datamodel.Kind_Map)
 
 			n2Seg := must.Node(n.LookupBySegment(datamodel.PathSegmentOfString("x")))
-			Wish(t, datamodel.DeepEqual(n2, n2Seg), ShouldEqual, true)
+			qt.Check(t, datamodel.DeepEqual(n2, n2Seg), qt.IsTrue)
 
 			n2Node := must.Node(n.LookupByNode(basicnode.NewString("x")))
-			Wish(t, datamodel.DeepEqual(n2, n2Node), ShouldEqual, true)
+			qt.Check(t, datamodel.DeepEqual(n2, n2Node), qt.IsTrue)
 
-			Wish(t, must.String(must.Node(n2.LookupByString("s"))), ShouldEqual, "woo")
+			qt.Check(t, must.String(must.Node(n2.LookupByString("s"))), qt.Equals, "woo")
 		})
 		t.Run("repr-read", func(t *testing.T) {
 			nr := n.Representation()
-			Require(t, nr.Kind(), ShouldEqual, datamodel.Kind_Map)
-			Wish(t, nr.Length(), ShouldEqual, int64(1))
+			qt.Assert(t, nr.Kind(), qt.Equals, datamodel.Kind_Map)
+			qt.Check(t, nr.Length(), qt.Equals, int64(1))
 
 			n2 := must.Node(nr.LookupByString("r"))
-			Require(t, n2.Kind(), ShouldEqual, datamodel.Kind_Map)
+			qt.Assert(t, n2.Kind(), qt.Equals, datamodel.Kind_Map)
 
 			n2Seg := must.Node(nr.LookupBySegment(datamodel.PathSegmentOfString("r")))
-			Wish(t, datamodel.DeepEqual(n2, n2Seg), ShouldEqual, true)
+			qt.Check(t, datamodel.DeepEqual(n2, n2Seg), qt.IsTrue)
 
 			n2Node := must.Node(nr.LookupByNode(basicnode.NewString("r")))
-			Wish(t, datamodel.DeepEqual(n2, n2Node), ShouldEqual, true)
+			qt.Check(t, datamodel.DeepEqual(n2, n2Node), qt.IsTrue)
 
-			Wish(t, must.String(must.Node(n2.LookupByString("q"))), ShouldEqual, "woo")
+			qt.Check(t, must.String(must.Node(n2.LookupByString("q"))), qt.Equals, "woo")
 		})
 	})
 	t.Run("repr-create", func(t *testing.T) {
@@ -137,6 +137,6 @@ func SchemaTestStructNesting(t *testing.T, engine Engine) {
 				ma.AssembleEntry("q").AssignString("woo")
 			})
 		})
-		Wish(t, datamodel.DeepEqual(n, nr), ShouldEqual, true)
+		qt.Check(t, datamodel.DeepEqual(n, nr), qt.IsTrue)
 	})
 }

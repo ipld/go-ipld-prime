@@ -3,7 +3,7 @@ package tests
 import (
 	"testing"
 
-	. "github.com/warpfork/go-wish"
+	qt "github.com/frankban/quicktest"
 
 	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/fluent"
@@ -31,21 +31,21 @@ func SchemaTestMapsContainingMaybe(t *testing.T, engine Engine) {
 				ma.AssembleEntry("two").AssignString("2")
 			}).(schema.TypedNode)
 			t.Run("typed-read", func(t *testing.T) {
-				Require(t, n.Kind(), ShouldEqual, datamodel.Kind_Map)
-				Wish(t, n.Length(), ShouldEqual, int64(2))
-				Wish(t, must.String(must.Node(n.LookupByString("one"))), ShouldEqual, "1")
-				Wish(t, must.String(must.Node(n.LookupByString("two"))), ShouldEqual, "2")
+				qt.Assert(t, n.Kind(), qt.Equals, datamodel.Kind_Map)
+				qt.Check(t, n.Length(), qt.Equals, int64(2))
+				qt.Check(t, must.String(must.Node(n.LookupByString("one"))), qt.Equals, "1")
+				qt.Check(t, must.String(must.Node(n.LookupByString("two"))), qt.Equals, "2")
 				_, err := n.LookupByString("miss")
-				Wish(t, err, ShouldBeSameTypeAs, datamodel.ErrNotExists{})
+				qt.Check(t, err, qt.ErrorAs, &datamodel.ErrNotExists{})
 			})
 			t.Run("repr-read", func(t *testing.T) {
 				nr := n.Representation()
-				Require(t, nr.Kind(), ShouldEqual, datamodel.Kind_Map)
-				Wish(t, nr.Length(), ShouldEqual, int64(2))
-				Wish(t, must.String(must.Node(nr.LookupByString("one"))), ShouldEqual, "1")
-				Wish(t, must.String(must.Node(nr.LookupByString("two"))), ShouldEqual, "2")
+				qt.Assert(t, nr.Kind(), qt.Equals, datamodel.Kind_Map)
+				qt.Check(t, nr.Length(), qt.Equals, int64(2))
+				qt.Check(t, must.String(must.Node(nr.LookupByString("one"))), qt.Equals, "1")
+				qt.Check(t, must.String(must.Node(nr.LookupByString("two"))), qt.Equals, "2")
 				_, err := nr.LookupByString("miss")
-				Wish(t, err, ShouldBeSameTypeAs, datamodel.ErrNotExists{})
+				qt.Check(t, err, qt.ErrorAs, &datamodel.ErrNotExists{})
 			})
 		})
 		t.Run("repr-create", func(t *testing.T) {
@@ -53,7 +53,7 @@ func SchemaTestMapsContainingMaybe(t *testing.T, engine Engine) {
 				ma.AssembleEntry("one").AssignString("1")
 				ma.AssembleEntry("two").AssignString("2")
 			})
-			Wish(t, datamodel.DeepEqual(n, nr), ShouldEqual, true)
+			qt.Check(t, datamodel.DeepEqual(n, nr), qt.IsTrue)
 		})
 	})
 	t.Run("nullable", func(t *testing.T) {
@@ -66,21 +66,21 @@ func SchemaTestMapsContainingMaybe(t *testing.T, engine Engine) {
 				ma.AssembleEntry("none").AssignNull()
 			}).(schema.TypedNode)
 			t.Run("typed-read", func(t *testing.T) {
-				Require(t, n.Kind(), ShouldEqual, datamodel.Kind_Map)
-				Wish(t, n.Length(), ShouldEqual, int64(2))
-				Wish(t, must.String(must.Node(n.LookupByString("one"))), ShouldEqual, "1")
-				Wish(t, must.Node(n.LookupByString("none")), ShouldEqual, datamodel.Null)
+				qt.Assert(t, n.Kind(), qt.Equals, datamodel.Kind_Map)
+				qt.Check(t, n.Length(), qt.Equals, int64(2))
+				qt.Check(t, must.String(must.Node(n.LookupByString("one"))), qt.Equals, "1")
+				qt.Check(t, must.Node(n.LookupByString("none")), qt.Equals, datamodel.Null)
 				_, err := n.LookupByString("miss")
-				Wish(t, err, ShouldBeSameTypeAs, datamodel.ErrNotExists{})
+				qt.Check(t, err, qt.ErrorAs, &datamodel.ErrNotExists{})
 			})
 			t.Run("repr-read", func(t *testing.T) {
 				nr := n.Representation()
-				Require(t, nr.Kind(), ShouldEqual, datamodel.Kind_Map)
-				Wish(t, nr.Length(), ShouldEqual, int64(2))
-				Wish(t, must.String(must.Node(nr.LookupByString("one"))), ShouldEqual, "1")
-				Wish(t, must.Node(nr.LookupByString("none")), ShouldEqual, datamodel.Null)
+				qt.Assert(t, nr.Kind(), qt.Equals, datamodel.Kind_Map)
+				qt.Check(t, nr.Length(), qt.Equals, int64(2))
+				qt.Check(t, must.String(must.Node(nr.LookupByString("one"))), qt.Equals, "1")
+				qt.Check(t, must.Node(nr.LookupByString("none")), qt.Equals, datamodel.Null)
 				_, err := nr.LookupByString("miss")
-				Wish(t, err, ShouldBeSameTypeAs, datamodel.ErrNotExists{})
+				qt.Check(t, err, qt.ErrorAs, &datamodel.ErrNotExists{})
 			})
 		})
 		t.Run("repr-create", func(t *testing.T) {
@@ -88,7 +88,7 @@ func SchemaTestMapsContainingMaybe(t *testing.T, engine Engine) {
 				ma.AssembleEntry("one").AssignString("1")
 				ma.AssembleEntry("none").AssignNull()
 			})
-			Wish(t, datamodel.DeepEqual(n, nr), ShouldEqual, true)
+			qt.Check(t, datamodel.DeepEqual(n, nr), qt.IsTrue)
 		})
 	})
 }
@@ -131,35 +131,35 @@ func SchemaTestMapsContainingMaps(t *testing.T, engine Engine) {
 	}
 	reading := func(t *testing.T, n datamodel.Node, fieldName string) {
 		withNode(n, func(n datamodel.Node) {
-			Require(t, n.Kind(), ShouldEqual, datamodel.Kind_Map)
-			Wish(t, n.Length(), ShouldEqual, int64(3))
+			qt.Assert(t, n.Kind(), qt.Equals, datamodel.Kind_Map)
+			qt.Check(t, n.Length(), qt.Equals, int64(3))
 			withNode(must.Node(n.LookupByString("one")), func(n datamodel.Node) {
-				Require(t, n.Kind(), ShouldEqual, datamodel.Kind_Map)
-				Wish(t, n.Length(), ShouldEqual, int64(2))
+				qt.Assert(t, n.Kind(), qt.Equals, datamodel.Kind_Map)
+				qt.Check(t, n.Length(), qt.Equals, int64(2))
 				withNode(must.Node(n.LookupByString("zot")), func(n datamodel.Node) {
-					Require(t, n.Kind(), ShouldEqual, datamodel.Kind_Map)
-					Wish(t, n.Length(), ShouldEqual, int64(1))
-					Wish(t, must.String(must.Node(n.LookupByString(fieldName))), ShouldEqual, "11")
+					qt.Assert(t, n.Kind(), qt.Equals, datamodel.Kind_Map)
+					qt.Check(t, n.Length(), qt.Equals, int64(1))
+					qt.Check(t, must.String(must.Node(n.LookupByString(fieldName))), qt.Equals, "11")
 				})
 				withNode(must.Node(n.LookupByString("zop")), func(n datamodel.Node) {
-					Require(t, n.Kind(), ShouldEqual, datamodel.Kind_Map)
-					Wish(t, n.Length(), ShouldEqual, int64(1))
-					Wish(t, must.String(must.Node(n.LookupByString(fieldName))), ShouldEqual, "12")
+					qt.Assert(t, n.Kind(), qt.Equals, datamodel.Kind_Map)
+					qt.Check(t, n.Length(), qt.Equals, int64(1))
+					qt.Check(t, must.String(must.Node(n.LookupByString(fieldName))), qt.Equals, "12")
 				})
 			})
 			withNode(must.Node(n.LookupByString("two")), func(n datamodel.Node) {
-				Wish(t, n.Length(), ShouldEqual, int64(1))
+				qt.Check(t, n.Length(), qt.Equals, int64(1))
 				withNode(must.Node(n.LookupByString("zim")), func(n datamodel.Node) {
-					Require(t, n.Kind(), ShouldEqual, datamodel.Kind_Map)
-					Wish(t, n.Length(), ShouldEqual, int64(1))
-					Wish(t, must.String(must.Node(n.LookupByString(fieldName))), ShouldEqual, "21")
+					qt.Assert(t, n.Kind(), qt.Equals, datamodel.Kind_Map)
+					qt.Check(t, n.Length(), qt.Equals, int64(1))
+					qt.Check(t, must.String(must.Node(n.LookupByString(fieldName))), qt.Equals, "21")
 				})
 			})
 			withNode(must.Node(n.LookupByString("none")), func(n datamodel.Node) {
-				Wish(t, datamodel.DeepEqual(n, datamodel.Null), ShouldEqual, true)
+				qt.Check(t, datamodel.DeepEqual(n, datamodel.Null), qt.IsTrue)
 			})
 			_, err := n.LookupByString("miss")
-			Wish(t, err, ShouldBeSameTypeAs, datamodel.ErrNotExists{})
+			qt.Check(t, err, qt.ErrorAs, &datamodel.ErrNotExists{})
 		})
 	}
 	var n schema.TypedNode
@@ -174,7 +174,7 @@ func SchemaTestMapsContainingMaps(t *testing.T, engine Engine) {
 	})
 	t.Run("repr-create", func(t *testing.T) {
 		nr := creation(t, nrp, "encoded")
-		Wish(t, datamodel.DeepEqual(n, nr), ShouldEqual, true)
+		qt.Check(t, datamodel.DeepEqual(n, nr), qt.IsTrue)
 	})
 }
 
@@ -215,19 +215,19 @@ func SchemaTestMapsWithComplexKeys(t *testing.T, engine Engine) {
 			ma.AssembleValue().AssignString("3")
 		}).(schema.TypedNode)
 		t.Run("typed-read", func(t *testing.T) {
-			Require(t, n.Kind(), ShouldEqual, datamodel.Kind_Map)
-			Wish(t, n.Length(), ShouldEqual, int64(3))
+			qt.Assert(t, n.Kind(), qt.Equals, datamodel.Kind_Map)
+			qt.Check(t, n.Length(), qt.Equals, int64(3))
 			n2 := must.Node(n.LookupByString("c:d"))
-			Require(t, n2.Kind(), ShouldEqual, datamodel.Kind_String)
-			Wish(t, must.String(n2), ShouldEqual, "2")
+			qt.Assert(t, n2.Kind(), qt.Equals, datamodel.Kind_String)
+			qt.Check(t, must.String(n2), qt.Equals, "2")
 		})
 		t.Run("repr-read", func(t *testing.T) {
 			nr := n.Representation()
-			Require(t, nr.Kind(), ShouldEqual, datamodel.Kind_Map)
-			Wish(t, nr.Length(), ShouldEqual, int64(3))
+			qt.Assert(t, nr.Kind(), qt.Equals, datamodel.Kind_Map)
+			qt.Check(t, nr.Length(), qt.Equals, int64(3))
 			n2 := must.Node(nr.LookupByString("c:d"))
-			Require(t, n2.Kind(), ShouldEqual, datamodel.Kind_String)
-			Wish(t, must.String(n2), ShouldEqual, "2")
+			qt.Assert(t, n2.Kind(), qt.Equals, datamodel.Kind_String)
+			qt.Check(t, must.String(n2), qt.Equals, "2")
 		})
 	})
 	t.Run("repr-create", func(t *testing.T) {
@@ -236,6 +236,6 @@ func SchemaTestMapsWithComplexKeys(t *testing.T, engine Engine) {
 			ma.AssembleEntry("c:d").AssignString("2")
 			ma.AssembleEntry("e:f").AssignString("3")
 		})
-		Wish(t, datamodel.DeepEqual(n, nr), ShouldEqual, true)
+		qt.Check(t, datamodel.DeepEqual(n, nr), qt.IsTrue)
 	})
 }
