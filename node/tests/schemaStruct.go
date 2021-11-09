@@ -107,10 +107,10 @@ func SchemaTestStructNesting(t *testing.T, engine Engine) {
 			qt.Assert(t, n2.Kind(), qt.Equals, datamodel.Kind_Map)
 
 			n2Seg := must.Node(n.LookupBySegment(datamodel.PathSegmentOfString("x")))
-			qt.Check(t, datamodel.DeepEqual(n2, n2Seg), qt.IsTrue)
+			qt.Check(t, n2, NodeContentEquals, n2Seg)
 
 			n2Node := must.Node(n.LookupByNode(basicnode.NewString("x")))
-			qt.Check(t, datamodel.DeepEqual(n2, n2Node), qt.IsTrue)
+			qt.Check(t, n2, NodeContentEquals, n2Node)
 
 			qt.Check(t, must.String(must.Node(n2.LookupByString("s"))), qt.Equals, "woo")
 		})
@@ -123,10 +123,10 @@ func SchemaTestStructNesting(t *testing.T, engine Engine) {
 			qt.Assert(t, n2.Kind(), qt.Equals, datamodel.Kind_Map)
 
 			n2Seg := must.Node(nr.LookupBySegment(datamodel.PathSegmentOfString("r")))
-			qt.Check(t, datamodel.DeepEqual(n2, n2Seg), qt.IsTrue)
+			qt.Check(t, n2, NodeContentEquals, n2Seg)
 
 			n2Node := must.Node(nr.LookupByNode(basicnode.NewString("r")))
-			qt.Check(t, datamodel.DeepEqual(n2, n2Node), qt.IsTrue)
+			qt.Check(t, n2, NodeContentEquals, n2Node)
 
 			qt.Check(t, must.String(must.Node(n2.LookupByString("q"))), qt.Equals, "woo")
 		})
@@ -137,6 +137,6 @@ func SchemaTestStructNesting(t *testing.T, engine Engine) {
 				ma.AssembleEntry("q").AssignString("woo")
 			})
 		})
-		qt.Check(t, datamodel.DeepEqual(n, nr), qt.IsTrue)
+		qt.Check(t, n, NodeContentEquals, nr)
 	})
 }

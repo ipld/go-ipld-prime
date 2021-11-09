@@ -1,4 +1,4 @@
-package dagjson
+package dagjson_test
 
 import (
 	"bytes"
@@ -6,13 +6,15 @@ import (
 	"strings"
 	"testing"
 
-	. "github.com/warpfork/go-wish"
+	qt "github.com/frankban/quicktest"
 
 	cid "github.com/ipfs/go-cid"
+	"github.com/ipld/go-ipld-prime/codec/dagjson"
 	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/linking"
 	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
 	"github.com/ipld/go-ipld-prime/node/basicnode"
+	nodetests "github.com/ipld/go-ipld-prime/node/tests"
 )
 
 func TestRoundtripCidlink(t *testing.T) {
@@ -33,11 +35,11 @@ func TestRoundtripCidlink(t *testing.T) {
 	}
 
 	lnk, err := lsys.Store(linking.LinkContext{}, lp, n)
-	Require(t, err, ShouldEqual, nil)
+	qt.Assert(t, err, qt.IsNil)
 
 	n2, err := lsys.Load(linking.LinkContext{}, lnk, basicnode.Prototype.Any)
-	Require(t, err, ShouldEqual, nil)
-	Wish(t, n2, ShouldEqual, nSorted)
+	qt.Assert(t, err, qt.IsNil)
+	qt.Check(t, n2, nodetests.NodeContentEquals, nSorted)
 }
 
 // Make sure that a map that *almost* looks like a link is handled safely.
@@ -58,11 +60,11 @@ func TestUnmarshalTrickyMapContainingLink(t *testing.T) {
 
 	// Unmarshal.  Hopefully we get a map with a link in it.
 	nb := basicnode.Prototype.Any.NewBuilder()
-	err := Decode(nb, strings.NewReader(tricky))
-	Require(t, err, ShouldEqual, nil)
+	err := dagjson.Decode(nb, strings.NewReader(tricky))
+	qt.Assert(t, err, qt.IsNil)
 	n := nb.Build()
-	Wish(t, n.Kind(), ShouldEqual, datamodel.Kind_Map)
+	qt.Check(t, n.Kind(), qt.Equals, datamodel.Kind_Map)
 	n2, err := n.LookupByString("/")
-	Require(t, err, ShouldEqual, nil)
-	Wish(t, n2.Kind(), ShouldEqual, datamodel.Kind_Link)
+	qt.Assert(t, err, qt.IsNil)
+	qt.Check(t, n2.Kind(), qt.Equals, datamodel.Kind_Link)
 }

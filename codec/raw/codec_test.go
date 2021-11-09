@@ -12,6 +12,7 @@ import (
 	"github.com/ipld/go-ipld-prime/linking"
 	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
 	"github.com/ipld/go-ipld-prime/node/basicnode"
+	nodetests "github.com/ipld/go-ipld-prime/node/tests"
 )
 
 var tests = []struct {
@@ -71,7 +72,7 @@ func TestRoundtripCidlink(t *testing.T) {
 
 	newNode, err := lsys.Load(linking.LinkContext{}, lnk, basicnode.Prototype.Any)
 	qt.Assert(t, err, qt.IsNil)
-	qt.Assert(t, newNode, qt.DeepEquals, node)
+	qt.Assert(t, newNode, nodetests.NodeContentEquals, node)
 }
 
 // mustOnlyUseRead only exposes Read, hiding Bytes.

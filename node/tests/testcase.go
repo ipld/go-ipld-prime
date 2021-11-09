@@ -126,7 +126,7 @@ func (tcase testcase) Test(t *testing.T, np, npr datamodel.NodePrototype) {
 		}
 		if n2 != nil {
 			t.Run("type-create and repr-create match", func(t *testing.T) {
-				qt.Check(t, datamodel.DeepEqual(n, n2), qt.IsTrue)
+				qt.Check(t, n, NodeContentEquals, n2)
 			})
 		}
 
@@ -189,7 +189,7 @@ func (tcase testcase) Test(t *testing.T, np, npr datamodel.NodePrototype) {
 			t.Run("type-create with AK+AV", func(t *testing.T) {
 				n3, err := shallowCopyMap(np, n)
 				qt.Check(t, err, qt.IsNil)
-				qt.Check(t, datamodel.DeepEqual(n, n3), qt.IsTrue)
+				qt.Check(t, n, NodeContentEquals, n3)
 			})
 		}
 
@@ -199,10 +199,7 @@ func (tcase testcase) Test(t *testing.T, np, npr datamodel.NodePrototype) {
 			t.Run("repr-create with AK+AV", func(t *testing.T) {
 				n3, err := shallowCopyMap(npr, n.(schema.TypedNode).Representation())
 				qt.Check(t, err, qt.IsNil)
-				// TODO: Improve checking mechanism; hits:
-				// -  expose datamodel.DeepEqual as a go-cmp Comparer, or
-				// - use the printer package and then do string diff on the results
-				qt.Check(t, datamodel.DeepEqual(n, n3), qt.IsTrue)
+				qt.Check(t, n3, NodeContentEquals, n)
 			})
 		}
 

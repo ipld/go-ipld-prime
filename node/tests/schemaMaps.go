@@ -53,7 +53,7 @@ func SchemaTestMapsContainingMaybe(t *testing.T, engine Engine) {
 				ma.AssembleEntry("one").AssignString("1")
 				ma.AssembleEntry("two").AssignString("2")
 			})
-			qt.Check(t, datamodel.DeepEqual(n, nr), qt.IsTrue)
+			qt.Check(t, n, NodeContentEquals, nr)
 		})
 	})
 	t.Run("nullable", func(t *testing.T) {
@@ -88,7 +88,7 @@ func SchemaTestMapsContainingMaybe(t *testing.T, engine Engine) {
 				ma.AssembleEntry("one").AssignString("1")
 				ma.AssembleEntry("none").AssignNull()
 			})
-			qt.Check(t, datamodel.DeepEqual(n, nr), qt.IsTrue)
+			qt.Check(t, n, NodeContentEquals, nr)
 		})
 	})
 }
@@ -156,7 +156,7 @@ func SchemaTestMapsContainingMaps(t *testing.T, engine Engine) {
 				})
 			})
 			withNode(must.Node(n.LookupByString("none")), func(n datamodel.Node) {
-				qt.Check(t, datamodel.DeepEqual(n, datamodel.Null), qt.IsTrue)
+				qt.Check(t, n, NodeContentEquals, datamodel.Null)
 			})
 			_, err := n.LookupByString("miss")
 			qt.Check(t, err, qt.ErrorAs, &datamodel.ErrNotExists{})
@@ -174,7 +174,7 @@ func SchemaTestMapsContainingMaps(t *testing.T, engine Engine) {
 	})
 	t.Run("repr-create", func(t *testing.T) {
 		nr := creation(t, nrp, "encoded")
-		qt.Check(t, datamodel.DeepEqual(n, nr), qt.IsTrue)
+		qt.Check(t, n, NodeContentEquals, nr)
 	})
 }
 
@@ -236,6 +236,6 @@ func SchemaTestMapsWithComplexKeys(t *testing.T, engine Engine) {
 			ma.AssembleEntry("c:d").AssignString("2")
 			ma.AssembleEntry("e:f").AssignString("3")
 		})
-		qt.Check(t, datamodel.DeepEqual(n, nr), qt.IsTrue)
+		qt.Check(t, n, NodeContentEquals, nr)
 	})
 }
