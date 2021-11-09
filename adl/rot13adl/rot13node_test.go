@@ -3,7 +3,7 @@ package rot13adl
 import (
 	"testing"
 
-	. "github.com/warpfork/go-wish"
+	qt "github.com/frankban/quicktest"
 
 	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/node/basicnode"
@@ -13,23 +13,23 @@ func TestLogicalNodeRoundtrip(t *testing.T) {
 	// Build high level node.
 	nb := Prototype.Node.NewBuilder()
 	err := nb.AssignString("abcd")
-	Require(t, err, ShouldEqual, nil)
+	qt.Assert(t, err, qt.IsNil)
 	n := nb.Build()
 	// Inspect the high level node.
 	s, err := n.AsString()
-	Wish(t, err, ShouldEqual, nil)
-	Wish(t, s, ShouldEqual, "abcd")
+	qt.Check(t, err, qt.IsNil)
+	qt.Check(t, s, qt.Equals, "abcd")
 }
 
 func TestNodeInternal(t *testing.T) {
 	// Build high level node.
 	nb := Prototype.Node.NewBuilder()
 	err := nb.AssignString("abcd")
-	Require(t, err, ShouldEqual, nil)
+	qt.Assert(t, err, qt.IsNil)
 	n := nb.Build()
 	// Poke its insides directly to see that the transformation occured.
-	Wish(t, n.(*_R13String).synthesized, ShouldEqual, "abcd")
-	Wish(t, n.(*_R13String).raw, ShouldEqual, "nopq")
+	qt.Check(t, n.(*_R13String).synthesized, qt.Equals, "abcd")
+	qt.Check(t, n.(*_R13String).raw, qt.Equals, "nopq")
 }
 
 func TestReify(t *testing.T) {
@@ -39,11 +39,11 @@ func TestReify(t *testing.T) {
 		// Reify it.
 		synth, err := Reify(sn)
 		// Inspect the resulting high level node.
-		Require(t, err, ShouldEqual, nil)
-		Wish(t, synth.Kind(), ShouldEqual, datamodel.Kind_String)
+		qt.Assert(t, err, qt.IsNil)
+		qt.Check(t, synth.Kind(), qt.Equals, datamodel.Kind_String)
 		s, err := synth.AsString()
-		Wish(t, err, ShouldEqual, nil)
-		Wish(t, s, ShouldEqual, "abcd")
+		qt.Check(t, err, qt.IsNil)
+		qt.Check(t, s, qt.Equals, "abcd")
 	})
 	t.Run("using substrate node", func(t *testing.T) {
 		// Build substrate-shaped data, in the substrate type right from the start.
@@ -53,11 +53,11 @@ func TestReify(t *testing.T) {
 		// Reify it.
 		synth, err := Reify(sn)
 		// Inspect the resulting high level node.
-		Require(t, err, ShouldEqual, nil)
-		Wish(t, synth.Kind(), ShouldEqual, datamodel.Kind_String)
+		qt.Assert(t, err, qt.IsNil)
+		qt.Check(t, synth.Kind(), qt.Equals, datamodel.Kind_String)
 		s, err := synth.AsString()
-		Wish(t, err, ShouldEqual, nil)
-		Wish(t, s, ShouldEqual, "abcd")
+		qt.Check(t, err, qt.IsNil)
+		qt.Check(t, s, qt.Equals, "abcd")
 	})
 }
 
@@ -65,7 +65,7 @@ func TestInspectingSubstrate(t *testing.T) {
 	// Build high level node.
 	nb := Prototype.Node.NewBuilder()
 	err := nb.AssignString("abcd")
-	Require(t, err, ShouldEqual, nil)
+	qt.Assert(t, err, qt.IsNil)
 	n := nb.Build()
 	// Ask it about its substrate, and inspect that.
 	sn := n.(R13String).Substrate()
@@ -73,6 +73,6 @@ func TestInspectingSubstrate(t *testing.T) {
 	//  Is it reasonable to make this part of a standard feature detection pattern,
 	//   and make that interface reside in the main IPLD package?  Or in an `adl` package that contains such standard interfaces?
 	ss, err := sn.AsString()
-	Wish(t, err, ShouldEqual, nil)
-	Wish(t, ss, ShouldEqual, "nopq")
+	qt.Check(t, err, qt.IsNil)
+	qt.Check(t, ss, qt.Equals, "nopq")
 }
