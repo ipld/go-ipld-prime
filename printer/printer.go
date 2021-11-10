@@ -1,6 +1,7 @@
 package printer
 
 import (
+	"encoding/hex"
 	"io"
 	"os"
 	"strconv"
@@ -350,8 +351,16 @@ func (z *printBuf) doString(indentLevel int, printState uint8, n datamodel.Node)
 		z.writeString(strconv.QuoteToGraphic(x))
 		z.writeString("}")
 	case datamodel.Kind_Bytes:
-		panic("TODO")
+		x, _ := n.AsBytes()
+		z.writeString("{")
+		dst := make([]byte, hex.EncodedLen(len(x)))
+		hex.Encode(dst, x)
+		z.writeString(string(dst))
+		z.writeString("}")
 	case datamodel.Kind_Link:
-		panic("TODO")
+		x, _ := n.AsLink()
+		z.writeString("{")
+		z.writeString(x.String())
+		z.writeString("}")
 	}
 }
