@@ -44,6 +44,62 @@ When a release tag is made, this block of bullet points will just slide down to 
 Released Changes
 ----------------
 
+### v0.12.3
+
+_2021 September 30_
+
+(This is a minor release; we'll keep the notes brief.)
+
+- Fixed: using `SkipMe` in a traversal now skips only that subtree of nodes, not the remainder of the block!
+  [[#251](https://github.com/ipld/go-ipld-prime/pull/251)]
+- New: `traversal` features now have budgets!  You can set a "budget" value, and watch it monotonically decrement as your operations procede.  This makes it easy to put limits on the amount of work you'll do.
+  [[#260](https://github.com/ipld/go-ipld-prime/pull/260)]
+- New: `traversal` features can be configured to visit links they encounter only once (and ignore them if seen again).
+  [[#252](https://github.com/ipld/go-ipld-prime/pull/252)]
+	- Note that this is not without caveats: this is not merely an optimization; enabling it _may_ produce logically different outcomes, depending on what your selector is.
+	  This is because links are ignored when seen again, even if they're seen for a different _reason_, via a different path, etc.
+- Fixed: a very nasty off-by-one in unions produced by the "gogen" codegen.
+  [[#257](https://github.com/ipld/go-ipld-prime/pull/257)]
+- Improved: the test suites for typed nodes now provide much better coverage (to prevent something like the above from happening again, even in other implementations).
+- New: `schema/dsl`!  This package contains parsers for the IPLD Schema DSL, and produces data structures in `schema/dmt` form.
+- Removed: other misc partially-complete packages.  (This will surely bother no one; it's just cleanup.)
+- Removed: `codec/jst`.  If you were using that, [`jst` has its own repo](https://github.com/warpfork/go-jst/) now.
+- Improved: `traversal` now uses the error wrapping ("`%w`") feature in more places.
+- Changed: `printer` keeps empty maps and lists and strings on a single line.
+- Changed: `schema.TypeName` is now just an alias of `string`.  This may result in somewhat less casting; or, you might not notice it.
+- Improved: the `schema/dmt` package continues to be improved and become more complete.
+	- Some changes also track fixes in the schema spec, upstream.  (Or caused those fixes!)
+- New/Improved: the `schema` package describes several more things which it always should have.  Enums, for example.
+
+
+
+### v0.12.2
+
+_2021 September 8_
+
+(This is a minor release; we'll keep the notes brief.)
+
+- New: the `printer` package has appeared, and aims to provide an information-rich, debug-readable, human-friendly output of data from an IPLD node tree. [[#238](https://github.com/ipld/go-ipld-prime/pull/238/)]
+	- This works for both plain data model data, and for typed data, and annotates type information if present.
+	- Note that this is _not_ a codec: it's specifically _richer_ than that.  Conversely, this printer format is not designed to be parsed back to data model data.  Use a codec for a codec's job; use the printer for debugging and inspection jobs.
+- Fixed/Improved: more things about the `bindnode` system.  (It's still early and improving fast.)
+- Fixed: json codec, cbor codec, and their dag variants all now return ErrUnexpectedEOF in the conditions you'd expect.  (Previously they sometimes just returned EOF, which could be surprising.)
+- Changed/Improved: the `schema/dmt` package is now implemented using `bindnode`, and there's a more complete `Compile()` feature.  (This is still very early, in this tag.  More to come here soon.)
+
+
+
+### v0.12.1
+
+_2021 August 30_
+
+(This is a minor release; we'll keep the notes brief.)
+
+- Fixed/Improved: many things about the `bindnode` system.  (It's still early and improving fast.)
+- Changed: the strings for `schema.TypeKind_*` are lowercase.  (The docs and specs all act this way, and always have; it was a strange error for this code to have titlecase.)
+- New: the root package contains more helper methods for encoding and decoding operations
+
+
+
 ### v0.12.0
 
 _2021 August 19_
