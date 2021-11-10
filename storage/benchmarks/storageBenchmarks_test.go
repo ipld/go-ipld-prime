@@ -30,7 +30,7 @@ func BenchmarkPut(b *testing.B) {
 	}, {
 		storeName: "dsadapter-flatfs-base32-defaultshard",
 		storeConstructor: func() storage.WritableStorage {
-			shardFn, err := flatfs.ParseShardFunc("/repo/flatfs/shard/v1/next-to-last/3")
+			shardFn, err := flatfs.ParseShardFunc("/repo/flatfs/shard/v1/next-to-last/2")
 			if err != nil {
 				panic(err)
 			}
