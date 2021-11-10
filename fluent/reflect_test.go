@@ -3,7 +3,7 @@ package fluent_test
 import (
 	"testing"
 
-	. "github.com/warpfork/go-wish"
+	qt "github.com/frankban/quicktest"
 
 	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/fluent"
@@ -22,33 +22,33 @@ func TestReflect(t *testing.T) {
 				"k33": "asking",
 			},
 		})
-		Wish(t, err, ShouldEqual, nil)
-		Wish(t, n.Kind(), ShouldEqual, datamodel.Kind_Map)
+		qt.Check(t, err, qt.IsNil)
+		qt.Check(t, n.Kind(), qt.Equals, datamodel.Kind_Map)
 		t.Run("CorrectContents", func(t *testing.T) {
-			Wish(t, n.Length(), ShouldEqual, int64(3))
-			Wish(t, must.String(must.Node(n.LookupByString("k1"))), ShouldEqual, "fine")
-			Wish(t, must.String(must.Node(n.LookupByString("k2"))), ShouldEqual, "super")
+			qt.Check(t, n.Length(), qt.Equals, int64(3))
+			qt.Check(t, must.String(must.Node(n.LookupByString("k1"))), qt.Equals, "fine")
+			qt.Check(t, must.String(must.Node(n.LookupByString("k2"))), qt.Equals, "super")
 			n := must.Node(n.LookupByString("k3"))
-			Wish(t, n.Length(), ShouldEqual, int64(3))
-			Wish(t, must.String(must.Node(n.LookupByString("k31"))), ShouldEqual, "thanks")
-			Wish(t, must.String(must.Node(n.LookupByString("k32"))), ShouldEqual, "for")
-			Wish(t, must.String(must.Node(n.LookupByString("k33"))), ShouldEqual, "asking")
+			qt.Check(t, n.Length(), qt.Equals, int64(3))
+			qt.Check(t, must.String(must.Node(n.LookupByString("k31"))), qt.Equals, "thanks")
+			qt.Check(t, must.String(must.Node(n.LookupByString("k32"))), qt.Equals, "for")
+			qt.Check(t, must.String(must.Node(n.LookupByString("k33"))), qt.Equals, "asking")
 		})
 		t.Run("CorrectOrder", func(t *testing.T) {
 			itr := n.MapIterator()
 			k, _, _ := itr.Next()
-			Wish(t, must.String(k), ShouldEqual, "k1")
+			qt.Check(t, must.String(k), qt.Equals, "k1")
 			k, _, _ = itr.Next()
-			Wish(t, must.String(k), ShouldEqual, "k2")
+			qt.Check(t, must.String(k), qt.Equals, "k2")
 			k, v, _ := itr.Next()
-			Wish(t, must.String(k), ShouldEqual, "k3")
+			qt.Check(t, must.String(k), qt.Equals, "k3")
 			itr = v.MapIterator()
 			k, _, _ = itr.Next()
-			Wish(t, must.String(k), ShouldEqual, "k31")
+			qt.Check(t, must.String(k), qt.Equals, "k31")
 			k, _, _ = itr.Next()
-			Wish(t, must.String(k), ShouldEqual, "k32")
+			qt.Check(t, must.String(k), qt.Equals, "k32")
 			k, _, _ = itr.Next()
-			Wish(t, must.String(k), ShouldEqual, "k33")
+			qt.Check(t, must.String(k), qt.Equals, "k33")
 		})
 	})
 	t.Run("Struct", func(t *testing.T) {
@@ -66,30 +66,30 @@ func TestReflect(t *testing.T) {
 			Z: "super",
 			M: Woo{"thanks", "really"},
 		})
-		Wish(t, err, ShouldEqual, nil)
-		Wish(t, n.Kind(), ShouldEqual, datamodel.Kind_Map)
+		qt.Check(t, err, qt.IsNil)
+		qt.Check(t, n.Kind(), qt.Equals, datamodel.Kind_Map)
 		t.Run("CorrectContents", func(t *testing.T) {
-			Wish(t, n.Length(), ShouldEqual, int64(3))
-			Wish(t, must.String(must.Node(n.LookupByString("X"))), ShouldEqual, "fine")
-			Wish(t, must.String(must.Node(n.LookupByString("Z"))), ShouldEqual, "super")
+			qt.Check(t, n.Length(), qt.Equals, int64(3))
+			qt.Check(t, must.String(must.Node(n.LookupByString("X"))), qt.Equals, "fine")
+			qt.Check(t, must.String(must.Node(n.LookupByString("Z"))), qt.Equals, "super")
 			n := must.Node(n.LookupByString("M"))
-			Wish(t, n.Length(), ShouldEqual, int64(2))
-			Wish(t, must.String(must.Node(n.LookupByString("A"))), ShouldEqual, "thanks")
-			Wish(t, must.String(must.Node(n.LookupByString("B"))), ShouldEqual, "really")
+			qt.Check(t, n.Length(), qt.Equals, int64(2))
+			qt.Check(t, must.String(must.Node(n.LookupByString("A"))), qt.Equals, "thanks")
+			qt.Check(t, must.String(must.Node(n.LookupByString("B"))), qt.Equals, "really")
 		})
 		t.Run("CorrectOrder", func(t *testing.T) {
 			itr := n.MapIterator()
 			k, _, _ := itr.Next()
-			Wish(t, must.String(k), ShouldEqual, "X")
+			qt.Check(t, must.String(k), qt.Equals, "X")
 			k, _, _ = itr.Next()
-			Wish(t, must.String(k), ShouldEqual, "Z")
+			qt.Check(t, must.String(k), qt.Equals, "Z")
 			k, v, _ := itr.Next()
-			Wish(t, must.String(k), ShouldEqual, "M")
+			qt.Check(t, must.String(k), qt.Equals, "M")
 			itr = v.MapIterator()
 			k, _, _ = itr.Next()
-			Wish(t, must.String(k), ShouldEqual, "A")
+			qt.Check(t, must.String(k), qt.Equals, "A")
 			k, _, _ = itr.Next()
-			Wish(t, must.String(k), ShouldEqual, "B")
+			qt.Check(t, must.String(k), qt.Equals, "B")
 		})
 	})
 	t.Run("NamedString", func(t *testing.T) {
@@ -98,29 +98,29 @@ func TestReflect(t *testing.T) {
 			Z Foo
 		}
 		n, err := fluent.Reflect(basicnode.Prototype.Any, Bar{"foo"})
-		Wish(t, err, ShouldEqual, nil)
-		Wish(t, n.Kind(), ShouldEqual, datamodel.Kind_Map)
-		Wish(t, must.String(must.Node(n.LookupByString("Z"))), ShouldEqual, "foo")
+		qt.Check(t, err, qt.IsNil)
+		qt.Check(t, n.Kind(), qt.Equals, datamodel.Kind_Map)
+		qt.Check(t, must.String(must.Node(n.LookupByString("Z"))), qt.Equals, "foo")
 	})
 	t.Run("Interface", func(t *testing.T) {
 		type Zaz struct {
 			Z interface{}
 		}
 		n, err := fluent.Reflect(basicnode.Prototype.Any, Zaz{map[string]interface{}{"wow": "wee"}})
-		Wish(t, err, ShouldEqual, nil)
-		Wish(t, n.Kind(), ShouldEqual, datamodel.Kind_Map)
+		qt.Check(t, err, qt.IsNil)
+		qt.Check(t, n.Kind(), qt.Equals, datamodel.Kind_Map)
 		n, err = n.LookupByString("Z")
-		Wish(t, err, ShouldEqual, nil)
-		Wish(t, n.Kind(), ShouldEqual, datamodel.Kind_Map)
-		Wish(t, must.String(must.Node(n.LookupByString("wow"))), ShouldEqual, "wee")
+		qt.Check(t, err, qt.IsNil)
+		qt.Check(t, n.Kind(), qt.Equals, datamodel.Kind_Map)
+		qt.Check(t, must.String(must.Node(n.LookupByString("wow"))), qt.Equals, "wee")
 	})
 	t.Run("Bytes", func(t *testing.T) {
 		n, err := fluent.Reflect(basicnode.Prototype.Any, []byte{0x1, 0x2, 0x3})
-		Wish(t, err, ShouldEqual, nil)
-		Wish(t, n.Kind(), ShouldEqual, datamodel.Kind_Bytes)
+		qt.Check(t, err, qt.IsNil)
+		qt.Check(t, n.Kind(), qt.Equals, datamodel.Kind_Bytes)
 		b, err := n.AsBytes()
-		Wish(t, err, ShouldEqual, nil)
-		Wish(t, b, ShouldEqual, []byte{0x1, 0x2, 0x3})
+		qt.Check(t, err, qt.IsNil)
+		qt.Check(t, b, qt.DeepEquals, []byte{0x1, 0x2, 0x3})
 	})
 	t.Run("NamedBytes", func(t *testing.T) {
 		type Foo []byte
@@ -128,27 +128,27 @@ func TestReflect(t *testing.T) {
 			Z Foo
 		}
 		n, err := fluent.Reflect(basicnode.Prototype.Any, Bar{[]byte{0x1, 0x2, 0x3}})
-		Wish(t, err, ShouldEqual, nil)
-		Wish(t, n.Kind(), ShouldEqual, datamodel.Kind_Map)
+		qt.Check(t, err, qt.IsNil)
+		qt.Check(t, n.Kind(), qt.Equals, datamodel.Kind_Map)
 		n, err = n.LookupByString("Z")
-		Wish(t, err, ShouldEqual, nil)
-		Wish(t, n.Kind(), ShouldEqual, datamodel.Kind_Bytes)
+		qt.Check(t, err, qt.IsNil)
+		qt.Check(t, n.Kind(), qt.Equals, datamodel.Kind_Bytes)
 		b, err := n.AsBytes()
-		Wish(t, err, ShouldEqual, nil)
-		Wish(t, b, ShouldEqual, []byte{0x1, 0x2, 0x3})
+		qt.Check(t, err, qt.IsNil)
+		qt.Check(t, b, qt.DeepEquals, []byte{0x1, 0x2, 0x3})
 	})
 	t.Run("InterfaceContainingBytes", func(t *testing.T) {
 		type Zaz struct {
 			Z interface{}
 		}
 		n, err := fluent.Reflect(basicnode.Prototype.Any, Zaz{[]byte{0x1, 0x2, 0x3}})
-		Wish(t, err, ShouldEqual, nil)
-		Wish(t, n.Kind(), ShouldEqual, datamodel.Kind_Map)
+		qt.Check(t, err, qt.IsNil)
+		qt.Check(t, n.Kind(), qt.Equals, datamodel.Kind_Map)
 		n, err = n.LookupByString("Z")
-		Wish(t, err, ShouldEqual, nil)
-		Wish(t, n.Kind(), ShouldEqual, datamodel.Kind_Bytes)
+		qt.Check(t, err, qt.IsNil)
+		qt.Check(t, n.Kind(), qt.Equals, datamodel.Kind_Bytes)
 		b, err := n.AsBytes()
-		Wish(t, err, ShouldEqual, nil)
-		Wish(t, b, ShouldEqual, []byte{0x1, 0x2, 0x3})
+		qt.Check(t, err, qt.IsNil)
+		qt.Check(t, b, qt.DeepEquals, []byte{0x1, 0x2, 0x3})
 	})
 }

@@ -3,7 +3,7 @@ package fluent_test
 import (
 	"testing"
 
-	. "github.com/warpfork/go-wish"
+	qt "github.com/frankban/quicktest"
 
 	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/fluent"
@@ -16,10 +16,10 @@ func TestBuild(t *testing.T) {
 		n := fluent.MustBuild(basicnode.Prototype__String{}, func(fna fluent.NodeAssembler) {
 			fna.AssignString("fine")
 		})
-		Wish(t, n.Kind(), ShouldEqual, datamodel.Kind_String)
+		qt.Check(t, n.Kind(), qt.Equals, datamodel.Kind_String)
 		v2, err := n.AsString()
-		Wish(t, err, ShouldEqual, nil)
-		Wish(t, v2, ShouldEqual, "fine")
+		qt.Check(t, err, qt.IsNil)
+		qt.Check(t, v2, qt.Equals, "fine")
 	})
 	t.Run("map build should work", func(t *testing.T) {
 		n := fluent.MustBuild(basicnode.Prototype.Map, func(fna fluent.NodeAssembler) {
@@ -33,15 +33,15 @@ func TestBuild(t *testing.T) {
 				})
 			})
 		})
-		Wish(t, n.Kind(), ShouldEqual, datamodel.Kind_Map)
-		Wish(t, n.Length(), ShouldEqual, int64(3))
-		Wish(t, must.String(must.Node(n.LookupByString("k1"))), ShouldEqual, "fine")
-		Wish(t, must.String(must.Node(n.LookupByString("k2"))), ShouldEqual, "super")
+		qt.Check(t, n.Kind(), qt.Equals, datamodel.Kind_Map)
+		qt.Check(t, n.Length(), qt.Equals, int64(3))
+		qt.Check(t, must.String(must.Node(n.LookupByString("k1"))), qt.Equals, "fine")
+		qt.Check(t, must.String(must.Node(n.LookupByString("k2"))), qt.Equals, "super")
 		n = must.Node(n.LookupByString("k3"))
-		Wish(t, n.Length(), ShouldEqual, int64(3))
-		Wish(t, must.String(must.Node(n.LookupByString("k31"))), ShouldEqual, "thanks")
-		Wish(t, must.String(must.Node(n.LookupByString("k32"))), ShouldEqual, "for")
-		Wish(t, must.String(must.Node(n.LookupByString("k33"))), ShouldEqual, "asking")
+		qt.Check(t, n.Length(), qt.Equals, int64(3))
+		qt.Check(t, must.String(must.Node(n.LookupByString("k31"))), qt.Equals, "thanks")
+		qt.Check(t, must.String(must.Node(n.LookupByString("k32"))), qt.Equals, "for")
+		qt.Check(t, must.String(must.Node(n.LookupByString("k33"))), qt.Equals, "asking")
 	})
 	t.Run("list build should work", func(t *testing.T) {
 		n := fluent.MustBuild(basicnode.Prototype.List, func(fna fluent.NodeAssembler) {
@@ -55,19 +55,19 @@ func TestBuild(t *testing.T) {
 				})
 			})
 		})
-		Wish(t, n.Kind(), ShouldEqual, datamodel.Kind_List)
-		Wish(t, n.Length(), ShouldEqual, int64(1))
+		qt.Check(t, n.Kind(), qt.Equals, datamodel.Kind_List)
+		qt.Check(t, n.Length(), qt.Equals, int64(1))
 		n = must.Node(n.LookupByIndex(0))
-		Wish(t, n.Kind(), ShouldEqual, datamodel.Kind_List)
-		Wish(t, n.Length(), ShouldEqual, int64(1))
+		qt.Check(t, n.Kind(), qt.Equals, datamodel.Kind_List)
+		qt.Check(t, n.Length(), qt.Equals, int64(1))
 		n = must.Node(n.LookupByIndex(0))
-		Wish(t, n.Kind(), ShouldEqual, datamodel.Kind_List)
-		Wish(t, n.Length(), ShouldEqual, int64(1))
+		qt.Check(t, n.Kind(), qt.Equals, datamodel.Kind_List)
+		qt.Check(t, n.Length(), qt.Equals, int64(1))
 		n = must.Node(n.LookupByIndex(0))
-		Wish(t, n.Kind(), ShouldEqual, datamodel.Kind_List)
-		Wish(t, n.Length(), ShouldEqual, int64(1))
+		qt.Check(t, n.Kind(), qt.Equals, datamodel.Kind_List)
+		qt.Check(t, n.Length(), qt.Equals, int64(1))
 		n = must.Node(n.LookupByIndex(0))
-		Wish(t, n.Kind(), ShouldEqual, datamodel.Kind_Int)
-		Wish(t, must.Int(n), ShouldEqual, int64(2))
+		qt.Check(t, n.Kind(), qt.Equals, datamodel.Kind_Int)
+		qt.Check(t, must.Int(n), qt.Equals, int64(2))
 	})
 }
