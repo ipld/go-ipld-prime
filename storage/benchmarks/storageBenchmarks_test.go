@@ -3,7 +3,6 @@ package benchmarks
 import (
 	"encoding/base32"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"testing"
 
@@ -67,11 +66,8 @@ func BenchmarkPut(b *testing.B) {
 			b.Run(fmt.Sprintf("%s/scale=%d", ttr.storeName, scale), func(b *testing.B) {
 				// Make a tempdir.  Change cwd to it.
 				//  We'll assume the storage system, if it needs filesystem, can use the cwd.
-				dir, err := ioutil.TempDir("", "storagebench")
-				if err != nil {
-					panic(err)
-				}
-				defer os.RemoveAll(dir)
+				//  Using b.TempDir means the cleanup happens handled by the test system (and critically, not on our clock).
+				dir := b.TempDir()
 				retreat, err := os.Getwd()
 				if err != nil {
 					panic(err)
