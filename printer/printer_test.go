@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	qt "github.com/frankban/quicktest"
-	"github.com/warpfork/go-wish"
 
 	"github.com/ipfs/go-cid"
 	"github.com/ipld/go-ipld-prime/datamodel"
@@ -13,6 +12,7 @@ import (
 	"github.com/ipld/go-ipld-prime/node/basicnode"
 	"github.com/ipld/go-ipld-prime/node/bindnode"
 	"github.com/ipld/go-ipld-prime/schema"
+	"github.com/ipld/go-ipld-prime/testutil"
 )
 
 var testLink = func() datamodel.Link {
@@ -34,7 +34,7 @@ func TestSimpleData(t *testing.T) {
 				qp.ListEntry(la, qp.Int(2))
 			}))
 		})
-		qt.Check(t, Sprint(n), qt.CmpEquals(), wish.Dedent(`
+		qt.Check(t, Sprint(n), qt.CmpEquals(), testutil.Dedent(`
 		map{
 			string{"some key"}: string{"some value"}
 			string{"another key"}: string{"another value"}
@@ -65,7 +65,7 @@ func TestSimpleData(t *testing.T) {
 				qp.ListEntry(la, qp.Link(testLink))
 			}))
 		})
-		qt.Check(t, Sprint(n), qt.CmpEquals(), wish.Dedent(`
+		qt.Check(t, Sprint(n), qt.CmpEquals(), testutil.Dedent(`
 		map{
 			string{"some key"}: link{bafkqabiaaebagba}
 			string{"another key"}: string{"another value"}
@@ -104,7 +104,7 @@ func TestTypedData(t *testing.T) {
 			}, nil),
 		)
 		n := bindnode.Wrap(&FooBar{"x", "y", []byte("zed"), testLink}, ts.TypeByName("FooBar"))
-		qt.Check(t, Sprint(n), qt.CmpEquals(), wish.Dedent(`
+		qt.Check(t, Sprint(n), qt.CmpEquals(), testutil.Dedent(`
 			struct<FooBar>{
 				foo: string<String>{"x"}
 				bar: string<String>{"y"}
@@ -137,7 +137,7 @@ func TestTypedData(t *testing.T) {
 				{"z", "z"}: "b",
 			},
 		}, ts.TypeByName("WowMap"))
-		qt.Check(t, Sprint(n), qt.CmpEquals(), wish.Dedent(`
+		qt.Check(t, Sprint(n), qt.CmpEquals(), testutil.Dedent(`
 			map<WowMap>{
 				struct<FooBar>{foo: string<String>{"x"}, bar: string<String>{"y"}}: string<String>{"a"}
 				struct<FooBar>{foo: string<String>{"z"}, bar: string<String>{"z"}}: string<String>{"b"}
@@ -180,7 +180,7 @@ func TestTypedData(t *testing.T) {
 			cfg := Config{
 				UseMapComplexStyleAlways: true,
 			}
-			qt.Check(t, cfg.Sprint(n), qt.CmpEquals(), wish.Dedent(`
+			qt.Check(t, cfg.Sprint(n), qt.CmpEquals(), testutil.Dedent(`
 				map<WowMap>{
 					struct<FooBar>{
 							foo: string<String>{"x"}
@@ -213,7 +213,7 @@ func TestTypedData(t *testing.T) {
 					"WowMap": false,
 				},
 			}
-			qt.Check(t, cfg.Sprint(n), qt.CmpEquals(), wish.Dedent(`
+			qt.Check(t, cfg.Sprint(n), qt.CmpEquals(), testutil.Dedent(`
 				map<WowMap>{
 					struct<FooBar>{foo: string<String>{"x"}, bar: struct<Baz>{baz: string<String>{"y"}}, baz: struct<Baz>{baz: string<String>{"y"}}}: struct<Baz>{
 						baz: string<String>{"a"}

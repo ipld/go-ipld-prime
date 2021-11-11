@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"io"
 
-	wish "github.com/warpfork/go-wish"
+	"github.com/ipld/go-ipld-prime/testutil"
 )
 
 // EmitInternalEnums creates a file with enum types used internally.
@@ -15,7 +15,7 @@ import (
 // (The imports in this file are different than most others in codegen output;
 // we gather up any references to other packages in this file in order to simplify the rest of codegen's awareness of imports.)
 func EmitInternalEnums(packageName string, w io.Writer) {
-	fmt.Fprint(w, wish.Dedent(`
+	fmt.Fprint(w, testutil.Dedent(`
 		package `+packageName+`
 
 		`+doNotEditComment+`
@@ -36,7 +36,7 @@ func EmitInternalEnums(packageName string, w io.Writer) {
 	// Additionally, we get a few extra states that we cram into the same area of bits:
 	//   - `midvalue` is used by assemblers of recursives to block AssignNull after BeginX.
 	//   - `allowNull` is used by parent assemblers when initializing a child assembler to tell the child a transition to Maybe_Null is allowed in this context.
-	fmt.Fprint(w, wish.Dedent(`
+	fmt.Fprint(w, testutil.Dedent(`
 		const (
 			midvalue = schema.Maybe(4)
 			allowNull = schema.Maybe(5)
@@ -44,7 +44,7 @@ func EmitInternalEnums(packageName string, w io.Writer) {
 
 	`))
 
-	fmt.Fprint(w, wish.Dedent(`
+	fmt.Fprint(w, testutil.Dedent(`
 		type maState uint8
 
 		const (
@@ -66,7 +66,7 @@ func EmitInternalEnums(packageName string, w io.Writer) {
 
 	// We occasionally need this erroring thunk to be able to snake an error out from some assembly processes.
 	// It implements all of datamodel.NodeAssembler, but all of its methods return errors when used.
-	fmt.Fprint(w, wish.Dedent(`
+	fmt.Fprint(w, testutil.Dedent(`
 		type _ErrorThunkAssembler struct {
 			e error
 		}
