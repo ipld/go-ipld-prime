@@ -5,9 +5,8 @@ import (
 	"strings"
 	"text/template"
 
-	wish "github.com/warpfork/go-wish"
-
 	"github.com/ipld/go-ipld-prime/datamodel"
+	"github.com/ipld/go-ipld-prime/testutil"
 )
 
 func doTemplate(tmplstr string, w io.Writer, adjCfg *AdjunctCfg, data interface{}) {
@@ -106,7 +105,7 @@ func doTemplate(tmplstr string, w io.Writer, adjCfg *AdjunctCfg, data interface{
 			"add":   func(a, b int) int { return a + b },
 			"title": func(s string) string { return strings.Title(s) },
 		}).
-		Parse(wish.Dedent(tmplstr)))
+		Parse(testutil.Dedent(tmplstr)))
 	if err := tmpl.Execute(w, data); err != nil {
 		panic(err)
 	}
