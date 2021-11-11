@@ -4,13 +4,14 @@ import (
 	"fmt"
 	"testing"
 
-	. "github.com/warpfork/go-wish"
+	qt "github.com/frankban/quicktest"
 
 	_ "github.com/ipld/go-ipld-prime/codec/dagjson"
 	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/fluent"
 	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
 	"github.com/ipld/go-ipld-prime/node/basicnode"
+	nodetests "github.com/ipld/go-ipld-prime/node/tests"
 	"github.com/ipld/go-ipld-prime/traversal"
 	"github.com/ipld/go-ipld-prime/traversal/selector"
 	"github.com/ipld/go-ipld-prime/traversal/selector/builder"
@@ -104,23 +105,23 @@ func TestStopAtLink(t *testing.T) {
 			switch order {
 			case 0:
 				// Root
-				Wish(t, prog.Path.String(), ShouldEqual, "")
+				qt.Check(t, prog.Path.String(), qt.Equals, "")
 			case 1:
-				Wish(t, prog.Path.String(), ShouldEqual, "plain")
-				Wish(t, n, ShouldEqual, basicnode.NewString("olde string"))
+				qt.Check(t, prog.Path.String(), qt.Equals, "plain")
+				qt.Check(t, n, nodetests.NodeContentEquals, basicnode.NewString("olde string"))
 			case 2:
-				Wish(t, prog.Path.String(), ShouldEqual, "linkedString")
+				qt.Check(t, prog.Path.String(), qt.Equals, "linkedString")
 			case 3:
-				Wish(t, prog.Path.String(), ShouldEqual, "linkedList")
+				qt.Check(t, prog.Path.String(), qt.Equals, "linkedList")
 			// We are starting to traverse the linkedList, we passed through the map already
 			case 4:
-				Wish(t, prog.Path.String(), ShouldEqual, "linkedList/0")
+				qt.Check(t, prog.Path.String(), qt.Equals, "linkedList/0")
 			}
 			order++
 			return nil
 		})
-		Wish(t, err, ShouldEqual, nil)
-		Wish(t, order, ShouldEqual, 8)
+		qt.Check(t, err, qt.IsNil)
+		qt.Check(t, order, qt.Equals, 8)
 	})
 }
 
@@ -227,12 +228,12 @@ func stopAtInChainTest(t *testing.T, chainNode datamodel.Node, stopLnk datamodel
 			},
 		}.WalkMatching(chainNode, s, func(prog traversal.Progress, n datamodel.Node) error {
 			//fmt.Println("Order", order, prog.Path.String())
-			Wish(t, order < len(expectedPaths), ShouldEqual, true)
-			Wish(t, prog.Path.String(), ShouldEqual, expectedPaths[order])
+			qt.Check(t, order < len(expectedPaths), qt.IsTrue)
+			qt.Check(t, prog.Path.String(), qt.Equals, expectedPaths[order])
 			order++
 			return nil
 		})
-		Wish(t, err, ShouldEqual, nil)
-		Wish(t, order, ShouldEqual, len(expectedPaths))
+		qt.Check(t, err, qt.IsNil)
+		qt.Check(t, order, qt.Equals, len(expectedPaths))
 	})
 }
