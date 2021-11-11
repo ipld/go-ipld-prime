@@ -79,12 +79,12 @@ func (store *Store) Put(ctx context.Context, key string, content []byte) error {
 //
 // It's useful for this storage implementation to explicitly support this,
 // because returning a reader gives us room to avoid needing a defensive copy.
-func (store *Store) GetStream(ctx context.Context, key string) (io.Reader, error) {
+func (store *Store) GetStream(ctx context.Context, key string) (io.ReadCloser, error) {
 	content, exists := store.Bag[key]
 	if !exists {
 		return nil, fmt.Errorf("404") // FIXME this needs a standard error type
 	}
-	return bytes.NewReader(content), nil
+	return io.NopCloser(bytes.NewReader(content)), nil
 }
 
 // Peek implements go-ipld-prime/storage.PeekableStorage.Peek.

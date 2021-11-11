@@ -86,6 +86,9 @@ type (
 	//
 	// BlockReadOpener can also be created out of storage.ReadableStorage and attached to a LinkSystem
 	// via the LinkSystem.SetReadStorage method.
+	//
+	// Users of a BlockReadOpener function should also check the io.Reader
+	// for matching the io.Closer interface, and use the Close function as appropriate if present.
 	BlockReadOpener func(LinkContext, datamodel.Link) (io.Reader, error)
 
 	// BlockWriteOpener defines the shape of a function used to open a writer

@@ -36,14 +36,14 @@ func Put(ctx context.Context, store WritableStorage, key string, content []byte)
 // This function will feature-detect the StreamingReadableStorage interface, and use that if possible;
 // otherwise it will fall back to using basic ReadableStorage methods transparently
 // (at the cost of loading all the data into memory at once and up front).
-func GetStream(ctx context.Context, store ReadableStorage, key string) (io.Reader, error) {
+func GetStream(ctx context.Context, store ReadableStorage, key string) (io.ReadCloser, error) {
 	// Prefer the feature itself, first.
 	if streamable, ok := store.(StreamingReadableStorage); ok {
 		return streamable.GetStream(ctx, key)
 	}
 	// Fallback to basic.
 	blob, err := store.Get(ctx, key)
-	return bytes.NewReader(blob), err
+	return io.NopCloser(bytes.NewReader(blob)), err
 }
 
 // PutStream returns an io.Writer and a WriteCommitter callback.

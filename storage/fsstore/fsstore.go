@@ -124,11 +124,7 @@ func (store *Store) Put(ctx context.Context, key string, content []byte) error {
 }
 
 // GetStream implements go-ipld-prime/storage.StreamingReadableStorage.GetStream.
-//
-// Note that the returned reader will also be an io.Closer;
-// if the caller does not check for that, and call Close appropriately, as StreamingReadableStorage documents is appropriate,
-// then there may be resource leaks.
-func (store *Store) GetStream(ctx context.Context, key string) (io.Reader, error) {
+func (store *Store) GetStream(ctx context.Context, key string) (io.ReadCloser, error) {
 	if ctx.Err() != nil {
 		return nil, ctx.Err()
 	}
