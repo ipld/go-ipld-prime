@@ -37,6 +37,30 @@ Unreleased on master
 Changes here are on the master branch, but not in any tagged release yet.
 When a release tag is made, this block of bullet points will just slide down to the [Released Changes](#released-changes) section.
 
+- _nothing yet :)_
+
+
+
+Released Changes
+----------------
+
+### v0.14.0
+
+_2021 November 11_
+
+This release is a smooth-sailing release, and mostly contains new features, quality-of-life improvements,
+and some significant improvements to the completeness and usability of features that have been in development across previous releases.
+There shouldn't be a lot of surprises, and upgrading should be easy.
+
+Some of the biggest improvements include: `bindnode` now supports most IPLD features and is increasingly stable;
+the `schema` system now has functioning `schema/dmt` and `schema/dsl` packages, and can parse schema documents smoothly(!);
+if you haven't seen the `printer` package that first quietly appeared in `v0.12.2`, you should definitely check it out now;
+and we have some new `storage` APIs that might be worth checking out, too.
+There are also many, many other smaller improvements.
+
+See the complete list and further deatils below
+(and don't forget to check out the notes under the other `v0.12.*` headings, if you haven't absorbed those updates already, too!):
+
 - New: `datamodel.Copy`: a helper function to do a shallow copy from one node to another.
 	- You don't often need this, because nodes are supposed to be immutable!
 	  But it still sometimes comes in handy, for example, if you want to change the memory layout you're using by moving data into a different node implementation.
@@ -72,9 +96,12 @@ When a release tag is made, this block of bullet points will just slide down to 
 - Improved: `printer` is now more resilient and works even on relatively misbehaved `Node` implementations, such as those which implement `schema.TypedNode` but then rudely and nonsensically return nil type info.  (We don't expect all code to be resilient against misbehaved `Node` implementations... but for a debug tool in particular?  It's good to have it handle as much as it can.)
 
 
+This, and the last few releases tagged in the `v0.12.*` series, include invaluable contributions from
+@mvdan, @warpfork, @rvagg, @willscott, @masih, @hannahhoward, @aschmahmann, @ribasushi,
+and probably yet more others who have contributed through code and design reviews,
+or by using these libraries and demanding they continue to become better.
+Thanks to each and every one of the people who carry this project forward!
 
-Released Changes
-----------------
 
 ### v0.12.3
 
