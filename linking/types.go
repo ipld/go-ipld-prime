@@ -84,8 +84,8 @@ type (
 	// and hash in the Link parameter before returning.
 	// (This is something that the LinkSystem composition will handle if you're using it.)
 	//
-	// Some implementations of BlockWriteOpener and BlockReadOpener may be
-	// found in the storage package.  Applications are also free to write their own.
+	// BlockReadOpener can also be created out of storage.ReadableStorage and attached to a LinkSystem
+	// via the LinkSystem.SetReadStorage method.
 	BlockReadOpener func(LinkContext, datamodel.Link) (io.Reader, error)
 
 	// BlockWriteOpener defines the shape of a function used to open a writer
@@ -118,8 +118,8 @@ type (
 	// and when the BlockWriteCommiter is called, it will flush the writes
 	// and then use a rename operation to place the tempfile in a permanent path based the Link.)
 	//
-	// Some implementations of BlockWriteOpener and BlockReadOpener may be
-	// found in the storage package.  Applications are also free to write their own.
+	// BlockWriteOpener can also be created out of storage.WritableStorage and attached to a LinkSystem
+	// via the LinkSystem.SetWriteStorage method.
 	BlockWriteOpener func(LinkContext) (io.Writer, BlockWriteCommitter, error)
 
 	// BlockWriteCommitter defines the shape of a function which, together
