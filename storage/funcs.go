@@ -43,7 +43,7 @@ func GetStream(ctx context.Context, store ReadableStorage, key string) (io.ReadC
 	}
 	// Fallback to basic.
 	blob, err := store.Get(ctx, key)
-	return io.NopCloser(bytes.NewReader(blob)), err
+	return noopCloser{bytes.NewReader(blob)}, err
 }
 
 // PutStream returns an io.Writer and a WriteCommitter callback.
@@ -112,9 +112,11 @@ func Peek(ctx context.Context, store ReadableStorage, key string) ([]byte, io.Cl
 	}
 	// Fallback to basic.
 	bs, err := store.Get(ctx, key)
-	return bs, noopCloser{}, err
+	return bs, noopCloser{nil}, err
 }
 
-type noopCloser struct{}
+type noopCloser struct {
+	io.Reader
+}
 
 func (noopCloser) Close() error { return nil }
