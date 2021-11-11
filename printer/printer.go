@@ -175,11 +175,21 @@ func (z *printBuf) doString(indentLevel int, printState uint8, n datamodel.Node)
 	//  Note: this can be somewhat overbearing -- for example, typed strings are going to get called out as `string<String>{"value"}`.
 	//   This is rather agonizingly verbose, but also accurate; I'm not sure if we'd want to elide information about typed-vs-untyped entirely.
 	if tn, ok := n.(schema.TypedNode); ok {
-		z.writeString(tn.Type().TypeKind().String())
+		var tnk schema.TypeKind
+		var tntName string
+		// Defensively check for nil node type
+		if tnt := tn.Type(); tnt == nil {
+			tntName = "?!nil"
+			tnk = schema.TypeKind_Invalid
+		} else {
+			tntName = tnt.Name()
+			tnk = tnt.TypeKind()
+		}
+		z.writeString(tnk.String())
 		z.writeString("<")
-		z.writeString(tn.Type().Name())
+		z.writeString(tntName)
 		z.writeString(">")
-		switch tn.Type().TypeKind() {
+		switch tnk {
 		case schema.TypeKind_Invalid:
 			z.writeString("{?!}")
 		case schema.TypeKind_Map:

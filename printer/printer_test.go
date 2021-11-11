@@ -225,5 +225,87 @@ func TestTypedData(t *testing.T) {
 			))
 		})
 	})
+	t.Run("invalid-nil-typed-node", func(t *testing.T) {
+		qt.Check(t, Sprint(nilTypedNode{}), qt.CmpEquals(), "invalid<?!nil>{?!}")
+	})
+}
 
+var _ schema.TypedNode = (*nilTypedNode)(nil)
+
+type nilTypedNode struct{}
+
+func (n nilTypedNode) Kind() datamodel.Kind {
+	return datamodel.Kind_Invalid
+}
+
+func (n nilTypedNode) LookupByString(key string) (datamodel.Node, error) {
+	return nil, nil
+}
+
+func (n nilTypedNode) LookupByNode(key datamodel.Node) (datamodel.Node, error) {
+	return nil, nil
+}
+
+func (n nilTypedNode) LookupByIndex(idx int64) (datamodel.Node, error) {
+	return nil, nil
+}
+
+func (n nilTypedNode) LookupBySegment(seg datamodel.PathSegment) (datamodel.Node, error) {
+	return nil, nil
+}
+
+func (n nilTypedNode) MapIterator() datamodel.MapIterator {
+	return nil
+}
+
+func (n nilTypedNode) ListIterator() datamodel.ListIterator {
+	return nil
+}
+
+func (n nilTypedNode) Length() int64 {
+	return 0
+}
+
+func (n nilTypedNode) IsAbsent() bool {
+	return false
+}
+
+func (n nilTypedNode) IsNull() bool {
+	return false
+}
+
+func (n nilTypedNode) AsBool() (bool, error) {
+	panic("nil-typed-node")
+}
+
+func (n nilTypedNode) AsInt() (int64, error) {
+	panic("nil-typed-node")
+}
+
+func (n nilTypedNode) AsFloat() (float64, error) {
+	panic("nil-typed-node")
+}
+
+func (n nilTypedNode) AsString() (string, error) {
+	panic("nil-typed-node")
+}
+
+func (n nilTypedNode) AsBytes() ([]byte, error) {
+	panic("nil-typed-node")
+}
+
+func (n nilTypedNode) AsLink() (datamodel.Link, error) {
+	panic("nil-typed-node")
+}
+
+func (n nilTypedNode) Prototype() datamodel.NodePrototype {
+	return nil
+}
+
+func (n nilTypedNode) Type() schema.Type {
+	return nil
+}
+
+func (n nilTypedNode) Representation() datamodel.Node {
+	return nil
 }
