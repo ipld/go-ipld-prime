@@ -226,16 +226,21 @@ func TestTypedData(t *testing.T) {
 		})
 	})
 	t.Run("invalid-nil-typed-node", func(t *testing.T) {
-		qt.Check(t, Sprint(nilTypedNode{}), qt.CmpEquals(), "invalid<?!nil>{?!}")
+		qt.Check(t, Sprint(&nilTypedNode{datamodel.Kind_Invalid}), qt.CmpEquals(), "invalid<?!nil>{?!}")
+	})
+	t.Run("invalid-nil-typed-node-with-map-kind", func(t *testing.T) {
+		qt.Check(t, Sprint(&nilTypedNode{datamodel.Kind_Map}), qt.CmpEquals(), "invalid<?!nil>{?!}{}")
 	})
 }
 
 var _ schema.TypedNode = (*nilTypedNode)(nil)
 
-type nilTypedNode struct{}
+type nilTypedNode struct {
+	kind datamodel.Kind
+}
 
-func (n nilTypedNode) Kind() datamodel.Kind {
-	return datamodel.Kind_Invalid
+func (n *nilTypedNode) Kind() datamodel.Kind {
+	return n.kind
 }
 
 func (n nilTypedNode) LookupByString(key string) (datamodel.Node, error) {

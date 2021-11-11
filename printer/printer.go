@@ -124,11 +124,15 @@ func (cfg Config) useCmplxKeys(mapn datamodel.Node) bool {
 	if !ok {
 		return false
 	}
-	force, ok := cfg.UseMapComplexStyleOnType[tn.Type().Name()]
+	tnt := tn.Type()
+	if tnt == nil {
+		return false
+	}
+	force, ok := cfg.UseMapComplexStyleOnType[tnt.Name()]
 	if ok {
 		return force
 	}
-	ti, ok := tn.Type().(*schema.TypeMap)
+	ti, ok := tnt.(*schema.TypeMap)
 	if !ok { // Probably should never even have been asked, then?
 		panic("how did you get here?")
 	}
