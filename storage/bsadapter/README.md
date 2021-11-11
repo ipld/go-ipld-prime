@@ -1,12 +1,9 @@
-dsadapter
+bsadapter
 =========
 
-The `dsadapter` package/module is a small piece of glue code to connect
-the `github.com/ipfs/go-datastore` package, and packages implementing its interfaces,
+The `bsadapter` package/module is a small piece of glue code to connect
+the `github.com/ipfs/go-blockstore` package, and packages implementing its interfaces,
 forward into the `go-ipld-prime/storage` interfaces.
-
-For example, this can be used to use "flatfs" and other datastore plugins
-with go-ipld-prime storage APIs.
 
 
 Why structured like this?

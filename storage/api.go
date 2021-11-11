@@ -89,8 +89,7 @@ type WritableStorage interface {
 // --- streaming --->
 
 type StreamingReadableStorage interface {
-	// Note that the returned io.Reader may also be an io.ReadCloser -- check for this.
-	GetStream(ctx context.Context, key string) (io.Reader, error)
+	GetStream(ctx context.Context, key string) (io.ReadCloser, error)
 }
 
 // StreamingWritableStorage is a feature-detection interface that advertises support for streaming writes.

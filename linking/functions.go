@@ -129,6 +129,9 @@ func (lsys *LinkSystem) LoadRaw(lnkCtx LinkContext, lnk datamodel.Link) ([]byte,
 	if err != nil {
 		return nil, err
 	}
+	if closer, ok := reader.(io.Closer); ok {
+		defer closer.Close()
+	}
 	var buf bytes.Buffer
 	if _, err := io.Copy(&buf, reader); err != nil {
 		return nil, err
@@ -173,6 +176,9 @@ func (lsys *LinkSystem) Fill(lnkCtx LinkContext, lnk datamodel.Link, na datamode
 	reader, err := lsys.StorageReadOpener(lnkCtx, lnk)
 	if err != nil {
 		return err
+	}
+	if closer, ok := reader.(io.Closer); ok {
+		defer closer.Close()
 	}
 	// TrustedStorage indicates the data coming out of this reader has already been hashed and verified earlier.
 	// As a result, we can skip rehashing it
