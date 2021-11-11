@@ -1,10 +1,9 @@
 package selector
 
 import (
-	"fmt"
 	"testing"
 
-	. "github.com/warpfork/go-wish"
+	qt "github.com/frankban/quicktest"
 
 	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/fluent"
@@ -15,14 +14,14 @@ func TestParseExploreIndex(t *testing.T) {
 	t.Run("parsing non map node should error", func(t *testing.T) {
 		sn := basicnode.NewInt(0)
 		_, err := ParseContext{}.ParseExploreIndex(sn)
-		Wish(t, err, ShouldEqual, fmt.Errorf("selector spec parse rejected: selector body must be a map"))
+		qt.Check(t, err, qt.ErrorMatches, "selector spec parse rejected: selector body must be a map")
 	})
 	t.Run("parsing map node without next field should error", func(t *testing.T) {
 		sn := fluent.MustBuildMap(basicnode.Prototype__Map{}, 1, func(na fluent.MapAssembler) {
 			na.AssembleEntry(SelectorKey_Index).AssignInt(2)
 		})
 		_, err := ParseContext{}.ParseExploreIndex(sn)
-		Wish(t, err, ShouldEqual, fmt.Errorf("selector spec parse rejected: next field must be present in ExploreIndex selector"))
+		qt.Check(t, err, qt.ErrorMatches, "selector spec parse rejected: next field must be present in ExploreIndex selector")
 	})
 	t.Run("parsing map node without index field should error", func(t *testing.T) {
 		sn := fluent.MustBuildMap(basicnode.Prototype__Map{}, 1, func(na fluent.MapAssembler) {
@@ -31,7 +30,7 @@ func TestParseExploreIndex(t *testing.T) {
 			})
 		})
 		_, err := ParseContext{}.ParseExploreIndex(sn)
-		Wish(t, err, ShouldEqual, fmt.Errorf("selector spec parse rejected: index field must be present in ExploreIndex selector"))
+		qt.Check(t, err, qt.ErrorMatches, "selector spec parse rejected: index field must be present in ExploreIndex selector")
 	})
 	t.Run("parsing map node with index field that is not an int should error", func(t *testing.T) {
 		sn := fluent.MustBuildMap(basicnode.Prototype__Map{}, 2, func(na fluent.MapAssembler) {
@@ -41,7 +40,7 @@ func TestParseExploreIndex(t *testing.T) {
 			})
 		})
 		_, err := ParseContext{}.ParseExploreIndex(sn)
-		Wish(t, err, ShouldEqual, fmt.Errorf("selector spec parse rejected: index field must be a number in ExploreIndex selector"))
+		qt.Check(t, err, qt.ErrorMatches, "selector spec parse rejected: index field must be a number in ExploreIndex selector")
 	})
 	t.Run("parsing map node with next field with invalid selector node should return child's error", func(t *testing.T) {
 		sn := fluent.MustBuildMap(basicnode.Prototype__Map{}, 2, func(na fluent.MapAssembler) {
@@ -49,7 +48,7 @@ func TestParseExploreIndex(t *testing.T) {
 			na.AssembleEntry(SelectorKey_Next).AssignInt(0)
 		})
 		_, err := ParseContext{}.ParseExploreIndex(sn)
-		Wish(t, err, ShouldEqual, fmt.Errorf("selector spec parse rejected: selector is a keyed union and thus must be a map"))
+		qt.Check(t, err, qt.ErrorMatches, "selector spec parse rejected: selector is a keyed union and thus must be a map")
 	})
 	t.Run("parsing map node with next field with valid selector node should parse", func(t *testing.T) {
 		sn := fluent.MustBuildMap(basicnode.Prototype__Map{}, 2, func(na fluent.MapAssembler) {
@@ -59,8 +58,8 @@ func TestParseExploreIndex(t *testing.T) {
 			})
 		})
 		s, err := ParseContext{}.ParseExploreIndex(sn)
-		Wish(t, err, ShouldEqual, nil)
-		Wish(t, s, ShouldEqual, ExploreIndex{Matcher{}, [1]datamodel.PathSegment{datamodel.PathSegmentOfInt(2)}})
+		qt.Check(t, err, qt.IsNil)
+		qt.Check(t, s, qt.Equals, ExploreIndex{Matcher{}, [1]datamodel.PathSegment{datamodel.PathSegmentOfInt(2)}})
 	})
 }
 
@@ -69,7 +68,7 @@ func TestExploreIndexExplore(t *testing.T) {
 	t.Run("exploring should return nil unless node is a list", func(t *testing.T) {
 		n := fluent.MustBuildMap(basicnode.Prototype__Map{}, 0, func(na fluent.MapAssembler) {})
 		returnedSelector, _ := s.Explore(n, datamodel.PathSegmentOfInt(3))
-		Wish(t, returnedSelector, ShouldEqual, nil)
+		qt.Check(t, returnedSelector, qt.IsNil)
 	})
 	n := fluent.MustBuildList(basicnode.Prototype__List{}, 4, func(na fluent.ListAssembler) {
 		na.AssembleValue().AssignInt(0)
@@ -79,14 +78,14 @@ func TestExploreIndexExplore(t *testing.T) {
 	})
 	t.Run("exploring should return nil when given a path segment with a different index", func(t *testing.T) {
 		returnedSelector, _ := s.Explore(n, datamodel.PathSegmentOfInt(2))
-		Wish(t, returnedSelector, ShouldEqual, nil)
+		qt.Check(t, returnedSelector, qt.IsNil)
 	})
 	t.Run("exploring should return nil when given a path segment that isn't an index", func(t *testing.T) {
 		returnedSelector, _ := s.Explore(n, datamodel.PathSegmentOfString("cheese"))
-		Wish(t, returnedSelector, ShouldEqual, nil)
+		qt.Check(t, returnedSelector, qt.IsNil)
 	})
 	t.Run("exploring should return the next selector when given a path segment with the right index", func(t *testing.T) {
 		returnedSelector, _ := s.Explore(n, datamodel.PathSegmentOfInt(3))
-		Wish(t, returnedSelector, ShouldEqual, Matcher{})
+		qt.Check(t, returnedSelector, qt.Equals, Matcher{})
 	})
 }

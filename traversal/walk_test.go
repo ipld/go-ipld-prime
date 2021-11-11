@@ -8,7 +8,6 @@ import (
 	"testing"
 
 	qt "github.com/frankban/quicktest"
-	. "github.com/warpfork/go-wish"
 
 	_ "github.com/ipld/go-ipld-prime/codec/dagjson"
 	"github.com/ipld/go-ipld-prime/datamodel"
@@ -16,6 +15,7 @@ import (
 	"github.com/ipld/go-ipld-prime/linking"
 	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
 	"github.com/ipld/go-ipld-prime/node/basicnode"
+	nodetests "github.com/ipld/go-ipld-prime/node/tests"
 	"github.com/ipld/go-ipld-prime/storage"
 	"github.com/ipld/go-ipld-prime/traversal"
 	"github.com/ipld/go-ipld-prime/traversal/selector"
@@ -61,19 +61,19 @@ func TestWalkMatching(t *testing.T) {
 	ssb := builder.NewSelectorSpecBuilder(basicnode.Prototype.Any)
 	t.Run("traverse selecting true should visit the root", func(t *testing.T) {
 		err := traversal.WalkMatching(basicnode.NewString("x"), selector.Matcher{}, func(prog traversal.Progress, n datamodel.Node) error {
-			Wish(t, n, ShouldEqual, basicnode.NewString("x"))
-			Wish(t, prog.Path.String(), ShouldEqual, datamodel.Path{}.String())
+			qt.Check(t, n, nodetests.NodeContentEquals, basicnode.NewString("x"))
+			qt.Check(t, prog.Path.String(), qt.Equals, datamodel.Path{}.String())
 			return nil
 		})
-		Wish(t, err, ShouldEqual, nil)
+		qt.Check(t, err, qt.IsNil)
 	})
 	t.Run("traverse selecting true should visit only the root and no deeper", func(t *testing.T) {
 		err := traversal.WalkMatching(middleMapNode, selector.Matcher{}, func(prog traversal.Progress, n datamodel.Node) error {
-			Wish(t, n, ShouldEqual, middleMapNode)
-			Wish(t, prog.Path.String(), ShouldEqual, datamodel.Path{}.String())
+			qt.Check(t, n, qt.Equals, middleMapNode)
+			qt.Check(t, prog.Path.String(), qt.Equals, datamodel.Path{}.String())
 			return nil
 		})
-		Wish(t, err, ShouldEqual, nil)
+		qt.Check(t, err, qt.IsNil)
 	})
 	t.Run("traverse selecting fields should work", func(t *testing.T) {
 		ss := ssb.ExploreFields(func(efsb builder.ExploreFieldsSpecBuilder) {
@@ -81,22 +81,22 @@ func TestWalkMatching(t *testing.T) {
 			efsb.Insert("bar", ssb.Matcher())
 		})
 		s, err := ss.Selector()
-		Require(t, err, ShouldEqual, nil)
+		qt.Assert(t, err, qt.IsNil)
 		var order int
 		err = traversal.WalkMatching(middleMapNode, s, func(prog traversal.Progress, n datamodel.Node) error {
 			switch order {
 			case 0:
-				Wish(t, n, ShouldEqual, basicnode.NewBool(true))
-				Wish(t, prog.Path.String(), ShouldEqual, "foo")
+				qt.Check(t, n, nodetests.NodeContentEquals, basicnode.NewBool(true))
+				qt.Check(t, prog.Path.String(), qt.Equals, "foo")
 			case 1:
-				Wish(t, n, ShouldEqual, basicnode.NewBool(false))
-				Wish(t, prog.Path.String(), ShouldEqual, "bar")
+				qt.Check(t, n, nodetests.NodeContentEquals, basicnode.NewBool(false))
+				qt.Check(t, prog.Path.String(), qt.Equals, "bar")
 			}
 			order++
 			return nil
 		})
-		Wish(t, err, ShouldEqual, nil)
-		Wish(t, order, ShouldEqual, 2)
+		qt.Check(t, err, qt.IsNil)
+		qt.Check(t, order, qt.Equals, 2)
 	})
 	t.Run("traverse selecting fields recursively should work", func(t *testing.T) {
 		ss := ssb.ExploreFields(func(efsb builder.ExploreFieldsSpecBuilder) {
@@ -106,22 +106,22 @@ func TestWalkMatching(t *testing.T) {
 			}))
 		})
 		s, err := ss.Selector()
-		Require(t, err, ShouldEqual, nil)
+		qt.Assert(t, err, qt.IsNil)
 		var order int
 		err = traversal.WalkMatching(middleMapNode, s, func(prog traversal.Progress, n datamodel.Node) error {
 			switch order {
 			case 0:
-				Wish(t, n, ShouldEqual, basicnode.NewBool(true))
-				Wish(t, prog.Path.String(), ShouldEqual, "foo")
+				qt.Check(t, n, nodetests.NodeContentEquals, basicnode.NewBool(true))
+				qt.Check(t, prog.Path.String(), qt.Equals, "foo")
 			case 1:
-				Wish(t, n, ShouldEqual, basicnode.NewString("zoo"))
-				Wish(t, prog.Path.String(), ShouldEqual, "nested/nonlink")
+				qt.Check(t, n, nodetests.NodeContentEquals, basicnode.NewString("zoo"))
+				qt.Check(t, prog.Path.String(), qt.Equals, "nested/nonlink")
 			}
 			order++
 			return nil
 		})
-		Wish(t, err, ShouldEqual, nil)
-		Wish(t, order, ShouldEqual, 2)
+		qt.Check(t, err, qt.IsNil)
+		qt.Check(t, order, qt.Equals, 2)
 	})
 	t.Run("traversing across nodes should work", func(t *testing.T) {
 		ss := ssb.ExploreRecursive(selector.RecursionLimitDepth(3), ssb.ExploreUnion(
@@ -140,35 +140,35 @@ func TestWalkMatching(t *testing.T) {
 		}.WalkMatching(middleMapNode, s, func(prog traversal.Progress, n datamodel.Node) error {
 			switch order {
 			case 0:
-				Wish(t, n, ShouldEqual, middleMapNode)
-				Wish(t, prog.Path.String(), ShouldEqual, "")
+				qt.Check(t, n, qt.Equals, middleMapNode)
+				qt.Check(t, prog.Path.String(), qt.Equals, "")
 			case 1:
-				Wish(t, n, ShouldEqual, basicnode.NewBool(true))
-				Wish(t, prog.Path.String(), ShouldEqual, "foo")
+				qt.Check(t, n, nodetests.NodeContentEquals, basicnode.NewBool(true))
+				qt.Check(t, prog.Path.String(), qt.Equals, "foo")
 			case 2:
-				Wish(t, n, ShouldEqual, basicnode.NewBool(false))
-				Wish(t, prog.Path.String(), ShouldEqual, "bar")
+				qt.Check(t, n, nodetests.NodeContentEquals, basicnode.NewBool(false))
+				qt.Check(t, prog.Path.String(), qt.Equals, "bar")
 			case 3:
-				Wish(t, n, ShouldEqual, fluent.MustBuildMap(basicnode.Prototype.Map, 2, func(na fluent.MapAssembler) {
+				qt.Check(t, n, nodetests.NodeContentEquals, fluent.MustBuildMap(basicnode.Prototype.Map, 2, func(na fluent.MapAssembler) {
 					na.AssembleEntry("alink").AssignLink(leafAlphaLnk)
 					na.AssembleEntry("nonlink").AssignString("zoo")
 				}))
-				Wish(t, prog.Path.String(), ShouldEqual, "nested")
+				qt.Check(t, prog.Path.String(), qt.Equals, "nested")
 			case 4:
-				Wish(t, n, ShouldEqual, basicnode.NewString("alpha"))
-				Wish(t, prog.Path.String(), ShouldEqual, "nested/alink")
-				Wish(t, prog.LastBlock.Path.String(), ShouldEqual, "nested/alink")
-				Wish(t, prog.LastBlock.Link.String(), ShouldEqual, leafAlphaLnk.String())
+				qt.Check(t, n, nodetests.NodeContentEquals, basicnode.NewString("alpha"))
+				qt.Check(t, prog.Path.String(), qt.Equals, "nested/alink")
+				qt.Check(t, prog.LastBlock.Path.String(), qt.Equals, "nested/alink")
+				qt.Check(t, prog.LastBlock.Link.String(), qt.Equals, leafAlphaLnk.String())
 
 			case 5:
-				Wish(t, n, ShouldEqual, basicnode.NewString("zoo"))
-				Wish(t, prog.Path.String(), ShouldEqual, "nested/nonlink")
+				qt.Check(t, n, nodetests.NodeContentEquals, basicnode.NewString("zoo"))
+				qt.Check(t, prog.Path.String(), qt.Equals, "nested/nonlink")
 			}
 			order++
 			return nil
 		})
-		Wish(t, err, ShouldEqual, nil)
-		Wish(t, order, ShouldEqual, 6)
+		qt.Check(t, err, qt.IsNil)
+		qt.Check(t, order, qt.Equals, 6)
 	})
 	t.Run("traversing lists should work", func(t *testing.T) {
 		ss := ssb.ExploreRange(0, 3, ssb.Matcher())
@@ -184,26 +184,26 @@ func TestWalkMatching(t *testing.T) {
 		}.WalkMatching(middleListNode, s, func(prog traversal.Progress, n datamodel.Node) error {
 			switch order {
 			case 0:
-				Wish(t, n, ShouldEqual, basicnode.NewString("alpha"))
-				Wish(t, prog.Path.String(), ShouldEqual, "0")
-				Wish(t, prog.LastBlock.Path.String(), ShouldEqual, "0")
-				Wish(t, prog.LastBlock.Link.String(), ShouldEqual, leafAlphaLnk.String())
+				qt.Check(t, n, nodetests.NodeContentEquals, basicnode.NewString("alpha"))
+				qt.Check(t, prog.Path.String(), qt.Equals, "0")
+				qt.Check(t, prog.LastBlock.Path.String(), qt.Equals, "0")
+				qt.Check(t, prog.LastBlock.Link.String(), qt.Equals, leafAlphaLnk.String())
 			case 1:
-				Wish(t, n, ShouldEqual, basicnode.NewString("alpha"))
-				Wish(t, prog.Path.String(), ShouldEqual, "1")
-				Wish(t, prog.LastBlock.Path.String(), ShouldEqual, "1")
-				Wish(t, prog.LastBlock.Link.String(), ShouldEqual, leafAlphaLnk.String())
+				qt.Check(t, n, nodetests.NodeContentEquals, basicnode.NewString("alpha"))
+				qt.Check(t, prog.Path.String(), qt.Equals, "1")
+				qt.Check(t, prog.LastBlock.Path.String(), qt.Equals, "1")
+				qt.Check(t, prog.LastBlock.Link.String(), qt.Equals, leafAlphaLnk.String())
 			case 2:
-				Wish(t, n, ShouldEqual, basicnode.NewString("beta"))
-				Wish(t, prog.Path.String(), ShouldEqual, "2")
-				Wish(t, prog.LastBlock.Path.String(), ShouldEqual, "2")
-				Wish(t, prog.LastBlock.Link.String(), ShouldEqual, leafBetaLnk.String())
+				qt.Check(t, n, nodetests.NodeContentEquals, basicnode.NewString("beta"))
+				qt.Check(t, prog.Path.String(), qt.Equals, "2")
+				qt.Check(t, prog.LastBlock.Path.String(), qt.Equals, "2")
+				qt.Check(t, prog.LastBlock.Link.String(), qt.Equals, leafBetaLnk.String())
 			}
 			order++
 			return nil
 		})
-		Wish(t, err, ShouldEqual, nil)
-		Wish(t, order, ShouldEqual, 3)
+		qt.Check(t, err, qt.IsNil)
+		qt.Check(t, order, qt.Equals, 3)
 	})
 	t.Run("multiple layers of link traversal should work", func(t *testing.T) {
 		ss := ssb.ExploreFields(func(efsb builder.ExploreFieldsSpecBuilder) {
@@ -227,46 +227,46 @@ func TestWalkMatching(t *testing.T) {
 		}.WalkMatching(rootNode, s, func(prog traversal.Progress, n datamodel.Node) error {
 			switch order {
 			case 0:
-				Wish(t, n, ShouldEqual, basicnode.NewString("alpha"))
-				Wish(t, prog.Path.String(), ShouldEqual, "linkedList/0")
-				Wish(t, prog.LastBlock.Path.String(), ShouldEqual, "linkedList/0")
-				Wish(t, prog.LastBlock.Link.String(), ShouldEqual, leafAlphaLnk.String())
+				qt.Check(t, n, nodetests.NodeContentEquals, basicnode.NewString("alpha"))
+				qt.Check(t, prog.Path.String(), qt.Equals, "linkedList/0")
+				qt.Check(t, prog.LastBlock.Path.String(), qt.Equals, "linkedList/0")
+				qt.Check(t, prog.LastBlock.Link.String(), qt.Equals, leafAlphaLnk.String())
 			case 1:
-				Wish(t, n, ShouldEqual, basicnode.NewString("alpha"))
-				Wish(t, prog.Path.String(), ShouldEqual, "linkedList/1")
-				Wish(t, prog.LastBlock.Path.String(), ShouldEqual, "linkedList/1")
-				Wish(t, prog.LastBlock.Link.String(), ShouldEqual, leafAlphaLnk.String())
+				qt.Check(t, n, nodetests.NodeContentEquals, basicnode.NewString("alpha"))
+				qt.Check(t, prog.Path.String(), qt.Equals, "linkedList/1")
+				qt.Check(t, prog.LastBlock.Path.String(), qt.Equals, "linkedList/1")
+				qt.Check(t, prog.LastBlock.Link.String(), qt.Equals, leafAlphaLnk.String())
 			case 2:
-				Wish(t, n, ShouldEqual, basicnode.NewString("beta"))
-				Wish(t, prog.Path.String(), ShouldEqual, "linkedList/2")
-				Wish(t, prog.LastBlock.Path.String(), ShouldEqual, "linkedList/2")
-				Wish(t, prog.LastBlock.Link.String(), ShouldEqual, leafBetaLnk.String())
+				qt.Check(t, n, nodetests.NodeContentEquals, basicnode.NewString("beta"))
+				qt.Check(t, prog.Path.String(), qt.Equals, "linkedList/2")
+				qt.Check(t, prog.LastBlock.Path.String(), qt.Equals, "linkedList/2")
+				qt.Check(t, prog.LastBlock.Link.String(), qt.Equals, leafBetaLnk.String())
 			case 3:
-				Wish(t, n, ShouldEqual, basicnode.NewString("alpha"))
-				Wish(t, prog.Path.String(), ShouldEqual, "linkedList/3")
-				Wish(t, prog.LastBlock.Path.String(), ShouldEqual, "linkedList/3")
-				Wish(t, prog.LastBlock.Link.String(), ShouldEqual, leafAlphaLnk.String())
+				qt.Check(t, n, nodetests.NodeContentEquals, basicnode.NewString("alpha"))
+				qt.Check(t, prog.Path.String(), qt.Equals, "linkedList/3")
+				qt.Check(t, prog.LastBlock.Path.String(), qt.Equals, "linkedList/3")
+				qt.Check(t, prog.LastBlock.Link.String(), qt.Equals, leafAlphaLnk.String())
 			case 4:
-				Wish(t, n, ShouldEqual, basicnode.NewBool(true))
-				Wish(t, prog.Path.String(), ShouldEqual, "linkedMap/foo")
-				Wish(t, prog.LastBlock.Path.String(), ShouldEqual, "linkedMap")
-				Wish(t, prog.LastBlock.Link.String(), ShouldEqual, middleMapNodeLnk.String())
+				qt.Check(t, n, nodetests.NodeContentEquals, basicnode.NewBool(true))
+				qt.Check(t, prog.Path.String(), qt.Equals, "linkedMap/foo")
+				qt.Check(t, prog.LastBlock.Path.String(), qt.Equals, "linkedMap")
+				qt.Check(t, prog.LastBlock.Link.String(), qt.Equals, middleMapNodeLnk.String())
 			case 5:
-				Wish(t, n, ShouldEqual, basicnode.NewString("zoo"))
-				Wish(t, prog.Path.String(), ShouldEqual, "linkedMap/nested/nonlink")
-				Wish(t, prog.LastBlock.Path.String(), ShouldEqual, "linkedMap")
-				Wish(t, prog.LastBlock.Link.String(), ShouldEqual, middleMapNodeLnk.String())
+				qt.Check(t, n, nodetests.NodeContentEquals, basicnode.NewString("zoo"))
+				qt.Check(t, prog.Path.String(), qt.Equals, "linkedMap/nested/nonlink")
+				qt.Check(t, prog.LastBlock.Path.String(), qt.Equals, "linkedMap")
+				qt.Check(t, prog.LastBlock.Link.String(), qt.Equals, middleMapNodeLnk.String())
 			case 6:
-				Wish(t, n, ShouldEqual, basicnode.NewString("alpha"))
-				Wish(t, prog.Path.String(), ShouldEqual, "linkedMap/nested/alink")
-				Wish(t, prog.LastBlock.Path.String(), ShouldEqual, "linkedMap/nested/alink")
-				Wish(t, prog.LastBlock.Link.String(), ShouldEqual, leafAlphaLnk.String())
+				qt.Check(t, n, nodetests.NodeContentEquals, basicnode.NewString("alpha"))
+				qt.Check(t, prog.Path.String(), qt.Equals, "linkedMap/nested/alink")
+				qt.Check(t, prog.LastBlock.Path.String(), qt.Equals, "linkedMap/nested/alink")
+				qt.Check(t, prog.LastBlock.Link.String(), qt.Equals, leafAlphaLnk.String())
 			}
 			order++
 			return nil
 		})
-		Wish(t, err, ShouldEqual, nil)
-		Wish(t, order, ShouldEqual, 7)
+		qt.Check(t, err, qt.IsNil)
+		qt.Check(t, order, qt.Equals, 7)
 	})
 }
 
@@ -287,7 +287,7 @@ func TestWalkBudgets(t *testing.T) {
 		err = prog.WalkMatching(middleMapNode, s, func(prog traversal.Progress, n datamodel.Node) error {
 			switch order {
 			case 0:
-				qt.Assert(t, n, qt.CmpEquals(), basicnode.NewBool(true))
+				qt.Assert(t, n, nodetests.NodeContentEquals, basicnode.NewBool(true))
 				qt.Assert(t, prog.Path.String(), qt.Equals, "foo")
 			}
 			order++
@@ -316,13 +316,13 @@ func TestWalkBudgets(t *testing.T) {
 		}.WalkMatching(middleListNode, s, func(prog traversal.Progress, n datamodel.Node) error {
 			switch order {
 			case 0:
-				qt.Assert(t, n, qt.CmpEquals(), basicnode.NewString("alpha"))
+				qt.Assert(t, n, nodetests.NodeContentEquals, basicnode.NewString("alpha"))
 				qt.Assert(t, prog.Path.String(), qt.Equals, "0")
 			case 1:
-				qt.Assert(t, n, qt.CmpEquals(), basicnode.NewString("alpha"))
+				qt.Assert(t, n, nodetests.NodeContentEquals, basicnode.NewString("alpha"))
 				qt.Assert(t, prog.Path.String(), qt.Equals, "1")
 			case 2:
-				qt.Assert(t, n, qt.CmpEquals(), basicnode.NewString("beta"))
+				qt.Assert(t, n, nodetests.NodeContentEquals, basicnode.NewString("beta"))
 				qt.Assert(t, prog.Path.String(), qt.Equals, "2")
 			}
 			order++
@@ -395,13 +395,13 @@ func TestWalkBlockLoadOrder(t *testing.T) {
 		var count int
 		lsys := cidlink.DefaultLinkSystem()
 		lsys.StorageReadOpener = func(lc linking.LinkContext, l datamodel.Link) (io.Reader, error) {
-			Wish(t, l.String(), ShouldEqual, expected[count].String())
+			qt.Check(t, l.String(), qt.Equals, expected[count].String())
 			log.Printf("%v (%v) %s<> %v (%v)\n", l, linkNames[l], strings.Repeat(" ", 17-len(linkNames[l])), expected[count], linkNames[expected[count]])
 			count++
 			return readFn(lc, l)
 		}
 		sel, err := selector.CompileSelector(s)
-		Wish(t, err, ShouldEqual, nil)
+		qt.Check(t, err, qt.IsNil)
 		err = traversal.Progress{
 			Cfg: &traversal.Config{
 				LinkSystem:                     lsys,
@@ -411,8 +411,8 @@ func TestWalkBlockLoadOrder(t *testing.T) {
 		}.WalkMatching(newRootNode, sel, func(prog traversal.Progress, n datamodel.Node) error {
 			return nil
 		})
-		Wish(t, err, ShouldEqual, nil)
-		Wish(t, count, ShouldEqual, len(expected))
+		qt.Check(t, err, qt.IsNil)
+		qt.Check(t, count, qt.Equals, len(expected))
 	}
 
 	t.Run("CommonSelector_MatchAllRecursively", func(t *testing.T) {
