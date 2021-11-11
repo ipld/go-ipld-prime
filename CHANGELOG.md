@@ -37,7 +37,39 @@ Unreleased on master
 Changes here are on the master branch, but not in any tagged release yet.
 When a release tag is made, this block of bullet points will just slide down to the [Released Changes](#released-changes) section.
 
-- _nothing yet :)_
+- New: `datamodel.Copy`: a helper function to do a shallow copy from one node to another.
+	- You don't often need this, because nodes are supposed to be immutable!
+	  But it still sometimes comes in handy, for example, if you want to change the memory layout you're using by moving data into a different node implementation.
+- Improved: documentation of APIs.  (Especially, for subtler bits like `NodeAssembler.AssignNode`.)
+- New: `datamodel.Link` now requires a `Binary()` function.  In contrast to `Link.String()` (which is supposed to return something printable), `Link.Binary()` should give you the rawest thing possible.  (It's equivalent to `go-cid.CID.KeyString`.)
+- New: **a new storage API**, including one **batteries-included** filesystem storage implementation, and **adapters** to several other different storage APIs.  [[#265](https://github.com/ipld/go-ipld-prime/pull/265), [#279](https://github.com/ipld/go-ipld-prime/pull/279)]
+	- The primary goal of this is the "batteries included" part: using the new `storage/fsstore` package, you should now be able to make simple applications with IPLD and use a simple sharded disk storage system (it'll look vaguely like a `.git/objects` directory), and do it in about five minutes and without pulling in any additional complex dependencies.
+	- If you want to develop new storage systems or make adapters to them: the APIs in `storage` package are designed to be implemented easily.
+		- The `storage` APIs are designed entirely around types found in the golang standard library.  You do not need to import anything in the `storage` package in order to implement its interfaces!
+		- The minimal APIs that a storage system has to implement are _very_ small.  Two functions.  Every additional feature, or optimization that you can offer: those all have their own interfaces, and we use feature-detection on them.  You can implement as much or as little as you like.
+	- As a user of the storage APIs: use the functions in the `storage` package.  Those functions take a storage system as a parameter, and will do feature detection _for you_.
+		- This means you can always write your code to call the APIs you _want_, and the `storage` functions will figure out how to map it onto the storage system that you _have_ (whatever it supports) in the most efficient way it can.
+	- As a user of the `LinkSystem` API: you can ignore most of this!  If you want to use the new `storage` APIs, there are setup methods on `LinkSystem` that will take them as a parameter.  If you have existing code wired up with the previous APIs, it still works too.
+	- As someone who already has code and wonders how to migrate:
+		- If you're using the `linking.Storage*Opener` API: you don't have to do anything.  Those still work too.
+		- If you were using code from other repos like `ipfs/go-ipfs-blockstore` or `ipfs/go-datastore` or so on: those have adapters now in the `storage/*adapter` packages!  You should now be able to use those more easily, with less custom glue code.  (There's also now a migration readme in the repo root: check that out.)
+	- If you would like to ask: "is it fast?" -- yes.  You'll find that the new `storage/fsstore`, our batteries-included filesystem storage system, is comparable (or beating) the `go-ds-flatfs` package that you may have been using in the past.  (More benchmarks and any performance improvement patches will of course be welcome -- but at the very least, there's no reason to hold back on using the new system.)
+- New: `LinkSystem` has some new methods: `LoadRaw` and `LoadPlusRaw` give you the ability to get data model nodes loaded, and _also_ receive the raw binary blobs.
+	- This can be useful if you're building an application that's piping data around to other serial APIs without necessarily transforming it.  (No need to reserialize if that's your journey.)
+- New: a CLI tool has begun development!
+	- ... and almost immediately been removed again, to live in its own repo: check out https://github.com/ipld/go-ipldtool .
+- Improved: many more things about `bindnode`.
+	- `bindnode` now understands `go-cid.CID` fields.
+	- Kinded unions are much more completely supported.
+	- Many TODO panics have gone away, replaced by finished features.
+	- `bindnode` will increasingly check that the golang types you give it can be structurally matched to the schema if you provide one, which gives better errors earlier, and increases the ease and safety of use drastically.
+- Improved: the `schema/dmt` and `schema/dsl` packages are increasingly complete.
+	- There are also now helper functions in the root package which will do the whole journey of "load a file, parse the Schema DSL, compile and typecheck the DMT, and give you the type info in handy golang interfaces", all at once!  Check out `ipld.LoadSchema`!
+- New: there is a codegen feature for `bindnode` which will produce very terse golang structs matching a schema and ready to be bound back to `bindnode`!
+	- This competes with the older `gengo` code generator -- by comparison, the `bindnode` code generator produces much, _much_ less code.  (However, be advised that the performance characteristics are probably also markedly different; and we do not have sufficient benchmarks to comment on this at this time.)
+- Internal: many tests are being ported to `quicktest`.  There should be no external impact to this, but we look forward to removing some of the other test libraries from our dependency tree in the near future.
+- Improved: `printer` now supports links and bytes!
+- Improved: `printer` is now more resilient and works even on relatively misbehaved `Node` implementations, such as those which implement `schema.TypedNode` but then rudely and nonsensically return nil type info.  (We don't expect all code to be resilient against misbehaved `Node` implementations... but for a debug tool in particular?  It's good to have it handle as much as it can.)
 
 
 
