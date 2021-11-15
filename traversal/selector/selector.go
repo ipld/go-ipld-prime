@@ -165,6 +165,8 @@ func (pc ParseContext) ParseSelector(n datamodel.Node) (Selector, error) {
 		return pc.ParseExploreRecursive(v)
 	case SelectorKey_ExploreRecursiveEdge:
 		return pc.ParseExploreRecursiveEdge(v)
+	case SelectorKey_ExploreInterpretAs:
+		return pc.ParseExploreInterpretAs(v)
 	case SelectorKey_Matcher:
 		return pc.ParseMatcher(v)
 	default:

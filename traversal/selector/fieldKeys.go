@@ -10,6 +10,7 @@ const (
 	SelectorKey_ExploreUnion         = "|"
 	SelectorKey_ExploreConditional   = "&"
 	SelectorKey_ExploreRecursiveEdge = "@"
+	SelectorKey_ExploreInterpretAs   = "~"
 	SelectorKey_Next                 = ">"
 	SelectorKey_Fields               = "f>"
 	SelectorKey_Index                = "i"
@@ -21,5 +22,6 @@ const (
 	SelectorKey_LimitNone            = "none"
 	SelectorKey_StopAt               = "!"
 	SelectorKey_Condition            = "&"
+	SelectorKey_As                   = "c"
 	// not filling conditional keys since it's not complete
 )

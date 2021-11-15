@@ -120,6 +120,25 @@ func (prog Progress) walkAdv(n datamodel.Node, s selector.Selector, fn AdvVisitF
 }
 
 func (prog Progress) walkAdv_iterateAll(n datamodel.Node, s selector.Selector, fn AdvVisitFn) error {
+	if rs, ok := s.(selector.Transformable); ok {
+		adl := rs.Transform()
+		if prog.Cfg.LinkSystem.KnownReifiers == nil {
+			return fmt.Errorf("adl requested but not supported by link system: %s", adl)
+		}
+		reifier, ok := prog.Cfg.LinkSystem.KnownReifiers[adl]
+		if !ok {
+			return fmt.Errorf("unregistered adl requested: %s", adl)
+		}
+
+		rn, err := reifier(linking.LinkContext{
+			Ctx:      prog.Cfg.Ctx,
+			LinkPath: prog.Path,
+		}, n, &prog.Cfg.LinkSystem)
+		if err != nil {
+			return err
+		}
+		n = rn
+	}
 	for itr := selector.NewSegmentIterator(n); !itr.Done(); {
 		ps, v, err := itr.Next()
 		if err != nil {

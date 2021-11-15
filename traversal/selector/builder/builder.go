@@ -30,6 +30,7 @@ type SelectorSpecBuilder interface {
 	ExploreIndex(index int64, next SelectorSpec) SelectorSpec
 	ExploreRange(start, end int64, next SelectorSpec) SelectorSpec
 	ExploreFields(ExploreFieldsSpecBuildingClosure) SelectorSpec
+	ExploreInterpretAs(as string, next SelectorSpec) SelectorSpec
 	Matcher() SelectorSpec
 }
 
@@ -145,6 +146,17 @@ func (ssb *selectorSpecBuilder) ExploreFields(specBuilder ExploreFieldsSpecBuild
 				na.AssembleEntry(selector.SelectorKey_Fields).CreateMap(-1, func(na fluent.MapAssembler) {
 					specBuilder(exploreFieldsSpecBuilder{na})
 				})
+			})
+		}),
+	}
+}
+
+func (ssb *selectorSpecBuilder) ExploreInterpretAs(as string, next SelectorSpec) SelectorSpec {
+	return selectorSpec{
+		fluent.MustBuildMap(ssb.np, 1, func(na fluent.MapAssembler) {
+			na.AssembleEntry(selector.SelectorKey_ExploreInterpretAs).CreateMap(1, func(na fluent.MapAssembler) {
+				na.AssembleEntry(selector.SelectorKey_As).AssignString(as)
+				na.AssembleEntry(selector.SelectorKey_Next).AssignNode(next.Node())
 			})
 		}),
 	}
