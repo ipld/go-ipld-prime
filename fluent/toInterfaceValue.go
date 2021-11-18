@@ -23,13 +23,13 @@ func ToInterfaceValue(node datamodel.Node) (interface{}, error) {
 	case datamodel.Kind_Link:
 		return node.AsLink()
 	case datamodel.Kind_Map:
-		outMap := make(map[interface{}]interface{})
+		outMap := make(map[string]interface{})
 		for mi := node.MapIterator(); !mi.Done(); {
 			k, v, err := mi.Next()
 			if err != nil {
 				return nil, err
 			}
-			kVal, err := ToInterfaceValue(k)
+			kVal, err := k.AsString()
 			if err != nil {
 				return nil, err
 			}

@@ -40,15 +40,16 @@ func TestMapValue(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	outM := out.(map[interface{}]interface{})
+	outM := out.(map[string]interface{})
 
 	if len(a) != len(outM) {
 		t.Errorf("Mismatch in size")
 	}
 
 	for k, v := range outM {
-		if v != a[k.(string)] {
-			t.Errorf("expected %v, got %v at key %v", a[k.(string)], v, k)
+		if v != a[k] {
+			t.Errorf("expected %v, got %v at key %v", a[k], v, k)
 		}
 	}
+
 }
