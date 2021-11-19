@@ -8,6 +8,13 @@ import (
 	"github.com/ipld/go-ipld-prime/traversal/selector"
 )
 
+// Walk walks a tree of Nodes, visiting each of them,
+// and calling the given VisitFn on all of them;
+// it does not traverse any links.
+func Walk(n datamodel.Node, fn VisitFn) error {
+	return Progress{}.Walk(n, fn)
+}
+
 // WalkMatching walks a graph of Nodes, deciding which to visit by applying a Selector,
 // and calling the given VisitFn on those that the Selector deems a match.
 //
@@ -74,6 +81,57 @@ func (prog Progress) WalkMatching(n datamodel.Node, s selector.Selector, fn Visi
 		}
 		return fn(prog, n)
 	})
+}
+
+// Walk is the same as the package-scope function of the same name,
+// but considers an existing Progress state (and any config it might reference).
+func (prog Progress) Walk(n datamodel.Node, fn VisitFn) error {
+	// Check the budget!
+	if prog.Budget != nil {
+		if prog.Budget.NodeBudget <= 0 {
+			return &ErrBudgetExceeded{BudgetKind: "node", Path: prog.Path}
+		}
+		prog.Budget.NodeBudget--
+	}
+	// Visit the current node.
+	if err := fn(prog, n); err != nil {
+		if _, ok := err.(SkipMe); ok {
+			return nil
+		}
+		return err
+	}
+	// Recurse on nodes with a recursive kind; otherwise just return.
+	switch n.Kind() {
+	case datamodel.Kind_Map:
+		for itr := n.MapIterator(); !itr.Done(); {
+			k, v, err := itr.Next()
+			if err != nil {
+				return err
+			}
+			ks, _ := k.AsString()
+			progNext := prog
+			progNext.Path = prog.Path.AppendSegmentString(ks)
+			if err := progNext.Walk(v, fn); err != nil {
+				return err
+			}
+		}
+		return nil
+	case datamodel.Kind_List:
+		for itr := n.ListIterator(); !itr.Done(); {
+			idx, v, err := itr.Next()
+			if err != nil {
+				return err
+			}
+			progNext := prog
+			progNext.Path = prog.Path.AppendSegmentInt(idx)
+			if err := progNext.Walk(v, fn); err != nil {
+				return err
+			}
+		}
+		return nil
+	default:
+		return nil
+	}
 }
 
 // WalkAdv is identical to WalkMatching, except it is called for *all* nodes
