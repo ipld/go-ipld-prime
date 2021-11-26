@@ -8,11 +8,15 @@ import (
 	"github.com/ipld/go-ipld-prime/traversal/selector"
 )
 
-// Walk walks a tree of Nodes, visiting each of them,
+// WalkLocal walks a tree of Nodes, visiting each of them,
 // and calling the given VisitFn on all of them;
 // it does not traverse any links.
-func Walk(n datamodel.Node, fn VisitFn) error {
-	return Progress{}.Walk(n, fn)
+//
+// WalkLocal can skip subtrees if the VisitFn returns SkipMe,
+// but lacks any other options for controlling or directing the visit;
+// consider using some of the various Walk functions with Selector parameters if you want more control.
+func WalkLocal(n datamodel.Node, fn VisitFn) error {
+	return Progress{}.WalkLocal(n, fn)
 }
 
 // WalkMatching walks a graph of Nodes, deciding which to visit by applying a Selector,
@@ -83,9 +87,9 @@ func (prog Progress) WalkMatching(n datamodel.Node, s selector.Selector, fn Visi
 	})
 }
 
-// Walk is the same as the package-scope function of the same name,
+// WalkLocal is the same as the package-scope function of the same name,
 // but considers an existing Progress state (and any config it might reference).
-func (prog Progress) Walk(n datamodel.Node, fn VisitFn) error {
+func (prog Progress) WalkLocal(n datamodel.Node, fn VisitFn) error {
 	// Check the budget!
 	if prog.Budget != nil {
 		if prog.Budget.NodeBudget <= 0 {
@@ -111,7 +115,7 @@ func (prog Progress) Walk(n datamodel.Node, fn VisitFn) error {
 			ks, _ := k.AsString()
 			progNext := prog
 			progNext.Path = prog.Path.AppendSegmentString(ks)
-			if err := progNext.Walk(v, fn); err != nil {
+			if err := progNext.WalkLocal(v, fn); err != nil {
 				return err
 			}
 		}
@@ -124,7 +128,7 @@ func (prog Progress) Walk(n datamodel.Node, fn VisitFn) error {
 			}
 			progNext := prog
 			progNext.Path = prog.Path.AppendSegmentInt(idx)
-			if err := progNext.Walk(v, fn); err != nil {
+			if err := progNext.WalkLocal(v, fn); err != nil {
 				return err
 			}
 		}
