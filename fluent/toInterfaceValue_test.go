@@ -1,55 +1,51 @@
 package fluent_test
 
 import (
+	"encoding/json"
 	"testing"
 
+	qt "github.com/frankban/quicktest"
+	"github.com/ipfs/go-cid"
 	"github.com/ipld/go-ipld-prime/fluent"
+	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
 	"github.com/ipld/go-ipld-prime/node/basicnode"
 )
 
-func TestListValue(t *testing.T) {
-	a := []string{"a", "b", "c"}
-	n, err := fluent.Reflect(basicnode.Prototype.Any, a)
-	if err != nil {
-		t.Fatal(err)
-	}
-	out, err := fluent.ToInterfaceValue(n)
-	if err != nil {
-		t.Fatal(err)
-	}
-	outArr := out.([]interface{})
+var roundTripTestCases = []struct {
+	desc  string
+	value interface{}
+}{
+	{desc: "Number", value: 100},
+	{desc: "String", value: "hi"},
+	{desc: "Bool", value: "hi"},
+	{desc: "Bytes", value: []byte("hi")},
+	{desc: "Map", value: map[string]interface{}{"a": "1", "b": int64(2), "c": 3.14, "d": true}},
+	{desc: "Array", value: []string{"a", "b", "c"}},
+}
 
-	if len(a) != len(outArr) {
-		t.Errorf("Mismatch in array size")
-	}
-
-	for i, v := range outArr {
-		if a[i] != v {
-			t.Errorf("expected %v, got %v at index %v", a[i], v, i)
-		}
+func TestRoundTrip(t *testing.T) {
+	for _, testCase := range roundTripTestCases {
+		t.Run(testCase.desc, func(t *testing.T) {
+			c := qt.New(t)
+			n, err := fluent.Reflect(basicnode.Prototype.Any, testCase.value)
+			c.Assert(err, qt.IsNil)
+			out, err := fluent.ToInterface(n)
+			c.Assert(err, qt.IsNil)
+			outJson, err := json.Marshal(out)
+			qt.Check(t, err, qt.IsNil)
+			qt.Check(t, outJson, qt.JSONEquals, testCase.value)
+		})
 	}
 }
 
-func TestMapValue(t *testing.T) {
-	a := map[string]interface{}{"a": "1", "b": int64(2), "c": 3.14}
-	n, err := fluent.Reflect(basicnode.Prototype.Any, a)
-	if err != nil {
-		t.Fatal(err)
-	}
-	out, err := fluent.ToInterfaceValue(n)
-	if err != nil {
-		t.Fatal(err)
-	}
-	outM := out.(map[string]interface{})
+func TestLink(t *testing.T) {
+	c := qt.New(t)
+	var someCid, err = cid.Parse("bafybeihrqe2hmfauph5yfbd6ucv7njqpiy4tvbewlvhzjl4bhnyiu6h7pm")
+	c.Assert(err, qt.IsNil)
+	var link = cidlink.Link{Cid: someCid}
+	var node = basicnode.NewLink(link)
+	v, err := fluent.ToInterface(node)
+	c.Assert(err, qt.IsNil)
 
-	if len(a) != len(outM) {
-		t.Errorf("Mismatch in size")
-	}
-
-	for k, v := range outM {
-		if v != a[k] {
-			t.Errorf("expected %v, got %v at key %v", a[k], v, k)
-		}
-	}
-
+	c.Assert(v.(cidlink.Link), qt.Equals, link)
 }

@@ -1,13 +1,18 @@
 package fluent
 
 import (
+	"errors"
+
 	"github.com/ipld/go-ipld-prime/datamodel"
 )
 
-func ToInterfaceValue(node datamodel.Node) (interface{}, error) {
+var ErrInvalidKind = errors.New("invalid kind")
+var ErrUnknownKind = errors.New("unknown kind")
+
+func ToInterface(node datamodel.Node) (interface{}, error) {
 	switch k := node.Kind(); k {
 	case datamodel.Kind_Invalid:
-		panic("invalid node")
+		return nil, ErrInvalidKind
 	case datamodel.Kind_Null:
 		return nil, nil
 	case datamodel.Kind_Bool:
@@ -23,7 +28,7 @@ func ToInterfaceValue(node datamodel.Node) (interface{}, error) {
 	case datamodel.Kind_Link:
 		return node.AsLink()
 	case datamodel.Kind_Map:
-		outMap := make(map[string]interface{})
+		outMap := make(map[string]interface{}, node.Length())
 		for mi := node.MapIterator(); !mi.Done(); {
 			k, v, err := mi.Next()
 			if err != nil {
@@ -33,15 +38,11 @@ func ToInterfaceValue(node datamodel.Node) (interface{}, error) {
 			if err != nil {
 				return nil, err
 			}
-			vVal, err := ToInterfaceValue(v)
+			vVal, err := ToInterface(v)
 			if err != nil {
 				return nil, err
 			}
 			outMap[kVal] = vVal
-
-			if mi.Done() {
-				break
-			}
 		}
 		return outMap, nil
 	case datamodel.Kind_List:
@@ -51,17 +52,14 @@ func ToInterfaceValue(node datamodel.Node) (interface{}, error) {
 			if err != nil {
 				return nil, err
 			}
-			vVal, err := ToInterfaceValue(v)
+			vVal, err := ToInterface(v)
 			if err != nil {
 				return nil, err
 			}
 			outList = append(outList, vVal)
-
-			if li.Done() {
-				break
-			}
 		}
 		return outList, nil
+	default:
+		return nil, ErrUnknownKind
 	}
-	panic("unhandled case in switch")
 }
