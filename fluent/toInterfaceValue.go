@@ -9,6 +9,12 @@ import (
 var errInvalidKind = errors.New("invalid kind")
 var errUnknownKind = errors.New("unknown kind")
 
+// ToInterface converts an IPLD node to its simplest equivalent Go value.
+//
+// Booleans, integers, floats, strings, bytes, and links are returned as themselves,
+// as per the node's AsT method. Note that nulls are returned as untyped nils.
+//
+// Lists and maps are returned as []interface{} and map[string]interface{}, respectively.
 func ToInterface(node datamodel.Node) (interface{}, error) {
 	switch k := node.Kind(); k {
 	case datamodel.Kind_Invalid:
