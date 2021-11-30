@@ -7,7 +7,7 @@ replace github.com/ipld/go-ipld-prime => ../..
 replace github.com/ipld/go-ipld-prime/storage/dsadapter => ../dsadapter
 
 require (
-	github.com/ipfs/go-ds-flatfs v0.4.5
-	github.com/ipld/go-ipld-prime v0.12.3
-	github.com/ipld/go-ipld-prime/storage/dsadapter v0.0.0-20211022093231-ebf675a9bd6d
+	github.com/ipfs/go-ds-flatfs v0.5.0
+	github.com/ipld/go-ipld-prime v0.14.1
+	github.com/ipld/go-ipld-prime/storage/dsadapter v0.0.0-20211130004103-85b37597b213
 )
