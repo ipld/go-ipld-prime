@@ -6,13 +6,13 @@ import (
 	"github.com/ipld/go-ipld-prime/datamodel"
 )
 
-var ErrInvalidKind = errors.New("invalid kind")
-var ErrUnknownKind = errors.New("unknown kind")
+var errInvalidKind = errors.New("invalid kind")
+var errUnknownKind = errors.New("unknown kind")
 
 func ToInterface(node datamodel.Node) (interface{}, error) {
 	switch k := node.Kind(); k {
 	case datamodel.Kind_Invalid:
-		return nil, ErrInvalidKind
+		return nil, errInvalidKind
 	case datamodel.Kind_Null:
 		return nil, nil
 	case datamodel.Kind_Bool:
@@ -60,6 +60,6 @@ func ToInterface(node datamodel.Node) (interface{}, error) {
 		}
 		return outList, nil
 	default:
-		return nil, ErrUnknownKind
+		return nil, errUnknownKind
 	}
 }
