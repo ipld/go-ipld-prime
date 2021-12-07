@@ -267,9 +267,14 @@ func (st *unmarshalState) bytesLookahead(na datamodel.NodeAssembler, tokSrc shar
 		return false, nil
 	}
 	// Okay, we made it -- this looks like bytes.  Parse it.
-	elBytes, err := base64.StdEncoding.DecodeString(st.tk[4].Str)
+	elBytes, err := base64.RawStdEncoding.DecodeString(st.tk[4].Str)
 	if err != nil {
-		return false, err
+		if _, isInput := err.(base64.CorruptInputError); isInput {
+			elBytes, err = base64.StdEncoding.DecodeString(st.tk[4].Str)
+		}
+		if err != nil {
+			return false, err
+		}
 	}
 	if err := na.AssignBytes(elBytes); err != nil {
 		return false, err

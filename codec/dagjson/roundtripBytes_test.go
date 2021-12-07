@@ -61,3 +61,14 @@ func TestEncapsulatedBytes(t *testing.T) {
 		qt.Check(t, nb.Build(), nodetests.NodeContentEquals, encapsulatedNode)
 	})
 }
+
+var withPadding = `{"/": {"bytes": "Bxrk96XO8cwr3hrcL4VeWtVdYudzHv47BbBl7CesWvmjRrRPOLZp9Ukg6sivn5Nqg4V5X2w43mk4Ppuzr+M+DA=="}}`
+
+func TestPaddedBytes(t *testing.T) {
+	t.Run("decoding", func(t *testing.T) {
+		buf := strings.NewReader(withPadding)
+		nb := basicnode.Prototype.Bytes.NewBuilder()
+		err := dagjson.Decode(nb, buf)
+		qt.Assert(t, err, qt.IsNil)
+	})
+}
