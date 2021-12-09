@@ -59,37 +59,37 @@ func verifyCompatibility(seen map[seenEntry]bool, goType reflect.Type, schemaTyp
 	switch schemaType := schemaType.(type) {
 	case *schema.TypeBool:
 		if goType.Kind() != reflect.Bool {
-			doPanic("kind mismatch")
+			doPanic("kind mismatch; need boolean")
 		}
 	case *schema.TypeInt:
 		// TODO: allow uints?
 		switch goType.Kind() {
 		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 		default:
-			doPanic("kind mismatch")
+			doPanic("kind mismatch; need integer")
 		}
 	case *schema.TypeFloat:
 		switch goType.Kind() {
 		case reflect.Float32, reflect.Float64:
 		default:
-			doPanic("kind mismatch")
+			doPanic("kind mismatch; need float")
 		}
 	case *schema.TypeString:
 		// TODO: allow []byte?
 		if goType.Kind() != reflect.String {
-			doPanic("kind mismatch")
+			doPanic("kind mismatch; need string")
 		}
 	case *schema.TypeBytes:
 		// TODO: allow string?
 		if goType.Kind() != reflect.Slice {
-			doPanic("kind mismatch")
+			doPanic("kind mismatch; need slice of bytes")
 		}
 		if goType.Elem().Kind() != reflect.Uint8 {
-			doPanic("kind mismatch")
+			doPanic("kind mismatch; need slice of bytes")
 		}
 	case *schema.TypeList:
 		if goType.Kind() != reflect.Slice {
-			doPanic("kind mismatch")
+			doPanic("kind mismatch; need slice")
 		}
 		goType = goType.Elem()
 		if schemaType.ValueIsNullable() {
@@ -105,7 +105,7 @@ func verifyCompatibility(seen map[seenEntry]bool, goType reflect.Type, schemaTyp
 		//		Values map[K]V
 		//	}
 		if goType.Kind() != reflect.Struct {
-			doPanic("kind mismatch")
+			doPanic("kind mismatch; need struct{Keys []K; Values map[K]V}")
 		}
 		if goType.NumField() != 2 {
 			doPanic("%d vs 2 fields", goType.NumField())
@@ -113,19 +113,19 @@ func verifyCompatibility(seen map[seenEntry]bool, goType reflect.Type, schemaTyp
 
 		fieldKeys := goType.Field(0)
 		if fieldKeys.Type.Kind() != reflect.Slice {
-			doPanic("kind mismatch")
+			doPanic("kind mismatch; need struct{Keys []K; Values map[K]V}")
 		}
 		verifyCompatibility(seen, fieldKeys.Type.Elem(), schemaType.KeyType())
 
 		fieldValues := goType.Field(1)
 		if fieldValues.Type.Kind() != reflect.Map {
-			doPanic("kind mismatch")
+			doPanic("kind mismatch; need struct{Keys []K; Values map[K]V}")
 		}
 		verifyCompatibility(seen, fieldValues.Type.Key(), schemaType.KeyType())
 		verifyCompatibility(seen, fieldValues.Type.Elem(), schemaType.ValueType())
 	case *schema.TypeStruct:
 		if goType.Kind() != reflect.Struct {
-			doPanic("kind mismatch")
+			doPanic("kind mismatch; need struct")
 		}
 
 		schemaFields := schemaType.Fields()
@@ -152,7 +152,7 @@ func verifyCompatibility(seen map[seenEntry]bool, goType reflect.Type, schemaTyp
 		}
 	case *schema.TypeUnion:
 		if goType.Kind() != reflect.Struct {
-			doPanic("kind mismatch")
+			doPanic("kind mismatch; need struct for an union")
 		}
 
 		schemaMembers := schemaType.Members()
@@ -169,8 +169,8 @@ func verifyCompatibility(seen map[seenEntry]bool, goType reflect.Type, schemaTyp
 			verifyCompatibility(seen, goType, schemaType)
 		}
 	case *schema.TypeLink:
-		if goType != goTypeLink && goType != goTypeCid {
-			doPanic("links in Go must be datamodel.Link or cid.Cid")
+		if goType != goTypeLink && goType != goTypeCidLink && goType != goTypeCid {
+			doPanic("links in Go must be datamodel.Link, cidlink.Link, or cid.Cid")
 		}
 	default:
 		panic(fmt.Sprintf("%T", schemaType))
