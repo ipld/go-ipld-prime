@@ -309,13 +309,7 @@ func (p *parser) typeStruct() (*dmt.TypeDefnStruct, error) {
 		}
 
 		if tok == "}" {
-			// TODO: repr.  currently hardcoded to map repr.
-			if len(repr.Fields.Keys) == 0 {
-				// Fields is optional; omit it if empty.
-				repr.Fields = nil
-			}
-			defn.Representation.StructRepresentation_Map = repr
-			return defn, nil
+			break
 		}
 		name := tok
 
@@ -393,7 +387,7 @@ func (p *parser) typeStruct() (*dmt.TypeDefnStruct, error) {
 						}
 						anyScalar.Int = &n
 					default:
-						return nil, fmt.Errorf("unsupported implicit scalar: %s", scalar)
+						return nil, p.errf("unsupported implicit scalar: %s", scalar)
 					}
 
 					details.Implicit = &anyScalar
@@ -403,6 +397,34 @@ func (p *parser) typeStruct() (*dmt.TypeDefnStruct, error) {
 		}
 
 		mapAppend(&defn.Fields, name, field)
+	}
+
+	reprName := "map" // default repr
+	if tok, err := p.peekToken(); err == nil && tok == "representation" {
+		p.consumePeeked()
+		name, err := p.consumeName()
+		if err != nil {
+			return nil, err
+		}
+		reprName = name
+	}
+	if reprName != "map" && len(repr.Fields.Keys) > 0 {
+		return nil, p.errf("rename and implicit are only supported for struct map representations")
+	}
+	switch reprName {
+	case "map":
+		if len(repr.Fields.Keys) == 0 {
+			// Fields is optional; omit it if empty.
+			repr.Fields = nil
+		}
+		defn.Representation.StructRepresentation_Map = repr
+		return defn, nil
+	case "tuple":
+		defn.Representation.StructRepresentation_Tuple = &dmt.StructRepresentation_Tuple{}
+		return defn, nil
+		// TODO: support custom fieldorder
+	default:
+		return nil, p.errf("unknown enum repr: %q", reprName)
 	}
 }
 
@@ -620,6 +642,5 @@ func (p *parser) typeEnum() (*dmt.TypeDefnEnum, error) {
 	default:
 		return nil, p.errf("unknown enum repr: %q", reprName)
 	}
-	// TODO: repr
 	return defn, nil
 }
