@@ -45,7 +45,7 @@ func (a *Adapter) Has(ctx context.Context, key string) (bool, error) {
 	}
 
 	// Delegate the Has call.
-	return a.Wrapped.Has(k)
+	return a.Wrapped.Has(ctx, k)
 }
 
 // Get implements go-ipld-prime/storage.ReadableStorage.Get.
@@ -65,7 +65,7 @@ func (a *Adapter) Get(ctx context.Context, key string) ([]byte, error) {
 	}
 
 	// Delegate the Get call.
-	block, err := a.Wrapped.Get(k)
+	block, err := a.Wrapped.Get(ctx, k)
 	if err != nil {
 		return nil, err
 	}
@@ -103,7 +103,7 @@ func (a *Adapter) Put(ctx context.Context, key string, content []byte) error {
 	}
 
 	// Delegate the Put call.
-	return a.Wrapped.Put(block)
+	return a.Wrapped.Put(ctx, block)
 }
 
 // Do the inverse of cid.KeyString().

@@ -6,8 +6,7 @@ require (
 	github.com/google/uuid v1.2.0 // indirect
 	github.com/ipfs/go-block-format v0.0.3
 	github.com/ipfs/go-cid v0.1.0
-	github.com/ipfs/go-datastore v0.4.5 // indirect
-	github.com/ipfs/go-ipfs-blockstore v0.1.6
+	github.com/ipfs/go-ipfs-blockstore v1.1.2
 	github.com/ipfs/go-log v1.0.5 // indirect
 	github.com/klauspost/cpuid/v2 v2.0.6 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
