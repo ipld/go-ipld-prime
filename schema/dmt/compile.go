@@ -217,7 +217,7 @@ func spawnType(ts *schema.TypeSystem, name schema.TypeName, defn TypeDefn) (sche
 				repr = schema.SpawnStructRepresentationTuple()
 				break
 			}
-			return nil, fmt.Errorf("TODO: support for tuples with  field orders in the schema package")
+			return nil, fmt.Errorf("TODO: support for tuples with field orders in the schema package")
 		default:
 			return nil, fmt.Errorf("TODO: support other struct repr in schema package")
 		}
