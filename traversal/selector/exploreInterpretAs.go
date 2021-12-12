@@ -27,15 +27,15 @@ func (s ExploreInterpretAs) Decide(n datamodel.Node) bool {
 	return false
 }
 
-// Transform indicates how this selector expects to transform the current datamodel.Node.
-func (s ExploreInterpretAs) Transform() string {
+// NamedReifier indicates how this selector expects to Reify the current datamodel.Node.
+func (s ExploreInterpretAs) NamedReifier() string {
 	return s.adl
 }
 
-// Transformable provides for a feature detection interface on selectors to understand when
-// and if Transformation of the datamodel.node should be attempted when performing traversals.
-type Transformable interface {
-	Transform() string
+// Reifiable provides a feature detection interface on selectors to understand when
+// and if Reification of the datamodel.node should be attempted when performing traversals.
+type Reifiable interface {
+	NamedReifier() string
 }
 
 // ParseExploreInterpretAs assembles a Selector

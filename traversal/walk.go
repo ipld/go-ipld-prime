@@ -182,14 +182,14 @@ func (prog Progress) walkAdv(n datamodel.Node, s selector.Selector, fn AdvVisitF
 }
 
 func (prog Progress) walkAdv_iterateAll(n datamodel.Node, s selector.Selector, fn AdvVisitFn) error {
-	if rs, ok := s.(selector.Transformable); ok {
-		adl := rs.Transform()
+	if s, ok := s.(selector.Reifiable); ok {
+		adl := s.NamedReifier()
 		if prog.Cfg.LinkSystem.KnownReifiers == nil {
-			return fmt.Errorf("adl requested but not supported by link system: %s", adl)
+			return fmt.Errorf("adl requested but not supported by link system: %q", adl)
 		}
 		reifier, ok := prog.Cfg.LinkSystem.KnownReifiers[adl]
 		if !ok {
-			return fmt.Errorf("unregistered adl requested: %s", adl)
+			return fmt.Errorf("unregistered adl requested: %q", adl)
 		}
 
 		rn, err := reifier(linking.LinkContext{
@@ -197,7 +197,7 @@ func (prog Progress) walkAdv_iterateAll(n datamodel.Node, s selector.Selector, f
 			LinkPath: prog.Path,
 		}, n, &prog.Cfg.LinkSystem)
 		if err != nil {
-			return err
+			return fmt.Errorf("failed to reify node as %q: %v", adl, err)
 		}
 		n = rn
 	}
