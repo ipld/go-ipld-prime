@@ -1,6 +1,7 @@
 package printer
 
 import (
+	"encoding/hex"
 	"io"
 	"os"
 	"strconv"
@@ -123,11 +124,15 @@ func (cfg Config) useCmplxKeys(mapn datamodel.Node) bool {
 	if !ok {
 		return false
 	}
-	force, ok := cfg.UseMapComplexStyleOnType[tn.Type().Name()]
+	tnt := tn.Type()
+	if tnt == nil {
+		return false
+	}
+	force, ok := cfg.UseMapComplexStyleOnType[tnt.Name()]
 	if ok {
 		return force
 	}
-	ti, ok := tn.Type().(*schema.TypeMap)
+	ti, ok := tnt.(*schema.TypeMap)
 	if !ok { // Probably should never even have been asked, then?
 		panic("how did you get here?")
 	}
@@ -174,11 +179,21 @@ func (z *printBuf) doString(indentLevel int, printState uint8, n datamodel.Node)
 	//  Note: this can be somewhat overbearing -- for example, typed strings are going to get called out as `string<String>{"value"}`.
 	//   This is rather agonizingly verbose, but also accurate; I'm not sure if we'd want to elide information about typed-vs-untyped entirely.
 	if tn, ok := n.(schema.TypedNode); ok {
-		z.writeString(tn.Type().TypeKind().String())
+		var tnk schema.TypeKind
+		var tntName string
+		// Defensively check for nil node type
+		if tnt := tn.Type(); tnt == nil {
+			tntName = "?!nil"
+			tnk = schema.TypeKind_Invalid
+		} else {
+			tntName = tnt.Name()
+			tnk = tnt.TypeKind()
+		}
+		z.writeString(tnk.String())
 		z.writeString("<")
-		z.writeString(tn.Type().Name())
+		z.writeString(tntName)
 		z.writeString(">")
-		switch tn.Type().TypeKind() {
+		switch tnk {
 		case schema.TypeKind_Invalid:
 			z.writeString("{?!}")
 		case schema.TypeKind_Map:
@@ -350,8 +365,16 @@ func (z *printBuf) doString(indentLevel int, printState uint8, n datamodel.Node)
 		z.writeString(strconv.QuoteToGraphic(x))
 		z.writeString("}")
 	case datamodel.Kind_Bytes:
-		panic("TODO")
+		x, _ := n.AsBytes()
+		z.writeString("{")
+		dst := make([]byte, hex.EncodedLen(len(x)))
+		hex.Encode(dst, x)
+		z.writeString(string(dst))
+		z.writeString("}")
 	case datamodel.Kind_Link:
-		panic("TODO")
+		x, _ := n.AsLink()
+		z.writeString("{")
+		z.writeString(x.String())
+		z.writeString("}")
 	}
 }

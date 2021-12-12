@@ -49,7 +49,9 @@ func (cfg DecodeOptions) Decode(na datamodel.NodeAssembler, r io.Reader) error {
 		return na2.DecodeDagCbor(r)
 	}
 	// Okay, generic builder path.
-	return Unmarshal(na, cbor.NewDecoder(cbor.DecodeOptions{}, r), cfg)
+	return Unmarshal(na, cbor.NewDecoder(cbor.DecodeOptions{
+		CoerceUndefToNull: true,
+	}, r), cfg)
 }
 
 // Future work: we would like to remove the Unmarshal function,

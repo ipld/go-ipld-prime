@@ -1,10 +1,9 @@
 package selector
 
 import (
-	"fmt"
 	"testing"
 
-	. "github.com/warpfork/go-wish"
+	qt "github.com/frankban/quicktest"
 
 	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/fluent"
@@ -15,7 +14,7 @@ func TestParseExploreUnion(t *testing.T) {
 	t.Run("parsing non list node should error", func(t *testing.T) {
 		sn := fluent.MustBuildMap(basicnode.Prototype__Map{}, 0, func(na fluent.MapAssembler) {})
 		_, err := ParseContext{}.ParseExploreUnion(sn)
-		Wish(t, err, ShouldEqual, fmt.Errorf("selector spec parse rejected: explore union selector must be a list"))
+		qt.Check(t, err, qt.ErrorMatches, "selector spec parse rejected: explore union selector must be a list")
 	})
 	t.Run("parsing list node where one node is invalid should return child's error", func(t *testing.T) {
 		sn := fluent.MustBuildList(basicnode.Prototype__List{}, 2, func(na fluent.ListAssembler) {
@@ -25,7 +24,7 @@ func TestParseExploreUnion(t *testing.T) {
 			na.AssembleValue().AssignInt(2)
 		})
 		_, err := ParseContext{}.ParseExploreUnion(sn)
-		Wish(t, err, ShouldEqual, fmt.Errorf("selector spec parse rejected: selector is a keyed union and thus must be a map"))
+		qt.Check(t, err, qt.ErrorMatches, "selector spec parse rejected: selector is a keyed union and thus must be a map")
 	})
 
 	t.Run("parsing map node with next field with valid selector node should parse", func(t *testing.T) {
@@ -43,8 +42,8 @@ func TestParseExploreUnion(t *testing.T) {
 			})
 		})
 		s, err := ParseContext{}.ParseExploreUnion(sn)
-		Wish(t, err, ShouldEqual, nil)
-		Wish(t, s, ShouldEqual, ExploreUnion{[]Selector{Matcher{}, ExploreIndex{Matcher{}, [1]datamodel.PathSegment{datamodel.PathSegmentOfInt(2)}}}})
+		qt.Check(t, err, qt.IsNil)
+		qt.Check(t, s, deepEqualsAllowAllUnexported, ExploreUnion{[]Selector{Matcher{}, ExploreIndex{Matcher{}, [1]datamodel.PathSegment{datamodel.PathSegmentOfInt(2)}}}})
 	})
 }
 
@@ -58,14 +57,14 @@ func TestExploreUnionExplore(t *testing.T) {
 	t.Run("exploring should return nil if all member selectors return nil when explored", func(t *testing.T) {
 		s := ExploreUnion{[]Selector{Matcher{}, ExploreIndex{Matcher{}, [1]datamodel.PathSegment{datamodel.PathSegmentOfInt(2)}}}}
 		returnedSelector, _ := s.Explore(n, datamodel.PathSegmentOfInt(3))
-		Wish(t, returnedSelector, ShouldEqual, nil)
+		qt.Check(t, returnedSelector, qt.IsNil)
 	})
 
 	t.Run("if exactly one member selector returns a non-nil selector when explored, exploring should return that value", func(t *testing.T) {
 		s := ExploreUnion{[]Selector{Matcher{}, ExploreIndex{Matcher{}, [1]datamodel.PathSegment{datamodel.PathSegmentOfInt(2)}}}}
 
 		returnedSelector, _ := s.Explore(n, datamodel.PathSegmentOfInt(2))
-		Wish(t, returnedSelector, ShouldEqual, Matcher{})
+		qt.Check(t, returnedSelector, qt.Equals, Matcher{})
 	})
 	t.Run("exploring should return a new union selector if more than one member selector returns a non nil selector when explored", func(t *testing.T) {
 		s := ExploreUnion{[]Selector{
@@ -76,7 +75,7 @@ func TestExploreUnionExplore(t *testing.T) {
 		}}
 
 		returnedSelector, _ := s.Explore(n, datamodel.PathSegmentOfInt(2))
-		Wish(t, returnedSelector, ShouldEqual, ExploreUnion{[]Selector{Matcher{}, Matcher{}}})
+		qt.Check(t, returnedSelector, deepEqualsAllowAllUnexported, ExploreUnion{[]Selector{Matcher{}, Matcher{}}})
 	})
 }
 
@@ -87,7 +86,7 @@ func TestExploreUnionInterests(t *testing.T) {
 			Matcher{},
 			ExploreIndex{Matcher{}, [1]datamodel.PathSegment{datamodel.PathSegmentOfInt(2)}},
 		}}
-		Wish(t, s.Interests(), ShouldEqual, []datamodel.PathSegment(nil))
+		qt.Check(t, s.Interests(), deepEqualsAllowAllUnexported, []datamodel.PathSegment(nil))
 	})
 	t.Run("if no member selector is high-cardinality, interests should be combination of member selectors interests", func(t *testing.T) {
 		s := ExploreUnion{[]Selector{
@@ -95,7 +94,7 @@ func TestExploreUnionInterests(t *testing.T) {
 			Matcher{},
 			ExploreIndex{Matcher{}, [1]datamodel.PathSegment{datamodel.PathSegmentOfInt(2)}},
 		}}
-		Wish(t, s.Interests(), ShouldEqual, []datamodel.PathSegment{datamodel.PathSegmentOfString("applesauce"), datamodel.PathSegmentOfInt(2)})
+		qt.Check(t, s.Interests(), deepEqualsAllowAllUnexported, []datamodel.PathSegment{datamodel.PathSegmentOfString("applesauce"), datamodel.PathSegmentOfInt(2)})
 	})
 }
 
@@ -107,7 +106,7 @@ func TestExploreUnionDecide(t *testing.T) {
 			Matcher{},
 			ExploreIndex{Matcher{}, [1]datamodel.PathSegment{datamodel.PathSegmentOfInt(2)}},
 		}}
-		Wish(t, s.Decide(n), ShouldEqual, true)
+		qt.Check(t, s.Decide(n), qt.IsTrue)
 	})
 	t.Run("if no member selector returns true, decide should be false", func(t *testing.T) {
 		s := ExploreUnion{[]Selector{
@@ -115,6 +114,6 @@ func TestExploreUnionDecide(t *testing.T) {
 			ExploreAll{Matcher{}},
 			ExploreIndex{Matcher{}, [1]datamodel.PathSegment{datamodel.PathSegmentOfInt(2)}},
 		}}
-		Wish(t, s.Decide(n), ShouldEqual, false)
+		qt.Check(t, s.Decide(n), qt.IsFalse)
 	})
 }

@@ -211,6 +211,13 @@ func spawnType(ts *schema.TypeSystem, name schema.TypeName, defn TypeDefn) (sche
 
 			}
 			repr = schema.SpawnStructRepresentationMap2(renames, implicits)
+		case typ.Representation.StructRepresentation_Tuple != nil:
+			rp := typ.Representation.StructRepresentation_Tuple
+			if rp.FieldOrder == nil {
+				repr = schema.SpawnStructRepresentationTuple()
+				break
+			}
+			return nil, fmt.Errorf("TODO: support for tuples with field orders in the schema package")
 		default:
 			return nil, fmt.Errorf("TODO: support other struct repr in schema package")
 		}

@@ -1,30 +1,33 @@
-package builder
+package builder_test
 
 import (
 	"testing"
 
+	qt "github.com/frankban/quicktest"
+
 	"github.com/ipld/go-ipld-prime/fluent"
 	"github.com/ipld/go-ipld-prime/node/basicnode"
+	nodetests "github.com/ipld/go-ipld-prime/node/tests"
 	"github.com/ipld/go-ipld-prime/traversal/selector"
-	. "github.com/warpfork/go-wish"
+	"github.com/ipld/go-ipld-prime/traversal/selector/builder"
 )
 
 func TestBuildingSelectors(t *testing.T) {
 	np := basicnode.Prototype.Any
-	ssb := NewSelectorSpecBuilder(np)
+	ssb := builder.NewSelectorSpecBuilder(np)
 	t.Run("Matcher builds matcher nodes", func(t *testing.T) {
 		sn := ssb.Matcher().Node()
 		esn := fluent.MustBuildMap(np, 1, func(na fluent.MapAssembler) {
 			na.AssembleEntry(selector.SelectorKey_Matcher).CreateMap(0, func(na fluent.MapAssembler) {})
 		})
-		Wish(t, sn, ShouldEqual, esn)
+		qt.Check(t, sn, nodetests.NodeContentEquals, esn)
 	})
 	t.Run("ExploreRecursiveEdge builds ExploreRecursiveEdge nodes", func(t *testing.T) {
 		sn := ssb.ExploreRecursiveEdge().Node()
 		esn := fluent.MustBuildMap(np, 1, func(na fluent.MapAssembler) {
 			na.AssembleEntry(selector.SelectorKey_ExploreRecursiveEdge).CreateMap(0, func(na fluent.MapAssembler) {})
 		})
-		Wish(t, sn, ShouldEqual, esn)
+		qt.Check(t, sn, nodetests.NodeContentEquals, esn)
 	})
 	t.Run("ExploreAll builds ExploreAll nodes", func(t *testing.T) {
 		sn := ssb.ExploreAll(ssb.Matcher()).Node()
@@ -35,7 +38,7 @@ func TestBuildingSelectors(t *testing.T) {
 				})
 			})
 		})
-		Wish(t, sn, ShouldEqual, esn)
+		qt.Check(t, sn, nodetests.NodeContentEquals, esn)
 	})
 	t.Run("ExploreIndex builds ExploreIndex nodes", func(t *testing.T) {
 		sn := ssb.ExploreIndex(2, ssb.Matcher()).Node()
@@ -47,7 +50,7 @@ func TestBuildingSelectors(t *testing.T) {
 				})
 			})
 		})
-		Wish(t, sn, ShouldEqual, esn)
+		qt.Check(t, sn, nodetests.NodeContentEquals, esn)
 	})
 	t.Run("ExploreRange builds ExploreRange nodes", func(t *testing.T) {
 		sn := ssb.ExploreRange(2, 3, ssb.Matcher()).Node()
@@ -60,7 +63,7 @@ func TestBuildingSelectors(t *testing.T) {
 				})
 			})
 		})
-		Wish(t, sn, ShouldEqual, esn)
+		qt.Check(t, sn, nodetests.NodeContentEquals, esn)
 	})
 	t.Run("ExploreRecursive builds ExploreRecursive nodes", func(t *testing.T) {
 		sn := ssb.ExploreRecursive(selector.RecursionLimitDepth(2), ssb.ExploreAll(ssb.ExploreRecursiveEdge())).Node()
@@ -78,7 +81,7 @@ func TestBuildingSelectors(t *testing.T) {
 				})
 			})
 		})
-		Wish(t, sn, ShouldEqual, esn)
+		qt.Check(t, sn, nodetests.NodeContentEquals, esn)
 		sn = ssb.ExploreRecursive(selector.RecursionLimitNone(), ssb.ExploreAll(ssb.ExploreRecursiveEdge())).Node()
 		esn = fluent.MustBuildMap(np, 1, func(na fluent.MapAssembler) {
 			na.AssembleEntry(selector.SelectorKey_ExploreRecursive).CreateMap(2, func(na fluent.MapAssembler) {
@@ -94,7 +97,7 @@ func TestBuildingSelectors(t *testing.T) {
 				})
 			})
 		})
-		Wish(t, sn, ShouldEqual, esn)
+		qt.Check(t, sn, nodetests.NodeContentEquals, esn)
 	})
 	t.Run("ExploreUnion builds ExploreUnion nodes", func(t *testing.T) {
 		sn := ssb.ExploreUnion(ssb.Matcher(), ssb.ExploreIndex(2, ssb.Matcher())).Node()
@@ -113,10 +116,10 @@ func TestBuildingSelectors(t *testing.T) {
 				})
 			})
 		})
-		Wish(t, sn, ShouldEqual, esn)
+		qt.Check(t, sn, nodetests.NodeContentEquals, esn)
 	})
 	t.Run("ExploreFields builds ExploreFields nodes", func(t *testing.T) {
-		sn := ssb.ExploreFields(func(efsb ExploreFieldsSpecBuilder) { efsb.Insert("applesauce", ssb.Matcher()) }).Node()
+		sn := ssb.ExploreFields(func(efsb builder.ExploreFieldsSpecBuilder) { efsb.Insert("applesauce", ssb.Matcher()) }).Node()
 		esn := fluent.MustBuildMap(np, 1, func(na fluent.MapAssembler) {
 			na.AssembleEntry(selector.SelectorKey_ExploreFields).CreateMap(1, func(na fluent.MapAssembler) {
 				na.AssembleEntry(selector.SelectorKey_Fields).CreateMap(1, func(na fluent.MapAssembler) {
@@ -126,6 +129,6 @@ func TestBuildingSelectors(t *testing.T) {
 				})
 			})
 		})
-		Wish(t, sn, ShouldEqual, esn)
+		qt.Check(t, sn, nodetests.NodeContentEquals, esn)
 	})
 }

@@ -6,12 +6,13 @@ import (
 	"strings"
 	"testing"
 
+	qt "github.com/frankban/quicktest"
 	cid "github.com/ipfs/go-cid"
-	. "github.com/warpfork/go-wish"
 
 	"github.com/ipld/go-ipld-prime/fluent"
 	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
 	"github.com/ipld/go-ipld-prime/node/basicnode"
+	nodetests "github.com/ipld/go-ipld-prime/node/tests"
 )
 
 var n = fluent.MustBuildMap(basicnode.Prototype.Map, 4, func(na fluent.MapAssembler) {
@@ -52,15 +53,15 @@ func TestRoundtrip(t *testing.T) {
 	t.Run("encoding", func(t *testing.T) {
 		var buf bytes.Buffer
 		err := Encode(n, &buf)
-		Require(t, err, ShouldEqual, nil)
-		Wish(t, buf.String(), ShouldEqual, serial)
+		qt.Assert(t, err, qt.IsNil)
+		qt.Check(t, buf.String(), qt.Equals, serial)
 	})
 	t.Run("decoding", func(t *testing.T) {
 		buf := strings.NewReader(serial)
 		nb := basicnode.Prototype.Map.NewBuilder()
 		err := Decode(nb, buf)
-		Require(t, err, ShouldEqual, nil)
-		Wish(t, nb.Build(), ShouldEqual, nSorted)
+		qt.Assert(t, err, qt.IsNil)
+		qt.Check(t, nb.Build(), nodetests.NodeContentEquals, nSorted)
 	})
 }
 
@@ -71,15 +72,15 @@ func TestRoundtripScalar(t *testing.T) {
 	t.Run("encoding", func(t *testing.T) {
 		var buf bytes.Buffer
 		err := Encode(simple, &buf)
-		Require(t, err, ShouldEqual, nil)
-		Wish(t, buf.String(), ShouldEqual, `japplesauce`)
+		qt.Assert(t, err, qt.IsNil)
+		qt.Check(t, buf.String(), qt.Equals, `japplesauce`)
 	})
 	t.Run("decoding", func(t *testing.T) {
 		buf := strings.NewReader(`japplesauce`)
 		nb := basicnode.Prototype__String{}.NewBuilder()
 		err := Decode(nb, buf)
-		Require(t, err, ShouldEqual, nil)
-		Wish(t, nb.Build(), ShouldEqual, simple)
+		qt.Assert(t, err, qt.IsNil)
+		qt.Check(t, nb.Build(), nodetests.NodeContentEquals, simple)
 	})
 }
 
@@ -102,10 +103,10 @@ func TestRoundtripLinksAndBytes(t *testing.T) {
 
 	buf := bytes.Buffer{}
 	err := Encode(linkByteNode, &buf)
-	Require(t, err, ShouldEqual, nil)
+	qt.Assert(t, err, qt.IsNil)
 	nb := basicnode.Prototype.Map.NewBuilder()
 	err = Decode(nb, &buf)
-	Require(t, err, ShouldEqual, nil)
+	qt.Assert(t, err, qt.IsNil)
 	reconstructed := nb.Build()
-	Wish(t, reconstructed, ShouldEqual, linkByteNode)
+	qt.Check(t, reconstructed, nodetests.NodeContentEquals, linkByteNode)
 }
