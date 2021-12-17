@@ -424,7 +424,7 @@ func (p *parser) typeStruct() (*dmt.TypeDefnStruct, error) {
 		return defn, nil
 		// TODO: support custom fieldorder
 	default:
-		return nil, p.errf("unknown enum repr: %q", reprName)
+		return nil, p.errf("unknown struct repr: %q", reprName)
 	}
 }
 
@@ -639,6 +639,23 @@ func (p *parser) typeEnum() (*dmt.TypeDefnEnum, error) {
 			mapAppend(repr, defn.Members[i], unquoted)
 		}
 		defn.Representation.EnumRepresentation_String = repr
+	case "int":
+		repr := &dmt.EnumRepresentation_Int{}
+		for i, key := range reprKeys {
+			if key[0] != '"' {
+				return nil, p.errf("enum int representation used with non-string key: %s", key)
+			}
+			unquoted, err := strconv.Unquote(key)
+			if err != nil {
+				return nil, p.forwardError(err)
+			}
+			parsed, err := strconv.Atoi(unquoted)
+			if err != nil {
+				return nil, p.forwardError(err)
+			}
+			mapAppend(repr, defn.Members[i], parsed)
+		}
+		defn.Representation.EnumRepresentation_Int = repr
 	default:
 		return nil, p.errf("unknown enum repr: %q", reprName)
 	}
