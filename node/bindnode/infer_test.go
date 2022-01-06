@@ -90,6 +90,34 @@ var prototypeTests = []struct {
 		}`,
 	},
 	{
+		name: "Enums",
+		schemaSrc: `type Root struct {
+				enumAsString       EnumAsString
+				enumAsStringCustom EnumAsString
+				enumAsInt          EnumAsInt
+			}
+			type EnumAsString enum {
+				| Nope ("No")
+				| Yep  ("Yes")
+				| Maybe
+			}
+			type EnumAsInt enum {
+				| Nope  ("10")
+				| Yep   ("11")
+				| Maybe ("12")
+			} representation int`,
+		ptrType: (*struct {
+			EnumAsString       string
+			EnumAsStringCustom string
+			EnumAsInt          string
+		})(nil),
+		prettyDagJSON: `{
+			"enumAsInt":          10,
+			"enumAsString":       "Maybe",
+			"enumAsStringCustom": "Yes"
+		}`,
+	},
+	{
 		name: "ScalarKindedUnions",
 		// TODO: should we use an "Any" type from the prelude?
 		schemaSrc: `type Root struct {
@@ -449,6 +477,7 @@ func TestProduceGoTypes(t *testing.T) {
 			out, err := exec.Command("go", "build", genPath).CombinedOutput()
 			qt.Assert(t, err, qt.IsNil, qt.Commentf("output: %s", out))
 
+			// TODO: check that the generated types are compatible with the schema.
 		})
 	}
 }

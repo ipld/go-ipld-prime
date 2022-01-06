@@ -87,6 +87,10 @@ func verifyCompatibility(seen map[seenEntry]bool, goType reflect.Type, schemaTyp
 		if goType.Elem().Kind() != reflect.Uint8 {
 			doPanic("kind mismatch; need slice of bytes")
 		}
+	case *schema.TypeEnum:
+		if goType.Kind() != reflect.String {
+			doPanic("kind mismatch; need string")
+		}
 	case *schema.TypeList:
 		if goType.Kind() != reflect.Slice {
 			doPanic("kind mismatch; need slice")
@@ -256,6 +260,8 @@ func inferGoType(typ schema.Type) reflect.Type {
 		return reflect.StructOf(fieldsGo)
 	case *schema.TypeLink:
 		return goTypeLink
+	case *schema.TypeEnum:
+		return goTypeString
 	}
 	panic(fmt.Sprintf("%T", typ))
 }

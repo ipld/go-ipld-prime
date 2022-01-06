@@ -52,6 +52,9 @@ func produceGoTypeInner(goTypes map[string]string, name string, typ schema.Type)
 	goTypes[name] = "WIP"
 
 	switch typ := typ.(type) {
+	case *schema.TypeEnum:
+		// TODO: also generate named constants for the members.
+		return goTypeString.String()
 	case *schema.TypeStruct:
 		var b strings.Builder
 		fmt.Fprintf(&b, "struct {\n")
