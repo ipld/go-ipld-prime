@@ -22,6 +22,6 @@ const (
 	SelectorKey_LimitNone            = "none"
 	SelectorKey_StopAt               = "!"
 	SelectorKey_Condition            = "&"
-	SelectorKey_As                   = "c"
+	SelectorKey_As                   = "as"
 	// not filling conditional keys since it's not complete
 )
