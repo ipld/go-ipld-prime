@@ -508,8 +508,7 @@ func TestWalk_ADLs(t *testing.T) {
 	s, err := ss.Selector()
 	qt.Check(t, err, qt.IsNil)
 	lsys := cidlink.DefaultLinkSystem()
-	lsys.KnownReifiers = make(map[string]linking.NodeReifier)
-	lsys.KnownReifiers["linkjumper"] = customReifier
+	lsys.KnownReifiers = map[string]linking.NodeReifier{"linkJumper": customReifier}
 	lsys.SetReadStorage(&store)
 	var order int
 	err = traversal.Progress{
