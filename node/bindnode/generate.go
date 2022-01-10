@@ -34,6 +34,8 @@ func produceGoType(goTypes map[string]string, typ schema.Type) (name, src string
 		return goTypeBytes.String(), ""
 	case *schema.TypeLink:
 		return goTypeLink.String(), "" // datamodel.Link
+	case *schema.TypeAny:
+		return goTypeNode.String(), "" // datamodel.Node
 	}
 
 	// Results are cached in goTypes.

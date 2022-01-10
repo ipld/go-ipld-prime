@@ -95,6 +95,7 @@ var (
 	_ Type = &TypeBytes{}
 	_ Type = &TypeInt{}
 	_ Type = &TypeFloat{}
+	_ Type = &TypeAny{}
 	_ Type = &TypeMap{}
 	_ Type = &TypeList{}
 	_ Type = &TypeLink{}
@@ -125,6 +126,10 @@ type TypeInt struct {
 }
 
 type TypeFloat struct {
+	typeBase
+}
+
+type TypeAny struct {
 	typeBase
 }
 

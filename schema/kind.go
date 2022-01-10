@@ -26,7 +26,7 @@ const (
 	TypeKind_Struct  TypeKind = '$'
 	TypeKind_Union   TypeKind = '^'
 	TypeKind_Enum    TypeKind = '%'
-	// FUTURE: TypeKind_Any = '?'?
+	TypeKind_Any     TypeKind = '?'
 )
 
 func (k TypeKind) String() string {
@@ -35,6 +35,8 @@ func (k TypeKind) String() string {
 		return "invalid"
 	case TypeKind_Map:
 		return "map"
+	case TypeKind_Any:
+		return "any"
 	case TypeKind_List:
 		return "list"
 	case TypeKind_Unit:
@@ -102,6 +104,8 @@ func (k TypeKind) ActsLike() datamodel.Kind {
 		return datamodel.Kind_Map // REVIEW: unions are tricky.
 	case TypeKind_Enum:
 		return datamodel.Kind_String // 'AsString' is the one clear thing to define.
+	case TypeKind_Any:
+		return datamodel.Kind_Invalid // TODO: maybe ActsLike should return (Kind, bool)
 	default:
 		panic("invalid enumeration value!")
 	}

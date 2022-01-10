@@ -83,6 +83,10 @@ func SpawnMap(name TypeName, keyType TypeName, valueType TypeName, nullable bool
 	return &TypeMap{typeBase{name, nil}, false, keyType, valueType, nullable}
 }
 
+func SpawnAny(name TypeName) *TypeAny {
+	return &TypeAny{typeBase{name, nil}}
+}
+
 func SpawnStruct(name TypeName, fields []StructField, repr StructRepresentation) *TypeStruct {
 	v := &TypeStruct{
 		typeBase{name, nil},

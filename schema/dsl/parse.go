@@ -272,6 +272,8 @@ func (p *parser) typeDefn() (dmt.TypeDefn, error) {
 		defn.TypeDefnInt = &dmt.TypeDefnInt{}
 	case "link":
 		defn.TypeDefnLink = &dmt.TypeDefnLink{}
+	case "any":
+		defn.TypeDefnAny = &dmt.TypeDefnAny{}
 	case "&":
 		target, err := p.consumeName()
 		if err != nil {
