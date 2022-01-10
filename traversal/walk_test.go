@@ -503,7 +503,7 @@ func TestWalk_ADLs(t *testing.T) {
 
 	ssb := builder.NewSelectorSpecBuilder(basicnode.Prototype.Any)
 	ss := ssb.ExploreFields(func(efsb builder.ExploreFieldsSpecBuilder) {
-		efsb.Insert("linkedList", ssb.ExploreInterpretAs("linkjumper", ssb.Matcher()))
+		efsb.Insert("linkedList", ssb.ExploreInterpretAs("linkJumper", ssb.Matcher()))
 	})
 	s, err := ss.Selector()
 	qt.Check(t, err, qt.IsNil)
