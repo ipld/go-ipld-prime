@@ -18,6 +18,7 @@ var (
 	goTypeString  = reflect.TypeOf("")
 	goTypeBytes   = reflect.TypeOf([]byte{})
 	goTypeLink    = reflect.TypeOf((*datamodel.Link)(nil)).Elem()
+	goTypeNode    = reflect.TypeOf((*datamodel.Node)(nil)).Elem()
 	goTypeCidLink = reflect.TypeOf((*cidlink.Link)(nil)).Elem()
 	goTypeCid     = reflect.TypeOf((*cid.Cid)(nil)).Elem()
 
@@ -27,6 +28,7 @@ var (
 	schemaTypeString = schema.SpawnString("String")
 	schemaTypeBytes  = schema.SpawnBytes("Bytes")
 	schemaTypeLink   = schema.SpawnLink("Link")
+	schemaTypeAny    = schema.SpawnAny("Any")
 )
 
 // Consider exposing these APIs later, if they might be useful.
@@ -176,6 +178,11 @@ func verifyCompatibility(seen map[seenEntry]bool, goType reflect.Type, schemaTyp
 		if goType != goTypeLink && goType != goTypeCidLink && goType != goTypeCid {
 			doPanic("links in Go must be datamodel.Link, cidlink.Link, or cid.Cid")
 		}
+	case *schema.TypeAny:
+		// TODO: support some other option for Any, such as deferred decode
+		if goType != goTypeNode {
+			doPanic("Any in Go must be datamodel.Node")
+		}
 	default:
 		panic(fmt.Sprintf("%T", schemaType))
 	}
@@ -262,6 +269,8 @@ func inferGoType(typ schema.Type) reflect.Type {
 		return goTypeLink
 	case *schema.TypeEnum:
 		return goTypeString
+	case *schema.TypeAny:
+		return goTypeNode
 	}
 	panic(fmt.Sprintf("%T", typ))
 }
@@ -282,6 +291,7 @@ func init() {
 	defaultTypeSystem.Accumulate(schemaTypeString)
 	defaultTypeSystem.Accumulate(schemaTypeBytes)
 	defaultTypeSystem.Accumulate(schemaTypeLink)
+	defaultTypeSystem.Accumulate(schemaTypeAny)
 }
 
 // TODO: support IPLD maps and unions in inferSchema
@@ -292,6 +302,7 @@ func init() {
 // has them, and test that that works as expected
 
 func inferSchema(typ reflect.Type) schema.Type {
+	// TODO: support Link and Any
 	switch typ.Kind() {
 	case reflect.Bool:
 		return schemaTypeBool

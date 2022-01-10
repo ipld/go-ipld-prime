@@ -262,7 +262,7 @@ func (w *_mapIteratorRepr) Next() (key, value datamodel.Node, _ error) {
 	if err != nil {
 		return nil, nil, err
 	}
-	return k.(schema.TypedNode).Representation(), v.(schema.TypedNode).Representation(), nil
+	return reprNode(k), reprNode(v), nil
 }
 
 func (w *_mapIteratorRepr) Done() bool {
@@ -284,7 +284,7 @@ func (w *_listIteratorRepr) Next() (index int64, value datamodel.Node, _ error) 
 	if err != nil {
 		return idx, nil, err
 	}
-	return idx, v.(schema.TypedNode).Representation(), nil
+	return idx, reprNode(v), nil
 }
 
 func (w *_listIteratorRepr) Done() bool {
@@ -549,6 +549,8 @@ func (w *_assemblerRepr) BeginMap(sizeHint int64) (datamodel.MapAssembler, error
 		return (*_mapAssemblerRepr)(asm), nil
 	case *_unionAssembler:
 		return (*_unionAssemblerRepr)(asm), nil
+	case *basicMapAssembler:
+		return asm, nil
 	default:
 		panic(fmt.Sprintf("bindnode: unexpected assembler type: %T", asm))
 	}
@@ -568,6 +570,9 @@ func (w *_assemblerRepr) BeginList(sizeHint int64) (datamodel.ListAssembler, err
 		asm, err := (*_assembler)(w).BeginList(sizeHint)
 		if err != nil {
 			return nil, err
+		}
+		if _, ok := asm.(*basicListAssembler); ok {
+			return asm, nil
 		}
 		return (*_listAssemblerRepr)(asm.(*_listAssembler)), nil
 	default:

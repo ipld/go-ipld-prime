@@ -17,6 +17,7 @@ func (TypeString) TypeKind() TypeKind { return TypeKind_String }
 func (TypeBytes) TypeKind() TypeKind  { return TypeKind_Bytes }
 func (TypeInt) TypeKind() TypeKind    { return TypeKind_Int }
 func (TypeFloat) TypeKind() TypeKind  { return TypeKind_Float }
+func (TypeAny) TypeKind() TypeKind    { return TypeKind_Any }
 func (TypeMap) TypeKind() TypeKind    { return TypeKind_Map }
 func (TypeList) TypeKind() TypeKind   { return TypeKind_List }
 func (TypeLink) TypeKind() TypeKind   { return TypeKind_Link }
@@ -65,6 +66,9 @@ func (t TypeStruct) RepresentationBehavior() datamodel.Kind {
 func (t TypeEnum) RepresentationBehavior() datamodel.Kind {
 	// TODO: this should have a representation strategy switch too; sometimes that will indicate int representation behavior.
 	return datamodel.Kind_String
+}
+func (t TypeAny) RepresentationBehavior() datamodel.Kind {
+	return datamodel.Kind_Invalid // TODO: what can we possibly do here?
 }
 
 /* interesting methods per Type type */

@@ -20,12 +20,10 @@ func Compile(ts *schema.TypeSystem, node *Schema) error {
 		ts.Accumulate(schema.SpawnString("String"))
 		ts.Accumulate(schema.SpawnBytes("Bytes"))
 
-		// TODO: schema package lacks support?
-		// ts.Accumulate(schema.SpawnAny("Any"))
+		ts.Accumulate(schema.SpawnAny("Any"))
 
-		// Blocked on "Any".
-		// ts.Accumulate(schema.SpawnMap("Map", "String", "Any", false))
-		// ts.Accumulate(schema.SpawnList("List", "Any", false))
+		ts.Accumulate(schema.SpawnMap("Map", "String", "Any", false))
+		ts.Accumulate(schema.SpawnList("List", "Any", false))
 
 		// Should be &Any, really.
 		ts.Accumulate(schema.SpawnLink("Link"))
@@ -293,6 +291,8 @@ func spawnType(ts *schema.TypeSystem, name schema.TypeName, defn TypeDefn) (sche
 			return schema.SpawnLink(name), nil
 		}
 		return schema.SpawnLinkReference(name, *typ.ExpectedType), nil
+	case defn.TypeDefnAny != nil:
+		return schema.SpawnAny(name), nil
 	default:
 		panic(fmt.Errorf("%#v", defn))
 	}

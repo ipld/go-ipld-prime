@@ -90,6 +90,51 @@ var prototypeTests = []struct {
 		}`,
 	},
 	{
+		name: "Any",
+		// TODO: also Null
+		schemaSrc: `type Root struct {
+				anyNodeWithBool   Any
+				anyNodeWithInt    Any
+				anyNodeWithFloat  Any
+				anyNodeWithString Any
+				anyNodeWithBytes  Any
+				anyNodeWithList   Any
+				anyNodeWithMap    Any
+				anyNodeWithLink   Any
+
+				anyNodeBehindList [Any]
+				anyNodeBehindMap  {String:Any}
+			}`,
+		ptrType: (*struct {
+			AnyNodeWithBool   datamodel.Node
+			AnyNodeWithInt    datamodel.Node
+			AnyNodeWithFloat  datamodel.Node
+			AnyNodeWithString datamodel.Node
+			AnyNodeWithBytes  datamodel.Node
+			AnyNodeWithList   datamodel.Node
+			AnyNodeWithMap    datamodel.Node
+			AnyNodeWithLink   datamodel.Node
+
+			AnyNodeBehindList []datamodel.Node
+			AnyNodeBehindMap  struct {
+				Keys   []string
+				Values map[string]datamodel.Node
+			}
+		})(nil),
+		prettyDagJSON: `{
+			"anyNodeBehindList": [12.5, {"x": false}],
+			"anyNodeBehindMap":  {"x": 123, "y": [true, false]},
+			"anyNodeWithBool":   true,
+			"anyNodeWithBytes":  {"/": {"bytes": "34cd"}},
+			"anyNodeWithFloat":  12.5,
+			"anyNodeWithInt":    3,
+			"anyNodeWithLink":   {"/": "bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi"},
+			"anyNodeWithList":   [3, 2, 1],
+			"anyNodeWithMap":    {"a": "x", "b": "y"},
+			"anyNodeWithString": "foo"
+		}`,
+	},
+	{
 		name: "Enums",
 		schemaSrc: `type Root struct {
 				enumAsString       EnumAsString
