@@ -21,10 +21,15 @@ func reprNode(node datamodel.Node) datamodel.Node {
 }
 
 func reprStrategy(typ schema.Type) interface{} {
+	// Can't use an interface check, as each method has a different result type.
+	// TODO: consider inlining this type switch at each call site,
+	// as the call sites need the underlying schema.Type too.
 	switch typ := typ.(type) {
 	case *schema.TypeStruct:
 		return typ.RepresentationStrategy()
 	case *schema.TypeUnion:
+		return typ.RepresentationStrategy()
+	case *schema.TypeEnum:
 		return typ.RepresentationStrategy()
 	}
 	return nil
@@ -59,6 +64,10 @@ func (w *_nodeRepr) Kind() datamodel.Kind {
 		mtyp := w.schemaType.(*schema.TypeUnion).Members()[haveIdx]
 		return mtyp.RepresentationBehavior()
 	case schema.UnionRepresentation_Stringprefix:
+		return datamodel.Kind_String
+	case schema.EnumRepresentation_Int:
+		return datamodel.Kind_Int
+	case schema.EnumRepresentation_String:
 		return datamodel.Kind_String
 	case nil:
 		return (*_node)(w).Kind()
@@ -343,6 +352,19 @@ func (w *_nodeRepr) AsInt() (int64, error) {
 	switch stg := reprStrategy(w.schemaType).(type) {
 	case schema.UnionRepresentation_Kinded:
 		return w.asKinded(stg, datamodel.Kind_Int).AsInt()
+	case schema.EnumRepresentation_Int:
+		s, err := (*_node)(w).AsString()
+		if err != nil {
+			return 0, err
+		}
+		mapped, ok := stg[s]
+		if !ok {
+			// We assume that the schema strategy is correct,
+			// so we can only fail if the stored string isn't a valid member.
+			return 0, fmt.Errorf("%q is not a valid member of enum %s", s, w.schemaType.Name())
+		}
+		// TODO: the strategy type should probably use int64 rather than int
+		return int64(mapped), nil
 	case nil:
 		return (*_node)(w).AsInt()
 	default:
@@ -400,6 +422,21 @@ func (w *_nodeRepr) AsString() (string, error) {
 		return name + stg.GetDelim() + s, nil
 	case schema.UnionRepresentation_Kinded:
 		return w.asKinded(stg, datamodel.Kind_String).AsString()
+	case schema.EnumRepresentation_String:
+		s, err := (*_node)(w).AsString()
+		if err != nil {
+			return "", err
+		}
+		if mapped := stg[s]; mapped != "" {
+			return mapped, nil
+		}
+		members := w.schemaType.(*schema.TypeEnum).Members()
+		for _, member := range members {
+			if s == member {
+				return s, nil
+			}
+		}
+		return "", fmt.Errorf("%q is not a valid member of enum %s", s, w.schemaType.Name())
 	case nil:
 		// continues below
 	default:
@@ -562,6 +599,14 @@ func (w *_assemblerRepr) AssignInt(i int64) error {
 	switch stg := reprStrategy(w.schemaType).(type) {
 	case schema.UnionRepresentation_Kinded:
 		return w.asKinded(stg, datamodel.Kind_Int).AssignInt(i)
+	case schema.EnumRepresentation_Int:
+		typ := w.schemaType.(*schema.TypeEnum)
+		for _, member := range typ.Members() {
+			if int64(stg[member]) == i {
+				return (*_assembler)(w).AssignString(member)
+			}
+		}
+		return fmt.Errorf("%d is not a valid member of enum %s", i, w.schemaType.Name())
 	case nil:
 		return (*_assembler)(w).AssignInt(i)
 	default:
@@ -649,6 +694,20 @@ func (w *_assemblerRepr) AssignString(s string) error {
 			return w2.AssignString(remainder)
 		}
 		return fmt.Errorf("schema rejects data: the union type %s requires a known prefix, and it was not found in the data %q", w.schemaType.Name(), s)
+	case schema.EnumRepresentation_String:
+		// Note that we need to do a reverse lookup.
+		for member, mapped := range stg {
+			if mapped == s {
+				return (*_assembler)(w).AssignString(member)
+			}
+		}
+		members := w.schemaType.(*schema.TypeEnum).Members()
+		for _, member := range members {
+			if s == member {
+				return (*_assembler)(w).AssignString(member)
+			}
+		}
+		return fmt.Errorf("%q is not a valid member of enum %s", s, w.schemaType.Name())
 	case nil:
 		return (*_assembler)(w).AssignString(s)
 	default:

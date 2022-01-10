@@ -17,6 +17,7 @@ import (
 	"github.com/ipld/go-ipld-prime"
 	"github.com/ipld/go-ipld-prime/codec/dagjson"
 	"github.com/ipld/go-ipld-prime/datamodel"
+	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
 	"github.com/ipld/go-ipld-prime/node/bindnode"
 	"github.com/ipld/go-ipld-prime/schema"
 )
@@ -73,16 +74,47 @@ var prototypeTests = []struct {
 	{
 		name: "Links",
 		schemaSrc: `type Root struct {
-				linkGeneric Link
 				linkCID     Link
+				linkGeneric Link
+				linkImpl    Link
 			}`,
 		ptrType: (*struct {
 			LinkGeneric datamodel.Link
 			LinkCID     cid.Cid
+			LinkImpl    cidlink.Link
 		})(nil),
 		prettyDagJSON: `{
 			"linkCID":     {"/": "bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi"},
-			"linkGeneric": {"/": "bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi"}
+			"linkGeneric": {"/": "bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi"},
+			"linkImpl":    {"/": "bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi"}
+		}`,
+	},
+	{
+		name: "Enums",
+		schemaSrc: `type Root struct {
+				enumAsString       EnumAsString
+				enumAsStringCustom EnumAsString
+				enumAsInt          EnumAsInt
+			}
+			type EnumAsString enum {
+				| Nope ("No")
+				| Yep  ("Yes")
+				| Maybe
+			}
+			type EnumAsInt enum {
+				| Nope  ("10")
+				| Yep   ("11")
+				| Maybe ("12")
+			} representation int`,
+		ptrType: (*struct {
+			EnumAsString       string
+			EnumAsStringCustom string
+			EnumAsInt          string
+		})(nil),
+		prettyDagJSON: `{
+			"enumAsInt":          10,
+			"enumAsString":       "Maybe",
+			"enumAsStringCustom": "Yes"
 		}`,
 	},
 	{
@@ -239,7 +271,7 @@ var verifyTests = []struct {
 			(*namedBool)(nil),
 		},
 		badTypes: []verifyBadType{
-			{(*string)(nil), `.*type Root .* type string: kind mismatch`},
+			{(*string)(nil), `.*type Root .* type string: kind mismatch;.*`},
 		},
 	},
 	{
@@ -254,7 +286,7 @@ var verifyTests = []struct {
 			(*int64)(nil),
 		},
 		badTypes: []verifyBadType{
-			{(*string)(nil), `.*type Root .* type string: kind mismatch`},
+			{(*string)(nil), `.*type Root .* type string: kind mismatch;.*`},
 		},
 	},
 	{
@@ -266,7 +298,7 @@ var verifyTests = []struct {
 			(*float32)(nil),
 		},
 		badTypes: []verifyBadType{
-			{(*string)(nil), `.*type Root .* type string: kind mismatch`},
+			{(*string)(nil), `.*type Root .* type string: kind mismatch;.*`},
 		},
 	},
 	{
@@ -277,7 +309,7 @@ var verifyTests = []struct {
 			(*namedString)(nil),
 		},
 		badTypes: []verifyBadType{
-			{(*int)(nil), `.*type Root .* type int: kind mismatch`},
+			{(*int)(nil), `.*type Root .* type int: kind mismatch;.*`},
 		},
 	},
 	{
@@ -289,8 +321,8 @@ var verifyTests = []struct {
 			(*[]uint8)(nil), // alias of byte
 		},
 		badTypes: []verifyBadType{
-			{(*int)(nil), `.*type Root .* type int: kind mismatch`},
-			{(*[]int)(nil), `.*type Root .* type \[\]int: kind mismatch`},
+			{(*int)(nil), `.*type Root .* type int: kind mismatch;.*`},
+			{(*[]int)(nil), `.*type Root .* type \[\]int: kind mismatch;.*`},
 		},
 	},
 	{
@@ -301,9 +333,9 @@ var verifyTests = []struct {
 			(*[]namedString)(nil),
 		},
 		badTypes: []verifyBadType{
-			{(*string)(nil), `.*type Root .* type string: kind mismatch`},
-			{(*[]int)(nil), `.*type String .* type int: kind mismatch`},
-			{(*[3]string)(nil), `.*type Root .* type \[3\]string: kind mismatch`},
+			{(*string)(nil), `.*type Root .* type string: kind mismatch;.*`},
+			{(*[]int)(nil), `.*type String .* type int: kind mismatch;.*`},
+			{(*[3]string)(nil), `.*type Root .* type \[3\]string: kind mismatch;.*`},
 		},
 	},
 	{
@@ -316,8 +348,8 @@ var verifyTests = []struct {
 			(*struct{ Int namedInt64 })(nil),
 		},
 		badTypes: []verifyBadType{
-			{(*string)(nil), `.*type Root .* type string: kind mismatch`},
-			{(*struct{ Int bool })(nil), `.*type Int .* type bool: kind mismatch`},
+			{(*string)(nil), `.*type Root .* type string: kind mismatch;.*`},
+			{(*struct{ Int bool })(nil), `.*type Int .* type bool: kind mismatch;.*`},
 			{(*struct{ Int1, Int2 int })(nil), `.*type Root .* type struct {.*}: 2 vs 1 fields`},
 		},
 	},
@@ -335,17 +367,17 @@ var verifyTests = []struct {
 			})(nil),
 		},
 		badTypes: []verifyBadType{
-			{(*string)(nil), `.*type Root .* type string: kind mismatch`},
+			{(*string)(nil), `.*type Root .* type string: kind mismatch;.*`},
 			{(*struct{ Keys []string })(nil), `.*type Root .*: 1 vs 2 fields`},
 			{(*struct{ Values map[string]int })(nil), `.*type Root .*: 1 vs 2 fields`},
 			{(*struct {
 				Keys   string
 				Values map[string]int
-			})(nil), `.*type Root .*: kind mismatch`},
+			})(nil), `.*type Root .*: kind mismatch;.*`},
 			{(*struct {
 				Keys   []string
 				Values string
-			})(nil), `.*type Root .*: kind mismatch`},
+			})(nil), `.*type Root .*: kind mismatch;.*`},
 		},
 	},
 	{
@@ -368,7 +400,7 @@ var verifyTests = []struct {
 			})(nil),
 		},
 		badTypes: []verifyBadType{
-			{(*string)(nil), `.*type Root .* type string: kind mismatch`},
+			{(*string)(nil), `.*type Root .* type string: kind mismatch;.*`},
 			{(*struct{ List *[]string })(nil), `.*type Root .*: 1 vs 2 members`},
 			{(*struct {
 				List   *[]string
@@ -377,7 +409,7 @@ var verifyTests = []struct {
 			{(*struct {
 				List   *[]string
 				String *int
-			})(nil), `.*type String .*: kind mismatch`},
+			})(nil), `.*type String .*: kind mismatch;.*`},
 		},
 	},
 }
@@ -445,6 +477,7 @@ func TestProduceGoTypes(t *testing.T) {
 			out, err := exec.Command("go", "build", genPath).CombinedOutput()
 			qt.Assert(t, err, qt.IsNil, qt.Commentf("output: %s", out))
 
+			// TODO: check that the generated types are compatible with the schema.
 		})
 	}
 }

@@ -26,7 +26,6 @@ func Compile(ts *schema.TypeSystem, node *Schema) error {
 		// Blocked on "Any".
 		// ts.Accumulate(schema.SpawnMap("Map", "String", "Any", false))
 		// ts.Accumulate(schema.SpawnList("List", "Any", false))
-		// ts.Accumulate(schema.SpawnList("List", "Any", false))
 
 		// Should be &Any, really.
 		ts.Accumulate(schema.SpawnLink("Link"))
@@ -278,6 +277,9 @@ func spawnType(ts *schema.TypeSystem, name schema.TypeName, defn TypeDefn) (sche
 		case typ.Representation.EnumRepresentation_String != nil:
 			rp := typ.Representation.EnumRepresentation_String
 			repr = schema.EnumRepresentation_String(rp.Values)
+		case typ.Representation.EnumRepresentation_Int != nil:
+			rp := typ.Representation.EnumRepresentation_Int
+			repr = schema.EnumRepresentation_Int(rp.Values)
 		default:
 			return nil, fmt.Errorf("TODO: support other enum repr in schema package")
 		}
