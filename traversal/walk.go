@@ -172,7 +172,7 @@ func (prog Progress) walkAdv(n datamodel.Node, s selector.Selector, fn AdvVisitF
 			LinkPath: prog.Path,
 		}, n, &prog.Cfg.LinkSystem)
 		if err != nil {
-			return fmt.Errorf("failed to reify node as %q: %v", adl, err)
+			return fmt.Errorf("failed to reify node as %q: %w", adl, err)
 		}
 		s, err = s.Explore(n, datamodel.PathSegment{})
 		if err != nil {
