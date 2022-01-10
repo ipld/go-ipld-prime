@@ -155,6 +155,32 @@ func (prog Progress) walkAdv(n datamodel.Node, s selector.Selector, fn AdvVisitF
 		}
 		prog.Budget.NodeBudget--
 	}
+
+	// refiy the node if advised.
+	if rs, ok := s.(selector.Reifiable); ok {
+		adl := rs.NamedReifier()
+		if prog.Cfg.LinkSystem.KnownReifiers == nil {
+			return fmt.Errorf("adl requested but not supported by link system: %q", adl)
+		}
+		reifier, ok := prog.Cfg.LinkSystem.KnownReifiers[adl]
+		if !ok {
+			return fmt.Errorf("unregistered adl requested: %q", adl)
+		}
+
+		rn, err := reifier(linking.LinkContext{
+			Ctx:      prog.Cfg.Ctx,
+			LinkPath: prog.Path,
+		}, n, &prog.Cfg.LinkSystem)
+		if err != nil {
+			return fmt.Errorf("failed to reify node as %q: %w", adl, err)
+		}
+		s, err = s.Explore(n, datamodel.PathSegment{})
+		if err != nil {
+			return err
+		}
+		n = rn
+	}
+
 	// Decide if this node is matched -- do callbacks as appropriate.
 	if s.Decide(n) {
 		if err := fn(prog, n, VisitReason_SelectionMatch); err != nil {

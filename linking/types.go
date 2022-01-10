@@ -37,6 +37,7 @@ type LinkSystem struct {
 	StorageReadOpener  BlockReadOpener
 	TrustedStorage     bool
 	NodeReifier        NodeReifier
+	KnownReifiers      map[string]NodeReifier
 }
 
 // The following three types are the key functionality we need from a "blockstore".

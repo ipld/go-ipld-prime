@@ -491,3 +491,40 @@ func TestWalkBlockLoadOrder(t *testing.T) {
 		})
 	})
 }
+
+func TestWalk_ADLs(t *testing.T) {
+	// we'll make a reifier that when it sees a list returns a custom element instead.
+	customReifier := func(_ linking.LinkContext, n datamodel.Node, _ *linking.LinkSystem) (datamodel.Node, error) {
+		if n.Kind() == datamodel.Kind_List {
+			return leafAlpha, nil
+		}
+		return n, nil
+	}
+
+	ssb := builder.NewSelectorSpecBuilder(basicnode.Prototype.Any)
+	ss := ssb.ExploreFields(func(efsb builder.ExploreFieldsSpecBuilder) {
+		efsb.Insert("linkedList", ssb.ExploreInterpretAs("linkJumper", ssb.Matcher()))
+	})
+	s, err := ss.Selector()
+	qt.Check(t, err, qt.IsNil)
+	lsys := cidlink.DefaultLinkSystem()
+	lsys.KnownReifiers = map[string]linking.NodeReifier{"linkJumper": customReifier}
+	lsys.SetReadStorage(&store)
+	var order int
+	err = traversal.Progress{
+		Cfg: &traversal.Config{
+			LinkSystem:                     lsys,
+			LinkTargetNodePrototypeChooser: basicnode.Chooser,
+		},
+	}.WalkMatching(rootNode, s, func(prog traversal.Progress, n datamodel.Node) error {
+		switch order {
+		case 0:
+			qt.Check(t, n, nodetests.NodeContentEquals, basicnode.NewString("alpha"))
+			qt.Check(t, prog.Path.String(), qt.Equals, "linkedList")
+		}
+		order++
+		return nil
+	})
+	qt.Check(t, err, qt.IsNil)
+	qt.Check(t, order, qt.Equals, 1)
+}
