@@ -46,7 +46,7 @@ func (pc ParseContext) ParseExploreInterpretAs(n datamodel.Node) (Selector, erro
 	}
 	adlNode, err := n.LookupByString(SelectorKey_As)
 	if err != nil {
-		return nil, fmt.Errorf("selector spec parse rejected: fields in ExploreFields selector must be present")
+		return nil, fmt.Errorf("selector spec parse rejected: the 'as' field must be present in ExploreInterpretAs clause")
 	}
 	next, err := n.LookupByString(SelectorKey_Next)
 	if err != nil {
