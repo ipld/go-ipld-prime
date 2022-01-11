@@ -175,11 +175,7 @@ func (r UnionRepresentation_Kinded) GetMember(k datamodel.Kind) TypeName {
 
 // Fields returns a slice of descriptions of the object's fields.
 func (t TypeStruct) Fields() []StructField {
-	a := make([]StructField, len(t.fields))
-	for i := range t.fields {
-		a[i] = t.fields[i]
-	}
-	return a
+	return t.fields
 }
 
 // Field looks up a StructField by name, or returns nil if no such field.
@@ -268,11 +264,7 @@ func (r StructRepresentation_Stringjoin) GetDelim() string {
 
 // Members returns a slice the strings which are valid inhabitants of this enum.
 func (t TypeEnum) Members() []string {
-	a := make([]string, len(t.members))
-	for i := range t.members {
-		a[i] = t.members[i]
-	}
-	return a
+	return t.members
 }
 
 func (t TypeEnum) RepresentationStrategy() EnumRepresentation {
