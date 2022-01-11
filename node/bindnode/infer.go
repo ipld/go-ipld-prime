@@ -90,8 +90,16 @@ func verifyCompatibility(seen map[seenEntry]bool, goType reflect.Type, schemaTyp
 			doPanic("kind mismatch; need slice of bytes")
 		}
 	case *schema.TypeEnum:
-		if goType.Kind() != reflect.String {
-			doPanic("kind mismatch; need string")
+		if _, ok := schemaType.RepresentationStrategy().(schema.EnumRepresentation_Int); ok {
+			switch goType.Kind() {
+			case reflect.String, reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+			default:
+				doPanic("kind mismatch; need string or integer")
+			}
+		} else {
+			if goType.Kind() != reflect.String {
+				doPanic("kind mismatch; need string")
+			}
 		}
 	case *schema.TypeList:
 		if goType.Kind() != reflect.Slice {
@@ -268,6 +276,7 @@ func inferGoType(typ schema.Type) reflect.Type {
 	case *schema.TypeLink:
 		return goTypeLink
 	case *schema.TypeEnum:
+		// TODO: generate int for int reprs by default?
 		return goTypeString
 	case *schema.TypeAny:
 		return goTypeNode

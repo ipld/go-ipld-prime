@@ -137,9 +137,10 @@ var prototypeTests = []struct {
 	{
 		name: "Enums",
 		schemaSrc: `type Root struct {
-				enumAsString       EnumAsString
-				enumAsStringCustom EnumAsString
-				enumAsInt          EnumAsInt
+				stringAsString       EnumAsString
+				stringAsStringCustom EnumAsString
+				stringAsInt          EnumAsInt
+				intAsInt             EnumAsInt
 			}
 			type EnumAsString enum {
 				| Nope ("No")
@@ -152,14 +153,16 @@ var prototypeTests = []struct {
 				| Maybe ("12")
 			} representation int`,
 		ptrType: (*struct {
-			EnumAsString       string
-			EnumAsStringCustom string
-			EnumAsInt          string
+			StringAsString       string
+			StringAsStringCustom string
+			StringAsInt          string
+			IntAsInt             int32
 		})(nil),
 		prettyDagJSON: `{
-			"enumAsInt":          10,
-			"enumAsString":       "Maybe",
-			"enumAsStringCustom": "Yes"
+			"intAsInt":             12,
+			"stringAsInt":          10,
+			"stringAsString":       "Maybe",
+			"stringAsStringCustom": "Yes"
 		}`,
 	},
 	{
@@ -516,7 +519,7 @@ func TestProduceGoTypes(t *testing.T) {
 
 			// Ensure that the output builds, i.e. typechecks.
 			genPath := filepath.Join(t.TempDir(), "gen.go")
-			err = ioutil.WriteFile(genPath, buf.Bytes(), 0666)
+			err = ioutil.WriteFile(genPath, buf.Bytes(), 0o666)
 			qt.Assert(t, err, qt.IsNil)
 
 			out, err := exec.Command("go", "build", genPath).CombinedOutput()
