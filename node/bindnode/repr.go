@@ -234,6 +234,7 @@ func (w *_nodeRepr) MapIterator() datamodel.MapIterator {
 	switch stg := reprStrategy(w.schemaType).(type) {
 	case schema.StructRepresentation_Map:
 		itr := (*_node)(w).MapIterator().(*_structIterator)
+		// When we reach the last non-absent field, we should stop.
 		itr.reprEnd = int(w.lengthMinusTrailingAbsents())
 		return (*_structIteratorRepr)(itr)
 	case schema.UnionRepresentation_Keyed:
@@ -291,6 +292,17 @@ func (w *_listIteratorRepr) Done() bool {
 	return w.nextIndex >= w.val.Len()
 }
 
+func (w *_nodeRepr) lengthMinusAbsents() int64 {
+	fields := w.schemaType.(*schema.TypeStruct).Fields()
+	n := int64(len(fields))
+	for i, field := range fields {
+		if field.IsOptional() && w.val.Field(i).IsNil() {
+			n--
+		}
+	}
+	return n
+}
+
 func (w *_nodeRepr) lengthMinusTrailingAbsents() int64 {
 	fields := w.schemaType.(*schema.TypeStruct).Fields()
 	for i := len(fields) - 1; i >= 0; i-- {
@@ -307,9 +319,9 @@ func (w *_nodeRepr) Length() int64 {
 	case schema.StructRepresentation_Stringjoin:
 		return -1
 	case schema.StructRepresentation_Map:
-		return w.lengthMinusTrailingAbsents()
+		return w.lengthMinusAbsents()
 	case schema.StructRepresentation_Tuple:
-		return w.lengthMinusTrailingAbsents()
+		return w.lengthMinusAbsents()
 	case schema.UnionRepresentation_Keyed:
 		return (*_node)(w).Length()
 	case schema.UnionRepresentation_Kinded:
