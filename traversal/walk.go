@@ -203,6 +203,9 @@ func (prog Progress) walkAdv(n datamodel.Node, s selector.Selector, fn AdvVisitF
 	if attn == nil {
 		return prog.walkAdv_iterateAll(n, s, fn)
 	}
+	if len(attn) == 0 {
+		return nil
+	}
 	return prog.walkAdv_iterateSelective(n, attn, s, fn)
 
 }

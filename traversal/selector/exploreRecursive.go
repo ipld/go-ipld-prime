@@ -87,6 +87,7 @@ func (s ExploreRecursive) Interests() []datamodel.PathSegment {
 
 // Explore returns the node's selector for all fields
 func (s ExploreRecursive) Explore(n datamodel.Node, p datamodel.PathSegment) (Selector, error) {
+	// Check any stopAt conditions right away.
 	if s.stopAt != nil {
 		target, err := n.LookupBySegment(p)
 		if err != nil {
@@ -97,12 +98,22 @@ func (s ExploreRecursive) Explore(n datamodel.Node, p datamodel.PathSegment) (Se
 		}
 	}
 
-	nextSelector, _ := s.current.Explore(n, p)
-	limit := s.limit
+	// Fence against edge case: if the next selector is a recursion edge, nope, we're out.
+	//  (This is only reachable if a recursion contains nothing but an edge -- which is probably somewhat rare,
+	//   because it's certainly rather useless -- but it's not explicitly rejected as a malformed selector during compile, either, so it must be handled.)
+	if _, ok := s.current.(ExploreRecursiveEdge); ok {
+		return nil, nil
+	}
 
+	// Apply the current selector clause.  (This could be midway through something resembling the initially specified sequence.)
+	nextSelector, _ := s.current.Explore(n, p)
+
+	// We have to wrap the nextSelector yielded by the current clause in recursion information before returning it,
+	//  so that future levels of recursion (as well as their limits) can continue to operate correctly.
 	if nextSelector == nil {
 		return nil, nil
 	}
+	limit := s.limit
 	if !s.hasRecursiveEdge(nextSelector) {
 		return ExploreRecursive{s.sequence, nextSelector, limit, s.stopAt}, nil
 	}

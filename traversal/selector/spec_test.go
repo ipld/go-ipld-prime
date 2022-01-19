@@ -18,7 +18,13 @@ import (
 )
 
 func TestSpecFixtures(t *testing.T) {
-	doc, err := testmark.ReadFile("../../.ipld/specs/selectors/fixtures/selector-fixtures-1.md")
+	dir := "../../.ipld/specs/selectors/fixtures/"
+	testOneSpecFixtureFile(t, dir+"selector-fixtures-1.md")
+	testOneSpecFixtureFile(t, dir+"selector-fixtures-recursion.md")
+}
+
+func testOneSpecFixtureFile(t *testing.T, filename string) {
+	doc, err := testmark.ReadFile(filename)
 	if os.IsNotExist(err) {
 		t.Skipf("not running spec suite: %s (did you clone the submodule with the data?)", err)
 	}
@@ -108,5 +114,4 @@ func TestSpecFixtures(t *testing.T) {
 			qt.Assert(t, visitLogString.String(), qt.CmpEquals(), fixtureExpectNormBuf.String())
 		})
 	}
-
 }
