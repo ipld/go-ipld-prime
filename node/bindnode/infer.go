@@ -39,6 +39,11 @@ type seenEntry struct {
 }
 
 func verifyCompatibility(seen map[seenEntry]bool, goType reflect.Type, schemaType schema.Type) {
+	// TODO(mvdan): support **T as well?
+	if goType.Kind() == reflect.Ptr {
+		goType = goType.Elem()
+	}
+
 	// Avoid endless loops.
 	//
 	// TODO(mvdan): this is easy but fairly allocation-happy.
