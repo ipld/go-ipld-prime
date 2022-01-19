@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"html/template"
 	"io/ioutil"
 	"os/exec"
 	"path/filepath"
@@ -79,8 +80,8 @@ var prototypeTests = []struct {
 				linkImpl    Link
 			}`,
 		ptrType: (*struct {
-			LinkGeneric datamodel.Link
 			LinkCID     cid.Cid
+			LinkGeneric datamodel.Link
 			LinkImpl    cidlink.Link
 		})(nil),
 		prettyDagJSON: `{
@@ -286,6 +287,101 @@ func TestPrototype(t *testing.T) {
 
 				// Verify that doing a dag-json encode of the non-repr node works.
 				_ = dagjsonEncode(t, node)
+			})
+		}
+	}
+}
+
+func TestPrototypePointerCombinations(t *testing.T) {
+	t.Parallel()
+
+	// TODO: Null
+	// TODO: cover more schema types and repr strategies.
+	// Some of them are still using w.val directly without "nonPtr" calls.
+	kindTests := []struct {
+		name         string
+		schemaType   string
+		fieldPtrType interface{}
+		fieldDagJSON string
+	}{
+		{"Bool", "Bool", (*bool)(nil), `true`},
+		{"Int", "Int", (*int64)(nil), `23`},
+		{"Float", "Float", (*float64)(nil), `34.5`},
+		{"String", "String", (*string)(nil), `"foo"`},
+		{"Bytes", "Bytes", (*[]byte)(nil), `{"/": {"bytes": "34cd"}}`},
+		{"Link_CID", "Link", (*cid.Cid)(nil), `{"/": "bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi"}`},
+		{"Link_Impl", "Link", (*cidlink.Link)(nil), `{"/": "bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi"}`},
+		{"Link_Generic", "Link", (*datamodel.Link)(nil), `{"/": "bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi"}`},
+		{"List_String", "[String]", (*[]string)(nil), `["foo", "bar"]`},
+		{"Map_String_Int", "{String:Int}", (*struct {
+			Keys   []string
+			Values map[string]int64
+		})(nil), `{"x":3,"y":4}`},
+	}
+
+	for _, kindTest := range kindTests {
+		for _, modifier := range []string{"", "optional", "nullable"} {
+			// don't reuse range vars
+			kindTest := kindTest
+			modifier := modifier
+			t.Run(fmt.Sprintf("%s/%s", kindTest.name, modifier), func(t *testing.T) {
+				t.Parallel()
+
+				var buf bytes.Buffer
+				err := template.Must(template.New("").Parse(`
+				type Root struct {
+					field {{.Modifier}} {{.Type}}
+				}`)).Execute(&buf, struct {
+					Type, Modifier string
+				}{kindTest.schemaType, modifier})
+				qt.Assert(t, err, qt.IsNil)
+				schemaSrc := buf.String()
+
+				// *struct { Field {{.fieldPtrType}} }
+				ptrType := reflect.Zero(reflect.PtrTo(reflect.StructOf([]reflect.StructField{
+					{Name: "Field", Type: reflect.TypeOf(kindTest.fieldPtrType)},
+				}))).Interface()
+
+				ts, err := ipld.LoadSchemaBytes([]byte(schemaSrc))
+				qt.Assert(t, err, qt.IsNil)
+				schemaType := ts.TypeByName("Root")
+				qt.Assert(t, schemaType, qt.Not(qt.IsNil))
+
+				proto := bindnode.Prototype(ptrType, schemaType)
+				wantEncodedBytes, err := json.Marshal(map[string]interface{}{"field": json.RawMessage(kindTest.fieldDagJSON)})
+				qt.Assert(t, err, qt.IsNil)
+				wantEncoded := string(wantEncodedBytes)
+
+				node := dagjsonDecode(t, proto.Representation(), wantEncoded).(schema.TypedNode)
+
+				encoded := dagjsonEncode(t, node.Representation())
+				qt.Assert(t, encoded, qt.Equals, wantEncoded)
+
+				// Assigning with the missing field should only work with optional.
+				nb := proto.NewBuilder()
+				err = dagjson.Decode(nb, strings.NewReader(`{}`))
+				if modifier == "optional" {
+					qt.Assert(t, err, qt.IsNil)
+					node := nb.Build()
+					// The resulting node should be non-nil with a nil field.
+					nodeVal := reflect.ValueOf(bindnode.Unwrap(node))
+					qt.Assert(t, nodeVal.Elem().FieldByName("Field").IsNil(), qt.IsTrue)
+				} else {
+					qt.Assert(t, err, qt.Not(qt.IsNil))
+				}
+
+				// Assigning with a null field should only work with nullable.
+				nb = proto.NewBuilder()
+				err = dagjson.Decode(nb, strings.NewReader(`{"field":null}`))
+				if modifier == "nullable" {
+					qt.Assert(t, err, qt.IsNil)
+					node := nb.Build()
+					// The resulting node should be non-nil with a nil field.
+					nodeVal := reflect.ValueOf(bindnode.Unwrap(node))
+					qt.Assert(t, nodeVal.Elem().FieldByName("Field").IsNil(), qt.IsTrue)
+				} else {
+					qt.Assert(t, err, qt.Not(qt.IsNil))
+				}
 			})
 		}
 	}

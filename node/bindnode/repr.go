@@ -243,10 +243,11 @@ func (w *_nodeRepr) MapIterator() datamodel.MapIterator {
 	case nil:
 		switch st := (w.schemaType).(type) {
 		case *schema.TypeMap:
+			val := nonPtrVal(w.val)
 			return &_mapIteratorRepr{
 				schemaType: st,
-				keysVal:    w.val.FieldByName("Keys"),
-				valuesVal:  w.val.FieldByName("Values"),
+				keysVal:    val.FieldByName("Keys"),
+				valuesVal:  val.FieldByName("Values"),
 			}
 		default:
 			panic(fmt.Sprintf("TODO: mapitr.repr for typekind %s", w.schemaType.TypeKind()))
@@ -637,7 +638,7 @@ func (w *_assemblerRepr) AssignInt(i int64) error {
 			if int64(reprInt) != i {
 				continue
 			}
-			val := (*_assembler)(w).nonPtrVal()
+			val := (*_assembler)(w).createNonPtrVal()
 			switch val.Kind() {
 			case reflect.String:
 				return (*_assembler)(w).AssignString(member)
