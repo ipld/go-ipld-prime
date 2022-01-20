@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/ipld/go-ipld-prime"
 	"github.com/ipld/go-ipld-prime/codec/dagjson"
 	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/fluent/qp"
@@ -12,20 +13,16 @@ import (
 )
 
 func ExampleWrap_withSchema() {
-	ts := schema.TypeSystem{}
-	ts.Init()
-	ts.Accumulate(schema.SpawnString("String"))
-	ts.Accumulate(schema.SpawnInt("Int"))
-	ts.Accumulate(schema.SpawnStruct("Person",
-		[]schema.StructField{
-			schema.SpawnStructField("Name", "String", false, false),
-			schema.SpawnStructField("Age", "Int", true, false),
-			schema.SpawnStructField("Friends", "List_String", false, false),
-		},
-		schema.SpawnStructRepresentationMap(nil),
-	))
-	ts.Accumulate(schema.SpawnList("List_String", "String", false))
-
+	ts, err := ipld.LoadSchemaBytes([]byte(`
+		type Person struct {
+			Name    String
+			Age     optional Int
+			Friends [String]
+		}
+	`))
+	if err != nil {
+		panic(err)
+	}
 	schemaType := ts.TypeByName("Person")
 
 	type Person struct {
@@ -66,19 +63,16 @@ func ExampleWrap_noSchema() {
 }
 
 func ExamplePrototype_onlySchema() {
-	ts := schema.TypeSystem{}
-	ts.Init()
-	ts.Accumulate(schema.SpawnString("String"))
-	ts.Accumulate(schema.SpawnInt("Int"))
-	ts.Accumulate(schema.SpawnStruct("Person",
-		[]schema.StructField{
-			schema.SpawnStructField("Name", "String", false, false),
-			schema.SpawnStructField("Age", "Int", true, false),
-			schema.SpawnStructField("Friends", "List_String", false, false),
-		},
-		schema.SpawnStructRepresentationMap(nil),
-	))
-	ts.Accumulate(schema.SpawnList("List_String", "String", false))
+	ts, err := ipld.LoadSchemaBytes([]byte(`
+		type Person struct {
+			Name    String
+			Age     optional Int
+			Friends [String]
+		}
+	`))
+	if err != nil {
+		panic(err)
+	}
 
 	schemaType := ts.TypeByName("Person")
 	proto := bindnode.Prototype(nil, schemaType)
@@ -102,21 +96,15 @@ func ExamplePrototype_onlySchema() {
 }
 
 func ExamplePrototype_union() {
-	ts := schema.TypeSystem{}
-	ts.Init()
-	ts.Accumulate(schema.SpawnString("String"))
-	ts.Accumulate(schema.SpawnInt("Int"))
-	ts.Accumulate(schema.SpawnUnion("StringOrInt",
-		[]schema.TypeName{
-			"String",
-			"Int",
-		},
-		schema.SpawnUnionRepresentationKeyed(map[string]schema.TypeName{
-			"hasString": "String",
-			"hasInt":    "Int",
-		}),
-	))
-
+	ts, err := ipld.LoadSchemaBytes([]byte(`
+		type StringOrInt union {
+			| String "hasString"
+			| Int    "hasInt"
+		} representation keyed
+	`))
+	if err != nil {
+		panic(err)
+	}
 	schemaType := ts.TypeByName("StringOrInt")
 
 	type CustomIntType int64
