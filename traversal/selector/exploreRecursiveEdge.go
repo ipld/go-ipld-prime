@@ -16,9 +16,9 @@ import (
 // An ExploreRecursiveEdge without an enclosing ExploreRecursive is an error.
 type ExploreRecursiveEdge struct{}
 
-// Interests should ultimately never get called for an ExploreRecursiveEdge selector
+// Interests should almost never get called for an ExploreRecursiveEdge selector
 func (s ExploreRecursiveEdge) Interests() []datamodel.PathSegment {
-	panic("Traversed Explore Recursive Edge Node With No Parent")
+	return []datamodel.PathSegment{}
 }
 
 // Explore should ultimately never get called for an ExploreRecursiveEdge selector
@@ -26,9 +26,9 @@ func (s ExploreRecursiveEdge) Explore(n datamodel.Node, p datamodel.PathSegment)
 	panic("Traversed Explore Recursive Edge Node With No Parent")
 }
 
-// Decide should ultimately never get called for an ExploreRecursiveEdge selector
+// Decide should almost never get called for an ExploreRecursiveEdge selector
 func (s ExploreRecursiveEdge) Decide(n datamodel.Node) bool {
-	panic("Traversed Explore Recursive Edge Node With No Parent")
+	return false
 }
 
 // ParseExploreRecursiveEdge assembles a Selector

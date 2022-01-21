@@ -81,8 +81,9 @@ type Selector interface {
 	// (If that happens, we're currently assuming the ADL has a reasonable caching behavior.  It's very likely that the traversal will look up the same paths that Explore just looked up (assuming the Condition told exploration to continue).)
 	//
 
-	// Interests should return either a list of PageSegment we're likely interested in,
+	// Interests should return either a list of PathSegment we're likely interested in,
 	// **or nil**, which indicates we're a high-cardinality or expression-based selection clause and thus we'll need all segments proposed to us.
+	// Note that a non-nil zero length list of PathSegment is distinguished from nil: this would mean this selector is interested absolutely nothing.
 	//
 	// Traversal will call this before calling Explore, and use it to try to call Explore less often (or even avoid iterating on the data node at all).
 	Interests() []datamodel.PathSegment
