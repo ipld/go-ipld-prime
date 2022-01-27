@@ -69,6 +69,9 @@ var (
 )
 
 func (x KindSet) String() string {
+	if len(x) == 0 {
+		return "<empty KindSet>"
+	}
 	s := ""
 	for i := 0; i < len(x)-1; i++ {
 		s += x[i].String() + " or "

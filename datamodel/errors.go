@@ -37,9 +37,9 @@ type ErrWrongKind struct {
 
 func (e ErrWrongKind) Error() string {
 	if e.TypeName == "" {
-		return fmt.Sprintf("func called on wrong kind: %s called on a %s node, but only makes sense on %s", e.MethodName, e.ActualKind, e.AppropriateKind)
+		return fmt.Sprintf("func called on wrong kind: %q called on a %s node, but only makes sense on %s", e.MethodName, e.ActualKind, e.AppropriateKind)
 	} else {
-		return fmt.Sprintf("func called on wrong kind: %s called on a %s node (kind: %s), but only makes sense on %s", e.MethodName, e.TypeName, e.ActualKind, e.AppropriateKind)
+		return fmt.Sprintf("func called on wrong kind: %q called on a %s node (kind: %s), but only makes sense on %s", e.MethodName, e.TypeName, e.ActualKind, e.AppropriateKind)
 	}
 }
 
