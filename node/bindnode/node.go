@@ -142,7 +142,7 @@ func (w *_node) LookupByString(key string) (datamodel.Node, error) {
 		}
 		fval := nonPtrVal(w.val).FieldByName(fieldNameFromSchema(key))
 		if !fval.IsValid() {
-			panic("TODO: go-schema mismatch")
+			return nil, fmt.Errorf("bindnode TODO: go-schema mismatch")
 		}
 		if field.IsOptional() {
 			if fval.IsNil() {
@@ -434,7 +434,7 @@ func (w *_node) AsLink() (datamodel.Link, error) {
 	case cid.Cid:
 		return cidlink.Link{Cid: val}, nil
 	default:
-		panic(fmt.Sprintf("bindnode: unexpected link type %T", val))
+		return nil, fmt.Errorf("bindnode: unexpected link type %T", val)
 	}
 }
 
@@ -452,7 +452,7 @@ func (w *_builder) Build() datamodel.Node {
 }
 
 func (w *_builder) Reset() {
-	panic("TODO: Reset")
+	panic("bindnode TODO: Reset")
 }
 
 type _assembler struct {
@@ -700,6 +700,7 @@ func (w *_assembler) AssignBytes(p []byte) error {
 
 func (w *_assembler) AssignLink(link datamodel.Link) error {
 	val := w.createNonPtrVal()
+	// TODO: newVal.Type() panics if link==nil; add a test and fix.
 	if _, ok := w.schemaType.(*schema.TypeAny); ok {
 		val.Set(reflect.ValueOf(basicnode.NewLink(link)))
 	} else if newVal := reflect.ValueOf(link); newVal.Type().AssignableTo(val.Type()) {
@@ -860,7 +861,7 @@ func (w *_structAssembler) AssembleValue() datamodel.NodeAssembler {
 	if field == nil {
 		// TODO: should've been raised when the key was submitted (we have room to return errors there, but can only panic at this point in the game).
 		// TODO: should make well-typed errors for this.
-		panic(fmt.Sprintf("TODO: invalid key: %q is not a field in type %s", name, w.schemaType.Name()))
+		panic(fmt.Sprintf("bindnode TODO: invalid key: %q is not a field in type %s", name, w.schemaType.Name()))
 		// panic(schema.ErrInvalidKey{
 		// 	TypeName: w.schemaType.Name(),
 		// 	Key:      basicnode.NewString(name),
@@ -872,7 +873,7 @@ func (w *_structAssembler) AssembleValue() datamodel.NodeAssembler {
 		panic(fmt.Sprintf("schema type %q has field %q, we expect go struct to have field %q", w.schemaType.Name(), field.Name(), fieldNameFromSchema(name)))
 	}
 	if len(ftyp.Index) > 1 {
-		panic("TODO: embedded fields")
+		panic("bindnode TODO: embedded fields")
 	}
 	w.doneFields[ftyp.Index[0]] = true
 	fval := w.val.FieldByIndex(ftyp.Index)
@@ -922,7 +923,7 @@ func (w *_structAssembler) KeyPrototype() datamodel.NodePrototype {
 }
 
 func (w *_structAssembler) ValuePrototype(k string) datamodel.NodePrototype {
-	panic("TODO: struct ValuePrototype")
+	panic("bindnode TODO: struct ValuePrototype")
 }
 
 type _mapAssembler struct {
@@ -1053,7 +1054,7 @@ func (w *_unionAssembler) AssembleValue() datamodel.NodeAssembler {
 		}
 	}
 	if mtyp == nil {
-		panic(fmt.Sprintf("TODO: missing member %s in %s", name, w.schemaType.Name()))
+		panic(fmt.Sprintf("bindnode TODO: missing member %s in %s", name, w.schemaType.Name()))
 		// return nil, datamodel.ErrInvalidKey{
 		// 	TypeName: w.schemaType.Name(),
 		// 	Key:      basicnode.NewString(name),
@@ -1096,7 +1097,7 @@ func (w *_unionAssembler) KeyPrototype() datamodel.NodePrototype {
 }
 
 func (w *_unionAssembler) ValuePrototype(k string) datamodel.NodePrototype {
-	panic("TODO: union ValuePrototype")
+	panic("bindnode TODO: union ValuePrototype")
 }
 
 type _structIterator struct {
