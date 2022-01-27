@@ -72,7 +72,7 @@ func (w *_nodeRepr) Kind() datamodel.Kind {
 	case nil:
 		return (*_node)(w).Kind()
 	default:
-		panic(fmt.Sprintf("TODO Kind: %T", stg))
+		panic(fmt.Sprintf("bindnode TODO Kind: %T", stg))
 	}
 }
 
@@ -129,7 +129,7 @@ func (w *_nodeRepr) asKinded(stg schema.UnionRepresentation_Kinded, kind datamod
 		w2.schemaType = member
 		return &w2
 	}
-	panic("TODO: GetMember result is missing?")
+	panic("bindnode TODO: GetMember result is missing?")
 }
 
 func (w *_nodeRepr) LookupByString(key string) (datamodel.Node, error) {
@@ -151,14 +151,12 @@ func (w *_nodeRepr) LookupByString(key string) (datamodel.Node, error) {
 			return nil, err
 		}
 		return reprNode(v), nil
-	case nil:
+	default:
 		v, err := (*_node)(w).LookupByString(key)
 		if err != nil {
 			return nil, err
 		}
 		return reprNode(v), nil
-	default:
-		panic(fmt.Sprintf("TODO: %T", stg))
 	}
 }
 
@@ -174,14 +172,12 @@ func (w *_nodeRepr) LookupByIndex(idx int64) (datamodel.Node, error) {
 			return nil, err
 		}
 		return reprNode(v), nil
-	case nil:
+	default:
 		v, err := (*_node)(w).LookupByIndex(idx)
 		if err != nil {
 			return nil, err
 		}
 		return reprNode(v), nil
-	default:
-		panic(fmt.Sprintf("TODO: %T", stg))
 	}
 }
 
@@ -228,10 +224,11 @@ func (w *_nodeRepr) LookupByNode(key datamodel.Node) (datamodel.Node, error) {
 }
 
 func (w *_nodeRepr) MapIterator() datamodel.MapIterator {
+	// TODO: we can try to reuse reprStrategy here and elsewhere
 	if stg, ok := reprStrategy(w.schemaType).(schema.UnionRepresentation_Kinded); ok {
 		w = w.asKinded(stg, datamodel.Kind_Map)
 	}
-	switch stg := reprStrategy(w.schemaType).(type) {
+	switch reprStrategy(w.schemaType).(type) {
 	case schema.StructRepresentation_Map:
 		itr := (*_node)(w).MapIterator().(*_structIterator)
 		// When we reach the last non-absent field, we should stop.
@@ -240,7 +237,7 @@ func (w *_nodeRepr) MapIterator() datamodel.MapIterator {
 	case schema.UnionRepresentation_Keyed:
 		itr := (*_node)(w).MapIterator().(*_unionIterator)
 		return (*_unionIteratorRepr)(itr)
-	case nil:
+	default:
 		switch st := (w.schemaType).(type) {
 		case *schema.TypeMap:
 			val := nonPtrVal(w.val)
@@ -250,10 +247,8 @@ func (w *_nodeRepr) MapIterator() datamodel.MapIterator {
 				valuesVal:  val.FieldByName("Values"),
 			}
 		default:
-			panic(fmt.Sprintf("TODO: mapitr.repr for typekind %s", w.schemaType.TypeKind()))
+			panic(fmt.Sprintf("bindnode TODO: mapitr.repr for typekind %s", w.schemaType.TypeKind()))
 		}
-	default:
-		panic(fmt.Sprintf("TODO: %T", stg))
 	}
 }
 
@@ -331,7 +326,7 @@ func (w *_nodeRepr) Length() int64 {
 	case nil:
 		// continues below
 	default:
-		panic(fmt.Sprintf("TODO: %T", stg))
+		panic(fmt.Sprintf("bindnode TODO: %T", stg))
 	}
 	return (*_node)(w).Length()
 }
@@ -357,7 +352,7 @@ func (w *_nodeRepr) AsBool() (bool, error) {
 	case nil:
 		return (*_node)(w).AsBool()
 	default:
-		panic(fmt.Sprintf("TODO: %T", stg))
+		return false, fmt.Errorf("bindnode TODO: %T", stg)
 	}
 }
 
@@ -397,7 +392,7 @@ func (w *_nodeRepr) AsInt() (int64, error) {
 	case nil:
 		return (*_node)(w).AsInt()
 	default:
-		panic(fmt.Sprintf("TODO: %T", stg))
+		return 0, fmt.Errorf("bindnode TODO: %T", stg)
 	}
 }
 
@@ -408,7 +403,7 @@ func (w *_nodeRepr) AsFloat() (float64, error) {
 	case nil:
 		return (*_node)(w).AsFloat()
 	default:
-		panic(fmt.Sprintf("TODO: %T", stg))
+		return 0, fmt.Errorf("bindnode TODO: %T", stg)
 	}
 }
 
@@ -469,7 +464,7 @@ func (w *_nodeRepr) AsString() (string, error) {
 	case nil:
 		// continues below
 	default:
-		panic(fmt.Sprintf("TODO: %T", stg))
+		return "", fmt.Errorf("bindnode TODO: %T", stg)
 	}
 	// Things that have reached here, should be only those things that have string kind naturally,
 	// and so using the same method as the type level is correct.
@@ -484,7 +479,7 @@ func (w *_nodeRepr) AsBytes() ([]byte, error) {
 	case nil:
 		return (*_node)(w).AsBytes()
 	default:
-		panic(fmt.Sprintf("TODO: %T", stg))
+		return nil, fmt.Errorf("bindnode TODO: %T", stg)
 	}
 }
 
@@ -495,12 +490,12 @@ func (w *_nodeRepr) AsLink() (datamodel.Link, error) {
 	case nil:
 		return (*_node)(w).AsLink()
 	default:
-		panic(fmt.Sprintf("TODO: %T", stg))
+		return nil, fmt.Errorf("bindnode TODO: %T", stg)
 	}
 }
 
 func (w *_nodeRepr) Prototype() datamodel.NodePrototype {
-	panic("TODO: Prototype")
+	panic("bindnode TODO: Prototype")
 }
 
 type _builderRepr struct {
@@ -520,7 +515,7 @@ func (w *_builderRepr) Build() datamodel.Node {
 }
 
 func (w *_builderRepr) Reset() {
-	panic("TODO: Reset")
+	panic("bindnode TODO: Reset")
 }
 
 type _assemblerRepr struct {
@@ -581,7 +576,7 @@ func (w *_assemblerRepr) BeginMap(sizeHint int64) (datamodel.MapAssembler, error
 	case *basicMapAssembler:
 		return asm, nil
 	default:
-		panic(fmt.Sprintf("bindnode: unexpected assembler type: %T", asm))
+		return nil, fmt.Errorf("bindnode TODO: %T", asm)
 	}
 }
 
@@ -595,7 +590,7 @@ func (w *_assemblerRepr) BeginList(sizeHint int64) (datamodel.ListAssembler, err
 			return nil, err
 		}
 		return (*_listStructAssemblerRepr)(asm.(*_structAssembler)), nil
-	case nil:
+	default:
 		asm, err := (*_assembler)(w).BeginList(sizeHint)
 		if err != nil {
 			return nil, err
@@ -604,8 +599,6 @@ func (w *_assemblerRepr) BeginList(sizeHint int64) (datamodel.ListAssembler, err
 			return asm, nil
 		}
 		return (*_listAssemblerRepr)(asm.(*_listAssembler)), nil
-	default:
-		panic(fmt.Sprintf("TODO: %T", stg))
 	}
 }
 
@@ -614,7 +607,7 @@ func (w *_assemblerRepr) AssignNull() error {
 	case nil:
 		return (*_assembler)(w).AssignNull()
 	default:
-		panic(fmt.Sprintf("TODO: %T", stg))
+		return fmt.Errorf("bindnode TODO: %T", stg)
 	}
 }
 
@@ -622,10 +615,8 @@ func (w *_assemblerRepr) AssignBool(b bool) error {
 	switch stg := reprStrategy(w.schemaType).(type) {
 	case schema.UnionRepresentation_Kinded:
 		return w.asKinded(stg, datamodel.Kind_Bool).AssignBool(b)
-	case nil:
-		return (*_assembler)(w).AssignBool(b)
 	default:
-		panic(fmt.Sprintf("TODO: %T", stg))
+		return (*_assembler)(w).AssignBool(b)
 	}
 }
 
@@ -656,10 +647,8 @@ func (w *_assemblerRepr) AssignInt(i int64) error {
 			}
 		}
 		return fmt.Errorf("AssignInt: %d is not a valid member of enum %s", i, w.schemaType.Name())
-	case nil:
-		return (*_assembler)(w).AssignInt(i)
 	default:
-		panic(fmt.Sprintf("TODO: %T", stg))
+		return (*_assembler)(w).AssignInt(i)
 	}
 }
 
@@ -667,10 +656,8 @@ func (w *_assemblerRepr) AssignFloat(f float64) error {
 	switch stg := reprStrategy(w.schemaType).(type) {
 	case schema.UnionRepresentation_Kinded:
 		return w.asKinded(stg, datamodel.Kind_Float).AssignFloat(f)
-	case nil:
-		return (*_assembler)(w).AssignFloat(f)
 	default:
-		panic(fmt.Sprintf("TODO: %T", stg))
+		return (*_assembler)(w).AssignFloat(f)
 	}
 }
 
@@ -680,7 +667,7 @@ func (w *_assemblerRepr) AssignString(s string) error {
 		fields := w.schemaType.(*schema.TypeStruct).Fields()
 		parts := strings.Split(s, stg.GetDelim())
 		if len(parts) != len(fields) {
-			panic("TODO: len mismatch")
+			return fmt.Errorf("bindnode TODO: len mismatch")
 		}
 		mapAsm, err := (*_assembler)(w).BeginMap(-1)
 		if err != nil {
@@ -757,10 +744,8 @@ func (w *_assemblerRepr) AssignString(s string) error {
 			}
 		}
 		return fmt.Errorf("AssignString: %q is not a valid member of enum %s", s, w.schemaType.Name())
-	case nil:
-		return (*_assembler)(w).AssignString(s)
 	default:
-		panic(fmt.Sprintf("TODO: %T", stg))
+		return (*_assembler)(w).AssignString(s)
 	}
 }
 
@@ -768,10 +753,8 @@ func (w *_assemblerRepr) AssignBytes(p []byte) error {
 	switch stg := reprStrategy(w.schemaType).(type) {
 	case schema.UnionRepresentation_Kinded:
 		return w.asKinded(stg, datamodel.Kind_Bytes).AssignBytes(p)
-	case nil:
-		return (*_assembler)(w).AssignBytes(p)
 	default:
-		panic(fmt.Sprintf("TODO: %T", stg))
+		return (*_assembler)(w).AssignBytes(p)
 	}
 }
 
@@ -779,24 +762,17 @@ func (w *_assemblerRepr) AssignLink(link datamodel.Link) error {
 	switch stg := reprStrategy(w.schemaType).(type) {
 	case schema.UnionRepresentation_Kinded:
 		return w.asKinded(stg, datamodel.Kind_Link).AssignLink(link)
-	case nil:
-		return (*_assembler)(w).AssignLink(link)
 	default:
-		panic(fmt.Sprintf("TODO: %T", stg))
+		return (*_assembler)(w).AssignLink(link)
 	}
 }
 
 func (w *_assemblerRepr) AssignNode(node datamodel.Node) error {
-	switch stg := reprStrategy(w.schemaType).(type) {
-	case nil:
-		return (*_assembler)(w).AssignNode(node)
-	default:
-		panic(fmt.Sprintf("TODO: %T", stg))
-	}
+	return (*_assembler)(w).AssignNode(node)
 }
 
 func (w *_assemblerRepr) Prototype() datamodel.NodePrototype {
-	panic("TODO: Assembler.Prototype")
+	panic("bindnode TODO: Assembler.Prototype")
 }
 
 type _structAssemblerRepr _structAssembler
@@ -823,7 +799,7 @@ func (w *_structAssemblerRepr) AssembleKey() datamodel.NodeAssembler {
 			ActualKind:      datamodel.Kind_List,
 		})
 	default:
-		panic(fmt.Sprintf("TODO: %T", stg))
+		panic(fmt.Sprintf("bindnode TODO: %T", stg))
 	}
 }
 
@@ -838,7 +814,7 @@ func (w *_structAssemblerRepr) AssembleValue() datamodel.NodeAssembler {
 		valAsm = assemblerRepr(valAsm)
 		return valAsm
 	default:
-		panic(fmt.Sprintf("TODO: %T", stg))
+		panic(fmt.Sprintf("bindnode TODO: %T", stg))
 	}
 }
 
@@ -864,38 +840,28 @@ func (w *_structAssemblerRepr) Finish() error {
 		}
 		return err
 	default:
-		panic(fmt.Sprintf("TODO: %T", stg))
+		return fmt.Errorf("bindnode TODO: %T", stg)
 	}
 }
 
 func (w *_structAssemblerRepr) KeyPrototype() datamodel.NodePrototype {
-	panic("TODO")
+	panic("bindnode TODO")
 }
 
 func (w *_structAssemblerRepr) ValuePrototype(k string) datamodel.NodePrototype {
-	panic("TODO: struct ValuePrototype")
+	panic("bindnode TODO: struct ValuePrototype")
 }
 
 type _mapAssemblerRepr _mapAssembler
 
 func (w *_mapAssemblerRepr) AssembleKey() datamodel.NodeAssembler {
-	switch stg := reprStrategy(w.schemaType).(type) {
-	case nil:
-		asm := (*_mapAssembler)(w).AssembleKey()
-		return (*_assemblerRepr)(asm.(*_assembler))
-	default:
-		panic(fmt.Sprintf("TODO: %T", stg))
-	}
+	asm := (*_mapAssembler)(w).AssembleKey()
+	return (*_assemblerRepr)(asm.(*_assembler))
 }
 
 func (w *_mapAssemblerRepr) AssembleValue() datamodel.NodeAssembler {
-	switch stg := reprStrategy(w.schemaType).(type) {
-	case nil:
-		asm := (*_mapAssembler)(w).AssembleValue()
-		return (*_assemblerRepr)(asm.(*_assembler))
-	default:
-		panic(fmt.Sprintf("TODO: %T", stg))
-	}
+	asm := (*_mapAssembler)(w).AssembleValue()
+	return (*_assemblerRepr)(asm.(*_assembler))
 }
 
 func (w *_mapAssemblerRepr) AssembleEntry(k string) (datamodel.NodeAssembler, error) {
@@ -907,20 +873,15 @@ func (w *_mapAssemblerRepr) AssembleEntry(k string) (datamodel.NodeAssembler, er
 }
 
 func (w *_mapAssemblerRepr) Finish() error {
-	switch stg := reprStrategy(w.schemaType).(type) {
-	case nil:
-		return (*_mapAssembler)(w).Finish()
-	default:
-		panic(fmt.Sprintf("TODO: %T", stg))
-	}
+	return (*_mapAssembler)(w).Finish()
 }
 
 func (w *_mapAssemblerRepr) KeyPrototype() datamodel.NodePrototype {
-	panic("TODO")
+	panic("bindnode TODO")
 }
 
 func (w *_mapAssemblerRepr) ValuePrototype(k string) datamodel.NodePrototype {
-	panic("TODO: struct ValuePrototype")
+	panic("bindnode TODO: struct ValuePrototype")
 }
 
 type _listStructAssemblerRepr _structAssembler
@@ -939,7 +900,7 @@ func (w *_listStructAssemblerRepr) AssembleValue() datamodel.NodeAssembler {
 		entryAsm = assemblerRepr(entryAsm)
 		return entryAsm
 	default:
-		panic(fmt.Sprintf("TODO: %T", stg))
+		panic(fmt.Sprintf("bindnode TODO: %T", stg))
 	}
 }
 
@@ -948,12 +909,12 @@ func (w *_listStructAssemblerRepr) Finish() error {
 	case schema.StructRepresentation_Tuple:
 		return (*_structAssembler)(w).Finish()
 	default:
-		panic(fmt.Sprintf("TODO: %T", stg))
+		return fmt.Errorf("bindnode TODO: %T", stg)
 	}
 }
 
 func (w *_listStructAssemblerRepr) ValuePrototype(idx int64) datamodel.NodePrototype {
-	panic("TODO: list ValuePrototype")
+	panic("bindnode TODO: list ValuePrototype")
 }
 
 // Note that lists do not have any representation strategy right now.
@@ -969,7 +930,7 @@ func (w *_listAssemblerRepr) Finish() error {
 }
 
 func (w *_listAssemblerRepr) ValuePrototype(idx int64) datamodel.NodePrototype {
-	panic("TODO: list ValuePrototype")
+	panic("bindnode TODO: list ValuePrototype")
 }
 
 type _unionAssemblerRepr _unionAssembler
@@ -979,7 +940,7 @@ func (w *_unionAssemblerRepr) AssembleKey() datamodel.NodeAssembler {
 	case schema.UnionRepresentation_Keyed:
 		return (*_unionAssembler)(w).AssembleKey()
 	default:
-		panic(fmt.Sprintf("TODO: %T", stg))
+		panic(fmt.Sprintf("bindnode TODO: %T", stg))
 	}
 }
 
@@ -994,7 +955,7 @@ func (w *_unionAssemblerRepr) AssembleValue() datamodel.NodeAssembler {
 		valAsm = assemblerRepr(valAsm)
 		return valAsm
 	default:
-		panic(fmt.Sprintf("TODO: %T", stg))
+		panic(fmt.Sprintf("bindnode TODO: %T", stg))
 	}
 }
 
@@ -1011,16 +972,16 @@ func (w *_unionAssemblerRepr) Finish() error {
 	case schema.UnionRepresentation_Keyed:
 		return (*_unionAssembler)(w).Finish()
 	default:
-		panic(fmt.Sprintf("TODO: %T", stg))
+		return fmt.Errorf("bindnode TODO: %T", stg)
 	}
 }
 
 func (w *_unionAssemblerRepr) KeyPrototype() datamodel.NodePrototype {
-	panic("TODO")
+	panic("bindnode TODO")
 }
 
 func (w *_unionAssemblerRepr) ValuePrototype(k string) datamodel.NodePrototype {
-	panic("TODO: union ValuePrototype")
+	panic("bindnode TODO: union ValuePrototype")
 }
 
 type _structIteratorRepr _structIterator
@@ -1043,7 +1004,7 @@ func (w *_structIteratorRepr) Next() (key, value datamodel.Node, _ error) {
 		}
 		return key, reprNode(value), nil
 	default:
-		panic(fmt.Sprintf("TODO: %T", stg))
+		return nil, nil, fmt.Errorf("bindnode TODO: %T", stg)
 	}
 }
 
@@ -1054,7 +1015,7 @@ func (w *_structIteratorRepr) Done() bool {
 		// documented somewhere
 		return w.nextIndex >= w.reprEnd
 	default:
-		panic(fmt.Sprintf("TODO: %T", stg))
+		panic(fmt.Sprintf("bindnode TODO: %T", stg))
 	}
 }
 
@@ -1074,7 +1035,7 @@ func (w *_unionIteratorRepr) Next() (key, value datamodel.Node, _ error) {
 		}
 		return key, reprNode(value), nil
 	default:
-		panic(fmt.Sprintf("TODO: %T", stg))
+		return nil, nil, fmt.Errorf("bindnode TODO: %T", stg)
 	}
 }
 
@@ -1083,6 +1044,6 @@ func (w *_unionIteratorRepr) Done() bool {
 	case schema.UnionRepresentation_Keyed:
 		return (*_unionIterator)(w).Done()
 	default:
-		panic(fmt.Sprintf("TODO: %T", stg))
+		panic(fmt.Sprintf("bindnode TODO: %T", stg))
 	}
 }
