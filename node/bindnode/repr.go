@@ -783,23 +783,22 @@ func (w *_structAssemblerRepr) AssembleKey() datamodel.NodeAssembler {
 		return (*_structAssembler)(w).AssembleKey()
 	case schema.StructRepresentation_Stringjoin,
 		schema.StructRepresentation_StringPairs:
-		// TODO an error-carrying "NodeAssembler" is needed so that this can refrain from panicking.
-		// TODO perhaps the ErrorWrongKind type should also be extended to explicitly describe whether the method was applied on bare DM, type-level, or repr-level.
-		panic(&datamodel.ErrWrongKind{
+		// TODO: perhaps the ErrorWrongKind type should also be extended to explicitly describe whether the method was applied on bare DM, type-level, or repr-level.
+		return _errorAssembler{datamodel.ErrWrongKind{
 			TypeName:        w.schemaType.Name() + ".Repr",
 			MethodName:      "AssembleKey",
 			AppropriateKind: datamodel.KindSet_JustMap,
 			ActualKind:      datamodel.Kind_String,
-		})
+		}}
 	case schema.StructRepresentation_Tuple:
-		panic(&datamodel.ErrWrongKind{
+		return _errorAssembler{datamodel.ErrWrongKind{
 			TypeName:        w.schemaType.Name() + ".Repr",
 			MethodName:      "AssembleKey",
 			AppropriateKind: datamodel.KindSet_JustMap,
 			ActualKind:      datamodel.Kind_List,
-		})
+		}}
 	default:
-		panic(fmt.Sprintf("bindnode TODO: %T", stg))
+		return _errorAssembler{fmt.Errorf("bindnode TODO: %T", stg)}
 	}
 }
 
@@ -814,7 +813,7 @@ func (w *_structAssemblerRepr) AssembleValue() datamodel.NodeAssembler {
 		valAsm = assemblerRepr(valAsm)
 		return valAsm
 	default:
-		panic(fmt.Sprintf("bindnode TODO: %T", stg))
+		return _errorAssembler{fmt.Errorf("bindnode TODO: %T", stg)}
 	}
 }
 
@@ -895,12 +894,12 @@ func (w *_listStructAssemblerRepr) AssembleValue() datamodel.NodeAssembler {
 
 		entryAsm, err := (*_structAssembler)(w).AssembleEntry(field.Name())
 		if err != nil {
-			panic(err) // TODO: probably return an assembler that always errors?
+			return _errorAssembler{err}
 		}
 		entryAsm = assemblerRepr(entryAsm)
 		return entryAsm
 	default:
-		panic(fmt.Sprintf("bindnode TODO: %T", stg))
+		return _errorAssembler{fmt.Errorf("bindnode TODO: %T", stg)}
 	}
 }
 
@@ -940,7 +939,7 @@ func (w *_unionAssemblerRepr) AssembleKey() datamodel.NodeAssembler {
 	case schema.UnionRepresentation_Keyed:
 		return (*_unionAssembler)(w).AssembleKey()
 	default:
-		panic(fmt.Sprintf("bindnode TODO: %T", stg))
+		return _errorAssembler{fmt.Errorf("bindnode TODO: %T", stg)}
 	}
 }
 
@@ -955,7 +954,7 @@ func (w *_unionAssemblerRepr) AssembleValue() datamodel.NodeAssembler {
 		valAsm = assemblerRepr(valAsm)
 		return valAsm
 	default:
-		panic(fmt.Sprintf("bindnode TODO: %T", stg))
+		return _errorAssembler{fmt.Errorf("bindnode TODO: %T", stg)}
 	}
 }
 
