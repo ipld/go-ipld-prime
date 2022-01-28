@@ -408,13 +408,12 @@ func TestKindMismatches(t *testing.T) {
 				F2 Int
 			}
 		`},
-		// TODO: panics to fix
-		// {"Struct_Tuple", `
-		// 	type Root struct {
-		// 		F1 Int
-		// 		F2 Int
-		// 	} representation tuple
-		// `},
+		{"Struct_Tuple", `
+			type Root struct {
+				F1 Int
+				F2 Int
+			} representation tuple
+		`},
 		// TODO: more schema types and repr strategies
 	}
 
