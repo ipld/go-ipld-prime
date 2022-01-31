@@ -56,6 +56,11 @@ func TestRoundtrip(t *testing.T) {
 		qt.Assert(t, err, qt.IsNil)
 		qt.Check(t, buf.String(), qt.Equals, serial)
 	})
+	t.Run("length", func(t *testing.T) {
+		length, err := EncodedLength(n)
+		qt.Assert(t, err, qt.IsNil)
+		qt.Check(t, length, qt.Equals, int64(len(serial)))
+	})
 	t.Run("decoding", func(t *testing.T) {
 		buf := strings.NewReader(serial)
 		nb := basicnode.Prototype.Map.NewBuilder()

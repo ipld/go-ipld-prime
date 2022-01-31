@@ -245,3 +245,120 @@ func marshalMap(n datamodel.Node, tk *tok.Token, sink shared.TokenSink, options 
 	_, err := sink.Step(tk)
 	return err
 }
+
+// EncodedLength will calculate the length in bytes that the encoded form of the
+// provided Node will occupy.
+// In some circmstances is may be advantageous to be able to pre-allocate the
+// bytes and encode into those bytes than require the encoding process to write
+// to a flexible byte sink.
+// Note that this function requires a full walk of the Node's graph, which may
+// not necessarily be a trivial cost.
+func EncodedLength(n datamodel.Node) (int64, error) {
+	switch n.Kind() {
+	case datamodel.Kind_Invalid:
+		return 0, fmt.Errorf("cannot traverse a node that is absent")
+	case datamodel.Kind_Null:
+		return 1, nil // 0xf6
+	case datamodel.Kind_Map:
+		length := uintLength(n.Length()) // length prefixed major 5
+		for itr := n.MapIterator(); !itr.Done(); {
+			k, v, err := itr.Next()
+			if err != nil {
+				return 0, err
+			}
+			keyLength, err := EncodedLength(k)
+			if err != nil {
+				return 0, err
+			}
+			length += keyLength
+			valueLength, err := EncodedLength(v)
+			if err != nil {
+				return 0, err
+			}
+			length += valueLength
+		}
+		return length, nil
+	case datamodel.Kind_List:
+		nl := n.Length()
+		length := uintLength(nl) // length prefixed major 4
+		for i := int64(0); i < nl; i++ {
+			v, err := n.LookupByIndex(i)
+			if err != nil {
+				return 0, err
+			}
+			innerLength, err := EncodedLength(v)
+			if err != nil {
+				return 0, err
+			}
+			length += innerLength
+		}
+		return length, nil
+	case datamodel.Kind_Bool:
+		return 1, nil // 0xf4 or 0xf5
+	case datamodel.Kind_Int:
+		v, err := n.AsInt()
+		if err != nil {
+			return 0, err
+		}
+		return uintLength(v), nil // major 0 or 1, as small as possible
+	case datamodel.Kind_Float:
+		return 9, nil // always major 7 and 64-bit float
+	case datamodel.Kind_String:
+		v, err := n.AsString()
+		if err != nil {
+			return 0, err
+		}
+
+		return uintLength(int64(len(v))) + int64(len(v)), nil // length prefixed major 3
+	case datamodel.Kind_Bytes:
+		v, err := n.AsBytes()
+		if err != nil {
+			return 0, err
+		}
+		return uintLength(int64(len(v))) + int64(len(v)), nil // length prefixed major 2
+	case datamodel.Kind_Link:
+		v, err := n.AsLink()
+		if err != nil {
+			return 0, err
+		}
+		switch lnk := v.(type) {
+		case cidlink.Link:
+			length := int64(2)                // tag,42: 0xd82a
+			bl := int64(len(lnk.Bytes())) + 1 // additional 0x00 in front of the CID bytes
+			length += uintLength(bl) + bl     // length prefixed major 2
+			return length, err
+		default:
+			return 0, fmt.Errorf("schemafree link emission only supported by this codec for CID type links")
+		}
+	default:
+		panic("unreachable")
+	}
+}
+
+// Calculate how many bytes an integer, and therefore also the leading bytes of
+// a length-prefixed token. CBOR will pack it up into the smallest possible
+// uint representation, even merging it with the major if it's <=23.
+
+type boundaryLength struct {
+	upperBound int64
+	length     int64
+}
+
+var lengthBoundaries = []boundaryLength{
+	{24, 1},         // packed major|minor
+	{256, 2},        // major, 8-bit length
+	{65536, 3},      // major, 16-bit length
+	{4294967296, 5}, // major, 32-bit length
+	{-1, 9},         // major, 64-bit length
+}
+
+func uintLength(length int64) int64 {
+	for _, lb := range lengthBoundaries {
+		if length < lb.upperBound {
+			return lb.length
+		}
+	}
+	// maximum number of bytes to pack this length
+	// also improbable, and likely a very bad Node that shouldn't be encoded
+	return lengthBoundaries[len(lengthBoundaries)-1].length
+}
