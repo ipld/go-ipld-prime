@@ -248,11 +248,11 @@ func marshalMap(n datamodel.Node, tk *tok.Token, sink shared.TokenSink, options 
 
 // EncodedLength will calculate the length in bytes that the encoded form of the
 // provided Node will occupy.
-// In some circmstances is may be advantageous to be able to pre-allocate the
-// bytes and encode into those bytes than require the encoding process to write
-// to a flexible byte sink.
+//
 // Note that this function requires a full walk of the Node's graph, which may
-// not necessarily be a trivial cost.
+// not necessarily be a trivial cost and will incur some allocations. Using this
+// method to calculate buffers to pre-allocate may not result in performance
+// gains, but rather incur an overall cost. Use with care.
 func EncodedLength(n datamodel.Node) (int64, error) {
 	switch n.Kind() {
 	case datamodel.Kind_Invalid:
@@ -260,7 +260,7 @@ func EncodedLength(n datamodel.Node) (int64, error) {
 	case datamodel.Kind_Null:
 		return 1, nil // 0xf6
 	case datamodel.Kind_Map:
-		length := uintLength(n.Length()) // length prefixed major 5
+		length := uintLength(uint64(n.Length())) // length prefixed major 5
 		for itr := n.MapIterator(); !itr.Done(); {
 			k, v, err := itr.Next()
 			if err != nil {
@@ -280,7 +280,7 @@ func EncodedLength(n datamodel.Node) (int64, error) {
 		return length, nil
 	case datamodel.Kind_List:
 		nl := n.Length()
-		length := uintLength(nl) // length prefixed major 4
+		length := uintLength(uint64(nl)) // length prefixed major 4
 		for i := int64(0); i < nl; i++ {
 			v, err := n.LookupByIndex(i)
 			if err != nil {
@@ -300,7 +300,10 @@ func EncodedLength(n datamodel.Node) (int64, error) {
 		if err != nil {
 			return 0, err
 		}
-		return uintLength(v), nil // major 0 or 1, as small as possible
+		if v < 0 {
+			v = -v - 1 // negint is stored as one less than actual
+		}
+		return uintLength(uint64(v)), nil // major 0 or 1, as small as possible
 	case datamodel.Kind_Float:
 		return 9, nil // always major 7 and 64-bit float
 	case datamodel.Kind_String:
@@ -309,13 +312,13 @@ func EncodedLength(n datamodel.Node) (int64, error) {
 			return 0, err
 		}
 
-		return uintLength(int64(len(v))) + int64(len(v)), nil // length prefixed major 3
+		return uintLength(uint64(len(v))) + int64(len(v)), nil // length prefixed major 3
 	case datamodel.Kind_Bytes:
 		v, err := n.AsBytes()
 		if err != nil {
 			return 0, err
 		}
-		return uintLength(int64(len(v))) + int64(len(v)), nil // length prefixed major 2
+		return uintLength(uint64(len(v))) + int64(len(v)), nil // length prefixed major 2
 	case datamodel.Kind_Link:
 		v, err := n.AsLink()
 		if err != nil {
@@ -323,9 +326,9 @@ func EncodedLength(n datamodel.Node) (int64, error) {
 		}
 		switch lnk := v.(type) {
 		case cidlink.Link:
-			length := int64(2)                // tag,42: 0xd82a
-			bl := int64(len(lnk.Bytes())) + 1 // additional 0x00 in front of the CID bytes
-			length += uintLength(bl) + bl     // length prefixed major 2
+			length := int64(2)                    // tag,42: 0xd82a
+			bl := int64(len(lnk.Bytes())) + 1     // additional 0x00 in front of the CID bytes
+			length += uintLength(uint64(bl)) + bl // length prefixed major 2
 			return length, err
 		default:
 			return 0, fmt.Errorf("schemafree link emission only supported by this codec for CID type links")
@@ -340,7 +343,7 @@ func EncodedLength(n datamodel.Node) (int64, error) {
 // uint representation, even merging it with the major if it's <=23.
 
 type boundaryLength struct {
-	upperBound int64
+	upperBound uint64
 	length     int64
 }
 
@@ -349,16 +352,18 @@ var lengthBoundaries = []boundaryLength{
 	{256, 2},        // major, 8-bit length
 	{65536, 3},      // major, 16-bit length
 	{4294967296, 5}, // major, 32-bit length
-	{-1, 9},         // major, 64-bit length
+	{0, 9},          // major, 64-bit length
 }
 
-func uintLength(length int64) int64 {
+func uintLength(ii uint64) int64 {
 	for _, lb := range lengthBoundaries {
-		if length < lb.upperBound {
+		if ii < lb.upperBound {
 			return lb.length
 		}
 	}
-	// maximum number of bytes to pack this length
-	// also improbable, and likely a very bad Node that shouldn't be encoded
+	// maximum number of bytes to pack this int
+	// if this int is used as a length prefix for a map, list, string or bytes
+	// then we likely have a very bad Node that shouldn't be encoded, but the
+	// encoder may raise problems with that if the memory allocator doesn't first.
 	return lengthBoundaries[len(lengthBoundaries)-1].length
 }
