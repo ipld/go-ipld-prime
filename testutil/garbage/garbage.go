@@ -4,7 +4,6 @@ import (
 	"math"
 	"math/rand"
 	"strings"
-	"time"
 
 	"github.com/ipfs/go-cid"
 	"github.com/ipld/go-ipld-prime/datamodel"
@@ -20,7 +19,7 @@ type Options struct {
 	blockSize      uint64
 }
 
-type generator func(count uint64, opts Options) (uint64, datamodel.Node)
+type generator func(rand *rand.Rand, count uint64, opts Options) (uint64, datamodel.Node)
 
 type hasher struct {
 	code   uint64
@@ -29,26 +28,32 @@ type hasher struct {
 
 const charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789`~!@#$%^&*()-_=+[]{}|\\:;'\",.<>?/ \t\n☺💩"
 
-var codecs []uint64
-var hashes []hasher
-var kinds datamodel.KindSet
-var generators map[datamodel.Kind]generator
-var runes []rune
+var (
+	codecs     = []uint64{0x55, 0x70, 0x71, 0x0129}
+	hashes     = []hasher{{0x12, 256}, {0x16, 256}, {0x1b, 256}, {0xb220, 256}, {0x13, 512}, {0x15, 384}, {0x14, 512}}
+	kinds      = append(datamodel.KindSet_Scalar, datamodel.KindSet_Recursive...)
+	runes      = []rune(charset)
+	generators map[datamodel.Kind]generator
+)
 
 // Garbage produces random Nodes which can be useful for testing and benchmarking. By default, the
-// Nodes produced are relatively small, averaging near the 100 byte range when encoded
+// Nodes produced are relatively small, averaging near the 1024 byte range when encoded
 // (very roughly, with a wide spread).
 //
 // Options can be used to adjust the average size and weights of occurances of different kinds
 // within the complete Node graph.
-func Garbage(opts ...Option) datamodel.Node {
+//
+// Care should be taken when using a random source to generate garbage for testing purposes, that
+// the randomness is stable across test runs, or a seed is captured in such a way that a failure
+// can be reproduced (e.g. by printing it to stdout during the test run so it can be captured in
+// CI for a failure).
+func Garbage(rand *rand.Rand, opts ...Option) datamodel.Node {
 	options := applyOptions(opts...)
-	rand.Seed(time.Now().UnixNano())
-	_, n := generate(options.blockSize, options)
+	_, n := generate(rand, options.blockSize, options)
 	return n
 }
 
-func generate(count uint64, opts Options) (uint64, datamodel.Node) {
+func generate(rand *rand.Rand, count uint64, opts Options) (uint64, datamodel.Node) {
 	weights := opts.weights
 	if opts.initialWeights != nil {
 		weights = opts.initialWeights
@@ -63,27 +68,32 @@ func generate(count uint64, opts Options) (uint64, datamodel.Node) {
 	for _, kind := range kinds {
 		wacc += weights[kind]
 		if float64(wacc) >= r {
-			return generators[kind](count, opts)
+			return generators[kind](rand, count, opts)
 		}
 	}
 	panic("bad options")
 }
 
-func rndSize(bias uint64) uint64 {
-	// @rv: OK, I'll admit that I've completely forgotten how I arrived at this, but it
-	// generates numbers that bias toward `bias`, but not strictly, they may vary wildly
-	// but be drawn toward the lower end of the range and tend to be suitable for lengths
-	// of arrays and such
-	m := math.Abs(math.Floor(5/(1-(math.Pow(rand.Float64(), 2))) - 5 + rand.Float64()*float64(bias)))
-	return uint64(m)
+func rndSize(rand *rand.Rand, bias uint64) uint64 {
+	if bias == 0 {
+		panic("size shouldn't be zero")
+	}
+	mean := float64(bias)
+	stdev := mean / 10
+	for {
+		s := math.Abs(rand.NormFloat64())*stdev + mean
+		if s >= 1 {
+			return uint64(s)
+		}
+	}
 }
 
-func rndRune() rune {
+func rndRune(rand *rand.Rand) rune {
 	return runes[rand.Intn(len(runes))]
 }
 
-func listGenerator(count uint64, opts Options) (uint64, datamodel.Node) {
-	len := rndSize(5)
+func listGenerator(rand *rand.Rand, count uint64, opts Options) (uint64, datamodel.Node) {
+	len := rndSize(rand, 10)
 	lb := basicnode.Prototype.List.NewBuilder()
 	la, err := lb.BeginList(int64(len))
 	if err != nil {
@@ -91,8 +101,11 @@ func listGenerator(count uint64, opts Options) (uint64, datamodel.Node) {
 	}
 	size := uint64(0)
 	for i := uint64(0); i < len && size < count; i++ {
-		c, n := generate(count-size, opts)
-		la.AssembleValue().AssignNode(n)
+		c, n := generate(rand, count-size, opts)
+		err := la.AssembleValue().AssignNode(n)
+		if err != nil {
+			panic(err)
+		}
 		size += c
 	}
 	err = la.Finish()
@@ -102,8 +115,8 @@ func listGenerator(count uint64, opts Options) (uint64, datamodel.Node) {
 	return size, lb.Build()
 }
 
-func mapGenerator(count uint64, opts Options) (uint64, datamodel.Node) {
-	length := rndSize(5)
+func mapGenerator(rand *rand.Rand, count uint64, opts Options) (uint64, datamodel.Node) {
+	length := rndSize(rand, 10)
 	mb := basicnode.Prototype.Map.NewBuilder()
 	ma, err := mb.BeginMap(int64(length))
 	if err != nil {
@@ -114,7 +127,7 @@ func mapGenerator(count uint64, opts Options) (uint64, datamodel.Node) {
 	for i := uint64(0); i < length && size < count; i++ {
 		var key string
 		for {
-			c, k := stringGenerator(5, opts)
+			c, k := stringGenerator(rand, 5, opts)
 			key = must.String(k)
 			if _, ok := keys[key]; !ok && len(key) > 0 {
 				keys[key] = struct{}{}
@@ -126,7 +139,7 @@ func mapGenerator(count uint64, opts Options) (uint64, datamodel.Node) {
 		if size >= count { // the case where we've blown our budget already on the key
 			sz = 5
 		}
-		c, value := generate(sz, opts)
+		c, value := generate(rand, sz, opts)
 		size += c
 		err := ma.AssembleKey().AssignString(key)
 		if err != nil {
@@ -144,27 +157,30 @@ func mapGenerator(count uint64, opts Options) (uint64, datamodel.Node) {
 	return size, mb.Build()
 }
 
-func stringGenerator(count uint64, opts Options) (uint64, datamodel.Node) {
-	len := rndSize(count)
+func stringGenerator(rand *rand.Rand, count uint64, opts Options) (uint64, datamodel.Node) {
+	len := rndSize(rand, count/2+1)
 	sb := strings.Builder{}
 	for i := uint64(0); i < len; i++ {
-		sb.WriteRune(rndRune())
+		sb.WriteRune(rndRune(rand))
 	}
 	return len, basicnode.NewString(sb.String())
 }
 
-func bytesGenerator(count uint64, opts Options) (uint64, datamodel.Node) {
-	len := rndSize(count)
+func bytesGenerator(rand *rand.Rand, count uint64, opts Options) (uint64, datamodel.Node) {
+	len := rndSize(rand, count/2+1)
 	ba := make([]byte, len)
-	rand.Read(ba)
+	_, err := rand.Read(ba)
+	if err != nil {
+		panic(err)
+	}
 	return len, basicnode.NewBytes(ba)
 }
 
-func boolGenerator(count uint64, opts Options) (uint64, datamodel.Node) {
+func boolGenerator(rand *rand.Rand, count uint64, opts Options) (uint64, datamodel.Node) {
 	return 0, basicnode.NewBool(rand.Float64() > 0.5)
 }
 
-func intGenerator(count uint64, opts Options) (uint64, datamodel.Node) {
+func intGenerator(rand *rand.Rand, count uint64, opts Options) (uint64, datamodel.Node) {
 	i := rand.Int63()
 	if rand.Float64() > 0.5 {
 		i = -i
@@ -172,15 +188,15 @@ func intGenerator(count uint64, opts Options) (uint64, datamodel.Node) {
 	return 0, basicnode.NewInt(i)
 }
 
-func floatGenerator(count uint64, opts Options) (uint64, datamodel.Node) {
+func floatGenerator(rand *rand.Rand, count uint64, opts Options) (uint64, datamodel.Node) {
 	return 0, basicnode.NewFloat(math.Tan((rand.Float64() - 0.5) * math.Pi))
 }
 
-func nullGenerator(count uint64, opts Options) (uint64, datamodel.Node) {
+func nullGenerator(rand *rand.Rand, count uint64, opts Options) (uint64, datamodel.Node) {
 	return 0, datamodel.Null
 }
 
-func linkGenerator(count uint64, opts Options) (uint64, datamodel.Node) {
+func linkGenerator(rand *rand.Rand, count uint64, opts Options) (uint64, datamodel.Node) {
 	hasher := hashes[rand.Intn(len(hashes))]
 	codec := codecs[rand.Intn(len(codecs))]
 	ba := make([]byte, hasher.length/8)
@@ -196,7 +212,7 @@ type Option func(*Options)
 
 func applyOptions(opt ...Option) Options {
 	opts := Options{
-		blockSize:      100,
+		blockSize:      1024,
 		initialWeights: DefaultInitialWeights(),
 		weights:        DefaultWeights(),
 	}
@@ -276,7 +292,7 @@ func Weights(weights map[datamodel.Kind]int) Option {
 // approximate measure, but over enough repeated Garbage() calls, the resulting
 // Nodes, once encoded, should have a median that is somewhere in this vicinity.
 //
-// The default target block size is 100. This should be tuned in accordance with
+// The default target block size is 1024. This should be tuned in accordance with
 // the anticipated average block size of the system under test.
 func TargetBlockSize(blockSize uint64) Option {
 	return func(o *Options) {
@@ -285,11 +301,7 @@ func TargetBlockSize(blockSize uint64) Option {
 }
 
 func init() {
-	kinds = append(datamodel.KindSet_Scalar, datamodel.KindSet_Recursive...)
-	runes = []rune(charset)
-	codecs = []uint64{0x55, 0x70, 0x71, 0x0129}
-	hashes = []hasher{{0x12, 256}, {0x16, 256}, {0x1b, 256}, {0xb220, 256}, {0x13, 512}, {0x15, 384}, {0x14, 512}}
-
+	// can't be declared statically because of some cycles through list & map to generate()
 	generators = map[datamodel.Kind]generator{
 		datamodel.Kind_List:   listGenerator,
 		datamodel.Kind_Map:    mapGenerator,

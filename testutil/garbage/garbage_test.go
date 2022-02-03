@@ -2,7 +2,10 @@ package garbage
 
 import (
 	"bytes"
+	"fmt"
+	"math/rand"
 	"testing"
+	"time"
 
 	qt "github.com/frankban/quicktest"
 	"github.com/ipld/go-ipld-prime"
@@ -13,8 +16,11 @@ import (
 
 func TestGarbageProducesAllKinds(t *testing.T) {
 	kindCount := make(map[datamodel.Kind]int)
-	for i := 0; i < 1000; i++ {
-		gbg := Garbage()
+	seed := time.Now().Unix()
+	fmt.Printf("randomness seed: %v\n", seed)
+	rnd := rand.New(rand.NewSource(seed))
+	for i := 0; i < 10000; i++ {
+		gbg := Garbage(rnd)
 		kindCount[gbg.Kind()]++
 	}
 	for _, kind := range append(datamodel.KindSet_Scalar, datamodel.KindSet_Recursive...) {
@@ -24,9 +30,12 @@ func TestGarbageProducesAllKinds(t *testing.T) {
 
 func TestGarbageProducesValidNodes(t *testing.T) {
 	// round-trip through a codec should pick up most possible problems with Node validity
+	seed := time.Now().Unix()
+	fmt.Printf("randomness seed: %v\n", seed)
+	rnd := rand.New(rand.NewSource(seed))
 	for i := 0; i < 1000; i++ {
 		var buf bytes.Buffer
-		gbg := Garbage()
+		gbg := Garbage(rnd)
 		err := dagcbor.Encode(gbg, &buf)
 		qt.Assert(t, err, qt.IsNil)
 		nb := basicnode.Prototype.Any.NewBuilder()
@@ -36,12 +45,21 @@ func TestGarbageProducesValidNodes(t *testing.T) {
 	}
 }
 
+func TestGarbageProducesSameDataForSameRandomSource(t *testing.T) {
+	gbg1 := Garbage(rand.New(rand.NewSource(1)))
+	gbg2 := Garbage(rand.New(rand.NewSource(1)))
+	qt.Assert(t, ipld.DeepEqual(gbg1, gbg2), qt.IsTrue)
+}
+
 func TestGarbageProducesSingleKind(t *testing.T) {
+	seed := time.Now().Unix()
+	fmt.Printf("randomness seed: %v\n", seed)
+	rnd := rand.New(rand.NewSource(seed))
 	for _, kind := range append(datamodel.KindSet_Scalar, datamodel.KindSet_Recursive...) {
 		t.Run(kind.String(), func(t *testing.T) {
 			kindCount := make(map[datamodel.Kind]int)
 			for i := 0; i < 1000; i++ {
-				gbg := Garbage(InitialWeights(map[datamodel.Kind]int{kind: 1}))
+				gbg := Garbage(rnd, InitialWeights(map[datamodel.Kind]int{kind: 1}))
 				kindCount[gbg.Kind()]++
 			}
 			for _, k := range append(datamodel.KindSet_Scalar, datamodel.KindSet_Recursive...) {
