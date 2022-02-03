@@ -36,7 +36,7 @@ var (
 	generators map[datamodel.Kind]generator
 )
 
-// Garbage produces random Nodes which can be useful for testing and benchmarking. By default, the
+// Generate produces random Nodes which can be useful for testing and benchmarking. By default, the
 // Nodes produced are relatively small, averaging near the 1024 byte range when encoded
 // (very roughly, with a wide spread).
 //
@@ -47,7 +47,7 @@ var (
 // the randomness is stable across test runs, or a seed is captured in such a way that a failure
 // can be reproduced (e.g. by printing it to stdout during the test run so it can be captured in
 // CI for a failure).
-func Garbage(rand *mathrand.Rand, opts ...Option) datamodel.Node {
+func Generate(rand *mathrand.Rand, opts ...Option) datamodel.Node {
 	options := applyOptions(opts...)
 	_, n := generate(rand, options.blockSize, options)
 	return n
@@ -289,7 +289,7 @@ func Weights(weights map[datamodel.Kind]int) Option {
 
 // TargetBlockSize sets a very rough bias in number of bytes that the resulting
 // Node may consume when encoded (i.e. the block size). This is a very
-// approximate measure, but over enough repeated Garbage() calls, the resulting
+// approximate measure, but over enough repeated Generate() calls, the resulting
 // Nodes, once encoded, should have a median that is somewhere in this vicinity.
 //
 // The default target block size is 1024. This should be tuned in accordance with
