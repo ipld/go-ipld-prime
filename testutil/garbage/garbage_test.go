@@ -2,7 +2,6 @@ package garbage
 
 import (
 	"bytes"
-	"fmt"
 	"math/rand"
 	"testing"
 	"time"
@@ -17,7 +16,7 @@ import (
 func TestGarbageProducesAllKinds(t *testing.T) {
 	kindCount := make(map[datamodel.Kind]int)
 	seed := time.Now().Unix()
-	fmt.Printf("randomness seed: %v\n", seed)
+	t.Logf("randomness seed: %v\n", seed)
 	rnd := rand.New(rand.NewSource(seed))
 	for i := 0; i < 10000; i++ {
 		gbg := Garbage(rnd)
@@ -31,7 +30,7 @@ func TestGarbageProducesAllKinds(t *testing.T) {
 func TestGarbageProducesValidNodes(t *testing.T) {
 	// round-trip through a codec should pick up most possible problems with Node validity
 	seed := time.Now().Unix()
-	fmt.Printf("randomness seed: %v\n", seed)
+	t.Logf("randomness seed: %v\n", seed)
 	rnd := rand.New(rand.NewSource(seed))
 	for i := 0; i < 1000; i++ {
 		var buf bytes.Buffer
@@ -53,7 +52,7 @@ func TestGarbageProducesSameDataForSameRandomSource(t *testing.T) {
 
 func TestGarbageProducesSingleKind(t *testing.T) {
 	seed := time.Now().Unix()
-	fmt.Printf("randomness seed: %v\n", seed)
+	t.Logf("randomness seed: %v\n", seed)
 	rnd := rand.New(rand.NewSource(seed))
 	for _, kind := range append(datamodel.KindSet_Scalar, datamodel.KindSet_Recursive...) {
 		t.Run(kind.String(), func(t *testing.T) {

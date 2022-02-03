@@ -2,7 +2,7 @@ package garbage
 
 import (
 	"math"
-	"math/rand"
+	mathrand "math/rand"
 	"strings"
 
 	"github.com/ipfs/go-cid"
@@ -19,7 +19,7 @@ type Options struct {
 	blockSize      uint64
 }
 
-type generator func(rand *rand.Rand, count uint64, opts Options) (uint64, datamodel.Node)
+type generator func(rand *mathrand.Rand, count uint64, opts Options) (uint64, datamodel.Node)
 
 type hasher struct {
 	code   uint64
@@ -47,13 +47,13 @@ var (
 // the randomness is stable across test runs, or a seed is captured in such a way that a failure
 // can be reproduced (e.g. by printing it to stdout during the test run so it can be captured in
 // CI for a failure).
-func Garbage(rand *rand.Rand, opts ...Option) datamodel.Node {
+func Garbage(rand *mathrand.Rand, opts ...Option) datamodel.Node {
 	options := applyOptions(opts...)
 	_, n := generate(rand, options.blockSize, options)
 	return n
 }
 
-func generate(rand *rand.Rand, count uint64, opts Options) (uint64, datamodel.Node) {
+func generate(rand *mathrand.Rand, count uint64, opts Options) (uint64, datamodel.Node) {
 	weights := opts.weights
 	if opts.initialWeights != nil {
 		weights = opts.initialWeights
@@ -74,7 +74,7 @@ func generate(rand *rand.Rand, count uint64, opts Options) (uint64, datamodel.No
 	panic("bad options")
 }
 
-func rndSize(rand *rand.Rand, bias uint64) uint64 {
+func rndSize(rand *mathrand.Rand, bias uint64) uint64 {
 	if bias == 0 {
 		panic("size shouldn't be zero")
 	}
@@ -88,11 +88,11 @@ func rndSize(rand *rand.Rand, bias uint64) uint64 {
 	}
 }
 
-func rndRune(rand *rand.Rand) rune {
+func rndRune(rand *mathrand.Rand) rune {
 	return runes[rand.Intn(len(runes))]
 }
 
-func listGenerator(rand *rand.Rand, count uint64, opts Options) (uint64, datamodel.Node) {
+func listGenerator(rand *mathrand.Rand, count uint64, opts Options) (uint64, datamodel.Node) {
 	len := rndSize(rand, 10)
 	lb := basicnode.Prototype.List.NewBuilder()
 	la, err := lb.BeginList(int64(len))
@@ -115,7 +115,7 @@ func listGenerator(rand *rand.Rand, count uint64, opts Options) (uint64, datamod
 	return size, lb.Build()
 }
 
-func mapGenerator(rand *rand.Rand, count uint64, opts Options) (uint64, datamodel.Node) {
+func mapGenerator(rand *mathrand.Rand, count uint64, opts Options) (uint64, datamodel.Node) {
 	length := rndSize(rand, 10)
 	mb := basicnode.Prototype.Map.NewBuilder()
 	ma, err := mb.BeginMap(int64(length))
@@ -157,7 +157,7 @@ func mapGenerator(rand *rand.Rand, count uint64, opts Options) (uint64, datamode
 	return size, mb.Build()
 }
 
-func stringGenerator(rand *rand.Rand, count uint64, opts Options) (uint64, datamodel.Node) {
+func stringGenerator(rand *mathrand.Rand, count uint64, opts Options) (uint64, datamodel.Node) {
 	len := rndSize(rand, count/2+1)
 	sb := strings.Builder{}
 	for i := uint64(0); i < len; i++ {
@@ -166,7 +166,7 @@ func stringGenerator(rand *rand.Rand, count uint64, opts Options) (uint64, datam
 	return len, basicnode.NewString(sb.String())
 }
 
-func bytesGenerator(rand *rand.Rand, count uint64, opts Options) (uint64, datamodel.Node) {
+func bytesGenerator(rand *mathrand.Rand, count uint64, opts Options) (uint64, datamodel.Node) {
 	len := rndSize(rand, count/2+1)
 	ba := make([]byte, len)
 	_, err := rand.Read(ba)
@@ -176,11 +176,11 @@ func bytesGenerator(rand *rand.Rand, count uint64, opts Options) (uint64, datamo
 	return len, basicnode.NewBytes(ba)
 }
 
-func boolGenerator(rand *rand.Rand, count uint64, opts Options) (uint64, datamodel.Node) {
+func boolGenerator(rand *mathrand.Rand, count uint64, opts Options) (uint64, datamodel.Node) {
 	return 0, basicnode.NewBool(rand.Float64() > 0.5)
 }
 
-func intGenerator(rand *rand.Rand, count uint64, opts Options) (uint64, datamodel.Node) {
+func intGenerator(rand *mathrand.Rand, count uint64, opts Options) (uint64, datamodel.Node) {
 	i := rand.Int63()
 	if rand.Float64() > 0.5 {
 		i = -i
@@ -188,15 +188,15 @@ func intGenerator(rand *rand.Rand, count uint64, opts Options) (uint64, datamode
 	return 0, basicnode.NewInt(i)
 }
 
-func floatGenerator(rand *rand.Rand, count uint64, opts Options) (uint64, datamodel.Node) {
+func floatGenerator(rand *mathrand.Rand, count uint64, opts Options) (uint64, datamodel.Node) {
 	return 0, basicnode.NewFloat(math.Tan((rand.Float64() - 0.5) * math.Pi))
 }
 
-func nullGenerator(rand *rand.Rand, count uint64, opts Options) (uint64, datamodel.Node) {
+func nullGenerator(rand *mathrand.Rand, count uint64, opts Options) (uint64, datamodel.Node) {
 	return 0, datamodel.Null
 }
 
-func linkGenerator(rand *rand.Rand, count uint64, opts Options) (uint64, datamodel.Node) {
+func linkGenerator(rand *mathrand.Rand, count uint64, opts Options) (uint64, datamodel.Node) {
 	hasher := hashes[rand.Intn(len(hashes))]
 	codec := codecs[rand.Intn(len(codecs))]
 	ba := make([]byte, hasher.length/8)
