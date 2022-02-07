@@ -85,7 +85,7 @@ func (k TypeKind) ActsLike() datamodel.Kind {
 	case TypeKind_List:
 		return datamodel.Kind_List
 	case TypeKind_Unit:
-		return datamodel.Kind_Bool // maps to 'true'.
+		return datamodel.Kind_Bool // maps to 'true'.  // REVIEW: odd that this doesn't map to 'null'?  // TODO this should be standardized in the specs, in a table.
 	case TypeKind_Bool:
 		return datamodel.Kind_Bool
 	case TypeKind_Int:
@@ -101,7 +101,7 @@ func (k TypeKind) ActsLike() datamodel.Kind {
 	case TypeKind_Struct:
 		return datamodel.Kind_Map // clear enough: fields are keys.
 	case TypeKind_Union:
-		return datamodel.Kind_Map // REVIEW: unions are tricky.
+		return datamodel.Kind_Map
 	case TypeKind_Enum:
 		return datamodel.Kind_String // 'AsString' is the one clear thing to define.
 	case TypeKind_Any:
