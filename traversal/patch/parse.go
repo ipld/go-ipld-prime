@@ -1,9 +1,11 @@
 package patch
 
 import (
+	"bytes"
 	"io"
 	"strings"
 
+	"github.com/ipld/go-ipld-prime/codec"
 	"github.com/ipld/go-ipld-prime/node/bindnode"
 
 	"github.com/ipld/go-ipld-prime/codec/json"
@@ -24,7 +26,7 @@ var ts = func() schema.TypeSystem {
 			value optional Any
 			from optional String
 		}
-		type OperationList [Operation]
+		type OperationSequence [Operation]
 	`))
 	if err != nil {
 		panic(err)
@@ -37,9 +39,12 @@ var ts = func() schema.TypeSystem {
 	return ts
 }()
 
-// FIXME this should surely accept a codec.Decoder parameter
-func LoadPatch(r io.Reader) ([]Operation, error) {
-	npt := bindnode.Prototype((*[]operationRaw)(nil), ts.TypeByName("OperationList"))
+func ParseBytes(b []byte, dec codec.Decoder) ([]Operation, error) {
+	return Parse(bytes.NewReader(b), dec)
+}
+
+func Parse(r io.Reader, dec codec.Decoder) ([]Operation, error) {
+	npt := bindnode.Prototype((*[]operationRaw)(nil), ts.TypeByName("OperationSequence"))
 	nb := npt.Representation().NewBuilder()
 	if err := json.Decode(nb, r); err != nil {
 		return nil, err

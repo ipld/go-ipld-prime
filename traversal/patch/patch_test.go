@@ -48,7 +48,7 @@ func testOneSpecFixtureFile(t *testing.T, filename string) {
 			if err != nil {
 				t.Errorf("failed to parse fixture data: %s", err)
 			}
-			ops, err := LoadPatch(bytes.NewReader(patchBlob))
+			ops, err := ParseBytes(patchBlob, dagjson.Decode)
 			if err != nil {
 				t.Errorf("failed to parse fixture patch: %s", err)
 			}
@@ -59,7 +59,7 @@ func testOneSpecFixtureFile(t *testing.T, filename string) {
 			}
 
 			// Do the thing!
-			actualResult, err := Apply(initial, ops)
+			actualResult, err := Eval(initial, ops)
 			if err != nil {
 				t.Errorf("patch did not apply: %s", err)
 			}

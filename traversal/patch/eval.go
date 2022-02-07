@@ -25,10 +25,10 @@ type Operation struct {
 	From  datamodel.Path // Present on 'move', 'copy'.
 }
 
-func Apply(n datamodel.Node, ops []Operation) (datamodel.Node, error) {
+func Eval(n datamodel.Node, ops []Operation) (datamodel.Node, error) {
 	var err error
 	for _, op := range ops {
-		n, err = ApplyOne(n, op)
+		n, err = EvalOne(n, op)
 		if err != nil {
 			return nil, err
 		}
@@ -36,7 +36,7 @@ func Apply(n datamodel.Node, ops []Operation) (datamodel.Node, error) {
 	return n, nil
 }
 
-func ApplyOne(n datamodel.Node, op Operation) (datamodel.Node, error) {
+func EvalOne(n datamodel.Node, op Operation) (datamodel.Node, error) {
 	switch op.Op {
 	case "add":
 		return traversal.FocusedTransform(n, op.Path, func(_ traversal.Progress, point datamodel.Node) (datamodel.Node, error) {
