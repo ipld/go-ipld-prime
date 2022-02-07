@@ -147,6 +147,21 @@ func (prog Progress) WalkAdv(n datamodel.Node, s selector.Selector, fn AdvVisitF
 	return prog.walkAdv(n, s, fn)
 }
 
+// ResumeWalkAdv resumes a WalkAdv by short-cutting to the path specified by Progress.Path,
+// and then continuing. The specified node n should be the root of the traversal.
+func (prog Progress) ResumeWalkAdv(n datamodel.Node, s selector.Selector, fn AdvVisitFn) error {
+	innerProg := Progress{
+		Cfg:       prog.Cfg,
+		Path:      datamodel.NewPath(nil),
+		Budget:    prog.Budget,
+		SeenLinks: prog.SeenLinks,
+	}
+
+	return innerProg.walkAdv(n, s, func(p Progress, n datamodel.Node, vr VisitReason) error {
+		return SkipMe{}
+	})
+}
+
 func (prog Progress) walkAdv(n datamodel.Node, s selector.Selector, fn AdvVisitFn) error {
 	// Check the budget!
 	if prog.Budget != nil {
