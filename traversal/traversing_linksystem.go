@@ -48,20 +48,22 @@ func (pn pathNode) allLinks() []datamodel.Link {
 // getPaths returns reconstructed paths in the tree rooted at 'root'
 func (pn pathNode) getLinks(root datamodel.Path) []datamodel.Link {
 	segs := root.Segments()
-	if len(segs) == 0 {
+	switch len(segs) {
+	case 0:
 		if pn.link != nil {
 			return []datamodel.Link{pn.link}
 		}
 		return []datamodel.Link{}
-	} else if len(segs) == 1 {
+	case 1:
 		// base case 1: get all paths below this child.
 		next := segs[0]
 		if child, ok := pn.children[next]; ok {
 			return child.allLinks()
-		} else if !ok {
-			return []datamodel.Link{}
 		}
+		return []datamodel.Link{}
+	default:
 	}
+
 	next := segs[0]
 	if _, ok := pn.children[next]; !ok {
 		// base case 2: not registered sub-path.
@@ -135,10 +137,8 @@ func (ts *traversalState) traverse(lc linking.LinkContext, l ipld.Link) (io.Read
 func WithTraversingLinksystem(p *Progress) (TraverseResumer, error) {
 	ts := &traversalState{
 		underlyingOpener: p.Cfg.LinkSystem.StorageReadOpener,
-		position:         0,
 		pathOrder:        make(map[int]datamodel.Path),
 		pathTree:         newPath(nil),
-		target:           nil,
 		progress:         p,
 	}
 	p.Cfg.LinkSystem.StorageReadOpener = ts.traverse
