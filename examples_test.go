@@ -8,6 +8,7 @@ import (
 	"github.com/ipld/go-ipld-prime"
 	"github.com/ipld/go-ipld-prime/codec/dagjson"
 	"github.com/ipld/go-ipld-prime/node/basicnode"
+	"github.com/ipld/go-ipld-prime/node/bindnode"
 	"github.com/ipld/go-ipld-prime/schema"
 )
 
@@ -72,4 +73,37 @@ func ExampleLoadSchema() {
 	// Output:
 	// field name="foo" nullable=false type=Int
 	// field name="bar" nullable=true type=String
+}
+
+// Example_goValueWithSchema shows how to combine a Go value with an IPLD
+// schema, which can then be used as an IPLD node.
+//
+// For more examples and documentation, see the node/bindnode package.
+func Example_goValueWithSchema() {
+	type Person struct {
+		Name    string
+		Age     int
+		Friends []string
+	}
+
+	ts, err := ipld.LoadSchemaBytes([]byte(`
+		type Person struct {
+			name    String
+			age     Int
+			friends [String]
+		} representation tuple
+	`))
+	if err != nil {
+		panic(err)
+	}
+	schemaType := ts.TypeByName("Person")
+	person := &Person{Name: "Alice", Age: 34, Friends: []string{"Bob"}}
+	node := bindnode.Wrap(person, schemaType)
+
+	fmt.Printf("%#v\n", person)
+	dagjson.Encode(node.Representation(), os.Stdout)
+
+	// Output:
+	// &ipld_test.Person{Name:"Alice", Age:34, Friends:[]string{"Bob"}}
+	// ["Alice",34,["Bob"]]
 }
