@@ -47,7 +47,7 @@ func (w *_prototypeRepr) NewBuilder() datamodel.NodeBuilder {
 type _nodeRepr _node
 
 func (w *_nodeRepr) Kind() datamodel.Kind {
-	switch stg := reprStrategy(w.schemaType).(type) {
+	switch reprStrategy(w.schemaType).(type) {
 	case schema.StructRepresentation_Stringjoin:
 		return datamodel.Kind_String
 	case schema.StructRepresentation_Map:
@@ -69,10 +69,8 @@ func (w *_nodeRepr) Kind() datamodel.Kind {
 		return datamodel.Kind_Int
 	case schema.EnumRepresentation_String:
 		return datamodel.Kind_String
-	case nil:
-		return (*_node)(w).Kind()
 	default:
-		panic(fmt.Sprintf("bindnode TODO Kind: %T", stg))
+		return (*_node)(w).Kind()
 	}
 }
 
@@ -238,17 +236,11 @@ func (w *_nodeRepr) MapIterator() datamodel.MapIterator {
 		itr := (*_node)(w).MapIterator().(*_unionIterator)
 		return (*_unionIteratorRepr)(itr)
 	default:
-		switch st := (w.schemaType).(type) {
-		case *schema.TypeMap:
-			val := nonPtrVal(w.val)
-			return &_mapIteratorRepr{
-				schemaType: st,
-				keysVal:    val.FieldByName("Keys"),
-				valuesVal:  val.FieldByName("Values"),
-			}
-		default:
-			panic(fmt.Sprintf("bindnode TODO: mapitr.repr for typekind %s", w.schemaType.TypeKind()))
+		iter, _ := (*_node)(w).MapIterator().(*_mapIterator)
+		if iter == nil {
+			return nil
 		}
+		return (*_mapIteratorRepr)(iter)
 	}
 }
 
@@ -267,11 +259,18 @@ func (w *_mapIteratorRepr) Done() bool {
 }
 
 func (w *_nodeRepr) ListIterator() datamodel.ListIterator {
-	if reprStrategy(w.schemaType) == nil {
-		return (*_listIteratorRepr)((*_node)(w).ListIterator().(*_listIterator))
+	// TODO: support kinded unions?
+	switch reprStrategy(w.schemaType).(type) {
+	case schema.StructRepresentation_Tuple:
+		typ := w.schemaType.(*schema.TypeStruct)
+		return &_tupleIteratorRepr{schemaType: typ, fields: typ.Fields(), val: w.val}
+	default:
+		iter, _ := (*_node)(w).ListIterator().(*_listIterator)
+		if iter == nil {
+			return nil
+		}
+		return (*_listIteratorRepr)(iter)
 	}
-	// TODO this is probably failing silently for structs with tuple representation.
-	return nil
 }
 
 type _listIteratorRepr _listIterator
@@ -299,6 +298,33 @@ func (w *_nodeRepr) lengthMinusAbsents() int64 {
 	return n
 }
 
+type _tupleIteratorRepr struct {
+	// TODO: support embedded fields?
+	schemaType *schema.TypeStruct
+	fields     []schema.StructField
+	val        reflect.Value // non-pointer
+	nextIndex  int
+
+	// these are only used in repr.go
+	reprEnd int
+}
+
+func (w *_tupleIteratorRepr) Next() (index int64, value datamodel.Node, _ error) {
+_skipAbsent:
+	_, value, err := (*_structIterator)(w).Next()
+	if err != nil {
+		return 0, nil, err
+	}
+	if value.IsAbsent() {
+		goto _skipAbsent
+	}
+	return int64(w.nextIndex), reprNode(value), nil
+}
+
+func (w *_tupleIteratorRepr) Done() bool {
+	return w.nextIndex >= w.reprEnd
+}
+
 func (w *_nodeRepr) lengthMinusTrailingAbsents() int64 {
 	fields := w.schemaType.(*schema.TypeStruct).Fields()
 	for i := len(fields) - 1; i >= 0; i-- {
@@ -317,18 +343,19 @@ func (w *_nodeRepr) Length() int64 {
 	case schema.StructRepresentation_Map:
 		return w.lengthMinusAbsents()
 	case schema.StructRepresentation_Tuple:
+		// TODO: presumably, tuples should disallow optional fields.
+		// But the following tests disagrees:
+		// https://github.com/ipld/go-ipld-prime/blob/297518c911326ef7f44800dc32a923e7b084fccc/node/tests/schemaStructReprTuple.go#L24-L32
+		// return int64(len(w.schemaType.(*schema.TypeStruct).Fields()))
 		return w.lengthMinusAbsents()
 	case schema.UnionRepresentation_Keyed:
 		return (*_node)(w).Length()
 	case schema.UnionRepresentation_Kinded:
 		w = w.asKinded(stg, w.Kind())
-		// continues below
-	case nil:
-		// continues below
+		return (*_node)(w).Length()
 	default:
-		panic(fmt.Sprintf("bindnode TODO: %T", stg))
+		return (*_node)(w).Length()
 	}
-	return (*_node)(w).Length()
 }
 
 func (w *_nodeRepr) IsAbsent() bool {
@@ -349,10 +376,8 @@ func (w *_nodeRepr) AsBool() (bool, error) {
 	switch stg := reprStrategy(w.schemaType).(type) {
 	case schema.UnionRepresentation_Kinded:
 		return w.asKinded(stg, datamodel.Kind_Bool).AsBool()
-	case nil:
-		return (*_node)(w).AsBool()
 	default:
-		return false, fmt.Errorf("bindnode TODO: %T", stg)
+		return (*_node)(w).AsBool()
 	}
 }
 
@@ -389,10 +414,8 @@ func (w *_nodeRepr) AsInt() (int64, error) {
 		default:
 			return 0, fmt.Errorf("AsInt: unexpected kind: %s", w.val.Kind())
 		}
-	case nil:
-		return (*_node)(w).AsInt()
 	default:
-		return 0, fmt.Errorf("bindnode TODO: %T", stg)
+		return (*_node)(w).AsInt()
 	}
 }
 
@@ -400,10 +423,8 @@ func (w *_nodeRepr) AsFloat() (float64, error) {
 	switch stg := reprStrategy(w.schemaType).(type) {
 	case schema.UnionRepresentation_Kinded:
 		return w.asKinded(stg, datamodel.Kind_Float).AsFloat()
-	case nil:
-		return (*_node)(w).AsFloat()
 	default:
-		return 0, fmt.Errorf("bindnode TODO: %T", stg)
+		return (*_node)(w).AsFloat()
 	}
 }
 
@@ -461,25 +482,17 @@ func (w *_nodeRepr) AsString() (string, error) {
 			}
 		}
 		return "", fmt.Errorf("AsString: %q is not a valid member of enum %s", s, w.schemaType.Name())
-	case nil:
-		// continues below
 	default:
-		return "", fmt.Errorf("bindnode TODO: %T", stg)
+		return (*_node)(w).AsString()
 	}
-	// Things that have reached here, should be only those things that have string kind naturally,
-	// and so using the same method as the type level is correct.
-	// TODO is this applicable for anything other than... strings?
-	return (*_node)(w).AsString()
 }
 
 func (w *_nodeRepr) AsBytes() ([]byte, error) {
 	switch stg := reprStrategy(w.schemaType).(type) {
 	case schema.UnionRepresentation_Kinded:
 		return w.asKinded(stg, datamodel.Kind_Bytes).AsBytes()
-	case nil:
-		return (*_node)(w).AsBytes()
 	default:
-		return nil, fmt.Errorf("bindnode TODO: %T", stg)
+		return (*_node)(w).AsBytes()
 	}
 }
 
@@ -487,10 +500,8 @@ func (w *_nodeRepr) AsLink() (datamodel.Link, error) {
 	switch stg := reprStrategy(w.schemaType).(type) {
 	case schema.UnionRepresentation_Kinded:
 		return w.asKinded(stg, datamodel.Kind_Link).AsLink()
-	case nil:
-		return (*_node)(w).AsLink()
 	default:
-		return nil, fmt.Errorf("bindnode TODO: %T", stg)
+		return (*_node)(w).AsLink()
 	}
 }
 
@@ -603,12 +614,7 @@ func (w *_assemblerRepr) BeginList(sizeHint int64) (datamodel.ListAssembler, err
 }
 
 func (w *_assemblerRepr) AssignNull() error {
-	switch stg := reprStrategy(w.schemaType).(type) {
-	case nil:
-		return (*_assembler)(w).AssignNull()
-	default:
-		return fmt.Errorf("bindnode TODO: %T", stg)
-	}
+	return (*_assembler)(w).AssignNull()
 }
 
 func (w *_assemblerRepr) AssignBool(b bool) error {

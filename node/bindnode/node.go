@@ -25,22 +25,23 @@ var (
 	_ datamodel.Node   = (*_nodeRepr)(nil)
 
 	_ datamodel.NodeBuilder   = (*_builder)(nil)
-	_ datamodel.NodeAssembler = (*_assembler)(nil)
 	_ datamodel.NodeBuilder   = (*_builderRepr)(nil)
+	_ datamodel.NodeAssembler = (*_assembler)(nil)
 	_ datamodel.NodeAssembler = (*_assemblerRepr)(nil)
 
 	_ datamodel.MapAssembler = (*_structAssembler)(nil)
-	_ datamodel.MapIterator  = (*_structIterator)(nil)
 	_ datamodel.MapAssembler = (*_structAssemblerRepr)(nil)
+	_ datamodel.MapIterator  = (*_structIterator)(nil)
 	_ datamodel.MapIterator  = (*_structIteratorRepr)(nil)
 
 	_ datamodel.ListAssembler = (*_listAssembler)(nil)
-	_ datamodel.ListIterator  = (*_listIterator)(nil)
 	_ datamodel.ListAssembler = (*_listAssemblerRepr)(nil)
+	_ datamodel.ListIterator  = (*_listIterator)(nil)
+	_ datamodel.ListIterator  = (*_tupleIteratorRepr)(nil)
 
 	_ datamodel.MapAssembler = (*_unionAssembler)(nil)
-	_ datamodel.MapIterator  = (*_unionIterator)(nil)
 	_ datamodel.MapAssembler = (*_unionAssemblerRepr)(nil)
+	_ datamodel.MapIterator  = (*_unionIterator)(nil)
 	_ datamodel.MapIterator  = (*_unionIteratorRepr)(nil)
 )
 
