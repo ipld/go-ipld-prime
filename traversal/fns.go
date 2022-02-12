@@ -37,8 +37,9 @@ type Progress struct {
 		Path datamodel.Path
 		Link datamodel.Link
 	}
-	Budget    *Budget                     // If present, tracks "budgets" for how many more steps we're willing to take before we should halt.
-	SeenLinks map[datamodel.Link]struct{} // Set used to remember which links have been visited before, if Cfg.LinkVisitOnlyOnce is true.
+	PastStartAtPath bool
+	Budget          *Budget                     // If present, tracks "budgets" for how many more steps we're willing to take before we should halt.
+	SeenLinks       map[datamodel.Link]struct{} // Set used to remember which links have been visited before, if Cfg.LinkVisitOnlyOnce is true.
 }
 
 type Config struct {
@@ -46,6 +47,7 @@ type Config struct {
 	LinkSystem                     linking.LinkSystem             // LinkSystem used for automatic link loading, and also any storing if mutation features (e.g. traversal.Transform) are used.
 	LinkTargetNodePrototypeChooser LinkTargetNodePrototypeChooser // Chooser for Node implementations to produce during automatic link traversal.
 	LinkVisitOnlyOnce              bool                           // By default, we visit across links wherever we see them again, even if we've visited them before, because the reason for visiting might be different than it was before since we got to it via a different path.  If set to true, track links we've seen before in Progress.SeenLinks and do not visit them again.  Note that sufficiently complex selectors may require valid revisiting of some links, so setting this to true can change behavior noticably and should be done with care.
+	StartAtPath                    datamodel.Path                 // allows a traversal to skip execution of everything it would traverse before a given path
 }
 
 type Budget struct {
