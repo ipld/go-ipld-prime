@@ -431,74 +431,128 @@ func TestKindMismatches(t *testing.T) {
 
 	someCid, err := cid.Decode("bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi")
 	qt.Assert(t, err, qt.IsNil)
-	assembleKind := func(proto datamodel.NodePrototype, kind datamodel.Kind) error {
+	assembleAsKind := func(proto datamodel.NodePrototype, kind datamodel.Kind) (ipld.Node, error) {
 		nb := proto.NewBuilder()
 		switch kind {
 		case datamodel.Kind_Bool:
 			if err := nb.AssignBool(true); err != nil {
-				return err
+				return nil, err
 			}
 		case datamodel.Kind_Int:
 			if err := nb.AssignInt(123); err != nil {
-				return err
+				return nil, err
 			}
 		case datamodel.Kind_Float:
 			if err := nb.AssignFloat(12.5); err != nil {
-				return err
+				return nil, err
 			}
 		case datamodel.Kind_String:
 			if err := nb.AssignString("foo"); err != nil {
-				return err
+				return nil, err
 			}
 		case datamodel.Kind_Bytes:
 			if err := nb.AssignBytes([]byte("\x00bar")); err != nil {
-				return err
+				return nil, err
 			}
 		case datamodel.Kind_Link:
 			if err := nb.AssignLink(cidlink.Link{Cid: someCid}); err != nil {
-				return err
+				return nil, err
 			}
 		case datamodel.Kind_Map:
 			asm, err := nb.BeginMap(-1)
 			if err != nil {
-				return err
+				return nil, err
 			}
 			// First via AssembleKey.
 			if err := asm.AssembleKey().AssignString("F1"); err != nil {
-				return err
+				return nil, err
 			}
 			if err := asm.AssembleValue().AssignInt(101); err != nil {
-				return err
+				return nil, err
 			}
 			// Then via AssembleEntry.
 			entryAsm, err := asm.AssembleEntry("F2")
 			if err != nil {
-				return err
+				return nil, err
 			}
 			if err := entryAsm.AssignInt(102); err != nil {
-				return err
+				return nil, err
 			}
 			if err := asm.Finish(); err != nil {
-				return err
+				return nil, err
 			}
 		case datamodel.Kind_List:
 			asm, err := nb.BeginList(-1)
 			if err != nil {
-				return err
+				return nil, err
 			}
 			if err := asm.AssembleValue().AssignInt(101); err != nil {
-				return err
+				return nil, err
 			}
 			if err := asm.AssembleValue().AssignInt(102); err != nil {
-				return err
+				return nil, err
 			}
 			if err := asm.Finish(); err != nil {
-				return err
+				return nil, err
 			}
 		}
 		node := nb.Build()
 		// If we succeeded, node must never be nil.
 		qt.Assert(t, node, qt.Not(qt.IsNil))
+		return node, nil
+	}
+	useNodeAsKind := func(node datamodel.Node, kind datamodel.Kind) error {
+		// TODO: also check valid methods per kind, like Length and LookupByX
+		switch kind {
+		case datamodel.Kind_Bool:
+			if _, err := node.AsBool(); err != nil {
+				return err
+			}
+		case datamodel.Kind_Int:
+			if _, err := node.AsInt(); err != nil {
+				return err
+			}
+		case datamodel.Kind_Float:
+			if _, err := node.AsFloat(); err != nil {
+				return err
+			}
+		case datamodel.Kind_String:
+			if _, err := node.AsString(); err != nil {
+				return err
+			}
+		case datamodel.Kind_Bytes:
+			if _, err := node.AsBytes(); err != nil {
+				return err
+			}
+		case datamodel.Kind_Link:
+			if _, err := node.AsLink(); err != nil {
+				return err
+			}
+		case datamodel.Kind_Map:
+			iter := node.MapIterator()
+			if iter == nil {
+				// Return a dummy error to signal whether iter is nil or not.
+				return datamodel.ErrWrongKind{MethodName: "TestKindMismatches_Dummy"}
+			}
+			for !iter.Done() {
+				_, _, err := iter.Next()
+				if err != nil {
+					return err
+				}
+			}
+		case datamodel.Kind_List:
+			iter := node.ListIterator()
+			if iter == nil {
+				// Return a dummy error to signal whether iter is nil or not.
+				return datamodel.ErrWrongKind{MethodName: "TestKindMismatches_Dummy"}
+			}
+			for !iter.Done() {
+				_, _, err := iter.Next()
+				if err != nil {
+					return err
+				}
+			}
+		}
 		return nil
 	}
 
@@ -509,6 +563,11 @@ func TestKindMismatches(t *testing.T) {
 		kindTest := kindTest
 		t.Run(kindTest.name, func(t *testing.T) {
 			t.Parallel()
+			defer func() {
+				if r := recover(); r != nil {
+					t.Errorf("caught panic: %v", r)
+				}
+			}()
 
 			ts, err := ipld.LoadSchemaBytes([]byte(kindTest.schemaSrc))
 			qt.Assert(t, err, qt.IsNil)
@@ -518,21 +577,35 @@ func TestKindMismatches(t *testing.T) {
 			// Note that the Go type is inferred.
 			proto := bindnode.Prototype(nil, schemaType).Representation()
 
-			actualKind := schemaType.RepresentationBehavior()
+			reprBehaviorKind := schemaType.RepresentationBehavior()
 
 			for _, kind := range allKinds {
-				err := assembleKind(proto, kind)
-				comment := qt.Commentf("Assign of %v", kind)
+				_, err := assembleAsKind(proto, kind)
+				comment := qt.Commentf("assigned as %v", kind)
 				// Assembling should succed iff we used the right kind.
-				if kind == actualKind {
+				if kind == reprBehaviorKind {
 					qt.Assert(t, err, qt.IsNil, comment)
 				} else {
 					qt.Assert(t, err, qt.Not(qt.IsNil), comment)
 					qt.Assert(t, err, qt.ErrorAs, new(datamodel.ErrWrongKind), comment)
 				}
+			}
 
-				// TODO: check AsT methods just like AssignT
-				// TODO: also check valid methods per kind, like Length
+			node, err := assembleAsKind(proto, reprBehaviorKind)
+			qt.Assert(t, err, qt.IsNil)
+			node = node.(schema.TypedNode).Representation()
+			nodeKind := node.Kind()
+
+			for _, kind := range allKinds {
+				err := useNodeAsKind(node, kind)
+				comment := qt.Commentf("used as %v", kind)
+				// Using the node should succed iff we used the right kind.
+				if kind == nodeKind {
+					qt.Assert(t, err, qt.IsNil, comment)
+				} else {
+					qt.Assert(t, err, qt.Not(qt.IsNil), comment)
+					qt.Assert(t, err, qt.ErrorAs, new(datamodel.ErrWrongKind), comment)
+				}
 			}
 		})
 	}
