@@ -61,7 +61,7 @@ func testOneSpecFixtureFile(t *testing.T, filename string) {
 			// Do the thing!
 			actualResult, err := Eval(initial, ops)
 			if err != nil {
-				t.Errorf("patch did not apply: %s", err)
+				t.Fatalf("patch did not apply: %s", err)
 			}
 
 			// Serialize (and pretty print) result, so that we can diff it.
