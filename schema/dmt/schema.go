@@ -1,7 +1,5 @@
 package schemadmt
 
-//go:generate go test -run=Generate -vet=off -tags=bindnodegen
-
 import (
 	"fmt"
 
@@ -15,6 +13,8 @@ import (
 var Type struct {
 	Schema schema.TypedPrototype
 }
+
+//go:generate go run -tags=schemadmtgen gen.go
 
 var schemaTypeSystem schema.TypeSystem
 
