@@ -19,7 +19,13 @@ var ts = func() schema.TypeSystem {
 	sch, err := schemadsl.Parse("", strings.NewReader(
 		// This could be more accurately modelled as an inline union,
 		// but that seems like work, given how high the overlap is.
+		//
+		// This schema may also belong in the specs repo,
+		// but if so, we'd still replicate it here,
+		// because as a rule, we don't require the specs repo submodule be present for the source to compile (just for all the tests to run).
 		`
+		# Operation and OperationSequence are the types that describe operations (but not what to apply them on).
+		# See the Instruction type for describing both operations and what to apply them on.
 		type Operation struct {
 			op String
 			path String
@@ -27,6 +33,21 @@ var ts = func() schema.TypeSystem {
 			from optional String
 		}
 		type OperationSequence [Operation]
+
+		type Instruction struct {
+			startAt Link
+			operations OperationSequence
+			# future: optional field for adl signalling and/or other lenses
+		}
+		type InstructionResult union {
+			| Error "error"
+			| Link "result"
+		} representation keyed
+		type Error struct {
+			code String # enum forthcoming
+			message String
+			details {String:String}
+		}
 	`))
 	if err != nil {
 		panic(err)
