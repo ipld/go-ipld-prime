@@ -25,7 +25,12 @@ func (pn pathNode) addPath(p []datamodel.PathSegment, link datamodel.Link) {
 		return
 	}
 	if _, ok := pn.children[p[0]]; !ok {
-		child := newPath(link)
+var child *pathNode
+if len(p) == 1 {
+  child = newPath(link)
+} else {
+   child = newPath(nil)
+}
 		pn.children[p[0]] = child
 	}
 	pn.children[p[0]].addPath(p[1:], link)
