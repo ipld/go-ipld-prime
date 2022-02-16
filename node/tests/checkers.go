@@ -22,6 +22,9 @@ func (n *nodeContentEqualsChecker) Check(got interface{}, args []interface{}, no
 	if want == nil {
 		return qt.IsNil.Check(got, args, note)
 	}
+	if got == nil {
+		return qt.IsNotNil.Check(got, args, note)
+	}
 	wantNode, ok := want.(datamodel.Node)
 	if !ok {
 		return errors.New("this checker only supports checking datamodel.Node values")
