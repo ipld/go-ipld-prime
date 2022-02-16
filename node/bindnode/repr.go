@@ -164,6 +164,9 @@ func (w *_nodeRepr) LookupByIndex(idx int64) (datamodel.Node, error) {
 		return w.asKinded(stg, datamodel.Kind_List).LookupByIndex(idx)
 	case schema.StructRepresentation_Tuple:
 		fields := w.schemaType.(*schema.TypeStruct).Fields()
+		if idx < 0 || int(idx) >= len(fields) {
+			return nil, datamodel.ErrNotExists{Segment: datamodel.PathSegmentOfInt(idx)}
+		}
 		field := fields[idx]
 		v, err := (*_node)(w).LookupByString(field.Name())
 		if err != nil {
@@ -259,7 +262,9 @@ func (w *_mapIteratorRepr) Done() bool {
 }
 
 func (w *_nodeRepr) ListIterator() datamodel.ListIterator {
-	// TODO: support kinded unions?
+	if stg, ok := reprStrategy(w.schemaType).(schema.UnionRepresentation_Kinded); ok {
+		w = w.asKinded(stg, datamodel.Kind_List)
+	}
 	switch reprStrategy(w.schemaType).(type) {
 	case schema.StructRepresentation_Tuple:
 		typ := w.schemaType.(*schema.TypeStruct)
@@ -506,7 +511,7 @@ func (w *_nodeRepr) AsLink() (datamodel.Link, error) {
 }
 
 func (w *_nodeRepr) Prototype() datamodel.NodePrototype {
-	panic("bindnode TODO: Prototype")
+	return (*_prototypeRepr)((*_node)(w).Prototype().(*_prototype))
 }
 
 type _builderRepr struct {
@@ -537,15 +542,24 @@ type _assemblerRepr struct {
 	nullable bool
 }
 
-func assemblerRepr(am datamodel.NodeAssembler) *_assemblerRepr {
-	return (*_assemblerRepr)(am.(*_assembler))
+func assemblerRepr(am datamodel.NodeAssembler) datamodel.NodeAssembler {
+	switch am := am.(type) {
+	case *_assembler:
+		return (*_assemblerRepr)(am)
+	case _errorAssembler:
+		return am
+	default:
+		panic(fmt.Sprintf("unexpected NodeAssembler type: %T", am))
+	}
 }
 
-func (w *_assemblerRepr) asKinded(stg schema.UnionRepresentation_Kinded, kind datamodel.Kind) *_assemblerRepr {
+func (w *_assemblerRepr) asKinded(stg schema.UnionRepresentation_Kinded, kind datamodel.Kind) datamodel.NodeAssembler {
 	name := stg.GetMember(kind)
 	members := w.schemaType.(*schema.TypeUnion).Members()
+	kindSet := make([]datamodel.Kind, 0, len(members))
 	for idx, member := range members {
 		if member.Name() != name {
+			kindSet = append(kindSet, member.RepresentationBehavior())
 			continue
 		}
 		w2 := *w
@@ -566,12 +580,17 @@ func (w *_assemblerRepr) asKinded(stg schema.UnionRepresentation_Kinded, kind da
 		}
 		return &w2
 	}
-	return nil
+	return _errorAssembler{datamodel.ErrWrongKind{
+		TypeName:        w.schemaType.Name() + ".Repr",
+		MethodName:      "", // TODO: we could fill it via runtime.Callers
+		AppropriateKind: datamodel.KindSet(kindSet),
+		ActualKind:      kind,
+	}}
 }
 
 func (w *_assemblerRepr) BeginMap(sizeHint int64) (datamodel.MapAssembler, error) {
 	if stg, ok := reprStrategy(w.schemaType).(schema.UnionRepresentation_Kinded); ok {
-		w = w.asKinded(stg, datamodel.Kind_Map)
+		return w.asKinded(stg, datamodel.Kind_Map).BeginMap(sizeHint)
 	}
 	asm, err := (*_assembler)(w).BeginMap(sizeHint)
 	if err != nil {
@@ -587,7 +606,7 @@ func (w *_assemblerRepr) BeginMap(sizeHint int64) (datamodel.MapAssembler, error
 	case *basicMapAssembler:
 		return asm, nil
 	default:
-		return nil, fmt.Errorf("bindnode TODO: %T", asm)
+		return nil, fmt.Errorf("bindnode BeginMap TODO: %T", asm)
 	}
 }
 
@@ -804,7 +823,7 @@ func (w *_structAssemblerRepr) AssembleKey() datamodel.NodeAssembler {
 			ActualKind:      datamodel.Kind_List,
 		}}
 	default:
-		return _errorAssembler{fmt.Errorf("bindnode TODO: %T", stg)}
+		return _errorAssembler{fmt.Errorf("bindnode AssembleKey TODO: %T", stg)}
 	}
 }
 
@@ -819,7 +838,7 @@ func (w *_structAssemblerRepr) AssembleValue() datamodel.NodeAssembler {
 		valAsm = assemblerRepr(valAsm)
 		return valAsm
 	default:
-		return _errorAssembler{fmt.Errorf("bindnode TODO: %T", stg)}
+		return _errorAssembler{fmt.Errorf("bindnode AssembleValue TODO: %T", stg)}
 	}
 }
 
@@ -845,7 +864,7 @@ func (w *_structAssemblerRepr) Finish() error {
 		}
 		return err
 	default:
-		return fmt.Errorf("bindnode TODO: %T", stg)
+		return fmt.Errorf("bindnode Finish TODO: %T", stg)
 	}
 }
 
@@ -895,6 +914,11 @@ func (w *_listStructAssemblerRepr) AssembleValue() datamodel.NodeAssembler {
 	switch stg := reprStrategy(w.schemaType).(type) {
 	case schema.StructRepresentation_Tuple:
 		fields := w.schemaType.Fields()
+		if w.nextIndex >= len(fields) {
+			return _errorAssembler{datamodel.ErrNotExists{
+				Segment: datamodel.PathSegmentOfInt(int64(w.nextIndex)),
+			}}
+		}
 		field := fields[w.nextIndex]
 		w.nextIndex++
 
@@ -905,7 +929,7 @@ func (w *_listStructAssemblerRepr) AssembleValue() datamodel.NodeAssembler {
 		entryAsm = assemblerRepr(entryAsm)
 		return entryAsm
 	default:
-		return _errorAssembler{fmt.Errorf("bindnode TODO: %T", stg)}
+		return _errorAssembler{fmt.Errorf("bindnode AssembleValue TODO: %T", stg)}
 	}
 }
 
@@ -914,7 +938,7 @@ func (w *_listStructAssemblerRepr) Finish() error {
 	case schema.StructRepresentation_Tuple:
 		return (*_structAssembler)(w).Finish()
 	default:
-		return fmt.Errorf("bindnode TODO: %T", stg)
+		return fmt.Errorf("bindnode Finish TODO: %T", stg)
 	}
 }
 
@@ -945,7 +969,7 @@ func (w *_unionAssemblerRepr) AssembleKey() datamodel.NodeAssembler {
 	case schema.UnionRepresentation_Keyed:
 		return (*_unionAssembler)(w).AssembleKey()
 	default:
-		return _errorAssembler{fmt.Errorf("bindnode TODO: %T", stg)}
+		return _errorAssembler{fmt.Errorf("bindnode AssembleKey TODO: %T", stg)}
 	}
 }
 
@@ -960,7 +984,7 @@ func (w *_unionAssemblerRepr) AssembleValue() datamodel.NodeAssembler {
 		valAsm = assemblerRepr(valAsm)
 		return valAsm
 	default:
-		return _errorAssembler{fmt.Errorf("bindnode TODO: %T", stg)}
+		return _errorAssembler{fmt.Errorf("bindnode AssembleValue TODO: %T", stg)}
 	}
 }
 
@@ -977,7 +1001,7 @@ func (w *_unionAssemblerRepr) Finish() error {
 	case schema.UnionRepresentation_Keyed:
 		return (*_unionAssembler)(w).Finish()
 	default:
-		return fmt.Errorf("bindnode TODO: %T", stg)
+		return fmt.Errorf("bindnode Finish TODO: %T", stg)
 	}
 }
 
@@ -1009,7 +1033,7 @@ func (w *_structIteratorRepr) Next() (key, value datamodel.Node, _ error) {
 		}
 		return key, reprNode(value), nil
 	default:
-		return nil, nil, fmt.Errorf("bindnode TODO: %T", stg)
+		return nil, nil, fmt.Errorf("bindnode Next TODO: %T", stg)
 	}
 }
 
@@ -1020,7 +1044,7 @@ func (w *_structIteratorRepr) Done() bool {
 		// documented somewhere
 		return w.nextIndex >= w.reprEnd
 	default:
-		panic(fmt.Sprintf("bindnode TODO: %T", stg))
+		panic(fmt.Sprintf("bindnode Done TODO: %T", stg))
 	}
 }
 
@@ -1040,7 +1064,7 @@ func (w *_unionIteratorRepr) Next() (key, value datamodel.Node, _ error) {
 		}
 		return key, reprNode(value), nil
 	default:
-		return nil, nil, fmt.Errorf("bindnode TODO: %T", stg)
+		return nil, nil, fmt.Errorf("bindnode Next TODO: %T", stg)
 	}
 }
 
@@ -1049,6 +1073,6 @@ func (w *_unionIteratorRepr) Done() bool {
 	case schema.UnionRepresentation_Keyed:
 		return (*_unionIterator)(w).Done()
 	default:
-		panic(fmt.Sprintf("bindnode TODO: %T", stg))
+		panic(fmt.Sprintf("bindnode Done TODO: %T", stg))
 	}
 }
