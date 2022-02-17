@@ -37,7 +37,7 @@ type Progress struct {
 		Path datamodel.Path
 		Link datamodel.Link
 	}
-	PastStartAtPath bool
+	PastStartAtPath bool                        // Indicates whether the traversal has progressed passed the StartAtPath in the config -- use to avoid path checks when inside a sub portion of a DAG that is entirely inside the "not-skipped" portion of a traversal
 	Budget          *Budget                     // If present, tracks "budgets" for how many more steps we're willing to take before we should halt.
 	SeenLinks       map[datamodel.Link]struct{} // Set used to remember which links have been visited before, if Cfg.LinkVisitOnlyOnce is true.
 }
