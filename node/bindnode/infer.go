@@ -69,10 +69,7 @@ func verifyCompatibility(seen map[seenEntry]bool, goType reflect.Type, schemaTyp
 			doPanic("kind mismatch; need boolean")
 		}
 	case *schema.TypeInt:
-		// TODO: allow uints?
-		switch goType.Kind() {
-		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-		default:
+		if kind := goType.Kind(); !kindInt[kind] && !kindUint[kind] {
 			doPanic("kind mismatch; need integer")
 		}
 	case *schema.TypeFloat:
@@ -96,9 +93,7 @@ func verifyCompatibility(seen map[seenEntry]bool, goType reflect.Type, schemaTyp
 		}
 	case *schema.TypeEnum:
 		if _, ok := schemaType.RepresentationStrategy().(schema.EnumRepresentation_Int); ok {
-			switch goType.Kind() {
-			case reflect.String, reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-			default:
+			if kind := goType.Kind(); kind != reflect.String && !kindInt[kind] && !kindUint[kind] {
 				doPanic("kind mismatch; need string or integer")
 			}
 		} else {
@@ -370,4 +365,23 @@ func inferSchema(typ reflect.Type) schema.Type {
 		return typSchema
 	}
 	panic(fmt.Sprintf("%s", typ.Kind()))
+}
+
+// There are currently 27 reflect.Kind iota values,
+// so 32 should be plenty to ensure we don't panic in practice.
+
+var kindInt = [32]bool{
+	reflect.Int:   true,
+	reflect.Int8:  true,
+	reflect.Int16: true,
+	reflect.Int32: true,
+	reflect.Int64: true,
+}
+
+var kindUint = [32]bool{
+	reflect.Uint:   true,
+	reflect.Uint8:  true,
+	reflect.Uint16: true,
+	reflect.Uint32: true,
+	reflect.Uint64: true,
 }

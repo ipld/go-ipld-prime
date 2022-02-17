@@ -54,6 +54,7 @@ var prototypeTests = []struct {
 		schemaSrc: `type Root struct {
 				bool   Bool
 				int    Int
+				uint   Int
 				float  Float
 				string String
 				bytes  Bytes
@@ -61,6 +62,7 @@ var prototypeTests = []struct {
 		ptrType: (*struct {
 			Bool   bool
 			Int    int64
+			Uint   uint32
 			Float  float64
 			String string
 			Bytes  []byte
@@ -70,7 +72,8 @@ var prototypeTests = []struct {
 			"bytes":  {"/": {"bytes": "34cd"}},
 			"float":  12.5,
 			"int":    3,
-			"string": "foo"
+			"string": "foo",
+			"uint":   50
 		}`,
 	},
 	{
@@ -143,6 +146,7 @@ var prototypeTests = []struct {
 				stringAsStringCustom EnumAsString
 				stringAsInt          EnumAsInt
 				intAsInt             EnumAsInt
+				uintAsInt            EnumAsInt
 			}
 			type EnumAsString enum {
 				| Nope ("No")
@@ -159,12 +163,14 @@ var prototypeTests = []struct {
 			StringAsStringCustom string
 			StringAsInt          string
 			IntAsInt             int32
+			UintAsInt            uint16
 		})(nil),
 		prettyDagJSON: `{
 			"intAsInt":             12,
 			"stringAsInt":          10,
 			"stringAsString":       "Maybe",
-			"stringAsStringCustom": "Yes"
+			"stringAsStringCustom": "Yes",
+			"uintAsInt":            11
 		}`,
 	},
 	{

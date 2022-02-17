@@ -401,7 +401,12 @@ func (w *_node) AsInt() (int64, error) {
 	if err := compatibleKind(w.schemaType, datamodel.Kind_Int); err != nil {
 		return 0, err
 	}
-	return nonPtrVal(w.val).Int(), nil
+	val := nonPtrVal(w.val)
+	if kindUint[val.Kind()] {
+		// TODO: check for overflow
+		return int64(val.Uint()), nil
+	}
+	return val.Int(), nil
 }
 
 func (w *_node) AsFloat() (float64, error) {
@@ -637,6 +642,12 @@ func (w *_assembler) AssignInt(i int64) error {
 	}
 	if _, ok := w.schemaType.(*schema.TypeAny); ok {
 		w.createNonPtrVal().Set(reflect.ValueOf(basicnode.NewInt(i)))
+	} else if kindUint[w.val.Kind()] {
+		if i < 0 {
+			// TODO: write a test
+			return fmt.Errorf("bindnode: cannot assign negative integer to %s", w.val.Type())
+		}
+		w.createNonPtrVal().SetUint(uint64(i))
 	} else {
 		w.createNonPtrVal().SetInt(i)
 	}

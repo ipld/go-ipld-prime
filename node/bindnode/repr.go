@@ -391,8 +391,8 @@ func (w *_nodeRepr) AsInt() (int64, error) {
 	case schema.UnionRepresentation_Kinded:
 		return w.asKinded(stg, datamodel.Kind_Int).AsInt()
 	case schema.EnumRepresentation_Int:
-		switch w.val.Kind() {
-		case reflect.String:
+		kind := w.val.Kind()
+		if kind == reflect.String {
 			s, err := (*_node)(w).AsString()
 			if err != nil {
 				return 0, err
@@ -405,20 +405,24 @@ func (w *_nodeRepr) AsInt() (int64, error) {
 			}
 			// TODO: the strategy type should probably use int64 rather than int
 			return int64(mapped), nil
-		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-			// Short-cut to fetching the repr int directly, akin to node.go's AsInt.
-			i := w.val.Int()
-			for _, reprInt := range stg {
-				if int64(reprInt) == i {
-					return i, nil
-				}
-			}
-			// We assume that the schema strategy is correct,
-			// so we can only fail if the stored string isn't a valid member.
-			return 0, fmt.Errorf("AsInt: %d is not a valid member of enum %s", i, w.schemaType.Name())
-		default:
-			return 0, fmt.Errorf("AsInt: unexpected kind: %s", w.val.Kind())
 		}
+		var i int
+		// TODO: check for overflows
+		if kindInt[kind] {
+			i = int(w.val.Int())
+		} else if kindUint[kind] {
+			i = int(w.val.Uint())
+		} else {
+			return 0, fmt.Errorf("AsInt: unexpected kind: %s", kind)
+		}
+		for _, reprInt := range stg {
+			if reprInt == i {
+				return int64(i), nil
+			}
+		}
+		// We assume that the schema strategy is correct,
+		// so we can only fail if the stored string isn't a valid member.
+		return 0, fmt.Errorf("AsInt: %d is not a valid member of enum %s", i, w.schemaType.Name())
 	default:
 		return (*_node)(w).AsInt()
 	}
@@ -655,21 +659,28 @@ func (w *_assemblerRepr) AssignInt(i int64) error {
 				continue
 			}
 			val := (*_assembler)(w).createNonPtrVal()
-			switch val.Kind() {
-			case reflect.String:
+			kind := val.Kind()
+			if kind == reflect.String {
 				return (*_assembler)(w).AssignString(member)
-			case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-				// Short-cut to storing the repr int directly, akin to node.go's AssignInt.
+			}
+			// Short-cut to storing the repr int directly, akin to node.go's AssignInt.
+			if kindInt[kind] {
 				val.SetInt(i)
-				if w.finish != nil {
-					if err := w.finish(); err != nil {
-						return err
-					}
+			} else if kindUint[kind] {
+				if i < 0 {
+					// TODO: write a test
+					return fmt.Errorf("bindnode: cannot assign negative integer to %s", w.val.Type())
 				}
-				return nil
-			default:
+				val.SetUint(uint64(i))
+			} else {
 				return fmt.Errorf("AsInt: unexpected kind: %s", val.Kind())
 			}
+			if w.finish != nil {
+				if err := w.finish(); err != nil {
+					return err
+				}
+			}
+			return nil
 		}
 		return fmt.Errorf("AssignInt: %d is not a valid member of enum %s", i, w.schemaType.Name())
 	default:
