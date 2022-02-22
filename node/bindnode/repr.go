@@ -804,7 +804,8 @@ func (w *_assemblerRepr) AssignLink(link datamodel.Link) error {
 }
 
 func (w *_assemblerRepr) AssignNode(node datamodel.Node) error {
-	return (*_assembler)(w).AssignNode(node)
+	// TODO: attempt to take a shortcut, like assembler.AssignNode
+	return datamodel.Copy(node, w)
 }
 
 func (w *_assemblerRepr) Prototype() datamodel.NodePrototype {
