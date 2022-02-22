@@ -20,6 +20,7 @@ import (
 	"github.com/ipld/go-ipld-prime/codec/dagjson"
 	"github.com/ipld/go-ipld-prime/datamodel"
 	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
+	"github.com/ipld/go-ipld-prime/node/basicnode"
 	"github.com/ipld/go-ipld-prime/node/bindnode"
 	"github.com/ipld/go-ipld-prime/schema"
 )
@@ -977,4 +978,33 @@ func TestProduceGoTypes(t *testing.T) {
 			// TODO: check that the generated types are compatible with the schema.
 		})
 	}
+}
+
+func TestRenameAssignNode(t *testing.T) {
+	type Foo struct{ I int }
+
+	ts, _ := ipld.LoadSchemaBytes([]byte(`
+type Foo struct {
+	I Int (rename "J")
+}
+`))
+	FooProto := bindnode.Prototype((*Foo)(nil), ts.TypeByName("Foo"))
+
+	// Decode straight into bindnode typed builder
+	nb := FooProto.Representation().NewBuilder()
+	err := dagjson.Decode(nb, bytes.NewReader([]byte(`{"J":100}`)))
+	qt.Assert(t, err, qt.IsNil)
+	node := nb.Build()
+
+	// decode into basicnode builder
+	nb = basicnode.Prototype.Any.NewBuilder()
+	err = dagjson.Decode(nb, bytes.NewReader([]byte(`{"J":100}`)))
+	qt.Assert(t, err, qt.IsNil)
+	node = nb.Build()
+
+	// AssignNode from the basicnode form
+	nb = FooProto.Representation().NewBuilder()
+	err = nb.AssignNode(node)
+	qt.Assert(t, err, qt.IsNil)
+	node = nb.Build()
 }
