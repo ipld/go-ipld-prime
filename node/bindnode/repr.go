@@ -268,7 +268,9 @@ func (w *_nodeRepr) ListIterator() datamodel.ListIterator {
 	switch reprStrategy(w.schemaType).(type) {
 	case schema.StructRepresentation_Tuple:
 		typ := w.schemaType.(*schema.TypeStruct)
-		return &_tupleIteratorRepr{schemaType: typ, fields: typ.Fields(), val: w.val}
+		iter := _tupleIteratorRepr{schemaType: typ, fields: typ.Fields(), val: w.val}
+		iter.reprEnd = int(w.lengthMinusTrailingAbsents())
+		return &iter
 	default:
 		iter, _ := (*_node)(w).ListIterator().(*_listIterator)
 		if iter == nil {
@@ -320,7 +322,7 @@ _skipAbsent:
 	if err != nil {
 		return 0, nil, err
 	}
-	if value.IsAbsent() {
+	if w.nextIndex > w.reprEnd {
 		goto _skipAbsent
 	}
 	return int64(w.nextIndex), reprNode(value), nil
@@ -348,11 +350,7 @@ func (w *_nodeRepr) Length() int64 {
 	case schema.StructRepresentation_Map:
 		return w.lengthMinusAbsents()
 	case schema.StructRepresentation_Tuple:
-		// TODO: presumably, tuples should disallow optional fields.
-		// But the following tests disagrees:
-		// https://github.com/ipld/go-ipld-prime/blob/297518c911326ef7f44800dc32a923e7b084fccc/node/tests/schemaStructReprTuple.go#L24-L32
-		// return int64(len(w.schemaType.(*schema.TypeStruct).Fields()))
-		return w.lengthMinusAbsents()
+		return w.lengthMinusTrailingAbsents()
 	case schema.UnionRepresentation_Keyed:
 		return (*_node)(w).Length()
 	case schema.UnionRepresentation_Kinded:
@@ -932,6 +930,7 @@ func (w *_listStructAssemblerRepr) AssembleValue() datamodel.NodeAssembler {
 			}}
 		}
 		field := fields[w.nextIndex]
+		w.doneFields[w.nextIndex] = true
 		w.nextIndex++
 
 		entryAsm, err := (*_structAssembler)(w).AssembleEntry(field.Name())
