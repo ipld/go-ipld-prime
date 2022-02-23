@@ -994,17 +994,148 @@ type Foo struct {
 	nb := FooProto.Representation().NewBuilder()
 	err := dagjson.Decode(nb, bytes.NewReader([]byte(`{"J":100}`)))
 	qt.Assert(t, err, qt.IsNil)
-	node := nb.Build()
+	nb.Build()
 
 	// decode into basicnode builder
 	nb = basicnode.Prototype.Any.NewBuilder()
 	err = dagjson.Decode(nb, bytes.NewReader([]byte(`{"J":100}`)))
 	qt.Assert(t, err, qt.IsNil)
-	node = nb.Build()
+	node := nb.Build()
 
 	// AssignNode from the basicnode form
 	nb = FooProto.Representation().NewBuilder()
 	err = nb.AssignNode(node)
 	qt.Assert(t, err, qt.IsNil)
-	node = nb.Build()
+	nb.Build()
+}
+
+func TestEmptyTypedAssignNode(t *testing.T) {
+	type Foo struct {
+		I string
+		J string
+		K int
+	}
+	type Foo1Optional struct {
+		I string
+		J string
+		K *int
+	}
+	type Foo2Optional struct {
+		I string
+		J *string
+		K *int
+	}
+	tupleSchema := `type Foo struct {
+		I String
+		J String
+		K Int
+	} representation tuple`
+	tuple1OptionalSchema := `type Foo struct {
+		I String
+		J String
+		K optional Int
+	} representation tuple`
+	tuple2OptionalSchema := `type Foo struct {
+		I String
+		J optional String
+		K optional Int
+	} representation tuple`
+
+	testCases := map[string]struct {
+		schema  string
+		typ     interface{}
+		dagJson string
+		err     string
+	}{
+		"tuple": {
+			schema:  tupleSchema,
+			typ:     (*Foo)(nil),
+			dagJson: `["","",0]`,
+		},
+		"tuple with 2 absents": {
+			schema:  tupleSchema,
+			typ:     (*Foo)(nil),
+			dagJson: `[""]`,
+			err:     "missing required fields: J,K",
+		},
+		"tuple with 1 optional": {
+			schema:  tuple1OptionalSchema,
+			typ:     (*Foo1Optional)(nil),
+			dagJson: `["","",0]`,
+		},
+		"tuple with 1 optional and absent": {
+			schema:  tuple1OptionalSchema,
+			typ:     (*Foo1Optional)(nil),
+			dagJson: `["",""]`,
+		},
+		"tuple with 1 optional and 2 absents": {
+			schema:  tuple1OptionalSchema,
+			typ:     (*Foo1Optional)(nil),
+			dagJson: `[""]`,
+			err:     "missing required fields: J",
+		},
+		"tuple with 2 optional": {
+			schema:  tuple2OptionalSchema,
+			typ:     (*Foo2Optional)(nil),
+			dagJson: `["","",0]`,
+		},
+		"tuple with 2 optional and 1 absent": {
+			schema:  tuple2OptionalSchema,
+			typ:     (*Foo2Optional)(nil),
+			dagJson: `["",""]`,
+		},
+		"tuple with 2 optional and 2 absent": {
+			schema:  tuple2OptionalSchema,
+			typ:     (*Foo2Optional)(nil),
+			dagJson: `[""]`,
+		},
+		"tuple with 2 optional and 3 absent": {
+			schema:  tuple2OptionalSchema,
+			typ:     (*Foo2Optional)(nil),
+			dagJson: `[]`,
+			err:     "missing required fields: I",
+		},
+		"map": {
+			schema: `type Foo struct {
+				I String
+				J String
+				K Int
+			} representation map
+			`,
+			typ:     (*Foo)(nil),
+			dagJson: `{"I":"","J":"","K":0}`,
+		},
+	}
+
+	for testCase, data := range testCases {
+		t.Run(testCase, func(t *testing.T) {
+			ts, _ := ipld.LoadSchemaBytes([]byte(data.schema))
+			FooProto := bindnode.Prototype(data.typ, ts.TypeByName("Foo"))
+
+			// decode an "empty" object into Foo, these are all default values
+			nb := basicnode.Prototype.Any.NewBuilder()
+			err := dagjson.Decode(nb, bytes.NewReader([]byte(data.dagJson)))
+			qt.Assert(t, err, qt.IsNil)
+			node := nb.Build()
+
+			// AssignNode from the basicnode form
+			nb = FooProto.Representation().NewBuilder()
+			err = nb.AssignNode(node)
+			if data.err == "" {
+				qt.Assert(t, err, qt.IsNil)
+			} else {
+				qt.Assert(t, err, qt.ErrorMatches, data.err)
+			}
+			nb.Build()
+
+			// make an "empty" form, although none of the fields are optional so we should end up with defaults
+			nb = FooProto.Representation().NewBuilder()
+			empty := nb.Build()
+
+			// AssignNode from the representation of the "empty" form, which should pass through default values
+			nb = FooProto.Representation().NewBuilder()
+			err = nb.AssignNode(empty.(schema.TypedNode).Representation())
+			qt.Assert(t, err, qt.IsNil)
+		})
+	}
 }
