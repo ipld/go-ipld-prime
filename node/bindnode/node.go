@@ -158,7 +158,7 @@ func (w *_node) LookupByString(key string) (datamodel.Node, error) {
 			fval = fval.Elem()
 		}
 		if _, ok := field.Type().(*schema.TypeAny); ok {
-			return fval.Interface().(datamodel.Node), nil
+			return nonPtrVal(fval).Interface().(datamodel.Node), nil
 		}
 		node := &_node{
 			schemaType: field.Type(),
@@ -196,7 +196,7 @@ func (w *_node) LookupByString(key string) (datamodel.Node, error) {
 			fval = fval.Elem()
 		}
 		if _, ok := typ.ValueType().(*schema.TypeAny); ok {
-			return fval.Interface().(datamodel.Node), nil
+			return nonPtrVal(fval).Interface().(datamodel.Node), nil
 		}
 		node := &_node{
 			schemaType: typ.ValueType(),
@@ -275,7 +275,7 @@ func (w *_node) LookupByIndex(idx int64) (datamodel.Node, error) {
 			val = val.Elem()
 		}
 		if _, ok := typ.ValueType().(*schema.TypeAny); ok {
-			return val.Interface().(datamodel.Node), nil
+			return nonPtrVal(val).Interface().(datamodel.Node), nil
 		}
 		return &_node{schemaType: typ.ValueType(), val: val}, nil
 	}
@@ -1082,7 +1082,7 @@ func (w *_structIterator) Next() (key, value datamodel.Node, _ error) {
 		val = val.Elem()
 	}
 	if _, ok := field.Type().(*schema.TypeAny); ok {
-		return key, val.Interface().(datamodel.Node), nil
+		return key, nonPtrVal(val).Interface().(datamodel.Node), nil
 	}
 	node := &_node{
 		schemaType: field.Type(),
@@ -1121,7 +1121,7 @@ func (w *_mapIterator) Next() (key, value datamodel.Node, _ error) {
 		val = val.Elem()
 	}
 	if _, ok := w.schemaType.ValueType().(*schema.TypeAny); ok {
-		return key, val.Interface().(datamodel.Node), nil
+		return key, nonPtrVal(val).Interface().(datamodel.Node), nil
 	}
 	node := &_node{
 		schemaType: w.schemaType.ValueType(),
@@ -1154,7 +1154,7 @@ func (w *_listIterator) Next() (index int64, value datamodel.Node, _ error) {
 		val = val.Elem()
 	}
 	if _, ok := w.schemaType.ValueType().(*schema.TypeAny); ok {
-		return idx, val.Interface().(datamodel.Node), nil
+		return idx, nonPtrVal(val).Interface().(datamodel.Node), nil
 	}
 	return idx, &_node{schemaType: w.schemaType.ValueType(), val: val}, nil
 }

@@ -321,6 +321,7 @@ func TestPrototypePointerCombinations(t *testing.T) {
 		{"Link_Impl", "Link", (*cidlink.Link)(nil), `{"/": "bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi"}`},
 		{"Link_Generic", "Link", (*datamodel.Link)(nil), `{"/": "bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi"}`},
 		{"List_String", "[String]", (*[]string)(nil), `["foo", "bar"]`},
+		{"Any_Node_Int", "Any", (*datamodel.Node)(nil), `23`},
 		{"Map_String_Int", "{String:Int}", (*struct {
 			Keys   []string
 			Values map[string]int64
@@ -344,11 +345,13 @@ func TestPrototypePointerCombinations(t *testing.T) {
 				}{kindTest.schemaType, modifier})
 				qt.Assert(t, err, qt.IsNil)
 				schemaSrc := buf.String()
+				t.Logf("IPLD schema: %T", schemaSrc)
 
 				// *struct { Field {{.fieldPtrType}} }
 				ptrType := reflect.Zero(reflect.PtrTo(reflect.StructOf([]reflect.StructField{
 					{Name: "Field", Type: reflect.TypeOf(kindTest.fieldPtrType)},
 				}))).Interface()
+				t.Logf("Go type: %T", ptrType)
 
 				ts, err := ipld.LoadSchemaBytes([]byte(schemaSrc))
 				qt.Assert(t, err, qt.IsNil)
