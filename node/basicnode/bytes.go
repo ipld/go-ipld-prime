@@ -73,6 +73,10 @@ func (plainBytes) AsLink() (datamodel.Link, error) {
 func (plainBytes) Prototype() datamodel.NodePrototype {
 	return Prototype__Bytes{}
 }
+func (pb plainBytes) ReadAt(p []byte, off int64) (n int, err error) {
+	n = copy(p, pb[off:])
+	return
+}
 
 // -- NodePrototype -->
 
