@@ -2,6 +2,7 @@ package selector_test
 
 import (
 	"bytes"
+	"io"
 	"os"
 	"testing"
 
@@ -14,7 +15,7 @@ import (
 	"github.com/ipld/go-ipld-prime/fluent/qp"
 	"github.com/ipld/go-ipld-prime/node/basicnode"
 	"github.com/ipld/go-ipld-prime/traversal"
-	"github.com/ipld/go-ipld-prime/traversal/selector/parse"
+	selectorparse "github.com/ipld/go-ipld-prime/traversal/selector/parse"
 )
 
 func TestSpecFixtures(t *testing.T) {
@@ -81,6 +82,18 @@ func testOneSpecFixtureFile(t *testing.T, filename string) {
 					}))
 					qp.MapEntry(ma, "matched", qp.Bool(reason == traversal.VisitReason_SelectionMatch))
 				})
+				if reason == traversal.VisitReason_SelectionMatch && n.Kind() == datamodel.Kind_Bytes {
+					if lbn, ok := n.(datamodel.LargeBytesNode); ok {
+						rdr, err := lbn.AsLargeBytes()
+						if err == nil {
+							io.Copy(io.Discard, rdr)
+						}
+					}
+					_, err := n.AsBytes()
+					if err != nil {
+						panic("insanity at a deeper level than this test's target")
+					}
+				}
 				if err != nil {
 					panic("insanity at a deeper level than this test's target")
 				}
