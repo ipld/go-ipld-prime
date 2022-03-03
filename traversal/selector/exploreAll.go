@@ -27,6 +27,11 @@ func (s ExploreAll) Decide(n datamodel.Node) bool {
 	return false
 }
 
+// Match always returns false because this is not a matcher
+func (s ExploreAll) Match(node datamodel.Node) (datamodel.Node, error) {
+	return nil, nil
+}
+
 // ParseExploreAll assembles a Selector from a ExploreAll selector node
 func (pc ParseContext) ParseExploreAll(n datamodel.Node) (Selector, error) {
 	if n.Kind() != datamodel.Kind_Map {

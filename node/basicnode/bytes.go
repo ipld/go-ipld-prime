@@ -106,7 +106,7 @@ func (nb *plainBytes__Builder) Reset() {
 // -- NodeAssembler -->
 
 type plainBytes__Assembler struct {
-	w *plainBytes
+	w datamodel.Node
 }
 
 func (plainBytes__Assembler) BeginMap(sizeHint int64) (datamodel.MapAssembler, error) {
@@ -131,17 +131,24 @@ func (plainBytes__Assembler) AssignString(string) error {
 	return mixins.BytesAssembler{TypeName: "bytes"}.AssignString("")
 }
 func (na *plainBytes__Assembler) AssignBytes(v []byte) error {
-	*na.w = plainBytes(v)
+	na.w = datamodel.Node(plainBytes(v))
 	return nil
 }
 func (plainBytes__Assembler) AssignLink(datamodel.Link) error {
 	return mixins.BytesAssembler{TypeName: "bytes"}.AssignLink(nil)
 }
 func (na *plainBytes__Assembler) AssignNode(v datamodel.Node) error {
+	if lb, ok := v.(datamodel.LargeBytesNode); ok {
+		lbn, err := lb.AsLargeBytes()
+		if err == nil {
+			na.w = streamBytes{lbn}
+			return nil
+		}
+	}
 	if v2, err := v.AsBytes(); err != nil {
 		return err
 	} else {
-		*na.w = plainBytes(v2)
+		na.w = plainBytes(v2)
 		return nil
 	}
 }

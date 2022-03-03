@@ -182,10 +182,12 @@ func (prog Progress) walkAdv(n datamodel.Node, s selector.Selector, fn AdvVisitF
 	}
 
 	// Decide if this node is matched -- do callbacks as appropriate.
-	if s.Decide(n) {
-		if err := fn(prog, n, VisitReason_SelectionMatch); err != nil {
+	if match, err := s.Match(n); match != nil {
+		if err := fn(prog, match, VisitReason_SelectionMatch); err != nil {
 			return err
 		}
+	} else if err != nil {
+		return err
 	} else {
 		if err := fn(prog, n, VisitReason_SelectionCandidate); err != nil {
 			return err
