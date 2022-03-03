@@ -1,6 +1,9 @@
 package basicnode
 
 import (
+	"bytes"
+	"io"
+
 	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/node/mixins"
 )
@@ -72,6 +75,9 @@ func (plainBytes) AsLink() (datamodel.Link, error) {
 }
 func (plainBytes) Prototype() datamodel.NodePrototype {
 	return Prototype__Bytes{}
+}
+func (n plainBytes) AsLargeBytes() (io.ReadSeeker, error) {
+	return bytes.NewReader(n), nil
 }
 
 // -- NodePrototype -->
