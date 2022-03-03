@@ -1,5 +1,7 @@
 package datamodel
 
+import "io"
+
 // Node represents a value in IPLD.  Any point in a tree of data is a node:
 // scalar values (like int64, string, etc) are nodes, and
 // so are recursive values (like map and list).
@@ -163,6 +165,19 @@ type Node interface {
 	//
 	// Calling this method should not cause an allocation.
 	Prototype() NodePrototype
+}
+
+// LargeBytesNode is an optional interface extending a Bytes node that allows its
+// contents to be accessed through an io.Reader instead of a []byte slice. Use of
+// an io.Reader is encouraged, as it allows for streaming large byte slices
+// without allocating a large slice in memory.
+type LargeBytesNode interface {
+	Node
+	// AsLargeBytes returns an io.Reader that can be used to read the contents of the node.
+	// Note that the presence of this method / interface does not imply that the node
+	// can always return a valid io.ReadSeeker, and the error value must also be checked
+	// for support.
+	AsLargeBytes() (io.ReadSeeker, error)
 }
 
 // NodePrototype describes a node implementation (all Node have a NodePrototype),
