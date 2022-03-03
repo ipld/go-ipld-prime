@@ -32,46 +32,49 @@ type Slice struct {
 }
 
 func (s Slice) Slice(n datamodel.Node) (datamodel.Node, error) {
-	if n.Kind() == datamodel.Kind_String {
+	var from, to int64
+	switch n.Kind() {
+	case datamodel.Kind_String:
 		str, err := n.AsString()
 		if err != nil {
 			return nil, err
 		}
-		to := s.To
+		to = s.To
 		if len(str) < int(to) {
 			to = int64(len(str))
 		}
-		from := s.From
+		from = s.From
 		if len(str) < int(from) {
 			from = int64(len(str))
 		}
 		return basicnode.NewString(str[from:to]), nil
-	} else if n.Kind() == datamodel.Kind_Bytes {
+	case datamodel.Kind_Bytes:
 		if lbn, ok := n.(datamodel.LargeBytesNode); ok {
 			rdr, err := lbn.AsLargeBytes()
 			if err != nil {
 				return nil, err
 			}
 
-			sr := io.NewSectionReader(readerat{rdr}, int64(s.From), int64(s.To))
+			sr := io.NewSectionReader(readerat{rdr}, s.From, s.To)
 			return basicnode.NewBytesFromReader(sr), nil
 		}
 		bytes, err := n.AsBytes()
 		if err != nil {
 			return nil, err
 		}
-		to := s.To
+		to = s.To
 		if len(bytes) < int(to) {
 			to = int64(len(bytes))
 		}
-		from := s.From
+		from = s.From
 		if len(bytes) < int(from) {
 			from = int64(len(bytes))
 		}
 
 		return basicnode.NewBytes(bytes[from:to]), nil
+	default:
+		return nil, fmt.Errorf("selector slice rejected: subset match must be over string or bytes")
 	}
-	return nil, fmt.Errorf("selector slice rejected: subset match must be over string or bytes")
 }
 
 // Interests are empty for a matcher (for now) because
