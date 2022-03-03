@@ -176,6 +176,11 @@ func (s ExploreRecursive) Decide(n datamodel.Node) bool {
 	return s.current.Decide(n)
 }
 
+// Match always returns false because this is not a matcher
+func (s ExploreRecursive) Match(node datamodel.Node) (datamodel.Node, error) {
+	return s.current.Match(node)
+}
+
 type exploreRecursiveContext struct {
 	edgesFound int
 }

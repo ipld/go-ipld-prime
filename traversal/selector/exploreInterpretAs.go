@@ -27,6 +27,11 @@ func (s ExploreInterpretAs) Decide(n datamodel.Node) bool {
 	return false
 }
 
+// Match always returns false because this is not a matcher
+func (s ExploreInterpretAs) Match(node datamodel.Node) (datamodel.Node, error) {
+	return nil, nil
+}
+
 // NamedReifier indicates how this selector expects to Reify the current datamodel.Node.
 func (s ExploreInterpretAs) NamedReifier() string {
 	return s.adl

@@ -37,6 +37,11 @@ func (s ExploreIndex) Decide(n datamodel.Node) bool {
 	return false
 }
 
+// Match always returns false because this is not a matcher
+func (s ExploreIndex) Match(node datamodel.Node) (datamodel.Node, error) {
+	return nil, nil
+}
+
 // ParseExploreIndex assembles a Selector
 // from a ExploreIndex selector node
 func (pc ParseContext) ParseExploreIndex(n datamodel.Node) (Selector, error) {

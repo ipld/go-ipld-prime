@@ -23,5 +23,8 @@ const (
 	SelectorKey_StopAt               = "!"
 	SelectorKey_Condition            = "&"
 	SelectorKey_As                   = "as"
+	SelectorKey_Subset               = "subset"
+	SelectorKey_From                 = "["
+	SelectorKey_To                   = "]"
 	// not filling conditional keys since it's not complete
 )

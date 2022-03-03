@@ -106,6 +106,12 @@ type Selector interface {
 	// Only "Matcher" clauses actually implement this in a way that ever returns "true".
 	// See the Selector specs for discussion on "matched" vs "reached"/"visited" nodes.
 	Decide(node datamodel.Node) bool
+
+	// Match is an extension to Decide allowing the matcher to `decide` a transformation of
+	// the matched node. This is used for `Subset` match behavior. If the node is matched,
+	// the first argument will be the matched node. If it is not matched, the first argument
+	// will be null. If there is an error, the first argument will be null.
+	Match(node datamodel.Node) (datamodel.Node, error)
 }
 
 // REVIEW: do ParsedParent and ParseContext need to be exported?  They're mostly used during the compilation process.
