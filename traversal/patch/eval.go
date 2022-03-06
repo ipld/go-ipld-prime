@@ -105,8 +105,14 @@ func EvalOne(n datamodel.Node, op Operation) (datamodel.Node, error) {
 		if err != nil {
 			return nil, err
 		}
-		return traversal.FocusedTransform(n, op.Path, func(_ traversal.Progress, point datamodel.Node) (datamodel.Node, error) {
+		n, err := traversal.FocusedTransform(n, op.Path, func(_ traversal.Progress, point datamodel.Node) (datamodel.Node, error) {
 			return source, nil // is this right?  what does FocusedTransform do re upsert?
+		}, false)
+		if err != nil {
+			return nil, err
+		}
+		return traversal.FocusedTransform(n, op.From, func(_ traversal.Progress, point datamodel.Node) (datamodel.Node, error) {
+			return nil, nil // Returning a nil value here means "remove what's here".
 		}, false)
 	case "copy":
 		// TODO i think you need a check that it's not landing under itself here
