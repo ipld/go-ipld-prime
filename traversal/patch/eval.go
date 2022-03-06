@@ -84,7 +84,7 @@ func EvalOne(n datamodel.Node, op Operation) (datamodel.Node, error) {
 				return nb.Build(), nil
 			}
 			return prog.FocusedTransform(parent, datamodel.NewPath([]datamodel.PathSegment{op.Path.Last()}), func(prog traversal.Progress, point datamodel.Node) (datamodel.Node, error) {
-				if point != nil {
+				if point != nil && !point.IsAbsent() {
 					return nil, fmt.Errorf("patch-target-exists: at %q", op.Path) // TODO error structuralization and review the code
 				}
 				return op.Value, nil
@@ -92,7 +92,7 @@ func EvalOne(n datamodel.Node, op Operation) (datamodel.Node, error) {
 		}, false)
 	case "remove":
 		return traversal.FocusedTransform(n, op.Path, func(_ traversal.Progress, point datamodel.Node) (datamodel.Node, error) {
-			return nil, nil
+			return nil, nil // Returning a nil value here means "remove what's here".
 		}, false)
 	case "replace":
 		// TODO i think you need a check that it's not landing under itself here

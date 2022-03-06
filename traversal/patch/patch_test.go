@@ -46,16 +46,16 @@ func testOneSpecFixtureFile(t *testing.T, filename string) {
 			// Parse everything.
 			initial, err := ipld.Decode(initialBlob, dagjson.Decode)
 			if err != nil {
-				t.Errorf("failed to parse fixture data: %s", err)
+				t.Fatalf("failed to parse fixture data: %s", err)
 			}
 			ops, err := ParseBytes(patchBlob, dagjson.Decode)
 			if err != nil {
-				t.Errorf("failed to parse fixture patch: %s", err)
+				t.Fatalf("failed to parse fixture patch: %s", err)
 			}
 			// We don't actually keep the decoded result object.  We're just gonna serialize the result and textually diff that instead.
 			_, err = ipld.Decode(resultBlob, dagjson.Decode)
 			if err != nil {
-				t.Errorf("failed to parse fixture data: %s", err)
+				t.Fatalf("failed to parse fixture data: %s", err)
 			}
 
 			// Do the thing!

@@ -171,6 +171,8 @@ func (prog *Progress) get(n datamodel.Node, p datamodel.Path, trackProgress bool
 // a copy-on-write fashion -- and the FocusedTransform function as a whole will
 // return a new Node containing identical children except for those replaced.
 //
+// Returning nil from the TransformFn as the replacement node means "remove this".
+//
 // FocusedTransform can be used again inside the applied function!
 // This kind of composition can be useful for doing batches of updates.
 // E.g. if have a large Node graph which contains a 100-element list, and
@@ -208,6 +210,9 @@ func (prog Progress) FocusedTransform(n datamodel.Node, p datamodel.Path, fn Tra
 //
 // As implemented, this is not actually efficient if the update will be a no-op; it won't notice until it gets there.
 func (prog Progress) focusedTransform(n datamodel.Node, na datamodel.NodeAssembler, p datamodel.Path, fn TransformFn, createParents bool) error {
+	at := prog.Path
+	// Base case: if we've reached the end of the path, do the replacement here.
+	//  (Note: in some cases within maps, there is another branch that is the base case, for reasons involving removes.)
 	if p.Len() == 0 {
 		n2, err := fn(prog, n)
 		if err != nil {
@@ -231,7 +236,7 @@ func (prog Progress) focusedTransform(n datamodel.Node, na datamodel.NodeAssembl
 		if err != nil {
 			return err
 		}
-		prog.Path = prog.Path.AppendSegment(seg)
+		prog.Path = at.AppendSegment(seg)
 		if err := ma.AssembleKey().AssignString(seg.String()); err != nil {
 			return err
 		}
@@ -252,6 +257,25 @@ func (prog Progress) focusedTransform(n datamodel.Node, na datamodel.NodeAssembl
 		if err != nil {
 			return err
 		}
+		// If we're approaching the end of the path, call the TransformFunc.
+		//  We need to know if it returns nil (meaning: do a deletion) _before_ we do the AssembleKey step.
+		//  (This results in the entire map branch having a different base case.)
+		var end bool
+		var n2 datamodel.Node
+		if p2.Len() == 0 {
+			end = true
+			n3, err := n.LookupBySegment(seg)
+			if n3 != datamodel.Absent && err != nil { // TODO badly need to simplify the standard treatment of "not found" here.  Can't even fit it all in one line!  See https://github.com/ipld/go-ipld-prime/issues/360.
+				if _, ok := err.(datamodel.ErrNotExists); !ok {
+					return err
+				}
+			}
+			prog.Path = at.AppendSegment(seg)
+			n2, err = fn(prog, n3)
+			if err != nil {
+				return err
+			}
+		}
 		// Copy children over.  Replace the target (preserving its current position!) while doing this, if found.
 		//  Note that we don't recurse into copying children (assuming AssignNode doesn't); this is as shallow/COW as the AssignNode implementation permits.
 		var replaced bool
@@ -260,16 +284,32 @@ func (prog Progress) focusedTransform(n datamodel.Node, na datamodel.NodeAssembl
 			if err != nil {
 				return err
 			}
-			if err := ma.AssembleKey().AssignNode(k); err != nil {
-				return err
-			}
-			if asPathSegment(k).Equals(seg) {
-				prog.Path = prog.Path.AppendSegment(seg)
-				if err := prog.focusedTransform(v, ma.AssembleValue(), p2, fn, createParents); err != nil {
+			if asPathSegment(k).Equals(seg) { // for the segment that's either update, update within, or being removed:
+				if end { // the last path segment in the overall instruction gets a different case because it may need to handle deletion
+					if n2 == nil {
+						replaced = true
+						continue // replace with nil means delete, which means continue early here: don't even copy the key.
+					}
+				}
+				// as long as we're not deleting, then this key will exist in the new data.
+				if err := ma.AssembleKey().AssignNode(k); err != nil {
 					return err
 				}
 				replaced = true
-			} else {
+				if n2 != nil { // if we already produced the replacement because we're at the end...
+					if err := ma.AssembleValue().AssignNode(n2); err != nil {
+						return err
+					}
+				} else { // ... otherwise, recurse:
+					prog.Path = at.AppendSegment(seg)
+					if err := prog.focusedTransform(v, ma.AssembleValue(), p2, fn, createParents); err != nil {
+						return err
+					}
+				}
+			} else { // for any other siblings of the target: just copy.
+				if err := ma.AssembleKey().AssignNode(k); err != nil {
+					return err
+				}
 				if err := ma.AssembleValue().AssignNode(v); err != nil {
 					return err
 				}
@@ -281,7 +321,7 @@ func (prog Progress) focusedTransform(n datamodel.Node, na datamodel.NodeAssembl
 		// If we didn't find the target yet: append it.
 		//  If we're at the end, always do this;
 		//  if we're in the middle, only do this if createParents mode is enabled.
-		prog.Path = prog.Path.AppendSegment(seg)
+		prog.Path = at.AppendSegment(seg)
 		if p.Len() > 1 && !createParents {
 			return fmt.Errorf("transform: parent position at %q did not exist (and createParents was false)", prog.Path)
 		}
