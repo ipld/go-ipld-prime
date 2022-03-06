@@ -428,7 +428,7 @@ func (prog Progress) walk_transform_iterateList(n datamodel.Node, s selector.Sel
 			if sNext != nil {
 				progNext := prog
 				progNext.Path = prog.Path.AppendSegment(ps)
-				if v.Kind() == datamodel.Kind_Link {
+				if v.Kind() == datamodel.Kind_Link && prog.Cfg != nil {
 					lnk, _ := v.AsLink()
 					if prog.Cfg.LinkVisitOnlyOnce {
 						if _, seen := prog.SeenLinks[lnk]; seen {
@@ -495,7 +495,7 @@ func (prog Progress) walk_transform_iterateMap(n datamodel.Node, s selector.Sele
 			if sNext != nil {
 				progNext := prog
 				progNext.Path = prog.Path.AppendSegment(ps)
-				if v.Kind() == datamodel.Kind_Link {
+				if v.Kind() == datamodel.Kind_Link && prog.Cfg != nil {
 					lnk, _ := v.AsLink()
 					if prog.Cfg.LinkVisitOnlyOnce {
 						if _, seen := prog.SeenLinks[lnk]; seen {
