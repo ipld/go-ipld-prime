@@ -174,6 +174,7 @@ func (prog Progress) walkAdv(n datamodel.Node, s selector.Selector, fn AdvVisitF
 		if err != nil {
 			return fmt.Errorf("failed to reify node as %q: %w", adl, err)
 		}
+		// explore into the `InterpretAs` clause to the child selector.
 		s, err = s.Explore(n, datamodel.PathSegment{})
 		if err != nil {
 			return err
@@ -181,14 +182,18 @@ func (prog Progress) walkAdv(n datamodel.Node, s selector.Selector, fn AdvVisitF
 		n = rn
 	}
 
-	// Decide if this node is matched -- do callbacks as appropriate.
-	if s.Decide(n) {
-		if err := fn(prog, n, VisitReason_SelectionMatch); err != nil {
+	if prog.Path.Len() >= prog.Cfg.StartAtPath.Len() || !prog.PastStartAtPath {
+		// Decide if this node is matched -- do callbacks as appropriate.
+		if match, err := s.Match(n); match != nil {
+			if err := fn(prog, match, VisitReason_SelectionMatch); err != nil {
+				return err
+			}
+		} else if err != nil {
 			return err
-		}
-	} else {
-		if err := fn(prog, n, VisitReason_SelectionCandidate); err != nil {
-			return err
+		} else {
+			if err := fn(prog, n, VisitReason_SelectionCandidate); err != nil {
+				return err
+			}
 		}
 	}
 	// If we're handling scalars (e.g. not maps and lists) we can return now.
@@ -211,10 +216,22 @@ func (prog Progress) walkAdv(n datamodel.Node, s selector.Selector, fn AdvVisitF
 }
 
 func (prog Progress) walkAdv_iterateAll(n datamodel.Node, s selector.Selector, fn AdvVisitFn) error {
+	var reachedStartAtPath bool
 	for itr := selector.NewSegmentIterator(n); !itr.Done(); {
+		if reachedStartAtPath {
+			prog.PastStartAtPath = reachedStartAtPath
+		}
 		ps, v, err := itr.Next()
 		if err != nil {
 			return err
+		}
+		if prog.Path.Len() < prog.Cfg.StartAtPath.Len() && !prog.PastStartAtPath {
+			if ps.Equals(prog.Cfg.StartAtPath.Segments()[prog.Path.Len()]) {
+				reachedStartAtPath = true
+			}
+			if !reachedStartAtPath {
+				continue
+			}
 		}
 		sNext, err := s.Explore(n, ps)
 		if err != nil {
@@ -252,7 +269,16 @@ func (prog Progress) walkAdv_iterateAll(n datamodel.Node, s selector.Selector, f
 }
 
 func (prog Progress) walkAdv_iterateSelective(n datamodel.Node, attn []datamodel.PathSegment, s selector.Selector, fn AdvVisitFn) error {
+	var reachedStartAtPath bool
 	for _, ps := range attn {
+		if prog.Path.Len() < prog.Cfg.StartAtPath.Len() {
+			if ps.Equals(prog.Cfg.StartAtPath.Segments()[prog.Path.Len()]) {
+				reachedStartAtPath = true
+			}
+			if !reachedStartAtPath {
+				continue
+			}
+		}
 		v, err := n.LookupBySegment(ps)
 		if err != nil {
 			continue

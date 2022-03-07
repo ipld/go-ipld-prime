@@ -41,6 +41,11 @@ func (s ExploreRange) Decide(n datamodel.Node) bool {
 	return false
 }
 
+// Match always returns false because this is not a matcher
+func (s ExploreRange) Match(node datamodel.Node) (datamodel.Node, error) {
+	return nil, nil
+}
+
 // ParseExploreRange assembles a Selector
 // from a ExploreRange selector node
 func (pc ParseContext) ParseExploreRange(n datamodel.Node) (Selector, error) {
