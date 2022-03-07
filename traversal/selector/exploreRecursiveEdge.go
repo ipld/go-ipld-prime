@@ -31,6 +31,11 @@ func (s ExploreRecursiveEdge) Decide(n datamodel.Node) bool {
 	return false
 }
 
+// Match always returns false because this is not a matcher
+func (s ExploreRecursiveEdge) Match(node datamodel.Node) (datamodel.Node, error) {
+	return nil, nil
+}
+
 // ParseExploreRecursiveEdge assembles a Selector
 // from a exploreRecursiveEdge selector node
 func (pc ParseContext) ParseExploreRecursiveEdge(n datamodel.Node) (Selector, error) {

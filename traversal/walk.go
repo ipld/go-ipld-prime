@@ -174,6 +174,7 @@ func (prog Progress) walkAdv(n datamodel.Node, s selector.Selector, fn AdvVisitF
 		if err != nil {
 			return fmt.Errorf("failed to reify node as %q: %w", adl, err)
 		}
+		// explore into the `InterpretAs` clause to the child selector.
 		s, err = s.Explore(n, datamodel.PathSegment{})
 		if err != nil {
 			return err
@@ -183,10 +184,12 @@ func (prog Progress) walkAdv(n datamodel.Node, s selector.Selector, fn AdvVisitF
 
 	if prog.Path.Len() >= prog.Cfg.StartAtPath.Len() || !prog.PastStartAtPath {
 		// Decide if this node is matched -- do callbacks as appropriate.
-		if s.Decide(n) {
-			if err := fn(prog, n, VisitReason_SelectionMatch); err != nil {
+		if match, err := s.Match(n); match != nil {
+			if err := fn(prog, match, VisitReason_SelectionMatch); err != nil {
 				return err
 			}
+		} else if err != nil {
+			return err
 		} else {
 			if err := fn(prog, n, VisitReason_SelectionCandidate); err != nil {
 				return err
