@@ -370,8 +370,201 @@ func (prog Progress) loadLink(v datamodel.Node, parent datamodel.Node) (datamode
 // prototype of the Nodes at the same positions in the existing tree
 // (literally, builders used to construct any new needed intermediate nodes
 // are chosen by asking the existing nodes about their prototype).
-//
-// This feature is not yet implemented.
 func (prog Progress) WalkTransforming(n datamodel.Node, s selector.Selector, fn TransformFn) (datamodel.Node, error) {
-	panic("TODO")
+	prog.init()
+	return prog.walkTransforming(n, s, fn)
+}
+
+func (prog Progress) walkTransforming(n datamodel.Node, s selector.Selector, fn TransformFn) (datamodel.Node, error) {
+	// Check the budget!
+	if prog.Budget != nil {
+		if prog.Budget.NodeBudget <= 0 {
+			return nil, &ErrBudgetExceeded{BudgetKind: "node", Path: prog.Path}
+		}
+		prog.Budget.NodeBudget--
+	}
+
+	// refiy the node if advised.
+	if rs, ok := s.(selector.Reifiable); ok {
+		adl := rs.NamedReifier()
+		if prog.Cfg.LinkSystem.KnownReifiers == nil {
+			return nil, fmt.Errorf("adl requested but not supported by link system: %q", adl)
+		}
+		reifier, ok := prog.Cfg.LinkSystem.KnownReifiers[adl]
+		if !ok {
+			return nil, fmt.Errorf("unregistered adl requested: %q", adl)
+		}
+
+		rn, err := reifier(linking.LinkContext{
+			Ctx:      prog.Cfg.Ctx,
+			LinkPath: prog.Path,
+		}, n, &prog.Cfg.LinkSystem)
+		if err != nil {
+			return nil, fmt.Errorf("failed to reify node as %q: %w", adl, err)
+		}
+		s, err = s.Explore(n, datamodel.PathSegment{})
+		if err != nil {
+			return nil, err
+		}
+		n = rn
+	}
+
+	// Decide if this node is matched -- do callbacks as appropriate.
+	new_n, err := fn(prog, n)
+	if err != nil {
+		return nil, err
+	}
+	if new_n != n {
+		// don't continue on transformed subtrees
+		return new_n, nil
+	}
+
+	// If we're handling scalars (e.g. not maps and lists) we can return now.
+	nk := n.Kind()
+	switch nk {
+	case datamodel.Kind_List:
+		return prog.walk_transform_iterateList(n, s, fn, s.Interests())
+	case datamodel.Kind_Map:
+		return prog.walk_transform_iterateMap(n, s, fn, s.Interests())
+	default:
+		return n, nil
+	}
+}
+
+func contains(interest []datamodel.PathSegment, candidate datamodel.PathSegment) bool {
+	for _, i := range interest {
+		if i == candidate {
+			return true
+		}
+	}
+	return false
+}
+
+func (prog Progress) walk_transform_iterateList(n datamodel.Node, s selector.Selector, fn TransformFn, attn []datamodel.PathSegment) (datamodel.Node, error) {
+	bldr := n.Prototype().NewBuilder()
+	lstBldr, err := bldr.BeginList(n.Length())
+	if err != nil {
+		return nil, err
+	}
+	for itr := selector.NewSegmentIterator(n); !itr.Done(); {
+		ps, v, err := itr.Next()
+		if err != nil {
+			return nil, err
+		}
+		if attn == nil || contains(attn, ps) {
+			sNext, err := s.Explore(n, ps)
+			if err != nil {
+				return nil, err
+			}
+			if sNext != nil {
+				progNext := prog
+				progNext.Path = prog.Path.AppendSegment(ps)
+				if v.Kind() == datamodel.Kind_Link {
+					lnk, _ := v.AsLink()
+					if prog.Cfg.LinkVisitOnlyOnce {
+						if _, seen := prog.SeenLinks[lnk]; seen {
+							continue
+						}
+						prog.SeenLinks[lnk] = struct{}{}
+					}
+					progNext.LastBlock.Path = progNext.Path
+					progNext.LastBlock.Link = lnk
+					v, err = progNext.loadLink(v, n)
+					if err != nil {
+						if _, ok := err.(SkipMe); ok {
+							continue
+						}
+						return nil, err
+					}
+				}
+
+				next, err := progNext.WalkTransforming(v, sNext, fn)
+				if err != nil {
+					return nil, err
+				}
+				if err := lstBldr.AssembleValue().AssignNode(next); err != nil {
+					return nil, err
+				}
+			} else {
+				if err := lstBldr.AssembleValue().AssignNode(v); err != nil {
+					return nil, err
+				}
+			}
+		} else {
+			if err := lstBldr.AssembleValue().AssignNode(v); err != nil {
+				return nil, err
+			}
+		}
+	}
+	if err := lstBldr.Finish(); err != nil {
+		return nil, err
+	}
+	return bldr.Build(), nil
+}
+
+func (prog Progress) walk_transform_iterateMap(n datamodel.Node, s selector.Selector, fn TransformFn, attn []datamodel.PathSegment) (datamodel.Node, error) {
+	bldr := n.Prototype().NewBuilder()
+	mapBldr, err := bldr.BeginMap(n.Length())
+	if err != nil {
+		return nil, err
+	}
+
+	for itr := selector.NewSegmentIterator(n); !itr.Done(); {
+		ps, v, err := itr.Next()
+		if err != nil {
+			return nil, err
+		}
+		if err := mapBldr.AssembleKey().AssignString(ps.String()); err != nil {
+			return nil, err
+		}
+
+		if attn == nil || contains(attn, ps) {
+			sNext, err := s.Explore(n, ps)
+			if err != nil {
+				return nil, err
+			}
+			if sNext != nil {
+				progNext := prog
+				progNext.Path = prog.Path.AppendSegment(ps)
+				if v.Kind() == datamodel.Kind_Link {
+					lnk, _ := v.AsLink()
+					if prog.Cfg.LinkVisitOnlyOnce {
+						if _, seen := prog.SeenLinks[lnk]; seen {
+							continue
+						}
+						prog.SeenLinks[lnk] = struct{}{}
+					}
+					progNext.LastBlock.Path = progNext.Path
+					progNext.LastBlock.Link = lnk
+					v, err = progNext.loadLink(v, n)
+					if err != nil {
+						if _, ok := err.(SkipMe); ok {
+							continue
+						}
+						return nil, err
+					}
+				}
+
+				next, err := progNext.WalkTransforming(v, sNext, fn)
+				if err != nil {
+					return nil, err
+				}
+				if err := mapBldr.AssembleValue().AssignNode(next); err != nil {
+					return nil, err
+				}
+			} else {
+				if err := mapBldr.AssembleValue().AssignNode(v); err != nil {
+					return nil, err
+				}
+			}
+		} else {
+			if err := mapBldr.AssembleValue().AssignNode(v); err != nil {
+				return nil, err
+			}
+		}
+	}
+	if err := mapBldr.Finish(); err != nil {
+		return nil, err
+	}
+	return bldr.Build(), nil
 }
