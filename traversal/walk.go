@@ -371,6 +371,11 @@ func (prog Progress) loadLink(v datamodel.Node, parent datamodel.Node) (datamode
 // (literally, builders used to construct any new needed intermediate nodes
 // are chosen by asking the existing nodes about their prototype).
 func (prog Progress) WalkTransforming(n datamodel.Node, s selector.Selector, fn TransformFn) (datamodel.Node, error) {
+	prog.init()
+	return prog.walkTransforming(n, s, fn)
+}
+
+func (prog Progress) walkTransforming(n datamodel.Node, s selector.Selector, fn TransformFn) (datamodel.Node, error) {
 	// Check the budget!
 	if prog.Budget != nil {
 		if prog.Budget.NodeBudget <= 0 {
@@ -454,7 +459,7 @@ func (prog Progress) walk_transform_iterateList(n datamodel.Node, s selector.Sel
 			if sNext != nil {
 				progNext := prog
 				progNext.Path = prog.Path.AppendSegment(ps)
-				if v.Kind() == datamodel.Kind_Link && prog.Cfg != nil {
+				if v.Kind() == datamodel.Kind_Link {
 					lnk, _ := v.AsLink()
 					if prog.Cfg.LinkVisitOnlyOnce {
 						if _, seen := prog.SeenLinks[lnk]; seen {
@@ -521,7 +526,7 @@ func (prog Progress) walk_transform_iterateMap(n datamodel.Node, s selector.Sele
 			if sNext != nil {
 				progNext := prog
 				progNext.Path = prog.Path.AppendSegment(ps)
-				if v.Kind() == datamodel.Kind_Link && prog.Cfg != nil {
+				if v.Kind() == datamodel.Kind_Link {
 					lnk, _ := v.AsLink()
 					if prog.Cfg.LinkVisitOnlyOnce {
 						if _, seen := prog.SeenLinks[lnk]; seen {
