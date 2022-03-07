@@ -73,7 +73,7 @@ func (s Slice) Slice(n datamodel.Node) (datamodel.Node, error) {
 
 		return basicnode.NewBytes(bytes[from:to]), nil
 	default:
-		return nil, fmt.Errorf("selector slice rejected: subset match must be over string or bytes")
+		return nil, fmt.Errorf("selector slice rejected on %s: subset match must be over string or bytes", n.Kind())
 	}
 }
 
@@ -89,7 +89,7 @@ func (s Matcher) Explore(n datamodel.Node, p datamodel.PathSegment) (Selector, e
 }
 
 // Decide is always true for a match cause it's in the result set
-// TODO: Implement boolean logic for conditionals
+// Deprecated: use Match instead
 func (s Matcher) Decide(n datamodel.Node) bool {
 	return true
 }

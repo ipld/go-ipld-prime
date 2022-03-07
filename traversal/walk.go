@@ -174,6 +174,7 @@ func (prog Progress) walkAdv(n datamodel.Node, s selector.Selector, fn AdvVisitF
 		if err != nil {
 			return fmt.Errorf("failed to reify node as %q: %w", adl, err)
 		}
+		// explore into the `InterpretAs` clause to the child selector.
 		s, err = s.Explore(n, datamodel.PathSegment{})
 		if err != nil {
 			return err
