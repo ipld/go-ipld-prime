@@ -135,8 +135,17 @@ func verifyCompatibility(seen map[seenEntry]bool, goType reflect.Type, schemaTyp
 		if fieldValues.Type.Kind() != reflect.Map {
 			doPanic("kind mismatch; need struct{Keys []K; Values map[K]V}")
 		}
-		verifyCompatibility(seen, fieldValues.Type.Key(), schemaType.KeyType())
-		verifyCompatibility(seen, fieldValues.Type.Elem(), schemaType.ValueType())
+		keyType := fieldValues.Type.Key()
+		verifyCompatibility(seen, keyType, schemaType.KeyType())
+
+		elemType := fieldValues.Type.Elem()
+		if schemaType.ValueIsNullable() {
+			if elemType.Kind() != reflect.Ptr {
+				doPanic("nullable types must be pointers")
+			}
+			elemType = elemType.Elem()
+		}
+		verifyCompatibility(seen, elemType, schemaType.ValueType())
 	case *schema.TypeStruct:
 		if goType.Kind() != reflect.Struct {
 			doPanic("kind mismatch; need struct")

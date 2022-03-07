@@ -322,6 +322,12 @@ func TestPrototypePointerCombinations(t *testing.T) {
 		{"Link_Generic", "Link", (*datamodel.Link)(nil), `{"/": "bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi"}`},
 		{"List_String", "[String]", (*[]string)(nil), `["foo", "bar"]`},
 		{"Any_Node_Int", "Any", (*datamodel.Node)(nil), `23`},
+		// TODO: reenable once we don't require pointers for nullable
+		// {"Any_Pointer_Int", "{String: nullable Any}",
+		// 	(*struct {
+		// 		Keys   []string
+		// 		Values map[string]datamodel.Node
+		// 	})(nil), `{"x":3,"y":"bar","z":[2.3,4.5]}`},
 		{"Map_String_Int", "{String:Int}", (*struct {
 			Keys   []string
 			Values map[string]int64
@@ -879,6 +885,23 @@ var verifyTests = []struct {
 				Keys   []string
 				Values string
 			})(nil), `.*type Root .*: kind mismatch;.*`},
+		},
+	},
+	{
+		name:      "MapNullableAny",
+		schemaSrc: `type Root {String:nullable Any}`,
+		goodTypes: []interface{}{
+			(*struct {
+				Keys   []string
+				Values map[string]*datamodel.Node
+			})(nil),
+		},
+		badTypes: []verifyBadType{
+			{(*string)(nil), `.*type Root .* type string: kind mismatch;.*`},
+			{(*struct {
+				Keys   []string
+				Values map[string]datamodel.Node
+			})(nil), `.*type Root .*: nullable types must be pointers`},
 		},
 	},
 	{
