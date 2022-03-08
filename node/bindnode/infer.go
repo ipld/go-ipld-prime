@@ -2,6 +2,7 @@ package bindnode
 
 import (
 	"fmt"
+	"go/token"
 	"reflect"
 	"strings"
 
@@ -289,13 +290,19 @@ func inferGoType(typ schema.Type) reflect.Type {
 		return goTypeString
 	case *schema.TypeAny:
 		return goTypeNode
+	case nil:
+		panic("bindnode: unexpected nil schema.Type")
 	}
 	panic(fmt.Sprintf("%T", typ))
 }
 
 // from IPLD Schema field names like "foo" to Go field names like "Foo".
 func fieldNameFromSchema(name string) string {
-	return strings.Title(name)
+	fieldName := strings.Title(name)
+	if !token.IsIdentifier(fieldName) {
+		panic(fmt.Sprintf("bindnode: inferred field name %q is not a valid Go identifier", fieldName))
+	}
+	return fieldName
 }
 
 var defaultTypeSystem schema.TypeSystem
