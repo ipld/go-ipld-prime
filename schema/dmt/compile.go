@@ -232,6 +232,16 @@ func spawnType(ts *schema.TypeSystem, name schema.TypeName, defn TypeDefn) (sche
 				panic("TODO: inline union members")
 			}
 		}
+		// TODO: we should probably also reject duplicates.
+		validMember := func(name string) bool {
+			for _, memberName := range members {
+				if memberName == name {
+					return true
+				}
+			}
+			return false
+		}
+
 		var repr schema.UnionRepresentation
 		switch {
 		case typ.Representation.UnionRepresentation_Kinded != nil:
@@ -242,7 +252,11 @@ func spawnType(ts *schema.TypeSystem, name schema.TypeName, defn TypeDefn) (sche
 				member := rp.Values[kindStr]
 				switch {
 				case member.TypeName != nil:
-					table[kind] = *member.TypeName
+					memberName := *member.TypeName
+					if !validMember(memberName) {
+						return nil, fmt.Errorf("%q is not a valid member of union %q", memberName, name)
+					}
+					table[kind] = memberName
 				case member.UnionMemberInlineDefn != nil:
 					panic("TODO: inline defn support")
 				}
@@ -255,7 +269,11 @@ func spawnType(ts *schema.TypeSystem, name schema.TypeName, defn TypeDefn) (sche
 				member := rp.Values[key]
 				switch {
 				case member.TypeName != nil:
-					table[key] = *member.TypeName
+					memberName := *member.TypeName
+					if !validMember(memberName) {
+						return nil, fmt.Errorf("%q is not a valid member of union %q", memberName, name)
+					}
+					table[key] = memberName
 				case member.UnionMemberInlineDefn != nil:
 					panic("TODO: inline defn support")
 				}

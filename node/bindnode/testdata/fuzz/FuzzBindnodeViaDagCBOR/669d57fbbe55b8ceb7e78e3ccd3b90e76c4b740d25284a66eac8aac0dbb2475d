@@ -1,0 +1,3 @@
+go test fuzz v1
+[]byte("\xa1etypes\xa1dRoot\xa1eunion\xa2gmembers\x82cIntfStringnrepresentation\xa1ekeyed\xa2a0c000a0a000000")
+[]byte("\xa1a00000")
