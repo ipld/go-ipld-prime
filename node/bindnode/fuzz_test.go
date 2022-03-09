@@ -156,7 +156,8 @@ func FuzzBindnodeViaDagCBOR(f *testing.F) {
 
 		// Log the input schema and node we're fuzzing with, to help debugging.
 		// We also use dag-json, as it's more human readable.
-		t.Logf("node in dag-cbor: %q", nodeDagCBOR)
+		t.Logf("schema in dag-cbor: %x", schemaDagCBOR)
+		t.Logf("node in dag-cbor: %x", nodeDagCBOR)
 		t.Logf("schema in dag-json: %s", marshalDagJSON(t, schemaNode.Representation()))
 		{
 			nodeBuilder := basicnode.Prototype.Any.NewBuilder()
