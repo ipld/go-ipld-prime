@@ -203,6 +203,7 @@ func FuzzBindnodeViaDagCBOR(f *testing.F) {
 					switch {
 					case strings.Contains(str, "bindnode: unexpected nil schema.Type"):
 					case strings.Contains(str, "is not a valid Go identifier"):
+					case strings.Contains(str, "bindnode: inferring Go types from cyclic schemas is not supported"):
 					default:
 						panic(r)
 					}
