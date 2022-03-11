@@ -1,0 +1,3 @@
+go test fuzz v1
+[]byte("\xa1etypes\xa1dRoot\xa1fstruct\xa2ffields\xa2b00\xa1dtyped0000b00\xa1dtypee00000nrepresentation\xa1cmap\xa0")
+[]byte("0")

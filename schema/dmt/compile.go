@@ -43,6 +43,12 @@ func Compile(ts *schema.TypeSystem, node *Schema) error {
 		ts.Accumulate(typ)
 	}
 
+	// TODO: if this fails and the user forgot to check Compile's returned error,
+	// we can leave the TypeSystem in an unfortunate broken state:
+	// they can obtain types out of the TypeSystem and they are non-nil,
+	// but trying to use them in any way may result in panics.
+	// Consider making that less prone to misuse, such as making it illegal to
+	// call TypeByName until ValidateGraph is happy.
 	if errs := ts.ValidateGraph(); errs != nil {
 		// Return the first error.
 		for _, err := range errs {

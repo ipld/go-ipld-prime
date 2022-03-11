@@ -188,7 +188,9 @@ func FuzzBindnodeViaDagCBOR(f *testing.F) {
 					t.Skipf("invalid schema: %v", r)
 				}
 			}()
-			schemadmt.Compile(ts, schemaDMT)
+			if err := schemadmt.Compile(ts, schemaDMT); err != nil {
+				t.Skipf("invalid schema: %v", err)
+			}
 		}()
 
 		schemaType := ts.TypeByName("Root")
