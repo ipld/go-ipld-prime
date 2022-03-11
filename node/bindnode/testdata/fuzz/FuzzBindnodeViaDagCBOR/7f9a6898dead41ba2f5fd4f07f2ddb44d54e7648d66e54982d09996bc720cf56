@@ -1,0 +1,3 @@
+go test fuzz v1
+[]byte("\xa1etypes\xa1dRoot\xa1dlist\xa1ivalueTypedRootcInt")
+[]byte("\x810")
