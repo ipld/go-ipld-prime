@@ -238,14 +238,20 @@ func spawnType(ts *schema.TypeSystem, name schema.TypeName, defn TypeDefn) (sche
 				panic("TODO: inline union members")
 			}
 		}
-		// TODO: we should probably also reject duplicates.
-		validMember := func(name string) bool {
-			for _, memberName := range members {
-				if memberName == name {
-					return true
-				}
+		remainingMembers := make(map[string]bool)
+		for _, memberName := range members {
+			remainingMembers[memberName] = true
+		}
+		validMember := func(memberName string) error {
+			switch remaining, known := remainingMembers[memberName]; {
+			case remaining:
+				remainingMembers[memberName] = false
+				return nil
+			case !known:
+				return fmt.Errorf("%q is not a valid member of union %q", memberName, name)
+			default:
+				return fmt.Errorf("%q is duplicate in the union repr of %q", memberName, name)
 			}
-			return false
 		}
 
 		var repr schema.UnionRepresentation
@@ -259,9 +265,7 @@ func spawnType(ts *schema.TypeSystem, name schema.TypeName, defn TypeDefn) (sche
 				switch {
 				case member.TypeName != nil:
 					memberName := *member.TypeName
-					if !validMember(memberName) {
-						return nil, fmt.Errorf("%q is not a valid member of union %q", memberName, name)
-					}
+					validMember(memberName)
 					table[kind] = memberName
 				case member.UnionMemberInlineDefn != nil:
 					panic("TODO: inline defn support")
@@ -276,9 +280,7 @@ func spawnType(ts *schema.TypeSystem, name schema.TypeName, defn TypeDefn) (sche
 				switch {
 				case member.TypeName != nil:
 					memberName := *member.TypeName
-					if !validMember(memberName) {
-						return nil, fmt.Errorf("%q is not a valid member of union %q", memberName, name)
-					}
+					validMember(memberName)
 					table[key] = memberName
 				case member.UnionMemberInlineDefn != nil:
 					panic("TODO: inline defn support")
@@ -287,6 +289,11 @@ func spawnType(ts *schema.TypeSystem, name schema.TypeName, defn TypeDefn) (sche
 			repr = schema.SpawnUnionRepresentationKeyed(table)
 		default:
 			return nil, fmt.Errorf("TODO: support other union repr in schema package")
+		}
+		for memberName, remaining := range remainingMembers {
+			if remaining {
+				return nil, fmt.Errorf("%q is not present in the union repr of %q", memberName, name)
+			}
 		}
 		return schema.SpawnUnion(name,
 			members,
