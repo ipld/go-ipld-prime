@@ -109,6 +109,12 @@ func marshalDagJSON(tb testing.TB, node datamodel.Node) []byte {
 	tb.Helper()
 	var buf bytes.Buffer
 	if err := dagjson.Encode(node, &buf); err != nil {
+		switch s := err.Error(); {
+		case strings.Contains(s, "unsupported value: NaN"),
+			strings.Contains(s, "unsupported value: -Inf"),
+			strings.Contains(s, "unsupported value: +Inf"):
+			tb.Skipf("dagcbor does not support NaN/Inf")
+		}
 		tb.Fatal(err)
 	}
 	return buf.Bytes()
