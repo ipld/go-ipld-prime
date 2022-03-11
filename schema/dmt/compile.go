@@ -289,12 +289,32 @@ func spawnType(ts *schema.TypeSystem, name schema.TypeName, defn TypeDefn) (sche
 	case defn.TypeDefnEnum != nil:
 		typ := defn.TypeDefnEnum
 		var repr schema.EnumRepresentation
+
+		// TODO: we should probably also reject duplicates.
+		validMember := func(name string) bool {
+			for _, memberName := range typ.Members {
+				if memberName == name {
+					return true
+				}
+			}
+			return false
+		}
 		switch {
 		case typ.Representation.EnumRepresentation_String != nil:
 			rp := typ.Representation.EnumRepresentation_String
+			for memberName := range rp.Values {
+				if !validMember(memberName) {
+					return nil, fmt.Errorf("%q is not a valid member of enum %q", memberName, name)
+				}
+			}
 			repr = schema.EnumRepresentation_String(rp.Values)
 		case typ.Representation.EnumRepresentation_Int != nil:
 			rp := typ.Representation.EnumRepresentation_Int
+			for memberName := range rp.Values {
+				if !validMember(memberName) {
+					return nil, fmt.Errorf("%q is not a valid member of enum %q", memberName, name)
+				}
+			}
 			repr = schema.EnumRepresentation_Int(rp.Values)
 		default:
 			return nil, fmt.Errorf("TODO: support other enum repr in schema package")
