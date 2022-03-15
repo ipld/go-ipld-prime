@@ -59,14 +59,15 @@ func (cfg DecodeOptions) Decode(na datamodel.NodeAssembler, r io.Reader) error {
 	}
 
 	var buf [1]byte
-	count, err := r.Read(buf[:])
-	if count != 0 {
-		return ErrTrailingBytes
-	}
-	if err == io.EOF {
+	_, err = io.ReadFull(r, buf[:])
+	switch err {
+	case io.EOF:
 		return nil
+	case nil:
+		return ErrTrailingBytes
+	default:
+		return err
 	}
-	return err
 }
 
 // Future work: we would like to remove the Unmarshal function,
