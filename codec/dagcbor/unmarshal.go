@@ -18,6 +18,7 @@ import (
 var (
 	ErrInvalidMultibase         = errors.New("invalid multibase on IPLD link")
 	ErrAllocationBudgetExceeded = errors.New("message structure demanded too many resources to process")
+	ErrTrailingBytes            = errors.New("unexpected content after end of cbor object")
 )
 
 const (
@@ -49,9 +50,24 @@ func (cfg DecodeOptions) Decode(na datamodel.NodeAssembler, r io.Reader) error {
 		return na2.DecodeDagCbor(r)
 	}
 	// Okay, generic builder path.
-	return Unmarshal(na, cbor.NewDecoder(cbor.DecodeOptions{
+	err := Unmarshal(na, cbor.NewDecoder(cbor.DecodeOptions{
 		CoerceUndefToNull: true,
 	}, r), cfg)
+
+	if err != nil {
+		return err
+	}
+
+	var buf [1]byte
+	_, err = io.ReadFull(r, buf[:])
+	switch err {
+	case io.EOF:
+		return nil
+	case nil:
+		return ErrTrailingBytes
+	default:
+		return err
+	}
 }
 
 // Future work: we would like to remove the Unmarshal function,
