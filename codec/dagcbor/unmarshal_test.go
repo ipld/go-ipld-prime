@@ -49,4 +49,10 @@ func TestFunBlocks(t *testing.T) {
 		qt.Assert(t, err, qt.IsNil)
 		qt.Assert(t, nb.Build().Kind(), qt.Equals, datamodel.Kind_Null)
 	})
+	t.Run("extra bytes", func(t *testing.T) {
+		buf := strings.NewReader("\xa0\x00")
+		nb := basicnode.Prototype.Any.NewBuilder()
+		err := Decode(nb, buf)
+		qt.Assert(t, err, qt.Equals, ErrTrailingBytes)
+	})
 }

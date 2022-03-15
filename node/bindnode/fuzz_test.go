@@ -238,9 +238,7 @@ func FuzzBindnodeViaDagCBOR(f *testing.F) {
 			t.Logf("decode successful: %#v", reflect.ValueOf(bindnode.Unwrap(node)).Elem().Interface())
 			reenc := marshalDagCBOR(t, node)
 			if !bytes.Equal(reenc, nodeDagCBOR) {
-				// TODO: reenable this once the dagcbor codec rejects non-canonical
-				// inputs like "00" and "a000", "0" and "a0" respectively.
-				// t.Errorf("node reencoded as %q rather than %q", reenc, nodeDagCBOR)
+				t.Errorf("node reencoded as %q rather than %q", reenc, nodeDagCBOR)
 			}
 			t.Logf("re-encode successful: %q", reenc)
 		}
