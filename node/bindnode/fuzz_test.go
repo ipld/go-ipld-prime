@@ -85,7 +85,7 @@ var fuzzInputs = []struct {
 			| One ("1")
 			| Two ("2")
 		} representation int`,
-		nodeDagJSON: `"Two"`,
+		nodeDagJSON: `2`,
 	},
 	{
 		schemaDSL: `type Root union {
@@ -93,6 +93,19 @@ var fuzzInputs = []struct {
 			| String "y"
 		} representation keyed`,
 		nodeDagJSON: `{"y":"foo"}`,
+	},
+	{
+		schemaDSL: `type Root union {
+			| Float  float
+			| Bytes  bytes
+			| Bool   bool
+			| Nested map
+		} representation kinded
+		type Nested struct {
+			F1 Int
+		}
+		`,
+		nodeDagJSON: `true`,
 	},
 }
 
@@ -132,6 +145,7 @@ func marshalDagJSON(tb testing.TB, node datamodel.Node) []byte {
 
 func FuzzBindnodeViaDagCBOR(f *testing.F) {
 	for _, input := range fuzzInputs {
+		// f.Logf("debug: %#v\n", input)
 		schemaDMT, err := schemadsl.ParseBytes([]byte(input.schemaDSL))
 		if err != nil {
 			f.Fatal(err)
@@ -147,8 +161,22 @@ func FuzzBindnodeViaDagCBOR(f *testing.F) {
 		nodeDagCBOR := marshalDagCBOR(f, node)
 		f.Add(schemaDagCBOR, nodeDagCBOR)
 
-		// TODO: verify that nodeDagCBOR actually fits the schema.
+		// Verify that nodeDagCBOR actually fits the schema.
 		// Otherwise, if any of our fuzz inputs are wrong, we might not notice.
+		{
+			schemaDMT := bindnode.Unwrap(schemaNode).(*schemadmt.Schema)
+			ts := new(schema.TypeSystem)
+			ts.Init()
+			if err := schemadmt.Compile(ts, schemaDMT); err != nil {
+				f.Fatal(err)
+			}
+			schemaType := ts.TypeByName("Root")
+			proto := bindnode.Prototype(nil, schemaType)
+			nodeBuilder := proto.Representation().NewBuilder()
+			if err := dagcbor.Decode(nodeBuilder, bytes.NewReader(nodeDagCBOR)); err != nil {
+				f.Fatal(err)
+			}
+		}
 	}
 	f.Fuzz(func(t *testing.T, schemaDagCBOR, nodeDagCBOR []byte) {
 		schemaBuilder := schemadmt.Type.Schema.Representation().NewBuilder()
@@ -162,8 +190,8 @@ func FuzzBindnodeViaDagCBOR(f *testing.F) {
 
 		// Log the input schema and node we're fuzzing with, to help debugging.
 		// We also use dag-json, as it's more human readable.
-		t.Logf("schema in dag-cbor: %x", schemaDagCBOR)
-		t.Logf("node in dag-cbor: %x", nodeDagCBOR)
+		t.Logf("schema in dag-cbor: %X", schemaDagCBOR)
+		t.Logf("node in dag-cbor: %X", nodeDagCBOR)
 		t.Logf("schema in dag-json: %s", marshalDagJSON(t, schemaNode.Representation()))
 		{
 			nodeBuilder := basicnode.Prototype.Any.NewBuilder()
@@ -238,9 +266,10 @@ func FuzzBindnodeViaDagCBOR(f *testing.F) {
 			t.Logf("decode successful: %#v", reflect.ValueOf(bindnode.Unwrap(node)).Elem().Interface())
 			reenc := marshalDagCBOR(t, node)
 			if !bytes.Equal(reenc, nodeDagCBOR) {
-				t.Errorf("node reencoded as %q rather than %q", reenc, nodeDagCBOR)
+				t.Errorf("node reencoded as %X rather than %X", reenc, nodeDagCBOR)
+			} else {
+				t.Logf("re-encode successful: %X", reenc)
 			}
-			t.Logf("re-encode successful: %q", reenc)
 		}
 	})
 }
