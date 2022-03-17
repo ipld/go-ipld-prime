@@ -35,6 +35,24 @@ const (
 type DecodeOptions struct {
 	// If true, parse DAG-CBOR tag(42) as Link nodes, otherwise reject them
 	AllowLinks bool
+
+	// TODO: ExperimentalDeterminism enforces map key order, but not the other parts
+	// of the spec such as integers or floats. See the fuzz failures spotted in
+	// https://github.com/ipld/go-ipld-prime/pull/389.
+	// When we're done implementing strictness, deprecate the option in favor of
+	// StrictDeterminism, but keep accepting both for backwards compatibility.
+
+	// ExperimentalDeterminism requires decoded DAG-CBOR bytes to be canonical as per
+	// the spec. For example, this means that integers and floats be encoded in
+	// a particular way, and map keys be sorted.
+	//
+	// The decoder does not enforce this requirement by default, as the codec
+	// was originally implemented without these rules. Because of that, there's
+	// a significant amount of published data that isn't canonical but should
+	// still decode with the default settings for backwards compatibility.
+	//
+	// Note that this option is experimental as it only implements partial strictness.
+	ExperimentalDeterminism bool
 }
 
 // Decode deserializes data from the given io.Reader and feeds it into the given datamodel.NodeAssembler.
@@ -122,6 +140,7 @@ func unmarshal2(na datamodel.NodeAssembler, tokSrc shared.TokenSource, tk *tok.T
 			return err
 		}
 		observedLen := 0
+		lastKey := ""
 		for {
 			_, err := tokSrc.Step(tk)
 			if err != nil {
@@ -146,6 +165,12 @@ func unmarshal2(na datamodel.NodeAssembler, tokSrc shared.TokenSource, tk *tok.T
 			if observedLen > expectLen {
 				return fmt.Errorf("unexpected continuation of map elements beyond declared length")
 			}
+			if observedLen > 1 && options.ExperimentalDeterminism {
+				if len(lastKey) > len(tk.Str) || lastKey > tk.Str {
+					return fmt.Errorf("map key %q is not after %q as per RFC7049", tk.Str, lastKey)
+				}
+			}
+			lastKey = tk.Str
 			mva, err := ma.AssembleEntry(tk.Str)
 			if err != nil { // return in error if the key was rejected
 				return err

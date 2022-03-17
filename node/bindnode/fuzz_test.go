@@ -204,6 +204,17 @@ func FuzzBindnodeViaDagCBOR(f *testing.F) {
 			t.Logf("node in dag-json: %s", marshalDagJSON(t, node))
 		}
 
+		// Is nodeDagCBOR canonically encoded, i.e. strictly deterministic as
+		// per the DAG-CBOR spec? This matters for the re-encode checks below.
+		// Note that we want to use the non-strict decoder for fuzzing,
+		// as that default is what the vast majority users will use.
+		canonicalNodeDagCBOR := true
+		canonicalDecoder := dagcbor.DecodeOptions{AllowLinks: true, ExperimentalDeterminism: true}
+		if err := canonicalDecoder.Decode(basicnode.Prototype.Any.NewBuilder(), bytes.NewReader(nodeDagCBOR)); err != nil {
+			canonicalNodeDagCBOR = false
+			t.Logf("note that this node dag-cbor isn't canonical!")
+		}
+
 		ts := new(schema.TypeSystem)
 		ts.Init()
 		// For the time being, we're not interested in panics from
@@ -265,9 +276,12 @@ func FuzzBindnodeViaDagCBOR(f *testing.F) {
 			// so to get useful output, use reflect to dereference them.
 			t.Logf("decode successful: %#v", reflect.ValueOf(bindnode.Unwrap(node)).Elem().Interface())
 			reenc := marshalDagCBOR(t, node)
-			if !bytes.Equal(reenc, nodeDagCBOR) {
+			switch {
+			case canonicalNodeDagCBOR && !bytes.Equal(reenc, nodeDagCBOR):
 				t.Errorf("node reencoded as %X rather than %X", reenc, nodeDagCBOR)
-			} else {
+			case !canonicalNodeDagCBOR && bytes.Equal(reenc, nodeDagCBOR):
+				t.Errorf("node reencoded as %X even though it's not canonical", reenc)
+			default:
 				t.Logf("re-encode successful: %X", reenc)
 			}
 		}
