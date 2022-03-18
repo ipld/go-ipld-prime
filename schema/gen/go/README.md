@@ -4,9 +4,13 @@ gengo
 This package contains a codegenerator for emitting Golang source code
 for datastructures based on IPLD Schemas.
 
-It is at present a partially complete proof-of-concept.  Use at your own risk.
+It is reasonably complete.  See the [feature table](#completeness) below for details.
 
-There is not yet a user-facing CLI; you have to write code to use it.
+There is a CLI tool which can be used to run this generator.
+See https://github.com/ipld/go-ipldtool !
+
+Some features may still requiring writing code to fully configure them.
+(PRs, here or in the go-ipldtool repo, welcome.)
 
 See [README_behaviors](README_behaviors.md) for notes about the behaviors of the code output by the generator.
 
