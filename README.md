@@ -28,7 +28,8 @@ if you want to write your own extensions, whether for new Node implementations
 or new codecs, or new higher-order order functions!)
 
 - `github.com/ipld/go-ipld-prime` -- imported as just `ipld` -- contains the core interfaces for IPLD.  The most important interfaces are `Node`, `NodeBuilder`, `Path`, and `Link`.
-- `github.com/ipld/go-ipld-prime/node/basicnode` -- imported as `basicnode` -- provides concrete implementations of `Node` and `NodeBuilder` which work for any kind of data.
+- `github.com/ipld/go-ipld-prime/node/basicnode` -- provides concrete implementations of `Node` and `NodeBuilder` which work for any kind of data, using unstructured memory.
+- `github.com/ipld/go-ipld-prime/node/bindnode` -- provides concrete implementations of `Node` and `NodeBuilder` which store data in native golang structures, interacting with it via reflection.  Also supports IPLD Schemas!
 - `github.com/ipld/go-ipld-prime/traversal` -- contains higher-order functions for traversing graphs of data easily.
 - `github.com/ipld/go-ipld-prime/traversal/selector` -- contains selectors, which are sort of like regexps, but for trees and graphs of IPLD data!
 - `github.com/ipld/go-ipld-prime/codec` -- parent package of all the codec implementations!
