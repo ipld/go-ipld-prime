@@ -40,6 +40,39 @@ or new codecs, or new higher-order order functions!)
 - `github.com/ipld/go-ipld-prime/node/typed` -- provides concrete implementations of `schema.TypedNode` which decorate a basic `Node` at runtime to have additional features described by IPLD Schemas.
 
 
+Getting Started
+---------------
+
+Let's say you want to create some data programmatically,
+and then serialize it, or save it as [blocks].
+
+You've got a ton of different options, depending on what golang convention you want to use:
+
+- the `qp` package -- [example](https://pkg.go.dev/github.com/ipld/go-ipld-prime/fluent/qp#example-package)
+- the `bindnode` system, if you want to use golang types -- [example](https://pkg.go.dev/github.com/ipld/go-ipld-prime/node/bindnode#example-Wrap-NoSchema), [example with schema](https://pkg.go.dev/github.com/ipld/go-ipld-prime/node/bindnode#example-Wrap-WithSchema)
+- or the [`NodeBuilder`](https://pkg.go.dev/github.com/ipld/go-ipld-prime/datamodel#NodeBuilder) interfaces, raw (verbose; not recommended)
+- or even some codegen systems!
+
+Once you've got a Node full of data,
+you can serialize it:
+
+https://pkg.go.dev/github.com/ipld/go-ipld-prime#example-package-CreateDataAndMarshal
+
+But probably you want to do more than that;
+probably you want to store this data as a block,
+and get a CID that links back to it.
+For this you use `LinkSystem`:
+
+https://pkg.go.dev/github.com/ipld/go-ipld-prime/linking#example-LinkSystem.Store
+
+Hopefully these pointers give you some useful getting-started focal points.
+The API docs should help from here on out.
+We also highly recommend scanning the [godocs](https://pkg.go.dev/github.com/ipld/go-ipld-prime) for other pieces of example code, in various packages!
+
+Let us know in [issues](https://github.com/ipld/go-ipld-prime/issues), [chat, or other community spaces](https://ipld.io/docs/intro/community/) if you need more help,
+or have suggestions on how we can improve the getting-started experiences!
+
+
 
 Other IPLD Libraries
 --------------------
