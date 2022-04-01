@@ -13,6 +13,7 @@ import (
 	"github.com/ipld/go-ipld-prime/schema"
 	schemadmt "github.com/ipld/go-ipld-prime/schema/dmt"
 	schemadsl "github.com/ipld/go-ipld-prime/schema/dsl"
+	"github.com/warpfork/go-testmark"
 	"gopkg.in/yaml.v2"
 
 	qt "github.com/frankban/quicktest"
@@ -53,6 +54,72 @@ type yamlFixtureBlock struct {
 	ActualParsed   interface{} `yaml:",omitempty"`
 	Expected       string      `yaml:",omitempty"`
 	ExpectedParsed interface{} `yaml:",omitempty"`
+}
+
+// Test the DSL parsing, as well as the DMT compile, and its normalization,
+// against fixtures that are in testmark data hunks in markdown files in the ipld/ipld repo.
+func TestFromTestmark(t *testing.T) {
+	// Glob all the markdown files in the fixtures directory.  Most do contain fixtures.
+	matches, err := filepath.Glob("../../.ipld/specs/schemas/fixtures/*.md")
+	qt.Assert(t, err, qt.IsNil)
+	qt.Assert(t, matches, qt.Not(qt.HasLen), 0)
+
+	for _, pth := range matches {
+		pth := pth // do not reuse range var since we're about to make parallel use of that value.
+
+		// Fixture names tend to be unique, but let's bracket them with the filename they came from anyway.
+		t.Run(filepath.Base(pth), func(t *testing.T) {
+			t.Parallel()
+			doc, err := testmark.ReadFile(pth)
+			qt.Assert(t, err, qt.IsNil)
+
+			// Data hunks in these spec files are in "directories" with one schema each.
+			doc.BuildDirIndex()
+			for _, dir := range doc.DirEnt.ChildrenList {
+				t.Run(dir.Name, func(t *testing.T) {
+					// First, check if this is marked for skipping.
+					// TODO eh, regexp?  how should this work?
+
+					// Each "directory" can contain many pieces of data, but only two we care about for this test:
+					//  - `schema.ipldsch` -- the DSL form of the schema.
+					//  - `schema.dmt.json` -- the logically equivalent Data Model tree of that same schema, in JSON.
+					dslBlob := dir.Children["schema.ipldsch"].Hunk.Body
+					dmtBlob := dir.Children["schema.dmt.json"].Hunk.Body
+
+					var sch *schemadmt.Schema
+					t.Run("parseable", func(t *testing.T) {
+						sch, err = schemadsl.ParseBytes(dslBlob)
+						qt.Assert(t, err, qt.IsNil)
+					})
+					if t.Failed() {
+						t.FailNow()
+					}
+
+					t.Run("compilable", func(t *testing.T) {
+						var ts schema.TypeSystem
+						ts.Init()
+						err := schemadmt.Compile(&ts, sch)
+						qt.Assert(t, err, qt.IsNil)
+						qt.Assert(t, ts.Names(), qt.Not(qt.HasLen), 0)
+					})
+
+					t.Run("matches-fixture-dmt", func(t *testing.T) {
+						node := bindnode.Wrap(sch, schemadmt.Type.Schema.Type())
+
+						var buf bytes.Buffer
+						err := ipldjson.Encode(node.Representation(), &buf)
+						qt.Assert(t, err, qt.IsNil)
+						qt.Assert(t, buf.String(), qt.Equals, string(dmtBlob))
+						// TODO add update feature
+						//  ... the existing one works on the schema-schema too, that's nice, not exactly sure how to port that
+					})
+
+					// TODO: ensure that doing a json codec decode results in the same Schema Go
+					// value that we got by parsing the DSL.
+				})
+			}
+		})
+	}
 }
 
 func TestParse(t *testing.T) {
