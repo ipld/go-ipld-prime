@@ -132,7 +132,7 @@ func spawnType(ts *schema.TypeSystem, name schema.TypeName, defn TypeDefn) (sche
 			typ.Representation.ListRepresentation_List != nil:
 			// default behavior
 		default:
-			return nil, fmt.Errorf("TODO: support other map repr in schema package")
+			return nil, fmt.Errorf("TODO: support other list repr in schema package")
 		}
 		return schema.SpawnList(name,
 			*typ.ValueType.TypeName,
@@ -147,6 +147,8 @@ func spawnType(ts *schema.TypeSystem, name schema.TypeName, defn TypeDefn) (sche
 		case typ.Representation == nil ||
 			typ.Representation.MapRepresentation_Map != nil:
 			// default behavior
+		case typ.Representation.MapRepresentation_Stringpairs != nil:
+			return nil, fmt.Errorf("TODO: support stringpairs map repr in schema package")
 		default:
 			return nil, fmt.Errorf("TODO: support other map repr in schema package")
 		}
@@ -221,6 +223,12 @@ func spawnType(ts *schema.TypeSystem, name schema.TypeName, defn TypeDefn) (sche
 				break
 			}
 			return nil, fmt.Errorf("TODO: support for tuples with field orders in the schema package")
+		case typ.Representation.StructRepresentation_Stringjoin != nil:
+			join := typ.Representation.StructRepresentation_Stringjoin.Join
+			if join == "" {
+				return nil, fmt.Errorf("stringjoin has empty join value")
+			}
+			repr = schema.SpawnStructRepresentationStringjoin(join)
 		default:
 			return nil, fmt.Errorf("TODO: support other struct repr in schema package")
 		}
@@ -287,6 +295,12 @@ func spawnType(ts *schema.TypeSystem, name schema.TypeName, defn TypeDefn) (sche
 				}
 			}
 			repr = schema.SpawnUnionRepresentationKeyed(table)
+		case typ.Representation.UnionRepresentation_StringPrefix != nil:
+			prefixes := typ.Representation.UnionRepresentation_StringPrefix.Prefixes
+			for _, key := range prefixes.Keys {
+				validMember(prefixes.Values[key])
+			}
+			repr = schema.SpawnUnionRepresentationStringprefix("", prefixes.Values)
 		default:
 			return nil, fmt.Errorf("TODO: support other union repr in schema package")
 		}
