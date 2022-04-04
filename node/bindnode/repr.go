@@ -87,11 +87,9 @@ func inboundMappedKey(typ *schema.TypeStruct, stg schema.StructRepresentation_Ma
 	for _, field := range fields {
 		mappedKey := stg.GetFieldKey(field)
 		if key == mappedKey {
-			// println(key, "rev-mapped to", field.Name())
 			return field.Name()
 		}
 	}
-	// println(key, "had no mapping")
 	return key // fallback to the same key
 }
 
@@ -115,6 +113,8 @@ func inboundMappedType(typ *schema.TypeUnion, stg schema.UnionRepresentation_Key
 	return key // fallback to the same key
 }
 
+// asKinded can be called on a kinded union node to obtain a node
+// representing one of its members, identified by kind.
 func (w *_nodeRepr) asKinded(stg schema.UnionRepresentation_Kinded, kind datamodel.Kind) *_nodeRepr {
 	name := stg.GetMember(kind)
 	members := w.schemaType.(*schema.TypeUnion).Members()
@@ -659,6 +659,7 @@ func (w *_assemblerRepr) AssignInt(i int64) error {
 			val := (*_assembler)(w).createNonPtrVal()
 			kind := val.Kind()
 			if kind == reflect.String {
+				// Reuse AssignString so we don't have to repeat ten lines.
 				return (*_assembler)(w).AssignString(member)
 			}
 			// Short-cut to storing the repr int directly, akin to node.go's AssignInt.
