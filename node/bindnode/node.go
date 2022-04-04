@@ -237,6 +237,7 @@ func (w *_node) LookupByString(key string) (datamodel.Node, error) {
 
 var invalidValue reflect.Value
 
+// unionMember finds which union member is set in the corresponding Go struct.
 func unionMember(val reflect.Value) (int, reflect.Value) {
 	// The first non-nil field is a match.
 	for i := 0; i < val.NumField(); i++ {
@@ -464,14 +465,22 @@ func (w *_builder) Reset() {
 type _assembler struct {
 	schemaType schema.Type
 	val        reflect.Value // non-pointer
-	finish     func() error
 
-	// kinded   bool // true if val is interface{} for a kinded union
+	// finish is used as an optional post-assemble step.
+	// For example, assigning to a kinded union uses a finish func
+	// to set the right union member in the Go union struct,
+	// which isn't known before the assemble has finished.
+	finish func() error
+
 	nullable bool // true if field or map value is nullable
 }
 
 func (w *_assembler) createNonPtrVal() reflect.Value {
 	val := w.val
+	// TODO: if val is not a pointer, we reuse its value.
+	// If it is a pointer, we allocate a new one and replace it.
+	// We should probably never reuse the existing value.
+
 	// TODO: support **T as well as *T?
 	if val.Kind() == reflect.Ptr {
 		// TODO: Sometimes we call createNonPtrVal before an assignment actually
@@ -640,6 +649,7 @@ func (w *_assembler) AssignInt(i int64) error {
 	if err := compatibleKind(w.schemaType, datamodel.Kind_Int); err != nil {
 		return err
 	}
+	// TODO: check for overflow
 	if _, ok := w.schemaType.(*schema.TypeAny); ok {
 		w.createNonPtrVal().Set(reflect.ValueOf(basicnode.NewInt(i)))
 	} else if kindUint[w.val.Kind()] {
