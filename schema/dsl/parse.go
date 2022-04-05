@@ -228,6 +228,35 @@ func (p *parser) consumeString() (string, error) {
 	return tok[1 : len(tok)-1], nil
 }
 
+func (p *parser) consumeStringMap() (map[string]string, error) {
+	result := map[string]string{}
+loop:
+	for {
+		tok, err := p.peekToken()
+		if err != nil {
+			return result, err
+		}
+		switch tok {
+		case "{":
+			p.consumePeeked()
+		case "}":
+			p.consumePeeked()
+			break loop
+		default:
+			key, err := p.consumeName()
+			if err != nil {
+				return result, err
+			}
+			value, err := p.consumeString()
+			if err != nil {
+				return result, err
+			}
+			result[key] = value
+		}
+	}
+	return result, nil
+}
+
 func (p *parser) consumeRequired(tok string) error {
 	got, err := p.consumeToken()
 	if err != nil {
@@ -425,6 +454,19 @@ func (p *parser) typeStruct() (*dmt.TypeDefnStruct, error) {
 		defn.Representation.StructRepresentation_Tuple = &dmt.StructRepresentation_Tuple{}
 		return defn, nil
 		// TODO: support custom fieldorder
+	case "stringjoin":
+		optMap, err := p.consumeStringMap()
+		if err != nil {
+			return nil, err
+		}
+		join, hasJoin := optMap["join"]
+		if !hasJoin {
+			return nil, p.errf("no join value provided for stringjoin repr")
+		}
+		defn.Representation.StructRepresentation_Stringjoin = &dmt.StructRepresentation_Stringjoin{
+			Join: join,
+		}
+		return defn, nil
 	default:
 		return nil, p.errf("unknown struct repr: %q", reprName)
 	}
@@ -513,7 +555,6 @@ func (p *parser) typeMap() (*dmt.TypeDefnMap, error) {
 		return defn, err
 	}
 
-	// TODO: repr
 	return defn, nil
 }
 
@@ -573,6 +614,24 @@ func (p *parser) typeUnion() (*dmt.TypeDefnUnion, error) {
 			mapAppend(repr, key, defn.Members[i])
 		}
 		defn.Representation.UnionRepresentation_Kinded = repr
+	case "stringprefix":
+		repr := &dmt.UnionRepresentation_StringPrefix{
+			Prefixes: dmt.Map__String__TypeName{
+				Values: map[string]string{},
+			},
+		}
+		for i, key := range reprKeys {
+			// unquote prefix string
+			if len(key) < 2 || key[0] != '"' || key[len(key)-1] != '"' {
+				return nil, p.errf("invalid stringprefix %q", key)
+			}
+			key = key[1 : len(key)-1]
+
+			// add prefix to prefixes map
+			repr.Prefixes.Keys = append(repr.Prefixes.Keys, key)
+			repr.Prefixes.Values[key] = *defn.Members[i].TypeName
+		}
+		defn.Representation.UnionRepresentation_StringPrefix = repr
 	default:
 		return nil, p.errf("TODO: union repr %q", reprName)
 	}
