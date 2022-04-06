@@ -1,6 +1,7 @@
 package gengo
 
 import (
+	"runtime"
 	"testing"
 
 	"github.com/ipld/go-ipld-prime/node/tests"
@@ -8,7 +9,9 @@ import (
 )
 
 func TestListsContainingMaybe(t *testing.T) {
-	t.Parallel()
+	if runtime.GOOS != "darwin" { // TODO: enable parallelism on macos
+		t.Parallel()
+	}
 
 	for _, engine := range []*genAndCompileEngine{
 		{
@@ -34,7 +37,9 @@ func TestListsContainingMaybe(t *testing.T) {
 }
 
 func TestListsContainingLists(t *testing.T) {
-	t.Parallel()
+	if runtime.GOOS != "darwin" { // TODO: enable parallelism on macos
+		t.Parallel()
+	}
 
 	engine := &genAndCompileEngine{prefix: "lists-of-lists"}
 	tests.SchemaTestListsContainingLists(t, engine)

@@ -1,6 +1,7 @@
 package gengo
 
 import (
+	"runtime"
 	"testing"
 
 	"github.com/ipld/go-ipld-prime/node/tests"
@@ -8,7 +9,9 @@ import (
 )
 
 func TestMapsContainingMaybe(t *testing.T) {
-	t.Parallel()
+	if runtime.GOOS != "darwin" { // TODO: enable parallelism on macos
+		t.Parallel()
+	}
 
 	for _, engine := range []*genAndCompileEngine{
 		{
@@ -33,14 +36,18 @@ func TestMapsContainingMaybe(t *testing.T) {
 }
 
 func TestMapsContainingMaps(t *testing.T) {
-	t.Parallel()
+	if runtime.GOOS != "darwin" { // TODO: enable parallelism on macos
+		t.Parallel()
+	}
 
 	engine := &genAndCompileEngine{prefix: "maps-recursive"}
 	tests.SchemaTestMapsContainingMaps(t, engine)
 }
 
 func TestMapsWithComplexKeys(t *testing.T) {
-	t.Parallel()
+	if runtime.GOOS != "darwin" { // TODO: enable parallelism on macos
+		t.Parallel()
+	}
 
 	engine := &genAndCompileEngine{prefix: "maps-cmplx-keys"}
 	tests.SchemaTestMapsWithComplexKeys(t, engine)

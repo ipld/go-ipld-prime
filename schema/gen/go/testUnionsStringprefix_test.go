@@ -1,6 +1,7 @@
 package gengo
 
 import (
+	"runtime"
 	"testing"
 
 	"github.com/ipld/go-ipld-prime/node/tests"
@@ -8,7 +9,9 @@ import (
 )
 
 func TestUnionStringprefix(t *testing.T) {
-	t.Parallel()
+	if runtime.GOOS != "darwin" { // TODO: enable parallelism on macos
+		t.Parallel()
+	}
 
 	for _, engine := range []*genAndCompileEngine{
 		{
