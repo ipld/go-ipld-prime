@@ -54,7 +54,7 @@ func (a *Adapter) Has(ctx context.Context, key string) (bool, error) {
 	// Delegate the has call.
 	// Note that for some datastore implementations, this will do *yet more*
 	// validation on the key, and may return errors from that.
-	return a.Wrapped.Has(k)
+	return a.Wrapped.Has(ctx, k)
 }
 
 // Get implements go-ipld-prime/storage.ReadableStorage.Get.
@@ -82,7 +82,7 @@ func (a *Adapter) Get(ctx context.Context, key string) ([]byte, error) {
 	// Delegate the get call.
 	// Note that for some datastore implementations, this will do *yet more*
 	// validation on the key, and may return errors from that.
-	return a.Wrapped.Get(k)
+	return a.Wrapped.Get(ctx, k)
 }
 
 // Put implements go-ipld-prime/storage.WritableStorage.Put.
@@ -110,5 +110,5 @@ func (a *Adapter) Put(ctx context.Context, key string, content []byte) error {
 	// Delegate the put call.
 	// Note that for some datastore implementations, this will do *yet more*
 	// validation on the key, and may return errors from that.
-	return a.Wrapped.Put(k, content)
+	return a.Wrapped.Put(ctx, k, content)
 }

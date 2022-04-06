@@ -56,7 +56,7 @@ func (a *Adapter) Has(ctx context.Context, key string) (bool, error) {
 	}
 
 	// Delegate the Has call.
-	return a.Wrapped.Blockstore().Has(k)
+	return a.Wrapped.Blockstore().Has(ctx, k)
 }
 
 // Get implements go-ipld-prime/storage.ReadableStorage.Get.
@@ -112,7 +112,7 @@ func (a *Adapter) Put(ctx context.Context, key string, content []byte) error {
 
 	// Delegate the Put call.
 	// It's called "AddBlock" in BlockService.
-	return a.Wrapped.AddBlock(block)
+	return a.Wrapped.AddBlock(ctx, block)
 }
 
 // Do the inverse of cid.KeyString().
