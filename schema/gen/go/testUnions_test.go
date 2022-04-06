@@ -1,6 +1,7 @@
 package gengo
 
 import (
+	"runtime"
 	"testing"
 
 	"github.com/ipld/go-ipld-prime/node/tests"
@@ -8,7 +9,9 @@ import (
 )
 
 func TestUnionKeyed(t *testing.T) {
-	t.Parallel()
+	if runtime.GOOS != "darwin" { // TODO: enable parallelism on macos
+		t.Parallel()
+	}
 
 	for _, engine := range []*genAndCompileEngine{
 		{
@@ -33,7 +36,9 @@ func TestUnionKeyed(t *testing.T) {
 }
 
 func TestUnionKeyedComplexChildren(t *testing.T) {
-	t.Parallel()
+	if runtime.GOOS != "darwin" { // TODO: enable parallelism on macos
+		t.Parallel()
+	}
 
 	for _, engine := range []*genAndCompileEngine{
 		{
@@ -58,7 +63,9 @@ func TestUnionKeyedComplexChildren(t *testing.T) {
 }
 
 func TestUnionKeyedReset(t *testing.T) {
-	t.Parallel()
+	if runtime.GOOS != "darwin" { // TODO: enable parallelism on macos
+		t.Parallel()
+	}
 
 	for _, engine := range []*genAndCompileEngine{
 		{
