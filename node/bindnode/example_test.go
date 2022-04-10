@@ -17,7 +17,7 @@ func ExampleWrap_withSchema() {
 		type Person struct {
 			Name    String
 			Age     optional Int
-			Friends [String]
+			Friends optional [String]
 		}
 	`))
 	if err != nil {
@@ -27,8 +27,8 @@ func ExampleWrap_withSchema() {
 
 	type Person struct {
 		Name    string
-		Age     *int64 // optional
-		Friends []string
+		Age     *int64   // optional
+		Friends []string // optional; no need for a pointer as slices are nilable
 	}
 	person := &Person{
 		Name:    "Michael",

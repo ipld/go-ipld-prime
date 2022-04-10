@@ -108,10 +108,11 @@ func verifyCompatibility(seen map[seenEntry]bool, goType reflect.Type, schemaTyp
 		}
 		goType = goType.Elem()
 		if schemaType.ValueIsNullable() {
-			if goType.Kind() != reflect.Ptr {
-				doPanic("nullable types must be pointers")
+			if ptr, nilable := ptrOrNilable(goType.Kind()); !nilable {
+				doPanic("nullable types must be nilable")
+			} else if ptr {
+				goType = goType.Elem()
 			}
-			goType = goType.Elem()
 		}
 		verifyCompatibility(seen, goType, schemaType.ValueType())
 	case *schema.TypeMap:
@@ -141,10 +142,11 @@ func verifyCompatibility(seen map[seenEntry]bool, goType reflect.Type, schemaTyp
 
 		elemType := fieldValues.Type.Elem()
 		if schemaType.ValueIsNullable() {
-			if elemType.Kind() != reflect.Ptr {
-				doPanic("nullable types must be pointers")
+			if ptr, nilable := ptrOrNilable(elemType.Kind()); !nilable {
+				doPanic("nullable types must be nilable")
+			} else if ptr {
+				elemType = elemType.Elem()
 			}
-			elemType = elemType.Elem()
 		}
 		verifyCompatibility(seen, elemType, schemaType.ValueType())
 	case *schema.TypeStruct:
@@ -159,18 +161,31 @@ func verifyCompatibility(seen map[seenEntry]bool, goType reflect.Type, schemaTyp
 		for i, schemaField := range schemaFields {
 			schemaType := schemaField.Type()
 			goType := goType.Field(i).Type
-			// TODO: allow "is nilable" to some degree?
-			if schemaField.IsNullable() {
+			switch {
+			case schemaField.IsOptional() && schemaField.IsNullable():
+				// TODO: https://github.com/ipld/go-ipld-prime/issues/340 will
+				// help here, to avoid the double pointer. We can't use nilable
+				// but non-pointer types because that's just one "nil" state.
 				if goType.Kind() != reflect.Ptr {
-					doPanic("nullable types must be pointers")
+					doPanic("optional and nullable fields must use double pointers (**)")
 				}
 				goType = goType.Elem()
-			}
-			if schemaField.IsOptional() {
 				if goType.Kind() != reflect.Ptr {
-					doPanic("optional types must be pointers")
+					doPanic("optional and nullable fields must use double pointers (**)")
 				}
 				goType = goType.Elem()
+			case schemaField.IsOptional():
+				if ptr, nilable := ptrOrNilable(goType.Kind()); !nilable {
+					doPanic("optional fields must be nilable")
+				} else if ptr {
+					goType = goType.Elem()
+				}
+			case schemaField.IsNullable():
+				if ptr, nilable := ptrOrNilable(goType.Kind()); !nilable {
+					doPanic("nullable fields must be nilable")
+				} else if ptr {
+					goType = goType.Elem()
+				}
 			}
 			verifyCompatibility(seen, goType, schemaType)
 		}
@@ -186,10 +201,11 @@ func verifyCompatibility(seen map[seenEntry]bool, goType reflect.Type, schemaTyp
 
 		for i, schemaType := range schemaMembers {
 			goType := goType.Field(i).Type
-			if goType.Kind() != reflect.Ptr {
-				doPanic("union members must be pointers")
+			if ptr, nilable := ptrOrNilable(goType.Kind()); !nilable {
+				doPanic("union members must be nilable")
+			} else if ptr {
+				goType = goType.Elem()
 			}
-			goType = goType.Elem()
 			verifyCompatibility(seen, goType, schemaType)
 		}
 	case *schema.TypeLink:
@@ -203,6 +219,17 @@ func verifyCompatibility(seen map[seenEntry]bool, goType reflect.Type, schemaTyp
 		}
 	default:
 		panic(fmt.Sprintf("%T", schemaType))
+	}
+}
+
+func ptrOrNilable(kind reflect.Kind) (ptr, nilable bool) {
+	switch kind {
+	case reflect.Ptr:
+		return true, true
+	case reflect.Interface, reflect.Map, reflect.Slice:
+		return false, true
+	default:
+		return false, false
 	}
 }
 

@@ -149,13 +149,17 @@ func (w *_node) LookupByString(key string) (datamodel.Node, error) {
 			if fval.IsNil() {
 				return datamodel.Absent, nil
 			}
-			fval = fval.Elem()
+			if fval.Kind() == reflect.Ptr {
+				fval = fval.Elem()
+			}
 		}
 		if field.IsNullable() {
 			if fval.IsNil() {
 				return datamodel.Null, nil
 			}
-			fval = fval.Elem()
+			if fval.Kind() == reflect.Ptr {
+				fval = fval.Elem()
+			}
 		}
 		if _, ok := field.Type().(*schema.TypeAny); ok {
 			return nonPtrVal(fval).Interface().(datamodel.Node), nil
@@ -822,8 +826,14 @@ func (w *_structAssembler) AssembleValue() datamodel.NodeAssembler {
 	w.doneFields[ftyp.Index[0]] = true
 	fval := w.val.FieldByIndex(ftyp.Index)
 	if field.IsOptional() {
-		fval.Set(reflect.New(fval.Type().Elem()))
-		fval = fval.Elem()
+		if fval.Kind() == reflect.Ptr {
+			// ptrVal = new(T); val = *ptrVal
+			fval.Set(reflect.New(fval.Type().Elem()))
+			fval = fval.Elem()
+		} else {
+			// val = *new(T)
+			fval.Set(reflect.New(fval.Type()).Elem())
+		}
 	}
 	// TODO: reuse same assembler for perf?
 	return &_assembler{
@@ -1087,13 +1097,17 @@ func (w *_structIterator) Next() (key, value datamodel.Node, _ error) {
 		if val.IsNil() {
 			return key, datamodel.Absent, nil
 		}
-		val = val.Elem()
+		if val.Kind() == reflect.Ptr {
+			val = val.Elem()
+		}
 	}
 	if field.IsNullable() {
 		if val.IsNil() {
 			return key, datamodel.Null, nil
 		}
-		val = val.Elem()
+		if val.Kind() == reflect.Ptr {
+			val = val.Elem()
+		}
 	}
 	if _, ok := field.Type().(*schema.TypeAny); ok {
 		return key, nonPtrVal(val).Interface().(datamodel.Node), nil
