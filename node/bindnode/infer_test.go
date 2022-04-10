@@ -334,37 +334,64 @@ func TestPrototypePointerCombinations(t *testing.T) {
 		})(nil), `{"x":3,"y":4}`},
 	}
 
+	// For each IPLD kind, we test a matrix of combinations for IPLD's optional
+	// and nullable fields alongside pointer usage on the Go field side.
+	modifiers := []struct {
+		schemaField string // "", "optional", "nullable", "optional nullable"
+		goPointers  int    // 0 (T), 1 (*T), 2 (**T)
+	}{
+		{"", 0},                  // regular IPLD field with Go's T
+		{"", 1},                  // regular IPLD field with Go's *T
+		{"optional", 0},          // optional IPLD field with Go's T (skipped unless T is nilable)
+		{"optional", 1},          // optional IPLD field with Go's *T
+		{"nullable", 0},          // nullable IPLD field with Go's T (skipped unless T is nilable)
+		{"nullable", 1},          // nullable IPLD field with Go's *T
+		{"optional nullable", 2}, // optional and nullable IPLD field with Go's **T
+	}
 	for _, kindTest := range kindTests {
-		for _, modifier := range []string{"", "optional", "nullable"} {
+		for _, modifier := range modifiers {
 			// don't reuse range vars
 			kindTest := kindTest
 			modifier := modifier
-			t.Run(fmt.Sprintf("%s/%s", kindTest.name, modifier), func(t *testing.T) {
+			goFieldType := reflect.TypeOf(kindTest.fieldPtrType)
+			switch modifier.goPointers {
+			case 0:
+				goFieldType = goFieldType.Elem() // dereference fieldPtrType
+			case 1:
+				// fieldPtrType already uses one pointer
+			case 2:
+				goFieldType = reflect.PtrTo(goFieldType) // dereference fieldPtrType
+			}
+			if modifier.schemaField != "" && !nilable(goFieldType.Kind()) {
+				continue
+			}
+			t.Run(fmt.Sprintf("%s/%s-%dptr", kindTest.name, modifier.schemaField, modifier.goPointers), func(t *testing.T) {
 				t.Parallel()
 
 				var buf bytes.Buffer
 				err := template.Must(template.New("").Parse(`
-				type Root struct {
-					field {{.Modifier}} {{.Type}}
-				}`)).Execute(&buf, struct {
-					Type, Modifier string
-				}{kindTest.schemaType, modifier})
+						type Root struct {
+							field {{.Modifier}} {{.Type}}
+						}`)).Execute(&buf,
+					struct {
+						Type, Modifier string
+					}{kindTest.schemaType, modifier.schemaField})
 				qt.Assert(t, err, qt.IsNil)
 				schemaSrc := buf.String()
-				t.Logf("IPLD schema: %T", schemaSrc)
+				t.Logf("IPLD schema: %s", schemaSrc)
 
-				// *struct { Field {{.fieldPtrType}} }
-				ptrType := reflect.Zero(reflect.PtrTo(reflect.StructOf([]reflect.StructField{
-					{Name: "Field", Type: reflect.TypeOf(kindTest.fieldPtrType)},
+				// *struct { Field {{.goFieldType}} }
+				goType := reflect.Zero(reflect.PtrTo(reflect.StructOf([]reflect.StructField{
+					{Name: "Field", Type: goFieldType},
 				}))).Interface()
-				t.Logf("Go type: %T", ptrType)
+				t.Logf("Go type: %T", goType)
 
 				ts, err := ipld.LoadSchemaBytes([]byte(schemaSrc))
 				qt.Assert(t, err, qt.IsNil)
 				schemaType := ts.TypeByName("Root")
 				qt.Assert(t, schemaType, qt.Not(qt.IsNil))
 
-				proto := bindnode.Prototype(ptrType, schemaType)
+				proto := bindnode.Prototype(goType, schemaType)
 				wantEncodedBytes, err := json.Marshal(map[string]interface{}{"field": json.RawMessage(kindTest.fieldDagJSON)})
 				qt.Assert(t, err, qt.IsNil)
 				wantEncoded := string(wantEncodedBytes)
@@ -377,30 +404,45 @@ func TestPrototypePointerCombinations(t *testing.T) {
 				// Assigning with the missing field should only work with optional.
 				nb := proto.NewBuilder()
 				err = dagjson.Decode(nb, strings.NewReader(`{}`))
-				if modifier == "optional" {
+				switch modifier.schemaField {
+				case "optional", "optional nullable":
 					qt.Assert(t, err, qt.IsNil)
 					node := nb.Build()
 					// The resulting node should be non-nil with a nil field.
 					nodeVal := reflect.ValueOf(bindnode.Unwrap(node))
 					qt.Assert(t, nodeVal.Elem().FieldByName("Field").IsNil(), qt.IsTrue)
-				} else {
+				default:
 					qt.Assert(t, err, qt.Not(qt.IsNil))
 				}
 
 				// Assigning with a null field should only work with nullable.
 				nb = proto.NewBuilder()
 				err = dagjson.Decode(nb, strings.NewReader(`{"field":null}`))
-				if modifier == "nullable" {
+				switch modifier.schemaField {
+				case "nullable", "optional nullable":
 					qt.Assert(t, err, qt.IsNil)
 					node := nb.Build()
 					// The resulting node should be non-nil with a nil field.
 					nodeVal := reflect.ValueOf(bindnode.Unwrap(node))
-					qt.Assert(t, nodeVal.Elem().FieldByName("Field").IsNil(), qt.IsTrue)
-				} else {
+					if modifier.schemaField == "nullable" {
+						qt.Assert(t, nodeVal.Elem().FieldByName("Field").IsNil(), qt.IsTrue)
+					} else {
+						qt.Assert(t, nodeVal.Elem().FieldByName("Field").Elem().IsNil(), qt.IsTrue)
+					}
+				default:
 					qt.Assert(t, err, qt.Not(qt.IsNil))
 				}
 			})
 		}
+	}
+}
+
+func nilable(kind reflect.Kind) bool {
+	switch kind {
+	case reflect.Interface, reflect.Map, reflect.Ptr, reflect.Slice:
+		return true
+	default:
+		return false
 	}
 }
 
@@ -895,13 +937,13 @@ var verifyTests = []struct {
 				Keys   []string
 				Values map[string]*datamodel.Node
 			})(nil),
+			(*struct {
+				Keys   []string
+				Values map[string]datamodel.Node
+			})(nil),
 		},
 		badTypes: []verifyBadType{
 			{(*string)(nil), `.*type Root .* type string: kind mismatch;.*`},
-			{(*struct {
-				Keys   []string
-				Values map[string]datamodel.Node
-			})(nil), `.*type Root .*: nullable types must be pointers`},
 		},
 	},
 	{
@@ -919,6 +961,10 @@ var verifyTests = []struct {
 				String *string
 			})(nil),
 			(*struct {
+				List   []string
+				String *string
+			})(nil),
+			(*struct {
 				List   *[]namedString
 				String *namedString
 			})(nil),
@@ -927,9 +973,9 @@ var verifyTests = []struct {
 			{(*string)(nil), `.*type Root .* type string: kind mismatch;.*`},
 			{(*struct{ List *[]string })(nil), `.*type Root .*: 1 vs 2 members`},
 			{(*struct {
-				List   *[]string
+				List   []string
 				String string
-			})(nil), `.*type Root .*: union members must be pointers`},
+			})(nil), `.*type Root .*: union members must be nilable`},
 			{(*struct {
 				List   *[]string
 				String *int
