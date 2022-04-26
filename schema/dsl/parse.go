@@ -478,11 +478,14 @@ func (p *parser) typeNameOrInlineDefn() (dmt.TypeNameOrInlineDefn, error) {
 	if err != nil {
 		return typ, err
 	}
-	if tok == "&" {
-		return typ, p.errf("TODO: links")
-	}
 
 	switch tok {
+	case "&":
+		expectedName, err := p.consumeName()
+		if err != nil {
+			return typ, err
+		}
+		typ.InlineDefn = &dmt.InlineDefn{TypeDefnLink: &dmt.TypeDefnLink{ExpectedType: &expectedName}}
 	case "[":
 		tlist, err := p.typeList()
 		if err != nil {
@@ -574,13 +577,20 @@ func (p *parser) typeUnion() (*dmt.TypeDefnUnion, error) {
 			return nil, p.errf("expected %q or %q, got %q", "}", "|", tok)
 		}
 		var member dmt.UnionMember
-		name, err := p.consumeName()
+		nameOrInline, err := p.typeNameOrInlineDefn()
 		if err != nil {
 			return nil, err
 		}
-		// TODO: inline defn
-		member.TypeName = &name
 
+		if nameOrInline.TypeName != nil {
+			member.TypeName = nameOrInline.TypeName
+		} else {
+			if nameOrInline.InlineDefn.TypeDefnLink != nil {
+				member.UnionMemberInlineDefn = &dmt.UnionMemberInlineDefn{TypeDefnLink: nameOrInline.InlineDefn.TypeDefnLink}
+			} else {
+				return nil, p.errf("expected a name or inline link, got neither")
+			}
+		}
 		defn.Members = append(defn.Members, member)
 
 		key, err := p.consumeToken()

@@ -78,9 +78,18 @@ func todoAnonTypeName(nameOrDefn TypeNameOrInlineDefn) string {
 	case defn.TypeDefnList != nil:
 		defn := defn.TypeDefnList
 		return fmt.Sprintf("List__%s", todoAnonTypeName(defn.ValueType))
+	case defn.TypeDefnLink != nil:
+		return todoAnonLinkName(*defn.TypeDefnLink)
 	default:
 		panic(fmt.Errorf("%#v", defn))
 	}
+}
+
+func todoAnonLinkName(defn TypeDefnLink) string {
+	if defn.ExpectedType != nil {
+		return fmt.Sprintf("Link__%s", *defn.ExpectedType)
+	}
+	return "Link__Link"
 }
 
 func parseKind(s string) datamodel.Kind {
@@ -124,8 +133,20 @@ func spawnType(ts *schema.TypeSystem, name schema.TypeName, defn TypeDefn) (sche
 
 	case defn.TypeDefnList != nil:
 		typ := defn.TypeDefnList
-		if typ.ValueType.InlineDefn != nil {
-			return nil, fmt.Errorf("TODO: support anonymous types in schema package")
+		tname := ""
+		if typ.ValueType.TypeName != nil {
+			tname = *typ.ValueType.TypeName
+		} else if tname = todoAnonTypeName(typ.ValueType); ts.TypeByName(tname) == nil {
+			anonDefn := TypeDefn{
+				TypeDefnMap:  typ.ValueType.InlineDefn.TypeDefnMap,
+				TypeDefnList: typ.ValueType.InlineDefn.TypeDefnList,
+				TypeDefnLink: typ.ValueType.InlineDefn.TypeDefnLink,
+			}
+			anonType, err := spawnType(ts, tname, anonDefn)
+			if err != nil {
+				return nil, err
+			}
+			ts.Accumulate(anonType)
 		}
 		switch {
 		case typ.Representation == nil ||
@@ -135,13 +156,25 @@ func spawnType(ts *schema.TypeSystem, name schema.TypeName, defn TypeDefn) (sche
 			return nil, fmt.Errorf("TODO: support other list repr in schema package")
 		}
 		return schema.SpawnList(name,
-			*typ.ValueType.TypeName,
+			tname,
 			todoFromImplicitlyFalseBool(typ.ValueNullable),
 		), nil
 	case defn.TypeDefnMap != nil:
 		typ := defn.TypeDefnMap
-		if typ.ValueType.InlineDefn != nil {
-			return nil, fmt.Errorf("TODO: support anonymous types in schema package")
+		tname := ""
+		if typ.ValueType.TypeName != nil {
+			tname = *typ.ValueType.TypeName
+		} else if tname = todoAnonTypeName(typ.ValueType); ts.TypeByName(tname) == nil {
+			anonDefn := TypeDefn{
+				TypeDefnMap:  typ.ValueType.InlineDefn.TypeDefnMap,
+				TypeDefnList: typ.ValueType.InlineDefn.TypeDefnList,
+				TypeDefnLink: typ.ValueType.InlineDefn.TypeDefnLink,
+			}
+			anonType, err := spawnType(ts, tname, anonDefn)
+			if err != nil {
+				return nil, err
+			}
+			ts.Accumulate(anonType)
 		}
 		switch {
 		case typ.Representation == nil ||
@@ -154,7 +187,7 @@ func spawnType(ts *schema.TypeSystem, name schema.TypeName, defn TypeDefn) (sche
 		}
 		return schema.SpawnMap(name,
 			typ.KeyType,
-			*typ.ValueType.TypeName,
+			tname,
 			todoFromImplicitlyFalseBool(typ.ValueNullable),
 		), nil
 	case defn.TypeDefnStruct != nil:
@@ -243,7 +276,18 @@ func spawnType(ts *schema.TypeSystem, name schema.TypeName, defn TypeDefn) (sche
 			if member.TypeName != nil {
 				members = append(members, *member.TypeName)
 			} else {
-				panic("TODO: inline union members")
+				tname := todoAnonLinkName(*member.UnionMemberInlineDefn.TypeDefnLink)
+				members = append(members, tname)
+				if ts.TypeByName(tname) == nil {
+					anonDefn := TypeDefn{
+						TypeDefnLink: member.UnionMemberInlineDefn.TypeDefnLink,
+					}
+					anonType, err := spawnType(ts, tname, anonDefn)
+					if err != nil {
+						return nil, err
+					}
+					ts.Accumulate(anonType)
+				}
 			}
 		}
 		remainingMembers := make(map[string]bool)
@@ -276,7 +320,9 @@ func spawnType(ts *schema.TypeSystem, name schema.TypeName, defn TypeDefn) (sche
 					validMember(memberName)
 					table[kind] = memberName
 				case member.UnionMemberInlineDefn != nil:
-					panic("TODO: inline defn support")
+					tname := todoAnonLinkName(*member.UnionMemberInlineDefn.TypeDefnLink)
+					validMember(tname)
+					table[kind] = tname
 				}
 			}
 			repr = schema.SpawnUnionRepresentationKinded(table)
@@ -291,7 +337,9 @@ func spawnType(ts *schema.TypeSystem, name schema.TypeName, defn TypeDefn) (sche
 					validMember(memberName)
 					table[key] = memberName
 				case member.UnionMemberInlineDefn != nil:
-					panic("TODO: inline defn support")
+					tname := todoAnonLinkName(*member.UnionMemberInlineDefn.TypeDefnLink)
+					validMember(tname)
+					table[key] = tname
 				}
 			}
 			repr = schema.SpawnUnionRepresentationKeyed(table)
