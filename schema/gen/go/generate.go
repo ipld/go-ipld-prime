@@ -82,7 +82,7 @@ func Generate(pth string, pkgName string, ts schema.TypeSystem, adjCfg *AdjunctC
 					panic("unrecognized union representation strategy")
 				}
 			default:
-				panic("add more type switches here :)")
+				panic(fmt.Sprintf("add more type switches here :), failed at type %s", tn))
 			}
 		}
 	}
