@@ -66,7 +66,7 @@ func todoFromImplicitlyFalseBool(b *bool) bool {
 	return *b
 }
 
-func todoAnonTypeName(nameOrDefn TypeNameOrInlineDefn) string {
+func anonTypeName(nameOrDefn TypeNameOrInlineDefn) string {
 	if nameOrDefn.TypeName != nil {
 		return *nameOrDefn.TypeName
 	}
@@ -74,18 +74,18 @@ func todoAnonTypeName(nameOrDefn TypeNameOrInlineDefn) string {
 	switch {
 	case defn.TypeDefnMap != nil:
 		defn := defn.TypeDefnMap
-		return fmt.Sprintf("Map__%s__%s", defn.KeyType, todoAnonTypeName(defn.ValueType))
+		return fmt.Sprintf("Map__%s__%s", defn.KeyType, anonTypeName(defn.ValueType))
 	case defn.TypeDefnList != nil:
 		defn := defn.TypeDefnList
-		return fmt.Sprintf("List__%s", todoAnonTypeName(defn.ValueType))
+		return fmt.Sprintf("List__%s", anonTypeName(defn.ValueType))
 	case defn.TypeDefnLink != nil:
-		return todoAnonLinkName(*defn.TypeDefnLink)
+		return anonLinkName(*defn.TypeDefnLink)
 	default:
 		panic(fmt.Errorf("%#v", defn))
 	}
 }
 
-func todoAnonLinkName(defn TypeDefnLink) string {
+func anonLinkName(defn TypeDefnLink) string {
 	if defn.ExpectedType != nil {
 		return fmt.Sprintf("Link__%s", *defn.ExpectedType)
 	}
@@ -136,7 +136,7 @@ func spawnType(ts *schema.TypeSystem, name schema.TypeName, defn TypeDefn) (sche
 		tname := ""
 		if typ.ValueType.TypeName != nil {
 			tname = *typ.ValueType.TypeName
-		} else if tname = todoAnonTypeName(typ.ValueType); ts.TypeByName(tname) == nil {
+		} else if tname = anonTypeName(typ.ValueType); ts.TypeByName(tname) == nil {
 			anonDefn := TypeDefn{
 				TypeDefnMap:  typ.ValueType.InlineDefn.TypeDefnMap,
 				TypeDefnList: typ.ValueType.InlineDefn.TypeDefnList,
@@ -164,7 +164,7 @@ func spawnType(ts *schema.TypeSystem, name schema.TypeName, defn TypeDefn) (sche
 		tname := ""
 		if typ.ValueType.TypeName != nil {
 			tname = *typ.ValueType.TypeName
-		} else if tname = todoAnonTypeName(typ.ValueType); ts.TypeByName(tname) == nil {
+		} else if tname = anonTypeName(typ.ValueType); ts.TypeByName(tname) == nil {
 			anonDefn := TypeDefn{
 				TypeDefnMap:  typ.ValueType.InlineDefn.TypeDefnMap,
 				TypeDefnList: typ.ValueType.InlineDefn.TypeDefnList,
@@ -198,7 +198,7 @@ func spawnType(ts *schema.TypeSystem, name schema.TypeName, defn TypeDefn) (sche
 			tname := ""
 			if field.Type.TypeName != nil {
 				tname = *field.Type.TypeName
-			} else if tname = todoAnonTypeName(field.Type); ts.TypeByName(tname) == nil {
+			} else if tname = anonTypeName(field.Type); ts.TypeByName(tname) == nil {
 				// Note that TypeDefn and InlineDefn aren't the same enum.
 				anonDefn := TypeDefn{
 					TypeDefnMap:  field.Type.InlineDefn.TypeDefnMap,
@@ -276,7 +276,7 @@ func spawnType(ts *schema.TypeSystem, name schema.TypeName, defn TypeDefn) (sche
 			if member.TypeName != nil {
 				members = append(members, *member.TypeName)
 			} else {
-				tname := todoAnonLinkName(*member.UnionMemberInlineDefn.TypeDefnLink)
+				tname := anonLinkName(*member.UnionMemberInlineDefn.TypeDefnLink)
 				members = append(members, tname)
 				if ts.TypeByName(tname) == nil {
 					anonDefn := TypeDefn{
@@ -320,7 +320,7 @@ func spawnType(ts *schema.TypeSystem, name schema.TypeName, defn TypeDefn) (sche
 					validMember(memberName)
 					table[kind] = memberName
 				case member.UnionMemberInlineDefn != nil:
-					tname := todoAnonLinkName(*member.UnionMemberInlineDefn.TypeDefnLink)
+					tname := anonLinkName(*member.UnionMemberInlineDefn.TypeDefnLink)
 					validMember(tname)
 					table[kind] = tname
 				}
@@ -337,7 +337,7 @@ func spawnType(ts *schema.TypeSystem, name schema.TypeName, defn TypeDefn) (sche
 					validMember(memberName)
 					table[key] = memberName
 				case member.UnionMemberInlineDefn != nil:
-					tname := todoAnonLinkName(*member.UnionMemberInlineDefn.TypeDefnLink)
+					tname := anonLinkName(*member.UnionMemberInlineDefn.TypeDefnLink)
 					validMember(tname)
 					table[key] = tname
 				}
