@@ -11,7 +11,7 @@ func printShard(fn func(string, *[]string), key string) {
 	fmt.Printf("%s => %s\n", key, path.Join(v...))
 }
 
-func Example_Shard_r133() {
+func Example_shard_R133() {
 	printShard(Shard_r133, "abcdefgh")
 	printShard(Shard_r133, "abcdefg")
 	printShard(Shard_r133, "abcdef")
@@ -29,7 +29,7 @@ func Example_Shard_r133() {
 
 }
 
-func Example_Shard_r122() {
+func Example_shard_r122() {
 	printShard(Shard_r122, "abcdefgh")
 	printShard(Shard_r122, "abcdefg")
 	printShard(Shard_r122, "abcdef")
@@ -46,7 +46,7 @@ func Example_Shard_r122() {
 	// abc => 00/ab/abc
 }
 
-func Example_Shard_r12() {
+func Example_shard_r12() {
 	printShard(Shard_r12, "abcde")
 	printShard(Shard_r12, "abcd")
 	printShard(Shard_r12, "abc")

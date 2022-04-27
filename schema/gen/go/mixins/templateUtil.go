@@ -11,7 +11,7 @@ import (
 func doTemplate(tmplstr string, w io.Writer, data interface{}) {
 	tmpl := template.Must(template.New("").
 		Funcs(template.FuncMap{
-			"title": func(s string) string { return strings.Title(s) },
+			"title": func(s string) string { return strings.Title(s) }, //lint:ignore SA1019 cases.Title doesn't work for this
 		}).
 		Parse(testutil.Dedent(tmplstr)))
 	if err := tmpl.Execute(w, data); err != nil {

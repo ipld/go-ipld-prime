@@ -150,7 +150,7 @@ func (f floatParam) Assemble(na datamodel.NodeAssembler) {
 }
 
 func Float(f float64) Assemble {
-	return intParam(f).Assemble
+	return floatParam(f).Assemble
 }
 
 type stringParam string

@@ -9,7 +9,7 @@ import (
 	"github.com/ipld/go-ipld-prime/schema"
 )
 
-func Example_Marshal() {
+func Example_marshal() {
 	type Foobar struct {
 		Foo string
 		Bar string
@@ -28,7 +28,7 @@ func Example_Marshal() {
 
 // TODO: Example_Unmarshal, which uses nil and infers a typesystem.  However, to match Example_Unmarshal_withSchema, that appears to need more features in bindnode.
 
-func Example_Unmarshal_withSchema() {
+func Example_unmarshal_withSchema() {
 	typesys := schema.MustTypeSystem(
 		schema.SpawnStruct("Foobar",
 			[]schema.StructField{

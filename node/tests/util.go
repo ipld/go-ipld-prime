@@ -9,10 +9,6 @@ import (
 	"github.com/ipld/go-ipld-prime/traversal/selector"
 )
 
-// various benchmarks assign their final result here,
-// in order to defuse the possibility of their work being elided.
-var sink interface{}
-
 func mustNodeFromJsonString(np datamodel.NodePrototype, str string) datamodel.Node {
 	nb := np.NewBuilder()
 	must.NotError(json.Decode(nb, strings.NewReader(str)))

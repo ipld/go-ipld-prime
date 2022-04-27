@@ -77,7 +77,7 @@ func (g bytesReprBytesReprGenerator) EmitNodePrototypeType(w io.Writer) {
 	`, w, g.AdjCfg, g)
 }
 func (g bytesReprBytesReprGenerator) GetNodeBuilderGenerator() NodeBuilderGenerator {
-	return bytesReprBytesReprBuilderGenerator{g.AdjCfg, g.Type}
+	return bytesReprBytesReprBuilderGenerator(g)
 }
 
 type bytesReprBytesReprBuilderGenerator struct {

@@ -10,38 +10,9 @@ import (
 //  they'd probably be much less fragile and give better error messages that way.
 //  On the other hand, the functions for condensing two-arg returns wouldn't go away anyway.
 
-func plz(n datamodel.Node, e error) datamodel.Node {
-	if e != nil {
-		panic(e)
-	}
-	return n
-}
-
-func plzStr(n datamodel.Node, e error) string {
-	if e != nil {
-		panic(e)
-	}
-	if s, ok := n.AsString(); ok == nil {
-		return s
-	} else {
-		panic(ok)
-	}
-}
-
-func str(n datamodel.Node) string {
-	if s, ok := n.AsString(); ok == nil {
-		return s
-	} else {
-		panic(ok)
-	}
-}
-
-func erp(n datamodel.Node, e error) interface{} {
-	if e != nil {
-		return e
-	}
-	return n
-}
+// various benchmarks assign their final result here,
+// in order to defuse the possibility of their work being elided.
+var sink interface{} //lint:ignore U1000 used by benchmarks
 
 // purely to syntactically flip large inline closures so we can see the argument at the top rather than the bottom of the block.
 func withNode(n datamodel.Node, cb func(n datamodel.Node)) {

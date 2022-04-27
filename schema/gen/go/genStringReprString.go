@@ -77,7 +77,7 @@ func (g stringReprStringReprGenerator) EmitNodePrototypeType(w io.Writer) {
 	`, w, g.AdjCfg, g)
 }
 func (g stringReprStringReprGenerator) GetNodeBuilderGenerator() NodeBuilderGenerator {
-	return stringReprStringReprBuilderGenerator{g.AdjCfg, g.Type}
+	return stringReprStringReprBuilderGenerator(g)
 }
 
 type stringReprStringReprBuilderGenerator struct {
