@@ -5,6 +5,7 @@ import (
 	"flag"
 	"io/ioutil"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"testing"
 
@@ -76,9 +77,7 @@ func TestParse(t *testing.T) {
 			err = yaml.Unmarshal(data, &fixt)
 			qt.Assert(t, err, qt.IsNil)
 
-			inJSON := strings.Replace(fixt.Expected, "  ", "\t", -1)
-
-			testParse(t, fixt.Schema, inJSON, func(updated string) {
+			testParse(t, fixt.Schema, fixt.Expected, func(updated string) {
 				updated = strings.Replace(updated, "\t", "  ", -1)
 				fixt.Expected = updated
 
@@ -96,6 +95,10 @@ func TestParse(t *testing.T) {
 
 func testParse(t *testing.T, inSchema, inJSON string, updateFn func(string)) {
 	t.Helper()
+
+	inJSON = strings.Replace(inJSON, "  ", "\t", -1) // fix non-tab indenting
+	crre := regexp.MustCompile(`\r?\n`)
+	inJSON = crre.ReplaceAllString(inJSON, "\n") // fix windows carriage-return
 
 	sch, err := schemadsl.ParseBytes([]byte(inSchema))
 	qt.Assert(t, err, qt.IsNil)
