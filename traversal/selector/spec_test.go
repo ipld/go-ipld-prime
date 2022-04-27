@@ -3,7 +3,9 @@ package selector_test
 import (
 	"bytes"
 	"io"
+	"io/ioutil"
 	"os"
+	"regexp"
 	"testing"
 
 	qt "github.com/frankban/quicktest"
@@ -25,7 +27,11 @@ func TestSpecFixtures(t *testing.T) {
 }
 
 func testOneSpecFixtureFile(t *testing.T, filename string) {
-	doc, err := testmark.ReadFile(filename)
+	data, err := ioutil.ReadFile(filename)
+	crre := regexp.MustCompile(`\r?\n`)
+	data = []byte(crre.ReplaceAllString(string(data), "\n")) // fix windows carriage-return
+
+	doc, err := testmark.Parse(data)
 	if os.IsNotExist(err) {
 		t.Skipf("not running spec suite: %s (did you clone the submodule with the data?)", err)
 	}

@@ -3,6 +3,7 @@ package schemadmt_test
 import (
 	"bytes"
 	"io/ioutil"
+	"regexp"
 	"strings"
 	"testing"
 
@@ -30,6 +31,8 @@ func TestRoundtripSchemaSchema(t *testing.T) {
 func testRoundtrip(t *testing.T, want string, updateFn func(string)) {
 	t.Helper()
 
+	crre := regexp.MustCompile(`\r?\n`)
+	want = crre.ReplaceAllString(want, "\n")
 	nb := schemadmt.Type.Schema.Representation().NewBuilder()
 	err := ipldjson.Decode(nb, strings.NewReader(want))
 	qt.Assert(t, err, qt.IsNil)

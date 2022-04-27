@@ -1,5 +1,5 @@
-//go:build cgo && !skipgenbehavtests
-// +build cgo,!skipgenbehavtests
+//go:build cgo && !skipgenbehavtests && !windows
+// +build cgo,!skipgenbehavtests,!windows
 
 package gengo
 
