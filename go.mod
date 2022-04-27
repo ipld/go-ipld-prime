@@ -10,7 +10,6 @@ require (
 	github.com/multiformats/go-multihash v0.1.0
 	github.com/polydawn/refmt v0.0.0-20201211092308-30ac6d18308e
 	github.com/warpfork/go-testmark v0.3.0
-	golang.org/x/text v0.3.7
 	gopkg.in/yaml.v2 v2.4.0
 )
 
