@@ -211,7 +211,7 @@ func CheckAndMakeBasepath(basepath string) error {
 			return fmt.Errorf("fsstore: failed to make staging dir: %w", err)
 		}
 		if !fi.IsDir() {
-			return fmt.Errorf("fsstore: staging dir path contains not a dir!")
+			return fmt.Errorf("fsstore: staging dir path contains not a dir")
 		}
 	default:
 		return fmt.Errorf("fsstore: failed to make staging dir: %w", err)

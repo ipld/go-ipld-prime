@@ -343,11 +343,7 @@ func (g unionKindedReprGenerator) EmitNodePrototypeType(w io.Writer) {
 // --- NodeBuilder and NodeAssembler --->
 
 func (g unionKindedReprGenerator) GetNodeBuilderGenerator() NodeBuilderGenerator {
-	return unionKindedReprBuilderGenerator{
-		g.AdjCfg,
-		g.PkgName,
-		g.Type,
-	}
+	return unionKindedReprBuilderGenerator(g)
 }
 
 type unionKindedReprBuilderGenerator struct {

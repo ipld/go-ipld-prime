@@ -103,7 +103,7 @@ func doTemplate(tmplstr string, w io.Writer, adjCfg *AdjunctCfg, data interface{
 				}
 			},
 			"add":   func(a, b int) int { return a + b },
-			"title": func(s string) string { return strings.Title(s) },
+			"title": func(s string) string { return strings.Title(s) }, //lint:ignore SA1019 cases.Title doesn't work for this
 		}).
 		Parse(testutil.Dedent(tmplstr)))
 	if err := tmpl.Execute(w, data); err != nil {

@@ -185,11 +185,15 @@ type UnionRepresentation_Keyed struct {
 type UnionRepresentation_Kinded struct {
 	table map[datamodel.Kind]TypeName
 }
+
+//lint:ignore U1000 implementation TODO
 type UnionRepresentation_Envelope struct {
 	discriminantKey string
 	contentKey      string
 	table           map[string]TypeName // key is user-defined freetext
 }
+
+//lint:ignore U1000 implementation TODO
 type UnionRepresentation_Inline struct {
 	discriminantKey string
 	table           map[string]TypeName // key is user-defined freetext
@@ -228,6 +232,8 @@ type StructRepresentation_Map struct {
 	implicits map[string]ImplicitValue
 }
 type StructRepresentation_Tuple struct{}
+
+//lint:ignore U1000 implementation TODO
 type StructRepresentation_StringPairs struct{ sep1, sep2 string }
 type StructRepresentation_Stringjoin struct{ sep string }
 

@@ -107,6 +107,7 @@ func (cfg Config) oneline(typ schema.Type, isInKey bool) bool {
 	return isInKey // Future: this could become customizable, with some kind of Always|OnlyInKeys|Never option enum per type.
 }
 
+/* TODO: not implemented or used
 // useRepr decides if a value should be printed using its representation.
 // Sometimes configuring this to be true for structs or unions with stringy representations
 // will cause map printouts using them as keys to become drastically more readable
@@ -114,6 +115,7 @@ func (cfg Config) oneline(typ schema.Type, isInKey bool) bool {
 func (cfg Config) useRepr(typ schema.Type, isInKey bool) bool {
 	return false
 }
+*/
 
 // useCmplxKeys decides if a map should print itself using a multi-line and extra-indented style for keys.
 func (cfg Config) useCmplxKeys(mapn datamodel.Node) bool {

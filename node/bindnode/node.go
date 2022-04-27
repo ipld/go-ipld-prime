@@ -905,8 +905,6 @@ type _mapAssembler struct {
 	// TODO: more state checks
 
 	curKey _assembler
-
-	nextIndex int // only used by repr.go
 }
 
 func (w *_mapAssembler) AssembleKey() datamodel.NodeAssembler {
@@ -1000,8 +998,6 @@ type _unionAssembler struct {
 	// TODO: more state checks
 
 	curKey _assembler
-
-	nextIndex int // only used by repr.go
 }
 
 func (w *_unionAssembler) AssembleKey() datamodel.NodeAssembler {

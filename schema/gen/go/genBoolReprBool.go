@@ -77,7 +77,7 @@ func (g boolReprBoolReprGenerator) EmitNodePrototypeType(w io.Writer) {
 	`, w, g.AdjCfg, g)
 }
 func (g boolReprBoolReprGenerator) GetNodeBuilderGenerator() NodeBuilderGenerator {
-	return boolReprBoolReprBuilderGenerator{g.AdjCfg, g.Type}
+	return boolReprBoolReprBuilderGenerator(g)
 }
 
 type boolReprBoolReprBuilderGenerator struct {

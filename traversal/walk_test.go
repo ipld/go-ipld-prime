@@ -129,6 +129,7 @@ func TestWalkMatching(t *testing.T) {
 			ssb.ExploreAll(ssb.ExploreRecursiveEdge()),
 		))
 		s, err := ss.Selector()
+		qt.Check(t, err, qt.IsNil)
 		var order int
 		lsys := cidlink.DefaultLinkSystem()
 		lsys.SetReadStorage(&store)
@@ -173,6 +174,7 @@ func TestWalkMatching(t *testing.T) {
 	t.Run("traversing lists should work", func(t *testing.T) {
 		ss := ssb.ExploreRange(0, 3, ssb.Matcher())
 		s, err := ss.Selector()
+		qt.Check(t, err, qt.IsNil)
 		var order int
 		lsys := cidlink.DefaultLinkSystem()
 		lsys.SetReadStorage(&store)
@@ -216,6 +218,7 @@ func TestWalkMatching(t *testing.T) {
 			})))
 		})
 		s, err := ss.Selector()
+		qt.Check(t, err, qt.IsNil)
 		var order int
 		lsys := cidlink.DefaultLinkSystem()
 		lsys.SetReadStorage(&store)
@@ -280,6 +283,7 @@ func TestWalkMatching(t *testing.T) {
 			})))
 		})
 		s, err := ss.Selector()
+		qt.Check(t, err, qt.IsNil)
 		var order int
 		lsys := cidlink.DefaultLinkSystem()
 		lsys.SetReadStorage(&store)

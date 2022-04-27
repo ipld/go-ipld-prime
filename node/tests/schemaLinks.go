@@ -24,7 +24,7 @@ import (
 var store = memstore.Store{}
 
 func encode(n datamodel.Node) (datamodel.Node, datamodel.Link) {
-	lp := cidlink.LinkPrototype{cid.Prefix{
+	lp := cidlink.LinkPrototype{Prefix: cid.Prefix{
 		Version:  1,
 		Codec:    0x0129,
 		MhType:   0x13,

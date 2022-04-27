@@ -77,7 +77,7 @@ func (g float64ReprFloatReprGenerator) EmitNodePrototypeType(w io.Writer) {
 	`, w, g.AdjCfg, g)
 }
 func (g float64ReprFloatReprGenerator) GetNodeBuilderGenerator() NodeBuilderGenerator {
-	return float64ReprFloatReprBuilderGenerator{g.AdjCfg, g.Type}
+	return float64ReprFloatReprBuilderGenerator(g)
 }
 
 type float64ReprFloatReprBuilderGenerator struct {

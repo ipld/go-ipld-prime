@@ -348,7 +348,7 @@ func inferGoType(typ schema.Type, status map[schema.TypeName]inferredStatus, lev
 
 // from IPLD Schema field names like "foo" to Go field names like "Foo".
 func fieldNameFromSchema(name string) string {
-	fieldName := strings.Title(name)
+	fieldName := strings.Title(name) //lint:ignore SA1019 cases.Title doesn't work for this
 	if !token.IsIdentifier(fieldName) {
 		panic(fmt.Sprintf("bindnode: inferred field name %q is not a valid Go identifier", fieldName))
 	}
@@ -418,10 +418,8 @@ func inferSchema(typ reflect.Type, level int) schema.Type {
 			return schemaTypeBytes
 		}
 
-		etyp := typ.Elem()
 		nullable := false
-		if etyp.Kind() == reflect.Ptr {
-			etyp = etyp.Elem()
+		if typ.Elem().Kind() == reflect.Ptr {
 			nullable = true
 		}
 		etypSchema := inferSchema(typ.Elem(), level+1)
@@ -433,7 +431,7 @@ func inferSchema(typ reflect.Type, level int) schema.Type {
 		defaultTypeSystem.Accumulate(typSchema)
 		return typSchema
 	}
-	panic(fmt.Sprintf("%s", typ.Kind()))
+	panic(typ.Kind().String())
 }
 
 // There are currently 27 reflect.Kind iota values,

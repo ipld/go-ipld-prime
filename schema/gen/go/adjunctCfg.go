@@ -65,7 +65,7 @@ func (cfg *AdjunctCfg) FieldSymbolUpper(f schema.StructField) string {
 	if x, ok := cfg.fieldSymbolUpperOverrides[FieldTuple{f.Type().Name(), f.Name()}]; ok {
 		return x
 	}
-	return strings.Title(f.Name())
+	return strings.Title(f.Name()) //lint:ignore SA1019 cases.Title doesn't work for this
 }
 
 // Comments returns a bool for whether comments should be included in gen output or not.
@@ -171,7 +171,7 @@ func sizeOfSchemaType(t schema.Type) uintptr {
 // and validated more aggressively up front when adjcfg is loaded.
 func (cfg *AdjunctCfg) UnionMemlayout(t schema.Type) string {
 	if t.TypeKind() != schema.TypeKind_Union {
-		panic(fmt.Errorf("%s is not a union!", t.Name()))
+		panic(fmt.Errorf("%s is not a union", t.Name()))
 	}
 	v, ok := cfg.CfgUnionMemlayout[t.Name()]
 	if !ok {
