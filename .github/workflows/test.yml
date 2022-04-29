@@ -18,4 +18,15 @@ jobs:
       with:
         submodules: 'true'
     - name: Test
-      run: go test ./...
+      uses: protocol/multiple-go-modules@v1.2
+      with:
+        run: go test ./...
+    - name: Tests (32 bit)
+      if: ${{ matrix.os != 'macos-latest' }} # can't run 32 bit tests on OSX
+      uses: protocol/multiple-go-modules@v1.2
+      env:
+        GOARCH: 386
+      with:
+        run: |
+          export "PATH=${{ env.PATH_386 }}:$PATH"
+          go test ./...
