@@ -1,0 +1,32 @@
+on: [push, pull_request]
+name: Go Test (go-ipld-prime custom)
+
+# Similar to go-test.yml but runs only on Linux and doesn't run tests with
+# coverpkg so we can properly execute the codegen behavior tests which are
+# skipped in go-test.yml execution.
+
+jobs:
+  unit:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ "ubuntu" ]
+        go: [ "1.17.x", "1.18.x" ]
+    runs-on: ${{ format('{0}-latest', matrix.os) }}
+    name: ${{ matrix.os }} (go ${{ matrix.go }})
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      - uses: actions/setup-go@v2
+        with:
+          go-version: ${{ matrix.go }}
+      - name: Go information
+        run: |
+          go version
+          go env
+      - name: Run tests
+        uses: protocol/multiple-go-modules@v1.2
+        with:
+          run: |
+            go test -v ./...

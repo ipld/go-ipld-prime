@@ -1,0 +1,9 @@
+name: go-ipld-prime custom action setup
+description: Adds additional options to `go test` to skip behavior tests in the main test executions
+runs:
+  using: "composite"
+  steps:
+    - name: Disable codegen behavior tests
+      shell: bash
+      run: |
+        echo "ADDITIONAL_TEST_OPTIONS=-tags skipgenbehavtests" >> $GITHUB_ENV
