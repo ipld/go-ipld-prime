@@ -100,11 +100,11 @@ func Unmarshal(na datamodel.NodeAssembler, tokSrc shared.TokenSource, options De
 	//  This is a DoS defense mechanism.
 	//  It's *roughly* in units of bytes (but only very, VERY roughly) -- it also treats words as 1 in many cases.
 	// FUTURE: this ought be configurable somehow.  (How, and at what granularity though?)
-	var gas int = 1048576 * 10
+	var gas int64 = 1048576 * 10
 	return unmarshal1(na, tokSrc, &gas, options)
 }
 
-func unmarshal1(na datamodel.NodeAssembler, tokSrc shared.TokenSource, gas *int, options DecodeOptions) error {
+func unmarshal1(na datamodel.NodeAssembler, tokSrc shared.TokenSource, gas *int64, options DecodeOptions) error {
 	var tk tok.Token
 	done, err := tokSrc.Step(&tk)
 	if err == io.EOF {
@@ -121,25 +121,25 @@ func unmarshal1(na datamodel.NodeAssembler, tokSrc shared.TokenSource, gas *int,
 
 // starts with the first token already primed.  Necessary to get recursion
 //  to flow right without a peek+unpeek system.
-func unmarshal2(na datamodel.NodeAssembler, tokSrc shared.TokenSource, tk *tok.Token, gas *int, options DecodeOptions) error {
+func unmarshal2(na datamodel.NodeAssembler, tokSrc shared.TokenSource, tk *tok.Token, gas *int64, options DecodeOptions) error {
 	// FUTURE: check for schema.TypedNodeBuilder that's going to parse a Link (they can slurp any token kind they want).
 	switch tk.Type {
 	case tok.TMapOpen:
-		expectLen := tk.Length
-		allocLen := tk.Length
+		expectLen := int64(tk.Length)
+		allocLen := int64(tk.Length)
 		if tk.Length == -1 {
-			expectLen = math.MaxInt32
+			expectLen = math.MaxInt64
 			allocLen = 0
 		} else {
 			if *gas-allocLen < 0 { // halt early if this will clearly demand too many resources
 				return ErrAllocationBudgetExceeded
 			}
 		}
-		ma, err := na.BeginMap(int64(allocLen))
+		ma, err := na.BeginMap(allocLen)
 		if err != nil {
 			return err
 		}
-		observedLen := 0
+		var observedLen int64
 		lastKey := ""
 		for {
 			_, err := tokSrc.Step(tk)
@@ -148,12 +148,12 @@ func unmarshal2(na datamodel.NodeAssembler, tokSrc shared.TokenSource, tk *tok.T
 			}
 			switch tk.Type {
 			case tok.TMapClose:
-				if expectLen != math.MaxInt32 && observedLen != expectLen {
+				if expectLen != math.MaxInt64 && observedLen != expectLen {
 					return fmt.Errorf("unexpected mapClose before declared length")
 				}
 				return ma.Finish()
 			case tok.TString:
-				*gas -= len(tk.Str) + mapEntryGasScore
+				*gas -= int64(len(tk.Str) + mapEntryGasScore)
 				if *gas < 0 {
 					return ErrAllocationBudgetExceeded
 				}
@@ -183,21 +183,21 @@ func unmarshal2(na datamodel.NodeAssembler, tokSrc shared.TokenSource, tk *tok.T
 	case tok.TMapClose:
 		return fmt.Errorf("unexpected mapClose token")
 	case tok.TArrOpen:
-		expectLen := tk.Length
-		allocLen := tk.Length
+		expectLen := int64(tk.Length)
+		allocLen := int64(tk.Length)
 		if tk.Length == -1 {
-			expectLen = math.MaxInt32
+			expectLen = math.MaxInt64
 			allocLen = 0
 		} else {
 			if *gas-allocLen < 0 { // halt early if this will clearly demand too many resources
 				return ErrAllocationBudgetExceeded
 			}
 		}
-		la, err := na.BeginList(int64(allocLen))
+		la, err := na.BeginList(allocLen)
 		if err != nil {
 			return err
 		}
-		observedLen := 0
+		var observedLen int64
 		for {
 			_, err := tokSrc.Step(tk)
 			if err != nil {
@@ -205,7 +205,7 @@ func unmarshal2(na datamodel.NodeAssembler, tokSrc shared.TokenSource, tk *tok.T
 			}
 			switch tk.Type {
 			case tok.TArrClose:
-				if expectLen != math.MaxInt32 && observedLen != expectLen {
+				if expectLen != math.MaxInt64 && observedLen != expectLen {
 					return fmt.Errorf("unexpected arrClose before declared length")
 				}
 				return la.Finish()
@@ -229,13 +229,13 @@ func unmarshal2(na datamodel.NodeAssembler, tokSrc shared.TokenSource, tk *tok.T
 	case tok.TNull:
 		return na.AssignNull()
 	case tok.TString:
-		*gas -= len(tk.Str)
+		*gas -= int64(len(tk.Str))
 		if *gas < 0 {
 			return ErrAllocationBudgetExceeded
 		}
 		return na.AssignString(tk.Str)
 	case tok.TBytes:
-		*gas -= len(tk.Bytes)
+		*gas -= int64(len(tk.Bytes))
 		if *gas < 0 {
 			return ErrAllocationBudgetExceeded
 		}
