@@ -6,4 +6,4 @@ runs:
     - name: Disable codegen behavior tests
       shell: bash
       run: |
-        echo "ADDITIONAL_TEST_OPTIONS=-tags skipgenbehavtests" >> $GITHUB_ENV
+        echo "GOFLAGS=$GOFLAGS -tags skipgenbehavtests" >> $GITHUB_ENV
