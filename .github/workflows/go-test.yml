@@ -43,9 +43,7 @@ jobs:
           # Use -coverpkg=./..., so that we include cross-package coverage.
           # If package ./A imports ./B, and ./A's tests also cover ./B,
           # this means ./B's coverage will be significantly higher than 0%.
-          run: |
-            additional_opts=( $ADDITIONAL_TEST_OPTIONS )
-            go test -v -coverprofile=module-coverage.txt -coverpkg=./... "${additional_opts[@]}" ./...
+          run: go test -v -coverprofile=module-coverage.txt -coverpkg=./... ./...
       - name: Run tests (32 bit)
         if: ${{ matrix.os != 'macos' }} # can't run 32 bit tests on OSX.
         uses: protocol/multiple-go-modules@v1.2
@@ -59,9 +57,7 @@ jobs:
         if: ${{ matrix.os == 'ubuntu' }} # speed things up. Windows and OSX VMs are slow
         uses: protocol/multiple-go-modules@v1.2
         with:
-          run: |
-            additional_opts=( $ADDITIONAL_TEST_OPTIONS )
-            go test -v -race ./... "${additional_opts[@]}"
+          run: go test -v -race ./...
       - name: Collect coverage files
         shell: bash
         run: echo "COVERAGES=$(find . -type f -name 'module-coverage.txt' | tr -s '\n' ',' | sed 's/,$//')" >> $GITHUB_ENV
