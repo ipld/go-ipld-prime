@@ -33,6 +33,9 @@ func TestSimpleData(t *testing.T) {
 				qp.ListEntry(la, qp.Int(1))
 				qp.ListEntry(la, qp.Int(2))
 			}))
+			qp.MapEntry(ma, "list with float", qp.List(1, func(la datamodel.ListAssembler) {
+				qp.ListEntry(la, qp.Float(3.4))
+			}))
 		})
 		qt.Check(t, Sprint(n), qt.CmpEquals(), testutil.Dedent(`
 		map{
@@ -45,6 +48,9 @@ func TestSimpleData(t *testing.T) {
 			string{"nested list"}: list{
 				0: int{1}
 				1: int{2}
+			}
+			string{"list with float"}: list{
+				0: float{3.4}
 			}
 		}`,
 		))
