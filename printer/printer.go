@@ -359,7 +359,7 @@ func (z *printBuf) doString(indentLevel int, printState uint8, n datamodel.Node)
 	case datamodel.Kind_Float:
 		x, _ := n.AsFloat()
 		z.writeString("{")
-		strconv.FormatFloat(x, 'f', -1, 64)
+		z.writeString(strconv.FormatFloat(x, 'f', -1, 64))
 		z.writeString("}")
 	case datamodel.Kind_String:
 		x, _ := n.AsString()
