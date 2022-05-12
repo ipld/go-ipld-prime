@@ -271,7 +271,7 @@ func (lva *plainList__ValueAssembler) AssignBool(v bool) error {
 	return lva.AssignNode(&vb)
 }
 func (lva *plainList__ValueAssembler) AssignInt(v int64) error {
-	vb := plainInt(v)
+	vb := *newPlainInt(v)
 	return lva.AssignNode(&vb)
 }
 func (lva *plainList__ValueAssembler) AssignFloat(v float64) error {
