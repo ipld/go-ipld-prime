@@ -22,10 +22,22 @@ var ts = func() *schema.TypeSystem {
 		// but if so, we'd still replicate it here,
 		// because as a rule, we don't require the specs repo submodule be present for the source to compile (just for all the tests to run).
 		[]byte(`
+		# Op represents the kind of operation to perfrom
+		# The current set is based on the JSON Patch specification
+		# We may end up adding more operations in the future
+		type Op enum {
+			| Op_Add     ("add")
+			| Op_Remove  ("remove")
+			| Op_Replace ("replace")
+			| Op_Move    ("move")
+			| Op_Copy    ("copy")
+			| Op_Test    ("test")
+		}
+
 		# Operation and OperationSequence are the types that describe operations (but not what to apply them on).
 		# See the Instruction type for describing both operations and what to apply them on.
 		type Operation struct {
-			op String
+			op Op
 			path String
 			value optional Any
 			from optional String
