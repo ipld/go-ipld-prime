@@ -6,19 +6,34 @@ import (
 )
 
 var (
-	_ datamodel.Node          = plainInt(0)
+	_ datamodel.Node          = plainInt{0, false}
 	_ datamodel.NodePrototype = Prototype__Int{}
 	_ datamodel.NodeBuilder   = &plainInt__Builder{}
 	_ datamodel.NodeAssembler = &plainInt__Assembler{}
 )
 
+func newPlainInt(value int64) *plainInt {
+	sign := (value >> 63)
+	return &plainInt{
+		value:    uint64((value ^ sign) - sign),
+		negative: sign == 1,
+	}
+}
+
 func NewInt(value int64) datamodel.Node {
-	v := plainInt(value)
+	return newPlainInt(value)
+}
+
+func NewUInt(value uint64, negative bool) datamodel.Node {
+	v := plainInt{value, negative}
 	return &v
 }
 
 // plainInt is a simple boxed int that complies with datamodel.Node.
-type plainInt int64
+type plainInt struct {
+	value    uint64
+	negative bool
+}
 
 // -- Node interface methods -->
 
@@ -56,7 +71,10 @@ func (plainInt) AsBool() (bool, error) {
 	return mixins.Int{TypeName: "int"}.AsBool()
 }
 func (n plainInt) AsInt() (int64, error) {
-	return int64(n), nil
+	if n.negative {
+		return -int64(n.value), nil
+	}
+	return int64(n.value), nil
 }
 func (plainInt) AsFloat() (float64, error) {
 	return mixins.Int{TypeName: "int"}.AsFloat()
@@ -72,6 +90,15 @@ func (plainInt) AsLink() (datamodel.Link, error) {
 }
 func (plainInt) Prototype() datamodel.NodePrototype {
 	return Prototype__Int{}
+}
+
+// special methods for plainInt to allow accessing the uint64 range
+
+func (n plainInt) UInt() uint64 {
+	return n.value
+}
+func (n plainInt) Negative() bool {
+	return n.negative
 }
 
 // -- NodePrototype -->
@@ -116,7 +143,7 @@ func (plainInt__Assembler) AssignBool(bool) error {
 	return mixins.IntAssembler{TypeName: "int"}.AssignBool(false)
 }
 func (na *plainInt__Assembler) AssignInt(v int64) error {
-	*na.w = plainInt(v)
+	*na.w = *newPlainInt(v)
 	return nil
 }
 func (plainInt__Assembler) AssignFloat(float64) error {
@@ -135,7 +162,7 @@ func (na *plainInt__Assembler) AssignNode(v datamodel.Node) error {
 	if v2, err := v.AsInt(); err != nil {
 		return err
 	} else {
-		*na.w = plainInt(v2)
+		*na.w = *newPlainInt(v2)
 		return nil
 	}
 }
