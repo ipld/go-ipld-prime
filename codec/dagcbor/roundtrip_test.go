@@ -3,12 +3,15 @@ package dagcbor
 import (
 	"bytes"
 	"crypto/rand"
+	"encoding/hex"
+	"math"
 	"strings"
 	"testing"
 
 	qt "github.com/frankban/quicktest"
 	cid "github.com/ipfs/go-cid"
 
+	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/fluent"
 	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
 	"github.com/ipld/go-ipld-prime/node/basicnode"
@@ -114,4 +117,66 @@ func TestRoundtripLinksAndBytes(t *testing.T) {
 	qt.Assert(t, err, qt.IsNil)
 	reconstructed := nb.Build()
 	qt.Check(t, reconstructed, nodetests.NodeContentEquals, linkByteNode)
+}
+
+func TestInts(t *testing.T) {
+	data := []struct {
+		name      string
+		hex       string
+		value     uint64
+		intValue  int64
+		intErr    string
+		decodeErr string
+	}{
+		{"max uint64", "1bffffffffffffffff", math.MaxUint64, 0, "unsigned integer out of range of int64 type", ""},
+		{"max int64", "1b7fffffffffffffff", math.MaxInt64, math.MaxInt64, "", ""},
+		{"1", "01", 1, 1, "", ""},
+		{"0", "00", 0, 0, "", ""},
+		{"-1", "20", 0, -1, "", ""},
+		{"min int64", "3b7fffffffffffffff", 0, math.MinInt64, "", ""},
+		{"~min uint64", "3bfffffffffffffffe", 0, 0, "", "cbor: negative integer out of rage of int64 type"},
+		// TODO: 3bffffffffffffffff isn't properly handled by refmt, it's coerced to zero
+		// MaxUint64 gets overflowed here: https://github.com/polydawn/refmt/blob/30ac6d18308e584ca6a2e74ba81475559db94c5f/cbor/cborDecoderTerminals.go#L75
+	}
+
+	for _, td := range data {
+		t.Run(td.name, func(t *testing.T) {
+			buf, err := hex.DecodeString(td.hex) // max uint64
+			qt.Assert(t, err, qt.IsNil)
+			nb := basicnode.Prototype.Any.NewBuilder()
+			err = Decode(nb, bytes.NewReader(buf))
+			if td.decodeErr != "" {
+				qt.Assert(t, err, qt.IsNotNil)
+				qt.Assert(t, err.Error(), qt.Equals, td.decodeErr)
+				return
+			}
+			qt.Assert(t, err, qt.IsNil)
+			n := nb.Build()
+
+			ii, err := n.AsInt()
+			if td.intErr != "" {
+				qt.Assert(t, err.Error(), qt.Equals, td.intErr)
+			} else {
+				qt.Assert(t, err, qt.IsNil)
+				qt.Assert(t, ii, qt.Equals, int64(td.intValue))
+			}
+
+			// if the number is outside of the positive int64 range, we should be able
+			// to access it as a UintNode and be able to access the full int64 range
+			uin, ok := n.(datamodel.UintNode)
+			if td.value <= math.MaxInt64 {
+				qt.Assert(t, ok, qt.IsFalse)
+			} else {
+				qt.Assert(t, ok, qt.IsTrue)
+				val, err := uin.AsUint()
+				qt.Assert(t, err, qt.IsNil)
+				qt.Assert(t, val, qt.Equals, uint64(td.value))
+			}
+
+			var byts bytes.Buffer
+			err = Encode(n, &byts)
+			qt.Assert(t, err, qt.IsNil)
+			qt.Assert(t, hex.EncodeToString(byts.Bytes()), qt.Equals, td.hex)
+		})
+	}
 }

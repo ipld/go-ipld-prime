@@ -13,6 +13,7 @@ import (
 
 	"github.com/ipld/go-ipld-prime/datamodel"
 	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
+	"github.com/ipld/go-ipld-prime/node/basicnode"
 )
 
 var (
@@ -275,7 +276,12 @@ func unmarshal2(na datamodel.NodeAssembler, tokSrc shared.TokenSource, tk *tok.T
 		if *gas < 0 {
 			return ErrAllocationBudgetExceeded
 		}
-		return na.AssignInt(int64(tk.Uint)) // FIXME overflow check
+		// note that this pushes any overflow errors up the stack when AsInt() may
+		// be called on a UintNode that is too large to cast to an int64
+		if tk.Uint > math.MaxInt64 {
+			return na.AssignNode(basicnode.NewUint(tk.Uint))
+		}
+		return na.AssignInt(int64(tk.Uint))
 	case tok.TFloat64:
 		*gas -= 1
 		if *gas < 0 {
