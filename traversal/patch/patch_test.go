@@ -30,8 +30,7 @@ func testOneSpecFixtureFile(t *testing.T, filename string) {
 
 	// Data hunk in this spec file are in "directories" of a test scenario each.
 	doc.BuildDirIndex()
-	// Data hunk in this spec file are in "directories" of a test scenario each.
-	doc.BuildDirIndex()
+
 	for _, dir := range doc.DirEnt.ChildrenList {
 		t.Run(dir.Name, func(t *testing.T) {
 			// Grab all the data hunks.

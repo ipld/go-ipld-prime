@@ -3,27 +3,25 @@ package patch
 import (
 	"bytes"
 	"io"
-	"strings"
 
+	"github.com/ipld/go-ipld-prime"
 	"github.com/ipld/go-ipld-prime/codec"
 	"github.com/ipld/go-ipld-prime/node/bindnode"
 
 	"github.com/ipld/go-ipld-prime/codec/json"
 	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/schema"
-	schemadmt "github.com/ipld/go-ipld-prime/schema/dmt"
-	schemadsl "github.com/ipld/go-ipld-prime/schema/dsl"
 )
 
-var ts = func() schema.TypeSystem {
-	sch, err := schemadsl.Parse("", strings.NewReader(
+var ts = func() *schema.TypeSystem {
+	ts, err := ipld.LoadSchemaBytes(
 		// This could be more accurately modelled as an inline union,
 		// but that seems like work, given how high the overlap is.
 		//
 		// This schema may also belong in the specs repo,
 		// but if so, we'd still replicate it here,
 		// because as a rule, we don't require the specs repo submodule be present for the source to compile (just for all the tests to run).
-		`
+		[]byte(`
 		# Operation and OperationSequence are the types that describe operations (but not what to apply them on).
 		# See the Instruction type for describing both operations and what to apply them on.
 		type Operation struct {
@@ -50,11 +48,6 @@ var ts = func() schema.TypeSystem {
 		}
 	`))
 	if err != nil {
-		panic(err)
-	}
-	var ts schema.TypeSystem
-	ts.Init()
-	if err := schemadmt.Compile(&ts, sch); err != nil {
 		panic(err)
 	}
 	return ts
