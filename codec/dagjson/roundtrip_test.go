@@ -2,12 +2,15 @@ package dagjson_test
 
 import (
 	"bytes"
+	"encoding/hex"
+	"math"
 	"strings"
 	"testing"
 
 	qt "github.com/frankban/quicktest"
 
 	"github.com/ipld/go-ipld-prime/codec/dagjson"
+	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/fluent"
 	"github.com/ipld/go-ipld-prime/node/basicnode"
 	nodetests "github.com/ipld/go-ipld-prime/node/tests"
@@ -79,5 +82,72 @@ func TestRoundtripScalar(t *testing.T) {
 		err := dagjson.Decode(nb, buf)
 		qt.Assert(t, err, qt.IsNil)
 		qt.Check(t, nb.Build(), nodetests.NodeContentEquals, simple)
+	})
+}
+
+func TestInts(t *testing.T) {
+	t.Run("max uint64", func(t *testing.T) {
+		buf := strings.NewReader("18446744073709551615") // max uint64
+		nb := basicnode.Prototype.Any.NewBuilder()
+		err := dagjson.Decode(nb, buf)
+		qt.Assert(t, err, qt.IsNil)
+		n := nb.Build()
+
+		// the overflowed AsInt() int64 cast
+		_, err = n.AsInt()
+		qt.Assert(t, err.Error(), qt.Equals, "unsigned integer out of rage of int64 type")
+
+		// get real, underlying value
+		uin, ok := n.(datamodel.UintNode)
+		qt.Assert(t, ok, qt.IsTrue)
+		val, positive, err := uin.AsUint()
+		qt.Assert(t, err, qt.IsNil)
+		qt.Assert(t, val, qt.Equals, uint64(math.MaxUint64))
+		qt.Assert(t, positive, qt.IsTrue)
+
+		var byts bytes.Buffer
+		err = dagjson.Encode(n, &byts)
+		qt.Assert(t, err, qt.IsNil)
+		qt.Assert(t, hex.EncodeToString(byts.Bytes()), qt.Equals, "18446744073709551615")
+	})
+
+	t.Run("max int64", func(t *testing.T) {
+		buf := strings.NewReader("9223372036854775807") // max int64
+		nb := basicnode.Prototype.Any.NewBuilder()
+		err := dagjson.Decode(nb, buf)
+		qt.Assert(t, err, qt.IsNil)
+		n := nb.Build()
+
+		ii, err := n.AsInt()
+		qt.Assert(t, err, qt.IsNil)
+		qt.Assert(t, ii, qt.Equals, int64(math.MaxInt64))
+
+		// get uint form
+		uin, ok := n.(datamodel.UintNode)
+		qt.Assert(t, ok, qt.IsTrue)
+		val, positive, err := uin.AsUint()
+		qt.Assert(t, err, qt.IsNil)
+		qt.Assert(t, val, qt.Equals, uint64(math.MaxInt64))
+		qt.Assert(t, positive, qt.IsTrue)
+	})
+
+	t.Run("min int64", func(t *testing.T) {
+		buf := strings.NewReader("-9223372036854775808") // min int64
+		nb := basicnode.Prototype.Any.NewBuilder()
+		err := dagjson.Decode(nb, buf)
+		qt.Assert(t, err, qt.IsNil)
+		n := nb.Build()
+
+		ii, err := n.AsInt()
+		qt.Assert(t, err, qt.IsNil)
+		qt.Assert(t, ii, qt.Equals, int64(math.MinInt64))
+
+		// get uint form
+		uin, ok := n.(datamodel.UintNode)
+		qt.Assert(t, ok, qt.IsTrue)
+		val, positive, err := uin.AsUint()
+		qt.Assert(t, err, qt.IsNil)
+		qt.Assert(t, val, qt.Equals, uint64(math.MaxInt64)+1)
+		qt.Assert(t, positive, qt.IsFalse)
 	})
 }

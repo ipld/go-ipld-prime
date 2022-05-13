@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"io"
+	"math"
 
 	cid "github.com/ipfs/go-cid"
 	"github.com/polydawn/refmt/json"
@@ -12,6 +13,7 @@ import (
 
 	"github.com/ipld/go-ipld-prime/datamodel"
 	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
+	"github.com/ipld/go-ipld-prime/node/basicnode"
 )
 
 // This drifts pretty far from the general unmarshal in the parent package:
@@ -379,7 +381,10 @@ func (st *unmarshalState) unmarshal(na datamodel.NodeAssembler, tokSrc shared.To
 	case tok.TInt:
 		return na.AssignInt(st.tk[0].Int)
 	case tok.TUint:
-		return na.AssignInt(int64(st.tk[0].Uint)) // FIXME overflow check
+		if st.tk[0].Uint > uint64(math.MaxInt64) {
+			return na.AssignNode(basicnode.NewUInt(st.tk[0].Uint, true))
+		}
+		return na.AssignInt(int64(st.tk[0].Uint))
 	case tok.TFloat64:
 		return na.AssignFloat(st.tk[0].Float64)
 	default:

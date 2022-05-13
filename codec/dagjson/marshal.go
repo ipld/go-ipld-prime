@@ -175,13 +175,31 @@ func Marshal(n datamodel.Node, sink shared.TokenSink, options EncodeOptions) err
 		_, err = sink.Step(&tk)
 		return err
 	case datamodel.Kind_Int:
-		v, err := n.AsInt()
-		if err != nil {
-			return err
+		var v uint64
+		var positive bool
+		if uin, ok := n.(datamodel.UintNode); ok {
+			var err error
+			v, positive, err = uin.AsUint()
+			if err != nil {
+				return err
+			}
+		} else {
+			i, err := n.AsInt()
+			if err != nil {
+				return err
+			}
+			sign := (i >> 63)
+			v = uint64((i ^ sign) - sign)
+			positive = sign == 0
 		}
-		tk.Type = tok.TInt
-		tk.Int = int64(v)
-		_, err = sink.Step(&tk)
+		if positive {
+			tk.Type = tok.TUint
+			tk.Uint = v
+		} else {
+			tk.Type = tok.TInt
+			tk.Int = -int64(v)
+		}
+		_, err := sink.Step(&tk)
 		return err
 	case datamodel.Kind_Float:
 		v, err := n.AsFloat()
