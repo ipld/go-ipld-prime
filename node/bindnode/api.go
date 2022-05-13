@@ -27,10 +27,12 @@ import (
 // from it, so its underlying value will typically be nil. For example:
 //
 //     proto := bindnode.Prototype((*goType)(nil), schemaType)
-func Prototype(ptrType interface{}, schemaType schema.Type) schema.TypedPrototype {
+func Prototype(ptrType interface{}, schemaType schema.Type, options ...Option) schema.TypedPrototype {
 	if ptrType == nil && schemaType == nil {
 		panic("bindnode: either ptrType or schemaType must not be nil")
 	}
+
+	cfg := applyOptions(options...)
 
 	// TODO: if both are supplied, verify that they are compatible
 
@@ -50,11 +52,60 @@ func Prototype(ptrType interface{}, schemaType schema.Type) schema.TypedPrototyp
 		if schemaType == nil {
 			schemaType = inferSchema(goType, 0)
 		} else {
-			verifyCompatibility(make(map[seenEntry]bool), goType, schemaType)
+			verifyCompatibility(cfg, make(map[seenEntry]bool), goType, schemaType)
 		}
 	}
 
-	return &_prototype{schemaType: schemaType, goType: goType}
+	return &_prototype{cfg: cfg, schemaType: schemaType, goType: goType}
+}
+
+// CustomTypeConverter is an empty interface intended as a parent for the
+// various type converters
+type CustomTypeConverter interface {
+}
+
+// CustomTypeBytesConverter is able to convert byte slices to and from a
+// specific type that can't otherwise be handled by bindnode. Such a type will
+// likely not be instantiated by plain reflection and therefore need custom
+// logic to decode and/or instantiate.
+type CustomTypeBytesConverter interface {
+	FromBytes([]byte) (interface{}, error)
+	ToBytes(interface{}) ([]byte, error)
+}
+
+type config struct {
+	customConverters map[reflect.Type]CustomTypeConverter
+}
+
+// Option is able to apply custom options to the bindnode API
+type Option func(*config)
+
+// AddCustomTypeBytesConverter adds a CustomTypeConverter for a particular
+// type as referenced by ptrType. The CustomTypeConverter must be able to
+// handle that specific type, and the data model kind it's converting must be
+// present at the schema location it's encountered.
+func AddCustomTypeBytesConverter(ptrType interface{}, converter CustomTypeBytesConverter) Option {
+	val := reflect.ValueOf(ptrType)
+	if val.Kind() == reflect.Ptr {
+		val = val.Elem()
+	}
+	name := val.Type().Name()
+	if name == "" {
+		panic("not a named type")
+	}
+	return func(cfg *config) {
+		cfg.customConverters[val.Type()] = converter
+	}
+}
+
+func applyOptions(opt ...Option) config {
+	cfg := config{
+		customConverters: make(map[reflect.Type]CustomTypeConverter),
+	}
+	for _, o := range opt {
+		o(&cfg)
+	}
+	return cfg
 }
 
 // Wrap implements a schema.TypedNode given a non-nil pointer to a Go value and an
@@ -65,7 +116,7 @@ func Prototype(ptrType interface{}, schemaType schema.Type) schema.TypedPrototyp
 //
 // Similar to Prototype, if schemaType is non-nil it is assumed to be compatible
 // with the Go type, and otherwise it's inferred from the Go type.
-func Wrap(ptrVal interface{}, schemaType schema.Type) schema.TypedNode {
+func Wrap(ptrVal interface{}, schemaType schema.Type, options ...Option) schema.TypedNode {
 	if ptrVal == nil {
 		panic("bindnode: ptrVal must not be nil")
 	}
@@ -77,6 +128,7 @@ func Wrap(ptrVal interface{}, schemaType schema.Type) schema.TypedNode {
 		// Note that this can happen if ptrVal was a typed nil.
 		panic("bindnode: ptrVal must not be nil")
 	}
+	cfg := applyOptions(options...)
 	goVal := goPtrVal.Elem()
 	if goVal.Kind() == reflect.Ptr {
 		panic("bindnode: ptrVal must not be a pointer to a pointer")
@@ -84,9 +136,9 @@ func Wrap(ptrVal interface{}, schemaType schema.Type) schema.TypedNode {
 	if schemaType == nil {
 		schemaType = inferSchema(goVal.Type(), 0)
 	} else {
-		verifyCompatibility(make(map[seenEntry]bool), goVal.Type(), schemaType)
+		verifyCompatibility(cfg, make(map[seenEntry]bool), goVal.Type(), schemaType)
 	}
-	return &_node{val: goVal, schemaType: schemaType}
+	return &_node{cfg: cfg, val: goVal, schemaType: schemaType}
 }
 
 // TODO: consider making our own Node interface, like:
