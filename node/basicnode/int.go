@@ -1,41 +1,41 @@
 package basicnode
 
 import (
+	"fmt"
+	"math"
+
 	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/node/mixins"
 )
 
 var (
-	_ datamodel.Node          = plainInt{0, false}
+	_ datamodel.Node          = plainInt(0)
+	_ datamodel.UintNode      = plainInt(0)
+	_ datamodel.Node          = uintNode{}
+	_ datamodel.UintNode      = uintNode{}
 	_ datamodel.NodePrototype = Prototype__Int{}
 	_ datamodel.NodeBuilder   = &plainInt__Builder{}
 	_ datamodel.NodeAssembler = &plainInt__Assembler{}
 )
 
-func newPlainInt(value int64) *plainInt {
-	sign := (value >> 63)
-	return &plainInt{
-		value:    uint64((value ^ sign) - sign),
-		negative: sign == 1,
-	}
-}
-
 func NewInt(value int64) datamodel.Node {
-	return newPlainInt(value)
+	return plainInt(value)
 }
 
-func NewUInt(value uint64, negative bool) datamodel.Node {
-	v := plainInt{value, negative}
+func NewUInt(value uint64, positive bool) datamodel.Node {
+	v := uintNode{value, positive}
 	return &v
 }
 
-// plainInt is a simple boxed int that complies with datamodel.Node.
-type plainInt struct {
+type uintNode struct {
 	value    uint64
-	negative bool
+	positive bool
 }
 
-// -- Node interface methods -->
+// plainInt is a simple boxed int that complies with datamodel.Node.
+type plainInt int64
+
+// -- Node interface methods for plainInt -->
 
 func (plainInt) Kind() datamodel.Kind {
 	return datamodel.Kind_Int
@@ -71,10 +71,7 @@ func (plainInt) AsBool() (bool, error) {
 	return mixins.Int{TypeName: "int"}.AsBool()
 }
 func (n plainInt) AsInt() (int64, error) {
-	if n.negative {
-		return -int64(n.value), nil
-	}
-	return int64(n.value), nil
+	return int64(n), nil
 }
 func (plainInt) AsFloat() (float64, error) {
 	return mixins.Int{TypeName: "int"}.AsFloat()
@@ -92,13 +89,74 @@ func (plainInt) Prototype() datamodel.NodePrototype {
 	return Prototype__Int{}
 }
 
-// special methods for plainInt to allow accessing the uint64 range
+// allows plainInt to conform to the UintNode interface
 
-func (n plainInt) UInt() uint64 {
-	return n.value
+func (n plainInt) AsUint() (uint64, bool, error) {
+	sign := (n >> 63)
+	return uint64((n ^ sign) - sign), sign == 0, nil
 }
-func (n plainInt) Negative() bool {
-	return n.negative
+
+// -- Node interface methods for uintNode -->
+
+func (uintNode) Kind() datamodel.Kind {
+	return datamodel.Kind_Int
+}
+func (uintNode) LookupByString(string) (datamodel.Node, error) {
+	return mixins.Int{TypeName: "int"}.LookupByString("")
+}
+func (uintNode) LookupByNode(key datamodel.Node) (datamodel.Node, error) {
+	return mixins.Int{TypeName: "int"}.LookupByNode(nil)
+}
+func (uintNode) LookupByIndex(idx int64) (datamodel.Node, error) {
+	return mixins.Int{TypeName: "int"}.LookupByIndex(0)
+}
+func (uintNode) LookupBySegment(seg datamodel.PathSegment) (datamodel.Node, error) {
+	return mixins.Int{TypeName: "int"}.LookupBySegment(seg)
+}
+func (uintNode) MapIterator() datamodel.MapIterator {
+	return nil
+}
+func (uintNode) ListIterator() datamodel.ListIterator {
+	return nil
+}
+func (uintNode) Length() int64 {
+	return -1
+}
+func (uintNode) IsAbsent() bool {
+	return false
+}
+func (uintNode) IsNull() bool {
+	return false
+}
+func (uintNode) AsBool() (bool, error) {
+	return mixins.Int{TypeName: "int"}.AsBool()
+}
+func (n uintNode) AsInt() (int64, error) {
+	if n.value > uint64(math.MaxInt64) {
+		return -1, fmt.Errorf("unsigned integer out of rage of int64 type")
+	}
+	return int64(n.value), nil
+}
+func (uintNode) AsFloat() (float64, error) {
+	return mixins.Int{TypeName: "int"}.AsFloat()
+}
+func (uintNode) AsString() (string, error) {
+	return mixins.Int{TypeName: "int"}.AsString()
+}
+func (uintNode) AsBytes() ([]byte, error) {
+	return mixins.Int{TypeName: "int"}.AsBytes()
+}
+func (uintNode) AsLink() (datamodel.Link, error) {
+	return mixins.Int{TypeName: "int"}.AsLink()
+}
+func (uintNode) Prototype() datamodel.NodePrototype {
+	return Prototype__Int{}
+}
+
+// allows uintNode to conform to the UintNode interface
+
+func (n uintNode) AsUint() (uint64, bool, error) {
+	return n.value, n.positive, nil
 }
 
 // -- NodePrototype -->
@@ -143,7 +201,7 @@ func (plainInt__Assembler) AssignBool(bool) error {
 	return mixins.IntAssembler{TypeName: "int"}.AssignBool(false)
 }
 func (na *plainInt__Assembler) AssignInt(v int64) error {
-	*na.w = *newPlainInt(v)
+	*na.w = plainInt(v)
 	return nil
 }
 func (plainInt__Assembler) AssignFloat(float64) error {
@@ -162,7 +220,7 @@ func (na *plainInt__Assembler) AssignNode(v datamodel.Node) error {
 	if v2, err := v.AsInt(); err != nil {
 		return err
 	} else {
-		*na.w = *newPlainInt(v2)
+		*na.w = plainInt(v2)
 		return nil
 	}
 }

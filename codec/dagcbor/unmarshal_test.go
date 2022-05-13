@@ -1,8 +1,6 @@
 package dagcbor
 
 import (
-	"bytes"
-	"encoding/hex"
 	"runtime"
 	"strings"
 	"testing"
@@ -73,29 +71,4 @@ func TestFunBlocks(t *testing.T) {
 		err := Decode(nb, buf)
 		qt.Assert(t, err, qt.Equals, ErrTrailingBytes)
 	})
-}
-
-func TestInts(t *testing.T) {
-	buf, err := hex.DecodeString("1bffffffffffffffff") // max uint64
-	qt.Assert(t, err, qt.IsNil)
-	nb := basicnode.Prototype.Any.NewBuilder()
-	err = Decode(nb, bytes.NewReader(buf))
-	qt.Assert(t, err, qt.IsNil)
-	n := nb.Build()
-
-	// the overflowed AsInt() int64 cast
-	ii, err := n.AsInt()
-	qt.Assert(t, err, qt.IsNil)
-	qt.Assert(t, ii, qt.Equals, int64(-1)) // NOPE!
-
-	// get real, underlying value
-	uin, ok := n.(uintNode)
-	qt.Assert(t, ok, qt.IsTrue)
-	qt.Assert(t, uin.UInt(), qt.Equals, uint64(1<<64-1))
-	qt.Assert(t, uin.Negative(), qt.IsFalse)
-
-	var byts bytes.Buffer
-	err = Encode(n, &byts)
-	qt.Assert(t, err, qt.IsNil)
-	qt.Assert(t, hex.EncodeToString(byts.Bytes()), qt.Equals, "1bffffffffffffffff")
 }
