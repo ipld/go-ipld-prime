@@ -46,12 +46,14 @@ var (
 )
 
 type _prototype struct {
+	cfg        config
 	schemaType schema.Type
 	goType     reflect.Type // non-pointer
 }
 
 func (w *_prototype) NewBuilder() datamodel.NodeBuilder {
 	return &_builder{_assembler{
+		cfg:        w.cfg,
 		schemaType: w.schemaType,
 		val:        reflect.New(w.goType).Elem(),
 	}}
@@ -66,6 +68,7 @@ func (w *_prototype) Representation() datamodel.NodePrototype {
 }
 
 type _node struct {
+	cfg        config
 	schemaType schema.Type
 
 	val reflect.Value // non-pointer
@@ -165,6 +168,7 @@ func (w *_node) LookupByString(key string) (datamodel.Node, error) {
 			return nonPtrVal(fval).Interface().(datamodel.Node), nil
 		}
 		node := &_node{
+			cfg:        w.cfg,
 			schemaType: field.Type(),
 			val:        fval,
 		}
@@ -177,6 +181,7 @@ func (w *_node) LookupByString(key string) (datamodel.Node, error) {
 			kval = reflect.ValueOf(key)
 		default:
 			asm := &_assembler{
+				cfg:        w.cfg,
 				schemaType: ktyp,
 				val:        reflect.New(valuesVal.Type().Key()).Elem(),
 			}
@@ -203,6 +208,7 @@ func (w *_node) LookupByString(key string) (datamodel.Node, error) {
 			return nonPtrVal(fval).Interface().(datamodel.Node), nil
 		}
 		node := &_node{
+			cfg:        w.cfg,
 			schemaType: typ.ValueType(),
 			val:        fval,
 		}
@@ -226,6 +232,7 @@ func (w *_node) LookupByString(key string) (datamodel.Node, error) {
 			return nil, datamodel.ErrNotExists{Segment: datamodel.PathSegmentOfString(key)}
 		}
 		node := &_node{
+			cfg:        w.cfg,
 			schemaType: mtyp,
 			val:        mval,
 		}
@@ -282,7 +289,7 @@ func (w *_node) LookupByIndex(idx int64) (datamodel.Node, error) {
 		if _, ok := typ.ValueType().(*schema.TypeAny); ok {
 			return nonPtrVal(val).Interface().(datamodel.Node), nil
 		}
-		return &_node{schemaType: typ.ValueType(), val: val}, nil
+		return &_node{cfg: w.cfg, schemaType: typ.ValueType(), val: val}, nil
 	}
 	return nil, datamodel.ErrWrongKind{
 		TypeName:        w.schemaType.Name(),
@@ -339,18 +346,21 @@ func (w *_node) MapIterator() datamodel.MapIterator {
 	switch typ := w.schemaType.(type) {
 	case *schema.TypeStruct:
 		return &_structIterator{
+			cfg:        w.cfg,
 			schemaType: typ,
 			fields:     typ.Fields(),
 			val:        val,
 		}
 	case *schema.TypeUnion:
 		return &_unionIterator{
+			cfg:        w.cfg,
 			schemaType: typ,
 			members:    typ.Members(),
 			val:        val,
 		}
 	case *schema.TypeMap:
 		return &_mapIterator{
+			cfg:        w.cfg,
 			schemaType: typ,
 			keysVal:    val.FieldByName("Keys"),
 			valuesVal:  val.FieldByName("Values"),
@@ -363,7 +373,7 @@ func (w *_node) ListIterator() datamodel.ListIterator {
 	val := nonPtrVal(w.val)
 	switch typ := w.schemaType.(type) {
 	case *schema.TypeList:
-		return &_listIterator{schemaType: typ, val: val}
+		return &_listIterator{cfg: w.cfg, schemaType: typ, val: val}
 	}
 	return nil
 }
@@ -432,6 +442,19 @@ func (w *_node) AsBytes() ([]byte, error) {
 	if err := compatibleKind(w.schemaType, datamodel.Kind_Bytes); err != nil {
 		return nil, err
 	}
+
+	typ := w.val.Type()
+	if w.val.Kind() == reflect.Ptr {
+		typ = typ.Elem()
+	}
+	customConverter, ok := w.cfg.customConverters[typ]
+	if ok {
+		cbc, ok := customConverter.(CustomTypeBytesConverter)
+		if !ok {
+			panic("kind mismatch; custom converter for type is not a CustomTypeBytesConverter")
+		}
+		return cbc.ToBytes(w.val.Addr().Interface())
+	}
 	return nonPtrVal(w.val).Bytes(), nil
 }
 
@@ -450,7 +473,7 @@ func (w *_node) AsLink() (datamodel.Link, error) {
 }
 
 func (w *_node) Prototype() datamodel.NodePrototype {
-	return &_prototype{schemaType: w.schemaType, goType: w.val.Type()}
+	return &_prototype{cfg: w.cfg, schemaType: w.schemaType, goType: w.val.Type()}
 }
 
 type _builder struct {
@@ -459,7 +482,7 @@ type _builder struct {
 
 func (w *_builder) Build() datamodel.Node {
 	// TODO: should we panic if no Assign call was made, just like codegen?
-	return &_node{schemaType: w.schemaType, val: w.val}
+	return &_node{cfg: w.cfg, schemaType: w.schemaType, val: w.val}
 }
 
 func (w *_builder) Reset() {
@@ -467,6 +490,7 @@ func (w *_builder) Reset() {
 }
 
 type _assembler struct {
+	cfg        config
 	schemaType schema.Type
 	val        reflect.Value // non-pointer
 
@@ -535,6 +559,7 @@ func (w *_assembler) BeginMap(sizeHint int64) (datamodel.MapAssembler, error) {
 		val := w.createNonPtrVal()
 		doneFields := make([]bool, val.NumField())
 		return &_structAssembler{
+			cfg:        w.cfg,
 			schemaType: typ,
 			val:        val,
 			doneFields: doneFields,
@@ -548,6 +573,7 @@ func (w *_assembler) BeginMap(sizeHint int64) (datamodel.MapAssembler, error) {
 			valuesVal.Set(reflect.MakeMap(valuesVal.Type()))
 		}
 		return &_mapAssembler{
+			cfg:        w.cfg,
 			schemaType: typ,
 			keysVal:    keysVal,
 			valuesVal:  valuesVal,
@@ -556,6 +582,7 @@ func (w *_assembler) BeginMap(sizeHint int64) (datamodel.MapAssembler, error) {
 	case *schema.TypeUnion:
 		val := w.createNonPtrVal()
 		return &_unionAssembler{
+			cfg:        w.cfg,
 			schemaType: typ,
 			val:        val,
 			finish:     w.finish,
@@ -602,6 +629,7 @@ func (w *_assembler) BeginList(sizeHint int64) (datamodel.ListAssembler, error) 
 	case *schema.TypeList:
 		val := w.createNonPtrVal()
 		return &_listAssembler{
+			cfg:        w.cfg,
 			schemaType: typ,
 			val:        val,
 			finish:     w.finish,
@@ -714,7 +742,30 @@ func (w *_assembler) AssignBytes(p []byte) error {
 	if _, ok := w.schemaType.(*schema.TypeAny); ok {
 		w.createNonPtrVal().Set(reflect.ValueOf(basicnode.NewBytes(p)))
 	} else {
-		w.createNonPtrVal().SetBytes(p)
+		typ := w.val.Type()
+		if w.val.Kind() == reflect.Ptr {
+			typ = typ.Elem()
+		}
+		customConverter, ok := w.cfg.customConverters[typ]
+		if ok {
+			cbc, ok := customConverter.(CustomTypeBytesConverter)
+			if !ok {
+				panic("kind mismatch; custom converter for type is not a CustomTypeBytesConverter")
+			}
+			val, err := cbc.FromBytes(p)
+			if err != nil {
+				return err
+			}
+			rval := reflect.ValueOf(val)
+			if w.val.Kind() == reflect.Ptr && rval.Kind() != reflect.Ptr {
+				rval = rval.Addr()
+			} else if w.val.Kind() != reflect.Ptr && rval.Kind() == reflect.Ptr {
+				rval = rval.Elem()
+			}
+			w.val.Set(rval)
+		} else {
+			w.createNonPtrVal().SetBytes(p)
+		}
 	}
 	if w.finish != nil {
 		if err := w.finish(); err != nil {
@@ -770,11 +821,13 @@ func (w *_assembler) AssignNode(node datamodel.Node) error {
 }
 
 func (w *_assembler) Prototype() datamodel.NodePrototype {
-	return &_prototype{schemaType: w.schemaType, goType: w.val.Type()}
+	return &_prototype{cfg: w.cfg, schemaType: w.schemaType, goType: w.val.Type()}
 }
 
 type _structAssembler struct {
 	// TODO: embed _assembler?
+
+	cfg config
 
 	schemaType *schema.TypeStruct
 	val        reflect.Value // non-pointer
@@ -796,6 +849,7 @@ type _structAssembler struct {
 
 func (w *_structAssembler) AssembleKey() datamodel.NodeAssembler {
 	w.curKey = _assembler{
+		cfg:        w.cfg,
 		schemaType: schemaTypeString,
 		val:        reflect.New(goTypeString).Elem(),
 	}
@@ -837,6 +891,7 @@ func (w *_structAssembler) AssembleValue() datamodel.NodeAssembler {
 	}
 	// TODO: reuse same assembler for perf?
 	return &_assembler{
+		cfg:        w.cfg,
 		schemaType: field.Type(),
 		val:        fval,
 		nullable:   field.IsNullable(),
@@ -873,7 +928,7 @@ func (w *_structAssembler) Finish() error {
 func (w *_structAssembler) KeyPrototype() datamodel.NodePrototype {
 	// TODO: if the user provided their own schema with their own typesystem,
 	// the schemaTypeString here may be using the wrong typesystem.
-	return &_prototype{schemaType: schemaTypeString, goType: goTypeString}
+	return &_prototype{cfg: w.cfg, schemaType: schemaTypeString, goType: goTypeString}
 }
 
 func (w *_structAssembler) ValuePrototype(k string) datamodel.NodePrototype {
@@ -897,6 +952,7 @@ func (w _errorAssembler) AssignNode(datamodel.Node) error                  { ret
 func (w _errorAssembler) Prototype() datamodel.NodePrototype               { return nil }
 
 type _mapAssembler struct {
+	cfg        config
 	schemaType *schema.TypeMap
 	keysVal    reflect.Value // non-pointer
 	valuesVal  reflect.Value // non-pointer
@@ -909,6 +965,7 @@ type _mapAssembler struct {
 
 func (w *_mapAssembler) AssembleKey() datamodel.NodeAssembler {
 	w.curKey = _assembler{
+		cfg:        w.cfg,
 		schemaType: w.schemaType.KeyType(),
 		val:        reflect.New(w.valuesVal.Type().Key()).Elem(),
 	}
@@ -928,6 +985,7 @@ func (w *_mapAssembler) AssembleValue() datamodel.NodeAssembler {
 		return nil
 	}
 	return &_assembler{
+		cfg:        w.cfg,
 		schemaType: w.schemaType.ValueType(),
 		val:        val,
 		nullable:   w.schemaType.ValueIsNullable(),
@@ -953,14 +1011,15 @@ func (w *_mapAssembler) Finish() error {
 }
 
 func (w *_mapAssembler) KeyPrototype() datamodel.NodePrototype {
-	return &_prototype{schemaType: w.schemaType.KeyType(), goType: w.valuesVal.Type().Key()}
+	return &_prototype{cfg: w.cfg, schemaType: w.schemaType.KeyType(), goType: w.valuesVal.Type().Key()}
 }
 
 func (w *_mapAssembler) ValuePrototype(k string) datamodel.NodePrototype {
-	return &_prototype{schemaType: w.schemaType.ValueType(), goType: w.valuesVal.Type().Elem()}
+	return &_prototype{cfg: w.cfg, schemaType: w.schemaType.ValueType(), goType: w.valuesVal.Type().Elem()}
 }
 
 type _listAssembler struct {
+	cfg        config
 	schemaType *schema.TypeList
 	val        reflect.Value // non-pointer
 	finish     func() error
@@ -971,6 +1030,7 @@ func (w *_listAssembler) AssembleValue() datamodel.NodeAssembler {
 	// TODO: use a finish func to append
 	w.val.Set(reflect.Append(w.val, reflect.New(goType).Elem()))
 	return &_assembler{
+		cfg:        w.cfg,
 		schemaType: w.schemaType.ValueType(),
 		val:        w.val.Index(w.val.Len() - 1),
 		nullable:   w.schemaType.ValueIsNullable(),
@@ -987,10 +1047,11 @@ func (w *_listAssembler) Finish() error {
 }
 
 func (w *_listAssembler) ValuePrototype(idx int64) datamodel.NodePrototype {
-	return &_prototype{schemaType: w.schemaType.ValueType(), goType: w.val.Type().Elem()}
+	return &_prototype{cfg: w.cfg, schemaType: w.schemaType.ValueType(), goType: w.val.Type().Elem()}
 }
 
 type _unionAssembler struct {
+	cfg        config
 	schemaType *schema.TypeUnion
 	val        reflect.Value // non-pointer
 	finish     func() error
@@ -1002,6 +1063,7 @@ type _unionAssembler struct {
 
 func (w *_unionAssembler) AssembleKey() datamodel.NodeAssembler {
 	w.curKey = _assembler{
+		cfg:        w.cfg,
 		schemaType: schemaTypeString,
 		val:        reflect.New(goTypeString).Elem(),
 	}
@@ -1035,6 +1097,7 @@ func (w *_unionAssembler) AssembleValue() datamodel.NodeAssembler {
 		return nil
 	}
 	return &_assembler{
+		cfg:        w.cfg,
 		schemaType: mtyp,
 		val:        valPtr.Elem(),
 		finish:     finish,
@@ -1063,7 +1126,7 @@ func (w *_unionAssembler) Finish() error {
 }
 
 func (w *_unionAssembler) KeyPrototype() datamodel.NodePrototype {
-	return &_prototype{schemaType: schemaTypeString, goType: goTypeString}
+	return &_prototype{cfg: w.cfg, schemaType: schemaTypeString, goType: goTypeString}
 }
 
 func (w *_unionAssembler) ValuePrototype(k string) datamodel.NodePrototype {
@@ -1072,6 +1135,8 @@ func (w *_unionAssembler) ValuePrototype(k string) datamodel.NodePrototype {
 
 type _structIterator struct {
 	// TODO: support embedded fields?
+	cfg config
+
 	schemaType *schema.TypeStruct
 	fields     []schema.StructField
 	val        reflect.Value // non-pointer
@@ -1109,6 +1174,7 @@ func (w *_structIterator) Next() (key, value datamodel.Node, _ error) {
 		return key, nonPtrVal(val).Interface().(datamodel.Node), nil
 	}
 	node := &_node{
+		cfg:        w.cfg,
 		schemaType: field.Type(),
 		val:        val,
 	}
@@ -1120,6 +1186,7 @@ func (w *_structIterator) Done() bool {
 }
 
 type _mapIterator struct {
+	cfg        config
 	schemaType *schema.TypeMap
 	keysVal    reflect.Value // non-pointer
 	valuesVal  reflect.Value // non-pointer
@@ -1135,6 +1202,7 @@ func (w *_mapIterator) Next() (key, value datamodel.Node, _ error) {
 	w.nextIndex++
 
 	key = &_node{
+		cfg:        w.cfg,
 		schemaType: w.schemaType.KeyType(),
 		val:        goKey,
 	}
@@ -1148,6 +1216,7 @@ func (w *_mapIterator) Next() (key, value datamodel.Node, _ error) {
 		return key, nonPtrVal(val).Interface().(datamodel.Node), nil
 	}
 	node := &_node{
+		cfg:        w.cfg,
 		schemaType: w.schemaType.ValueType(),
 		val:        val,
 	}
@@ -1159,6 +1228,7 @@ func (w *_mapIterator) Done() bool {
 }
 
 type _listIterator struct {
+	cfg        config
 	schemaType *schema.TypeList
 	val        reflect.Value // non-pointer
 	nextIndex  int
@@ -1180,7 +1250,7 @@ func (w *_listIterator) Next() (index int64, value datamodel.Node, _ error) {
 	if _, ok := w.schemaType.ValueType().(*schema.TypeAny); ok {
 		return idx, nonPtrVal(val).Interface().(datamodel.Node), nil
 	}
-	return idx, &_node{schemaType: w.schemaType.ValueType(), val: val}, nil
+	return idx, &_node{cfg: w.cfg, schemaType: w.schemaType.ValueType(), val: val}, nil
 }
 
 func (w *_listIterator) Done() bool {
@@ -1189,6 +1259,7 @@ func (w *_listIterator) Done() bool {
 
 type _unionIterator struct {
 	// TODO: support embedded fields?
+	cfg        config
 	schemaType *schema.TypeUnion
 	members    []schema.Type
 	val        reflect.Value // non-pointer
@@ -1209,6 +1280,7 @@ func (w *_unionIterator) Next() (key, value datamodel.Node, _ error) {
 	mtyp := w.members[haveIdx]
 
 	node := &_node{
+		cfg:        w.cfg,
 		schemaType: mtyp,
 		val:        mval,
 	}
