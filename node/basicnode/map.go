@@ -383,7 +383,7 @@ func (mva *plainMap__ValueAssembler) AssignBool(v bool) error {
 	return mva.AssignNode(&vb)
 }
 func (mva *plainMap__ValueAssembler) AssignInt(v int64) error {
-	vb := *newPlainInt(v)
+	vb := plainInt(v)
 	return mva.AssignNode(&vb)
 }
 func (mva *plainMap__ValueAssembler) AssignFloat(v float64) error {

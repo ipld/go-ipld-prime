@@ -18,11 +18,6 @@ import (
 // except for the `case datamodel.Kind_Link` block,
 // which is dag-cbor's special sauce for schemafree links.
 
-type uintNode interface {
-	UInt() uint64
-	Negative() bool
-}
-
 // EncodeOptions can be used to customize the behavior of an encoding function.
 // The Encode method on this struct fits the codec.Encoder function interface.
 type EncodeOptions struct {
@@ -105,10 +100,13 @@ func marshal(n datamodel.Node, tk *tok.Token, sink shared.TokenSink, options Enc
 		return err
 	case datamodel.Kind_Int:
 		var v uint64
-		var negative bool
-		if uin, ok := n.(uintNode); ok {
-			v = uin.UInt()
-			negative = uin.Negative()
+		var positive bool
+		if uin, ok := n.(datamodel.UintNode); ok {
+			var err error
+			v, positive, err = uin.AsUint()
+			if err != nil {
+				return err
+			}
 		} else {
 			i, err := n.AsInt()
 			if err != nil {
@@ -116,14 +114,14 @@ func marshal(n datamodel.Node, tk *tok.Token, sink shared.TokenSink, options Enc
 			}
 			sign := (i >> 63)
 			v = uint64((i ^ sign) - sign)
-			negative = sign == 1
+			positive = sign == 0
 		}
-		if negative {
-			tk.Type = tok.TInt
-			tk.Int = -int64(v)
-		} else {
+		if positive {
 			tk.Type = tok.TUint
 			tk.Uint = v
+		} else {
+			tk.Type = tok.TInt
+			tk.Int = -int64(v)
 		}
 		_, err := sink.Step(tk)
 		return err
