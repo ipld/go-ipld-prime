@@ -39,6 +39,7 @@ type _prototypeRepr _prototype
 
 func (w *_prototypeRepr) NewBuilder() datamodel.NodeBuilder {
 	return &_builderRepr{_assemblerRepr{
+		cfg:        w.cfg,
 		schemaType: w.schemaType,
 		val:        reflect.New(w.goType).Elem(),
 	}}
@@ -268,7 +269,7 @@ func (w *_nodeRepr) ListIterator() datamodel.ListIterator {
 	switch reprStrategy(w.schemaType).(type) {
 	case schema.StructRepresentation_Tuple:
 		typ := w.schemaType.(*schema.TypeStruct)
-		iter := _tupleIteratorRepr{schemaType: typ, fields: typ.Fields(), val: w.val}
+		iter := _tupleIteratorRepr{cfg: w.cfg, schemaType: typ, fields: typ.Fields(), val: w.val}
 		iter.reprEnd = int(w.lengthMinusTrailingAbsents())
 		return &iter
 	default:
@@ -307,6 +308,7 @@ func (w *_nodeRepr) lengthMinusAbsents() int64 {
 
 type _tupleIteratorRepr struct {
 	// TODO: support embedded fields?
+	cfg        config
 	schemaType *schema.TypeStruct
 	fields     []schema.StructField
 	val        reflect.Value // non-pointer
@@ -535,7 +537,7 @@ type _builderRepr struct {
 func (w *_builderRepr) Build() datamodel.Node {
 	// TODO: see the notes above.
 	// return &_nodeRepr{schemaType: w.schemaType, val: w.val}
-	return &_node{schemaType: w.schemaType, val: w.val}
+	return &_node{cfg: w.cfg, schemaType: w.schemaType, val: w.val}
 }
 
 func (w *_builderRepr) Reset() {
@@ -543,6 +545,7 @@ func (w *_builderRepr) Reset() {
 }
 
 type _assemblerRepr struct {
+	cfg        config
 	schemaType schema.Type
 	val        reflect.Value // non-pointer
 	finish     func() error
