@@ -2,14 +2,12 @@ package bindnode_test
 
 import (
 	"bytes"
-	"fmt"
 	"math/big"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/ipld/go-ipld-prime"
 	"github.com/ipld/go-ipld-prime/codec/dagjson"
-	"github.com/ipld/go-ipld-prime/node/basicnode"
 	"github.com/ipld/go-ipld-prime/node/bindnode"
 
 	qt "github.com/frankban/quicktest"
@@ -31,14 +29,14 @@ func (b Boop) String() string {
 }
 
 // similar to go-state-types/big/Int
-type Blop struct{ *big.Int }
+type Frop struct{ *big.Int }
 
-func NewBlopFromString(str string) Blop {
+func NewFropFromString(str string) Frop {
 	v, _ := big.NewInt(0).SetString(str, 10)
-	return Blop{v}
+	return Frop{v}
 }
 
-func NewBlopFromBytes(buf []byte) Blop {
+func NewFropFromBytes(buf []byte) *Frop {
 	var negative bool
 	switch buf[0] {
 	case 0:
@@ -54,10 +52,10 @@ func NewBlopFromBytes(buf []byte) Blop {
 		i.Neg(i)
 	}
 
-	return Blop{i}
+	return &Frop{i}
 }
 
-func (b *Blop) Bytes() []byte {
+func (b *Frop) Bytes() []byte {
 	switch {
 	case b.Sign() > 0:
 		return append([]byte{0}, b.Int.Bytes()...)
@@ -72,7 +70,7 @@ type Boom struct {
 	S    string
 	B    Boop
 	Bptr *Boop
-	BI   Blop
+	F    Frop
 	I    int
 }
 
@@ -81,72 +79,50 @@ type Boom struct {
 	S String
 	B Bytes
 	Bptr nullable Bytes
-	BI Bytes
+	F Bytes
 	I Int
 } representation map
 `
 
-const boomFixtureDagJson = `{"B":{"/":{"bytes":"dGhlc2UgYXJlIGJ5dGVz"}},"BI":{"/":{"bytes":"AAH3fubjrGlwOMpClAkh/ro13L5Uls4/CtI"}},"Bptr":{"/":{"bytes":"dGhlc2UgYXJlIHBvaW50ZXIgYnl0ZXM"}},"I":10101,"S":"a string here"}`
+const boomFixtureDagJson = `{"B":{"/":{"bytes":"dGhlc2UgYXJlIGJ5dGVz"}},"Bptr":{"/":{"bytes":"dGhlc2UgYXJlIHBvaW50ZXIgYnl0ZXM"}},"F":{"/":{"bytes":"AAH3fubjrGlwOMpClAkh/ro13L5Uls4/CtI"}},"I":10101,"S":"a string here"}`
 
 var boomFixtureInstance = Boom{
 	S:    "a string here",
 	B:    *NewBoop([]byte("these are bytes")),
-	BI:   NewBlopFromString("12345678901234567891234567890123456789012345678901234567890"),
 	Bptr: NewBoop([]byte("these are pointer bytes")),
+	F:    NewFropFromString("12345678901234567891234567890123456789012345678901234567890"),
 	I:    10101,
 }
 
-type BoopConverter struct {
-}
-
-func (bc BoopConverter) FromBytes(b []byte) (interface{}, error) {
+func BoopFromBytes(b []byte) (*Boop, error) {
 	return NewBoop(b), nil
 }
 
-func (bc BoopConverter) ToBytes(typ interface{}) ([]byte, error) {
-	if boop, ok := typ.(*Boop); ok {
-		return boop.Bytes(), nil
-	}
-	return nil, fmt.Errorf("did not get a Boop type")
+func BoopToBytes(boop *Boop) ([]byte, error) {
+	return boop.Bytes(), nil
 }
 
-type BlopConverter struct {
+func FropFromBytes(b []byte) (*Frop, error) {
+	return NewFropFromBytes(b), nil
 }
 
-func (bc BlopConverter) FromBytes(b []byte) (interface{}, error) {
-	return NewBlopFromBytes(b), nil
+func FropToBytes(frop *Frop) ([]byte, error) {
+	return frop.Bytes(), nil
 }
-
-func (bc BlopConverter) ToBytes(typ interface{}) ([]byte, error) {
-	if blop, ok := typ.(*Blop); ok {
-		return blop.Bytes(), nil
-	}
-	return nil, fmt.Errorf("did not get a Blop type")
-}
-
-var (
-	_ bindnode.CustomTypeBytesConverter = (*BoopConverter)(nil)
-	_ bindnode.CustomTypeBytesConverter = (*BlopConverter)(nil)
-)
 
 func TestCustom(t *testing.T) {
 	opts := []bindnode.Option{
-		bindnode.AddCustomTypeBytesConverter(Boop{}, BoopConverter{}),
-		bindnode.AddCustomTypeBytesConverter(Blop{}, BlopConverter{}),
+		bindnode.AddCustomTypeBytesConverter(BoopFromBytes, BoopToBytes),
+		bindnode.AddCustomTypeBytesConverter(FropFromBytes, FropToBytes),
 	}
-
-	nb := basicnode.Prototype.Any.NewBuilder()
-	err := dagjson.Decode(nb, bytes.NewReader([]byte(boomFixtureDagJson)))
-	qt.Assert(t, err, qt.IsNil)
 
 	typeSystem, err := ipld.LoadSchemaBytes([]byte(boomSchema))
 	qt.Assert(t, err, qt.IsNil)
 	schemaType := typeSystem.TypeByName("Boom")
 	proto := bindnode.Prototype(&Boom{}, schemaType, opts...)
 
-	node := nb.Build()
 	builder := proto.Representation().NewBuilder()
-	err = builder.AssignNode(node)
+	err = dagjson.Decode(builder, bytes.NewReader([]byte(boomFixtureDagJson)))
 	qt.Assert(t, err, qt.IsNil)
 
 	typ := bindnode.Unwrap(builder.Build())
@@ -155,11 +131,11 @@ func TestCustom(t *testing.T) {
 
 	cmpr := qt.CmpEquals(
 		cmp.Comparer(func(x, y Boop) bool { return x.String() == y.String() }),
-		cmp.Comparer(func(x, y Blop) bool { return x.String() == y.String() }),
+		cmp.Comparer(func(x, y Frop) bool { return x.String() == y.String() }),
 	)
 	qt.Assert(t, *inst, cmpr, boomFixtureInstance)
 
-	tn := bindnode.Wrap(&boomFixtureInstance, schemaType, opts...)
+	tn := bindnode.Wrap(inst, schemaType, opts...)
 	var buf bytes.Buffer
 	err = dagjson.Encode(tn.Representation(), &buf)
 	qt.Assert(t, err, qt.IsNil)
