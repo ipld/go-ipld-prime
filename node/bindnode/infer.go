@@ -39,7 +39,7 @@ type seenEntry struct {
 	schemaType schema.Type
 }
 
-func verifyCompatibility(seen map[seenEntry]bool, goType reflect.Type, schemaType schema.Type) {
+func verifyCompatibility(cfg config, seen map[seenEntry]bool, goType reflect.Type, schemaType schema.Type) {
 	// TODO(mvdan): support **T as well?
 	if goType.Kind() == reflect.Ptr {
 		goType = goType.Elem()
@@ -86,11 +86,18 @@ func verifyCompatibility(seen map[seenEntry]bool, goType reflect.Type, schemaTyp
 		}
 	case *schema.TypeBytes:
 		// TODO: allow string?
-		if goType.Kind() != reflect.Slice {
-			doPanic("kind mismatch; need slice of bytes")
-		}
-		if goType.Elem().Kind() != reflect.Uint8 {
-			doPanic("kind mismatch; need slice of bytes")
+		customConverter, ok := cfg.customConverters[goType]
+		if ok {
+			if _, ok := customConverter.(CustomTypeBytesConverter); !ok {
+				doPanic("kind mismatch; custom converter for type is not a CustomTypeBytesConverter")
+			}
+		} else {
+			if goType.Kind() != reflect.Slice {
+				doPanic("kind mismatch; need slice of bytes")
+			}
+			if goType.Elem().Kind() != reflect.Uint8 {
+				doPanic("kind mismatch; need slice of bytes")
+			}
 		}
 	case *schema.TypeEnum:
 		if _, ok := schemaType.RepresentationStrategy().(schema.EnumRepresentation_Int); ok {
@@ -114,7 +121,7 @@ func verifyCompatibility(seen map[seenEntry]bool, goType reflect.Type, schemaTyp
 				goType = goType.Elem()
 			}
 		}
-		verifyCompatibility(seen, goType, schemaType.ValueType())
+		verifyCompatibility(cfg, seen, goType, schemaType.ValueType())
 	case *schema.TypeMap:
 		//	struct {
 		//		Keys   []K
@@ -131,14 +138,14 @@ func verifyCompatibility(seen map[seenEntry]bool, goType reflect.Type, schemaTyp
 		if fieldKeys.Type.Kind() != reflect.Slice {
 			doPanic("kind mismatch; need struct{Keys []K; Values map[K]V}")
 		}
-		verifyCompatibility(seen, fieldKeys.Type.Elem(), schemaType.KeyType())
+		verifyCompatibility(cfg, seen, fieldKeys.Type.Elem(), schemaType.KeyType())
 
 		fieldValues := goType.Field(1)
 		if fieldValues.Type.Kind() != reflect.Map {
 			doPanic("kind mismatch; need struct{Keys []K; Values map[K]V}")
 		}
 		keyType := fieldValues.Type.Key()
-		verifyCompatibility(seen, keyType, schemaType.KeyType())
+		verifyCompatibility(cfg, seen, keyType, schemaType.KeyType())
 
 		elemType := fieldValues.Type.Elem()
 		if schemaType.ValueIsNullable() {
@@ -148,7 +155,7 @@ func verifyCompatibility(seen map[seenEntry]bool, goType reflect.Type, schemaTyp
 				elemType = elemType.Elem()
 			}
 		}
-		verifyCompatibility(seen, elemType, schemaType.ValueType())
+		verifyCompatibility(cfg, seen, elemType, schemaType.ValueType())
 	case *schema.TypeStruct:
 		if goType.Kind() != reflect.Struct {
 			doPanic("kind mismatch; need struct")
@@ -187,7 +194,7 @@ func verifyCompatibility(seen map[seenEntry]bool, goType reflect.Type, schemaTyp
 					goType = goType.Elem()
 				}
 			}
-			verifyCompatibility(seen, goType, schemaType)
+			verifyCompatibility(cfg, seen, goType, schemaType)
 		}
 	case *schema.TypeUnion:
 		if goType.Kind() != reflect.Struct {
@@ -206,7 +213,7 @@ func verifyCompatibility(seen map[seenEntry]bool, goType reflect.Type, schemaTyp
 			} else if ptr {
 				goType = goType.Elem()
 			}
-			verifyCompatibility(seen, goType, schemaType)
+			verifyCompatibility(cfg, seen, goType, schemaType)
 		}
 	case *schema.TypeLink:
 		if goType != goTypeLink && goType != goTypeCidLink && goType != goTypeCid {
