@@ -86,10 +86,10 @@ func verifyCompatibility(cfg config, seen map[seenEntry]bool, goType reflect.Typ
 		}
 	case *schema.TypeBytes:
 		// TODO: allow string?
-		customConverter, ok := cfg.customConverters[goType]
+		customConverter, ok := cfg[goType]
 		if ok {
-			if _, ok := customConverter.(CustomTypeBytesConverter); !ok {
-				doPanic("kind mismatch; custom converter for type is not a CustomTypeBytesConverter")
+			if customConverter.kindType != byteSliceType {
+				doPanic("kind mismatch; custom converter for type is not for Bytes")
 			}
 		} else {
 			if goType.Kind() != reflect.Slice {

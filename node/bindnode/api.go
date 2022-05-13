@@ -59,51 +59,65 @@ func Prototype(ptrType interface{}, schemaType schema.Type, options ...Option) s
 	return &_prototype{cfg: cfg, schemaType: schemaType, goType: goType}
 }
 
-// CustomTypeConverter is an empty interface intended as a parent for the
-// various type converters
-type CustomTypeConverter interface {
+type converter struct {
+	kindType reflect.Type
+	fromFunc reflect.Value // func(Kind) (*Custom, error)
+	toFunc   reflect.Value // func(*Custom) (Kind, error)
 }
 
-// CustomTypeBytesConverter is able to convert byte slices to and from a
-// specific type that can't otherwise be handled by bindnode. Such a type will
-// likely not be instantiated by plain reflection and therefore need custom
-// logic to decode and/or instantiate.
-type CustomTypeBytesConverter interface {
-	FromBytes([]byte) (interface{}, error)
-	ToBytes(interface{}) ([]byte, error)
-}
-
-type config struct {
-	customConverters map[reflect.Type]CustomTypeConverter
-}
+type config map[reflect.Type]converter
 
 // Option is able to apply custom options to the bindnode API
-type Option func(*config)
+type Option func(config)
 
-// AddCustomTypeBytesConverter adds a CustomTypeConverter for a particular
-// type as referenced by ptrType. The CustomTypeConverter must be able to
-// handle that specific type, and the data model kind it's converting must be
-// present at the schema location it's encountered.
-func AddCustomTypeBytesConverter(ptrType interface{}, converter CustomTypeBytesConverter) Option {
-	val := reflect.ValueOf(ptrType)
-	if val.Kind() == reflect.Ptr {
-		val = val.Elem()
+var byteSliceType = reflect.TypeOf([]byte{})
+var errorType = reflect.TypeOf((*error)(nil)).Elem()
+
+// AddCustomTypeBytesConverter adds custom converter functions for a particular
+// type. The fromBytesFunc is of the form: func([]byte) (interface{}, error)
+// and toBytesFunc is of the form: func(interface{}) ([]byte, error)
+// where interface{} is a pointer form of the type we are converting.
+//
+// AddCustomTypeBytesConverter is an EXPERIMENTAL API and may be removed or
+// changed in a future release.
+func AddCustomTypeBytesConverter(fromBytesFunc interface{}, toBytesFunc interface{}) Option {
+	fbfVal := reflect.ValueOf(fromBytesFunc)
+	fbfType := fbfVal.Type()
+	if fbfType == nil || fbfType.Kind() != reflect.Func || fbfType.IsVariadic() {
+		panic("fromBytesFunc must be a (non-varadic) function")
 	}
-	name := val.Type().Name()
-	if name == "" {
-		panic("not a named type")
+	ni, no := fbfType.NumIn(), fbfType.NumOut()
+	if ni != 1 || no != 2 || fbfType.In(0) != byteSliceType || fbfType.Out(1) != errorType {
+		panic("fromBytesFunc must be of the form func([]byte) (interface{}, error)")
 	}
-	return func(cfg *config) {
-		cfg.customConverters[val.Type()] = converter
+
+	tbfVal := reflect.ValueOf(toBytesFunc)
+	tbfType := tbfVal.Type()
+	if tbfType == nil || tbfType.Kind() != reflect.Func || tbfType.IsVariadic() {
+		panic("toBytesFunc must be a (non-varadic) function")
+	}
+	ni, no = tbfType.NumIn(), tbfType.NumOut()
+	if ni != 1 || no != 2 || tbfType.Out(0) != byteSliceType || tbfType.Out(1) != errorType {
+		panic("toBytesFunc must be of the form func(interface{}) ([]byte, error)")
+	}
+
+	if fbfType.Out(0) != tbfType.In(0) {
+		panic("toBytesFunc must be of the form func(interface{}) ([]byte, error)")
+	}
+
+	customType := fbfType.Out(0)
+	if customType.Kind() == reflect.Ptr {
+		customType = customType.Elem()
+	}
+	return func(cfg config) {
+		cfg[customType] = converter{byteSliceType, fbfVal, tbfVal}
 	}
 }
 
 func applyOptions(opt ...Option) config {
-	cfg := config{
-		customConverters: make(map[reflect.Type]CustomTypeConverter),
-	}
+	cfg := make(map[reflect.Type]converter)
 	for _, o := range opt {
-		o(&cfg)
+		o(cfg)
 	}
 	return cfg
 }

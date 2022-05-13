@@ -447,13 +447,21 @@ func (w *_node) AsBytes() ([]byte, error) {
 	if w.val.Kind() == reflect.Ptr {
 		typ = typ.Elem()
 	}
-	customConverter, ok := w.cfg.customConverters[typ]
+	customConverter, ok := w.cfg[typ]
 	if ok {
-		cbc, ok := customConverter.(CustomTypeBytesConverter)
-		if !ok {
-			panic("kind mismatch; custom converter for type is not a CustomTypeBytesConverter")
+		res := customConverter.toFunc.Call([]reflect.Value{w.val.Addr()})
+		if !res[1].IsNil() {
+			err, ok := res[1].Interface().(error)
+			if !ok {
+				return nil, fmt.Errorf("converter function did not return expected error: %v", res[1].Interface())
+			}
+			return nil, err
 		}
-		return cbc.ToBytes(w.val.Addr().Interface())
+		byts, ok := res[0].Interface().([]byte)
+		if !ok {
+			return nil, fmt.Errorf("converter function did not return expected []byte")
+		}
+		return byts, nil
 	}
 	return nonPtrVal(w.val).Bytes(), nil
 }
@@ -746,17 +754,17 @@ func (w *_assembler) AssignBytes(p []byte) error {
 		if w.val.Kind() == reflect.Ptr {
 			typ = typ.Elem()
 		}
-		customConverter, ok := w.cfg.customConverters[typ]
+		customConverter, ok := w.cfg[typ]
 		if ok {
-			cbc, ok := customConverter.(CustomTypeBytesConverter)
-			if !ok {
-				panic("kind mismatch; custom converter for type is not a CustomTypeBytesConverter")
-			}
-			val, err := cbc.FromBytes(p)
-			if err != nil {
+			res := customConverter.fromFunc.Call([]reflect.Value{reflect.ValueOf(p)})
+			if !res[1].IsNil() {
+				err, ok := res[1].Interface().(error)
+				if !ok {
+					return fmt.Errorf("converter function did not return expected error: %v", res[1].Interface())
+				}
 				return err
 			}
-			rval := reflect.ValueOf(val)
+			rval := res[0]
 			if w.val.Kind() == reflect.Ptr && rval.Kind() != reflect.Ptr {
 				rval = rval.Addr()
 			} else if w.val.Kind() != reflect.Ptr && rval.Kind() == reflect.Ptr {
