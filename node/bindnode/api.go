@@ -7,6 +7,7 @@ package bindnode
 import (
 	"reflect"
 
+	"github.com/ipfs/go-cid"
 	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/schema"
 )
@@ -56,10 +57,47 @@ func Prototype(ptrType interface{}, schemaType schema.Type, options ...Option) s
 	return &_prototype{cfg: cfg, schemaType: schemaType, goType: goType}
 }
 
+// scalar kinds excluding Null
+
+type CustomBool struct {
+	From func(bool) (interface{}, error)
+	To   func(interface{}) (bool, error)
+}
+
+type CustomInt struct {
+	From func(int64) (interface{}, error)
+	To   func(interface{}) (int64, error)
+}
+
+type CustomFloat struct {
+	From func(float64) (interface{}, error)
+	To   func(interface{}) (float64, error)
+}
+
+type CustomString struct {
+	From func(string) (interface{}, error)
+	To   func(interface{}) (string, error)
+}
+
+type CustomBytes struct {
+	From func([]byte) (interface{}, error)
+	To   func(interface{}) ([]byte, error)
+}
+
+type CustomLink struct {
+	From func(cid.Cid) (interface{}, error)
+	To   func(interface{}) (cid.Cid, error)
+}
+
 type converter struct {
-	kindType reflect.Type
-	fromFunc reflect.Value // func(Kind) (*Custom, error)
-	toFunc   reflect.Value // func(*Custom) (Kind, error)
+	kind datamodel.Kind
+
+	customBool   *CustomBool
+	customInt    *CustomInt
+	customFloat  *CustomFloat
+	customString *CustomString
+	customBytes  *CustomBytes
+	customLink   *CustomLink
 }
 
 type config map[reflect.Type]converter
@@ -67,47 +105,64 @@ type config map[reflect.Type]converter
 // Option is able to apply custom options to the bindnode API
 type Option func(config)
 
-var byteSliceType = reflect.TypeOf([]byte{})
-var errorType = reflect.TypeOf((*error)(nil)).Elem()
-
-// AddCustomTypeBytesConverter adds custom converter functions for a particular
-// type. The fromBytesFunc is of the form: func([]byte) (interface{}, error)
-// and toBytesFunc is of the form: func(interface{}) ([]byte, error)
-// where interface{} is a pointer form of the type we are converting.
+// AddCustomTypeConverter adds custom converter functions for a particular
+// type as identified by a pointer in the first argument.
+// The fromFunc is of the form: func(kind) (interface{}, error)
+// and toFunc is of the form: func(interface{}) (kind, error)
+// where interface{} is a pointer form of the type we are converting and "kind"
+// is a Go form of the kind being converted (bool, int64, float64, string,
+// []byte, cid.Cid).
 //
-// AddCustomTypeBytesConverter is an EXPERIMENTAL API and may be removed or
+// AddCustomTypeConverter is an EXPERIMENTAL API and may be removed or
 // changed in a future release.
-func AddCustomTypeBytesConverter(fromBytesFunc interface{}, toBytesFunc interface{}) Option {
-	fbfVal := reflect.ValueOf(fromBytesFunc)
-	fbfType := fbfVal.Type()
-	if fbfType == nil || fbfType.Kind() != reflect.Func || fbfType.IsVariadic() {
-		panic("fromBytesFunc must be a (non-varadic) function")
-	}
-	ni, no := fbfType.NumIn(), fbfType.NumOut()
-	if ni != 1 || no != 2 || fbfType.In(0) != byteSliceType || fbfType.Out(1) != errorType {
-		panic("fromBytesFunc must be of the form func([]byte) (interface{}, error)")
-	}
+func AddCustomTypeConverter(ptrValue interface{}, customConverter interface{}) Option {
+	customType := reflect.ValueOf(ptrValue).Elem().Type()
 
-	tbfVal := reflect.ValueOf(toBytesFunc)
-	tbfType := tbfVal.Type()
-	if tbfType == nil || tbfType.Kind() != reflect.Func || tbfType.IsVariadic() {
-		panic("toBytesFunc must be a (non-varadic) function")
-	}
-	ni, no = tbfType.NumIn(), tbfType.NumOut()
-	if ni != 1 || no != 2 || tbfType.Out(0) != byteSliceType || tbfType.Out(1) != errorType {
-		panic("toBytesFunc must be of the form func(interface{}) ([]byte, error)")
-	}
-
-	if fbfType.Out(0) != tbfType.In(0) {
-		panic("toBytesFunc must be of the form func(interface{}) ([]byte, error)")
-	}
-
-	customType := fbfType.Out(0)
-	if customType.Kind() == reflect.Ptr {
-		customType = customType.Elem()
-	}
-	return func(cfg config) {
-		cfg[customType] = converter{byteSliceType, fbfVal, tbfVal}
+	switch typedCustomConverter := customConverter.(type) {
+	case CustomBool:
+		return func(cfg config) {
+			cfg[customType] = converter{
+				kind:       datamodel.Kind_Bool,
+				customBool: &typedCustomConverter,
+			}
+		}
+	case CustomInt:
+		return func(cfg config) {
+			cfg[customType] = converter{
+				kind:      datamodel.Kind_Int,
+				customInt: &typedCustomConverter,
+			}
+		}
+	case CustomFloat:
+		return func(cfg config) {
+			cfg[customType] = converter{
+				kind:        datamodel.Kind_Float,
+				customFloat: &typedCustomConverter,
+			}
+		}
+	case CustomString:
+		return func(cfg config) {
+			cfg[customType] = converter{
+				kind:         datamodel.Kind_String,
+				customString: &typedCustomConverter,
+			}
+		}
+	case CustomBytes:
+		return func(cfg config) {
+			cfg[customType] = converter{
+				kind:        datamodel.Kind_Bytes,
+				customBytes: &typedCustomConverter,
+			}
+		}
+	case CustomLink:
+		return func(cfg config) {
+			cfg[customType] = converter{
+				kind:       datamodel.Kind_Link,
+				customLink: &typedCustomConverter,
+			}
+		}
+	default:
+		panic("bindnode: fromFunc for Link must match one of the CustomFromX types")
 	}
 }
 

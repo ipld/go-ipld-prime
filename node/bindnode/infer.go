@@ -88,7 +88,7 @@ func verifyCompatibility(cfg config, seen map[seenEntry]bool, goType reflect.Typ
 		// TODO: allow string?
 		customConverter, ok := cfg[goType]
 		if ok {
-			if customConverter.kindType != byteSliceType {
+			if customConverter.kind != datamodel.Kind_Bytes {
 				doPanic("kind mismatch; custom converter for type is not for Bytes")
 			}
 		} else {
