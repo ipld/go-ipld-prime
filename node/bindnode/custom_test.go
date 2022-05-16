@@ -2,6 +2,7 @@ package bindnode_test
 
 import (
 	"bytes"
+	"fmt"
 	"math/big"
 	"testing"
 
@@ -94,26 +95,32 @@ var boomFixtureInstance = Boom{
 	I:    10101,
 }
 
-func BoopFromBytes(b []byte) (*Boop, error) {
+func BoopFromBytes(b []byte) (interface{}, error) {
 	return NewBoop(b), nil
 }
 
-func BoopToBytes(boop *Boop) ([]byte, error) {
-	return boop.Bytes(), nil
+func BoopToBytes(iface interface{}) ([]byte, error) {
+	if boop, ok := iface.(*Boop); ok {
+		return boop.Bytes(), nil
+	}
+	return nil, fmt.Errorf("did not get expected type")
 }
 
-func FropFromBytes(b []byte) (*Frop, error) {
+func FropFromBytes(b []byte) (interface{}, error) {
 	return NewFropFromBytes(b), nil
 }
 
-func FropToBytes(frop *Frop) ([]byte, error) {
-	return frop.Bytes(), nil
+func FropToBytes(iface interface{}) ([]byte, error) {
+	if frop, ok := iface.(*Frop); ok {
+		return frop.Bytes(), nil
+	}
+	return nil, fmt.Errorf("did not get expected type")
 }
 
 func TestCustom(t *testing.T) {
 	opts := []bindnode.Option{
-		bindnode.AddCustomTypeBytesConverter(BoopFromBytes, BoopToBytes),
-		bindnode.AddCustomTypeBytesConverter(FropFromBytes, FropToBytes),
+		bindnode.AddCustomTypeConverter(&Boop{}, bindnode.CustomBytes{From: BoopFromBytes, To: BoopToBytes}),
+		bindnode.AddCustomTypeConverter(&Frop{}, bindnode.CustomBytes{From: FropFromBytes, To: FropToBytes}),
 	}
 
 	typeSystem, err := ipld.LoadSchemaBytes([]byte(boomSchema))
