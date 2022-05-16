@@ -141,6 +141,22 @@ func ptrVal(val reflect.Value) reflect.Value {
 	return val.Addr()
 }
 
+func nonPtrType(val reflect.Value) reflect.Type {
+	typ := val.Type()
+	if typ.Kind() == reflect.Ptr {
+		return typ.Elem()
+	}
+	return typ
+}
+
+func matchSettable(val interface{}, to reflect.Value) reflect.Value {
+	setVal := nonPtrVal(reflect.ValueOf(val))
+	if !setVal.Type().AssignableTo(to.Type()) && setVal.Type().ConvertibleTo(to.Type()) {
+		setVal = setVal.Convert(to.Type())
+	}
+	return setVal
+}
+
 func (w *_node) LookupByString(key string) (datamodel.Node, error) {
 	switch typ := w.schemaType.(type) {
 	case *schema.TypeStruct:
@@ -416,12 +432,18 @@ func (w *_node) AsBool() (bool, error) {
 	if err := compatibleKind(w.schemaType, datamodel.Kind_Bool); err != nil {
 		return false, err
 	}
+	if customConverter, ok := w.cfg[nonPtrType(w.val)]; ok {
+		return customConverter.customToBool(ptrVal(w.val).Interface())
+	}
 	return nonPtrVal(w.val).Bool(), nil
 }
 
 func (w *_node) AsInt() (int64, error) {
 	if err := compatibleKind(w.schemaType, datamodel.Kind_Int); err != nil {
 		return 0, err
+	}
+	if customConverter, ok := w.cfg[nonPtrType(w.val)]; ok {
+		return customConverter.customToInt(ptrVal(w.val).Interface())
 	}
 	val := nonPtrVal(w.val)
 	if kindUint[val.Kind()] {
@@ -435,12 +457,18 @@ func (w *_node) AsFloat() (float64, error) {
 	if err := compatibleKind(w.schemaType, datamodel.Kind_Float); err != nil {
 		return 0, err
 	}
+	if customConverter, ok := w.cfg[nonPtrType(w.val)]; ok {
+		return customConverter.customToFloat(ptrVal(w.val).Interface())
+	}
 	return nonPtrVal(w.val).Float(), nil
 }
 
 func (w *_node) AsString() (string, error) {
 	if err := compatibleKind(w.schemaType, datamodel.Kind_String); err != nil {
 		return "", err
+	}
+	if customConverter, ok := w.cfg[nonPtrType(w.val)]; ok {
+		return customConverter.customToString(ptrVal(w.val).Interface())
 	}
 	return nonPtrVal(w.val).String(), nil
 }
@@ -449,13 +477,8 @@ func (w *_node) AsBytes() ([]byte, error) {
 	if err := compatibleKind(w.schemaType, datamodel.Kind_Bytes); err != nil {
 		return nil, err
 	}
-
-	typ := w.val.Type()
-	if w.val.Kind() == reflect.Ptr {
-		typ = typ.Elem()
-	}
-	if customConverter, ok := w.cfg[typ]; ok {
-		return customConverter.customBytes.To(ptrVal(w.val).Interface())
+	if customConverter, ok := w.cfg[nonPtrType(w.val)]; ok {
+		return customConverter.customToBytes(ptrVal(w.val).Interface())
 	}
 	return nonPtrVal(w.val).Bytes(), nil
 }
@@ -463,6 +486,13 @@ func (w *_node) AsBytes() ([]byte, error) {
 func (w *_node) AsLink() (datamodel.Link, error) {
 	if err := compatibleKind(w.schemaType, datamodel.Kind_Link); err != nil {
 		return nil, err
+	}
+	if customConverter, ok := w.cfg[nonPtrType(w.val)]; ok {
+		cid, err := customConverter.customToLink(ptrVal(w.val).Interface())
+		if err != nil {
+			return nil, err
+		}
+		return cidlink.Link{Cid: cid}, nil
 	}
 	switch val := nonPtrVal(w.val).Interface().(type) {
 	case datamodel.Link:
@@ -668,6 +698,12 @@ func (w *_assembler) AssignBool(b bool) error {
 	}
 	if _, ok := w.schemaType.(*schema.TypeAny); ok {
 		w.createNonPtrVal().Set(reflect.ValueOf(basicnode.NewBool(b)))
+	} else if customConverter, ok := w.cfg[nonPtrType(w.val)]; ok {
+		typ, err := customConverter.customFromBool(b)
+		if err != nil {
+			return err
+		}
+		w.createNonPtrVal().Set(matchSettable(typ, w.val))
 	} else {
 		w.createNonPtrVal().SetBool(b)
 	}
@@ -686,6 +722,12 @@ func (w *_assembler) AssignInt(i int64) error {
 	// TODO: check for overflow
 	if _, ok := w.schemaType.(*schema.TypeAny); ok {
 		w.createNonPtrVal().Set(reflect.ValueOf(basicnode.NewInt(i)))
+	} else if customConverter, ok := w.cfg[nonPtrType(w.val)]; ok {
+		typ, err := customConverter.customFromInt(i)
+		if err != nil {
+			return err
+		}
+		w.createNonPtrVal().Set(matchSettable(typ, w.val))
 	} else if kindUint[w.val.Kind()] {
 		if i < 0 {
 			// TODO: write a test
@@ -709,6 +751,12 @@ func (w *_assembler) AssignFloat(f float64) error {
 	}
 	if _, ok := w.schemaType.(*schema.TypeAny); ok {
 		w.createNonPtrVal().Set(reflect.ValueOf(basicnode.NewFloat(f)))
+	} else if customConverter, ok := w.cfg[nonPtrType(w.val)]; ok {
+		typ, err := customConverter.customFromFloat(f)
+		if err != nil {
+			return err
+		}
+		w.createNonPtrVal().Set(matchSettable(typ, w.val))
 	} else {
 		w.createNonPtrVal().SetFloat(f)
 	}
@@ -727,7 +775,15 @@ func (w *_assembler) AssignString(s string) error {
 	if _, ok := w.schemaType.(*schema.TypeAny); ok {
 		w.createNonPtrVal().Set(reflect.ValueOf(basicnode.NewString(s)))
 	} else {
-		w.createNonPtrVal().SetString(s)
+		if customConverter, ok := w.cfg[nonPtrType(w.val)]; ok {
+			typ, err := customConverter.customFromString(s)
+			if err != nil {
+				return err
+			}
+			w.createNonPtrVal().Set(matchSettable(typ, w.val))
+		} else {
+			w.createNonPtrVal().SetString(s)
+		}
 	}
 	if w.finish != nil {
 		if err := w.finish(); err != nil {
@@ -744,22 +800,12 @@ func (w *_assembler) AssignBytes(p []byte) error {
 	if _, ok := w.schemaType.(*schema.TypeAny); ok {
 		w.createNonPtrVal().Set(reflect.ValueOf(basicnode.NewBytes(p)))
 	} else {
-		typ := w.val.Type()
-		if w.val.Kind() == reflect.Ptr {
-			typ = typ.Elem()
-		}
-		if customConverter, ok := w.cfg[typ]; ok {
-			typ, err := customConverter.customBytes.From(p)
+		if customConverter, ok := w.cfg[nonPtrType(w.val)]; ok {
+			typ, err := customConverter.customFromBytes(p)
 			if err != nil {
 				return err
 			}
-			rval := reflect.ValueOf(typ)
-			if w.val.Kind() == reflect.Ptr && rval.Kind() != reflect.Ptr {
-				rval = rval.Addr()
-			} else if w.val.Kind() != reflect.Ptr && rval.Kind() == reflect.Ptr {
-				rval = rval.Elem()
-			}
-			w.val.Set(rval)
+			w.createNonPtrVal().Set(matchSettable(typ, w.val))
 		} else {
 			w.createNonPtrVal().SetBytes(p)
 		}
@@ -777,6 +823,16 @@ func (w *_assembler) AssignLink(link datamodel.Link) error {
 	// TODO: newVal.Type() panics if link==nil; add a test and fix.
 	if _, ok := w.schemaType.(*schema.TypeAny); ok {
 		val.Set(reflect.ValueOf(basicnode.NewLink(link)))
+	} else if customConverter, ok := w.cfg[nonPtrType(w.val)]; ok {
+		if cl, ok := link.(cidlink.Link); ok {
+			typ, err := customConverter.customFromLink(cl.Cid)
+			if err != nil {
+				return err
+			}
+			w.createNonPtrVal().Set(matchSettable(typ, w.val))
+		} else {
+			return fmt.Errorf("bindnode: custom converter can only receive a cidlink.Link through AssignLink")
+		}
 	} else if newVal := reflect.ValueOf(link); newVal.Type().AssignableTo(val.Type()) {
 		// Directly assignable.
 		val.Set(newVal)
