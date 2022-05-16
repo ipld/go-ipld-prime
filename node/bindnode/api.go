@@ -62,45 +62,74 @@ func Prototype(ptrType interface{}, schemaType schema.Type, options ...Option) s
 
 // scalar kinds excluding Null
 
-type CustomBool struct {
-	From func(bool) (interface{}, error)
-	To   func(interface{}) (bool, error)
-}
+// CustomFromBool is a custom converter function that takes a bool and returns a
+// custom type
+type CustomFromBool func(bool) (interface{}, error)
 
-type CustomInt struct {
-	From func(int64) (interface{}, error)
-	To   func(interface{}) (int64, error)
-}
+// CustomToBool is a custom converter function that takes a custom type and
+// returns a bool
+type CustomToBool func(interface{}) (bool, error)
 
-type CustomFloat struct {
-	From func(float64) (interface{}, error)
-	To   func(interface{}) (float64, error)
-}
+// CustomFromInt is a custom converter function that takes an int and returns a
+// custom type
+type CustomFromInt func(int64) (interface{}, error)
 
-type CustomString struct {
-	From func(string) (interface{}, error)
-	To   func(interface{}) (string, error)
-}
+// CustomToInt is a custom converter function that takes a custom type and
+// returns an int
+type CustomToInt func(interface{}) (int64, error)
 
-type CustomBytes struct {
-	From func([]byte) (interface{}, error)
-	To   func(interface{}) ([]byte, error)
-}
+// CustomFromFloat is a custom converter function that takes a float and returns
+// a custom type
+type CustomFromFloat func(float64) (interface{}, error)
 
-type CustomLink struct {
-	From func(cid.Cid) (interface{}, error)
-	To   func(interface{}) (cid.Cid, error)
-}
+// CustomToFloat is a custom converter function that takes a custom type and
+// returns a float
+type CustomToFloat func(interface{}) (float64, error)
+
+// CustomFromString is a custom converter function that takes a string and
+// returns custom type
+type CustomFromString func(string) (interface{}, error)
+
+// CustomToString is a custom converter function that takes a custom type and
+// returns a string
+type CustomToString func(interface{}) (string, error)
+
+// CustomFromBytes is a custom converter function that takes a byte slice and
+// returns a custom type
+type CustomFromBytes func([]byte) (interface{}, error)
+
+// CustomToBytes is a custom converter function that takes a custom type and
+// returns a byte slice
+type CustomToBytes func(interface{}) ([]byte, error)
+
+// CustomFromLink is a custom converter function that takes a cid.Cid and
+// returns a custom type
+type CustomFromLink func(cid.Cid) (interface{}, error)
+
+// CustomToLink is a custom converter function that takes a custom type and
+// returns a cid.Cid
+type CustomToLink func(interface{}) (cid.Cid, error)
 
 type converter struct {
 	kind datamodel.Kind
 
-	customBool   *CustomBool
-	customInt    *CustomInt
-	customFloat  *CustomFloat
-	customString *CustomString
-	customBytes  *CustomBytes
-	customLink   *CustomLink
+	customFromBool CustomFromBool
+	customToBool   CustomToBool
+
+	customFromInt CustomFromInt
+	customToInt   CustomToInt
+
+	customFromFloat CustomFromFloat
+	customToFloat   CustomToFloat
+
+	customFromString CustomFromString
+	customToString   CustomToString
+
+	customFromBytes CustomFromBytes
+	customToBytes   CustomToBytes
+
+	customFromLink CustomFromLink
+	customToLink   CustomToLink
 }
 
 type config map[reflect.Type]converter
@@ -108,64 +137,121 @@ type config map[reflect.Type]converter
 // Option is able to apply custom options to the bindnode API
 type Option func(config)
 
-// AddCustomTypeConverter adds custom converter functions for a particular
+// AddCustomTypeBoolConverter adds custom converter functions for a particular
 // type as identified by a pointer in the first argument.
-// The fromFunc is of the form: func(kind) (interface{}, error)
-// and toFunc is of the form: func(interface{}) (kind, error)
-// where interface{} is a pointer form of the type we are converting and "kind"
-// is a Go form of the kind being converted (bool, int64, float64, string,
-// []byte, cid.Cid).
+// The fromFunc is of the form: func(bool) (interface{}, error)
+// and toFunc is of the form: func(interface{}) (bool, error)
+// where interface{} is a pointer form of the type we are converting.
 //
-// AddCustomTypeConverter is an EXPERIMENTAL API and may be removed or
+// AddCustomTypeBoolConverter is an EXPERIMENTAL API and may be removed or
 // changed in a future release.
-func AddCustomTypeConverter(ptrValue interface{}, customConverter interface{}) Option {
-	customType := reflect.ValueOf(ptrValue).Elem().Type()
+func AddCustomTypeBoolConverter(ptrVal interface{}, from CustomFromBool, to CustomToBool) Option {
+	customType := nonPtrType(reflect.ValueOf(ptrVal))
+	return func(cfg config) {
+		cfg[customType] = converter{
+			kind:           datamodel.Kind_Bool,
+			customFromBool: from,
+			customToBool:   to,
+		}
+	}
+}
 
-	switch typedCustomConverter := customConverter.(type) {
-	case CustomBool:
-		return func(cfg config) {
-			cfg[customType] = converter{
-				kind:       datamodel.Kind_Bool,
-				customBool: &typedCustomConverter,
-			}
+// AddCustomTypeIntConverter adds custom converter functions for a particular
+// type as identified by a pointer in the first argument.
+// The fromFunc is of the form: func(int64) (interface{}, error)
+// and toFunc is of the form: func(interface{}) (int64, error)
+// where interface{} is a pointer form of the type we are converting.
+//
+// AddCustomTypeIntConverter is an EXPERIMENTAL API and may be removed or
+// changed in a future release.
+func AddCustomTypeIntConverter(ptrVal interface{}, from CustomFromInt, to CustomToInt) Option {
+	customType := nonPtrType(reflect.ValueOf(ptrVal))
+	return func(cfg config) {
+		cfg[customType] = converter{
+			kind:          datamodel.Kind_Int,
+			customFromInt: from,
+			customToInt:   to,
 		}
-	case CustomInt:
-		return func(cfg config) {
-			cfg[customType] = converter{
-				kind:      datamodel.Kind_Int,
-				customInt: &typedCustomConverter,
-			}
+	}
+}
+
+// AddCustomTypeFloatConverter adds custom converter functions for a particular
+// type as identified by a pointer in the first argument.
+// The fromFunc is of the form: func(float64) (interface{}, error)
+// and toFunc is of the form: func(interface{}) (float64, error)
+// where interface{} is a pointer form of the type we are converting.
+//
+// AddCustomTypeFloatConverter is an EXPERIMENTAL API and may be removed or
+// changed in a future release.
+func AddCustomTypeFloatConverter(ptrVal interface{}, from CustomFromFloat, to CustomToFloat) Option {
+	customType := nonPtrType(reflect.ValueOf(ptrVal))
+	return func(cfg config) {
+		cfg[customType] = converter{
+			kind:            datamodel.Kind_Float,
+			customFromFloat: from,
+			customToFloat:   to,
 		}
-	case CustomFloat:
-		return func(cfg config) {
-			cfg[customType] = converter{
-				kind:        datamodel.Kind_Float,
-				customFloat: &typedCustomConverter,
-			}
+	}
+}
+
+// AddCustomTypeStringConverter adds custom converter functions for a particular
+// type as identified by a pointer in the first argument.
+// The fromFunc is of the form: func(string) (interface{}, error)
+// and toFunc is of the form: func(interface{}) (string, error)
+// where interface{} is a pointer form of the type we are converting.
+//
+// AddCustomTypeStringConverter is an EXPERIMENTAL API and may be removed or
+// changed in a future release.
+func AddCustomTypeStringConverter(ptrVal interface{}, from CustomFromString, to CustomToString) Option {
+	customType := nonPtrType(reflect.ValueOf(ptrVal))
+	return func(cfg config) {
+		cfg[customType] = converter{
+			kind:             datamodel.Kind_String,
+			customFromString: from,
+			customToString:   to,
 		}
-	case CustomString:
-		return func(cfg config) {
-			cfg[customType] = converter{
-				kind:         datamodel.Kind_String,
-				customString: &typedCustomConverter,
-			}
+	}
+}
+
+// AddCustomTypeBytesConverter adds custom converter functions for a particular
+// type as identified by a pointer in the first argument.
+// The fromFunc is of the form: func([]byte) (interface{}, error)
+// and toFunc is of the form: func(interface{}) ([]byte, error)
+// where interface{} is a pointer form of the type we are converting.
+//
+// AddCustomTypeBytesConverter is an EXPERIMENTAL API and may be removed or
+// changed in a future release.
+func AddCustomTypeBytesConverter(ptrVal interface{}, from CustomFromBytes, to CustomToBytes) Option {
+	customType := nonPtrType(reflect.ValueOf(ptrVal))
+	return func(cfg config) {
+		cfg[customType] = converter{
+			kind:            datamodel.Kind_Bytes,
+			customFromBytes: from,
+			customToBytes:   to,
 		}
-	case CustomBytes:
-		return func(cfg config) {
-			cfg[customType] = converter{
-				kind:        datamodel.Kind_Bytes,
-				customBytes: &typedCustomConverter,
-			}
+	}
+}
+
+// AddCustomTypeLinkConverter adds custom converter functions for a particular
+// type as identified by a pointer in the first argument.
+// The fromFunc is of the form: func([]byte) (interface{}, error)
+// and toFunc is of the form: func(interface{}) ([]byte, error)
+// where interface{} is a pointer form of the type we are converting.
+//
+// Beware that this API is only compatible with cidlink.Link types in the data
+// model and may result in errors if attempting to convert from other
+// datamodel.Link types.
+//
+// AddCustomTypeLinkConverter is an EXPERIMENTAL API and may be removed or
+// changed in a future release.
+func AddCustomTypeLinkConverter(ptrVal interface{}, from CustomFromLink, to CustomToLink) Option {
+	customType := nonPtrType(reflect.ValueOf(ptrVal))
+	return func(cfg config) {
+		cfg[customType] = converter{
+			kind:           datamodel.Kind_Link,
+			customFromLink: from,
+			customToLink:   to,
 		}
-	case CustomLink:
-		return func(cfg config) {
-			cfg[customType] = converter{
-				kind:       datamodel.Kind_Link,
-				customLink: &typedCustomConverter,
-			}
-		}
-	default:
-		panic("bindnode: fromFunc for Link must match one of the CustomFromX types")
 	}
 }
 
