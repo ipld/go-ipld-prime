@@ -66,38 +66,52 @@ func verifyCompatibility(cfg config, seen map[seenEntry]bool, goType reflect.Typ
 	}
 	switch schemaType := schemaType.(type) {
 	case *schema.TypeBool:
-		if goType.Kind() != reflect.Bool {
+		if customConverter, ok := cfg[goType]; ok {
+			if customConverter.kind != datamodel.Kind_Bool {
+				doPanic("kind mismatch; custom converter for type is not for Bool")
+			}
+		} else if goType.Kind() != reflect.Bool {
 			doPanic("kind mismatch; need boolean")
 		}
 	case *schema.TypeInt:
-		if kind := goType.Kind(); !kindInt[kind] && !kindUint[kind] {
+		if customConverter, ok := cfg[goType]; ok {
+			if customConverter.kind != datamodel.Kind_Int {
+				doPanic("kind mismatch; custom converter for type is not for Int")
+			}
+		} else if kind := goType.Kind(); !kindInt[kind] && !kindUint[kind] {
 			doPanic("kind mismatch; need integer")
 		}
 	case *schema.TypeFloat:
-		switch goType.Kind() {
-		case reflect.Float32, reflect.Float64:
-		default:
-			doPanic("kind mismatch; need float")
+		if customConverter, ok := cfg[goType]; ok {
+			if customConverter.kind != datamodel.Kind_Float {
+				doPanic("kind mismatch; custom converter for type is not for Float")
+			}
+		} else {
+			switch goType.Kind() {
+			case reflect.Float32, reflect.Float64:
+			default:
+				doPanic("kind mismatch; need float")
+			}
 		}
 	case *schema.TypeString:
 		// TODO: allow []byte?
-		if goType.Kind() != reflect.String {
+		if customConverter, ok := cfg[goType]; ok {
+			if customConverter.kind != datamodel.Kind_String {
+				doPanic("kind mismatch; custom converter for type is not for String")
+			}
+		} else if goType.Kind() != reflect.String {
 			doPanic("kind mismatch; need string")
 		}
 	case *schema.TypeBytes:
 		// TODO: allow string?
-		customConverter, ok := cfg[goType]
-		if ok {
+		if customConverter, ok := cfg[goType]; ok {
 			if customConverter.kind != datamodel.Kind_Bytes {
 				doPanic("kind mismatch; custom converter for type is not for Bytes")
 			}
-		} else {
-			if goType.Kind() != reflect.Slice {
-				doPanic("kind mismatch; need slice of bytes")
-			}
-			if goType.Elem().Kind() != reflect.Uint8 {
-				doPanic("kind mismatch; need slice of bytes")
-			}
+		} else if goType.Kind() != reflect.Slice {
+			doPanic("kind mismatch; need slice of bytes")
+		} else if goType.Elem().Kind() != reflect.Uint8 {
+			doPanic("kind mismatch; need slice of bytes")
 		}
 	case *schema.TypeEnum:
 		if _, ok := schemaType.RepresentationStrategy().(schema.EnumRepresentation_Int); ok {
@@ -216,7 +230,11 @@ func verifyCompatibility(cfg config, seen map[seenEntry]bool, goType reflect.Typ
 			verifyCompatibility(cfg, seen, goType, schemaType)
 		}
 	case *schema.TypeLink:
-		if goType != goTypeLink && goType != goTypeCidLink && goType != goTypeCid {
+		if customConverter, ok := cfg[goType]; ok {
+			if customConverter.kind != datamodel.Kind_Link {
+				doPanic("kind mismatch; custom converter for type is not for Link")
+			}
+		} else if goType != goTypeLink && goType != goTypeCidLink && goType != goTypeCid {
 			doPanic("links in Go must be datamodel.Link, cidlink.Link, or cid.Cid")
 		}
 	case *schema.TypeAny:
