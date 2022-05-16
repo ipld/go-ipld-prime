@@ -26,12 +26,12 @@ var ts = func() *schema.TypeSystem {
 		# The current set is based on the JSON Patch specification
 		# We may end up adding more operations in the future
 		type Op enum {
-			| Op_Add     ("add")
-			| Op_Remove  ("remove")
-			| Op_Replace ("replace")
-			| Op_Move    ("move")
-			| Op_Copy    ("copy")
-			| Op_Test    ("test")
+			| add
+			| remove
+			| replace
+			| move
+			| copy
+			| test
 		}
 
 		# Operation and OperationSequence are the types that describe operations (but not what to apply them on).

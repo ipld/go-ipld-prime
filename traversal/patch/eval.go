@@ -38,7 +38,7 @@ func Eval(n datamodel.Node, ops []Operation) (datamodel.Node, error) {
 
 func EvalOne(n datamodel.Node, op Operation) (datamodel.Node, error) {
 	switch op.Op {
-	case "add":
+	case Op_Add:
 		// The behavior of the 'add' op in jsonpatch varies based on if the parent of the target path is a list.
 		// If the parent of the target path is a list, then 'add' is really more of an 'insert': it should slide the rest of the values down.
 		// There's also a special case for "-", which means "append to the end of the list".
@@ -133,6 +133,6 @@ func EvalOne(n datamodel.Node, op Operation) (datamodel.Node, error) {
 		}
 		return n, fmt.Errorf("test failed") // TODO real error handling and a code
 	default:
-		return nil, fmt.Errorf("misuse: invalid operation") // TODO real error handling and a code
+		return nil, fmt.Errorf("misuse: invalid operation: %s", op.Op) // TODO real error handling and a code
 	}
 }
