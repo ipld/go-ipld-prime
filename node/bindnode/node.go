@@ -134,6 +134,13 @@ func nonPtrVal(val reflect.Value) reflect.Value {
 	return val
 }
 
+func ptrVal(val reflect.Value) reflect.Value {
+	if val.Kind() == reflect.Ptr {
+		return val
+	}
+	return val.Addr()
+}
+
 func (w *_node) LookupByString(key string) (datamodel.Node, error) {
 	switch typ := w.schemaType.(type) {
 	case *schema.TypeStruct:
@@ -447,21 +454,8 @@ func (w *_node) AsBytes() ([]byte, error) {
 	if w.val.Kind() == reflect.Ptr {
 		typ = typ.Elem()
 	}
-	customConverter, ok := w.cfg[typ]
-	if ok {
-		res := customConverter.toFunc.Call([]reflect.Value{w.val.Addr()})
-		if !res[1].IsNil() {
-			err, ok := res[1].Interface().(error)
-			if !ok {
-				return nil, fmt.Errorf("converter function did not return expected error: %v", res[1].Interface())
-			}
-			return nil, err
-		}
-		byts, ok := res[0].Interface().([]byte)
-		if !ok {
-			return nil, fmt.Errorf("converter function did not return expected []byte")
-		}
-		return byts, nil
+	if customConverter, ok := w.cfg[typ]; ok {
+		return customConverter.customBytes.To(ptrVal(w.val).Interface())
 	}
 	return nonPtrVal(w.val).Bytes(), nil
 }
@@ -754,17 +748,12 @@ func (w *_assembler) AssignBytes(p []byte) error {
 		if w.val.Kind() == reflect.Ptr {
 			typ = typ.Elem()
 		}
-		customConverter, ok := w.cfg[typ]
-		if ok {
-			res := customConverter.fromFunc.Call([]reflect.Value{reflect.ValueOf(p)})
-			if !res[1].IsNil() {
-				err, ok := res[1].Interface().(error)
-				if !ok {
-					return fmt.Errorf("converter function did not return expected error: %v", res[1].Interface())
-				}
+		if customConverter, ok := w.cfg[typ]; ok {
+			typ, err := customConverter.customBytes.From(p)
+			if err != nil {
 				return err
 			}
-			rval := res[0]
+			rval := reflect.ValueOf(typ)
 			if w.val.Kind() == reflect.Ptr && rval.Kind() != reflect.Ptr {
 				rval = rval.Addr()
 			} else if w.val.Kind() != reflect.Ptr && rval.Kind() == reflect.Ptr {
