@@ -560,8 +560,9 @@ func (w *_assembler) Representation() datamodel.NodeAssembler {
 type basicMapAssembler struct {
 	datamodel.MapAssembler
 
-	builder datamodel.NodeBuilder
-	parent  *_assembler
+	builder   datamodel.NodeBuilder
+	parent    *_assembler
+	converter *converter
 }
 
 func (w *basicMapAssembler) Finish() error {
@@ -569,7 +570,15 @@ func (w *basicMapAssembler) Finish() error {
 		return err
 	}
 	basicNode := w.builder.Build()
-	w.parent.createNonPtrVal().Set(reflect.ValueOf(basicNode))
+	if w.converter != nil {
+		typ, err := w.converter.customFromAny(basicNode)
+		if err != nil {
+			return err
+		}
+		w.parent.createNonPtrVal().Set(matchSettable(typ, reflect.ValueOf(basicNode)))
+	} else {
+		w.parent.createNonPtrVal().Set(reflect.ValueOf(basicNode))
+	}
 	if w.parent.finish != nil {
 		if err := w.parent.finish(); err != nil {
 			return err
@@ -586,7 +595,11 @@ func (w *_assembler) BeginMap(sizeHint int64) (datamodel.MapAssembler, error) {
 		if err != nil {
 			return nil, err
 		}
-		return &basicMapAssembler{MapAssembler: mapAsm, builder: basicBuilder, parent: w}, nil
+		var conv *converter = nil
+		if customConverter, ok := w.cfg[nonPtrType(w.val)]; ok {
+			conv = &customConverter
+		}
+		return &basicMapAssembler{MapAssembler: mapAsm, builder: basicBuilder, parent: w, converter: conv}, nil
 	case *schema.TypeStruct:
 		val := w.createNonPtrVal()
 		doneFields := make([]bool, val.NumField())
@@ -631,8 +644,9 @@ func (w *_assembler) BeginMap(sizeHint int64) (datamodel.MapAssembler, error) {
 type basicListAssembler struct {
 	datamodel.ListAssembler
 
-	builder datamodel.NodeBuilder
-	parent  *_assembler
+	builder   datamodel.NodeBuilder
+	parent    *_assembler
+	converter *converter
 }
 
 func (w *basicListAssembler) Finish() error {
@@ -640,7 +654,15 @@ func (w *basicListAssembler) Finish() error {
 		return err
 	}
 	basicNode := w.builder.Build()
-	w.parent.createNonPtrVal().Set(reflect.ValueOf(basicNode))
+	if w.converter != nil {
+		typ, err := w.converter.customFromAny(basicNode)
+		if err != nil {
+			return err
+		}
+		w.parent.createNonPtrVal().Set(matchSettable(typ, reflect.ValueOf(basicNode)))
+	} else {
+		w.parent.createNonPtrVal().Set(reflect.ValueOf(basicNode))
+	}
 	if w.parent.finish != nil {
 		if err := w.parent.finish(); err != nil {
 			return err
@@ -657,7 +679,11 @@ func (w *_assembler) BeginList(sizeHint int64) (datamodel.ListAssembler, error) 
 		if err != nil {
 			return nil, err
 		}
-		return &basicListAssembler{ListAssembler: listAsm, builder: basicBuilder, parent: w}, nil
+		var conv *converter = nil
+		if customConverter, ok := w.cfg[nonPtrType(w.val)]; ok {
+			conv = &customConverter
+		}
+		return &basicListAssembler{ListAssembler: listAsm, builder: basicBuilder, parent: w, converter: conv}, nil
 	case *schema.TypeList:
 		val := w.createNonPtrVal()
 		return &_listAssembler{
@@ -683,7 +709,15 @@ func (w *_assembler) AssignNull() error {
 			// TODO
 		}
 	}
-	w.val.Set(reflect.Zero(w.val.Type()))
+	if customConverter, ok := w.cfg[nonPtrType(w.val)]; ok {
+		typ, err := customConverter.customFromAny(datamodel.Null)
+		if err != nil {
+			return err
+		}
+		w.createNonPtrVal().Set(matchSettable(typ, w.val))
+	} else {
+		w.val.Set(reflect.Zero(w.val.Type()))
+	}
 	if w.finish != nil {
 		if err := w.finish(); err != nil {
 			return err
@@ -696,16 +730,27 @@ func (w *_assembler) AssignBool(b bool) error {
 	if err := compatibleKind(w.schemaType, datamodel.Kind_Bool); err != nil {
 		return err
 	}
-	if _, ok := w.schemaType.(*schema.TypeAny); ok {
-		w.createNonPtrVal().Set(reflect.ValueOf(basicnode.NewBool(b)))
-	} else if customConverter, ok := w.cfg[nonPtrType(w.val)]; ok {
-		typ, err := customConverter.customFromBool(b)
-		if err != nil {
-			return err
+	customConverter, hasCustomConverter := w.cfg[nonPtrType(w.val)]
+	_, isAny := w.schemaType.(*schema.TypeAny)
+	if hasCustomConverter {
+		var typ interface{}
+		var err error
+		if isAny {
+			if typ, err = customConverter.customFromAny(basicnode.NewBool(b)); err != nil {
+				return err
+			}
+		} else {
+			if typ, err = customConverter.customFromBool(b); err != nil {
+				return err
+			}
 		}
 		w.createNonPtrVal().Set(matchSettable(typ, w.val))
 	} else {
-		w.createNonPtrVal().SetBool(b)
+		if isAny {
+			w.createNonPtrVal().Set(reflect.ValueOf(basicnode.NewBool(b)))
+		} else {
+			w.createNonPtrVal().SetBool(b)
+		}
 	}
 	if w.finish != nil {
 		if err := w.finish(); err != nil {
@@ -720,22 +765,33 @@ func (w *_assembler) AssignInt(i int64) error {
 		return err
 	}
 	// TODO: check for overflow
-	if _, ok := w.schemaType.(*schema.TypeAny); ok {
-		w.createNonPtrVal().Set(reflect.ValueOf(basicnode.NewInt(i)))
-	} else if customConverter, ok := w.cfg[nonPtrType(w.val)]; ok {
-		typ, err := customConverter.customFromInt(i)
-		if err != nil {
-			return err
+	customConverter, hasCustomConverter := w.cfg[nonPtrType(w.val)]
+	_, isAny := w.schemaType.(*schema.TypeAny)
+	if hasCustomConverter {
+		var typ interface{}
+		var err error
+		if isAny {
+			if typ, err = customConverter.customFromAny(basicnode.NewInt(i)); err != nil {
+				return err
+			}
+		} else {
+			if typ, err = customConverter.customFromInt(i); err != nil {
+				return err
+			}
 		}
 		w.createNonPtrVal().Set(matchSettable(typ, w.val))
-	} else if kindUint[w.val.Kind()] {
-		if i < 0 {
-			// TODO: write a test
-			return fmt.Errorf("bindnode: cannot assign negative integer to %s", w.val.Type())
-		}
-		w.createNonPtrVal().SetUint(uint64(i))
 	} else {
-		w.createNonPtrVal().SetInt(i)
+		if isAny {
+			w.createNonPtrVal().Set(reflect.ValueOf(basicnode.NewInt(i)))
+		} else if kindUint[w.val.Kind()] {
+			if i < 0 {
+				// TODO: write a test
+				return fmt.Errorf("bindnode: cannot assign negative integer to %s", w.val.Type())
+			}
+			w.createNonPtrVal().SetUint(uint64(i))
+		} else {
+			w.createNonPtrVal().SetInt(i)
+		}
 	}
 	if w.finish != nil {
 		if err := w.finish(); err != nil {
@@ -749,16 +805,27 @@ func (w *_assembler) AssignFloat(f float64) error {
 	if err := compatibleKind(w.schemaType, datamodel.Kind_Float); err != nil {
 		return err
 	}
-	if _, ok := w.schemaType.(*schema.TypeAny); ok {
-		w.createNonPtrVal().Set(reflect.ValueOf(basicnode.NewFloat(f)))
-	} else if customConverter, ok := w.cfg[nonPtrType(w.val)]; ok {
-		typ, err := customConverter.customFromFloat(f)
-		if err != nil {
-			return err
+	customConverter, hasCustomConverter := w.cfg[nonPtrType(w.val)]
+	_, isAny := w.schemaType.(*schema.TypeAny)
+	if hasCustomConverter {
+		var typ interface{}
+		var err error
+		if isAny {
+			if typ, err = customConverter.customFromAny(basicnode.NewFloat(f)); err != nil {
+				return err
+			}
+		} else {
+			if typ, err = customConverter.customFromFloat(f); err != nil {
+				return err
+			}
 		}
 		w.createNonPtrVal().Set(matchSettable(typ, w.val))
 	} else {
-		w.createNonPtrVal().SetFloat(f)
+		if isAny {
+			w.createNonPtrVal().Set(reflect.ValueOf(basicnode.NewFloat(f)))
+		} else {
+			w.createNonPtrVal().SetFloat(f)
+		}
 	}
 	if w.finish != nil {
 		if err := w.finish(); err != nil {
@@ -772,15 +839,24 @@ func (w *_assembler) AssignString(s string) error {
 	if err := compatibleKind(w.schemaType, datamodel.Kind_String); err != nil {
 		return err
 	}
-	if _, ok := w.schemaType.(*schema.TypeAny); ok {
-		w.createNonPtrVal().Set(reflect.ValueOf(basicnode.NewString(s)))
-	} else {
-		if customConverter, ok := w.cfg[nonPtrType(w.val)]; ok {
-			typ, err := customConverter.customFromString(s)
-			if err != nil {
+	customConverter, hasCustomConverter := w.cfg[nonPtrType(w.val)]
+	_, isAny := w.schemaType.(*schema.TypeAny)
+	if hasCustomConverter {
+		var typ interface{}
+		var err error
+		if isAny {
+			if typ, err = customConverter.customFromAny(basicnode.NewString(s)); err != nil {
 				return err
 			}
-			w.createNonPtrVal().Set(matchSettable(typ, w.val))
+		} else {
+			if typ, err = customConverter.customFromString(s); err != nil {
+				return err
+			}
+		}
+		w.createNonPtrVal().Set(matchSettable(typ, w.val))
+	} else {
+		if isAny {
+			w.createNonPtrVal().Set(reflect.ValueOf(basicnode.NewString(s)))
 		} else {
 			w.createNonPtrVal().SetString(s)
 		}
@@ -797,15 +873,24 @@ func (w *_assembler) AssignBytes(p []byte) error {
 	if err := compatibleKind(w.schemaType, datamodel.Kind_Bytes); err != nil {
 		return err
 	}
-	if _, ok := w.schemaType.(*schema.TypeAny); ok {
-		w.createNonPtrVal().Set(reflect.ValueOf(basicnode.NewBytes(p)))
-	} else {
-		if customConverter, ok := w.cfg[nonPtrType(w.val)]; ok {
-			typ, err := customConverter.customFromBytes(p)
-			if err != nil {
+	customConverter, hasCustomConverter := w.cfg[nonPtrType(w.val)]
+	_, isAny := w.schemaType.(*schema.TypeAny)
+	if hasCustomConverter {
+		var typ interface{}
+		var err error
+		if isAny {
+			if typ, err = customConverter.customFromAny(basicnode.NewBytes(p)); err != nil {
 				return err
 			}
-			w.createNonPtrVal().Set(matchSettable(typ, w.val))
+		} else {
+			if typ, err = customConverter.customFromBytes(p); err != nil {
+				return err
+			}
+		}
+		w.createNonPtrVal().Set(matchSettable(typ, w.val))
+	} else {
+		if isAny {
+			w.createNonPtrVal().Set(reflect.ValueOf(basicnode.NewBytes(p)))
 		} else {
 			w.createNonPtrVal().SetBytes(p)
 		}
@@ -822,7 +907,15 @@ func (w *_assembler) AssignLink(link datamodel.Link) error {
 	val := w.createNonPtrVal()
 	// TODO: newVal.Type() panics if link==nil; add a test and fix.
 	if _, ok := w.schemaType.(*schema.TypeAny); ok {
-		val.Set(reflect.ValueOf(basicnode.NewLink(link)))
+		if customConverter, ok := w.cfg[nonPtrType(w.val)]; ok {
+			typ, err := customConverter.customFromAny(basicnode.NewLink(link))
+			if err != nil {
+				return err
+			}
+			w.createNonPtrVal().Set(matchSettable(typ, w.val))
+		} else {
+			val.Set(reflect.ValueOf(basicnode.NewLink(link)))
+		}
 	} else if customConverter, ok := w.cfg[nonPtrType(w.val)]; ok {
 		if cl, ok := link.(cidlink.Link); ok {
 			typ, err := customConverter.customFromLink(cl.Cid)
@@ -1224,6 +1317,13 @@ func (w *_structIterator) Next() (key, value datamodel.Node, _ error) {
 		}
 	}
 	if _, ok := field.Type().(*schema.TypeAny); ok {
+		if customConverter, ok := w.cfg[nonPtrType(val)]; ok {
+			v, err := customConverter.customToAny(ptrVal(val).Interface())
+			if err != nil {
+				return nil, nil, err
+			}
+			return key, v, nil
+		}
 		return key, nonPtrVal(val).Interface().(datamodel.Node), nil
 	}
 	node := &_node{
