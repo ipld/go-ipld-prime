@@ -67,7 +67,7 @@ func verifyCompatibility(cfg config, seen map[seenEntry]bool, goType reflect.Typ
 	switch schemaType := schemaType.(type) {
 	case *schema.TypeBool:
 		if customConverter, ok := cfg[goType]; ok {
-			if customConverter.kind != datamodel.Kind_Bool {
+			if customConverter.kind != schema.TypeKind_Bool {
 				doPanic("kind mismatch; custom converter for type is not for Bool")
 			}
 		} else if goType.Kind() != reflect.Bool {
@@ -75,7 +75,7 @@ func verifyCompatibility(cfg config, seen map[seenEntry]bool, goType reflect.Typ
 		}
 	case *schema.TypeInt:
 		if customConverter, ok := cfg[goType]; ok {
-			if customConverter.kind != datamodel.Kind_Int {
+			if customConverter.kind != schema.TypeKind_Int {
 				doPanic("kind mismatch; custom converter for type is not for Int")
 			}
 		} else if kind := goType.Kind(); !kindInt[kind] && !kindUint[kind] {
@@ -83,7 +83,7 @@ func verifyCompatibility(cfg config, seen map[seenEntry]bool, goType reflect.Typ
 		}
 	case *schema.TypeFloat:
 		if customConverter, ok := cfg[goType]; ok {
-			if customConverter.kind != datamodel.Kind_Float {
+			if customConverter.kind != schema.TypeKind_Float {
 				doPanic("kind mismatch; custom converter for type is not for Float")
 			}
 		} else {
@@ -96,7 +96,7 @@ func verifyCompatibility(cfg config, seen map[seenEntry]bool, goType reflect.Typ
 	case *schema.TypeString:
 		// TODO: allow []byte?
 		if customConverter, ok := cfg[goType]; ok {
-			if customConverter.kind != datamodel.Kind_String {
+			if customConverter.kind != schema.TypeKind_String {
 				doPanic("kind mismatch; custom converter for type is not for String")
 			}
 		} else if goType.Kind() != reflect.String {
@@ -105,7 +105,7 @@ func verifyCompatibility(cfg config, seen map[seenEntry]bool, goType reflect.Typ
 	case *schema.TypeBytes:
 		// TODO: allow string?
 		if customConverter, ok := cfg[goType]; ok {
-			if customConverter.kind != datamodel.Kind_Bytes {
+			if customConverter.kind != schema.TypeKind_Bytes {
 				doPanic("kind mismatch; custom converter for type is not for Bytes")
 			}
 		} else if goType.Kind() != reflect.Slice {
@@ -231,15 +231,18 @@ func verifyCompatibility(cfg config, seen map[seenEntry]bool, goType reflect.Typ
 		}
 	case *schema.TypeLink:
 		if customConverter, ok := cfg[goType]; ok {
-			if customConverter.kind != datamodel.Kind_Link {
+			if customConverter.kind != schema.TypeKind_Link {
 				doPanic("kind mismatch; custom converter for type is not for Link")
 			}
 		} else if goType != goTypeLink && goType != goTypeCidLink && goType != goTypeCid {
 			doPanic("links in Go must be datamodel.Link, cidlink.Link, or cid.Cid")
 		}
 	case *schema.TypeAny:
-		// TODO: support some other option for Any, such as deferred decode
-		if goType != goTypeNode {
+		if customConverter, ok := cfg[goType]; ok {
+			if customConverter.kind != schema.TypeKind_Any {
+				doPanic("kind mismatch; custom converter for type is not for Any")
+			}
+		} else if goType != goTypeNode {
 			doPanic("Any in Go must be datamodel.Node")
 		}
 	default:
