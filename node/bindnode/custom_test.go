@@ -11,8 +11,13 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/ipfs/go-cid"
 	"github.com/ipld/go-ipld-prime"
+	"github.com/ipld/go-ipld-prime/codec/dagcbor"
 	"github.com/ipld/go-ipld-prime/codec/dagjson"
+	"github.com/ipld/go-ipld-prime/datamodel"
+	"github.com/ipld/go-ipld-prime/fluent/qp"
+	basicnode "github.com/ipld/go-ipld-prime/node/basic"
 	"github.com/ipld/go-ipld-prime/node/bindnode"
+	"github.com/ipld/go-ipld-prime/schema"
 	"github.com/multiformats/go-multihash"
 
 	qt "github.com/frankban/quicktest"
@@ -309,4 +314,191 @@ func TestCustom(t *testing.T) {
 	qt.Assert(t, err, qt.IsNil)
 
 	qt.Assert(t, buf.String(), qt.Equals, boomFixtureDagJson)
+}
+
+type AnyExtend struct {
+	Name   string
+	Blob   AnyExtendBlob
+	Count  int
+	Null   AnyCborEncoded
+	Bool   AnyCborEncoded
+	Int    AnyCborEncoded
+	Float  AnyCborEncoded
+	String AnyCborEncoded
+	Bytes  AnyCborEncoded
+	Link   AnyCborEncoded
+	Map    AnyCborEncoded
+	List   AnyCborEncoded
+}
+
+const anyExtendSchema = `
+type AnyExtend struct {
+	Name String
+	Blob Any
+	Count Int
+	Null nullable Any
+	Bool Any
+	Int Any
+	Float Any
+	String Any
+	Bytes Any
+	Link Any
+	Map Any
+	List Any
+}
+`
+
+type AnyExtendBlob struct {
+	f string
+	x int64
+	y int64
+	z int64
+}
+
+func AnyExtendBlobFromNode(node datamodel.Node) (interface{}, error) {
+	foo, err := node.LookupByString("foo")
+	if err != nil {
+		return nil, err
+	}
+	fooStr, err := foo.AsString()
+	if err != nil {
+		return nil, err
+	}
+	baz, err := node.LookupByString("baz")
+	if err != nil {
+		return nil, err
+	}
+	x, err := baz.LookupByIndex(0)
+	if err != nil {
+		return nil, err
+	}
+	xi, err := x.AsInt()
+	if err != nil {
+		return nil, err
+	}
+	y, err := baz.LookupByIndex(1)
+	if err != nil {
+		return nil, err
+	}
+	yi, err := y.AsInt()
+	if err != nil {
+		return nil, err
+	}
+	z, err := baz.LookupByIndex(2)
+	if err != nil {
+		return nil, err
+	}
+	zi, err := z.AsInt()
+	if err != nil {
+		return nil, err
+	}
+	return &AnyExtendBlob{f: fooStr, x: xi, y: yi, z: zi}, nil
+}
+
+func (aeb AnyExtendBlob) ToNode() (datamodel.Node, error) {
+	return qp.BuildMap(basicnode.Prototype.Any, -1, func(ma datamodel.MapAssembler) {
+		qp.MapEntry(ma, "foo", qp.String(aeb.f))
+		qp.MapEntry(ma, "baz", qp.List(-1, func(la datamodel.ListAssembler) {
+			qp.ListEntry(la, qp.Int(aeb.x))
+			qp.ListEntry(la, qp.Int(aeb.y))
+			qp.ListEntry(la, qp.Int(aeb.z))
+		}))
+	})
+}
+
+func AnyExtendBlobToNode(ptr interface{}) (datamodel.Node, error) {
+	aeb, ok := ptr.(*AnyExtendBlob)
+	if !ok {
+		return nil, fmt.Errorf("expected *AnyExtendBlob type")
+	}
+	return aeb.ToNode()
+}
+
+// take a datamodel.Node, dag-cbor encode it and store it here, do the reverse
+// to get the datamodel.Node back
+type AnyCborEncoded []byte
+
+func AnyCborEncodedFromNode(node datamodel.Node) (interface{}, error) {
+	if tn, ok := node.(schema.TypedNode); ok {
+		node = tn.Representation()
+	}
+	var buf bytes.Buffer
+	err := dagcbor.Encode(node, &buf)
+	if err != nil {
+		return nil, err
+	}
+	acb := AnyCborEncoded(buf.Bytes())
+	return &acb, nil
+}
+
+func AnyCborEncodedToNode(ptr interface{}) (datamodel.Node, error) {
+	acb, ok := ptr.(*AnyCborEncoded)
+	if !ok {
+		return nil, fmt.Errorf("expected *AnyCborEncoded type")
+	}
+	na := basicnode.Prototype.Any.NewBuilder()
+	err := dagcbor.Decode(na, bytes.NewReader(*acb))
+	if err != nil {
+		return nil, err
+	}
+	return na.Build(), nil
+}
+
+const anyExtendDagJson = `{"Blob":{"baz":[2,3,4],"foo":"bar"},"Bool":false,"Bytes":{"/":{"bytes":"AgMEBQYHCA"}},"Count":101,"Float":2.34,"Int":123456789,"Link":{"/":"bagyacvra2e6qt2fohajauxceox55t3gedsyqap2phmv7q2qaaaaaaaaaaaaa"},"List":[null,"one","two","three",1,2,3,true],"Map":{"foo":"bar","one":1,"three":3,"two":2},"Name":"Any extend test","Null":null,"String":"this is a string"}`
+
+var anyExtendFixtureInstance = AnyExtend{
+	Name:   "Any extend test",
+	Count:  101,
+	Blob:   AnyExtendBlob{f: "bar", x: 2, y: 3, z: 4},
+	Null:   AnyCborEncoded(mustFromHex("f6")), // normally this field would be `nil`, but we now get to decide whether it should be something concrete
+	Bool:   AnyCborEncoded(mustFromHex("f4")),
+	Int:    AnyCborEncoded(mustFromHex("1a075bcd15")),                                                                           // cbor encoded form of 123456789
+	Float:  AnyCborEncoded(mustFromHex("fb4002b851eb851eb8")),                                                                   // cbor encoded form of 2.34
+	String: AnyCborEncoded(mustFromHex("7074686973206973206120737472696e67")),                                                   // cbor encoded form of "this is a string"
+	Bytes:  AnyCborEncoded(mustFromHex("4702030405060708")),                                                                     // cbor encoded form of [2,3,4,5,6,7,8]
+	Link:   AnyCborEncoded(mustFromHex("d82a58260001b0015620d13d09e8ae38120a5c4475fbd9ecc41cb1003f4f3b2bf86a0000000000000000")), // dag-cbor encoded CID bagyacvra2e6qt2fohajauxceox55t3gedsyqap2phmv7q2qaaaaaaaaaaaaa
+	Map:    AnyCborEncoded(mustFromHex("a463666f6f63626172636f6e65016374776f0265746872656503")),                                 // cbor encoded form of {"one":1,"two":2,"three":3,"foo":"bar"}
+	List:   AnyCborEncoded(mustFromHex("88f6636f6e656374776f657468726565010203f5")),                                             // cbor encoded form of [null,'one','two','three',1,2,3,true]
+}
+
+func TestCustomAny(t *testing.T) {
+	opts := []bindnode.Option{
+		bindnode.AddCustomTypeAnyConverter(&AnyExtendBlob{}, AnyExtendBlobFromNode, AnyExtendBlobToNode),
+		bindnode.AddCustomTypeAnyConverter(&AnyCborEncoded{}, AnyCborEncodedFromNode, AnyCborEncodedToNode),
+	}
+
+	typeSystem, err := ipld.LoadSchemaBytes([]byte(anyExtendSchema))
+	qt.Assert(t, err, qt.IsNil)
+	schemaType := typeSystem.TypeByName("AnyExtend")
+	proto := bindnode.Prototype(&AnyExtend{}, schemaType, opts...)
+
+	builder := proto.Representation().NewBuilder()
+	err = dagjson.Decode(builder, bytes.NewReader([]byte(anyExtendDagJson)))
+	qt.Assert(t, err, qt.IsNil)
+
+	typ := bindnode.Unwrap(builder.Build())
+	inst, ok := typ.(*AnyExtend)
+	qt.Assert(t, ok, qt.IsTrue)
+
+	cmpr := qt.CmpEquals(
+		cmp.Comparer(func(x, y AnyExtendBlob) bool {
+			return x.f == y.f && x.x == y.x && x.y == y.y && x.z == y.z
+		}),
+	)
+	qt.Assert(t, *inst, cmpr, anyExtendFixtureInstance)
+
+	tn := bindnode.Wrap(inst, schemaType, opts...)
+	var buf bytes.Buffer
+	err = dagjson.Encode(tn.Representation(), &buf)
+	qt.Assert(t, err, qt.IsNil)
+
+	qt.Assert(t, buf.String(), qt.Equals, anyExtendDagJson)
+}
+
+func mustFromHex(hexStr string) []byte {
+	byt, err := hex.DecodeString(hexStr)
+	if err != nil {
+		panic(err)
+	}
+	return byt
 }
