@@ -107,8 +107,16 @@ type CustomFromLink func(cid.Cid) (interface{}, error)
 // returns a cid.Cid
 type CustomToLink func(interface{}) (cid.Cid, error)
 
+// CustomFromAny is a custom converter function that takes a datamodel.Node and
+// returns a custom type
+type CustomFromAny func(datamodel.Node) (interface{}, error)
+
+// CustomToAny is a custom converter function that takes a custom type and
+// returns a datamodel.Node
+type CustomToAny func(interface{}) (datamodel.Node, error)
+
 type converter struct {
-	kind datamodel.Kind
+	kind schema.TypeKind
 
 	customFromBool CustomFromBool
 	customToBool   CustomToBool
@@ -127,6 +135,9 @@ type converter struct {
 
 	customFromLink CustomFromLink
 	customToLink   CustomToLink
+
+	customFromAny CustomFromAny
+	customToAny   CustomToAny
 }
 
 type config map[reflect.Type]converter
@@ -146,7 +157,7 @@ func AddCustomTypeBoolConverter(ptrVal interface{}, from CustomFromBool, to Cust
 	customType := nonPtrType(reflect.ValueOf(ptrVal))
 	return func(cfg config) {
 		cfg[customType] = converter{
-			kind:           datamodel.Kind_Bool,
+			kind:           schema.TypeKind_Bool,
 			customFromBool: from,
 			customToBool:   to,
 		}
@@ -165,7 +176,7 @@ func AddCustomTypeIntConverter(ptrVal interface{}, from CustomFromInt, to Custom
 	customType := nonPtrType(reflect.ValueOf(ptrVal))
 	return func(cfg config) {
 		cfg[customType] = converter{
-			kind:          datamodel.Kind_Int,
+			kind:          schema.TypeKind_Int,
 			customFromInt: from,
 			customToInt:   to,
 		}
@@ -184,7 +195,7 @@ func AddCustomTypeFloatConverter(ptrVal interface{}, from CustomFromFloat, to Cu
 	customType := nonPtrType(reflect.ValueOf(ptrVal))
 	return func(cfg config) {
 		cfg[customType] = converter{
-			kind:            datamodel.Kind_Float,
+			kind:            schema.TypeKind_Float,
 			customFromFloat: from,
 			customToFloat:   to,
 		}
@@ -203,7 +214,7 @@ func AddCustomTypeStringConverter(ptrVal interface{}, from CustomFromString, to 
 	customType := nonPtrType(reflect.ValueOf(ptrVal))
 	return func(cfg config) {
 		cfg[customType] = converter{
-			kind:             datamodel.Kind_String,
+			kind:             schema.TypeKind_String,
 			customFromString: from,
 			customToString:   to,
 		}
@@ -222,7 +233,7 @@ func AddCustomTypeBytesConverter(ptrVal interface{}, from CustomFromBytes, to Cu
 	customType := nonPtrType(reflect.ValueOf(ptrVal))
 	return func(cfg config) {
 		cfg[customType] = converter{
-			kind:            datamodel.Kind_Bytes,
+			kind:            schema.TypeKind_Bytes,
 			customFromBytes: from,
 			customToBytes:   to,
 		}
@@ -245,9 +256,31 @@ func AddCustomTypeLinkConverter(ptrVal interface{}, from CustomFromLink, to Cust
 	customType := nonPtrType(reflect.ValueOf(ptrVal))
 	return func(cfg config) {
 		cfg[customType] = converter{
-			kind:           datamodel.Kind_Link,
+			kind:           schema.TypeKind_Link,
 			customFromLink: from,
 			customToLink:   to,
+		}
+	}
+}
+
+// AddCustomTypeAnyConverter adds custom converter functions for a particular
+// type as identified by a pointer in the first argument.
+// The fromFunc is of the form: func(datamodel.Node) (interface{}, error)
+// and toFunc is of the form: func(interface{}) (datamodel.Node, error)
+// where interface{} is a pointer form of the type we are converting.
+//
+// This method should be able to deal with all forms of Any and return an error
+// if the expected data forms don't match the expected.
+//
+// AddCustomTypeAnyConverter is an EXPERIMENTAL API and may be removed or
+// changed in a future release.
+func AddCustomTypeAnyConverter(ptrVal interface{}, from CustomFromAny, to CustomToAny) Option {
+	customType := nonPtrType(reflect.ValueOf(ptrVal))
+	return func(cfg config) {
+		cfg[customType] = converter{
+			kind:          schema.TypeKind_Any,
+			customFromAny: from,
+			customToAny:   to,
 		}
 	}
 }
