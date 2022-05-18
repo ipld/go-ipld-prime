@@ -66,7 +66,7 @@ func verifyCompatibility(cfg config, seen map[seenEntry]bool, goType reflect.Typ
 	}
 	switch schemaType := schemaType.(type) {
 	case *schema.TypeBool:
-		if customConverter, ok := cfg[goType]; ok {
+		if customConverter, ok := cfg.converterForType(goType); ok {
 			if customConverter.kind != schema.TypeKind_Bool {
 				doPanic("kind mismatch; custom converter for type is not for Bool")
 			}
@@ -74,7 +74,7 @@ func verifyCompatibility(cfg config, seen map[seenEntry]bool, goType reflect.Typ
 			doPanic("kind mismatch; need boolean")
 		}
 	case *schema.TypeInt:
-		if customConverter, ok := cfg[goType]; ok {
+		if customConverter, ok := cfg.converterForType(goType); ok {
 			if customConverter.kind != schema.TypeKind_Int {
 				doPanic("kind mismatch; custom converter for type is not for Int")
 			}
@@ -82,7 +82,7 @@ func verifyCompatibility(cfg config, seen map[seenEntry]bool, goType reflect.Typ
 			doPanic("kind mismatch; need integer")
 		}
 	case *schema.TypeFloat:
-		if customConverter, ok := cfg[goType]; ok {
+		if customConverter, ok := cfg.converterForType(goType); ok {
 			if customConverter.kind != schema.TypeKind_Float {
 				doPanic("kind mismatch; custom converter for type is not for Float")
 			}
@@ -95,7 +95,7 @@ func verifyCompatibility(cfg config, seen map[seenEntry]bool, goType reflect.Typ
 		}
 	case *schema.TypeString:
 		// TODO: allow []byte?
-		if customConverter, ok := cfg[goType]; ok {
+		if customConverter, ok := cfg.converterForType(goType); ok {
 			if customConverter.kind != schema.TypeKind_String {
 				doPanic("kind mismatch; custom converter for type is not for String")
 			}
@@ -104,7 +104,7 @@ func verifyCompatibility(cfg config, seen map[seenEntry]bool, goType reflect.Typ
 		}
 	case *schema.TypeBytes:
 		// TODO: allow string?
-		if customConverter, ok := cfg[goType]; ok {
+		if customConverter, ok := cfg.converterForType(goType); ok {
 			if customConverter.kind != schema.TypeKind_Bytes {
 				doPanic("kind mismatch; custom converter for type is not for Bytes")
 			}
@@ -187,6 +187,7 @@ func verifyCompatibility(cfg config, seen map[seenEntry]bool, goType reflect.Typ
 				// TODO: https://github.com/ipld/go-ipld-prime/issues/340 will
 				// help here, to avoid the double pointer. We can't use nilable
 				// but non-pointer types because that's just one "nil" state.
+				// TODO: deal with custom converters in this case
 				if goType.Kind() != reflect.Ptr {
 					doPanic("optional and nullable fields must use double pointers (**)")
 				}
@@ -203,7 +204,9 @@ func verifyCompatibility(cfg config, seen map[seenEntry]bool, goType reflect.Typ
 				}
 			case schemaField.IsNullable():
 				if ptr, nilable := ptrOrNilable(goType.Kind()); !nilable {
-					doPanic("nullable fields must be nilable")
+					if _, hasConverter := cfg.converterForType(goType); !hasConverter {
+						doPanic("nullable fields must be nilable")
+					}
 				} else if ptr {
 					goType = goType.Elem()
 				}
@@ -230,7 +233,7 @@ func verifyCompatibility(cfg config, seen map[seenEntry]bool, goType reflect.Typ
 			verifyCompatibility(cfg, seen, goType, schemaType)
 		}
 	case *schema.TypeLink:
-		if customConverter, ok := cfg[goType]; ok {
+		if customConverter, ok := cfg.converterForType(goType); ok {
 			if customConverter.kind != schema.TypeKind_Link {
 				doPanic("kind mismatch; custom converter for type is not for Link")
 			}
@@ -238,7 +241,7 @@ func verifyCompatibility(cfg config, seen map[seenEntry]bool, goType reflect.Typ
 			doPanic("links in Go must be datamodel.Link, cidlink.Link, or cid.Cid")
 		}
 	case *schema.TypeAny:
-		if customConverter, ok := cfg[goType]; ok {
+		if customConverter, ok := cfg.converterForType(goType); ok {
 			if customConverter.kind != schema.TypeKind_Any {
 				doPanic("kind mismatch; custom converter for type is not for Any")
 			}

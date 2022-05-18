@@ -317,18 +317,20 @@ func TestCustom(t *testing.T) {
 }
 
 type AnyExtend struct {
-	Name   string
-	Blob   AnyExtendBlob
-	Count  int
-	Null   AnyCborEncoded
-	Bool   AnyCborEncoded
-	Int    AnyCborEncoded
-	Float  AnyCborEncoded
-	String AnyCborEncoded
-	Bytes  AnyCborEncoded
-	Link   AnyCborEncoded
-	Map    AnyCborEncoded
-	List   AnyCborEncoded
+	Name         string
+	Blob         AnyExtendBlob
+	Count        int
+	Null         AnyCborEncoded
+	NullPtr      *AnyCborEncoded
+	NullableWith *AnyCborEncoded
+	Bool         AnyCborEncoded
+	Int          AnyCborEncoded
+	Float        AnyCborEncoded
+	String       AnyCborEncoded
+	Bytes        AnyCborEncoded
+	Link         AnyCborEncoded
+	Map          AnyCborEncoded
+	List         AnyCborEncoded
 }
 
 const anyExtendSchema = `
@@ -337,6 +339,8 @@ type AnyExtend struct {
 	Blob Any
 	Count Int
 	Null nullable Any
+	NullPtr nullable Any
+	NullableWith nullable Any
 	Bool Any
 	Int Any
 	Float Any
@@ -416,7 +420,7 @@ func AnyExtendBlobToNode(ptr interface{}) (datamodel.Node, error) {
 
 // take a datamodel.Node, dag-cbor encode it and store it here, do the reverse
 // to get the datamodel.Node back
-type AnyCborEncoded []byte
+type AnyCborEncoded struct{ str []byte }
 
 func AnyCborEncodedFromNode(node datamodel.Node) (interface{}, error) {
 	if tn, ok := node.(schema.TypedNode); ok {
@@ -427,7 +431,7 @@ func AnyCborEncodedFromNode(node datamodel.Node) (interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
-	acb := AnyCborEncoded(buf.Bytes())
+	acb := AnyCborEncoded{str: buf.Bytes()}
 	return &acb, nil
 }
 
@@ -437,28 +441,30 @@ func AnyCborEncodedToNode(ptr interface{}) (datamodel.Node, error) {
 		return nil, fmt.Errorf("expected *AnyCborEncoded type")
 	}
 	na := basicnode.Prototype.Any.NewBuilder()
-	err := dagcbor.Decode(na, bytes.NewReader(*acb))
+	err := dagcbor.Decode(na, bytes.NewReader(acb.str))
 	if err != nil {
 		return nil, err
 	}
 	return na.Build(), nil
 }
 
-const anyExtendDagJson = `{"Blob":{"baz":[2,3,4],"foo":"bar"},"Bool":false,"Bytes":{"/":{"bytes":"AgMEBQYHCA"}},"Count":101,"Float":2.34,"Int":123456789,"Link":{"/":"bagyacvra2e6qt2fohajauxceox55t3gedsyqap2phmv7q2qaaaaaaaaaaaaa"},"List":[null,"one","two","three",1,2,3,true],"Map":{"foo":"bar","one":1,"three":3,"two":2},"Name":"Any extend test","Null":null,"String":"this is a string"}`
+const anyExtendDagJson = `{"Blob":{"baz":[2,3,4],"foo":"bar"},"Bool":false,"Bytes":{"/":{"bytes":"AgMEBQYHCA"}},"Count":101,"Float":2.34,"Int":123456789,"Link":{"/":"bagyacvra2e6qt2fohajauxceox55t3gedsyqap2phmv7q2qaaaaaaaaaaaaa"},"List":[null,"one","two","three",1,2,3,true],"Map":{"foo":"bar","one":1,"three":3,"two":2},"Name":"Any extend test","Null":null,"NullPtr":null,"NullableWith":123456789,"String":"this is a string"}`
 
 var anyExtendFixtureInstance = AnyExtend{
-	Name:   "Any extend test",
-	Count:  101,
-	Blob:   AnyExtendBlob{f: "bar", x: 2, y: 3, z: 4},
-	Null:   AnyCborEncoded(mustFromHex("f6")), // normally this field would be `nil`, but we now get to decide whether it should be something concrete
-	Bool:   AnyCborEncoded(mustFromHex("f4")),
-	Int:    AnyCborEncoded(mustFromHex("1a075bcd15")),                                                                           // cbor encoded form of 123456789
-	Float:  AnyCborEncoded(mustFromHex("fb4002b851eb851eb8")),                                                                   // cbor encoded form of 2.34
-	String: AnyCborEncoded(mustFromHex("7074686973206973206120737472696e67")),                                                   // cbor encoded form of "this is a string"
-	Bytes:  AnyCborEncoded(mustFromHex("4702030405060708")),                                                                     // cbor encoded form of [2,3,4,5,6,7,8]
-	Link:   AnyCborEncoded(mustFromHex("d82a58260001b0015620d13d09e8ae38120a5c4475fbd9ecc41cb1003f4f3b2bf86a0000000000000000")), // dag-cbor encoded CID bagyacvra2e6qt2fohajauxceox55t3gedsyqap2phmv7q2qaaaaaaaaaaaaa
-	Map:    AnyCborEncoded(mustFromHex("a463666f6f63626172636f6e65016374776f0265746872656503")),                                 // cbor encoded form of {"one":1,"two":2,"three":3,"foo":"bar"}
-	List:   AnyCborEncoded(mustFromHex("88f6636f6e656374776f657468726565010203f5")),                                             // cbor encoded form of [null,'one','two','three',1,2,3,true]
+	Name:         "Any extend test",
+	Count:        101,
+	Blob:         AnyExtendBlob{f: "bar", x: 2, y: 3, z: 4},
+	Null:         AnyCborEncoded{mustFromHex("f6")}, // normally these two fields would be `nil`, but we now get to decide whether it should be something concrete
+	NullPtr:      &AnyCborEncoded{mustFromHex("f6")},
+	NullableWith: &AnyCborEncoded{mustFromHex("1a075bcd15")},
+	Bool:         AnyCborEncoded{mustFromHex("f4")},
+	Int:          AnyCborEncoded{mustFromHex("1a075bcd15")},                                                                           // cbor encoded form of 123456789
+	Float:        AnyCborEncoded{mustFromHex("fb4002b851eb851eb8")},                                                                   // cbor encoded form of 2.34
+	String:       AnyCborEncoded{mustFromHex("7074686973206973206120737472696e67")},                                                   // cbor encoded form of "this is a string"
+	Bytes:        AnyCborEncoded{mustFromHex("4702030405060708")},                                                                     // cbor encoded form of [2,3,4,5,6,7,8]
+	Link:         AnyCborEncoded{mustFromHex("d82a58260001b0015620d13d09e8ae38120a5c4475fbd9ecc41cb1003f4f3b2bf86a0000000000000000")}, // dag-cbor encoded CID bagyacvra2e6qt2fohajauxceox55t3gedsyqap2phmv7q2qaaaaaaaaaaaaa
+	Map:          AnyCborEncoded{mustFromHex("a463666f6f63626172636f6e65016374776f0265746872656503")},                                 // cbor encoded form of {"one":1,"two":2,"three":3,"foo":"bar"}
+	List:         AnyCborEncoded{mustFromHex("88f6636f6e656374776f657468726565010203f5")},                                             // cbor encoded form of [null,'one','two','three',1,2,3,true]
 }
 
 func TestCustomAny(t *testing.T) {
@@ -483,6 +489,9 @@ func TestCustomAny(t *testing.T) {
 	cmpr := qt.CmpEquals(
 		cmp.Comparer(func(x, y AnyExtendBlob) bool {
 			return x.f == y.f && x.x == y.x && x.y == y.y && x.z == y.z
+		}),
+		cmp.Comparer(func(x, y AnyCborEncoded) bool {
+			return bytes.Equal(x.str, y.str)
 		}),
 	)
 	qt.Assert(t, *inst, cmpr, anyExtendFixtureInstance)
