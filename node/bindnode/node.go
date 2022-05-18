@@ -702,7 +702,8 @@ func (w *_assembler) BeginList(sizeHint int64) (datamodel.ListAssembler, error) 
 }
 
 func (w *_assembler) AssignNull() error {
-	if customConverter, ok := w.cfg.converterFor(w.val); ok {
+	_, isAny := w.schemaType.(*schema.TypeAny)
+	if customConverter, ok := w.cfg.converterFor(w.val); ok && isAny {
 		typ, err := customConverter.customFromAny(datamodel.Null)
 		if err != nil {
 			return err
