@@ -153,6 +153,14 @@ func (c config) converterFor(val reflect.Value) (converter, bool) {
 	return conv, ok
 }
 
+func (c config) converterForType(typ reflect.Type) (converter, bool) {
+	if len(c) == 0 {
+		return converter{}, false
+	}
+	conv, ok := c[typ]
+	return conv, ok
+}
+
 // Option is able to apply custom options to the bindnode API
 type Option func(config)
 
