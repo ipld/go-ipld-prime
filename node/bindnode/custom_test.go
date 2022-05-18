@@ -331,6 +331,7 @@ type AnyExtend struct {
 	Link         AnyCborEncoded
 	Map          AnyCborEncoded
 	List         AnyCborEncoded
+	BoolPtr      *BoolSubst // included to test that a null entry won't call a non-Any converter
 }
 
 const anyExtendSchema = `
@@ -349,6 +350,7 @@ type AnyExtend struct {
 	Link Any
 	Map Any
 	List Any
+	BoolPtr nullable Bool
 }
 `
 
@@ -448,7 +450,7 @@ func AnyCborEncodedToNode(ptr interface{}) (datamodel.Node, error) {
 	return na.Build(), nil
 }
 
-const anyExtendDagJson = `{"Blob":{"baz":[2,3,4],"foo":"bar"},"Bool":false,"Bytes":{"/":{"bytes":"AgMEBQYHCA"}},"Count":101,"Float":2.34,"Int":123456789,"Link":{"/":"bagyacvra2e6qt2fohajauxceox55t3gedsyqap2phmv7q2qaaaaaaaaaaaaa"},"List":[null,"one","two","three",1,2,3,true],"Map":{"foo":"bar","one":1,"three":3,"two":2},"Name":"Any extend test","Null":null,"NullPtr":null,"NullableWith":123456789,"String":"this is a string"}`
+const anyExtendDagJson = `{"Blob":{"baz":[2,3,4],"foo":"bar"},"Bool":false,"BoolPtr":null,"Bytes":{"/":{"bytes":"AgMEBQYHCA"}},"Count":101,"Float":2.34,"Int":123456789,"Link":{"/":"bagyacvra2e6qt2fohajauxceox55t3gedsyqap2phmv7q2qaaaaaaaaaaaaa"},"List":[null,"one","two","three",1,2,3,true],"Map":{"foo":"bar","one":1,"three":3,"two":2},"Name":"Any extend test","Null":null,"NullPtr":null,"NullableWith":123456789,"String":"this is a string"}`
 
 var anyExtendFixtureInstance = AnyExtend{
 	Name:         "Any extend test",
@@ -465,12 +467,14 @@ var anyExtendFixtureInstance = AnyExtend{
 	Link:         AnyCborEncoded{mustFromHex("d82a58260001b0015620d13d09e8ae38120a5c4475fbd9ecc41cb1003f4f3b2bf86a0000000000000000")}, // dag-cbor encoded CID bagyacvra2e6qt2fohajauxceox55t3gedsyqap2phmv7q2qaaaaaaaaaaaaa
 	Map:          AnyCborEncoded{mustFromHex("a463666f6f63626172636f6e65016374776f0265746872656503")},                                 // cbor encoded form of {"one":1,"two":2,"three":3,"foo":"bar"}
 	List:         AnyCborEncoded{mustFromHex("88f6636f6e656374776f657468726565010203f5")},                                             // cbor encoded form of [null,'one','two','three',1,2,3,true]
+	BoolPtr:      nil,
 }
 
 func TestCustomAny(t *testing.T) {
 	opts := []bindnode.Option{
 		bindnode.AddCustomTypeAnyConverter(&AnyExtendBlob{}, AnyExtendBlobFromNode, AnyExtendBlobToNode),
 		bindnode.AddCustomTypeAnyConverter(&AnyCborEncoded{}, AnyCborEncodedFromNode, AnyCborEncodedToNode),
+		bindnode.AddCustomTypeBoolConverter(BoolSubst(0), BoolSubstFromBool, BoolToBoolSubst),
 	}
 
 	typeSystem, err := ipld.LoadSchemaBytes([]byte(anyExtendSchema))
