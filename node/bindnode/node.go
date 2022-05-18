@@ -702,13 +702,6 @@ func (w *_assembler) BeginList(sizeHint int64) (datamodel.ListAssembler, error) 
 }
 
 func (w *_assembler) AssignNull() error {
-	if !w.nullable {
-		return datamodel.ErrWrongKind{
-			TypeName:   w.schemaType.Name(),
-			MethodName: "AssignNull",
-			// TODO
-		}
-	}
 	if customConverter, ok := w.cfg.converterFor(w.val); ok {
 		typ, err := customConverter.customFromAny(datamodel.Null)
 		if err != nil {
@@ -716,6 +709,13 @@ func (w *_assembler) AssignNull() error {
 		}
 		w.createNonPtrVal().Set(matchSettable(typ, w.val))
 	} else {
+		if !w.nullable {
+			return datamodel.ErrWrongKind{
+				TypeName:   w.schemaType.Name(),
+				MethodName: "AssignNull",
+				// TODO
+			}
+		}
 		w.val.Set(reflect.Zero(w.val.Type()))
 	}
 	if w.finish != nil {
@@ -1308,6 +1308,16 @@ func (w *_structIterator) Next() (key, value datamodel.Node, _ error) {
 			val = val.Elem()
 		}
 	}
+	_, isAny := field.Type().(*schema.TypeAny)
+	if isAny {
+		if customConverter, ok := w.cfg.converterFor(val); ok {
+			v, err := customConverter.customToAny(ptrVal(val).Interface())
+			if err != nil {
+				return nil, nil, err
+			}
+			return key, v, nil
+		}
+	}
 	if field.IsNullable() {
 		if val.IsNil() {
 			return key, datamodel.Null, nil
@@ -1316,14 +1326,7 @@ func (w *_structIterator) Next() (key, value datamodel.Node, _ error) {
 			val = val.Elem()
 		}
 	}
-	if _, ok := field.Type().(*schema.TypeAny); ok {
-		if customConverter, ok := w.cfg.converterFor(val); ok {
-			v, err := customConverter.customToAny(ptrVal(val).Interface())
-			if err != nil {
-				return nil, nil, err
-			}
-			return key, v, nil
-		}
+	if isAny {
 		return key, nonPtrVal(val).Interface().(datamodel.Node), nil
 	}
 	node := &_node{
