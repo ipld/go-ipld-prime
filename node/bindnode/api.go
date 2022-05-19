@@ -145,20 +145,20 @@ type converter struct {
 
 type config map[reflect.Type]*converter
 
+// this mainly exists to short-circuit the nonPtrType() call; the `Type()` variant
+// exists for completeness
 func (c config) converterFor(val reflect.Value) *converter {
 	if len(c) == 0 {
 		return nil
 	}
-	conv, _ := c[nonPtrType(val)]
-	return conv
+	return c[nonPtrType(val)]
 }
 
 func (c config) converterForType(typ reflect.Type) *converter {
 	if len(c) == 0 {
 		return nil
 	}
-	conv, _ := c[typ]
-	return conv
+	return c[typ]
 }
 
 // Option is able to apply custom options to the bindnode API
