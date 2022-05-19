@@ -279,13 +279,13 @@ var boomFixtureInstance = Boom{
 
 func TestCustom(t *testing.T) {
 	opts := []bindnode.Option{
-		bindnode.AddCustomTypeBytesConverter(&Boop{}, BoopFromBytes, BoopToBytes),
-		bindnode.AddCustomTypeBytesConverter(&Frop{}, FropFromBytes, FropToBytes),
-		bindnode.AddCustomTypeBoolConverter(BoolSubst(0), BoolSubstFromBool, BoolToBoolSubst),
-		bindnode.AddCustomTypeIntConverter(IntSubst(""), IntSubstFromInt, IntToIntSubst),
-		bindnode.AddCustomTypeFloatConverter(&BigFloat{}, BigFloatFromFloat, FloatFromBigFloat),
-		bindnode.AddCustomTypeStringConverter(&ByteArray{}, ByteArrayFromString, StringFromByteArray),
-		bindnode.AddCustomTypeLinkConverter(BtcId(""), FromCidToBtcId, FromBtcIdToCid),
+		bindnode.TypedBytesConverter(&Boop{}, BoopFromBytes, BoopToBytes),
+		bindnode.TypedBytesConverter(&Frop{}, FropFromBytes, FropToBytes),
+		bindnode.TypedBoolConverter(BoolSubst(0), BoolSubstFromBool, BoolToBoolSubst),
+		bindnode.TypedIntConverter(IntSubst(""), IntSubstFromInt, IntToIntSubst),
+		bindnode.TypedFloatConverter(&BigFloat{}, BigFloatFromFloat, FloatFromBigFloat),
+		bindnode.TypedStringConverter(&ByteArray{}, ByteArrayFromString, StringFromByteArray),
+		bindnode.TypedLinkConverter(BtcId(""), FromCidToBtcId, FromBtcIdToCid),
 	}
 
 	typeSystem, err := ipld.LoadSchemaBytes([]byte(boomSchema))
@@ -472,9 +472,9 @@ var anyExtendFixtureInstance = AnyExtend{
 
 func TestCustomAny(t *testing.T) {
 	opts := []bindnode.Option{
-		bindnode.AddCustomTypeAnyConverter(&AnyExtendBlob{}, AnyExtendBlobFromNode, AnyExtendBlobToNode),
-		bindnode.AddCustomTypeAnyConverter(&AnyCborEncoded{}, AnyCborEncodedFromNode, AnyCborEncodedToNode),
-		bindnode.AddCustomTypeBoolConverter(BoolSubst(0), BoolSubstFromBool, BoolToBoolSubst),
+		bindnode.TypedAnyConverter(&AnyExtendBlob{}, AnyExtendBlobFromNode, AnyExtendBlobToNode),
+		bindnode.TypedAnyConverter(&AnyCborEncoded{}, AnyCborEncodedFromNode, AnyCborEncodedToNode),
+		bindnode.TypedBoolConverter(BoolSubst(0), BoolSubstFromBool, BoolToBoolSubst),
 	}
 
 	typeSystem, err := ipld.LoadSchemaBytes([]byte(anyExtendSchema))

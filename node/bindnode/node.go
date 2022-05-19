@@ -432,7 +432,7 @@ func (w *_node) AsBool() (bool, error) {
 	if err := compatibleKind(w.schemaType, datamodel.Kind_Bool); err != nil {
 		return false, err
 	}
-	if customConverter, ok := w.cfg.converterFor(w.val); ok {
+	if customConverter := w.cfg.converterFor(w.val); customConverter != nil {
 		return customConverter.customToBool(ptrVal(w.val).Interface())
 	}
 	return nonPtrVal(w.val).Bool(), nil
@@ -442,7 +442,7 @@ func (w *_node) AsInt() (int64, error) {
 	if err := compatibleKind(w.schemaType, datamodel.Kind_Int); err != nil {
 		return 0, err
 	}
-	if customConverter, ok := w.cfg.converterFor(w.val); ok {
+	if customConverter := w.cfg.converterFor(w.val); customConverter != nil {
 		return customConverter.customToInt(ptrVal(w.val).Interface())
 	}
 	val := nonPtrVal(w.val)
@@ -457,7 +457,7 @@ func (w *_node) AsFloat() (float64, error) {
 	if err := compatibleKind(w.schemaType, datamodel.Kind_Float); err != nil {
 		return 0, err
 	}
-	if customConverter, ok := w.cfg.converterFor(w.val); ok {
+	if customConverter := w.cfg.converterFor(w.val); customConverter != nil {
 		return customConverter.customToFloat(ptrVal(w.val).Interface())
 	}
 	return nonPtrVal(w.val).Float(), nil
@@ -467,7 +467,7 @@ func (w *_node) AsString() (string, error) {
 	if err := compatibleKind(w.schemaType, datamodel.Kind_String); err != nil {
 		return "", err
 	}
-	if customConverter, ok := w.cfg.converterFor(w.val); ok {
+	if customConverter := w.cfg.converterFor(w.val); customConverter != nil {
 		return customConverter.customToString(ptrVal(w.val).Interface())
 	}
 	return nonPtrVal(w.val).String(), nil
@@ -477,7 +477,7 @@ func (w *_node) AsBytes() ([]byte, error) {
 	if err := compatibleKind(w.schemaType, datamodel.Kind_Bytes); err != nil {
 		return nil, err
 	}
-	if customConverter, ok := w.cfg.converterFor(w.val); ok {
+	if customConverter := w.cfg.converterFor(w.val); customConverter != nil {
 		return customConverter.customToBytes(ptrVal(w.val).Interface())
 	}
 	return nonPtrVal(w.val).Bytes(), nil
@@ -487,7 +487,7 @@ func (w *_node) AsLink() (datamodel.Link, error) {
 	if err := compatibleKind(w.schemaType, datamodel.Kind_Link); err != nil {
 		return nil, err
 	}
-	if customConverter, ok := w.cfg.converterFor(w.val); ok {
+	if customConverter := w.cfg.converterFor(w.val); customConverter != nil {
 		cid, err := customConverter.customToLink(ptrVal(w.val).Interface())
 		if err != nil {
 			return nil, err
@@ -595,11 +595,8 @@ func (w *_assembler) BeginMap(sizeHint int64) (datamodel.MapAssembler, error) {
 		if err != nil {
 			return nil, err
 		}
-		var conv *converter = nil
-		if customConverter, ok := w.cfg.converterFor(w.val); ok {
-			conv = &customConverter
-		}
-		return &basicMapAssembler{MapAssembler: mapAsm, builder: basicBuilder, parent: w, converter: conv}, nil
+		converter := w.cfg.converterFor(w.val)
+		return &basicMapAssembler{MapAssembler: mapAsm, builder: basicBuilder, parent: w, converter: converter}, nil
 	case *schema.TypeStruct:
 		val := w.createNonPtrVal()
 		doneFields := make([]bool, val.NumField())
@@ -679,11 +676,8 @@ func (w *_assembler) BeginList(sizeHint int64) (datamodel.ListAssembler, error) 
 		if err != nil {
 			return nil, err
 		}
-		var conv *converter = nil
-		if customConverter, ok := w.cfg.converterFor(w.val); ok {
-			conv = &customConverter
-		}
-		return &basicListAssembler{ListAssembler: listAsm, builder: basicBuilder, parent: w, converter: conv}, nil
+		converter := w.cfg.converterFor(w.val)
+		return &basicListAssembler{ListAssembler: listAsm, builder: basicBuilder, parent: w, converter: converter}, nil
 	case *schema.TypeList:
 		val := w.createNonPtrVal()
 		return &_listAssembler{
@@ -703,7 +697,7 @@ func (w *_assembler) BeginList(sizeHint int64) (datamodel.ListAssembler, error) 
 
 func (w *_assembler) AssignNull() error {
 	_, isAny := w.schemaType.(*schema.TypeAny)
-	if customConverter, ok := w.cfg.converterFor(w.val); ok && isAny {
+	if customConverter := w.cfg.converterFor(w.val); customConverter != nil && isAny {
 		typ, err := customConverter.customFromAny(datamodel.Null)
 		if err != nil {
 			return err
@@ -731,9 +725,9 @@ func (w *_assembler) AssignBool(b bool) error {
 	if err := compatibleKind(w.schemaType, datamodel.Kind_Bool); err != nil {
 		return err
 	}
-	customConverter, hasCustomConverter := w.cfg.converterFor(w.val)
+	customConverter := w.cfg.converterFor(w.val)
 	_, isAny := w.schemaType.(*schema.TypeAny)
-	if hasCustomConverter {
+	if customConverter != nil {
 		var typ interface{}
 		var err error
 		if isAny {
@@ -766,9 +760,9 @@ func (w *_assembler) AssignInt(i int64) error {
 		return err
 	}
 	// TODO: check for overflow
-	customConverter, hasCustomConverter := w.cfg.converterFor(w.val)
+	customConverter := w.cfg.converterFor(w.val)
 	_, isAny := w.schemaType.(*schema.TypeAny)
-	if hasCustomConverter {
+	if customConverter != nil {
 		var typ interface{}
 		var err error
 		if isAny {
@@ -806,9 +800,9 @@ func (w *_assembler) AssignFloat(f float64) error {
 	if err := compatibleKind(w.schemaType, datamodel.Kind_Float); err != nil {
 		return err
 	}
-	customConverter, hasCustomConverter := w.cfg.converterFor(w.val)
+	customConverter := w.cfg.converterFor(w.val)
 	_, isAny := w.schemaType.(*schema.TypeAny)
-	if hasCustomConverter {
+	if customConverter != nil {
 		var typ interface{}
 		var err error
 		if isAny {
@@ -840,9 +834,9 @@ func (w *_assembler) AssignString(s string) error {
 	if err := compatibleKind(w.schemaType, datamodel.Kind_String); err != nil {
 		return err
 	}
-	customConverter, hasCustomConverter := w.cfg.converterFor(w.val)
+	customConverter := w.cfg.converterFor(w.val)
 	_, isAny := w.schemaType.(*schema.TypeAny)
-	if hasCustomConverter {
+	if customConverter != nil {
 		var typ interface{}
 		var err error
 		if isAny {
@@ -874,9 +868,9 @@ func (w *_assembler) AssignBytes(p []byte) error {
 	if err := compatibleKind(w.schemaType, datamodel.Kind_Bytes); err != nil {
 		return err
 	}
-	customConverter, hasCustomConverter := w.cfg.converterFor(w.val)
+	customConverter := w.cfg.converterFor(w.val)
 	_, isAny := w.schemaType.(*schema.TypeAny)
-	if hasCustomConverter {
+	if customConverter != nil {
 		var typ interface{}
 		var err error
 		if isAny {
@@ -908,7 +902,7 @@ func (w *_assembler) AssignLink(link datamodel.Link) error {
 	val := w.createNonPtrVal()
 	// TODO: newVal.Type() panics if link==nil; add a test and fix.
 	if _, ok := w.schemaType.(*schema.TypeAny); ok {
-		if customConverter, ok := w.cfg.converterFor(w.val); ok {
+		if customConverter := w.cfg.converterFor(w.val); customConverter != nil {
 			typ, err := customConverter.customFromAny(basicnode.NewLink(link))
 			if err != nil {
 				return err
@@ -917,7 +911,7 @@ func (w *_assembler) AssignLink(link datamodel.Link) error {
 		} else {
 			val.Set(reflect.ValueOf(basicnode.NewLink(link)))
 		}
-	} else if customConverter, ok := w.cfg.converterFor(w.val); ok {
+	} else if customConverter := w.cfg.converterFor(w.val); customConverter != nil {
 		if cl, ok := link.(cidlink.Link); ok {
 			typ, err := customConverter.customFromLink(cl.Cid)
 			if err != nil {
@@ -1311,7 +1305,7 @@ func (w *_structIterator) Next() (key, value datamodel.Node, _ error) {
 	}
 	_, isAny := field.Type().(*schema.TypeAny)
 	if isAny {
-		if customConverter, ok := w.cfg.converterFor(val); ok {
+		if customConverter := w.cfg.converterFor(val); customConverter != nil {
 			v, err := customConverter.customToAny(ptrVal(val).Interface())
 			if err != nil {
 				return nil, nil, err
