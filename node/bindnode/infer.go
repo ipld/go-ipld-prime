@@ -39,6 +39,11 @@ type seenEntry struct {
 	schemaType schema.Type
 }
 
+// verifyCompatibility is the primary way we check that the schema type(s)
+// matches the Go type(s); so we do this before we can proceed operating on it.
+// verifyCompatibility doesn't return an error, it panics—the errors here are
+// not runtime errors, they're programmer errors because your schema doesn't
+// match your Go type
 func verifyCompatibility(cfg config, seen map[seenEntry]bool, goType reflect.Type, schemaType schema.Type) {
 	// TODO(mvdan): support **T as well?
 	if goType.Kind() == reflect.Ptr {
@@ -278,6 +283,7 @@ const (
 	inferringDone
 )
 
+// inferGoType can build a Go type given a schema
 func inferGoType(typ schema.Type, status map[schema.TypeName]inferredStatus, level int) reflect.Type {
 	if level > maxRecursionLevel {
 		panic(fmt.Sprintf("inferGoType: refusing to recurse past %d levels", maxRecursionLevel))
@@ -407,6 +413,7 @@ func init() {
 // TODO: we should probably avoid re-spawning the same types if the TypeSystem
 // has them, and test that that works as expected
 
+// inferSchema can build a schema from a Go type
 func inferSchema(typ reflect.Type, level int) schema.Type {
 	if level > maxRecursionLevel {
 		panic(fmt.Sprintf("inferSchema: refusing to recurse past %d levels", maxRecursionLevel))
