@@ -171,12 +171,13 @@ type Option func(config)
 // changed in a future release.
 func TypedBoolConverter(ptrVal interface{}, from CustomFromBool, to CustomToBool) Option {
 	customType := nonPtrType(reflect.ValueOf(ptrVal))
+	converter := &converter{
+		kind:           schema.TypeKind_Bool,
+		customFromBool: from,
+		customToBool:   to,
+	}
 	return func(cfg config) {
-		cfg[customType] = &converter{
-			kind:           schema.TypeKind_Bool,
-			customFromBool: from,
-			customToBool:   to,
-		}
+		cfg[customType] = converter
 	}
 }
 
@@ -190,12 +191,13 @@ func TypedBoolConverter(ptrVal interface{}, from CustomFromBool, to CustomToBool
 // changed in a future release.
 func TypedIntConverter(ptrVal interface{}, from CustomFromInt, to CustomToInt) Option {
 	customType := nonPtrType(reflect.ValueOf(ptrVal))
+	converter := &converter{
+		kind:          schema.TypeKind_Int,
+		customFromInt: from,
+		customToInt:   to,
+	}
 	return func(cfg config) {
-		cfg[customType] = &converter{
-			kind:          schema.TypeKind_Int,
-			customFromInt: from,
-			customToInt:   to,
-		}
+		cfg[customType] = converter
 	}
 }
 
@@ -209,12 +211,13 @@ func TypedIntConverter(ptrVal interface{}, from CustomFromInt, to CustomToInt) O
 // changed in a future release.
 func TypedFloatConverter(ptrVal interface{}, from CustomFromFloat, to CustomToFloat) Option {
 	customType := nonPtrType(reflect.ValueOf(ptrVal))
+	converter := &converter{
+		kind:            schema.TypeKind_Float,
+		customFromFloat: from,
+		customToFloat:   to,
+	}
 	return func(cfg config) {
-		cfg[customType] = &converter{
-			kind:            schema.TypeKind_Float,
-			customFromFloat: from,
-			customToFloat:   to,
-		}
+		cfg[customType] = converter
 	}
 }
 
@@ -228,12 +231,13 @@ func TypedFloatConverter(ptrVal interface{}, from CustomFromFloat, to CustomToFl
 // changed in a future release.
 func TypedStringConverter(ptrVal interface{}, from CustomFromString, to CustomToString) Option {
 	customType := nonPtrType(reflect.ValueOf(ptrVal))
+	converter := &converter{
+		kind:             schema.TypeKind_String,
+		customFromString: from,
+		customToString:   to,
+	}
 	return func(cfg config) {
-		cfg[customType] = &converter{
-			kind:             schema.TypeKind_String,
-			customFromString: from,
-			customToString:   to,
-		}
+		cfg[customType] = converter
 	}
 }
 
@@ -247,12 +251,13 @@ func TypedStringConverter(ptrVal interface{}, from CustomFromString, to CustomTo
 // changed in a future release.
 func TypedBytesConverter(ptrVal interface{}, from CustomFromBytes, to CustomToBytes) Option {
 	customType := nonPtrType(reflect.ValueOf(ptrVal))
+	converter := &converter{
+		kind:            schema.TypeKind_Bytes,
+		customFromBytes: from,
+		customToBytes:   to,
+	}
 	return func(cfg config) {
-		cfg[customType] = &converter{
-			kind:            schema.TypeKind_Bytes,
-			customFromBytes: from,
-			customToBytes:   to,
-		}
+		cfg[customType] = converter
 	}
 }
 
@@ -270,12 +275,13 @@ func TypedBytesConverter(ptrVal interface{}, from CustomFromBytes, to CustomToBy
 // changed in a future release.
 func TypedLinkConverter(ptrVal interface{}, from CustomFromLink, to CustomToLink) Option {
 	customType := nonPtrType(reflect.ValueOf(ptrVal))
+	converter := &converter{
+		kind:           schema.TypeKind_Link,
+		customFromLink: from,
+		customToLink:   to,
+	}
 	return func(cfg config) {
-		cfg[customType] = &converter{
-			kind:           schema.TypeKind_Link,
-			customFromLink: from,
-			customToLink:   to,
-		}
+		cfg[customType] = converter
 	}
 }
 
@@ -292,16 +298,22 @@ func TypedLinkConverter(ptrVal interface{}, from CustomFromLink, to CustomToLink
 // changed in a future release.
 func TypedAnyConverter(ptrVal interface{}, from CustomFromAny, to CustomToAny) Option {
 	customType := nonPtrType(reflect.ValueOf(ptrVal))
+	converter := &converter{
+		kind:          schema.TypeKind_Any,
+		customFromAny: from,
+		customToAny:   to,
+	}
 	return func(cfg config) {
-		cfg[customType] = &converter{
-			kind:          schema.TypeKind_Any,
-			customFromAny: from,
-			customToAny:   to,
-		}
+		cfg[customType] = converter
 	}
 }
 
 func applyOptions(opt ...Option) config {
+	if len(opt) == 0 {
+		// no need to allocate, we access it via converterFor and converterForType
+		// which are safe for nil maps
+		return nil
+	}
 	cfg := make(map[reflect.Type]*converter)
 	for _, o := range opt {
 		o(cfg)
@@ -334,6 +346,11 @@ func Wrap(ptrVal interface{}, schemaType schema.Type, options ...Option) schema.
 	if schemaType == nil {
 		schemaType = inferSchema(goVal.Type(), 0)
 	} else {
+		// TODO(rvagg): explore ways to make this skippable by caching in the schema.Type
+		// passed in to this function; e.g. if you call Prototype(), then you've gone through
+		// this already, then calling .Type() on that could return a bindnode version of
+		// schema.Type that has the config cached and can be assumed to have been checked or
+		// inferred.
 		verifyCompatibility(cfg, make(map[seenEntry]bool), goVal.Type(), schemaType)
 	}
 	return &_node{cfg: cfg, val: goVal, schemaType: schemaType}
