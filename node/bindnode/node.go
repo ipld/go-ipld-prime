@@ -188,6 +188,9 @@ func (w *_node) LookupByString(key string) (datamodel.Node, error) {
 			}
 		}
 		if _, ok := field.Type().(*schema.TypeAny); ok {
+			if customConverter := w.cfg.converterFor(fval); customConverter != nil {
+				return customConverter.customToAny(ptrVal(fval).Interface())
+			}
 			return nonPtrVal(fval).Interface().(datamodel.Node), nil
 		}
 		node := &_node{
@@ -228,6 +231,9 @@ func (w *_node) LookupByString(key string) (datamodel.Node, error) {
 			fval = fval.Elem()
 		}
 		if _, ok := typ.ValueType().(*schema.TypeAny); ok {
+			if customConverter := w.cfg.converterFor(fval); customConverter != nil {
+				return customConverter.customToAny(ptrVal(fval).Interface())
+			}
 			return nonPtrVal(fval).Interface().(datamodel.Node), nil
 		}
 		node := &_node{
@@ -310,6 +316,9 @@ func (w *_node) LookupByIndex(idx int64) (datamodel.Node, error) {
 			val = val.Elem()
 		}
 		if _, ok := typ.ValueType().(*schema.TypeAny); ok {
+			if customConverter := w.cfg.converterFor(val); customConverter != nil {
+				return customConverter.customToAny(ptrVal(val).Interface())
+			}
 			return nonPtrVal(val).Interface().(datamodel.Node), nil
 		}
 		return &_node{cfg: w.cfg, schemaType: typ.ValueType(), val: val}, nil
@@ -1306,6 +1315,7 @@ func (w *_structIterator) Next() (key, value datamodel.Node, _ error) {
 	_, isAny := field.Type().(*schema.TypeAny)
 	if isAny {
 		if customConverter := w.cfg.converterFor(val); customConverter != nil {
+			fmt.Printf("ptrVal of %v : %v : %v\n", val, val.Kind(), val.Type())
 			v, err := customConverter.customToAny(ptrVal(val).Interface())
 			if err != nil {
 				return nil, nil, err
@@ -1357,13 +1367,23 @@ func (w *_mapIterator) Next() (key, value datamodel.Node, _ error) {
 		schemaType: w.schemaType.KeyType(),
 		val:        goKey,
 	}
+	_, isAny := w.schemaType.ValueType().(*schema.TypeAny)
+	if isAny {
+		if customConverter := w.cfg.converterFor(val); customConverter != nil {
+			// TODO(rvagg): can't call ptrVal on a map value that's not a pointer
+			// so only map[string]*foo will work for the Values map and an Any
+			// converter. Should we check in infer.go?
+			val, err := customConverter.customToAny(ptrVal(val).Interface())
+			return key, val, err
+		}
+	}
 	if w.schemaType.ValueIsNullable() {
 		if val.IsNil() {
 			return key, datamodel.Null, nil
 		}
 		val = val.Elem()
 	}
-	if _, ok := w.schemaType.ValueType().(*schema.TypeAny); ok {
+	if isAny {
 		return key, nonPtrVal(val).Interface().(datamodel.Node), nil
 	}
 	node := &_node{
@@ -1399,6 +1419,10 @@ func (w *_listIterator) Next() (index int64, value datamodel.Node, _ error) {
 		val = val.Elem()
 	}
 	if _, ok := w.schemaType.ValueType().(*schema.TypeAny); ok {
+		if customConverter := w.cfg.converterFor(val); customConverter != nil {
+			val, err := customConverter.customToAny(ptrVal(val).Interface())
+			return idx, val, err
+		}
 		return idx, nonPtrVal(val).Interface().(datamodel.Node), nil
 	}
 	return idx, &_node{cfg: w.cfg, schemaType: w.schemaType.ValueType(), val: val}, nil
