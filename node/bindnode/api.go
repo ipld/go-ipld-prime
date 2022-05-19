@@ -57,87 +57,29 @@ func Prototype(ptrType interface{}, schemaType schema.Type, options ...Option) s
 	return &_prototype{cfg: cfg, schemaType: schemaType, goType: goType}
 }
 
-// scalar kinds excluding Null
-
-// CustomFromBool is a custom converter function that takes a bool and returns a
-// custom type
-type CustomFromBool func(bool) (interface{}, error)
-
-// CustomToBool is a custom converter function that takes a custom type and
-// returns a bool
-type CustomToBool func(interface{}) (bool, error)
-
-// CustomFromInt is a custom converter function that takes an int and returns a
-// custom type
-type CustomFromInt func(int64) (interface{}, error)
-
-// CustomToInt is a custom converter function that takes a custom type and
-// returns an int
-type CustomToInt func(interface{}) (int64, error)
-
-// CustomFromFloat is a custom converter function that takes a float and returns
-// a custom type
-type CustomFromFloat func(float64) (interface{}, error)
-
-// CustomToFloat is a custom converter function that takes a custom type and
-// returns a float
-type CustomToFloat func(interface{}) (float64, error)
-
-// CustomFromString is a custom converter function that takes a string and
-// returns custom type
-type CustomFromString func(string) (interface{}, error)
-
-// CustomToString is a custom converter function that takes a custom type and
-// returns a string
-type CustomToString func(interface{}) (string, error)
-
-// CustomFromBytes is a custom converter function that takes a byte slice and
-// returns a custom type
-type CustomFromBytes func([]byte) (interface{}, error)
-
-// CustomToBytes is a custom converter function that takes a custom type and
-// returns a byte slice
-type CustomToBytes func(interface{}) ([]byte, error)
-
-// CustomFromLink is a custom converter function that takes a cid.Cid and
-// returns a custom type
-type CustomFromLink func(cid.Cid) (interface{}, error)
-
-// CustomToLink is a custom converter function that takes a custom type and
-// returns a cid.Cid
-type CustomToLink func(interface{}) (cid.Cid, error)
-
-// CustomFromAny is a custom converter function that takes a datamodel.Node and
-// returns a custom type
-type CustomFromAny func(datamodel.Node) (interface{}, error)
-
-// CustomToAny is a custom converter function that takes a custom type and
-// returns a datamodel.Node
-type CustomToAny func(interface{}) (datamodel.Node, error)
-
 type converter struct {
 	kind schema.TypeKind
 
-	customFromBool CustomFromBool
-	customToBool   CustomToBool
+	customFromBool func(bool) (interface{}, error)
+	customToBool   func(interface{}) (bool, error)
 
-	customFromInt CustomFromInt
-	customToInt   CustomToInt
+	customFromInt func(int64) (interface{}, error)
+	customToInt   func(interface{}) (int64, error)
 
-	customFromFloat CustomFromFloat
-	customToFloat   CustomToFloat
+	customFromFloat func(float64) (interface{}, error)
+	customToFloat   func(interface{}) (float64, error)
 
-	customFromString CustomFromString
-	customToString   CustomToString
+	customFromString func(string) (interface{}, error)
+	customToString   func(interface{}) (string, error)
 
-	customFromBytes CustomFromBytes
-	customToBytes   CustomToBytes
+	customFromBytes func([]byte) (interface{}, error)
+	customToBytes   func(interface{}) ([]byte, error)
 
-	customFromLink CustomFromLink
-	customToLink   CustomToLink
+	customFromLink func(cid.Cid) (interface{}, error)
+	customToLink   func(interface{}) (cid.Cid, error)
 
-	customFromAny CustomFromAny
-	customToAny   CustomToAny
+	customFromAny func(datamodel.Node) (interface{}, error)
+	customToAny   func(interface{}) (datamodel.Node, error)
 }
 
 type config map[reflect.Type]*converter
@@ -169,7 +111,7 @@ type Option func(config)
 //
 // TypedBoolConverter is an EXPERIMENTAL API and may be removed or
 // changed in a future release.
-func TypedBoolConverter(ptrVal interface{}, from CustomFromBool, to CustomToBool) Option {
+func TypedBoolConverter(ptrVal interface{}, from func(bool) (interface{}, error), to func(interface{}) (bool, error)) Option {
 	customType := nonPtrType(reflect.ValueOf(ptrVal))
 	converter := &converter{
 		kind:           schema.TypeKind_Bool,
@@ -189,7 +131,7 @@ func TypedBoolConverter(ptrVal interface{}, from CustomFromBool, to CustomToBool
 //
 // TypedIntConverter is an EXPERIMENTAL API and may be removed or
 // changed in a future release.
-func TypedIntConverter(ptrVal interface{}, from CustomFromInt, to CustomToInt) Option {
+func TypedIntConverter(ptrVal interface{}, from func(int64) (interface{}, error), to func(interface{}) (int64, error)) Option {
 	customType := nonPtrType(reflect.ValueOf(ptrVal))
 	converter := &converter{
 		kind:          schema.TypeKind_Int,
@@ -209,7 +151,7 @@ func TypedIntConverter(ptrVal interface{}, from CustomFromInt, to CustomToInt) O
 //
 // TypedFloatConverter is an EXPERIMENTAL API and may be removed or
 // changed in a future release.
-func TypedFloatConverter(ptrVal interface{}, from CustomFromFloat, to CustomToFloat) Option {
+func TypedFloatConverter(ptrVal interface{}, from func(float64) (interface{}, error), to func(interface{}) (float64, error)) Option {
 	customType := nonPtrType(reflect.ValueOf(ptrVal))
 	converter := &converter{
 		kind:            schema.TypeKind_Float,
@@ -229,7 +171,7 @@ func TypedFloatConverter(ptrVal interface{}, from CustomFromFloat, to CustomToFl
 //
 // TypedStringConverter is an EXPERIMENTAL API and may be removed or
 // changed in a future release.
-func TypedStringConverter(ptrVal interface{}, from CustomFromString, to CustomToString) Option {
+func TypedStringConverter(ptrVal interface{}, from func(string) (interface{}, error), to func(interface{}) (string, error)) Option {
 	customType := nonPtrType(reflect.ValueOf(ptrVal))
 	converter := &converter{
 		kind:             schema.TypeKind_String,
@@ -249,7 +191,7 @@ func TypedStringConverter(ptrVal interface{}, from CustomFromString, to CustomTo
 //
 // TypedBytesConverter is an EXPERIMENTAL API and may be removed or
 // changed in a future release.
-func TypedBytesConverter(ptrVal interface{}, from CustomFromBytes, to CustomToBytes) Option {
+func TypedBytesConverter(ptrVal interface{}, from func([]byte) (interface{}, error), to func(interface{}) ([]byte, error)) Option {
 	customType := nonPtrType(reflect.ValueOf(ptrVal))
 	converter := &converter{
 		kind:            schema.TypeKind_Bytes,
@@ -273,7 +215,7 @@ func TypedBytesConverter(ptrVal interface{}, from CustomFromBytes, to CustomToBy
 //
 // TypedLinkConverter is an EXPERIMENTAL API and may be removed or
 // changed in a future release.
-func TypedLinkConverter(ptrVal interface{}, from CustomFromLink, to CustomToLink) Option {
+func TypedLinkConverter(ptrVal interface{}, from func(cid.Cid) (interface{}, error), to func(interface{}) (cid.Cid, error)) Option {
 	customType := nonPtrType(reflect.ValueOf(ptrVal))
 	converter := &converter{
 		kind:           schema.TypeKind_Link,
@@ -296,7 +238,7 @@ func TypedLinkConverter(ptrVal interface{}, from CustomFromLink, to CustomToLink
 //
 // TypedAnyConverter is an EXPERIMENTAL API and may be removed or
 // changed in a future release.
-func TypedAnyConverter(ptrVal interface{}, from CustomFromAny, to CustomToAny) Option {
+func TypedAnyConverter(ptrVal interface{}, from func(datamodel.Node) (interface{}, error), to func(interface{}) (datamodel.Node, error)) Option {
 	customType := nonPtrType(reflect.ValueOf(ptrVal))
 	converter := &converter{
 		kind:          schema.TypeKind_Any,
