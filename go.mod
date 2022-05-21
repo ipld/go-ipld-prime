@@ -4,7 +4,7 @@ go 1.17
 
 require (
 	github.com/frankban/quicktest v1.14.3
-	github.com/google/go-cmp v0.5.7
+	github.com/google/go-cmp v0.5.8
 	github.com/ipfs/go-cid v0.0.4
 	github.com/multiformats/go-multicodec v0.3.0
 	github.com/multiformats/go-multihash v0.1.0
@@ -29,6 +29,5 @@ require (
 	github.com/warpfork/go-wish v0.0.0-20200122115046-b9ea61034e4a // indirect
 	golang.org/x/crypto v0.0.0-20210220033148-5ea612d1eb83 // indirect
 	golang.org/x/sys v0.0.0-20210309074719-68d13333faf2 // indirect
-	golang.org/x/xerrors v0.0.0-20191204190536-9bdfabe68543 // indirect
 	lukechampine.com/blake3 v1.1.6 // indirect
 )
