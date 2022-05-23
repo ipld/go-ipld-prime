@@ -43,6 +43,9 @@ func Prototype(ptrType interface{}, schemaType schema.Type) schema.TypedPrototyp
 			panic("bindnode: ptrType must be a pointer")
 		}
 		goType = goPtrType.Elem()
+		if goType.Kind() == reflect.Ptr {
+			panic("bindnode: ptrType must not be a pointer to a pointer")
+		}
 
 		if schemaType == nil {
 			schemaType = inferSchema(goType, 0)
@@ -75,6 +78,9 @@ func Wrap(ptrVal interface{}, schemaType schema.Type) schema.TypedNode {
 		panic("bindnode: ptrVal must not be nil")
 	}
 	goVal := goPtrVal.Elem()
+	if goVal.Kind() == reflect.Ptr {
+		panic("bindnode: ptrVal must not be a pointer to a pointer")
+	}
 	if schemaType == nil {
 		schemaType = inferSchema(goVal.Type(), 0)
 	} else {
