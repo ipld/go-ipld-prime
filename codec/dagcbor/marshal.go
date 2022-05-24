@@ -144,6 +144,9 @@ func marshal(n datamodel.Node, tk *tok.Token, sink shared.TokenSink, options Enc
 		}
 		switch lnk := v.(type) {
 		case cidlink.Link:
+			if !lnk.Cid.Defined() {
+				return fmt.Errorf("encoding undefined CIDs are not supported by this codec")
+			}
 			tk.Type = tok.TBytes
 			tk.Bytes = append([]byte{0}, lnk.Bytes()...)
 			tk.Tagged = true
