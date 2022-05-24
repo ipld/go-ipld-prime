@@ -301,7 +301,7 @@ func Wrap(ptrVal interface{}, schemaType schema.Type, options ...Option) schema.
 		// inferred.
 		verifyCompatibility(cfg, make(map[seenEntry]bool), goVal.Type(), schemaType)
 	}
-	return &_node{cfg: cfg, val: goVal, schemaType: schemaType}
+	return newNode(cfg, schemaType, goVal)
 }
 
 // TODO: consider making our own Node interface, like:
