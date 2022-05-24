@@ -25,6 +25,9 @@ var (
 	_ schema.TypedNode = (*_node)(nil)
 	_ datamodel.Node   = (*_nodeRepr)(nil)
 
+	_ datamodel.Node   = (*typedUint)(nil)
+	_ schema.TypedNode = (*typedUint)(nil)
+
 	_ datamodel.NodeBuilder   = (*_builder)(nil)
 	_ datamodel.NodeBuilder   = (*_builderRepr)(nil)
 	_ datamodel.NodeAssembler = (*_assembler)(nil)
@@ -79,6 +82,32 @@ type _node struct {
 // type _typedNode struct {
 // 	_node
 // }
+
+type typedUint struct {
+	datamodel.Node
+	schemaType schema.Type
+}
+
+func (tu typedUint) Type() schema.Type {
+	return tu.schemaType
+}
+
+func (tu typedUint) Representation() datamodel.Node {
+	return tu.Node
+}
+
+func newNode(cfg config, schemaType schema.Type, val reflect.Value) schema.TypedNode {
+	if schemaType.TypeKind() == schema.TypeKind_Int {
+		npval := nonPtrVal(val)
+		if kindUint[npval.Kind()] {
+			u := npval.Uint()
+			if u > math.MaxInt64 {
+				return typedUint{basicnode.NewUInt(u, true), schemaType}
+			}
+		}
+	}
+	return &_node{cfg, schemaType, val}
+}
 
 func (w *_node) Type() schema.Type {
 	return w.schemaType
@@ -201,12 +230,7 @@ func (w *_node) LookupByString(key string) (datamodel.Node, error) {
 			// field is an Any, safely assume a Node in fval
 			return nonPtrVal(fval).Interface().(datamodel.Node), nil
 		}
-		node := &_node{
-			cfg:        w.cfg,
-			schemaType: field.Type(),
-			val:        fval,
-		}
-		return node, nil
+		return newNode(w.cfg, field.Type(), fval), nil
 	case *schema.TypeMap:
 		// maps can only be structs with a Values map
 		var kval reflect.Value
@@ -251,12 +275,7 @@ func (w *_node) LookupByString(key string) (datamodel.Node, error) {
 			// value is an Any, safely assume a Node in fval
 			return nonPtrVal(fval).Interface().(datamodel.Node), nil
 		}
-		node := &_node{
-			cfg:        w.cfg,
-			schemaType: typ.ValueType(),
-			val:        fval,
-		}
-		return node, nil
+		return newNode(w.cfg, typ.ValueType(), fval), nil
 	case *schema.TypeUnion:
 		// treat a union similar to a struct, but we have the member names more
 		// easily accessible to match to 'key'
@@ -277,12 +296,7 @@ func (w *_node) LookupByString(key string) (datamodel.Node, error) {
 		if haveIdx != idx { // mismatching type
 			return nil, datamodel.ErrNotExists{Segment: datamodel.PathSegmentOfString(key)}
 		}
-		node := &_node{
-			cfg:        w.cfg,
-			schemaType: mtyp,
-			val:        mval,
-		}
-		return node, nil
+		return newNode(w.cfg, mtyp, mval), nil
 	}
 	return nil, datamodel.ErrWrongKind{
 		TypeName:        w.schemaType.Name(),
@@ -346,7 +360,7 @@ func (w *_node) LookupByIndex(idx int64) (datamodel.Node, error) {
 			// Any always yields a plain datamodel.Node
 			return nonPtrVal(val).Interface().(datamodel.Node), nil
 		}
-		return &_node{cfg: w.cfg, schemaType: typ.ValueType(), val: val}, nil
+		return newNode(w.cfg, typ.ValueType(), val), nil
 	}
 	return nil, datamodel.ErrWrongKind{
 		TypeName:        w.schemaType.Name(),
@@ -566,7 +580,7 @@ type _builder struct {
 
 func (w *_builder) Build() datamodel.Node {
 	// TODO: should we panic if no Assign call was made, just like codegen?
-	return &_node{cfg: w.cfg, schemaType: w.schemaType, val: w.val}
+	return newNode(w.cfg, w.schemaType, w.val)
 }
 
 func (w *_builder) Reset() {
@@ -836,6 +850,38 @@ func (w *_assembler) AssignBool(b bool) error {
 	return nil
 }
 
+func (w *_assembler) assignUInt(uin datamodel.UintNode) error {
+	if err := compatibleKind(w.schemaType, datamodel.Kind_Int); err != nil {
+		return err
+	}
+	_, isAny := w.schemaType.(*schema.TypeAny)
+	// TODO: customConverter for uint??
+	if isAny {
+		// Any means the Go type must receive a datamodel.Node
+		w.createNonPtrVal().Set(reflect.ValueOf(uin))
+	} else {
+		i, pos, err := uin.AsUint()
+		if err != nil {
+			return err
+		}
+		if !pos {
+			return fmt.Errorf("bindnode: cannot handle negative uint64 values")
+		}
+		if kindUint[w.val.Kind()] {
+			w.createNonPtrVal().SetUint(i)
+		} else {
+			// TODO: check for overflow
+			w.createNonPtrVal().SetInt(int64(i))
+		}
+	}
+	if w.finish != nil {
+		if err := w.finish(); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func (w *_assembler) AssignInt(i int64) error {
 	if err := compatibleKind(w.schemaType, datamodel.Kind_Int); err != nil {
 		return err
@@ -1064,6 +1110,9 @@ func (w *_assembler) AssignNode(node datamodel.Node) error {
 	// 	w.val.Set(newVal)
 	// 	return nil
 	// }
+	if uintNode, ok := node.(datamodel.UintNode); ok {
+		return w.assignUInt(uintNode)
+	}
 	return datamodel.Copy(node, w)
 }
 
@@ -1441,12 +1490,7 @@ func (w *_structIterator) Next() (key, value datamodel.Node, _ error) {
 		// field holds a datamodel.Node
 		return key, nonPtrVal(val).Interface().(datamodel.Node), nil
 	}
-	node := &_node{
-		cfg:        w.cfg,
-		schemaType: field.Type(),
-		val:        val,
-	}
-	return key, node, nil
+	return key, newNode(w.cfg, field.Type(), val), nil
 }
 
 func (w *_structIterator) Done() bool {
@@ -1471,11 +1515,7 @@ func (w *_mapIterator) Next() (key, value datamodel.Node, _ error) {
 	val := w.valuesVal.MapIndex(goKey)
 	w.nextIndex++
 
-	key = &_node{
-		cfg:        w.cfg,
-		schemaType: w.schemaType.KeyType(),
-		val:        goKey,
-	}
+	key = newNode(w.cfg, w.schemaType.KeyType(), goKey)
 	_, isAny := w.schemaType.ValueType().(*schema.TypeAny)
 	if isAny {
 		if customConverter := w.cfg.converterFor(val); customConverter != nil {
@@ -1499,12 +1539,7 @@ func (w *_mapIterator) Next() (key, value datamodel.Node, _ error) {
 		// Values holds datamodel.Nodes
 		return key, nonPtrVal(val).Interface().(datamodel.Node), nil
 	}
-	node := &_node{
-		cfg:        w.cfg,
-		schemaType: w.schemaType.ValueType(),
-		val:        val,
-	}
-	return key, node, nil
+	return key, newNode(w.cfg, w.schemaType.ValueType(), val), nil
 }
 
 func (w *_mapIterator) Done() bool {
@@ -1542,7 +1577,7 @@ func (w *_listIterator) Next() (index int64, value datamodel.Node, _ error) {
 		// values are Any, assume that they are datamodel.Nodes
 		return idx, nonPtrVal(val).Interface().(datamodel.Node), nil
 	}
-	return idx, &_node{cfg: w.cfg, schemaType: w.schemaType.ValueType(), val: val}, nil
+	return idx, newNode(w.cfg, w.schemaType.ValueType(), val), nil
 }
 
 func (w *_listIterator) Done() bool {
@@ -1573,11 +1608,7 @@ func (w *_unionIterator) Next() (key, value datamodel.Node, _ error) {
 	}
 	mtyp := w.members[haveIdx]
 
-	node := &_node{
-		cfg:        w.cfg,
-		schemaType: mtyp,
-		val:        mval,
-	}
+	node := newNode(w.cfg, mtyp, mval)
 	key = basicnode.NewString(mtyp.Name())
 	return key, node, nil
 }

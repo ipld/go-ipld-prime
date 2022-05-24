@@ -650,6 +650,24 @@ func (w *_assemblerRepr) AssignBool(b bool) error {
 	}
 }
 
+func (w *_assemblerRepr) assignUInt(uin datamodel.UintNode) error {
+	switch stg := reprStrategy(w.schemaType).(type) {
+	case schema.UnionRepresentation_Kinded:
+		return w.asKinded(stg, datamodel.Kind_Int).(*_assemblerRepr).assignUInt(uin)
+	case schema.EnumRepresentation_Int:
+		uin, pos, err := uin.AsUint()
+		if err != nil {
+			return err
+		}
+		if !pos {
+			return fmt.Errorf("bindnode: cannot handle negative uint64 values")
+		}
+		return fmt.Errorf("AssignInt: %d is not a valid member of enum %s", uin, w.schemaType.Name())
+	default:
+		return (*_assembler)(w).assignUInt(uin)
+	}
+}
+
 func (w *_assemblerRepr) AssignInt(i int64) error {
 	switch stg := reprStrategy(w.schemaType).(type) {
 	case schema.UnionRepresentation_Kinded:
@@ -814,6 +832,9 @@ func (w *_assemblerRepr) AssignLink(link datamodel.Link) error {
 
 func (w *_assemblerRepr) AssignNode(node datamodel.Node) error {
 	// TODO: attempt to take a shortcut, like assembler.AssignNode
+	if uintNode, ok := node.(datamodel.UintNode); ok {
+		return w.assignUInt(uintNode)
+	}
 	return datamodel.Copy(node, w)
 }
 
