@@ -488,6 +488,12 @@ func (w *_nodeRepr) AsString() (string, error) {
 				return s, nil
 			}
 		}
+		for k, v := range stg {
+			// a programming error? we may have the enum string value rather than the type
+			if v == s {
+				return "", fmt.Errorf("AsString: %q is not a valid member of enum %s (bindnode works at the type level; did you mean %q?)", s, w.schemaType.Name(), k)
+			}
+		}
 		return "", fmt.Errorf("AsString: %q is not a valid member of enum %s", s, w.schemaType.Name())
 	default:
 		return (*_node)(w).AsString()
