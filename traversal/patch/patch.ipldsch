@@ -1,0 +1,39 @@
+# Op represents the kind of operation to perfrom
+# The current set is based on the JSON Patch specification
+# We may end up adding more operations in the future
+type Op enum {
+  | add
+  | remove
+  | replace
+  | move
+  | copy
+  | test
+}
+
+# Operation and OperationSequence are the types that describe operations (but not what to apply them on).
+# See the Instruction type for describing both operations and what to apply them on.
+type Operation struct {
+  op Op
+  path String
+  value optional Any
+  from optional String
+}
+
+type OperationSequence [Operation]
+
+type Instruction struct {
+  startAt Link
+  operations OperationSequence
+  # future: optional field for adl signalling and/or other lenses
+}
+
+type InstructionResult union {
+  | Error "error"
+  | Link "result"
+} representation keyed
+
+type Error struct {
+  code String # enum forthcoming
+  message String
+  details {String:String}
+}

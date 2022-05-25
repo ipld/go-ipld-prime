@@ -1,3 +1,10 @@
+// Package patch provides an implementation of the IPLD Patch specification.
+// IPLD Patch is a system for declaratively specifying patches to a document,
+// which can then be applied to produce a new, modified document.
+//
+//
+// This package is EXPERIMENTAL; its behavior and API might change as it's still
+// in development.
 package patch
 
 import (
