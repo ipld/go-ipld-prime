@@ -29,6 +29,8 @@ var (
 	_ datamodel.Node     = (*_uintNode)(nil)
 	_ schema.TypedNode   = (*_uintNode)(nil)
 	_ datamodel.UintNode = (*_uintNode)(nil)
+	_ datamodel.Node     = (*_uintNodeRepr)(nil)
+	_ datamodel.UintNode = (*_uintNodeRepr)(nil)
 
 	_ datamodel.NodeBuilder   = (*_builder)(nil)
 	_ datamodel.NodeBuilder   = (*_builderRepr)(nil)
@@ -1604,6 +1606,8 @@ func (w *_unionIterator) Done() bool {
 	return w.done
 }
 
+// --- uint64 special case handling
+
 type _uintNode struct {
 	cfg        config
 	schemaType schema.Type
@@ -1615,7 +1619,7 @@ func (tu *_uintNode) Type() schema.Type {
 	return tu.schemaType
 }
 func (tu *_uintNode) Representation() datamodel.Node {
-	return tu
+	return (*_uintNodeRepr)(tu)
 }
 func (_uintNode) Kind() datamodel.Kind {
 	return datamodel.Kind_Int
@@ -1651,6 +1655,64 @@ func (_uintNode) AsBool() (bool, error) {
 	return mixins.Int{TypeName: "int"}.AsBool()
 }
 func (tu *_uintNode) AsInt() (int64, error) {
+	return (*_uintNodeRepr)(tu).AsInt()
+}
+func (tu *_uintNode) AsUint() (uint64, error) {
+	return (*_uintNodeRepr)(tu).AsUint()
+}
+func (_uintNode) AsFloat() (float64, error) {
+	return mixins.Int{TypeName: "int"}.AsFloat()
+}
+func (_uintNode) AsString() (string, error) {
+	return mixins.Int{TypeName: "int"}.AsString()
+}
+func (_uintNode) AsBytes() ([]byte, error) {
+	return mixins.Int{TypeName: "int"}.AsBytes()
+}
+func (_uintNode) AsLink() (datamodel.Link, error) {
+	return mixins.Int{TypeName: "int"}.AsLink()
+}
+func (_uintNode) Prototype() datamodel.NodePrototype {
+	return basicnode.Prototype__Int{}
+}
+
+// we need this for _uintNode#Representation() so we don't return a TypeNode
+type _uintNodeRepr _uintNode
+
+func (_uintNodeRepr) Kind() datamodel.Kind {
+	return datamodel.Kind_Int
+}
+func (_uintNodeRepr) LookupByString(string) (datamodel.Node, error) {
+	return mixins.Int{TypeName: "int"}.LookupByString("")
+}
+func (_uintNodeRepr) LookupByNode(key datamodel.Node) (datamodel.Node, error) {
+	return mixins.Int{TypeName: "int"}.LookupByNode(nil)
+}
+func (_uintNodeRepr) LookupByIndex(idx int64) (datamodel.Node, error) {
+	return mixins.Int{TypeName: "int"}.LookupByIndex(0)
+}
+func (_uintNodeRepr) LookupBySegment(seg datamodel.PathSegment) (datamodel.Node, error) {
+	return mixins.Int{TypeName: "int"}.LookupBySegment(seg)
+}
+func (_uintNodeRepr) MapIterator() datamodel.MapIterator {
+	return nil
+}
+func (_uintNodeRepr) ListIterator() datamodel.ListIterator {
+	return nil
+}
+func (_uintNodeRepr) Length() int64 {
+	return -1
+}
+func (_uintNodeRepr) IsAbsent() bool {
+	return false
+}
+func (_uintNodeRepr) IsNull() bool {
+	return false
+}
+func (_uintNodeRepr) AsBool() (bool, error) {
+	return mixins.Int{TypeName: "int"}.AsBool()
+}
+func (tu *_uintNodeRepr) AsInt() (int64, error) {
 	if err := compatibleKind(tu.schemaType, datamodel.Kind_Int); err != nil {
 		return 0, err
 	}
@@ -1666,7 +1728,7 @@ func (tu *_uintNode) AsInt() (int64, error) {
 	}
 	return int64(u), nil
 }
-func (tu *_uintNode) AsUint() (uint64, error) {
+func (tu *_uintNodeRepr) AsUint() (uint64, error) {
 	if err := compatibleKind(tu.schemaType, datamodel.Kind_Int); err != nil {
 		return 0, err
 	}
@@ -1675,18 +1737,18 @@ func (tu *_uintNode) AsUint() (uint64, error) {
 	// we can assume it's a uint64 at this point
 	return nonPtrVal(tu.val).Uint(), nil
 }
-func (_uintNode) AsFloat() (float64, error) {
+func (_uintNodeRepr) AsFloat() (float64, error) {
 	return mixins.Int{TypeName: "int"}.AsFloat()
 }
-func (_uintNode) AsString() (string, error) {
+func (_uintNodeRepr) AsString() (string, error) {
 	return mixins.Int{TypeName: "int"}.AsString()
 }
-func (_uintNode) AsBytes() ([]byte, error) {
+func (_uintNodeRepr) AsBytes() ([]byte, error) {
 	return mixins.Int{TypeName: "int"}.AsBytes()
 }
-func (_uintNode) AsLink() (datamodel.Link, error) {
+func (_uintNodeRepr) AsLink() (datamodel.Link, error) {
 	return mixins.Int{TypeName: "int"}.AsLink()
 }
-func (_uintNode) Prototype() datamodel.NodePrototype {
+func (_uintNodeRepr) Prototype() datamodel.NodePrototype {
 	return basicnode.Prototype__Int{}
 }
