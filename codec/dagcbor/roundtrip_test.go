@@ -135,10 +135,9 @@ func TestInts(t *testing.T) {
 		// get real, underlying value
 		uin, ok := n.(datamodel.UintNode)
 		qt.Assert(t, ok, qt.IsTrue)
-		val, positive, err := uin.AsUint()
+		val, err := uin.AsUint()
 		qt.Assert(t, err, qt.IsNil)
 		qt.Assert(t, val, qt.Equals, uint64(math.MaxUint64))
-		qt.Assert(t, positive, qt.IsTrue)
 
 		var byts bytes.Buffer
 		err = Encode(n, &byts)
@@ -158,13 +157,9 @@ func TestInts(t *testing.T) {
 		qt.Assert(t, err, qt.IsNil)
 		qt.Assert(t, ii, qt.Equals, int64(math.MaxInt64))
 
-		// get uint form
-		uin, ok := n.(datamodel.UintNode)
-		qt.Assert(t, ok, qt.IsTrue)
-		val, positive, err := uin.AsUint()
-		qt.Assert(t, err, qt.IsNil)
-		qt.Assert(t, val, qt.Equals, uint64(math.MaxInt64))
-		qt.Assert(t, positive, qt.IsTrue)
+		// doesn't need to be a uint
+		_, ok := n.(datamodel.UintNode)
+		qt.Assert(t, ok, qt.IsFalse)
 	})
 
 	t.Run("min int64", func(t *testing.T) {
@@ -179,12 +174,8 @@ func TestInts(t *testing.T) {
 		qt.Assert(t, err, qt.IsNil)
 		qt.Assert(t, ii, qt.Equals, int64(math.MinInt64))
 
-		// get uint form
-		uin, ok := n.(datamodel.UintNode)
-		qt.Assert(t, ok, qt.IsTrue)
-		val, positive, err := uin.AsUint()
-		qt.Assert(t, err, qt.IsNil)
-		qt.Assert(t, val, qt.Equals, uint64(math.MaxInt64)+1)
-		qt.Assert(t, positive, qt.IsFalse)
+		// doesn't need to be a uint
+		_, ok := n.(datamodel.UintNode)
+		qt.Assert(t, ok, qt.IsFalse)
 	})
 }

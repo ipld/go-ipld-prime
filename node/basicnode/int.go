@@ -10,9 +10,8 @@ import (
 
 var (
 	_ datamodel.Node          = plainInt(0)
-	_ datamodel.UintNode      = plainInt(0)
-	_ datamodel.Node          = uintNode{}
-	_ datamodel.UintNode      = uintNode{}
+	_ datamodel.Node          = plainUint(0)
+	_ datamodel.UintNode      = plainUint(0)
 	_ datamodel.NodePrototype = Prototype__Int{}
 	_ datamodel.NodeBuilder   = &plainInt__Builder{}
 	_ datamodel.NodeAssembler = &plainInt__Assembler{}
@@ -22,14 +21,8 @@ func NewInt(value int64) datamodel.Node {
 	return plainInt(value)
 }
 
-func NewUInt(value uint64, positive bool) datamodel.Node {
-	v := uintNode{value, positive}
-	return &v
-}
-
-type uintNode struct {
-	value    uint64
-	positive bool
+func NewUInt(value uint64) datamodel.Node {
+	return plainUint(value)
 }
 
 // plainInt is a simple boxed int that complies with datamodel.Node.
@@ -89,74 +82,72 @@ func (plainInt) Prototype() datamodel.NodePrototype {
 	return Prototype__Int{}
 }
 
-// allows plainInt to conform to the UintNode interface
+// plainUint is a simple boxed uint64 that complies with datamodel.Node,
+// allowing representation of the uint64 range above the int64 maximum via the
+// UintNode interface
+type plainUint uint64
 
-func (n plainInt) AsUint() (uint64, bool, error) {
-	sign := (n >> 63)
-	return uint64((n ^ sign) - sign), sign == 0, nil
-}
+// -- Node interface methods for plainUint -->
 
-// -- Node interface methods for uintNode -->
-
-func (uintNode) Kind() datamodel.Kind {
+func (plainUint) Kind() datamodel.Kind {
 	return datamodel.Kind_Int
 }
-func (uintNode) LookupByString(string) (datamodel.Node, error) {
+func (plainUint) LookupByString(string) (datamodel.Node, error) {
 	return mixins.Int{TypeName: "int"}.LookupByString("")
 }
-func (uintNode) LookupByNode(key datamodel.Node) (datamodel.Node, error) {
+func (plainUint) LookupByNode(key datamodel.Node) (datamodel.Node, error) {
 	return mixins.Int{TypeName: "int"}.LookupByNode(nil)
 }
-func (uintNode) LookupByIndex(idx int64) (datamodel.Node, error) {
+func (plainUint) LookupByIndex(idx int64) (datamodel.Node, error) {
 	return mixins.Int{TypeName: "int"}.LookupByIndex(0)
 }
-func (uintNode) LookupBySegment(seg datamodel.PathSegment) (datamodel.Node, error) {
+func (plainUint) LookupBySegment(seg datamodel.PathSegment) (datamodel.Node, error) {
 	return mixins.Int{TypeName: "int"}.LookupBySegment(seg)
 }
-func (uintNode) MapIterator() datamodel.MapIterator {
+func (plainUint) MapIterator() datamodel.MapIterator {
 	return nil
 }
-func (uintNode) ListIterator() datamodel.ListIterator {
+func (plainUint) ListIterator() datamodel.ListIterator {
 	return nil
 }
-func (uintNode) Length() int64 {
+func (plainUint) Length() int64 {
 	return -1
 }
-func (uintNode) IsAbsent() bool {
+func (plainUint) IsAbsent() bool {
 	return false
 }
-func (uintNode) IsNull() bool {
+func (plainUint) IsNull() bool {
 	return false
 }
-func (uintNode) AsBool() (bool, error) {
+func (plainUint) AsBool() (bool, error) {
 	return mixins.Int{TypeName: "int"}.AsBool()
 }
-func (n uintNode) AsInt() (int64, error) {
-	if n.value > uint64(math.MaxInt64) {
+func (n plainUint) AsInt() (int64, error) {
+	if uint64(n) > uint64(math.MaxInt64) {
 		return -1, fmt.Errorf("unsigned integer out of range of int64 type")
 	}
-	return int64(n.value), nil
+	return int64(n), nil
 }
-func (uintNode) AsFloat() (float64, error) {
+func (plainUint) AsFloat() (float64, error) {
 	return mixins.Int{TypeName: "int"}.AsFloat()
 }
-func (uintNode) AsString() (string, error) {
+func (plainUint) AsString() (string, error) {
 	return mixins.Int{TypeName: "int"}.AsString()
 }
-func (uintNode) AsBytes() ([]byte, error) {
+func (plainUint) AsBytes() ([]byte, error) {
 	return mixins.Int{TypeName: "int"}.AsBytes()
 }
-func (uintNode) AsLink() (datamodel.Link, error) {
+func (plainUint) AsLink() (datamodel.Link, error) {
 	return mixins.Int{TypeName: "int"}.AsLink()
 }
-func (uintNode) Prototype() datamodel.NodePrototype {
+func (plainUint) Prototype() datamodel.NodePrototype {
 	return Prototype__Int{}
 }
 
-// allows uintNode to conform to the UintNode interface
+// allows plainUint to conform to the plainUint interface
 
-func (n uintNode) AsUint() (uint64, bool, error) {
-	return n.value, n.positive, nil
+func (n plainUint) AsUint() (uint64, error) {
+	return uint64(n), nil
 }
 
 // -- NodePrototype -->

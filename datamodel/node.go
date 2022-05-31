@@ -172,10 +172,10 @@ type Node interface {
 type UintNode interface {
 	Node
 
-	// AsUint returns a uint64 representing the underlying integer as well as a
-	// boolean to indicate whether the number is positive (true) or negative
-	// (false).
-	AsUint() (uint64, bool, error)
+	// AsUint returns a uint64 representing the underlying integer if possible.
+	// This may return an error if the Node represents a negative integer that
+	// cannot be represented as a uint64.
+	AsUint() (uint64, error)
 }
 
 // LargeBytesNode is an optional interface extending a Bytes node that allows its

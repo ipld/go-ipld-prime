@@ -277,7 +277,7 @@ func unmarshal2(na datamodel.NodeAssembler, tokSrc shared.TokenSource, tk *tok.T
 			return ErrAllocationBudgetExceeded
 		}
 		if tk.Uint > uint64(math.MaxInt64) {
-			return na.AssignNode(basicnode.NewUInt(tk.Uint, true))
+			return na.AssignNode(basicnode.NewUInt(tk.Uint))
 		}
 		return na.AssignInt(int64(tk.Uint))
 	case tok.TFloat64:

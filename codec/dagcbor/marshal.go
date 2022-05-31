@@ -100,10 +100,10 @@ func marshal(n datamodel.Node, tk *tok.Token, sink shared.TokenSink, options Enc
 		return err
 	case datamodel.Kind_Int:
 		var v uint64
-		var positive bool
+		positive := true
 		if uin, ok := n.(datamodel.UintNode); ok {
 			var err error
-			v, positive, err = uin.AsUint()
+			v, err = uin.AsUint()
 			if err != nil {
 				return err
 			}
