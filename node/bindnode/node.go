@@ -11,6 +11,7 @@ import (
 	"github.com/ipld/go-ipld-prime/datamodel"
 	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
 	"github.com/ipld/go-ipld-prime/node/basicnode"
+	"github.com/ipld/go-ipld-prime/node/mixins"
 	"github.com/ipld/go-ipld-prime/schema"
 )
 
@@ -25,8 +26,9 @@ var (
 	_ schema.TypedNode = (*_node)(nil)
 	_ datamodel.Node   = (*_nodeRepr)(nil)
 
-	_ datamodel.Node   = (*typedUint)(nil)
-	_ schema.TypedNode = (*typedUint)(nil)
+	_ datamodel.Node     = (*_uintNode)(nil)
+	_ schema.TypedNode   = (*_uintNode)(nil)
+	_ datamodel.UintNode = (*_uintNode)(nil)
 
 	_ datamodel.NodeBuilder   = (*_builder)(nil)
 	_ datamodel.NodeBuilder   = (*_builderRepr)(nil)
@@ -83,27 +85,15 @@ type _node struct {
 // 	_node
 // }
 
-type typedUint struct {
-	datamodel.Node
-	schemaType schema.Type
-}
-
-func (tu typedUint) Type() schema.Type {
-	return tu.schemaType
-}
-
-func (tu typedUint) Representation() datamodel.Node {
-	return tu.Node
-}
-
 func newNode(cfg config, schemaType schema.Type, val reflect.Value) schema.TypedNode {
-	if schemaType.TypeKind() == schema.TypeKind_Int {
-		npval := nonPtrVal(val)
-		if kindUint[npval.Kind()] {
-			u := npval.Uint()
-			if u > math.MaxInt64 {
-				return typedUint{basicnode.NewUInt(u, true), schemaType}
-			}
+	if schemaType.TypeKind() == schema.TypeKind_Int && nonPtrVal(val).Kind() == reflect.Uint64 {
+		// special case for uint64 values so we can handle the >int64 range
+		// we give this treatment to all uint64s, regardless of current value
+		// because we have no guarantees the value won't change underneath us
+		return &_uintNode{
+			cfg:        cfg,
+			schemaType: schemaType,
+			val:        val,
 		}
 	}
 	return &_node{cfg, schemaType, val}
@@ -860,12 +850,9 @@ func (w *_assembler) assignUInt(uin datamodel.UintNode) error {
 		// Any means the Go type must receive a datamodel.Node
 		w.createNonPtrVal().Set(reflect.ValueOf(uin))
 	} else {
-		i, pos, err := uin.AsUint()
+		i, err := uin.AsUint()
 		if err != nil {
 			return err
-		}
-		if !pos {
-			return fmt.Errorf("bindnode: cannot handle negative uint64 values")
 		}
 		if kindUint[w.val.Kind()] {
 			w.createNonPtrVal().SetUint(i)
@@ -1615,4 +1602,91 @@ func (w *_unionIterator) Next() (key, value datamodel.Node, _ error) {
 
 func (w *_unionIterator) Done() bool {
 	return w.done
+}
+
+type _uintNode struct {
+	cfg        config
+	schemaType schema.Type
+
+	val reflect.Value // non-pointer
+}
+
+func (tu *_uintNode) Type() schema.Type {
+	return tu.schemaType
+}
+func (tu *_uintNode) Representation() datamodel.Node {
+	return tu
+}
+func (_uintNode) Kind() datamodel.Kind {
+	return datamodel.Kind_Int
+}
+func (_uintNode) LookupByString(string) (datamodel.Node, error) {
+	return mixins.Int{TypeName: "int"}.LookupByString("")
+}
+func (_uintNode) LookupByNode(key datamodel.Node) (datamodel.Node, error) {
+	return mixins.Int{TypeName: "int"}.LookupByNode(nil)
+}
+func (_uintNode) LookupByIndex(idx int64) (datamodel.Node, error) {
+	return mixins.Int{TypeName: "int"}.LookupByIndex(0)
+}
+func (_uintNode) LookupBySegment(seg datamodel.PathSegment) (datamodel.Node, error) {
+	return mixins.Int{TypeName: "int"}.LookupBySegment(seg)
+}
+func (_uintNode) MapIterator() datamodel.MapIterator {
+	return nil
+}
+func (_uintNode) ListIterator() datamodel.ListIterator {
+	return nil
+}
+func (_uintNode) Length() int64 {
+	return -1
+}
+func (_uintNode) IsAbsent() bool {
+	return false
+}
+func (_uintNode) IsNull() bool {
+	return false
+}
+func (_uintNode) AsBool() (bool, error) {
+	return mixins.Int{TypeName: "int"}.AsBool()
+}
+func (tu *_uintNode) AsInt() (int64, error) {
+	if err := compatibleKind(tu.schemaType, datamodel.Kind_Int); err != nil {
+		return 0, err
+	}
+	if customConverter := tu.cfg.converterFor(tu.val); customConverter != nil {
+		// user has registered a converter that takes the underlying type and returns an int
+		return customConverter.customToInt(ptrVal(tu.val).Interface())
+	}
+	val := nonPtrVal(tu.val)
+	// we can assume it's a uint64 at this point
+	u := val.Uint()
+	if u > math.MaxInt64 {
+		return 0, fmt.Errorf("bindnode: integer overflow, %d is too large for an int64", u)
+	}
+	return int64(u), nil
+}
+func (tu *_uintNode) AsUint() (uint64, error) {
+	if err := compatibleKind(tu.schemaType, datamodel.Kind_Int); err != nil {
+		return 0, err
+	}
+	// TODO(rvagg): do we want a converter option for uint values? do we combine it
+	// with int converters?
+	// we can assume it's a uint64 at this point
+	return nonPtrVal(tu.val).Uint(), nil
+}
+func (_uintNode) AsFloat() (float64, error) {
+	return mixins.Int{TypeName: "int"}.AsFloat()
+}
+func (_uintNode) AsString() (string, error) {
+	return mixins.Int{TypeName: "int"}.AsString()
+}
+func (_uintNode) AsBytes() ([]byte, error) {
+	return mixins.Int{TypeName: "int"}.AsBytes()
+}
+func (_uintNode) AsLink() (datamodel.Link, error) {
+	return mixins.Int{TypeName: "int"}.AsLink()
+}
+func (_uintNode) Prototype() datamodel.NodePrototype {
+	return basicnode.Prototype__Int{}
 }

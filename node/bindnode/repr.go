@@ -655,12 +655,9 @@ func (w *_assemblerRepr) assignUInt(uin datamodel.UintNode) error {
 	case schema.UnionRepresentation_Kinded:
 		return w.asKinded(stg, datamodel.Kind_Int).(*_assemblerRepr).assignUInt(uin)
 	case schema.EnumRepresentation_Int:
-		uin, pos, err := uin.AsUint()
+		uin, err := uin.AsUint()
 		if err != nil {
 			return err
-		}
-		if !pos {
-			return fmt.Errorf("bindnode: cannot handle negative uint64 values")
 		}
 		return fmt.Errorf("AssignInt: %d is not a valid member of enum %s", uin, w.schemaType.Name())
 	default:
