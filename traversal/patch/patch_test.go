@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"os"
+	"strings"
 	"testing"
 
 	qt "github.com/frankban/quicktest"
@@ -59,8 +60,16 @@ func testOneSpecFixtureFile(t *testing.T, filename string) {
 
 			// Do the thing!
 			actualResult, err := Eval(initial, ops)
-			if err != nil {
-				t.Fatalf("patch did not apply: %s", err)
+			if strings.HasSuffix(dir.Name, "-fail") {
+				if err == nil {
+					t.Fatalf("patch was expected to fail")
+				} else {
+					return
+				}
+			} else {
+				if err != nil {
+					t.Fatalf("patch did not apply: %s", err)
+				}
 			}
 
 			// Serialize (and pretty print) result, so that we can diff it.
