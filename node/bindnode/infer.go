@@ -380,7 +380,6 @@ func inferSchema(typ reflect.Type, level int) schema.Type {
 	if level > maxRecursionLevel {
 		panic(fmt.Sprintf("inferSchema: refusing to recurse past %d levels", maxRecursionLevel))
 	}
-	// TODO: support Link and Any
 	switch typ.Kind() {
 	case reflect.Bool:
 		return schemaTypeBool
@@ -391,6 +390,12 @@ func inferSchema(typ reflect.Type, level int) schema.Type {
 	case reflect.String:
 		return schemaTypeString
 	case reflect.Struct:
+		// these types must match exactly since we need symmetry of being able to
+		// get the values an also assign values to them
+		if typ == goTypeCid || typ == goTypeCidLink {
+			return schemaTypeLink
+		}
+
 		fieldsSchema := make([]schema.StructField, typ.NumField())
 		for i := range fieldsSchema {
 			field := typ.Field(i)
@@ -430,8 +435,18 @@ func inferSchema(typ reflect.Type, level int) schema.Type {
 		typSchema := schema.SpawnList(name, etypSchema.Name(), nullable)
 		defaultTypeSystem.Accumulate(typSchema)
 		return typSchema
+	case reflect.Interface:
+		// these types must match exactly since we need symmetry of being able to
+		// get the values an also assign values to them
+		if typ == goTypeLink {
+			return schemaTypeLink
+		}
+		if typ == goTypeNode {
+			return schemaTypeAny
+		}
+		panic("bindnode: unable to infer from interface")
 	}
-	panic(typ.Kind().String())
+	panic(fmt.Sprintf("bindnode: unable to infer from type %s", typ.Kind().String()))
 }
 
 // There are currently 27 reflect.Kind iota values,

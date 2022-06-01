@@ -14,6 +14,7 @@ import (
 	"testing"
 
 	qt "github.com/frankban/quicktest"
+	"github.com/google/go-cmp/cmp"
 	"github.com/ipfs/go-cid"
 
 	"github.com/ipld/go-ipld-prime"
@@ -1209,5 +1210,42 @@ func TestEmptyTypedAssignNode(t *testing.T) {
 			err = nb.AssignNode(empty.(schema.TypedNode).Representation())
 			qt.Assert(t, err, qt.IsNil)
 		})
+	}
+}
+
+func TestInferLinksAndAny(t *testing.T) {
+	link, err := cid.Decode("bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi")
+	qt.Assert(t, err, qt.IsNil)
+
+	type Nd struct {
+		A cid.Cid
+		B cidlink.Link
+		C datamodel.Link
+		D datamodel.Node
+	}
+
+	proto := bindnode.Prototype(&Nd{}, nil)
+
+	expected := &Nd{
+		A: link,
+		B: cidlink.Link{Cid: link},
+		C: cidlink.Link{Cid: link},
+		D: basicnode.NewString("Any Here"),
+	}
+
+	node := bindnode.Wrap(expected, proto.Type())
+
+	byts, err := ipld.Encode(node, dagjson.Encode)
+	qt.Assert(t, err, qt.IsNil)
+
+	qt.Assert(t, string(byts), qt.Equals, `{"A":{"/":"bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi"},"B":{"/":"bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi"},"C":{"/":"bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi"},"D":"Any Here"}`)
+
+	nodeRt, err := ipld.DecodeUsingPrototype(byts, dagjson.Decode, proto)
+	qt.Assert(t, err, qt.IsNil)
+
+	if actual, ok := bindnode.Unwrap(nodeRt).(*Nd); ok {
+		qt.Assert(t, actual, qt.CmpEquals(cmp.Comparer(func(x, y cid.Cid) bool { return x.Equals(y) })), expected)
+	} else {
+		t.Error("expected *Nd from Unwrap")
 	}
 }
