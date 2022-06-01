@@ -257,6 +257,9 @@ func Marshal(n datamodel.Node, sink shared.TokenSink, options EncodeOptions) err
 		}
 		switch lnk := v.(type) {
 		case cidlink.Link:
+			if !lnk.Cid.Defined() {
+				return fmt.Errorf("encoding undefined CIDs are not supported by this codec")
+			}
 			// Precisely four tokens to emit:
 			tk.Type = tok.TMapOpen
 			tk.Length = 1
