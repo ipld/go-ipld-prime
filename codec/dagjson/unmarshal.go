@@ -34,7 +34,10 @@ type DecodeOptions struct {
 	ParseBytes bool
 
 	// If true, the decoder stops reading from the stream at the end of the JSON structure.
-	// I.e. it does not slurp remaining whitespaces and EOF.
+	// i.e. it does not slurp remaining whitespaces and EOF.
+	// As per standard IPLD behavior, the parser considers the entire block to be
+	// part of the JSON structure and will error if there is extraneous
+	// non-whitespace data.
 	DontParseBeyondEnd bool
 }
 
