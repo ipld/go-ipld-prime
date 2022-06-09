@@ -32,6 +32,13 @@ type DecodeOptions struct {
 	// If true, parse DAG-JSON `{"/":{"bytes":"base64 bytes..."}}` as a Bytes kind
 	// node rather than nested plain maps
 	ParseBytes bool
+
+	// If true, the decoder stops reading from the stream at the end of the JSON structure.
+	// i.e. it does not slurp remaining whitespaces and EOF.
+	// As per standard IPLD behavior, the parser considers the entire block to be
+	// part of the JSON structure and will error if there is extraneous
+	// non-whitespace data.
+	DontParseBeyondEnd bool
 }
 
 // Decode deserializes data from the given io.Reader and feeds it into the given datamodel.NodeAssembler.
@@ -42,6 +49,9 @@ func (cfg DecodeOptions) Decode(na datamodel.NodeAssembler, r io.Reader) error {
 	err := Unmarshal(na, json.NewDecoder(r), cfg)
 	if err != nil {
 		return err
+	}
+	if cfg.DontParseBeyondEnd {
+		return nil
 	}
 	// Slurp any remaining whitespace.
 	//  This behavior may be due for review.
