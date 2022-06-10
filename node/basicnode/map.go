@@ -2,29 +2,31 @@ package basicnode
 
 import (
 	"fmt"
+	"reflect"
 
 	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/node/mixins"
 )
 
 var (
-	_ datamodel.Node          = &plainMap{}
-	_ datamodel.NodePrototype = Prototype__Map{}
-	_ datamodel.NodeBuilder   = &plainMap__Builder{}
-	_ datamodel.NodeAssembler = &plainMap__Assembler{}
+	_ datamodel.Node                         = &plainMap{}
+	_ datamodel.NodePrototype                = Prototype__Map{}
+	_ datamodel.NodePrototypeSupportingAmend = Prototype__Map{}
+	_ datamodel.NodeAmender                  = &plainMap__Builder{}
+	_ datamodel.NodeAssembler                = &plainMap__Assembler{}
 )
 
 // plainMap is a concrete type that provides a map-kind datamodel.Node.
 // It can contain any kind of value.
 // plainMap is also embedded in the 'any' struct and usable from there.
 type plainMap struct {
-	m map[string]datamodel.Node // string key -- even if a runtime schema wrapper is using us for storage, we must have a comparable type here, and string is all we know.
-	t []plainMap__Entry         // table for fast iteration, order keeping, and yielding pointers to enable alloc/conv amortization.
+	m map[string]datamodel.NodeAmender // string key -- even if a runtime schema wrapper is using us for storage, we must have a comparable type here, and string is all we know.
+	t []plainMap__Entry                // table for fast iteration, order keeping, and yielding pointers to enable alloc/conv amortization.
 }
 
 type plainMap__Entry struct {
-	k plainString    // address of this used when we return keys as nodes, such as in iterators.  Need in one place to amortize shifts to heap when ptr'ing for iface.
-	v datamodel.Node // identical to map values.  keeping them here simplifies iteration.  (in codegen'd maps, this position is also part of amortization, but in this implementation, that's less useful.)
+	k plainString           // address of this used when we return keys as nodes, such as in iterators.  Need in one place to amortize shifts to heap when ptr'ing for iface.
+	v datamodel.NodeAmender // identical to map values.  keeping them here simplifies iteration.  (in codegen'd maps, this position is also part of amortization, but in this implementation, that's less useful.)
 	// note on alternate implementations: 'v' could also use the 'any' type, and thus amortize value allocations.  the memory size trade would be large however, so we don't, here.
 }
 
@@ -34,6 +36,13 @@ func (plainMap) Kind() datamodel.Kind {
 	return datamodel.Kind_Map
 }
 func (n *plainMap) LookupByString(key string) (datamodel.Node, error) {
+	if a, err := n.lookupAmenderByString(key); err != nil {
+		return nil, err
+	} else {
+		return a.Build(), nil
+	}
+}
+func (n *plainMap) lookupAmenderByString(key string) (datamodel.NodeAmender, error) {
 	v, exists := n.m[key]
 	if !exists {
 		return nil, datamodel.ErrNotExists{Segment: datamodel.PathSegmentOfString(key)}
@@ -100,7 +109,7 @@ func (itr *plainMap_MapIterator) Next() (k datamodel.Node, v datamodel.Node, _ e
 		return nil, nil, datamodel.ErrIteratorOverread{}
 	}
 	k = &itr.n.t[itr.idx].k
-	v = itr.n.t[itr.idx].v
+	v = itr.n.t[itr.idx].v.Build()
 	itr.idx++
 	return
 }
@@ -112,8 +121,24 @@ func (itr *plainMap_MapIterator) Done() bool {
 
 type Prototype__Map struct{}
 
-func (Prototype__Map) NewBuilder() datamodel.NodeBuilder {
-	return &plainMap__Builder{plainMap__Assembler{w: &plainMap{}}}
+func (p Prototype__Map) NewBuilder() datamodel.NodeBuilder {
+	return p.AmendingBuilder(nil)
+}
+
+// -- NodePrototypeSupportingAmend -->
+
+func (p Prototype__Map) AmendingBuilder(base datamodel.Node) datamodel.NodeAmender {
+	var b *plainMap
+	if base != nil {
+		if baseMap, castOk := base.(*plainMap); !castOk {
+			panic("misuse")
+		} else {
+			b = baseMap
+		}
+	} else {
+		b = &plainMap{}
+	}
+	return &plainMap__Builder{plainMap__Assembler{w: b}}
 }
 
 // -- NodeBuilder -->
@@ -123,14 +148,75 @@ type plainMap__Builder struct {
 }
 
 func (nb *plainMap__Builder) Build() datamodel.Node {
-	if nb.state != maState_finished {
-		panic("invalid state: assembler must be 'finished' before Build can be called!")
+	if (nb.state != maState_initial) && (nb.state != maState_finished) {
+		panic("invalid state: assembly in progress must be 'finished' before Build can be called!")
 	}
 	return nb.w
 }
 func (nb *plainMap__Builder) Reset() {
 	*nb = plainMap__Builder{}
 	nb.w = &plainMap{}
+}
+
+// -- NodeAmender -->
+
+func (nb *plainMap__Builder) Transform(path datamodel.Path, transform func(datamodel.Node) (datamodel.NodeAmender, error)) (datamodel.Node, error) {
+	// Can only transform the root of the node or an immediate child.
+	if path.Len() > 2 {
+		panic("misuse")
+	} else
+	// Allow the root of the node to be replaced.
+	if path.Len() == 0 {
+		prevNode := nb.Build()
+		if newNb, err := transform(prevNode); err != nil {
+			return nil, err
+		} else if newMb, castOk := newNb.(*plainMap__Builder); !castOk {
+			return nil, fmt.Errorf("transform: cannot transform root into incompatible type: %v", reflect.TypeOf(newNb))
+		} else {
+			*nb.w = *newMb.w
+			return prevNode, nil
+		}
+	}
+	childSeg, _ := path.Shift()
+	childKey := childSeg.String()
+	childAmender, err := nb.w.lookupAmenderByString(childKey)
+	if err != nil {
+		// Return any error other than "not exists"
+		if _, notFoundErr := err.(datamodel.ErrNotExists); !notFoundErr {
+			return nil, fmt.Errorf("transform: child at %q did not exist)", path)
+		}
+	}
+	// Allocate storage space
+	if nb.w.m == nil {
+		nb.w.t = make([]plainMap__Entry, 0, 1)
+		nb.w.m = make(map[string]datamodel.NodeAmender, 1)
+	}
+	var prevChildVal datamodel.Node = nil
+	if childAmender != nil {
+		prevChildVal = childAmender.Build()
+	}
+	if newChildAmender, err := transform(prevChildVal); err != nil {
+		return nil, err
+	} else {
+		for idx, v := range nb.w.t {
+			if string(v.k) == childKey {
+				if newChildAmender == nil {
+					delete(nb.w.m, childKey)
+					newT := make([]plainMap__Entry, nb.w.Length()-1)
+					copy(newT, nb.w.t[:idx])
+					copy(newT[:idx], nb.w.t[idx+1:])
+					nb.w.t = newT
+				} else {
+					nb.w.t[idx].v = newChildAmender
+					nb.w.m[string(nb.w.t[idx].k)] = newChildAmender
+				}
+				return prevChildVal, nil
+			}
+		}
+		nb.w.t = append(nb.w.t, plainMap__Entry{plainString(childKey), newChildAmender})
+		nb.w.m[childKey] = newChildAmender
+		return prevChildVal, nil
+	}
 }
 
 // -- NodeAssembler -->
@@ -168,7 +254,7 @@ func (na *plainMap__Assembler) BeginMap(sizeHint int64) (datamodel.MapAssembler,
 	}
 	// Allocate storage space.
 	na.w.t = make([]plainMap__Entry, 0, sizeHint)
-	na.w.m = make(map[string]datamodel.Node, sizeHint)
+	na.w.m = make(map[string]datamodel.NodeAmender, sizeHint)
 	// That's it; return self as the MapAssembler.  We already have all the right methods on this structure.
 	return na, nil
 }
@@ -404,8 +490,9 @@ func (mva *plainMap__ValueAssembler) AssignLink(v datamodel.Link) error {
 }
 func (mva *plainMap__ValueAssembler) AssignNode(v datamodel.Node) error {
 	l := len(mva.ma.w.t) - 1
-	mva.ma.w.t[l].v = v
-	mva.ma.w.m[string(mva.ma.w.t[l].k)] = v
+	a := Prototype.Any.AmendingBuilder(v)
+	mva.ma.w.t[l].v = a
+	mva.ma.w.m[string(mva.ma.w.t[l].k)] = a
 	mva.ma.state = maState_initial
 	mva.ma = nil // invalidate self to prevent further incorrect use.
 	return nil

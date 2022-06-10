@@ -258,14 +258,6 @@ func TestMapLookupError(t *testing.T) {
 }
 
 func TestMapNewBuilderUsageError(t *testing.T) {
-	qt.Assert(t,
-		func() {
-			b := basicnode.Prototype.Map.NewBuilder()
-			_ = b.Build()
-		},
-		qt.PanicMatches,
-		`invalid state: assembler must be 'finished' before Build can be called!`)
-
 	// construct an empty map
 	b := basicnode.Prototype.Map.NewBuilder()
 	ma, err := b.BeginMap(0)
@@ -281,15 +273,6 @@ func TestMapNewBuilderUsageError(t *testing.T) {
 
 	expect := `map{}`
 	qt.Check(t, expect, qt.Equals, actual)
-
-	// reset will return the state to 'initial', so Build will panic once again
-	b.Reset()
-	qt.Assert(t,
-		func() {
-			_ = b.Build()
-		},
-		qt.PanicMatches,
-		`invalid state: assembler must be 'finished' before Build can be called!`)
 
 	// assembling a key without a value will cause Finish to panic
 	b.Reset()

@@ -238,7 +238,7 @@ type NodePrototype interface {
 // volumes of data, detecting and using this feature can result in significant
 // performance savings.
 type NodePrototypeSupportingAmend interface {
-	AmendingBuilder(base Node) NodeBuilder
+	AmendingBuilder(base Node) NodeAmender
 	// FUTURE: probably also needs a `AmendingWithout(base Node, filter func(k,v) bool) NodeBuilder`, or similar.
 	//  ("deletion" based APIs are also possible but both more complicated in interfaces added, and prone to accidentally quadratic usage.)
 	// FUTURE: there should be some stdlib `Copy` (?) methods that automatically look for this feature, and fallback if absent.
