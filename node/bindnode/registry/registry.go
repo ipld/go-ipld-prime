@@ -34,8 +34,6 @@ func typeOf(ptrValue interface{}) reflect.Type {
 	return val
 }
 
-// lookup of cached TypedPrototype (and therefore Type) for a Go type, if not
-// found, initial parse and setup and caching of the TypedPrototype will happen
 func (br BindnodeRegistry) prototypeDataFor(ptrType interface{}) prototypeData {
 	typ := typeOf(ptrType)
 	proto, ok := br[typ]
