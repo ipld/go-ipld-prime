@@ -11,7 +11,6 @@ Much of this code is used in other libraries and products, and we do take some c
 (If you're ever wondering about stability of a feature, ask -- or contribute more tests ;))
 
 - [Planned/Upcoming Changes](#planned-upcoming-changes)
-- [Changes on master branch but not yet Released](#unreleased-on-master)
 - [Released Changes Log](#released-changes)
 
 
@@ -20,33 +19,66 @@ Planned/Upcoming Changes
 
 Here are some outlines of changes we intend to make that affect the public API:
 
-- ... the critical list is relatively empty, for now :)
-- There have been some recurring wishes to do something about the Selector package layout.  There's no intended or prioritized date for this.  See https://github.com/ipld/go-ipld-prime/issues/236 for more.
-- There may be some upcoming changes to exactly how "not found" values are handled in order to clarify and standardize the subject.  There's no finalized date for this.  See https://github.com/ipld/go-ipld-prime/issues/360 for more.
-
-This is not an exhaustive list of planned changes, and does not include any internal changes, new features, performance improvements, and so forth.
-It's purely a list of things you might want to know about as a downstream consumer planning your update cycles.
-
-We will make these changes "soon" (for some definition of "soon").
-They are currently not written on the master branch.
-The definition of "soon" may vary, in service of a goal to sequence any public API changes in a way that's smooth to migrate over, and make those changes appear at an overall bearable chronological frequency.
-Tagged releases will be made when any of these changes land, so you can upgrade intentionally.
-
-
-Unreleased on master
---------------------
-
-Changes here are on the master branch, but not in any tagged release yet.
-When a release tag is made, this block of bullet points will just slide down to the [Released Changes](#released-changes) section.
-
-- _nothing yet :)_
-
-It's entirely possible there are more changes than are noted here -- consider checking the git commit log as the ultimate source of truth.
-
-
+- **Bindnode improvements**: Candidates for merge and release include:
+  - Custom Go type to IPLD kind conversion `Option`s: https://github.com/ipld/go-ipld-prime/pull/414
+  - Type registry for easier local maintenance of type to `Type` & `TypedPrototype` mappings and utilities for dealing with them: https://github.com/ipld/go-ipld-prime/pull/437
+- **Selectors**: There have been some recurring wishes to do something about the Selector package layout.  There's no intended or prioritized date for this.  See https://github.com/ipld/go-ipld-prime/issues/236 for more.
+- **Absent / "Not found" values**: There may be some upcoming changes to exactly how "not found" values are handled in order to clarify and standardize the subject.  There's no finalized date for this.  See https://github.com/ipld/go-ipld-prime/issues/360 for more.
 
 Released Changes
 ----------------
+
+### v0.17.0
+
+_2022 Jun 15_
+
+go-ipld-prime's release policy says that:
+
+> even numbers should be easy upgrades; odd numbers may change things
+
+In that spirit, this v0.17.0 release includes some potentially breaking changes. Although minor, they are marked below and they may lead to behavioral changes in your use of this library.
+
+#### 🛠 Breaking Changes
+
+* **Codecs**:
+  * DAG-CBOR, DAG-JSON: [Error on `cid.Undef` links in dag{json,cbor} encoding](https://github.com/ipld/go-ipld-prime/pull/433) - previously, encoding Link nodes that were empty CIDs (uninitialized zero-value or explicitly `cid.Undef`) would have passed through the DAG-CBOR or DAG-JSON codecs, silently producing erroneous output that wouldn't successfully pass back through a decode. (Rod Vagg)
+* **Bindnode**:
+  * [Panic early if API has been passed ptr-to-ptr](https://github.com/ipld/go-ipld-prime/pull/427) - previous usage of bindnode using pointers-to-pointers may have deferred (or in some cases avoided) panics until deeper usage of the API, this change makes it earlier to make it clear that pointer-to-pointer is not appropriate usage. (Rod Vagg)
+* **Build**:
+  * [Drop Go 1.16.x testing & begin testing Go 1.18.x](https://github.com/ipld/go-ipld-prime/pull/394) (Daniel Martí)
+  * Note also that in this release, the [github.com/ipfs/**go-cid**](https://github.com/ipfs/go-cid) dependency is upgraded from 0.0.4 to 0.2.0 which includes a breaking change with the removal of the `cid.Codecs` and `cid.CodecToStr` maps which may disruptive. See [the go-cid@0.2.0 release page for details](https://github.com/ipfs/go-cid/releases/tag/v0.2.0).
+
+#### 🔦 Highlights
+
+* **Data Model**:
+  * [Introduce `UIntNode` interface, used within DAG-CBOR codec to quietly support full uint64 range](https://github.com/ipld/go-ipld-prime/pull/413) (Rod Vagg)
+* **Bindnode**:
+  * Fuzzing and hardening for production use (Daniel Martí)
+  * Refuse to decode empty union values (Daniel Martí)
+  * [Allow nilable types for IPLD `optional`/`nullable`](https://github.com/ipld/go-ipld-prime/pull/401) (Daniel Martí)
+  * [More helpful error message for common enum value footgun](https://github.com/ipld/go-ipld-prime/pull/430) (Rod Vagg)
+  * [Infer links and `Any` from Go types](https://github.com/ipld/go-ipld-prime/pull/432) (Rod Vagg)
+* **Schemas**:
+  * DMT: Proper checking for unknown union members (Daniel Martí)
+  * DMT: Enum representations must be valid members (Daniel Martí)
+  * DMT: Reject duplicate or missing union representation members (Daniel Martí)
+  * DSL: [Support `stringjoin` struct representation and `stringprefix` union representation](https://github.com/ipld/go-ipld-prime/pull/397) (Eric Evenchick)
+  * DMT, DSL: [Enable inline types](https://github.com/ipld/go-ipld-prime/pull/404) (Rod Vagg)
+* **Patch**:
+  * [Add initial version of IPLD Patch feature](https://github.com/ipld/go-ipld-prime/pull/350) (Eric Myhre) *(helped across the line by mauve and Rod Vagg)*
+* **Codecs**:
+  * DAG-CBOR: [Reject extraneous content after valid (complete) CBOR object](https://github.com/ipld/go-ipld-prime/pull/386) (Rod Vagg)
+  * DAG-CBOR: [add `DecodeOptions.ExperimentalDeterminism`](https://github.com/ipld/go-ipld-prime/pull/390) (currently only checking map sorting order) (Daniel Martí)
+  * Printer: [Fix printing of floats](https://github.com/ipld/go-ipld-prime/pull/412) (Dustin Long)
+  * DAG-JSON: [Add option to not parse beyond end of structure](https://github.com/ipld/go-ipld-prime/pull/435) (Petar Maymounkov)
+* **Build**:
+  * Fix [macOS](https://github.com/ipld/go-ipld-prime/pull/400) and [Windows](https://github.com/ipld/go-ipld-prime/pull/405) testing (Rod Vagg)
+  * [Fix 32-bit build support](https://github.com/ipld/go-ipld-prime/pull/407) (Rod Vagg)
+  * [Make staticcheck and govet happy across codebase](https://github.com/ipld/go-ipld-prime/pull/406) (Rod Vagg)
+  * Enable full [unified-ci](https://github.com/protocol/.github) GitHub Actions suite, including auto-updating (Rod Vagg)
+  * [Enable dependabot, with monthly checks](https://github.com/ipld/go-ipld-prime/pull/417) (and update all dependencies) (Rod Vagg)
+
+Special thanks to **Daniel Martí** for many bindnode improvements and hardening, fuzzing across the library and improvements to the Schema DMT and DSL.
 
 ### v0.16.0
 
