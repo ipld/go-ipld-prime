@@ -54,7 +54,7 @@ Optional: Protocol Labs staff can send an email to shipped@protocol.ai to descri
 
 ## Checklist
 
-A release proposal pull request may use the following markdown checklist to help ensure the requisite steps are taken:
+Prior to opening a release proposal pull request, create an issue with the following markdown checklist to help ensure the requisite steps are taken. The issue can also be used to alert subscribed developers to the timeframe and the approximate scope of changes in the release.
 
 ```markdown
 * [ ] Add new h3 to `CHANGELOG.md` under **Released Changes** with curated list of changes and links to relevant PRs
