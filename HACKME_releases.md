@@ -8,27 +8,27 @@ go-ipld-prime follows **[WarpVer](https://gist.github.com/warpfork/98d2f4060c68a
 
 There is a CHANGELOG.md, it should be relevant and updated. Notable items in the commit history since the last release should be included. Where possible and practical, links to relevant pull requests or other issues with discussions on the items should be included.
 
-Finding the list of commits can be done using `git log`, e.g.:
-
-```
-git log --all --graph --date-order --abbrev-commit --decorate --oneline
-```
-
-Matching commits to pull requests may be a manual process with this method.
-
-Alternatively, use a tool that can provide some extra metadata to help with matching commits to pull requests. [changelog-maker](https://github.com/nodejs/changelog-maker) can help with this (requires Node.js be installed and the `npx` command be available):
+To find the list of commits, it is recommended that you use a tool that can provide some extra metadata to help with matching commits to pull requests. [changelog-maker](https://github.com/nodejs/changelog-maker) can help with this (requires Node.js be installed and the `npx` command be available):
 
 ```
 npx changelog-maker --start-ref=v0.16.0  --reverse=true --find-matching-prs=true --md=true ipld go-ipld-prime
+```
+
+Alternatively, you can use `git log` and perform mapping to pull requests manually, e.g.:
+
+```
+git log --all --graph --date-order --abbrev-commit --decorate --oneline
 ```
 
 *(where `--start-ref` points to name of the previous release tag)*
 
 ### Curate and summarize
 
-The output of a git log can be a helpful starting point for developing a CHANGELOG.md entry, but is unlikely to be an ideal final form as commit messages are rarely informative enough and multiple commits may be associated with a single PR / change.
-
 The CHANGELOG should be informative for developers wanting to know what changes may pose a risk (highlight these!) and what changes introduce features they may be interested in using.
+
+1. Group commits to subsystem to create a two-level list. Subsections can include "Data Model", "Schemas", "Bindnode", "Selectors", "Codecs", and the meta-category of "Build" to describe changes local to the repository and not necessarily relevant to API consumers.
+2. If there are breaking, or potentially breaking changes, list them under a `### 🛠 Breaking Changes` section.
+3. Otherwise, prune the list of commits down to the set of changes relevant to users, and list them under a `### 🔦 Highlights` section.
 
 Note that there is also a **Planned/Upcoming Changes** section near the top of the CHANGELOG.md. Update this to remove _done_ items and add other items that may be nearing completion but not yet released.
 
@@ -57,8 +57,8 @@ Optional: Protocol Labs staff can send an email to shipped@protocol.ai to descri
 Prior to opening a release proposal pull request, create an issue with the following markdown checklist to help ensure the requisite steps are taken. The issue can also be used to alert subscribed developers to the timeframe and the approximate scope of changes in the release.
 
 ```markdown
-* [ ] Add new h3 to `CHANGELOG.md` under **Released Changes** with curated list of changes and links to relevant PRs
-  * [ ] Highlight any potentially breaking or disruptive changes
+* [ ] Add new h3 to `CHANGELOG.md` under **Released Changes** with curated and subsystem-grouped list of changes and links to relevant PRs
+  * [ ] Highlight any potentially breaking or disruptive changes under "🛠 Breaking Changes", including extended descriptions to help users make compatibility judgements
   * [ ] Add special-thanks call-outs to contributors making significant contributions
 * [ ] Update **Planned/Upcoming Changes** section to remove completed items and add newly upcoming, but incomplete items
 * [ ] Bump version number appropriately in `version.json`
