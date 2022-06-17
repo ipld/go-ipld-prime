@@ -27,8 +27,8 @@ git log --all --graph --date-order --abbrev-commit --decorate --oneline
 The CHANGELOG should be informative for developers wanting to know what changes may pose a risk (highlight these!) and what changes introduce features they may be interested in using.
 
 1. Group commits to subsystem to create a two-level list. Subsections can include "Data Model", "Schemas", "Bindnode", "Selectors", "Codecs", and the meta-category of "Build" to describe changes local to the repository and not necessarily relevant to API consumers.
-2. If there are breaking, or potentially breaking changes, list them under a `### 🛠 Breaking Changes` section.
-3. Otherwise, prune the list of commits down to the set of changes relevant to users, and list them under a `### 🔦 Highlights` section.
+2. If there are breaking, or potentially breaking changes, list them under a `#### 🛠 Breaking Changes` section.
+3. Otherwise, prune the list of commits down to the set of changes relevant to users, and list them under a `#### 🔦 Highlights` section.
 
 Note that there is also a **Planned/Upcoming Changes** section near the top of the CHANGELOG.md. Update this to remove _done_ items and add other items that may be nearing completion but not yet released.
 
