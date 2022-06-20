@@ -47,27 +47,45 @@ func (br BindnodeRegistry) prototypeDataFor(ptrType interface{}) prototypeData {
 // unwrapped without needing the schema, Type, or TypedPrototype.
 // Typically the typeName will match the Go type name, but it can be whatever
 // is defined in the schema for the type being registered.
-// Registering the same type twice on this registry will cause a panic. Use
-// IsRegistered() if this is a possibility that should be avoided.
-// This call may also panic if the schema is invalid or the type doesn't match
-// the schema.
-func (br BindnodeRegistry) RegisterType(ptrType interface{}, schema string, typeName string, options ...bindnode.Option) {
+// Registering the same type twice on this registry will cause an error.
+// This call may also error if the schema is invalid or the type doesn't match
+// the schema. Additionally, panics from within bindnode's initial prototype
+// checks will be captured and returned as errors from this function.
+func (br BindnodeRegistry) RegisterType(ptrType interface{}, schema string, typeName string, options ...bindnode.Option) (err error) {
 	typ := typeOf(ptrType)
 	if _, ok := br[typ]; ok {
-		panic(fmt.Sprintf("bindnode utils: type already registered: %s", typ.Name()))
+		return fmt.Errorf("bindnode utils: type already registered: %s", typ.Name())
 	}
 	typeSystem, err := ipld.LoadSchemaBytes([]byte(schema))
 	if err != nil {
-		panic(fmt.Sprintf("bindnode utils: failed to load schema: %s", err.Error()))
+		return fmt.Errorf("bindnode utils: failed to load schema: %s", err.Error())
 	}
 	schemaType := typeSystem.TypeByName(typeName)
 	if schemaType == nil {
-		panic(fmt.Sprintf("bindnode utils: schema for [%T] does not contain that named type [%s]", ptrType, typ.Name()))
+		return fmt.Errorf("bindnode utils: schema for [%T] does not contain that named type [%s]", ptrType, typ.Name())
 	}
+
+	// focusing on bindnode setup panics
+	defer func() {
+		if rec := recover(); rec != nil {
+			switch v := rec.(type) {
+			case string:
+				err = fmt.Errorf(v)
+			case error:
+				err = v
+			default:
+				panic(rec)
+			}
+		}
+	}()
+
+	proto := bindnode.Prototype(ptrType, schemaType, options...)
 	br[typ] = prototypeData{
-		bindnode.Prototype(ptrType, schemaType, options...),
+		proto,
 		options,
 	}
+
+	return err
 }
 
 // IsRegistered can be used to determine if the type has already been registered
