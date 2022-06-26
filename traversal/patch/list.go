@@ -1,4 +1,4 @@
-package amend
+package patch
 
 import (
 	"github.com/emirpasic/gods/lists/arraylist"
@@ -26,9 +26,10 @@ type listAmender struct {
 
 func newListAmender(base datamodel.Node, parent Amender, create bool) Amender {
 	var mods *arraylist.List
-	// If the base node is already a list-amender *for the same base node*, reuse the modification metadata because that
-	// encapsulates all accumulated modifications.
-	if amd, castOk := base.(*listAmender); castOk && (base == amd.base) {
+	// If the base node is already a list-amender, reuse the metadata that encapsulates all accumulated modifications
+	// but reset `parent` and `created`.
+	if amd, castOk := base.(*listAmender); castOk {
+		base = amd.base
 		mods = amd.mods
 	} else {
 		// Start with fresh state because existing metadata could not be reused.
@@ -200,7 +201,7 @@ func (a *listAmender) Add(path datamodel.Path, value datamodel.Node, createParen
 	childVal, err := a.LookupBySegment(childSeg)
 	if err != nil {
 		// - Return any error other than "not exists".
-		// - If the chile node does not exist and `createParents = true`, create the new hierarchy, otherwise throw an
+		// - If the child node does not exist and `createParents = true`, create the new hierarchy, otherwise throw an
 		//   error.
 		// - Even if `createParent = false`, if we're at the leaf, don't throw an error because we don't need to create
 		//   any more intermediate parent nodes.

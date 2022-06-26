@@ -1,4 +1,4 @@
-package amend
+package patch
 
 import (
 	"github.com/ipld/go-ipld-prime/datamodel"

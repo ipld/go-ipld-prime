@@ -1,4 +1,4 @@
-package amend
+package patch
 
 import (
 	"github.com/emirpasic/gods/maps/linkedhashmap"
@@ -29,10 +29,10 @@ type mapAmender struct {
 }
 
 func newMapAmender(base datamodel.Node, parent Amender, create bool) Amender {
-	// If the base node is already a map-amender *for the same base node*, reuse the modification metadata but reset
-	// other information (viz. parent, created).
-	if amd, castOk := base.(*mapAmender); castOk && (base == amd.base) {
-		return &mapAmender{base, parent, create, amd.mods, amd.rems, amd.adds}
+	// If the base node is already a map-amender, reuse the metadata that encapsulates all accumulated modifications but
+	// reset `parent` and `created`.
+	if amd, castOk := base.(*mapAmender); castOk {
+		return &mapAmender{amd.base, parent, create, amd.mods, amd.rems, amd.adds}
 	} else {
 		// Start with fresh state because existing metadata could not be reused.
 		return &mapAmender{base, parent, create, linkedhashmap.New(), 0, 0}
@@ -233,7 +233,7 @@ func (a *mapAmender) Add(path datamodel.Path, value datamodel.Node, createParent
 	childVal, err := a.LookupBySegment(childSeg)
 	if err != nil {
 		// - Return any error other than "not exists".
-		// - If the chile node does not exist and `createParents = true`, create the new hierarchy, otherwise throw an
+		// - If the child node does not exist and `createParents = true`, create the new hierarchy, otherwise throw an
 		//   error.
 		// - Even if `createParent = false`, if we're at the leaf, don't throw an error because we don't need to create
 		//   any more intermediate parent nodes.
