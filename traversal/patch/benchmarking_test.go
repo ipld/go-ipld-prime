@@ -12,6 +12,7 @@ import (
 	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/fluent/qp"
 	"github.com/ipld/go-ipld-prime/node/basicnode"
+	"github.com/ipld/go-ipld-prime/traversal"
 )
 
 var addTests = []struct {
@@ -69,9 +70,9 @@ func BenchmarkAmend_Map_Add(b *testing.B) {
 			})
 			var err error
 			for r := 0; r < b.N; r++ {
-				a := NewAmender(n)
+				a := traversal.NewAmender(n)
 				for i := 0; i < v.num; i++ {
-					_, err = EvalOne(a.(datamodel.Node), Operation{
+					_, err = EvalOne(a.Build(), Operation{
 						Op:    Op_Add,
 						Path:  datamodel.ParsePath("/new-key-" + strconv.Itoa(i)),
 						Value: basicnode.NewString("new-value-" + strconv.Itoa(i)),
@@ -103,9 +104,9 @@ func BenchmarkAmend_List_Add(b *testing.B) {
 			})
 			var err error
 			for r := 0; r < b.N; r++ {
-				a := NewAmender(n)
+				a := traversal.NewAmender(n)
 				for i := 0; i < v.num; i++ {
-					_, err = EvalOne(a.(datamodel.Node), Operation{
+					_, err = EvalOne(a.Build(), Operation{
 						Op:    Op_Add,
 						Path:  datamodel.ParsePath("/0"), // insert at the start for worst-case
 						Value: basicnode.NewString("new-entry-" + strconv.Itoa(i)),
@@ -137,9 +138,9 @@ func BenchmarkAmend_Map_Remove(b *testing.B) {
 			})
 			var err error
 			for r := 0; r < b.N; r++ {
-				a := NewAmender(n)
+				a := traversal.NewAmender(n)
 				for i := 0; i < v.num; i++ {
-					_, err = EvalOne(a.(datamodel.Node), Operation{
+					_, err = EvalOne(a.Build(), Operation{
 						Op:   Op_Remove,
 						Path: datamodel.ParsePath("/key-" + strconv.Itoa(i)),
 					})
@@ -170,9 +171,9 @@ func BenchmarkAmend_List_Remove(b *testing.B) {
 			})
 			var err error
 			for r := 0; r < b.N; r++ {
-				a := NewAmender(n)
+				a := traversal.NewAmender(n)
 				for i := 0; i < v.num; i++ {
-					_, err = EvalOne(a.(datamodel.Node), Operation{
+					_, err = EvalOne(a.Build(), Operation{
 						Op:   Op_Remove,
 						Path: datamodel.ParsePath("/0"), // remove from the start for worst-case
 					})
@@ -203,9 +204,9 @@ func BenchmarkAmend_Map_Replace(b *testing.B) {
 			})
 			var err error
 			for r := 0; r < b.N; r++ {
-				a := NewAmender(n)
+				a := traversal.NewAmender(n)
 				for i := 0; i < v.num; i++ {
-					_, err = EvalOne(a.(datamodel.Node), Operation{
+					_, err = EvalOne(a.Build(), Operation{
 						Op:    Op_Replace,
 						Path:  datamodel.ParsePath("/key-" + strconv.Itoa(rand.Intn(v.size))),
 						Value: basicnode.NewString("new-value-" + strconv.Itoa(i)),
@@ -237,9 +238,9 @@ func BenchmarkAmend_List_Replace(b *testing.B) {
 			})
 			var err error
 			for r := 0; r < b.N; r++ {
-				a := NewAmender(n)
+				a := traversal.NewAmender(n)
 				for i := 0; i < v.num; i++ {
-					_, err = EvalOne(a.(datamodel.Node), Operation{
+					_, err = EvalOne(a.Build(), Operation{
 						Op:    Op_Replace,
 						Path:  datamodel.ParsePath("/" + strconv.Itoa(rand.Intn(v.size))),
 						Value: basicnode.NewString("new-entry-" + strconv.Itoa(i)),

@@ -1,6 +1,7 @@
-package patch
+package traversal
 
 import (
+	"fmt"
 	"github.com/emirpasic/gods/maps/linkedhashmap"
 
 	"github.com/ipld/go-ipld-prime/datamodel"
@@ -192,7 +193,7 @@ func (itr *mapAmender_Iterator) Next() (k datamodel.Node, v datamodel.Node, _ er
 			}
 			// Skip "wrapper" nodes that represent existing sub-nodes in the hierarchy corresponding to an added leaf
 			// node.
-			if amd, castOk := v.(Amender); castOk && !isCreated(amd) {
+			if !isCreated(v) {
 				continue
 			}
 			// We found a "real" node to return, increment the counter.
@@ -209,26 +210,51 @@ func (itr *mapAmender_Iterator) Done() bool {
 	return int64(itr.idx) >= itr.amd.Length()
 }
 
-func (a *mapAmender) Get(path datamodel.Path) (datamodel.Node, error) {
+func (a *mapAmender) Get(prog *Progress, path datamodel.Path, trackProgress bool) (datamodel.Node, error) {
+	// Check the budget
+	if prog.Budget != nil {
+		if prog.Budget.NodeBudget <= 0 {
+			return nil, &ErrBudgetExceeded{BudgetKind: "node", Path: prog.Path}
+		}
+		prog.Budget.NodeBudget--
+	}
 	childSeg, remainingPath := path.Shift()
+	prog.Path = prog.Path.AppendSegment(childSeg)
 	childVal, err := a.LookupBySegment(childSeg)
-	atLeaf := remainingPath.Len() == 0
 	// Since we're explicitly looking for a node, look for the child node in the current amender state and throw an
 	// error if it does not exist.
 	if err != nil {
 		return nil, err
 	}
-	childAmender := newAmender(childVal, a, childVal.Kind(), false)
-	a.mods.Put(childSeg, childAmender)
-	if atLeaf {
-		return childVal, nil
-	} else {
-		return childAmender.Get(remainingPath)
-	}
+	return a.storeChildAmender(childSeg, childVal, childVal.Kind(), false, trackProgress).Get(prog, remainingPath, trackProgress)
 }
 
-func (a *mapAmender) Add(path datamodel.Path, value datamodel.Node, createParents bool) error {
+func (a *mapAmender) Transform(prog *Progress, path datamodel.Path, fn TransformFn, createParents bool) (datamodel.Node, error) {
+	// Allow the base node to be replaced.
+	if path.Len() == 0 {
+		prevNode := a.Build()
+		if newNode, err := fn(*prog, prevNode); err != nil {
+			return nil, err
+		} else {
+			// Go through `newMapAmender` in case `newNode` is already a map-amender.
+			newAmd := newMapAmender(newNode, a.parent, a.created).(*mapAmender)
+			// Reset the current amender to use the transformed node.
+			a.base = newAmd.base
+			a.mods = newAmd.mods
+			a.rems = newAmd.rems
+			a.adds = newAmd.adds
+			return prevNode, nil
+		}
+	}
+	// Check the budget
+	if prog.Budget != nil {
+		if prog.Budget.NodeBudget <= 0 {
+			return nil, &ErrBudgetExceeded{BudgetKind: "node", Path: prog.Path}
+		}
+		prog.Budget.NodeBudget--
+	}
 	childSeg, remainingPath := path.Shift()
+	prog.Path = prog.Path.AppendSegment(childSeg)
 	atLeaf := remainingPath.Len() == 0
 	childVal, err := a.LookupBySegment(childSeg)
 	if err != nil {
@@ -238,29 +264,45 @@ func (a *mapAmender) Add(path datamodel.Path, value datamodel.Node, createParent
 		// - Even if `createParent = false`, if we're at the leaf, don't throw an error because we don't need to create
 		//   any more intermediate parent nodes.
 		if _, notFoundErr := err.(datamodel.ErrNotExists); !notFoundErr || !(atLeaf || createParents) {
-			return err
+			return nil, fmt.Errorf("transform: parent position at %q did not exist (and createParents was false)", prog.Path)
 		}
+	}
+	if atLeaf {
+		if newChildVal, err := fn(*prog, childVal); err != nil {
+			return nil, err
+		} else if newChildVal == nil {
+			// Use the "Null" node to indicate a removed child.
+			a.mods.Put(childSeg, datamodel.Null)
+			// If the child node being removed is a new node previously added to the node hierarchy, decrement `adds`,
+			// otherwise increment `rems`. This allows us to retain knowledge about the "history" of the base hierarchy.
+			if isCreated(newChildVal) {
+				a.rems++
+			} else {
+				a.adds--
+			}
+		} else {
+			// While building the nested amender tree, only count nodes as "added" when they didn't exist and had to be
+			// created to fill out the hierarchy.
+			create := false
+			if childVal == nil {
+				a.adds++
+				create = true
+			}
+			a.storeChildAmender(childSeg, newChildVal, newChildVal.Kind(), create, true)
+		}
+		return childVal, nil
 	}
 	// While building the nested amender tree, only count nodes as "added" when they didn't exist and had to be created
 	// to fill out the hierarchy.
+	var childKind datamodel.Kind
 	create := false
 	if childVal == nil {
 		a.adds++
 		create = true
-	}
-	var childKind datamodel.Kind
-	if atLeaf {
-		if childVal != nil {
-			// The leaf must not already exist.
-			return datamodel.ErrRepeatedMapKey{Key: basicnode.NewString(childSeg.String())}
-		}
-		childVal = value
-		childKind = value.Kind()
-	} else {
 		// If we're not at the leaf yet, look ahead on the remaining path to determine what kind of intermediate parent
 		// node we need to create.
 		nextChildSeg, _ := remainingPath.Shift()
-		if _, err := nextChildSeg.Index(); err == nil {
+		if _, err = nextChildSeg.Index(); err == nil {
 			// As per the discussion [here](https://github.com/smrz2001/go-ipld-prime/pull/1#issuecomment-1143035685),
 			// this code assumes that if we're dealing with an integral path segment, it corresponds to a list index.
 			childKind = datamodel.Kind_List
@@ -268,80 +310,16 @@ func (a *mapAmender) Add(path datamodel.Path, value datamodel.Node, createParent
 			// From the same discussion as above, any non-integral, intermediate path can be assumed to be a map key.
 			childKind = datamodel.Kind_Map
 		}
-	}
-	childAmender := newAmender(childVal, a, childKind, create)
-	a.mods.Put(childSeg, childAmender)
-	if atLeaf {
-		return nil
 	} else {
-		return childAmender.Add(remainingPath, value, createParents)
+		childKind = childVal.Kind()
 	}
+	return a.storeChildAmender(childSeg, childVal, childKind, create, true).Transform(prog, remainingPath, fn, createParents)
 }
 
-func (a *mapAmender) Remove(path datamodel.Path) (datamodel.Node, error) {
-	childSeg, remainingPath := path.Shift()
-	childVal, err := a.LookupBySegment(childSeg)
-	atLeaf := remainingPath.Len() == 0
-	// Since we're explicitly looking for a node, look for the child node in the current amender state and throw an
-	// error if it does not exist.
-	if err != nil {
-		return nil, err
+func (a *mapAmender) storeChildAmender(seg datamodel.PathSegment, n datamodel.Node, k datamodel.Kind, create bool, trackProgress bool) Amender {
+	childAmender := newAmender(n, a, k, create)
+	if trackProgress {
+		a.mods.Put(seg, childAmender)
 	}
-	if atLeaf {
-		// Use the "Null" node to indicate a removed child.
-		a.mods.Put(childSeg, datamodel.Null)
-		// If this parent node is an amender and present in the base hierarchy, increment `rems`, otherwise decrement
-		// `adds`. This allows us to retain knowledge about the "history" of the base hierarchy.
-		if ma, mapCastOk := childVal.(*mapAmender); mapCastOk {
-			if ma.base != nil {
-				a.rems++
-			} else {
-				a.adds--
-			}
-		} else if la, listCastOk := childVal.(*listAmender); listCastOk {
-			if la.base != nil {
-				a.rems++
-			} else {
-				a.adds--
-			}
-		} else {
-			a.rems++
-		}
-		return childVal, nil
-	} else {
-		childAmender := newAmender(childVal, a, childVal.Kind(), false)
-		// No need to update `rems` since we haven't reached the parent whose child is being removed.
-		a.mods.Put(childSeg, childAmender)
-		return childAmender.Remove(remainingPath)
-	}
-}
-
-func (a *mapAmender) Replace(path datamodel.Path, value datamodel.Node) (datamodel.Node, error) {
-	childSeg, remainingPath := path.Shift()
-	childVal, err := a.LookupBySegment(childSeg)
-	atLeaf := remainingPath.Len() == 0
-	// Since we're explicitly looking for a node, look for the child node in the current amender state and throw an
-	// error if it does not exist.
-	if err != nil {
-		return nil, err
-	}
-	var childKind datamodel.Kind
-	if atLeaf {
-		childVal = value
-		childKind = value.Kind()
-	} else if _, err := childSeg.Index(); err == nil {
-		// As per the discussion [here](https://github.com/smrz2001/go-ipld-prime/pull/1#issuecomment-1143035685), this
-		// code assumes that if we're dealing with an integral path segment, it corresponds to a list index.
-		childKind = datamodel.Kind_List
-	} else {
-		// From the same discussion as above, any non-integral, intermediate path can be assumed to be a map key.
-		childKind = datamodel.Kind_Map
-	}
-	childAmender := newAmender(childVal, a, childKind, false)
-	a.mods.Put(childSeg, childAmender)
-	if atLeaf {
-		return childVal, nil
-	} else {
-		return childAmender.Replace(remainingPath, value)
-	}
+	return childAmender
 }

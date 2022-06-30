@@ -1,8 +1,6 @@
-package patch
+package traversal
 
-import (
-	"github.com/ipld/go-ipld-prime/datamodel"
-)
+import "github.com/ipld/go-ipld-prime/datamodel"
 
 var (
 	_ datamodel.Node = &anyAmender{}
@@ -16,7 +14,12 @@ type anyAmender struct {
 }
 
 func newAnyAmender(base datamodel.Node, parent Amender, create bool) Amender {
-	return &anyAmender{base, parent, create}
+	// If the base node is already an any-amender, reuse it but reset `parent` and `created`.
+	if amd, castOk := base.(*anyAmender); castOk {
+		return &anyAmender{amd.base, parent, create}
+	} else {
+		return &anyAmender{base, parent, create}
+	}
 }
 
 func (a *anyAmender) Build() datamodel.Node {
@@ -92,34 +95,31 @@ func (a *anyAmender) Prototype() datamodel.NodePrototype {
 	return a.base.Prototype()
 }
 
-func (a *anyAmender) Get(path datamodel.Path) (datamodel.Node, error) {
-	// If the base node is an amender, use it, otherwise panic.
+func (a *anyAmender) Get(prog *Progress, path datamodel.Path, trackProgress bool) (datamodel.Node, error) {
+	// If the base node is an amender, use it, otherwise return the base node.
 	if amd, castOk := a.base.(Amender); castOk {
-		return amd.Get(path)
+		return amd.Get(prog, path, trackProgress)
 	}
-	panic("misuse")
+	return a.base, nil
 }
 
-func (a *anyAmender) Add(path datamodel.Path, value datamodel.Node, createParents bool) error {
-	// If the base node is an amender, use it, otherwise panic.
-	if amd, castOk := a.base.(Amender); castOk {
-		return amd.Add(path, value, createParents)
+func (a *anyAmender) Transform(prog *Progress, path datamodel.Path, fn TransformFn, createParents bool) (datamodel.Node, error) {
+	// Allow the base node to be replaced.
+	if path.Len() == 0 {
+		prevNode := a.Build()
+		if newNode, err := fn(*prog, prevNode); err != nil {
+			return nil, err
+		} else {
+			// Go through `newAnyAmender` in case `newNode` is already an any-amender.
+			newAmd := newAnyAmender(newNode, a.parent, a.created).(*anyAmender)
+			// Reset the current amender to use the transformed node.
+			a.base = newAmd.base
+			return prevNode, nil
+		}
 	}
-	panic("misuse")
-}
-
-func (a *anyAmender) Remove(path datamodel.Path) (datamodel.Node, error) {
 	// If the base node is an amender, use it, otherwise panic.
 	if amd, castOk := a.base.(Amender); castOk {
-		return amd.Remove(path)
-	}
-	panic("misuse")
-}
-
-func (a *anyAmender) Replace(path datamodel.Path, value datamodel.Node) (datamodel.Node, error) {
-	// If the base node is an amender, use it, otherwise panic.
-	if amd, castOk := a.base.(Amender); castOk {
-		return amd.Replace(path, value)
+		return amd.Transform(prog, path, fn, createParents)
 	}
 	panic("misuse")
 }
