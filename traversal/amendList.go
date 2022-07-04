@@ -20,19 +20,17 @@ type listElement struct {
 }
 
 type listAmender struct {
+	cfg     *AmendOptions
 	base    datamodel.Node
 	parent  Amender
 	created bool
-	mods    *arraylist.List
+	mods    arraylist.List
 }
 
-func newListAmender(base datamodel.Node, parent Amender, create bool) Amender {
-	var mods *arraylist.List
-	// If the base node is already a list-amender, reuse the metadata that encapsulates all accumulated modifications
-	// but reset `parent` and `created`.
+func (cfg *AmendOptions) newListAmender(base datamodel.Node, parent Amender, create bool) Amender {
+	// If the base node is already a list-amender, reuse the mutation state but reset `parent` and `created`.
 	if amd, castOk := base.(*listAmender); castOk {
-		base = amd.base
-		mods = amd.mods
+		return &listAmender{cfg, amd.base, parent, create, amd.mods}
 	} else {
 		// Start with fresh state because existing metadata could not be reused.
 		var elems []interface{}
@@ -44,9 +42,8 @@ func newListAmender(base datamodel.Node, parent Amender, create bool) Amender {
 		} else {
 			elems = make([]interface{}, 0)
 		}
-		mods = arraylist.New(elems...)
+		return &listAmender{cfg, base, parent, create, *arraylist.New(elems...)}
 	}
-	return &listAmender{base, parent, create, mods}
 }
 
 func (a *listAmender) Build() datamodel.Node {
@@ -207,10 +204,7 @@ func (a *listAmender) Transform(prog *Progress, path datamodel.Path, fn Transfor
 			return nil, fmt.Errorf("transform: cannot transform root into incompatible type: %q", newNode.Kind())
 		} else {
 			// Go through `newListAmender` in case `newNode` is already a list-amender.
-			newAmd := newListAmender(newNode, a.parent, a.created).(*listAmender)
-			// Reset the current amender to use the transformed node.
-			a.base = newAmd.base
-			a.mods = newAmd.mods
+			*a = *a.cfg.newListAmender(newNode, a.parent, a.created).(*listAmender)
 			return prevNode, nil
 		}
 	}
@@ -322,7 +316,7 @@ func (a *listAmender) storeChildAmender(childIdx int64, n datamodel.Node, k data
 			// transformation MUST wrap the element in another list so that, once unwrapped, the element can be replaced or
 			// inserted without affecting its semantics. Otherwise, the sub-list's elements will get expanded onto that
 			// index in the main list.
-			childAmender = newAmender(first, a, first.Kind(), childIdx == a.Length())
+			childAmender = a.cfg.newAmender(first, a, first.Kind(), childIdx == a.Length())
 			a.mods.Set(idx, listElement{-1, childAmender.Build()})
 			if n.Length() > 1 {
 				elems := make([]interface{}, n.Length()-1)
@@ -331,15 +325,15 @@ func (a *listAmender) storeChildAmender(childIdx int64, n datamodel.Node, k data
 					if err != nil {
 						return nil, err
 					}
-					elems[i] = listElement{-1, newAmender(next, a, next.Kind(), true).Build()}
+					elems[i] = listElement{-1, a.cfg.newAmender(next, a, next.Kind(), true).Build()}
 				}
 				a.mods.Insert(idx+1, elems...)
 			}
 		} else {
-			childAmender = newAmender(n, a, k, create)
+			childAmender = a.cfg.newAmender(n, a, k, create)
 			a.mods.Set(idx, listElement{-1, childAmender.Build()})
 		}
 		return childAmender, nil
 	}
-	return newAmender(n, a, k, create), nil
+	return a.cfg.newAmender(n, a, k, create), nil
 }

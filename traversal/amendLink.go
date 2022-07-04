@@ -15,24 +15,36 @@ var (
 )
 
 type linkAmender struct {
+	cfg     *AmendOptions
 	base    datamodel.Node
 	parent  Amender
 	created bool
-	link    datamodel.Link
+	nLink   datamodel.Link // newest link: can be `nil` if a transformation occurred, but it hasn't been recomputed
+	pLink   datamodel.Link // previous link: will always have a valid value, even if not the latest
+	child   Amender
 	linkCtx linking.LinkContext
 	linkSys linking.LinkSystem
-	child   Amender
 }
 
-func newLinkAmender(base datamodel.Node, parent Amender, create bool) Amender {
-	// If the base node is already a link-amender, reuse the metadata that encapsulates all accumulated modifications
-	// but reset `parent` and `created`.
+func (cfg *AmendOptions) newLinkAmender(base datamodel.Node, parent Amender, create bool) Amender {
+	// If the base node is already a link-amender, reuse the mutation state but reset `parent` and `created`.
 	if amd, castOk := base.(*linkAmender); castOk {
-		return &linkAmender{amd.base, parent, create, amd.link, amd.linkCtx, amd.linkSys, amd.child}
+		la := &linkAmender{cfg, amd.base, parent, create, amd.nLink, amd.pLink, amd.child, amd.linkCtx, amd.linkSys}
+		// Make a copy of the child amender so that it has its own mutation state
+		if la.child != nil {
+			child := la.child.Build()
+			la.child = cfg.newAmender(child, la, child.Kind(), false)
+		}
+		return la
 	} else {
 		// Start with fresh state because existing metadata could not be reused.
-		link, _ := base.AsLink()
-		return &linkAmender{base, parent, create, link, linking.LinkContext{}, linking.LinkSystem{}, nil}
+		link, err := base.AsLink()
+		if err != nil {
+			panic("misuse")
+		}
+		// `linkCtx` and `linkSys` can be defaulted since they're only needed for recomputing the link after a
+		// transformation occurs, and such a transformation would have populated them correctly.
+		return &linkAmender{cfg, base, parent, create, link, link, nil, linking.LinkContext{}, linking.LinkSystem{}}
 	}
 }
 
@@ -102,7 +114,7 @@ func (a *linkAmender) AsBytes() ([]byte, error) {
 }
 
 func (a *linkAmender) AsLink() (datamodel.Link, error) {
-	return a.link, nil
+	return a.computeLink()
 }
 
 func (a *linkAmender) Prototype() datamodel.NodePrototype {
@@ -113,7 +125,7 @@ func (a *linkAmender) Get(prog *Progress, path datamodel.Path, trackProgress boo
 	// Check the budget
 	if prog.Budget != nil {
 		if prog.Budget.LinkBudget <= 0 {
-			return nil, &ErrBudgetExceeded{BudgetKind: "link", Path: prog.Path, Link: a.link}
+			return nil, &ErrBudgetExceeded{BudgetKind: "link", Path: prog.Path, Link: a.validLink()}
 		}
 		prog.Budget.LinkBudget--
 	}
@@ -137,13 +149,7 @@ func (a *linkAmender) Transform(prog *Progress, path datamodel.Path, fn Transfor
 			return nil, fmt.Errorf("transform: cannot transform root into incompatible type: %q", newNode.Kind())
 		} else {
 			// Go through `newLinkAmender` in case `newNode` is already a link-amender.
-			newAmd := newLinkAmender(newNode, a.parent, a.created).(*linkAmender)
-			// Reset the current amender to use the transformed node.
-			a.base = newAmd.base
-			a.link = newAmd.link
-			a.linkCtx = newAmd.linkCtx
-			a.linkSys = newAmd.linkSys
-			a.child = newAmd.child
+			*a = *a.cfg.newLinkAmender(newNode, a.parent, a.created).(*linkAmender)
 			return prevNode, nil
 		}
 	}
@@ -151,17 +157,48 @@ func (a *linkAmender) Transform(prog *Progress, path datamodel.Path, fn Transfor
 	if err != nil {
 		return nil, err
 	}
-	if _, err = a.child.Transform(prog, path, fn, createParents); err != nil {
+	childVal, err := a.child.Transform(prog, path, fn, createParents)
+	if err != nil {
 		return nil, err
 	}
-	prevNode := a.child.Build()
-	// TODO: Is it possible to store lazily, and not everytime a child is modified? Perhaps this can be configured?
-	newLink, err := a.linkSys.Store(a.linkCtx, a.link.Prototype(), prevNode)
-	if err != nil {
-		return nil, fmt.Errorf("transform: error storing transformed node at %q: %w", prog.Path, err)
+	if a.cfg.LazyLinkUpdate {
+		// Reset the link and lazily compute it when it is needed instead of on every transformation.
+		a.nLink = nil
+	} else {
+		newLink, err := a.linkSys.Store(a.linkCtx, a.nLink.Prototype(), a.child.Build())
+		if err != nil {
+			return nil, fmt.Errorf("transform: error storing transformed node at %q: %w", prog.Path, err)
+		}
+		a.nLink = newLink
 	}
-	a.link = newLink
-	return prevNode, nil
+	return childVal, nil
+}
+
+// validLink will return a valid `Link`, whether the base value, an intermediate recomputed value, or the latest value.
+func (a *linkAmender) validLink() datamodel.Link {
+	if a.nLink == nil {
+		return a.pLink
+	}
+	return a.nLink
+}
+
+func (a *linkAmender) computeLink() (datamodel.Link, error) {
+	// `nLink` can be `nil` if lazy link computation is enabled and the child node has been transformed, but the updated
+	// link has not yet been requested (and thus not recomputed).
+	if a.nLink == nil {
+		// We've already validated that `base` is a valid `Link` and so we don't care about a conversion error here.
+		baseLink, _ := a.base.AsLink()
+		lp := baseLink.Prototype()
+		// `nLink` will only be `nil` if a transformation made it "dirty", indicating that it needs to be recomputed. In
+		// this case, `child` will always have a valid value since it would have already been loaded/updated, so we
+		// don't need to check.
+		newLink, err := a.linkSys.ComputeLink(lp, a.child.Build())
+		if err != nil {
+			return nil, err
+		}
+		a.nLink = newLink
+	}
+	return a.nLink, nil
 }
 
 func (a *linkAmender) loadLink(prog *Progress, trackProgress bool) error {
@@ -169,7 +206,7 @@ func (a *linkAmender) loadLink(prog *Progress, trackProgress bool) error {
 		// Check the budget
 		if prog.Budget != nil {
 			if prog.Budget.LinkBudget <= 0 {
-				return &ErrBudgetExceeded{BudgetKind: "link", Path: prog.Path, Link: a.link}
+				return &ErrBudgetExceeded{BudgetKind: "link", Path: prog.Path, Link: a.validLink()}
 			}
 			prog.Budget.LinkBudget--
 		}
@@ -181,21 +218,22 @@ func (a *linkAmender) loadLink(prog *Progress, trackProgress bool) error {
 			ParentNode: a.parent.Build(),
 		}
 		a.linkSys = prog.Cfg.LinkSystem
+		// `child` will only be `nil` if it was never loaded. In this case, `nLink` will always be valid, so we don't
+		// need to check.
 		// Pick what in-memory format we will build.
-		np, err := prog.Cfg.LinkTargetNodePrototypeChooser(a.link, a.linkCtx)
+		np, err := prog.Cfg.LinkTargetNodePrototypeChooser(a.nLink, a.linkCtx)
 		if err != nil {
-			return fmt.Errorf("error traversing node at %q: could not load link %q: %w", prog.Path, a.link, err)
+			return fmt.Errorf("error traversing node at %q: could not load link %q: %w", prog.Path, a.nLink, err)
 		}
 		// Load link
-		child, err := a.linkSys.Load(a.linkCtx, a.link, np)
+		child, err := a.linkSys.Load(a.linkCtx, a.nLink, np)
 		if err != nil {
-			return fmt.Errorf("error traversing node at %q: could not load link %q: %w", prog.Path, a.link, err)
+			return fmt.Errorf("error traversing node at %q: could not load link %q: %w", prog.Path, a.nLink, err)
 		}
-		// A node loaded from a link can never be considered "created".
-		a.child = newAmender(child, a, child.Kind(), false)
+		a.child = a.cfg.newAmender(child, a, child.Kind(), false)
 		if trackProgress {
 			prog.LastBlock.Path = prog.Path
-			prog.LastBlock.Link = a.link
+			prog.LastBlock.Link = a.nLink
 		}
 	}
 	return nil

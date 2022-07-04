@@ -15,12 +15,13 @@ var (
 )
 
 type mapAmender struct {
+	cfg     *AmendOptions
 	base    datamodel.Node
 	parent  Amender
 	created bool
 	// This is the information needed to present an accurate "effective" view of the base node and all accumulated
 	// modifications.
-	mods *linkedhashmap.Map
+	mods linkedhashmap.Map
 	// This is the count of children *present in the base node* that are removed. Knowing this count allows accurate
 	// traversal of the "effective" node view.
 	rems int
@@ -29,14 +30,13 @@ type mapAmender struct {
 	adds int
 }
 
-func newMapAmender(base datamodel.Node, parent Amender, create bool) Amender {
-	// If the base node is already a map-amender, reuse the metadata that encapsulates all accumulated modifications but
-	// reset `parent` and `created`.
+func (cfg *AmendOptions) newMapAmender(base datamodel.Node, parent Amender, create bool) Amender {
+	// If the base node is already a map-amender, reuse the mutation state but reset `parent` and `created`.
 	if amd, castOk := base.(*mapAmender); castOk {
-		return &mapAmender{amd.base, parent, create, amd.mods, amd.rems, amd.adds}
+		return &mapAmender{cfg, amd.base, parent, create, amd.mods, amd.rems, amd.adds}
 	} else {
 		// Start with fresh state because existing metadata could not be reused.
-		return &mapAmender{base, parent, create, linkedhashmap.New(), 0, 0}
+		return &mapAmender{cfg, base, parent, create, *linkedhashmap.New(), 0, 0}
 	}
 }
 
@@ -53,7 +53,7 @@ func (a *mapAmender) LookupByString(key string) (datamodel.Node, error) {
 	seg := datamodel.PathSegmentOfString(key)
 	// Added/removed nodes override the contents of the base node
 	if mod, exists := a.mods.Get(seg); exists {
-		v := mod.(datamodel.Node)
+		v := mod.(Amender).Build()
 		if v.IsNull() {
 			return nil, datamodel.ErrNotExists{Segment: seg}
 		}
@@ -169,7 +169,7 @@ func (itr *mapAmender_Iterator) Next() (k datamodel.Node, v datamodel.Node, _ er
 				return nil, nil, err
 			}
 			if mod, exists := itr.amd.mods.Get(datamodel.PathSegmentOfString(ks)); exists {
-				v = mod.(datamodel.Node)
+				v = mod.(Amender).Build()
 				// Skip removed nodes
 				if v.IsNull() {
 					continue
@@ -186,7 +186,7 @@ func (itr *mapAmender_Iterator) Next() (k datamodel.Node, v datamodel.Node, _ er
 		for itr.modsItr.Next() {
 			key := itr.modsItr.Key()
 			k = basicnode.NewString(key.(datamodel.PathSegment).String())
-			v = itr.modsItr.Value().(datamodel.Node)
+			v = itr.modsItr.Value().(Amender).Build()
 			// Skip removed nodes.
 			if v.IsNull() {
 				continue
@@ -243,12 +243,7 @@ func (a *mapAmender) Transform(prog *Progress, path datamodel.Path, fn Transform
 			return nil, fmt.Errorf("transform: cannot transform root into incompatible type: %q", newNode.Kind())
 		} else {
 			// Go through `newMapAmender` in case `newNode` is already a map-amender.
-			newAmd := newMapAmender(newNode, a.parent, a.created).(*mapAmender)
-			// Reset the current amender to use the transformed node.
-			a.base = newAmd.base
-			a.mods = newAmd.mods
-			a.rems = newAmd.rems
-			a.adds = newAmd.adds
+			*a = *a.cfg.newMapAmender(newNode, a.parent, a.created).(*mapAmender)
 			return prevNode, nil
 		}
 	}
@@ -278,7 +273,7 @@ func (a *mapAmender) Transform(prog *Progress, path datamodel.Path, fn Transform
 			return nil, err
 		} else if newChildVal == nil {
 			// Use the "Null" node to indicate a removed child.
-			a.mods.Put(childSeg, datamodel.Null)
+			a.mods.Put(childSeg, a.cfg.newAnyAmender(datamodel.Null, a, false))
 			// If the child node being removed is a new node previously added to the node hierarchy, decrement `adds`,
 			// otherwise increment `rems`. This allows us to retain knowledge about the "history" of the base hierarchy.
 			if isCreated(newChildVal) {
@@ -323,7 +318,7 @@ func (a *mapAmender) Transform(prog *Progress, path datamodel.Path, fn Transform
 }
 
 func (a *mapAmender) storeChildAmender(seg datamodel.PathSegment, n datamodel.Node, k datamodel.Kind, create bool, trackProgress bool) Amender {
-	childAmender := newAmender(n, a, k, create)
+	childAmender := a.cfg.newAmender(n, a, k, create)
 	if trackProgress {
 		a.mods.Put(seg, childAmender)
 	}

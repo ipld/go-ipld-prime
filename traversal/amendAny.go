@@ -8,17 +8,18 @@ var (
 )
 
 type anyAmender struct {
+	cfg     *AmendOptions
 	base    datamodel.Node
 	parent  Amender
 	created bool
 }
 
-func newAnyAmender(base datamodel.Node, parent Amender, create bool) Amender {
+func (cfg *AmendOptions) newAnyAmender(base datamodel.Node, parent Amender, create bool) Amender {
 	// If the base node is already an any-amender, reuse it but reset `parent` and `created`.
 	if amd, castOk := base.(*anyAmender); castOk {
-		return &anyAmender{amd.base, parent, create}
+		return &anyAmender{cfg, amd.base, parent, create}
 	} else {
-		return &anyAmender{base, parent, create}
+		return &anyAmender{cfg, base, parent, create}
 	}
 }
 
@@ -111,9 +112,7 @@ func (a *anyAmender) Transform(prog *Progress, path datamodel.Path, fn Transform
 			return nil, err
 		} else {
 			// Go through `newAnyAmender` in case `newNode` is already an any-amender.
-			newAmd := newAnyAmender(newNode, a.parent, a.created).(*anyAmender)
-			// Reset the current amender to use the transformed node.
-			a.base = newAmd.base
+			*a = *a.cfg.newAnyAmender(newNode, a.parent, a.created).(*anyAmender)
 			return prevNode, nil
 		}
 	}

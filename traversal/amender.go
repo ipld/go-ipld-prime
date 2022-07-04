@@ -16,25 +16,34 @@ type Amender interface {
 	Build() datamodel.Node
 }
 
-// NewAmender returns a new amender of the right "type" (i.e. map, list, any) using the specified base node.
+type AmendOptions struct {
+	// If true, will update `Link` nodes lazily on access instead of after every transformation requiring recomputation.
+	LazyLinkUpdate bool
+}
+
 func NewAmender(base datamodel.Node) Amender {
+	return AmendOptions{}.NewAmender(base)
+}
+
+// NewAmender returns a new amender of the right "type" (i.e. map, list, any) using the specified base node.
+func (cfg AmendOptions) NewAmender(base datamodel.Node) Amender {
 	// Do not allow externally creating a new amender without a base node to refer to. Amendment assumes that there is
 	// something to amend.
 	if base == nil {
 		panic("misuse")
 	}
-	return newAmender(base, nil, base.Kind(), false)
+	return cfg.newAmender(base, nil, base.Kind(), false)
 }
 
-func newAmender(base datamodel.Node, parent Amender, kind datamodel.Kind, create bool) Amender {
+func (cfg AmendOptions) newAmender(base datamodel.Node, parent Amender, kind datamodel.Kind, create bool) Amender {
 	if kind == datamodel.Kind_Map {
-		return newMapAmender(base, parent, create)
+		return cfg.newMapAmender(base, parent, create)
 	} else if kind == datamodel.Kind_List {
-		return newListAmender(base, parent, create)
+		return cfg.newListAmender(base, parent, create)
 	} else if kind == datamodel.Kind_Link {
-		return newLinkAmender(base, parent, create)
+		return cfg.newLinkAmender(base, parent, create)
 	} else {
-		return newAnyAmender(base, parent, create)
+		return cfg.newAnyAmender(base, parent, create)
 	}
 }
 
