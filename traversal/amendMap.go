@@ -239,6 +239,8 @@ func (a *mapAmender) Transform(prog *Progress, path datamodel.Path, fn Transform
 		prevNode := a.Build()
 		if newNode, err := fn(*prog, prevNode); err != nil {
 			return nil, err
+		} else if newNode.Kind() != datamodel.Kind_Map {
+			return nil, fmt.Errorf("transform: cannot transform root into incompatible type: %q", newNode.Kind())
 		} else {
 			// Go through `newMapAmender` in case `newNode` is already a map-amender.
 			newAmd := newMapAmender(newNode, a.parent, a.created).(*mapAmender)

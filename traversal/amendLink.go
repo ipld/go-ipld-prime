@@ -117,7 +117,7 @@ func (a *linkAmender) Get(prog *Progress, path datamodel.Path, trackProgress boo
 		}
 		prog.Budget.LinkBudget--
 	}
-	err := a.loadLink(prog)
+	err := a.loadLink(prog, trackProgress)
 	if err != nil {
 		return nil, err
 	}
@@ -133,6 +133,8 @@ func (a *linkAmender) Transform(prog *Progress, path datamodel.Path, fn Transfor
 		prevNode := a.Build()
 		if newNode, err := fn(*prog, prevNode); err != nil {
 			return nil, err
+		} else if newNode.Kind() != datamodel.Kind_Link {
+			return nil, fmt.Errorf("transform: cannot transform root into incompatible type: %q", newNode.Kind())
 		} else {
 			// Go through `newLinkAmender` in case `newNode` is already a link-amender.
 			newAmd := newLinkAmender(newNode, a.parent, a.created).(*linkAmender)
@@ -145,14 +147,7 @@ func (a *linkAmender) Transform(prog *Progress, path datamodel.Path, fn Transfor
 			return prevNode, nil
 		}
 	}
-	// Check the budget
-	if prog.Budget != nil {
-		if prog.Budget.LinkBudget <= 0 {
-			return nil, &ErrBudgetExceeded{BudgetKind: "link", Path: prog.Path, Link: a.link}
-		}
-		prog.Budget.LinkBudget--
-	}
-	err := a.loadLink(prog)
+	err := a.loadLink(prog, true)
 	if err != nil {
 		return nil, err
 	}
@@ -160,7 +155,7 @@ func (a *linkAmender) Transform(prog *Progress, path datamodel.Path, fn Transfor
 		return nil, err
 	}
 	prevNode := a.child.Build()
-	// TODO: Is is possible to store lazily, and not everytime a child is modified? Perhaps this can be configured?
+	// TODO: Is it possible to store lazily, and not everytime a child is modified? Perhaps this can be configured?
 	newLink, err := a.linkSys.Store(a.linkCtx, a.link.Prototype(), prevNode)
 	if err != nil {
 		return nil, fmt.Errorf("transform: error storing transformed node at %q: %w", prog.Path, err)
@@ -169,7 +164,7 @@ func (a *linkAmender) Transform(prog *Progress, path datamodel.Path, fn Transfor
 	return prevNode, nil
 }
 
-func (a *linkAmender) loadLink(prog *Progress) error {
+func (a *linkAmender) loadLink(prog *Progress, trackProgress bool) error {
 	if a.child == nil {
 		// Check the budget
 		if prog.Budget != nil {
@@ -198,8 +193,10 @@ func (a *linkAmender) loadLink(prog *Progress) error {
 		}
 		// A node loaded from a link can never be considered "created".
 		a.child = newAmender(child, a, child.Kind(), false)
-		prog.LastBlock.Path = prog.Path
-		prog.LastBlock.Link = a.link
+		if trackProgress {
+			prog.LastBlock.Path = prog.Path
+			prog.LastBlock.Link = a.link
+		}
 	}
 	return nil
 }

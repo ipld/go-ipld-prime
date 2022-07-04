@@ -203,6 +203,8 @@ func (a *listAmender) Transform(prog *Progress, path datamodel.Path, fn Transfor
 		prevNode := a.Build()
 		if newNode, err := fn(*prog, prevNode); err != nil {
 			return nil, err
+		} else if newNode.Kind() != datamodel.Kind_List {
+			return nil, fmt.Errorf("transform: cannot transform root into incompatible type: %q", newNode.Kind())
 		} else {
 			// Go through `newListAmender` in case `newNode` is already a list-amender.
 			newAmd := newListAmender(newNode, a.parent, a.created).(*listAmender)
@@ -297,36 +299,47 @@ func (a *listAmender) Transform(prog *Progress, path datamodel.Path, fn Transfor
 }
 
 func (a *listAmender) storeChildAmender(childIdx int64, n datamodel.Node, k datamodel.Kind, create bool, trackProgress bool) (Amender, error) {
-	idx := int(childIdx)
-	if trackProgress && create && (n.Kind() == datamodel.Kind_List) && (n.Length() > 0) {
-		first, err := n.LookupByIndex(0)
-		if err != nil {
-			return nil, err
-		}
-		// If appending to the end of the main list, all elements from the transformed list should be considered
-		// "created" because they did not exist before. If updating at a particular index in the main list, however, use
-		// the first element from the transformed list to replace the existing element at that index in the main list,
-		// then insert the rest of the transformed list elements after.
-		//
-		// This allows list transformation to perform both insertions (needed by JSON Patch) and replacements (needed by
-		// `FocusedTransform`), while also providing the flexibility to insert more than one element at a particular
-		// index in the list.
-		childAmender := newAmender(first, a, first.Kind(), childIdx == a.Length())
-		a.mods.Set(idx, listElement{-1, childAmender.Build()})
-		if n.Length() > 1 {
-			elems := make([]interface{}, n.Length()-1)
-			for i := range elems {
-				next, err := n.LookupByIndex(int64(i) + 1)
-				if err != nil {
-					return nil, err
-				}
-				elems[i] = listElement{-1, newAmender(next, a, next.Kind(), true).Build()}
+	if trackProgress {
+		var childAmender Amender
+		idx := int(childIdx)
+		if create && (n.Kind() == datamodel.Kind_List) && (n.Length() > 0) {
+			first, err := n.LookupByIndex(0)
+			if err != nil {
+				return nil, err
 			}
-			a.mods.Insert(idx+1, elems...)
+			// The following logic uses a transformed list (if there is one) to perform both insertions (needed by JSON
+			// Patch) and replacements (needed by `FocusedTransform`), while also providing the flexibility to insert more
+			// than one element at a particular index in the list.
+			//
+			// Rules:
+			//  - If appending to the end of the main list, all elements from the transformed list should be considered
+			//    "created" because they did not exist before.
+			//   - If updating at a particular index in the main list, however, use the first element from the transformed
+			//     list to replace the existing element at that index in the main list, then insert the rest of the
+			//     transformed list elements after.
+			//
+			// A special case to consider is that of a list element genuinely being a list itself. If that is the case, the
+			// transformation MUST wrap the element in another list so that, once unwrapped, the element can be replaced or
+			// inserted without affecting its semantics. Otherwise, the sub-list's elements will get expanded onto that
+			// index in the main list.
+			childAmender = newAmender(first, a, first.Kind(), childIdx == a.Length())
+			a.mods.Set(idx, listElement{-1, childAmender.Build()})
+			if n.Length() > 1 {
+				elems := make([]interface{}, n.Length()-1)
+				for i := range elems {
+					next, err := n.LookupByIndex(int64(i) + 1)
+					if err != nil {
+						return nil, err
+					}
+					elems[i] = listElement{-1, newAmender(next, a, next.Kind(), true).Build()}
+				}
+				a.mods.Insert(idx+1, elems...)
+			}
+		} else {
+			childAmender = newAmender(n, a, k, create)
+			a.mods.Set(idx, listElement{-1, childAmender.Build()})
 		}
 		return childAmender, nil
 	}
-	childAmender := newAmender(n, a, k, create)
-	a.mods.Set(idx, listElement{-1, childAmender.Build()})
-	return childAmender, nil
+	return newAmender(n, a, k, create), nil
 }
