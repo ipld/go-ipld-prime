@@ -1,8 +1,6 @@
 package traversal
 
-import (
-	"github.com/ipld/go-ipld-prime/datamodel"
-)
+import "github.com/ipld/go-ipld-prime/datamodel"
 
 // Focus traverses a Node graph according to a path, reaches a single Node,
 // and calls the given VisitFn on that reached node.

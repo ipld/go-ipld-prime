@@ -211,6 +211,10 @@ func (itr *mapAmender_Iterator) Done() bool {
 }
 
 func (a *mapAmender) Get(prog *Progress, path datamodel.Path, trackProgress bool) (datamodel.Node, error) {
+	// If the root is requested, return the `Node` view of the amender.
+	if path.Len() == 0 {
+		return a.Build(), nil
+	}
 	// Check the budget
 	if prog.Budget != nil {
 		if prog.Budget.NodeBudget <= 0 {

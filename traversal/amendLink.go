@@ -122,7 +122,7 @@ func (a *linkAmender) Get(prog *Progress, path datamodel.Path, trackProgress boo
 		return nil, err
 	}
 	if path.Len() == 0 {
-		return basicnode.NewLink(a.link), nil
+		return a.Build(), nil
 	}
 	return a.child.Get(prog, path, trackProgress)
 }
@@ -182,7 +182,7 @@ func (a *linkAmender) loadLink(prog *Progress) error {
 		a.linkCtx = linking.LinkContext{
 			Ctx:        prog.Cfg.Ctx,
 			LinkPath:   prog.Path,
-			LinkNode:   basicnode.NewLink(a.link),
+			LinkNode:   a.Build(),
 			ParentNode: a.parent.Build(),
 		}
 		a.linkSys = prog.Cfg.LinkSystem
