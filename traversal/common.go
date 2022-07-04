@@ -44,18 +44,18 @@ func (prog *Progress) init() {
 // If it's a string or an int, that's it.
 // Any other case will panic.  (If you're using this one keys returned by a MapIterator, though, you can ignore this possibility;
 // any compliant map implementation should've already rejected that data long ago, and should not be able to yield it to you from an iterator.)
-func asPathSegment(n datamodel.Node) datamodel.PathSegment {
-	if n2, ok := n.(schema.TypedNode); ok {
-		n = n2.Representation()
-	}
-	switch n.Kind() {
-	case datamodel.Kind_String:
-		s, _ := n.AsString()
-		return datamodel.PathSegmentOfString(s)
-	case datamodel.Kind_Int:
-		i, _ := n.AsInt()
-		return datamodel.PathSegmentOfInt(i)
-	default:
-		panic(fmt.Errorf("cannot get pathsegment from a %s", n.Kind()))
-	}
-}
+//func asPathSegment(n datamodel.Node) datamodel.PathSegment {
+//	if n2, ok := n.(schema.TypedNode); ok {
+//		n = n2.Representation()
+//	}
+//	switch n.Kind() {
+//	case datamodel.Kind_String:
+//		s, _ := n.AsString()
+//		return datamodel.PathSegmentOfString(s)
+//	case datamodel.Kind_Int:
+//		i, _ := n.AsInt()
+//		return datamodel.PathSegmentOfInt(i)
+//	default:
+//		panic(fmt.Errorf("cannot get pathsegment from a %s", n.Kind()))
+//	}
+//}
