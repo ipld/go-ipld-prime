@@ -14,6 +14,7 @@ import (
 	"github.com/ipld/go-ipld-prime/fluent"
 	"github.com/ipld/go-ipld-prime/linking"
 	cidlink "github.com/ipld/go-ipld-prime/linking/cid"
+	"github.com/ipld/go-ipld-prime/linking/preload"
 	"github.com/ipld/go-ipld-prime/node/basicnode"
 	nodetests "github.com/ipld/go-ipld-prime/node/tests"
 	"github.com/ipld/go-ipld-prime/storage"
@@ -435,6 +436,7 @@ func TestWalkBlockLoadOrder(t *testing.T) {
 		s datamodel.Node,
 		linkVisitOnce bool,
 		startAtPath datamodel.Path,
+		preloader preload.Loader,
 		readFn func(lc linking.LinkContext, l datamodel.Link) (io.Reader, error)) {
 
 		var count int
@@ -453,6 +455,7 @@ func TestWalkBlockLoadOrder(t *testing.T) {
 				LinkTargetNodePrototypeChooser: basicnode.Chooser,
 				LinkVisitOnlyOnce:              linkVisitOnce,
 				StartAtPath:                    startAtPath,
+				Preloader:                      preloader,
 			},
 		}.WalkMatching(newRootNode, sel, func(prog traversal.Progress, n datamodel.Node) error {
 			return nil
@@ -463,16 +466,47 @@ func TestWalkBlockLoadOrder(t *testing.T) {
 
 	t.Run("CommonSelector_MatchAllRecursively", func(t *testing.T) {
 		s := selectorparse.CommonSelector_MatchAllRecursively
-		verifySelectorLoads(t, expectedAllBlocks, s, false, datamodel.NewPath(nil), func(lctx linking.LinkContext, lnk datamodel.Link) (io.Reader, error) {
+		verifySelectorLoads(t, expectedAllBlocks, s, false, datamodel.NewPath(nil), nil, func(lctx linking.LinkContext, lnk datamodel.Link) (io.Reader, error) {
 			return storage.GetStream(lctx.Ctx, &store, lnk.Binary())
 		})
 	})
 
 	t.Run("CommonSelector_ExploreAllRecursively", func(t *testing.T) {
 		s := selectorparse.CommonSelector_ExploreAllRecursively
-		verifySelectorLoads(t, expectedAllBlocks, s, false, datamodel.NewPath(nil), func(lctx linking.LinkContext, lnk datamodel.Link) (io.Reader, error) {
+		verifySelectorLoads(t, expectedAllBlocks, s, false, datamodel.NewPath(nil), nil, func(lctx linking.LinkContext, lnk datamodel.Link) (io.Reader, error) {
 			return storage.GetStream(lctx.Ctx, &store, lnk.Binary())
 		})
+	})
+
+	t.Run("explore all with preload", func(t *testing.T) {
+		s := selectorparse.CommonSelector_ExploreAllRecursively
+		rootNodePreloads := []datamodel.Link{middleListNodeLnk, middleMapNodeLnk, leafAlphaLnk}
+		middleListNodePreloads := []datamodel.Link{leafAlphaLnk, leafAlphaLnk, leafBetaLnk, leafAlphaLnk}
+		middleMapNodePreloads := []datamodel.Link{leafAlphaLnk}
+		rootNodePreloadsRecursive := [][]datamodel.Link{rootNodePreloads, middleListNodePreloads, middleMapNodePreloads}
+		expectedLinks := [][]datamodel.Link{
+			{rootNodeLnk, middleListNodeLnk, rootNodeLnk, middleListNodeLnk, rootNodeLnk, middleListNodeLnk},
+		}
+		for i := 0; i < 3; i++ {
+			expectedLinks = append(expectedLinks, rootNodePreloadsRecursive...)
+			expectedLinks = append(expectedLinks, middleListNodePreloads)
+		}
+		preloadIndex := 0
+		preloader := func(_ preload.Context, links []preload.Link) {
+			if preloadIndex >= len(expectedLinks) {
+				t.Fatal("too many preloads")
+			}
+			expectedLinkRound := expectedLinks[preloadIndex]
+			preloadIndex++
+			qt.Assert(t, len(links), qt.Equals, len(expectedLinkRound))
+			for i, l := range links {
+				qt.Check(t, l.Link, qt.Equals, expectedLinkRound[i])
+			}
+		}
+		verifySelectorLoads(t, expectedAllBlocks, s, false, datamodel.NewPath(nil), preloader, func(lctx linking.LinkContext, lnk datamodel.Link) (io.Reader, error) {
+			return storage.GetStream(lctx.Ctx, &store, lnk.Binary())
+		})
+		qt.Check(t, preloadIndex, qt.Equals, len(expectedLinks))
 	})
 
 	t.Run("constructed explore-all selector", func(t *testing.T) {
@@ -481,7 +515,7 @@ func TestWalkBlockLoadOrder(t *testing.T) {
 		s := ssb.ExploreRecursive(selector.RecursionLimitNone(),
 			ssb.ExploreAll(ssb.ExploreRecursiveEdge())).
 			Node()
-		verifySelectorLoads(t, expectedAllBlocks, s, false, datamodel.NewPath(nil), func(lctx linking.LinkContext, lnk datamodel.Link) (io.Reader, error) {
+		verifySelectorLoads(t, expectedAllBlocks, s, false, datamodel.NewPath(nil), nil, func(lctx linking.LinkContext, lnk datamodel.Link) (io.Reader, error) {
 			return storage.GetStream(lctx.Ctx, &store, lnk.Binary())
 		})
 	})
@@ -510,7 +544,7 @@ func TestWalkBlockLoadOrder(t *testing.T) {
 
 		s := selectorparse.CommonSelector_ExploreAllRecursively
 		visited := make(map[datamodel.Link]bool)
-		verifySelectorLoads(t, expectedSkipMeBlocks, s, false, datamodel.NewPath(nil), func(lc linking.LinkContext, l datamodel.Link) (io.Reader, error) {
+		verifySelectorLoads(t, expectedSkipMeBlocks, s, false, datamodel.NewPath(nil), nil, func(lc linking.LinkContext, l datamodel.Link) (io.Reader, error) {
 			log.Printf("load %v [%v]\n", l, visited[l])
 			if visited[l] {
 				return nil, traversal.SkipMe{}
@@ -532,7 +566,7 @@ func TestWalkBlockLoadOrder(t *testing.T) {
 			middleMapNodeLnk,
 		}
 		s := selectorparse.CommonSelector_ExploreAllRecursively
-		verifySelectorLoads(t, expectedLinkRevisitBlocks, s, true, datamodel.NewPath(nil), func(lctx linking.LinkContext, lnk datamodel.Link) (io.Reader, error) {
+		verifySelectorLoads(t, expectedLinkRevisitBlocks, s, true, datamodel.NewPath(nil), nil, func(lctx linking.LinkContext, lnk datamodel.Link) (io.Reader, error) {
 			return storage.GetStream(lctx.Ctx, &store, lnk.Binary())
 		})
 	})
@@ -540,23 +574,28 @@ func TestWalkBlockLoadOrder(t *testing.T) {
 		// when using LinkRevisit:false to skip duplicate block loads, our loader
 		// doesn't even get to see the load attempts (unlike SkipMe, where the
 		// loader signals the skips)
-		testPathsToBlocksSkipped := map[string][]datamodel.Link{
+		testPathsToBlocksSkipped := []struct {
+			path               string
+			expectedLinkVisits []datamodel.Link
+		}{
 			// 5th node in load sequence for rootNode
-			"0/linkedList/2": append([]datamodel.Link{rootNodeLnk, middleListNodeLnk}, expectedAllBlocks[4:]...),
+			{"0/linkedList/2", append([]datamodel.Link{rootNodeLnk, middleListNodeLnk}, expectedAllBlocks[4:]...)},
 			// LinkedMap is 7th no, foo doesn't affect loading
-			"0/linkedMap/foo": append([]datamodel.Link{rootNodeLnk}, expectedAllBlocks[6:]...),
+			{"0/linkedMap/foo", append([]datamodel.Link{rootNodeLnk}, expectedAllBlocks[6:]...)},
 			// 8th node in load sequence for rootNode
-			"0/linkedMap/nested/alink": append([]datamodel.Link{rootNodeLnk, middleMapNodeLnk}, expectedAllBlocks[7:]...),
-			"0/linkedString":           append([]datamodel.Link{rootNodeLnk}, expectedAllBlocks[8:]...),
+			{"0/linkedMap/nested/alink", append([]datamodel.Link{rootNodeLnk, middleMapNodeLnk}, expectedAllBlocks[7:]...)},
+			{"0/linkedString", append([]datamodel.Link{rootNodeLnk}, expectedAllBlocks[8:]...)},
 			// pash through all nodes first root block, then go load middle list block
-			"1/2": append([]datamodel.Link{middleListNodeLnk}, expectedAllBlocks[len(rootNodeExpectedLinks)+3:]...),
-			"3/1": append([]datamodel.Link{middleListNodeLnk}, expectedAllBlocks[2*len(rootNodeExpectedLinks)+len(middleListNodeLinks)+2:]...),
+			{"1/2", append([]datamodel.Link{middleListNodeLnk}, expectedAllBlocks[len(rootNodeExpectedLinks)+3:]...)},
+			{"3/1", append([]datamodel.Link{middleListNodeLnk}, expectedAllBlocks[2*len(rootNodeExpectedLinks)+len(middleListNodeLinks)+2:]...)},
 		}
-		for path, expectedLinkVisits := range testPathsToBlocksSkipped {
-			startAtPath := datamodel.ParsePath(path)
-			s := selectorparse.CommonSelector_ExploreAllRecursively
-			verifySelectorLoads(t, expectedLinkVisits, s, false, startAtPath, func(lctx linking.LinkContext, lnk datamodel.Link) (io.Reader, error) {
-				return storage.GetStream(lctx.Ctx, &store, lnk.Binary())
+		for _, testCase := range testPathsToBlocksSkipped {
+			t.Run(testCase.path, func(t *testing.T) {
+				startAtPath := datamodel.ParsePath(testCase.path)
+				s := selectorparse.CommonSelector_ExploreAllRecursively
+				verifySelectorLoads(t, testCase.expectedLinkVisits, s, false, startAtPath, nil, func(lctx linking.LinkContext, lnk datamodel.Link) (io.Reader, error) {
+					return storage.GetStream(lctx.Ctx, &store, lnk.Binary())
+				})
 			})
 		}
 	})
