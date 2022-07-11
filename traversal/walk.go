@@ -5,6 +5,7 @@ import (
 
 	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/linking"
+	"github.com/ipld/go-ipld-prime/linking/preload"
 	"github.com/ipld/go-ipld-prime/traversal/selector"
 )
 
@@ -213,7 +214,7 @@ func (prog Progress) walkAdv(n datamodel.Node, s selector.Selector, fn AdvVisitF
 
 }
 
-func (prog Progress) walkAdv_iterateAll(n datamodel.Node, s selector.Selector, fn AdvVisitFn) error {
+func (prog Progress) iterateAll(n datamodel.Node, visit func(datamodel.PathSegment, datamodel.Node, bool) error) error {
 	var reachedStartAtPath bool
 	for itr := selector.NewSegmentIterator(n); !itr.Done(); {
 		if reachedStartAtPath {
@@ -231,42 +232,81 @@ func (prog Progress) walkAdv_iterateAll(n datamodel.Node, s selector.Selector, f
 				continue
 			}
 		}
-		sNext, err := s.Explore(n, ps)
+		err = visit(ps, v, prog.PastStartAtPath)
 		if err != nil {
 			return err
-		}
-		if sNext != nil {
-			progNext := prog
-			progNext.Path = prog.Path.AppendSegment(ps)
-			if v.Kind() == datamodel.Kind_Link {
-				lnk, _ := v.AsLink()
-				if prog.Cfg.LinkVisitOnlyOnce {
-					if _, seen := prog.SeenLinks[lnk]; seen {
-						continue
-					}
-					prog.SeenLinks[lnk] = struct{}{}
-				}
-				progNext.LastBlock.Path = progNext.Path
-				progNext.LastBlock.Link = lnk
-				v, err = progNext.loadLink(v, n)
-				if err != nil {
-					if _, ok := err.(SkipMe); ok {
-						continue
-					}
-					return err
-				}
-			}
-
-			err = progNext.walkAdv(v, sNext, fn)
-			if err != nil {
-				return err
-			}
 		}
 	}
 	return nil
 }
 
-func (prog Progress) walkAdv_iterateSelective(n datamodel.Node, attn []datamodel.PathSegment, s selector.Selector, fn AdvVisitFn) error {
+func (prog Progress) walkAdv_iterateAll(n datamodel.Node, s selector.Selector, fn AdvVisitFn) error {
+	nextSelectors := make([]selector.Selector, 0, n.Length())
+	preLoadLinks := make([]preload.Link, 0, n.Length())
+	err := prog.iterateAll(n, func(ps datamodel.PathSegment, v datamodel.Node, pastStartAtPath bool) error {
+		sNext, err := s.Explore(n, ps)
+		if err != nil {
+			return err
+		}
+		nextSelectors = append(nextSelectors, sNext)
+		if sNext != nil && v.Kind() == datamodel.Kind_Link {
+			lnk, _ := v.AsLink()
+			preLoadLinks = append(preLoadLinks, preload.Link{
+				Segment:  ps,
+				LinkNode: v,
+				Link:     lnk,
+			})
+		}
+		return nil
+	})
+	if err != nil {
+		return err
+	}
+	if prog.Cfg.Preloader != nil && len(preLoadLinks) > 0 {
+		prog.Cfg.Preloader(preload.Context{
+			Ctx:        prog.Cfg.Ctx,
+			BasePath:   prog.Path,
+			ParentNode: n,
+		}, preLoadLinks)
+	}
+
+	index := 0
+	return prog.iterateAll(n, func(ps datamodel.PathSegment, v datamodel.Node, pastStartAtPath bool) error {
+		var err error
+		sNext := nextSelectors[index]
+		index++
+		if sNext == nil {
+			return nil
+		}
+		progNext := prog
+		if pastStartAtPath {
+			progNext.PastStartAtPath = true
+		}
+		progNext.Path = prog.Path.AppendSegment(ps)
+		if v.Kind() == datamodel.Kind_Link {
+			lnk, _ := v.AsLink()
+			if prog.Cfg.LinkVisitOnlyOnce {
+				if _, seen := prog.SeenLinks[lnk]; seen {
+					return nil
+				}
+				prog.SeenLinks[lnk] = struct{}{}
+			}
+			progNext.LastBlock.Path = progNext.Path
+			progNext.LastBlock.Link = lnk
+			v, err = progNext.loadLink(v, n)
+			if err != nil {
+				if _, ok := err.(SkipMe); ok {
+					return nil
+				}
+				return err
+			}
+		}
+
+		return progNext.walkAdv(v, sNext, fn)
+	})
+}
+
+func (prog Progress) iterateSelective(n datamodel.Node, attn []datamodel.PathSegment, visit func(ps datamodel.PathSegment, v datamodel.Node) error) error {
 	var reachedStartAtPath bool
 	for _, ps := range attn {
 		if prog.Path.Len() < prog.Cfg.StartAtPath.Len() {
@@ -281,39 +321,75 @@ func (prog Progress) walkAdv_iterateSelective(n datamodel.Node, attn []datamodel
 		if err != nil {
 			continue
 		}
+		err = visit(ps, v)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (prog Progress) walkAdv_iterateSelective(n datamodel.Node, attn []datamodel.PathSegment, s selector.Selector, fn AdvVisitFn) error {
+	nextSelectors := make([]selector.Selector, 0, len(attn))
+	preLoadLinks := make([]preload.Link, 0, len(attn))
+	err := prog.iterateSelective(n, attn, func(ps datamodel.PathSegment, v datamodel.Node) error {
 		sNext, err := s.Explore(n, ps)
 		if err != nil {
 			return err
 		}
-		if sNext != nil {
-			progNext := prog
-			progNext.Path = prog.Path.AppendSegment(ps)
-			if v.Kind() == datamodel.Kind_Link {
-				lnk, _ := v.AsLink()
-				if prog.Cfg.LinkVisitOnlyOnce {
-					if _, seen := prog.SeenLinks[lnk]; seen {
-						continue
-					}
-					prog.SeenLinks[lnk] = struct{}{}
-				}
-				progNext.LastBlock.Path = progNext.Path
-				progNext.LastBlock.Link = lnk
-				v, err = progNext.loadLink(v, n)
-				if err != nil {
-					if _, ok := err.(SkipMe); ok {
-						continue
-					}
-					return err
-				}
-			}
+		nextSelectors = append(nextSelectors, sNext)
+		if sNext != nil && v.Kind() == datamodel.Kind_Link {
+			lnk, _ := v.AsLink()
+			preLoadLinks = append(preLoadLinks, preload.Link{
+				Segment:  ps,
+				LinkNode: v,
+				Link:     lnk,
+			})
+		}
+		return nil
+	})
+	if err != nil {
+		return err
+	}
+	if prog.Cfg.Preloader != nil && len(preLoadLinks) > 0 {
+		prog.Cfg.Preloader(preload.Context{
+			Ctx:        prog.Cfg.Ctx,
+			BasePath:   prog.Path,
+			ParentNode: n,
+		}, preLoadLinks)
+	}
 
-			err = progNext.walkAdv(v, sNext, fn)
+	index := 0
+	return prog.iterateSelective(n, attn, func(ps datamodel.PathSegment, v datamodel.Node) error {
+		var err error
+		sNext := nextSelectors[index]
+		index++
+		if sNext == nil {
+			return nil
+		}
+		progNext := prog
+		progNext.Path = prog.Path.AppendSegment(ps)
+		if v.Kind() == datamodel.Kind_Link {
+			lnk, _ := v.AsLink()
+			if prog.Cfg.LinkVisitOnlyOnce {
+				if _, seen := prog.SeenLinks[lnk]; seen {
+					return nil
+				}
+				prog.SeenLinks[lnk] = struct{}{}
+			}
+			progNext.LastBlock.Path = progNext.Path
+			progNext.LastBlock.Link = lnk
+			v, err = progNext.loadLink(v, n)
 			if err != nil {
+				if _, ok := err.(SkipMe); ok {
+					return nil
+				}
 				return err
 			}
 		}
-	}
-	return nil
+
+		return progNext.walkAdv(v, sNext, fn)
+	})
 }
 
 func (prog Progress) loadLink(v datamodel.Node, parent datamodel.Node) (datamodel.Node, error) {
