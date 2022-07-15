@@ -27,10 +27,10 @@ type listAmender struct {
 	mods    arraylist.List
 }
 
-func (cfg *AmendOptions) newListAmender(base datamodel.Node, parent Amender, create bool) Amender {
+func (cfg AmendOptions) newListAmender(base datamodel.Node, parent Amender, create bool) Amender {
 	// If the base node is already a list-amender, reuse the mutation state but reset `parent` and `created`.
 	if amd, castOk := base.(*listAmender); castOk {
-		return &listAmender{cfg, amd.base, parent, create, amd.mods}
+		return &listAmender{&cfg, amd.base, parent, create, amd.mods}
 	} else {
 		// Start with fresh state because existing metadata could not be reused.
 		var elems []interface{}
@@ -42,14 +42,11 @@ func (cfg *AmendOptions) newListAmender(base datamodel.Node, parent Amender, cre
 		} else {
 			elems = make([]interface{}, 0)
 		}
-		return &listAmender{cfg, base, parent, create, *arraylist.New(elems...)}
+		return &listAmender{&cfg, base, parent, create, *arraylist.New(elems...)}
 	}
 }
 
-func (a *listAmender) Build() datamodel.Node {
-	// `listAmender` is also a `Node`.
-	return (datamodel.Node)(a)
-}
+// -- Node -->
 
 func (a *listAmender) Kind() datamodel.Kind {
 	return datamodel.Kind_List
@@ -162,6 +159,8 @@ func (itr *listAmender_Iterator) Next() (idx int64, v datamodel.Node, err error)
 func (itr *listAmender_Iterator) Done() bool {
 	return int64(itr.idx) >= itr.amd.Length()
 }
+
+// -- Amender -->
 
 func (a *listAmender) Get(prog *Progress, path datamodel.Path, trackProgress bool) (datamodel.Node, error) {
 	// If the root is requested, return the `Node` view of the amender.
@@ -290,6 +289,11 @@ func (a *listAmender) Transform(prog *Progress, path datamodel.Path, fn Transfor
 		return nil, err
 	}
 	return childAmender.Transform(prog, remainingPath, fn, createParents)
+}
+
+func (a *listAmender) Build() datamodel.Node {
+	// `listAmender` is also a `Node`.
+	return (datamodel.Node)(a)
 }
 
 func (a *listAmender) storeChildAmender(childIdx int64, n datamodel.Node, k datamodel.Kind, create bool, trackProgress bool) (Amender, error) {

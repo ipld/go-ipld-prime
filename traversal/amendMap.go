@@ -30,20 +30,17 @@ type mapAmender struct {
 	adds int
 }
 
-func (cfg *AmendOptions) newMapAmender(base datamodel.Node, parent Amender, create bool) Amender {
+func (cfg AmendOptions) newMapAmender(base datamodel.Node, parent Amender, create bool) Amender {
 	// If the base node is already a map-amender, reuse the mutation state but reset `parent` and `created`.
 	if amd, castOk := base.(*mapAmender); castOk {
-		return &mapAmender{cfg, amd.base, parent, create, amd.mods, amd.rems, amd.adds}
+		return &mapAmender{&cfg, amd.base, parent, create, amd.mods, amd.rems, amd.adds}
 	} else {
 		// Start with fresh state because existing metadata could not be reused.
-		return &mapAmender{cfg, base, parent, create, *linkedhashmap.New(), 0, 0}
+		return &mapAmender{&cfg, base, parent, create, *linkedhashmap.New(), 0, 0}
 	}
 }
 
-func (a *mapAmender) Build() datamodel.Node {
-	// `mapAmender` is also a `Node`.
-	return (datamodel.Node)(a)
-}
+// -- Node -->
 
 func (a *mapAmender) Kind() datamodel.Kind {
 	return datamodel.Kind_Map
@@ -210,6 +207,8 @@ func (itr *mapAmender_Iterator) Done() bool {
 	return int64(itr.idx) >= itr.amd.Length()
 }
 
+// -- Amender -->
+
 func (a *mapAmender) Get(prog *Progress, path datamodel.Path, trackProgress bool) (datamodel.Node, error) {
 	// If the root is requested, return the `Node` view of the amender.
 	if path.Len() == 0 {
@@ -315,6 +314,11 @@ func (a *mapAmender) Transform(prog *Progress, path datamodel.Path, fn Transform
 		childKind = childVal.Kind()
 	}
 	return a.storeChildAmender(childSeg, childVal, childKind, create, true).Transform(prog, remainingPath, fn, createParents)
+}
+
+func (a *mapAmender) Build() datamodel.Node {
+	// `mapAmender` is also a `Node`.
+	return (datamodel.Node)(a)
 }
 
 func (a *mapAmender) storeChildAmender(seg datamodel.PathSegment, n datamodel.Node, k datamodel.Kind, create bool, trackProgress bool) Amender {

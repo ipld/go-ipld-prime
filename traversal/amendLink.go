@@ -26,10 +26,10 @@ type linkAmender struct {
 	linkSys linking.LinkSystem
 }
 
-func (cfg *AmendOptions) newLinkAmender(base datamodel.Node, parent Amender, create bool) Amender {
+func (cfg AmendOptions) newLinkAmender(base datamodel.Node, parent Amender, create bool) Amender {
 	// If the base node is already a link-amender, reuse the mutation state but reset `parent` and `created`.
 	if amd, castOk := base.(*linkAmender); castOk {
-		la := &linkAmender{cfg, amd.base, parent, create, amd.nLink, amd.pLink, amd.child, amd.linkCtx, amd.linkSys}
+		la := &linkAmender{&cfg, amd.base, parent, create, amd.nLink, amd.pLink, amd.child, amd.linkCtx, amd.linkSys}
 		// Make a copy of the child amender so that it has its own mutation state
 		if la.child != nil {
 			child := la.child.Build()
@@ -44,14 +44,11 @@ func (cfg *AmendOptions) newLinkAmender(base datamodel.Node, parent Amender, cre
 		}
 		// `linkCtx` and `linkSys` can be defaulted since they're only needed for recomputing the link after a
 		// transformation occurs, and such a transformation would have populated them correctly.
-		return &linkAmender{cfg, base, parent, create, link, link, nil, linking.LinkContext{}, linking.LinkSystem{}}
+		return &linkAmender{&cfg, base, parent, create, link, link, nil, linking.LinkContext{}, linking.LinkSystem{}}
 	}
 }
 
-func (a *linkAmender) Build() datamodel.Node {
-	// `linkAmender` is also a `Node`.
-	return (datamodel.Node)(a)
-}
+// -- Node -->
 
 func (a *linkAmender) Kind() datamodel.Kind {
 	return datamodel.Kind_Link
@@ -121,6 +118,8 @@ func (a *linkAmender) Prototype() datamodel.NodePrototype {
 	return basicnode.Prototype.Link
 }
 
+// -- Amender -->
+
 func (a *linkAmender) Get(prog *Progress, path datamodel.Path, trackProgress bool) (datamodel.Node, error) {
 	// Check the budget
 	if prog.Budget != nil {
@@ -172,6 +171,11 @@ func (a *linkAmender) Transform(prog *Progress, path datamodel.Path, fn Transfor
 		a.nLink = newLink
 	}
 	return childVal, nil
+}
+
+func (a *linkAmender) Build() datamodel.Node {
+	// `linkAmender` is also a `Node`.
+	return (datamodel.Node)(a)
 }
 
 // validLink will return a valid `Link`, whether the base value, an intermediate recomputed value, or the latest value.

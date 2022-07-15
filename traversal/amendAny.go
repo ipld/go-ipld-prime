@@ -14,19 +14,16 @@ type anyAmender struct {
 	created bool
 }
 
-func (cfg *AmendOptions) newAnyAmender(base datamodel.Node, parent Amender, create bool) Amender {
+func (cfg AmendOptions) newAnyAmender(base datamodel.Node, parent Amender, create bool) Amender {
 	// If the base node is already an any-amender, reuse it but reset `parent` and `created`.
 	if amd, castOk := base.(*anyAmender); castOk {
-		return &anyAmender{cfg, amd.base, parent, create}
+		return &anyAmender{&cfg, amd.base, parent, create}
 	} else {
-		return &anyAmender{cfg, base, parent, create}
+		return &anyAmender{&cfg, base, parent, create}
 	}
 }
 
-func (a *anyAmender) Build() datamodel.Node {
-	// `anyAmender` is also a `Node`.
-	return (datamodel.Node)(a)
-}
+// -- Node -->
 
 func (a *anyAmender) Kind() datamodel.Kind {
 	return a.base.Kind()
@@ -96,6 +93,8 @@ func (a *anyAmender) Prototype() datamodel.NodePrototype {
 	return a.base.Prototype()
 }
 
+// -- Amender -->
+
 func (a *anyAmender) Get(prog *Progress, path datamodel.Path, trackProgress bool) (datamodel.Node, error) {
 	// If the base node is an amender, use it, otherwise return the base node.
 	if amd, castOk := a.base.(Amender); castOk {
@@ -121,4 +120,9 @@ func (a *anyAmender) Transform(prog *Progress, path datamodel.Path, fn Transform
 		return amd.Transform(prog, path, fn, createParents)
 	}
 	panic("misuse")
+}
+
+func (a *anyAmender) Build() datamodel.Node {
+	// `anyAmender` is also a `Node`.
+	return (datamodel.Node)(a)
 }
