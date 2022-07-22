@@ -15,10 +15,8 @@ var (
 )
 
 type mapAmender struct {
-	cfg     *AmendOptions
-	base    datamodel.Node
-	parent  Amender
-	created bool
+	amendCfg
+
 	// This is the information needed to present an accurate "effective" view of the base node and all accumulated
 	// modifications.
 	mods linkedhashmap.Map
@@ -30,13 +28,13 @@ type mapAmender struct {
 	adds int
 }
 
-func (cfg AmendOptions) newMapAmender(base datamodel.Node, parent Amender, create bool) Amender {
+func (opts AmendOptions) newMapAmender(base datamodel.Node, parent Amender, create bool) Amender {
 	// If the base node is already a map-amender, reuse the mutation state but reset `parent` and `created`.
 	if amd, castOk := base.(*mapAmender); castOk {
-		return &mapAmender{&cfg, amd.base, parent, create, amd.mods, amd.rems, amd.adds}
+		return &mapAmender{amendCfg{&opts, amd.base, parent, create}, amd.mods, amd.rems, amd.adds}
 	} else {
 		// Start with fresh state because existing metadata could not be reused.
-		return &mapAmender{&cfg, base, parent, create, *linkedhashmap.New(), 0, 0}
+		return &mapAmender{amendCfg{&opts, base, parent, create}, *linkedhashmap.New(), 0, 0}
 	}
 }
 
@@ -182,15 +180,16 @@ func (itr *mapAmender_Iterator) Next() (k datamodel.Node, v datamodel.Node, _ er
 		// Iterate over mods, skipping removed nodes.
 		for itr.modsItr.Next() {
 			key := itr.modsItr.Key()
+			amd := itr.modsItr.Value().(Amender)
 			k = basicnode.NewString(key.(datamodel.PathSegment).String())
-			v = itr.modsItr.Value().(Amender).Build()
+			v = amd.Build()
 			// Skip removed nodes.
 			if v.IsNull() {
 				continue
 			}
 			// Skip "wrapper" nodes that represent existing sub-nodes in the hierarchy corresponding to an added leaf
 			// node.
-			if !isCreated(v) {
+			if !amd.isCreated() {
 				continue
 			}
 			// We found a "real" node to return, increment the counter.
@@ -242,7 +241,7 @@ func (a *mapAmender) Transform(prog *Progress, path datamodel.Path, fn Transform
 			return nil, fmt.Errorf("transform: cannot transform root into incompatible type: %q", newNode.Kind())
 		} else {
 			// Go through `newMapAmender` in case `newNode` is already a map-amender.
-			*a = *a.cfg.newMapAmender(newNode, a.parent, a.created).(*mapAmender)
+			*a = *a.opts.newMapAmender(newNode, a.parent, a.created).(*mapAmender)
 			return prevNode, nil
 		}
 	}
@@ -272,10 +271,10 @@ func (a *mapAmender) Transform(prog *Progress, path datamodel.Path, fn Transform
 			return nil, err
 		} else if newChildVal == nil {
 			// Use the "Null" node to indicate a removed child.
-			a.mods.Put(childSeg, a.cfg.newAnyAmender(datamodel.Null, a, false))
+			a.mods.Put(childSeg, a.opts.newAnyAmender(datamodel.Null, a, false))
 			// If the child node being removed is a new node previously added to the node hierarchy, decrement `adds`,
 			// otherwise increment `rems`. This allows us to retain knowledge about the "history" of the base hierarchy.
-			if isCreated(newChildVal) {
+			if amd, castOk := newChildVal.(Amender); castOk && amd.isCreated() {
 				a.rems++
 			} else {
 				a.adds--
@@ -321,8 +320,12 @@ func (a *mapAmender) Build() datamodel.Node {
 	return (datamodel.Node)(a)
 }
 
+func (a *mapAmender) isCreated() bool {
+	return a.created
+}
+
 func (a *mapAmender) storeChildAmender(seg datamodel.PathSegment, n datamodel.Node, k datamodel.Kind, create bool, trackProgress bool) Amender {
-	childAmender := a.cfg.newAmender(n, a, k, create)
+	childAmender := a.opts.newAmender(n, a, k, create)
 	if trackProgress {
 		a.mods.Put(seg, childAmender)
 	}

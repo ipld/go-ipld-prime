@@ -14,6 +14,9 @@ type Amender interface {
 	// Build returns a traversable node that can be used with existing codec implementations. An `Amender` does not
 	// *have* to be a `Node` although currently, all `Amender` implementations are also `Node`s.
 	Build() datamodel.Node
+
+	// isCreated returns whether an amender was "added" to a hierarchy instead of just wrapping an existing child node.
+	isCreated() bool
 }
 
 type AmendOptions struct {
@@ -21,41 +24,35 @@ type AmendOptions struct {
 	LazyLinkUpdate bool
 }
 
+type amendCfg struct {
+	opts    *AmendOptions
+	base    datamodel.Node
+	parent  Amender
+	created bool
+}
+
 func NewAmender(base datamodel.Node) Amender {
 	return AmendOptions{}.NewAmender(base)
 }
 
 // NewAmender returns a new amender of the right "type" (i.e. map, list, any) using the specified base node.
-func (cfg AmendOptions) NewAmender(base datamodel.Node) Amender {
+func (opts AmendOptions) NewAmender(base datamodel.Node) Amender {
 	// Do not allow externally creating a new amender without a base node to refer to. Amendment assumes that there is
 	// something to amend.
 	if base == nil {
 		panic("misuse")
 	}
-	return cfg.newAmender(base, nil, base.Kind(), false)
+	return opts.newAmender(base, nil, base.Kind(), false)
 }
 
-func (cfg AmendOptions) newAmender(base datamodel.Node, parent Amender, kind datamodel.Kind, create bool) Amender {
+func (opts AmendOptions) newAmender(base datamodel.Node, parent Amender, kind datamodel.Kind, create bool) Amender {
 	if kind == datamodel.Kind_Map {
-		return cfg.newMapAmender(base, parent, create)
+		return opts.newMapAmender(base, parent, create)
 	} else if kind == datamodel.Kind_List {
-		return cfg.newListAmender(base, parent, create)
+		return opts.newListAmender(base, parent, create)
 	} else if kind == datamodel.Kind_Link {
-		return cfg.newLinkAmender(base, parent, create)
+		return opts.newLinkAmender(base, parent, create)
 	} else {
-		return cfg.newAnyAmender(base, parent, create)
+		return opts.newAnyAmender(base, parent, create)
 	}
-}
-
-func isCreated(n datamodel.Node) bool {
-	if a, isAmd := n.(Amender); isAmd {
-		if ma, isMa := a.(*mapAmender); isMa {
-			return ma.created
-		} else if la, isLa := a.(*listAmender); isLa {
-			return la.created
-		} else if aa, isAa := a.(*anyAmender); isAa {
-			return aa.created
-		}
-	}
-	return false
 }

@@ -15,10 +15,8 @@ var (
 )
 
 type linkAmender struct {
-	cfg     *AmendOptions
-	base    datamodel.Node
-	parent  Amender
-	created bool
+	amendCfg
+
 	nLink   datamodel.Link // newest link: can be `nil` if a transformation occurred, but it hasn't been recomputed
 	pLink   datamodel.Link // previous link: will always have a valid value, even if not the latest
 	child   Amender
@@ -26,14 +24,14 @@ type linkAmender struct {
 	linkSys linking.LinkSystem
 }
 
-func (cfg AmendOptions) newLinkAmender(base datamodel.Node, parent Amender, create bool) Amender {
+func (opts AmendOptions) newLinkAmender(base datamodel.Node, parent Amender, create bool) Amender {
 	// If the base node is already a link-amender, reuse the mutation state but reset `parent` and `created`.
 	if amd, castOk := base.(*linkAmender); castOk {
-		la := &linkAmender{&cfg, amd.base, parent, create, amd.nLink, amd.pLink, amd.child, amd.linkCtx, amd.linkSys}
+		la := &linkAmender{amendCfg{&opts, amd.base, parent, create}, amd.nLink, amd.pLink, amd.child, amd.linkCtx, amd.linkSys}
 		// Make a copy of the child amender so that it has its own mutation state
 		if la.child != nil {
 			child := la.child.Build()
-			la.child = cfg.newAmender(child, la, child.Kind(), false)
+			la.child = opts.newAmender(child, la, child.Kind(), false)
 		}
 		return la
 	} else {
@@ -44,7 +42,7 @@ func (cfg AmendOptions) newLinkAmender(base datamodel.Node, parent Amender, crea
 		}
 		// `linkCtx` and `linkSys` can be defaulted since they're only needed for recomputing the link after a
 		// transformation occurs, and such a transformation would have populated them correctly.
-		return &linkAmender{&cfg, base, parent, create, link, link, nil, linking.LinkContext{}, linking.LinkSystem{}}
+		return &linkAmender{amendCfg{&opts, base, parent, create}, link, link, nil, linking.LinkContext{}, linking.LinkSystem{}}
 	}
 }
 
@@ -148,7 +146,7 @@ func (a *linkAmender) Transform(prog *Progress, path datamodel.Path, fn Transfor
 			return nil, fmt.Errorf("transform: cannot transform root into incompatible type: %q", newNode.Kind())
 		} else {
 			// Go through `newLinkAmender` in case `newNode` is already a link-amender.
-			*a = *a.cfg.newLinkAmender(newNode, a.parent, a.created).(*linkAmender)
+			*a = *a.opts.newLinkAmender(newNode, a.parent, a.created).(*linkAmender)
 			return prevNode, nil
 		}
 	}
@@ -160,7 +158,7 @@ func (a *linkAmender) Transform(prog *Progress, path datamodel.Path, fn Transfor
 	if err != nil {
 		return nil, err
 	}
-	if a.cfg.LazyLinkUpdate {
+	if a.opts.LazyLinkUpdate {
 		// Reset the link and lazily compute it when it is needed instead of on every transformation.
 		a.nLink = nil
 	} else {
@@ -176,6 +174,10 @@ func (a *linkAmender) Transform(prog *Progress, path datamodel.Path, fn Transfor
 func (a *linkAmender) Build() datamodel.Node {
 	// `linkAmender` is also a `Node`.
 	return (datamodel.Node)(a)
+}
+
+func (a *linkAmender) isCreated() bool {
+	return a.created
 }
 
 // validLink will return a valid `Link`, whether the base value, an intermediate recomputed value, or the latest value.
@@ -234,7 +236,7 @@ func (a *linkAmender) loadLink(prog *Progress, trackProgress bool) error {
 		if err != nil {
 			return fmt.Errorf("error traversing node at %q: could not load link %q: %w", prog.Path, a.nLink, err)
 		}
-		a.child = a.cfg.newAmender(child, a, child.Kind(), false)
+		a.child = a.opts.newAmender(child, a, child.Kind(), false)
 		if trackProgress {
 			prog.LastBlock.Path = prog.Path
 			prog.LastBlock.Link = a.nLink
