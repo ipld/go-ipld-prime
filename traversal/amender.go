@@ -3,9 +3,9 @@ package traversal
 import "github.com/ipld/go-ipld-prime/datamodel"
 
 type Amender interface {
-	// Get returns the node at the specified path. It will not create any intermediate nodes because this is just a
+	// Fetch returns the node at the specified path. It will not create any intermediate nodes because this is just a
 	// retrieval and not a modification operation.
-	Get(prog *Progress, path datamodel.Path, trackProgress bool) (datamodel.Node, error)
+	Fetch(prog *Progress, path datamodel.Path, trackProgress bool) (datamodel.Node, error)
 
 	// Transform will do an in-place transformation of the node at the specified path and return its previous value.
 	// If `createParents = true`, any missing parents will be created, otherwise this function will return an error.

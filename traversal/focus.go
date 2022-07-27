@@ -79,7 +79,7 @@ func (prog Progress) Get(n datamodel.Node, p datamodel.Path) (datamodel.Node, er
 // For Get calls, trackProgress=false, which avoids some allocations for state tracking that's not needed by that call.
 func (prog *Progress) get(n datamodel.Node, p datamodel.Path, trackProgress bool) (datamodel.Node, error) {
 	prog.init()
-	return NewAmender(n).Get(prog, p, trackProgress)
+	return NewAmender(n).Fetch(prog, p, trackProgress)
 }
 
 // FocusedTransform traverses a datamodel.Node graph, reaches a single Node,

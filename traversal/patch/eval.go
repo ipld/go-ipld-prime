@@ -104,7 +104,7 @@ func evalOne(prog *traversal.Progress, n datamodel.Node, op Operation) (datamode
 			return nil, err
 		}
 	case Op_Copy:
-		if source, err := a.Get(prog, op.From, true); err != nil {
+		if source, err := a.Fetch(prog, op.From, true); err != nil {
 			return nil, err
 		} else if _, err := a.Transform(prog, op.Path, func(progress traversal.Progress, node datamodel.Node) (datamodel.Node, error) {
 			return source, nil
@@ -112,7 +112,7 @@ func evalOne(prog *traversal.Progress, n datamodel.Node, op Operation) (datamode
 			return nil, err
 		}
 	case Op_Test:
-		if point, err := a.Get(prog, op.Path, true); err != nil {
+		if point, err := a.Fetch(prog, op.Path, true); err != nil {
 			return nil, err
 		} else if !datamodel.DeepEqual(point, op.Value) {
 			return nil, fmt.Errorf("test failed") // TODO real error handling and a code

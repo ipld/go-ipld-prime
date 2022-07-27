@@ -92,10 +92,10 @@ func (a *anyAmender) Prototype() datamodel.NodePrototype {
 
 // -- Amender -->
 
-func (a *anyAmender) Get(prog *Progress, path datamodel.Path, trackProgress bool) (datamodel.Node, error) {
+func (a *anyAmender) Fetch(prog *Progress, path datamodel.Path, trackProgress bool) (datamodel.Node, error) {
 	// If the base node is an amender, use it, otherwise return the base node.
 	if amd, castOk := a.base.(Amender); castOk {
-		return amd.Get(prog, path, trackProgress)
+		return amd.Fetch(prog, path, trackProgress)
 	}
 	return a.base, nil
 }

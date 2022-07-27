@@ -11,6 +11,7 @@ import (
 
 var (
 	_ datamodel.Node = &listAmender{}
+	_ datamodel.List = &listAmender{}
 	_ Amender        = &listAmender{}
 )
 
@@ -160,7 +161,7 @@ func (itr *listAmender_Iterator) Done() bool {
 
 // -- Amender -->
 
-func (a *listAmender) Get(prog *Progress, path datamodel.Path, trackProgress bool) (datamodel.Node, error) {
+func (a *listAmender) Fetch(prog *Progress, path datamodel.Path, trackProgress bool) (datamodel.Node, error) {
 	// If the root is requested, return the `Node` view of the amender.
 	if path.Len() == 0 {
 		return a.Build(), nil
@@ -188,7 +189,7 @@ func (a *listAmender) Get(prog *Progress, path datamodel.Path, trackProgress boo
 	if err != nil {
 		return nil, err
 	}
-	return childAmender.Get(prog, remainingPath, trackProgress)
+	return childAmender.Fetch(prog, remainingPath, trackProgress)
 }
 
 func (a *listAmender) Transform(prog *Progress, path datamodel.Path, fn TransformFn, createParents bool) (datamodel.Node, error) {
@@ -342,4 +343,51 @@ func (a *listAmender) storeChildAmender(childIdx int64, n datamodel.Node, k data
 		return childAmender, nil
 	}
 	return a.opts.newAmender(n, a, k, create), nil
+}
+
+// -- List -->
+
+func NewList(base interface{}) datamodel.List {
+	// TODO: `base` must be of "list" type
+	return AmendOptions{}.newListAmender(nodeForType(base), nil, false).(*listAmender)
+}
+
+func (a *listAmender) Get(idx int64) (datamodel.Node, bool) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (a *listAmender) Remove(idx int64) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (a *listAmender) Append(values ...interface{}) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (a *listAmender) Insert(idx int64, values ...interface{}) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (a *listAmender) Set(idx int64, value interface{}) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (a *listAmender) Empty() bool {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (a *listAmender) Clear() {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (a *listAmender) Values() []datamodel.Node {
+	//TODO implement me
+	panic("implement me")
 }

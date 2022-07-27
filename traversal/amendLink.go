@@ -118,7 +118,7 @@ func (a *linkAmender) Prototype() datamodel.NodePrototype {
 
 // -- Amender -->
 
-func (a *linkAmender) Get(prog *Progress, path datamodel.Path, trackProgress bool) (datamodel.Node, error) {
+func (a *linkAmender) Fetch(prog *Progress, path datamodel.Path, trackProgress bool) (datamodel.Node, error) {
 	// Check the budget
 	if prog.Budget != nil {
 		if prog.Budget.LinkBudget <= 0 {
@@ -133,7 +133,7 @@ func (a *linkAmender) Get(prog *Progress, path datamodel.Path, trackProgress boo
 	if path.Len() == 0 {
 		return a.Build(), nil
 	}
-	return a.child.Get(prog, path, trackProgress)
+	return a.child.Fetch(prog, path, trackProgress)
 }
 
 func (a *linkAmender) Transform(prog *Progress, path datamodel.Path, fn TransformFn, createParents bool) (datamodel.Node, error) {

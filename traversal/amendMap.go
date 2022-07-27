@@ -11,6 +11,7 @@ import (
 
 var (
 	_ datamodel.Node = &mapAmender{}
+	_ datamodel.Map  = &mapAmender{}
 	_ Amender        = &mapAmender{}
 )
 
@@ -208,7 +209,7 @@ func (itr *mapAmender_Iterator) Done() bool {
 
 // -- Amender -->
 
-func (a *mapAmender) Get(prog *Progress, path datamodel.Path, trackProgress bool) (datamodel.Node, error) {
+func (a *mapAmender) Fetch(prog *Progress, path datamodel.Path, trackProgress bool) (datamodel.Node, error) {
 	// If the root is requested, return the `Node` view of the amender.
 	if path.Len() == 0 {
 		return a.Build(), nil
@@ -228,7 +229,7 @@ func (a *mapAmender) Get(prog *Progress, path datamodel.Path, trackProgress bool
 	if err != nil {
 		return nil, err
 	}
-	return a.storeChildAmender(childSeg, childVal, childVal.Kind(), false, trackProgress).Get(prog, remainingPath, trackProgress)
+	return a.storeChildAmender(childSeg, childVal, childVal.Kind(), false, trackProgress).Fetch(prog, remainingPath, trackProgress)
 }
 
 func (a *mapAmender) Transform(prog *Progress, path datamodel.Path, fn TransformFn, createParents bool) (datamodel.Node, error) {
@@ -336,4 +337,79 @@ func (a *mapAmender) storeChildAmender(seg datamodel.PathSegment, n datamodel.No
 		a.mods.Put(seg, childAmender)
 	}
 	return childAmender
+}
+
+// -- Map -->
+
+func NewMap(base interface{}) datamodel.Map {
+	// TODO: `base` must be of "map" type
+	return AmendOptions{}.newMapAmender(nodeForType(base), nil, false).(*mapAmender)
+}
+
+func (a *mapAmender) Put(key string, value interface{}) bool {
+	if _, err := a.Transform(&Progress{}, datamodel.ParsePath("/"+key), func(progress Progress, node datamodel.Node) (datamodel.Node, error) {
+		return nodeForType(value), nil
+	}, false); err != nil {
+		return false
+	} else {
+		return true
+	}
+}
+
+func (a *mapAmender) Get(key string) (value datamodel.Node, found bool) {
+	if v, err := a.Fetch(&Progress{}, datamodel.ParsePath("/"+key), true); err != nil {
+		return nil, false
+	} else {
+		return nodeForType(v), true
+	}
+}
+
+func (a *mapAmender) Remove(key string) bool {
+	if _, err := a.Transform(&Progress{}, datamodel.ParsePath("/"+key), func(progress Progress, node datamodel.Node) (datamodel.Node, error) {
+		return nil, nil
+	}, false); err != nil {
+		return false
+	} else {
+		return true
+	}
+}
+
+func (a *mapAmender) Keys() []string {
+	keys := make([]string, a.Length())
+	count := 0
+	for itr := a.MapIterator(); !itr.Done(); {
+		if k, _, err := itr.Next(); err != nil {
+			return []string{}
+		} else if key, err := k.AsString(); err != nil {
+			return []string{}
+		} else {
+			keys[count] = key
+			count++
+		}
+	}
+	return keys
+}
+
+func (a *mapAmender) Empty() bool {
+	return a.Length() == 0
+}
+
+func (a *mapAmender) Clear() {
+	a.Transform(&Progress{}, datamodel.ParsePath("/"), func(progress Progress, node datamodel.Node) (datamodel.Node, error) {
+		return nil, nil
+	}, false)
+}
+
+func (a *mapAmender) Values() []datamodel.Node {
+	values := make([]datamodel.Node, a.Length())
+	count := 0
+	for itr := a.MapIterator(); !itr.Done(); {
+		_, v, err := itr.Next()
+		if err != nil {
+			return []datamodel.Node{}
+		}
+		values[count] = v
+		count++
+	}
+	return values
 }
