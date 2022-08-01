@@ -272,12 +272,18 @@ func (a *mapAmender) Transform(prog *Progress, path datamodel.Path, fn Transform
 		} else if newChildVal == nil {
 			// Use the "Null" node to indicate a removed child.
 			a.mods.Put(childSeg, a.opts.newAnyAmender(datamodel.Null, a, false))
-			// If the child node being removed is a new node previously added to the node hierarchy, decrement `adds`,
-			// otherwise increment `rems`. This allows us to retain knowledge about the "history" of the base hierarchy.
-			if amd, castOk := newChildVal.(Amender); castOk && amd.isCreated() {
-				a.rems++
-			} else {
-				a.adds--
+			// If the child being removed didn't already exist, we could error out but we don't have to because the
+			// state will remain consistent. This operation is equivalent to adding a child then removing it, in which
+			// case we would have incremented then decremented `adds`, leaving it the same.
+			if childVal != nil {
+				// If the child node being removed is a new node previously added to the node hierarchy, decrement
+				// `adds`, otherwise increment `rems`. This allows us to retain knowledge about the "history" of the
+				// base hierarchy.
+				if amd, castOk := childVal.(Amender); castOk && amd.isCreated() {
+					a.adds--
+				} else {
+					a.rems++
+				}
 			}
 		} else {
 			// While building the nested amender tree, only count nodes as "added" when they didn't exist and had to be
