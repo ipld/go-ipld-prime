@@ -298,3 +298,18 @@ func TestMapNewBuilderUsageError(t *testing.T) {
 		// TODO(dustmop): Error message here should be better
 		`misuse`)
 }
+
+func TestMapDupKeyError(t *testing.T) {
+	b := basicnode.Prototype.Map.NewBuilder()
+
+	// construct a map with duplicate keys
+	ma, err := b.BeginMap(3)
+	a := ma.AssembleKey()
+	a.AssignString("cat")
+	a = ma.AssembleValue()
+	a.AssignString("meow")
+	a = ma.AssembleKey()
+	err = a.AssignString("cat")
+
+	qt.Check(t, err, qt.ErrorMatches, `cannot repeat map key "cat"`)
+}
