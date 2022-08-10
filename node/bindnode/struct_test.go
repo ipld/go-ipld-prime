@@ -54,8 +54,8 @@ type Animal struct {
 	qt.Check(t, expect, qt.Equals, actual)
 
 	qt.Check(t, fmt.Sprintf("%T", proto.Representation()), qt.Equals, "*bindnode._prototypeRepr")
-	qt.Check(t, fmt.Sprintf("%s", schemaType.TypeKind()), qt.Equals, "struct")
-	qt.Check(t, fmt.Sprintf("%s", schemaType.RepresentationBehavior()), qt.Equals, "map")
+	qt.Check(t, schemaType.TypeKind().String(), qt.Equals, "struct")
+	qt.Check(t, schemaType.RepresentationBehavior().String(), qt.Equals, "map")
 }
 
 // test building a struct that contains a union, using typed nodes

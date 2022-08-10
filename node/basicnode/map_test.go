@@ -86,6 +86,9 @@ func TestMapBuilder(t *testing.T) {
 
 	// construct a map of three keys, using the MapBuilder
 	ma, err := b.BeginMap(3)
+	if err != nil {
+		t.Fatal(err)
+	}
 	a := ma.AssembleKey()
 	a.AssignString("cat")
 	a = ma.AssembleValue()
@@ -170,6 +173,9 @@ func TestMapCantAssignNodeTwice(t *testing.T) {
 
 	// construct a map of three keys, using the MapBuilder
 	ma, err := b.BeginMap(3)
+	if err != nil {
+		t.Fatal(err)
+	}
 	a := ma.AssembleKey()
 	a.AssignString("cat")
 	a = ma.AssembleValue()
@@ -212,6 +218,9 @@ func TestMapLookupError(t *testing.T) {
 
 	// construct a map of three keys, using the MapBuilder
 	ma, err := b.BeginMap(3)
+	if err != nil {
+		t.Fatal(err)
+	}
 	a := ma.AssembleKey()
 	a.AssignString("cat")
 	a = ma.AssembleValue()
@@ -304,6 +313,9 @@ func TestMapDupKeyError(t *testing.T) {
 
 	// construct a map with duplicate keys
 	ma, err := b.BeginMap(3)
+	if err != nil {
+		t.Fatal(err)
+	}
 	a := ma.AssembleKey()
 	a.AssignString("cat")
 	a = ma.AssembleValue()
