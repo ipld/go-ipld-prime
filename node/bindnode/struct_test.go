@@ -287,7 +287,6 @@ type Sound struct {
 // test building a struct that contains a union, where the union is
 // constructed as a typed node, but the struct is constructed using
 // the representation
-// NOTE: This test fails!
 func TestStructByRepresentationWithUnion(t *testing.T) {
 	ts, err := ipld.LoadSchemaBytes([]byte(`
 type Animal struct {
@@ -324,19 +323,18 @@ type Sound struct {
 	a := ma.AssembleKey()
 	must.NotError(a.AssignString("Movement"))
 	a = ma.AssembleValue()
-	must.NotError(a.AssignString("walk"))
+	must.NotError(a.AssignString("swim"))
 	must.NotError(ma.Finish())
 	behaviorNode := b.Build()
 
 	actual := printer.Sprint(behaviorNode)
 
-	expect := `union<Behavior>{string<Movement>{"walk"}}`
+	expect := `union<Behavior>{string<Movement>{"swim"}}`
 	qt.Check(t, expect, qt.Equals, actual)
 
 	// Animal top-level, from representation
-	// NOTE: this fails when trying to assign Behavior because that node
-	// was built as a typed node, but this assembler uses the
-	// representation instead
+	// NOTE: the Behavior node was built as a typed node, but
+	// this Animmal assembler uses representation
 	schemaType = ts.TypeByName("Animal")
 	proto := bindnode.Prototype(nil, schemaType).Representation()
 
@@ -354,8 +352,6 @@ type Sound struct {
 	a = ma.AssembleKey()
 	must.NotError(a.AssignString("Action"))
 	a = ma.AssembleValue()
-	// NOTE: Failure happens here:
-	//   bindnode AssembleKey TODO: schema.UnionRepresentation_Stringprefix
 	must.NotError(a.AssignNode(behaviorNode))
 
 	ma.Finish()
