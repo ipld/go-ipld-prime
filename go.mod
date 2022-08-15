@@ -7,7 +7,7 @@ require (
 	github.com/google/go-cmp v0.5.8
 	github.com/ipfs/go-cid v0.2.0
 	github.com/multiformats/go-multicodec v0.5.0
-	github.com/multiformats/go-multihash v0.2.0
+	github.com/multiformats/go-multihash v0.2.1
 	github.com/polydawn/refmt v0.0.0-20201211092308-30ac6d18308e
 	github.com/warpfork/go-testmark v0.10.0
 	gopkg.in/yaml.v2 v2.4.0
