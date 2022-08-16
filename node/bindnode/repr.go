@@ -1014,8 +1014,6 @@ func (w *_unionAssemblerRepr) AssembleKey() datamodel.NodeAssembler {
 	switch stg := reprStrategy(w.schemaType).(type) {
 	case schema.UnionRepresentation_Keyed:
 		return (*_unionAssembler)(w).AssembleKey()
-	case schema.UnionRepresentation_Stringprefix:
-		return (*_unionAssembler)(w).AssembleKey()
 	default:
 		return _errorAssembler{fmt.Errorf("bindnode AssembleKey TODO: %T", stg)}
 	}
@@ -1031,36 +1029,6 @@ func (w *_unionAssemblerRepr) AssembleValue() datamodel.NodeAssembler {
 		valAsm := (*_unionAssembler)(w).AssembleValue()
 		valAsm = assemblerRepr(valAsm)
 		return valAsm
-	case schema.UnionRepresentation_Stringprefix:
-		// NOTE: duplicated in node.go, unionAssembler.AssembleValue
-		// consider refactoring these
-		name := w.curKey.val.String()
-		var idx int
-		var mtyp schema.Type
-		for i, member := range w.schemaType.Members() {
-			if member.Name() == name {
-				idx = i
-				mtyp = member
-				break
-			}
-		}
-		if mtyp == nil {
-			return _errorAssembler{fmt.Errorf("bindnode TODO: missing member %s in %s", name, w.schemaType.Name())}
-		}
-
-		goType := w.val.Field(idx).Type().Elem()
-		valPtr := reflect.New(goType)
-		finish := func() error {
-			unionSetMember(w.val, idx, valPtr)
-			return nil
-		}
-		return &_assembler{
-			cfg:        w.cfg,
-			schemaType: mtyp,
-			val:        valPtr.Elem(),
-			finish:     finish,
-		}
-
 	default:
 		return _errorAssembler{fmt.Errorf("bindnode AssembleValue TODO: %T", stg)}
 	}
@@ -1077,8 +1045,6 @@ func (w *_unionAssemblerRepr) AssembleEntry(k string) (datamodel.NodeAssembler, 
 func (w *_unionAssemblerRepr) Finish() error {
 	switch stg := reprStrategy(w.schemaType).(type) {
 	case schema.UnionRepresentation_Keyed:
-		return (*_unionAssembler)(w).Finish()
-	case schema.UnionRepresentation_Stringprefix:
 		return (*_unionAssembler)(w).Finish()
 	default:
 		return fmt.Errorf("bindnode Finish TODO: %T", stg)

@@ -1360,8 +1360,6 @@ func (w *_unionAssembler) AssembleKey() datamodel.NodeAssembler {
 }
 
 func (w *_unionAssembler) AssembleValue() datamodel.NodeAssembler {
-	// NOTE: duplicated in repr.go, unionAssemblerRepr.AssembleValue for Stringprefix
-	// consider refactoring these
 	name := w.curKey.val.String()
 	var idx int
 	var mtyp schema.Type
