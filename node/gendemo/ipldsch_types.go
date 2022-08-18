@@ -11,15 +11,20 @@ var _ datamodel.Node = nil // suppress errors when this dependency is not refere
 // One of its major uses is to start the construction of a value.
 // You can use it like this:
 //
-// 		gendemo.Type.YourTypeName.NewBuilder().BeginMap() //...
+//	gendemo.Type.YourTypeName.NewBuilder().BeginMap() //...
 //
 // and:
 //
-// 		gendemo.Type.OtherTypeName.NewBuilder().AssignString("x") // ...
-//
+//	gendemo.Type.OtherTypeName.NewBuilder().AssignString("x") // ...
 var Type typeSlab
 
 type typeSlab struct {
+	Bar                     _Bar__Prototype
+	Bar__Repr               _Bar__ReprPrototype
+	Baz                     _Baz__Prototype
+	Baz__Repr               _Baz__ReprPrototype
+	Foo                     _Foo__Prototype
+	Foo__Repr               _Foo__ReprPrototype
 	Int                     _Int__Prototype
 	Int__Repr               _Int__ReprPrototype
 	Map__String__Msg3       _Map__String__Msg3__Prototype
@@ -28,9 +33,23 @@ type typeSlab struct {
 	Msg3__Repr              _Msg3__ReprPrototype
 	String                  _String__Prototype
 	String__Repr            _String__ReprPrototype
+	UnionKinded             _UnionKinded__Prototype
+	UnionKinded__Repr       _UnionKinded__ReprPrototype
 }
 
 // --- type definitions follow ---
+
+// Bar matches the IPLD Schema type "Bar".  It has bool kind.
+type Bar = *_Bar
+type _Bar struct{ x bool }
+
+// Baz matches the IPLD Schema type "Baz".  It has string kind.
+type Baz = *_Baz
+type _Baz struct{ x string }
+
+// Foo matches the IPLD Schema type "Foo".  It has int kind.
+type Foo = *_Foo
+type _Foo struct{ x int64 }
 
 // Int matches the IPLD Schema type "Int".  It has int kind.
 type Int = *_Int
@@ -58,3 +77,20 @@ type _Msg3 struct {
 // String matches the IPLD Schema type "String".  It has string kind.
 type String = *_String
 type _String struct{ x string }
+
+// UnionKinded matches the IPLD Schema type "UnionKinded".
+// UnionKinded has union typekind, which means its data model behaviors are that of a map kind.
+type UnionKinded = *_UnionKinded
+type _UnionKinded struct {
+	tag uint
+	x1  _Foo
+	x2  _Bar
+	x3  _Baz
+}
+type _UnionKinded__iface interface {
+	_UnionKinded__member()
+}
+
+func (_Foo) _UnionKinded__member() {}
+func (_Bar) _UnionKinded__member() {}
+func (_Baz) _UnionKinded__member() {}
