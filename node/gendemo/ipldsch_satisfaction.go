@@ -8,6 +8,625 @@ import (
 	"github.com/ipld/go-ipld-prime/schema"
 )
 
+func (n Bar) Bool() bool {
+	return n.x
+}
+func (_Bar__Prototype) FromBool(v bool) (Bar, error) {
+	n := _Bar{v}
+	return &n, nil
+}
+
+type _Bar__Maybe struct {
+	m schema.Maybe
+	v _Bar
+}
+type MaybeBar = *_Bar__Maybe
+
+func (m MaybeBar) IsNull() bool {
+	return m.m == schema.Maybe_Null
+}
+func (m MaybeBar) IsAbsent() bool {
+	return m.m == schema.Maybe_Absent
+}
+func (m MaybeBar) Exists() bool {
+	return m.m == schema.Maybe_Value
+}
+func (m MaybeBar) AsNode() datamodel.Node {
+	switch m.m {
+	case schema.Maybe_Absent:
+		return datamodel.Absent
+	case schema.Maybe_Null:
+		return datamodel.Null
+	case schema.Maybe_Value:
+		return &m.v
+	default:
+		panic("unreachable")
+	}
+}
+func (m MaybeBar) Must() Bar {
+	if !m.Exists() {
+		panic("unbox of a maybe rejected")
+	}
+	return &m.v
+}
+
+var _ datamodel.Node = (Bar)(&_Bar{})
+var _ schema.TypedNode = (Bar)(&_Bar{})
+
+func (Bar) Kind() datamodel.Kind {
+	return datamodel.Kind_Bool
+}
+func (Bar) LookupByString(string) (datamodel.Node, error) {
+	return mixins.Bool{TypeName: "gendemo.Bar"}.LookupByString("")
+}
+func (Bar) LookupByNode(datamodel.Node) (datamodel.Node, error) {
+	return mixins.Bool{TypeName: "gendemo.Bar"}.LookupByNode(nil)
+}
+func (Bar) LookupByIndex(idx int64) (datamodel.Node, error) {
+	return mixins.Bool{TypeName: "gendemo.Bar"}.LookupByIndex(0)
+}
+func (Bar) LookupBySegment(seg datamodel.PathSegment) (datamodel.Node, error) {
+	return mixins.Bool{TypeName: "gendemo.Bar"}.LookupBySegment(seg)
+}
+func (Bar) MapIterator() datamodel.MapIterator {
+	return nil
+}
+func (Bar) ListIterator() datamodel.ListIterator {
+	return nil
+}
+func (Bar) Length() int64 {
+	return -1
+}
+func (Bar) IsAbsent() bool {
+	return false
+}
+func (Bar) IsNull() bool {
+	return false
+}
+func (n Bar) AsBool() (bool, error) {
+	return n.x, nil
+}
+func (Bar) AsInt() (int64, error) {
+	return mixins.Bool{TypeName: "gendemo.Bar"}.AsInt()
+}
+func (Bar) AsFloat() (float64, error) {
+	return mixins.Bool{TypeName: "gendemo.Bar"}.AsFloat()
+}
+func (Bar) AsString() (string, error) {
+	return mixins.Bool{TypeName: "gendemo.Bar"}.AsString()
+}
+func (Bar) AsBytes() ([]byte, error) {
+	return mixins.Bool{TypeName: "gendemo.Bar"}.AsBytes()
+}
+func (Bar) AsLink() (datamodel.Link, error) {
+	return mixins.Bool{TypeName: "gendemo.Bar"}.AsLink()
+}
+func (Bar) Prototype() datamodel.NodePrototype {
+	return _Bar__Prototype{}
+}
+
+type _Bar__Prototype struct{}
+
+func (_Bar__Prototype) NewBuilder() datamodel.NodeBuilder {
+	var nb _Bar__Builder
+	nb.Reset()
+	return &nb
+}
+
+type _Bar__Builder struct {
+	_Bar__Assembler
+}
+
+func (nb *_Bar__Builder) Build() datamodel.Node {
+	if *nb.m != schema.Maybe_Value {
+		panic("invalid state: cannot call Build on an assembler that's not finished")
+	}
+	return nb.w
+}
+func (nb *_Bar__Builder) Reset() {
+	var w _Bar
+	var m schema.Maybe
+	*nb = _Bar__Builder{_Bar__Assembler{w: &w, m: &m}}
+}
+
+type _Bar__Assembler struct {
+	w *_Bar
+	m *schema.Maybe
+}
+
+func (na *_Bar__Assembler) reset() {}
+func (_Bar__Assembler) BeginMap(sizeHint int64) (datamodel.MapAssembler, error) {
+	return mixins.BoolAssembler{TypeName: "gendemo.Bar"}.BeginMap(0)
+}
+func (_Bar__Assembler) BeginList(sizeHint int64) (datamodel.ListAssembler, error) {
+	return mixins.BoolAssembler{TypeName: "gendemo.Bar"}.BeginList(0)
+}
+func (na *_Bar__Assembler) AssignNull() error {
+	switch *na.m {
+	case allowNull:
+		*na.m = schema.Maybe_Null
+		return nil
+	case schema.Maybe_Absent:
+		return mixins.BoolAssembler{TypeName: "gendemo.Bar"}.AssignNull()
+	case schema.Maybe_Value, schema.Maybe_Null:
+		panic("invalid state: cannot assign into assembler that's already finished")
+	}
+	panic("unreachable")
+}
+func (na *_Bar__Assembler) AssignBool(v bool) error {
+	switch *na.m {
+	case schema.Maybe_Value, schema.Maybe_Null:
+		panic("invalid state: cannot assign into assembler that's already finished")
+	}
+	na.w.x = v
+	*na.m = schema.Maybe_Value
+	return nil
+}
+func (_Bar__Assembler) AssignInt(int64) error {
+	return mixins.BoolAssembler{TypeName: "gendemo.Bar"}.AssignInt(0)
+}
+func (_Bar__Assembler) AssignFloat(float64) error {
+	return mixins.BoolAssembler{TypeName: "gendemo.Bar"}.AssignFloat(0)
+}
+func (_Bar__Assembler) AssignString(string) error {
+	return mixins.BoolAssembler{TypeName: "gendemo.Bar"}.AssignString("")
+}
+func (_Bar__Assembler) AssignBytes([]byte) error {
+	return mixins.BoolAssembler{TypeName: "gendemo.Bar"}.AssignBytes(nil)
+}
+func (_Bar__Assembler) AssignLink(datamodel.Link) error {
+	return mixins.BoolAssembler{TypeName: "gendemo.Bar"}.AssignLink(nil)
+}
+func (na *_Bar__Assembler) AssignNode(v datamodel.Node) error {
+	if v.IsNull() {
+		return na.AssignNull()
+	}
+	if v2, ok := v.(*_Bar); ok {
+		switch *na.m {
+		case schema.Maybe_Value, schema.Maybe_Null:
+			panic("invalid state: cannot assign into assembler that's already finished")
+		}
+		*na.w = *v2
+		*na.m = schema.Maybe_Value
+		return nil
+	}
+	if v2, err := v.AsBool(); err != nil {
+		return err
+	} else {
+		return na.AssignBool(v2)
+	}
+}
+func (_Bar__Assembler) Prototype() datamodel.NodePrototype {
+	return _Bar__Prototype{}
+}
+func (Bar) Type() schema.Type {
+	return nil /*TODO:typelit*/
+}
+func (n Bar) Representation() datamodel.Node {
+	return (*_Bar__Repr)(n)
+}
+
+type _Bar__Repr = _Bar
+
+var _ datamodel.Node = &_Bar__Repr{}
+
+type _Bar__ReprPrototype = _Bar__Prototype
+type _Bar__ReprAssembler = _Bar__Assembler
+
+func (n Baz) String() string {
+	return n.x
+}
+func (_Baz__Prototype) fromString(w *_Baz, v string) error {
+	*w = _Baz{v}
+	return nil
+}
+func (_Baz__Prototype) FromString(v string) (Baz, error) {
+	n := _Baz{v}
+	return &n, nil
+}
+
+type _Baz__Maybe struct {
+	m schema.Maybe
+	v _Baz
+}
+type MaybeBaz = *_Baz__Maybe
+
+func (m MaybeBaz) IsNull() bool {
+	return m.m == schema.Maybe_Null
+}
+func (m MaybeBaz) IsAbsent() bool {
+	return m.m == schema.Maybe_Absent
+}
+func (m MaybeBaz) Exists() bool {
+	return m.m == schema.Maybe_Value
+}
+func (m MaybeBaz) AsNode() datamodel.Node {
+	switch m.m {
+	case schema.Maybe_Absent:
+		return datamodel.Absent
+	case schema.Maybe_Null:
+		return datamodel.Null
+	case schema.Maybe_Value:
+		return &m.v
+	default:
+		panic("unreachable")
+	}
+}
+func (m MaybeBaz) Must() Baz {
+	if !m.Exists() {
+		panic("unbox of a maybe rejected")
+	}
+	return &m.v
+}
+
+var _ datamodel.Node = (Baz)(&_Baz{})
+var _ schema.TypedNode = (Baz)(&_Baz{})
+
+func (Baz) Kind() datamodel.Kind {
+	return datamodel.Kind_String
+}
+func (Baz) LookupByString(string) (datamodel.Node, error) {
+	return mixins.String{TypeName: "gendemo.Baz"}.LookupByString("")
+}
+func (Baz) LookupByNode(datamodel.Node) (datamodel.Node, error) {
+	return mixins.String{TypeName: "gendemo.Baz"}.LookupByNode(nil)
+}
+func (Baz) LookupByIndex(idx int64) (datamodel.Node, error) {
+	return mixins.String{TypeName: "gendemo.Baz"}.LookupByIndex(0)
+}
+func (Baz) LookupBySegment(seg datamodel.PathSegment) (datamodel.Node, error) {
+	return mixins.String{TypeName: "gendemo.Baz"}.LookupBySegment(seg)
+}
+func (Baz) MapIterator() datamodel.MapIterator {
+	return nil
+}
+func (Baz) ListIterator() datamodel.ListIterator {
+	return nil
+}
+func (Baz) Length() int64 {
+	return -1
+}
+func (Baz) IsAbsent() bool {
+	return false
+}
+func (Baz) IsNull() bool {
+	return false
+}
+func (Baz) AsBool() (bool, error) {
+	return mixins.String{TypeName: "gendemo.Baz"}.AsBool()
+}
+func (Baz) AsInt() (int64, error) {
+	return mixins.String{TypeName: "gendemo.Baz"}.AsInt()
+}
+func (Baz) AsFloat() (float64, error) {
+	return mixins.String{TypeName: "gendemo.Baz"}.AsFloat()
+}
+func (n Baz) AsString() (string, error) {
+	return n.x, nil
+}
+func (Baz) AsBytes() ([]byte, error) {
+	return mixins.String{TypeName: "gendemo.Baz"}.AsBytes()
+}
+func (Baz) AsLink() (datamodel.Link, error) {
+	return mixins.String{TypeName: "gendemo.Baz"}.AsLink()
+}
+func (Baz) Prototype() datamodel.NodePrototype {
+	return _Baz__Prototype{}
+}
+
+type _Baz__Prototype struct{}
+
+func (_Baz__Prototype) NewBuilder() datamodel.NodeBuilder {
+	var nb _Baz__Builder
+	nb.Reset()
+	return &nb
+}
+
+type _Baz__Builder struct {
+	_Baz__Assembler
+}
+
+func (nb *_Baz__Builder) Build() datamodel.Node {
+	if *nb.m != schema.Maybe_Value {
+		panic("invalid state: cannot call Build on an assembler that's not finished")
+	}
+	return nb.w
+}
+func (nb *_Baz__Builder) Reset() {
+	var w _Baz
+	var m schema.Maybe
+	*nb = _Baz__Builder{_Baz__Assembler{w: &w, m: &m}}
+}
+
+type _Baz__Assembler struct {
+	w *_Baz
+	m *schema.Maybe
+}
+
+func (na *_Baz__Assembler) reset() {}
+func (_Baz__Assembler) BeginMap(sizeHint int64) (datamodel.MapAssembler, error) {
+	return mixins.StringAssembler{TypeName: "gendemo.Baz"}.BeginMap(0)
+}
+func (_Baz__Assembler) BeginList(sizeHint int64) (datamodel.ListAssembler, error) {
+	return mixins.StringAssembler{TypeName: "gendemo.Baz"}.BeginList(0)
+}
+func (na *_Baz__Assembler) AssignNull() error {
+	switch *na.m {
+	case allowNull:
+		*na.m = schema.Maybe_Null
+		return nil
+	case schema.Maybe_Absent:
+		return mixins.StringAssembler{TypeName: "gendemo.Baz"}.AssignNull()
+	case schema.Maybe_Value, schema.Maybe_Null:
+		panic("invalid state: cannot assign into assembler that's already finished")
+	}
+	panic("unreachable")
+}
+func (_Baz__Assembler) AssignBool(bool) error {
+	return mixins.StringAssembler{TypeName: "gendemo.Baz"}.AssignBool(false)
+}
+func (_Baz__Assembler) AssignInt(int64) error {
+	return mixins.StringAssembler{TypeName: "gendemo.Baz"}.AssignInt(0)
+}
+func (_Baz__Assembler) AssignFloat(float64) error {
+	return mixins.StringAssembler{TypeName: "gendemo.Baz"}.AssignFloat(0)
+}
+func (na *_Baz__Assembler) AssignString(v string) error {
+	switch *na.m {
+	case schema.Maybe_Value, schema.Maybe_Null:
+		panic("invalid state: cannot assign into assembler that's already finished")
+	}
+	na.w.x = v
+	*na.m = schema.Maybe_Value
+	return nil
+}
+func (_Baz__Assembler) AssignBytes([]byte) error {
+	return mixins.StringAssembler{TypeName: "gendemo.Baz"}.AssignBytes(nil)
+}
+func (_Baz__Assembler) AssignLink(datamodel.Link) error {
+	return mixins.StringAssembler{TypeName: "gendemo.Baz"}.AssignLink(nil)
+}
+func (na *_Baz__Assembler) AssignNode(v datamodel.Node) error {
+	if v.IsNull() {
+		return na.AssignNull()
+	}
+	if v2, ok := v.(*_Baz); ok {
+		switch *na.m {
+		case schema.Maybe_Value, schema.Maybe_Null:
+			panic("invalid state: cannot assign into assembler that's already finished")
+		}
+		*na.w = *v2
+		*na.m = schema.Maybe_Value
+		return nil
+	}
+	if v2, err := v.AsString(); err != nil {
+		return err
+	} else {
+		return na.AssignString(v2)
+	}
+}
+func (_Baz__Assembler) Prototype() datamodel.NodePrototype {
+	return _Baz__Prototype{}
+}
+func (Baz) Type() schema.Type {
+	return nil /*TODO:typelit*/
+}
+func (n Baz) Representation() datamodel.Node {
+	return (*_Baz__Repr)(n)
+}
+
+type _Baz__Repr = _Baz
+
+var _ datamodel.Node = &_Baz__Repr{}
+
+type _Baz__ReprPrototype = _Baz__Prototype
+type _Baz__ReprAssembler = _Baz__Assembler
+
+func (n Foo) Int() int64 {
+	return n.x
+}
+func (_Foo__Prototype) FromInt(v int64) (Foo, error) {
+	n := _Foo{v}
+	return &n, nil
+}
+
+type _Foo__Maybe struct {
+	m schema.Maybe
+	v _Foo
+}
+type MaybeFoo = *_Foo__Maybe
+
+func (m MaybeFoo) IsNull() bool {
+	return m.m == schema.Maybe_Null
+}
+func (m MaybeFoo) IsAbsent() bool {
+	return m.m == schema.Maybe_Absent
+}
+func (m MaybeFoo) Exists() bool {
+	return m.m == schema.Maybe_Value
+}
+func (m MaybeFoo) AsNode() datamodel.Node {
+	switch m.m {
+	case schema.Maybe_Absent:
+		return datamodel.Absent
+	case schema.Maybe_Null:
+		return datamodel.Null
+	case schema.Maybe_Value:
+		return &m.v
+	default:
+		panic("unreachable")
+	}
+}
+func (m MaybeFoo) Must() Foo {
+	if !m.Exists() {
+		panic("unbox of a maybe rejected")
+	}
+	return &m.v
+}
+
+var _ datamodel.Node = (Foo)(&_Foo{})
+var _ schema.TypedNode = (Foo)(&_Foo{})
+
+func (Foo) Kind() datamodel.Kind {
+	return datamodel.Kind_Int
+}
+func (Foo) LookupByString(string) (datamodel.Node, error) {
+	return mixins.Int{TypeName: "gendemo.Foo"}.LookupByString("")
+}
+func (Foo) LookupByNode(datamodel.Node) (datamodel.Node, error) {
+	return mixins.Int{TypeName: "gendemo.Foo"}.LookupByNode(nil)
+}
+func (Foo) LookupByIndex(idx int64) (datamodel.Node, error) {
+	return mixins.Int{TypeName: "gendemo.Foo"}.LookupByIndex(0)
+}
+func (Foo) LookupBySegment(seg datamodel.PathSegment) (datamodel.Node, error) {
+	return mixins.Int{TypeName: "gendemo.Foo"}.LookupBySegment(seg)
+}
+func (Foo) MapIterator() datamodel.MapIterator {
+	return nil
+}
+func (Foo) ListIterator() datamodel.ListIterator {
+	return nil
+}
+func (Foo) Length() int64 {
+	return -1
+}
+func (Foo) IsAbsent() bool {
+	return false
+}
+func (Foo) IsNull() bool {
+	return false
+}
+func (Foo) AsBool() (bool, error) {
+	return mixins.Int{TypeName: "gendemo.Foo"}.AsBool()
+}
+func (n Foo) AsInt() (int64, error) {
+	return n.x, nil
+}
+func (Foo) AsFloat() (float64, error) {
+	return mixins.Int{TypeName: "gendemo.Foo"}.AsFloat()
+}
+func (Foo) AsString() (string, error) {
+	return mixins.Int{TypeName: "gendemo.Foo"}.AsString()
+}
+func (Foo) AsBytes() ([]byte, error) {
+	return mixins.Int{TypeName: "gendemo.Foo"}.AsBytes()
+}
+func (Foo) AsLink() (datamodel.Link, error) {
+	return mixins.Int{TypeName: "gendemo.Foo"}.AsLink()
+}
+func (Foo) Prototype() datamodel.NodePrototype {
+	return _Foo__Prototype{}
+}
+
+type _Foo__Prototype struct{}
+
+func (_Foo__Prototype) NewBuilder() datamodel.NodeBuilder {
+	var nb _Foo__Builder
+	nb.Reset()
+	return &nb
+}
+
+type _Foo__Builder struct {
+	_Foo__Assembler
+}
+
+func (nb *_Foo__Builder) Build() datamodel.Node {
+	if *nb.m != schema.Maybe_Value {
+		panic("invalid state: cannot call Build on an assembler that's not finished")
+	}
+	return nb.w
+}
+func (nb *_Foo__Builder) Reset() {
+	var w _Foo
+	var m schema.Maybe
+	*nb = _Foo__Builder{_Foo__Assembler{w: &w, m: &m}}
+}
+
+type _Foo__Assembler struct {
+	w *_Foo
+	m *schema.Maybe
+}
+
+func (na *_Foo__Assembler) reset() {}
+func (_Foo__Assembler) BeginMap(sizeHint int64) (datamodel.MapAssembler, error) {
+	return mixins.IntAssembler{TypeName: "gendemo.Foo"}.BeginMap(0)
+}
+func (_Foo__Assembler) BeginList(sizeHint int64) (datamodel.ListAssembler, error) {
+	return mixins.IntAssembler{TypeName: "gendemo.Foo"}.BeginList(0)
+}
+func (na *_Foo__Assembler) AssignNull() error {
+	switch *na.m {
+	case allowNull:
+		*na.m = schema.Maybe_Null
+		return nil
+	case schema.Maybe_Absent:
+		return mixins.IntAssembler{TypeName: "gendemo.Foo"}.AssignNull()
+	case schema.Maybe_Value, schema.Maybe_Null:
+		panic("invalid state: cannot assign into assembler that's already finished")
+	}
+	panic("unreachable")
+}
+func (_Foo__Assembler) AssignBool(bool) error {
+	return mixins.IntAssembler{TypeName: "gendemo.Foo"}.AssignBool(false)
+}
+func (na *_Foo__Assembler) AssignInt(v int64) error {
+	switch *na.m {
+	case schema.Maybe_Value, schema.Maybe_Null:
+		panic("invalid state: cannot assign into assembler that's already finished")
+	}
+	na.w.x = v
+	*na.m = schema.Maybe_Value
+	return nil
+}
+func (_Foo__Assembler) AssignFloat(float64) error {
+	return mixins.IntAssembler{TypeName: "gendemo.Foo"}.AssignFloat(0)
+}
+func (_Foo__Assembler) AssignString(string) error {
+	return mixins.IntAssembler{TypeName: "gendemo.Foo"}.AssignString("")
+}
+func (_Foo__Assembler) AssignBytes([]byte) error {
+	return mixins.IntAssembler{TypeName: "gendemo.Foo"}.AssignBytes(nil)
+}
+func (_Foo__Assembler) AssignLink(datamodel.Link) error {
+	return mixins.IntAssembler{TypeName: "gendemo.Foo"}.AssignLink(nil)
+}
+func (na *_Foo__Assembler) AssignNode(v datamodel.Node) error {
+	if v.IsNull() {
+		return na.AssignNull()
+	}
+	if v2, ok := v.(*_Foo); ok {
+		switch *na.m {
+		case schema.Maybe_Value, schema.Maybe_Null:
+			panic("invalid state: cannot assign into assembler that's already finished")
+		}
+		*na.w = *v2
+		*na.m = schema.Maybe_Value
+		return nil
+	}
+	if v2, err := v.AsInt(); err != nil {
+		return err
+	} else {
+		return na.AssignInt(v2)
+	}
+}
+func (_Foo__Assembler) Prototype() datamodel.NodePrototype {
+	return _Foo__Prototype{}
+}
+func (Foo) Type() schema.Type {
+	return nil /*TODO:typelit*/
+}
+func (n Foo) Representation() datamodel.Node {
+	return (*_Foo__Repr)(n)
+}
+
+type _Foo__Repr = _Foo
+
+var _ datamodel.Node = &_Foo__Repr{}
+
+type _Foo__ReprPrototype = _Foo__Prototype
+type _Foo__ReprAssembler = _Foo__Assembler
+
 func (n Int) Int() int64 {
 	return n.x
 }
@@ -2188,3 +2807,825 @@ var _ datamodel.Node = &_String__Repr{}
 
 type _String__ReprPrototype = _String__Prototype
 type _String__ReprAssembler = _String__Assembler
+
+func (n _UnionKinded) AsInterface() _UnionKinded__iface {
+	switch n.tag {
+	case 1:
+		return &n.x1
+	case 2:
+		return &n.x2
+	case 3:
+		return &n.x3
+	default:
+		panic("invalid union state; how did you create this object?")
+	}
+}
+
+type _UnionKinded__Maybe struct {
+	m schema.Maybe
+	v UnionKinded
+}
+type MaybeUnionKinded = *_UnionKinded__Maybe
+
+func (m MaybeUnionKinded) IsNull() bool {
+	return m.m == schema.Maybe_Null
+}
+func (m MaybeUnionKinded) IsAbsent() bool {
+	return m.m == schema.Maybe_Absent
+}
+func (m MaybeUnionKinded) Exists() bool {
+	return m.m == schema.Maybe_Value
+}
+func (m MaybeUnionKinded) AsNode() datamodel.Node {
+	switch m.m {
+	case schema.Maybe_Absent:
+		return datamodel.Absent
+	case schema.Maybe_Null:
+		return datamodel.Null
+	case schema.Maybe_Value:
+		return m.v
+	default:
+		panic("unreachable")
+	}
+}
+func (m MaybeUnionKinded) Must() UnionKinded {
+	if !m.Exists() {
+		panic("unbox of a maybe rejected")
+	}
+	return m.v
+}
+
+var (
+	memberName__UnionKinded_Foo = _String{"Foo"}
+	memberName__UnionKinded_Bar = _String{"Bar"}
+	memberName__UnionKinded_Baz = _String{"Baz"}
+)
+var _ datamodel.Node = (UnionKinded)(&_UnionKinded{})
+var _ schema.TypedNode = (UnionKinded)(&_UnionKinded{})
+
+func (UnionKinded) Kind() datamodel.Kind {
+	return datamodel.Kind_Map
+}
+func (n UnionKinded) LookupByString(key string) (datamodel.Node, error) {
+	switch key {
+	case "Foo":
+		if n.tag != 1 {
+			return nil, datamodel.ErrNotExists{Segment: datamodel.PathSegmentOfString(key)}
+		}
+		return &n.x1, nil
+	case "Bar":
+		if n.tag != 2 {
+			return nil, datamodel.ErrNotExists{Segment: datamodel.PathSegmentOfString(key)}
+		}
+		return &n.x2, nil
+	case "Baz":
+		if n.tag != 3 {
+			return nil, datamodel.ErrNotExists{Segment: datamodel.PathSegmentOfString(key)}
+		}
+		return &n.x3, nil
+	default:
+		return nil, schema.ErrNoSuchField{Type: nil /*TODO*/, Field: datamodel.PathSegmentOfString(key)}
+	}
+}
+func (n UnionKinded) LookupByNode(key datamodel.Node) (datamodel.Node, error) {
+	ks, err := key.AsString()
+	if err != nil {
+		return nil, err
+	}
+	return n.LookupByString(ks)
+}
+func (UnionKinded) LookupByIndex(idx int64) (datamodel.Node, error) {
+	return mixins.Map{TypeName: "gendemo.UnionKinded"}.LookupByIndex(0)
+}
+func (n UnionKinded) LookupBySegment(seg datamodel.PathSegment) (datamodel.Node, error) {
+	return n.LookupByString(seg.String())
+}
+func (n UnionKinded) MapIterator() datamodel.MapIterator {
+	return &_UnionKinded__MapItr{n, false}
+}
+
+type _UnionKinded__MapItr struct {
+	n    UnionKinded
+	done bool
+}
+
+func (itr *_UnionKinded__MapItr) Next() (k datamodel.Node, v datamodel.Node, _ error) {
+	if itr.done {
+		return nil, nil, datamodel.ErrIteratorOverread{}
+	}
+	switch itr.n.tag {
+	case 1:
+		k, v = &memberName__UnionKinded_Foo, &itr.n.x1
+	case 2:
+		k, v = &memberName__UnionKinded_Bar, &itr.n.x2
+	case 3:
+		k, v = &memberName__UnionKinded_Baz, &itr.n.x3
+	default:
+		panic("unreachable")
+	}
+	itr.done = true
+	return
+}
+func (itr *_UnionKinded__MapItr) Done() bool {
+	return itr.done
+}
+
+func (UnionKinded) ListIterator() datamodel.ListIterator {
+	return nil
+}
+func (UnionKinded) Length() int64 {
+	return 1
+}
+func (UnionKinded) IsAbsent() bool {
+	return false
+}
+func (UnionKinded) IsNull() bool {
+	return false
+}
+func (UnionKinded) AsBool() (bool, error) {
+	return mixins.Map{TypeName: "gendemo.UnionKinded"}.AsBool()
+}
+func (UnionKinded) AsInt() (int64, error) {
+	return mixins.Map{TypeName: "gendemo.UnionKinded"}.AsInt()
+}
+func (UnionKinded) AsFloat() (float64, error) {
+	return mixins.Map{TypeName: "gendemo.UnionKinded"}.AsFloat()
+}
+func (UnionKinded) AsString() (string, error) {
+	return mixins.Map{TypeName: "gendemo.UnionKinded"}.AsString()
+}
+func (UnionKinded) AsBytes() ([]byte, error) {
+	return mixins.Map{TypeName: "gendemo.UnionKinded"}.AsBytes()
+}
+func (UnionKinded) AsLink() (datamodel.Link, error) {
+	return mixins.Map{TypeName: "gendemo.UnionKinded"}.AsLink()
+}
+func (UnionKinded) Prototype() datamodel.NodePrototype {
+	return _UnionKinded__Prototype{}
+}
+
+type _UnionKinded__Prototype struct{}
+
+func (_UnionKinded__Prototype) NewBuilder() datamodel.NodeBuilder {
+	var nb _UnionKinded__Builder
+	nb.Reset()
+	return &nb
+}
+
+type _UnionKinded__Builder struct {
+	_UnionKinded__Assembler
+}
+
+func (nb *_UnionKinded__Builder) Build() datamodel.Node {
+	if *nb.m != schema.Maybe_Value {
+		panic("invalid state: cannot call Build on an assembler that's not finished")
+	}
+	return nb.w
+}
+func (nb *_UnionKinded__Builder) Reset() {
+	var w _UnionKinded
+	var m schema.Maybe
+	*nb = _UnionKinded__Builder{_UnionKinded__Assembler{w: &w, m: &m}}
+}
+
+type _UnionKinded__Assembler struct {
+	w     *_UnionKinded
+	m     *schema.Maybe
+	state maState
+
+	cm  schema.Maybe
+	ca1 _Foo__Assembler
+
+	ca2 _Bar__Assembler
+
+	ca3 _Baz__Assembler
+	ca  uint
+}
+
+func (na *_UnionKinded__Assembler) reset() {
+	na.state = maState_initial
+	switch na.ca {
+	case 0:
+		return
+	case 1:
+		na.ca1.reset()
+
+	case 2:
+		na.ca2.reset()
+
+	case 3:
+		na.ca3.reset()
+	default:
+		panic("unreachable")
+	}
+	na.ca = 0
+	na.cm = schema.Maybe_Absent
+}
+func (na *_UnionKinded__Assembler) BeginMap(int64) (datamodel.MapAssembler, error) {
+	switch *na.m {
+	case schema.Maybe_Value, schema.Maybe_Null:
+		panic("invalid state: cannot assign into assembler that's already finished")
+	case midvalue:
+		panic("invalid state: it makes no sense to 'begin' twice on the same assembler!")
+	}
+	*na.m = midvalue
+	if na.w == nil {
+		na.w = &_UnionKinded{}
+	}
+	return na, nil
+}
+func (_UnionKinded__Assembler) BeginList(sizeHint int64) (datamodel.ListAssembler, error) {
+	return mixins.MapAssembler{TypeName: "gendemo.UnionKinded"}.BeginList(0)
+}
+func (na *_UnionKinded__Assembler) AssignNull() error {
+	switch *na.m {
+	case allowNull:
+		*na.m = schema.Maybe_Null
+		return nil
+	case schema.Maybe_Absent:
+		return mixins.MapAssembler{TypeName: "gendemo.UnionKinded"}.AssignNull()
+	case schema.Maybe_Value, schema.Maybe_Null:
+		panic("invalid state: cannot assign into assembler that's already finished")
+	case midvalue:
+		panic("invalid state: cannot assign null into an assembler that's already begun working on recursive structures!")
+	}
+	panic("unreachable")
+}
+func (_UnionKinded__Assembler) AssignBool(bool) error {
+	return mixins.MapAssembler{TypeName: "gendemo.UnionKinded"}.AssignBool(false)
+}
+func (_UnionKinded__Assembler) AssignInt(int64) error {
+	return mixins.MapAssembler{TypeName: "gendemo.UnionKinded"}.AssignInt(0)
+}
+func (_UnionKinded__Assembler) AssignFloat(float64) error {
+	return mixins.MapAssembler{TypeName: "gendemo.UnionKinded"}.AssignFloat(0)
+}
+func (_UnionKinded__Assembler) AssignString(string) error {
+	return mixins.MapAssembler{TypeName: "gendemo.UnionKinded"}.AssignString("")
+}
+func (_UnionKinded__Assembler) AssignBytes([]byte) error {
+	return mixins.MapAssembler{TypeName: "gendemo.UnionKinded"}.AssignBytes(nil)
+}
+func (_UnionKinded__Assembler) AssignLink(datamodel.Link) error {
+	return mixins.MapAssembler{TypeName: "gendemo.UnionKinded"}.AssignLink(nil)
+}
+func (na *_UnionKinded__Assembler) AssignNode(v datamodel.Node) error {
+	if v.IsNull() {
+		return na.AssignNull()
+	}
+	if v2, ok := v.(*_UnionKinded); ok {
+		switch *na.m {
+		case schema.Maybe_Value, schema.Maybe_Null:
+			panic("invalid state: cannot assign into assembler that's already finished")
+		case midvalue:
+			panic("invalid state: cannot assign null into an assembler that's already begun working on recursive structures!")
+		}
+		if na.w == nil {
+			na.w = v2
+			*na.m = schema.Maybe_Value
+			return nil
+		}
+		*na.w = *v2
+		*na.m = schema.Maybe_Value
+		return nil
+	}
+	if v.Kind() != datamodel.Kind_Map {
+		return datamodel.ErrWrongKind{TypeName: "gendemo.UnionKinded", MethodName: "AssignNode", AppropriateKind: datamodel.KindSet_JustMap, ActualKind: v.Kind()}
+	}
+	itr := v.MapIterator()
+	for !itr.Done() {
+		k, v, err := itr.Next()
+		if err != nil {
+			return err
+		}
+		if err := na.AssembleKey().AssignNode(k); err != nil {
+			return err
+		}
+		if err := na.AssembleValue().AssignNode(v); err != nil {
+			return err
+		}
+	}
+	return na.Finish()
+}
+func (_UnionKinded__Assembler) Prototype() datamodel.NodePrototype {
+	return _UnionKinded__Prototype{}
+}
+func (ma *_UnionKinded__Assembler) valueFinishTidy() bool {
+	switch ma.cm {
+	case schema.Maybe_Value:
+		ma.state = maState_initial
+		return true
+	default:
+		return false
+	}
+}
+func (ma *_UnionKinded__Assembler) AssembleEntry(k string) (datamodel.NodeAssembler, error) {
+	switch ma.state {
+	case maState_initial:
+		// carry on
+	case maState_midKey:
+		panic("invalid state: AssembleEntry cannot be called when in the middle of assembling another key")
+	case maState_expectValue:
+		panic("invalid state: AssembleEntry cannot be called when expecting start of value assembly")
+	case maState_midValue:
+		if !ma.valueFinishTidy() {
+			panic("invalid state: AssembleEntry cannot be called when in the middle of assembling a value")
+		} // if tidy success: carry on for the moment, but we'll still be erroring shortly.
+	case maState_finished:
+		panic("invalid state: AssembleEntry cannot be called on an assembler that's already finished")
+	}
+	if ma.ca != 0 {
+		return nil, schema.ErrNotUnionStructure{TypeName: "gendemo.UnionKinded", Detail: "cannot add another entry -- a union can only contain one thing!"}
+	}
+	switch k {
+	case "Foo":
+		ma.state = maState_midValue
+		ma.ca = 1
+		ma.w.tag = 1
+		ma.ca1.w = &ma.w.x1
+		ma.ca1.m = &ma.cm
+		return &ma.ca1, nil
+	case "Bar":
+		ma.state = maState_midValue
+		ma.ca = 2
+		ma.w.tag = 2
+		ma.ca2.w = &ma.w.x2
+		ma.ca2.m = &ma.cm
+		return &ma.ca2, nil
+	case "Baz":
+		ma.state = maState_midValue
+		ma.ca = 3
+		ma.w.tag = 3
+		ma.ca3.w = &ma.w.x3
+		ma.ca3.m = &ma.cm
+		return &ma.ca3, nil
+	}
+	return nil, schema.ErrInvalidKey{TypeName: "gendemo.UnionKinded", Key: &_String{k}}
+}
+func (ma *_UnionKinded__Assembler) AssembleKey() datamodel.NodeAssembler {
+	switch ma.state {
+	case maState_initial:
+		// carry on
+	case maState_midKey:
+		panic("invalid state: AssembleKey cannot be called when in the middle of assembling another key")
+	case maState_expectValue:
+		panic("invalid state: AssembleKey cannot be called when expecting start of value assembly")
+	case maState_midValue:
+		if !ma.valueFinishTidy() {
+			panic("invalid state: AssembleKey cannot be called when in the middle of assembling a value")
+		} // if tidy success: carry on for the moment, but we'll still be erroring shortly... or rather, the keyassembler will be.
+	case maState_finished:
+		panic("invalid state: AssembleKey cannot be called on an assembler that's already finished")
+	}
+	ma.state = maState_midKey
+	return (*_UnionKinded__KeyAssembler)(ma)
+}
+func (ma *_UnionKinded__Assembler) AssembleValue() datamodel.NodeAssembler {
+	switch ma.state {
+	case maState_initial:
+		panic("invalid state: AssembleValue cannot be called when no key is primed")
+	case maState_midKey:
+		panic("invalid state: AssembleValue cannot be called when in the middle of assembling a key")
+	case maState_expectValue:
+		// carry on
+	case maState_midValue:
+		panic("invalid state: AssembleValue cannot be called when in the middle of assembling another value")
+	case maState_finished:
+		panic("invalid state: AssembleValue cannot be called on an assembler that's already finished")
+	}
+	ma.state = maState_midValue
+	switch ma.ca {
+	case 1:
+		ma.ca1.w = &ma.w.x1
+		ma.ca1.m = &ma.cm
+		return &ma.ca1
+	case 2:
+		ma.ca2.w = &ma.w.x2
+		ma.ca2.m = &ma.cm
+		return &ma.ca2
+	case 3:
+		ma.ca3.w = &ma.w.x3
+		ma.ca3.m = &ma.cm
+		return &ma.ca3
+	default:
+		panic("unreachable")
+	}
+}
+func (ma *_UnionKinded__Assembler) Finish() error {
+	switch ma.state {
+	case maState_initial:
+		// carry on
+	case maState_midKey:
+		panic("invalid state: Finish cannot be called when in the middle of assembling a key")
+	case maState_expectValue:
+		panic("invalid state: Finish cannot be called when expecting start of value assembly")
+	case maState_midValue:
+		if !ma.valueFinishTidy() {
+			panic("invalid state: Finish cannot be called when in the middle of assembling a value")
+		} // if tidy success: carry on
+	case maState_finished:
+		panic("invalid state: Finish cannot be called on an assembler that's already finished")
+	}
+	if ma.ca == 0 {
+		return schema.ErrNotUnionStructure{TypeName: "gendemo.UnionKinded", Detail: "a union must have exactly one entry (not none)!"}
+	}
+	ma.state = maState_finished
+	*ma.m = schema.Maybe_Value
+	return nil
+}
+func (ma *_UnionKinded__Assembler) KeyPrototype() datamodel.NodePrototype {
+	return _String__Prototype{}
+}
+func (ma *_UnionKinded__Assembler) ValuePrototype(k string) datamodel.NodePrototype {
+	switch k {
+	case "Foo":
+		return _Foo__Prototype{}
+	case "Bar":
+		return _Bar__Prototype{}
+	case "Baz":
+		return _Baz__Prototype{}
+	default:
+		return nil
+	}
+}
+
+type _UnionKinded__KeyAssembler _UnionKinded__Assembler
+
+func (_UnionKinded__KeyAssembler) BeginMap(sizeHint int64) (datamodel.MapAssembler, error) {
+	return mixins.StringAssembler{TypeName: "gendemo.UnionKinded.KeyAssembler"}.BeginMap(0)
+}
+func (_UnionKinded__KeyAssembler) BeginList(sizeHint int64) (datamodel.ListAssembler, error) {
+	return mixins.StringAssembler{TypeName: "gendemo.UnionKinded.KeyAssembler"}.BeginList(0)
+}
+func (na *_UnionKinded__KeyAssembler) AssignNull() error {
+	return mixins.StringAssembler{TypeName: "gendemo.UnionKinded.KeyAssembler"}.AssignNull()
+}
+func (_UnionKinded__KeyAssembler) AssignBool(bool) error {
+	return mixins.StringAssembler{TypeName: "gendemo.UnionKinded.KeyAssembler"}.AssignBool(false)
+}
+func (_UnionKinded__KeyAssembler) AssignInt(int64) error {
+	return mixins.StringAssembler{TypeName: "gendemo.UnionKinded.KeyAssembler"}.AssignInt(0)
+}
+func (_UnionKinded__KeyAssembler) AssignFloat(float64) error {
+	return mixins.StringAssembler{TypeName: "gendemo.UnionKinded.KeyAssembler"}.AssignFloat(0)
+}
+func (ka *_UnionKinded__KeyAssembler) AssignString(k string) error {
+	if ka.state != maState_midKey {
+		panic("misuse: KeyAssembler held beyond its valid lifetime")
+	}
+	if ka.ca != 0 {
+		return schema.ErrNotUnionStructure{TypeName: "gendemo.UnionKinded", Detail: "cannot add another entry -- a union can only contain one thing!"}
+	}
+	switch k {
+	case "Foo":
+		ka.ca = 1
+		ka.w.tag = 1
+		ka.state = maState_expectValue
+		return nil
+	case "Bar":
+		ka.ca = 2
+		ka.w.tag = 2
+		ka.state = maState_expectValue
+		return nil
+	case "Baz":
+		ka.ca = 3
+		ka.w.tag = 3
+		ka.state = maState_expectValue
+		return nil
+	}
+	return schema.ErrInvalidKey{TypeName: "gendemo.UnionKinded", Key: &_String{k}} // TODO: error quality: ErrInvalidUnionDiscriminant ?
+}
+func (_UnionKinded__KeyAssembler) AssignBytes([]byte) error {
+	return mixins.StringAssembler{TypeName: "gendemo.UnionKinded.KeyAssembler"}.AssignBytes(nil)
+}
+func (_UnionKinded__KeyAssembler) AssignLink(datamodel.Link) error {
+	return mixins.StringAssembler{TypeName: "gendemo.UnionKinded.KeyAssembler"}.AssignLink(nil)
+}
+func (ka *_UnionKinded__KeyAssembler) AssignNode(v datamodel.Node) error {
+	if v2, err := v.AsString(); err != nil {
+		return err
+	} else {
+		return ka.AssignString(v2)
+	}
+}
+func (_UnionKinded__KeyAssembler) Prototype() datamodel.NodePrototype {
+	return _String__Prototype{}
+}
+func (UnionKinded) Type() schema.Type {
+	return nil /*TODO:typelit*/
+}
+func (n UnionKinded) Representation() datamodel.Node {
+	return (*_UnionKinded__Repr)(n)
+}
+
+type _UnionKinded__Repr _UnionKinded
+
+var _ datamodel.Node = &_UnionKinded__Repr{}
+
+func (n *_UnionKinded__Repr) Kind() datamodel.Kind {
+	switch n.tag {
+	case 1:
+		return datamodel.Kind_Int
+	case 2:
+		return datamodel.Kind_Bool
+	case 3:
+		return datamodel.Kind_String
+	default:
+		panic("unreachable")
+	}
+}
+func (n *_UnionKinded__Repr) LookupByString(key string) (datamodel.Node, error) {
+	return nil, datamodel.ErrWrongKind{TypeName: "gendemo.UnionKinded.Repr", MethodName: "LookupByString", AppropriateKind: datamodel.KindSet_JustMap, ActualKind: n.Kind()}
+}
+func (n *_UnionKinded__Repr) LookupByNode(key datamodel.Node) (datamodel.Node, error) {
+	return nil, datamodel.ErrWrongKind{TypeName: "gendemo.UnionKinded.Repr", MethodName: "LookupByNode", AppropriateKind: datamodel.KindSet_Recursive, ActualKind: n.Kind()}
+}
+func (n *_UnionKinded__Repr) LookupByIndex(idx int64) (datamodel.Node, error) {
+	return nil, datamodel.ErrWrongKind{TypeName: "gendemo.UnionKinded.Repr", MethodName: "LookupByIndex", AppropriateKind: datamodel.KindSet_JustList, ActualKind: n.Kind()}
+}
+func (n *_UnionKinded__Repr) LookupBySegment(seg datamodel.PathSegment) (datamodel.Node, error) {
+	return nil, datamodel.ErrWrongKind{TypeName: "gendemo.UnionKinded.Repr", MethodName: "LookupBySegment", AppropriateKind: datamodel.KindSet_Recursive, ActualKind: n.Kind()}
+}
+func (n *_UnionKinded__Repr) MapIterator() datamodel.MapIterator {
+	return nil
+}
+func (n *_UnionKinded__Repr) ListIterator() datamodel.ListIterator {
+	return nil
+}
+func (n *_UnionKinded__Repr) Length() int64 {
+	return -1
+}
+func (n *_UnionKinded__Repr) IsAbsent() bool {
+	return false
+}
+func (n *_UnionKinded__Repr) IsNull() bool {
+	return false
+}
+func (n *_UnionKinded__Repr) AsBool() (bool, error) {
+	switch n.tag {
+	case 2:
+		return n.x2.Representation().AsBool()
+	default:
+		return false, datamodel.ErrWrongKind{TypeName: "gendemo.UnionKinded.Repr", MethodName: "AsBool", AppropriateKind: datamodel.KindSet_JustBool, ActualKind: n.Kind()}
+	}
+}
+func (n *_UnionKinded__Repr) AsInt() (int64, error) {
+	switch n.tag {
+	case 1:
+		return n.x1.Representation().AsInt()
+	default:
+		return 0, datamodel.ErrWrongKind{TypeName: "gendemo.UnionKinded.Repr", MethodName: "AsInt", AppropriateKind: datamodel.KindSet_JustInt, ActualKind: n.Kind()}
+	}
+}
+func (n *_UnionKinded__Repr) AsFloat() (float64, error) {
+	return 0, datamodel.ErrWrongKind{TypeName: "gendemo.UnionKinded.Repr", MethodName: "AsFloat", AppropriateKind: datamodel.KindSet_JustFloat, ActualKind: n.Kind()}
+}
+func (n *_UnionKinded__Repr) AsString() (string, error) {
+	switch n.tag {
+	case 3:
+		return n.x3.Representation().AsString()
+	default:
+		return "", datamodel.ErrWrongKind{TypeName: "gendemo.UnionKinded.Repr", MethodName: "AsString", AppropriateKind: datamodel.KindSet_JustString, ActualKind: n.Kind()}
+	}
+}
+func (n *_UnionKinded__Repr) AsBytes() ([]byte, error) {
+	return nil, datamodel.ErrWrongKind{TypeName: "gendemo.UnionKinded.Repr", MethodName: "AsBytes", AppropriateKind: datamodel.KindSet_JustBytes, ActualKind: n.Kind()}
+}
+func (n *_UnionKinded__Repr) AsLink() (datamodel.Link, error) {
+	return nil, datamodel.ErrWrongKind{TypeName: "gendemo.UnionKinded.Repr", MethodName: "AsLink", AppropriateKind: datamodel.KindSet_JustLink, ActualKind: n.Kind()}
+}
+func (_UnionKinded__Repr) Prototype() datamodel.NodePrototype {
+	return _UnionKinded__ReprPrototype{}
+}
+
+type _UnionKinded__ReprPrototype struct{}
+
+func (_UnionKinded__ReprPrototype) NewBuilder() datamodel.NodeBuilder {
+	var nb _UnionKinded__ReprBuilder
+	nb.Reset()
+	return &nb
+}
+
+type _UnionKinded__ReprBuilder struct {
+	_UnionKinded__ReprAssembler
+}
+
+func (nb *_UnionKinded__ReprBuilder) Build() datamodel.Node {
+	if *nb.m != schema.Maybe_Value {
+		panic("invalid state: cannot call Build on an assembler that's not finished")
+	}
+	return nb.w
+}
+func (nb *_UnionKinded__ReprBuilder) Reset() {
+	var w _UnionKinded
+	var m schema.Maybe
+	*nb = _UnionKinded__ReprBuilder{_UnionKinded__ReprAssembler{w: &w, m: &m}}
+}
+
+type _UnionKinded__ReprAssembler struct {
+	w   *_UnionKinded
+	m   *schema.Maybe
+	ca1 _Foo__ReprAssembler
+	ca2 _Bar__ReprAssembler
+	ca3 _Baz__ReprAssembler
+	ca  uint
+}
+
+func (na *_UnionKinded__ReprAssembler) reset() {
+	switch na.ca {
+	case 0:
+		return
+	case 1:
+		na.ca1.reset()
+	case 2:
+		na.ca2.reset()
+	case 3:
+		na.ca3.reset()
+	default:
+		panic("unreachable")
+	}
+	na.ca = 0
+}
+func (na *_UnionKinded__ReprAssembler) BeginMap(sizeHint int64) (datamodel.MapAssembler, error) {
+	switch *na.m {
+	case schema.Maybe_Value, schema.Maybe_Null:
+		panic("invalid state: cannot assign into assembler that's already finished")
+	case midvalue:
+		panic("invalid state: cannot assign into assembler that's already working on a larger structure!")
+	}
+	return nil, schema.ErrNotUnionStructure{TypeName: "gendemo.UnionKinded.Repr", Detail: "BeginMap called but is not valid for any of the kinds that are valid members of this union"}
+}
+func (na *_UnionKinded__ReprAssembler) BeginList(sizeHint int64) (datamodel.ListAssembler, error) {
+	switch *na.m {
+	case schema.Maybe_Value, schema.Maybe_Null:
+		panic("invalid state: cannot assign into assembler that's already finished")
+	case midvalue:
+		panic("invalid state: cannot assign into assembler that's already working on a larger structure!")
+	}
+	return nil, schema.ErrNotUnionStructure{TypeName: "gendemo.UnionKinded.Repr", Detail: "BeginList called but is not valid for any of the kinds that are valid members of this union"}
+}
+func (na *_UnionKinded__ReprAssembler) AssignNull() error {
+	switch *na.m {
+	case schema.Maybe_Value, schema.Maybe_Null:
+		panic("invalid state: cannot assign into assembler that's already finished")
+	case midvalue:
+		panic("invalid state: cannot assign into assembler that's already working on a larger structure!")
+	}
+	return schema.ErrNotUnionStructure{TypeName: "gendemo.UnionKinded.Repr", Detail: "AssignNull called but is not valid for any of the kinds that are valid members of this union"}
+}
+func (na *_UnionKinded__ReprAssembler) AssignBool(v bool) error {
+	switch *na.m {
+	case schema.Maybe_Value, schema.Maybe_Null:
+		panic("invalid state: cannot assign into assembler that's already finished")
+	case midvalue:
+		panic("invalid state: cannot assign into assembler that's already working on a larger structure!")
+	}
+	if na.w == nil {
+		na.w = &_UnionKinded{}
+	}
+	na.ca = 2
+	na.w.tag = 2
+	na.ca2.w = &na.w.x2
+	na.ca2.m = na.m
+	return na.ca2.AssignBool(v)
+}
+func (na *_UnionKinded__ReprAssembler) AssignInt(v int64) error {
+	switch *na.m {
+	case schema.Maybe_Value, schema.Maybe_Null:
+		panic("invalid state: cannot assign into assembler that's already finished")
+	case midvalue:
+		panic("invalid state: cannot assign into assembler that's already working on a larger structure!")
+	}
+	if na.w == nil {
+		na.w = &_UnionKinded{}
+	}
+	na.ca = 1
+	na.w.tag = 1
+	na.ca1.w = &na.w.x1
+	na.ca1.m = na.m
+	return na.ca1.AssignInt(v)
+}
+func (na *_UnionKinded__ReprAssembler) AssignFloat(v float64) error {
+	switch *na.m {
+	case schema.Maybe_Value, schema.Maybe_Null:
+		panic("invalid state: cannot assign into assembler that's already finished")
+	case midvalue:
+		panic("invalid state: cannot assign into assembler that's already working on a larger structure!")
+	}
+	return schema.ErrNotUnionStructure{TypeName: "gendemo.UnionKinded.Repr", Detail: "AssignFloat called but is not valid for any of the kinds that are valid members of this union"}
+}
+func (na *_UnionKinded__ReprAssembler) AssignString(v string) error {
+	switch *na.m {
+	case schema.Maybe_Value, schema.Maybe_Null:
+		panic("invalid state: cannot assign into assembler that's already finished")
+	case midvalue:
+		panic("invalid state: cannot assign into assembler that's already working on a larger structure!")
+	}
+	if na.w == nil {
+		na.w = &_UnionKinded{}
+	}
+	na.ca = 3
+	na.w.tag = 3
+	na.ca3.w = &na.w.x3
+	na.ca3.m = na.m
+	return na.ca3.AssignString(v)
+}
+func (na *_UnionKinded__ReprAssembler) AssignBytes(v []byte) error {
+	switch *na.m {
+	case schema.Maybe_Value, schema.Maybe_Null:
+		panic("invalid state: cannot assign into assembler that's already finished")
+	case midvalue:
+		panic("invalid state: cannot assign into assembler that's already working on a larger structure!")
+	}
+	return schema.ErrNotUnionStructure{TypeName: "gendemo.UnionKinded.Repr", Detail: "AssignBytes called but is not valid for any of the kinds that are valid members of this union"}
+}
+func (na *_UnionKinded__ReprAssembler) AssignLink(v datamodel.Link) error {
+	switch *na.m {
+	case schema.Maybe_Value, schema.Maybe_Null:
+		panic("invalid state: cannot assign into assembler that's already finished")
+	case midvalue:
+		panic("invalid state: cannot assign into assembler that's already working on a larger structure!")
+	}
+	return schema.ErrNotUnionStructure{TypeName: "gendemo.UnionKinded.Repr", Detail: "AssignLink called but is not valid for any of the kinds that are valid members of this union"}
+}
+func (na *_UnionKinded__ReprAssembler) AssignNode(v datamodel.Node) error {
+	if v.IsNull() {
+		return na.AssignNull()
+	}
+	if v2, ok := v.(*_UnionKinded); ok {
+		switch *na.m {
+		case schema.Maybe_Value, schema.Maybe_Null:
+			panic("invalid state: cannot assign into assembler that's already finished")
+		case midvalue:
+			panic("invalid state: cannot assign null into an assembler that's already begun working on recursive structures!")
+		}
+		if na.w == nil {
+			na.w = v2
+			*na.m = schema.Maybe_Value
+			return nil
+		}
+		*na.w = *v2
+		*na.m = schema.Maybe_Value
+		return nil
+	}
+	switch v.Kind() {
+	case datamodel.Kind_Bool:
+		v2, _ := v.AsBool()
+		return na.AssignBool(v2)
+	case datamodel.Kind_Int:
+		v2, _ := v.AsInt()
+		return na.AssignInt(v2)
+	case datamodel.Kind_Float:
+		v2, _ := v.AsFloat()
+		return na.AssignFloat(v2)
+	case datamodel.Kind_String:
+		v2, _ := v.AsString()
+		return na.AssignString(v2)
+	case datamodel.Kind_Bytes:
+		v2, _ := v.AsBytes()
+		return na.AssignBytes(v2)
+	case datamodel.Kind_Map:
+		na, err := na.BeginMap(v.Length())
+		if err != nil {
+			return err
+		}
+		itr := v.MapIterator()
+		for !itr.Done() {
+			k, v, err := itr.Next()
+			if err != nil {
+				return err
+			}
+			if err := na.AssembleKey().AssignNode(k); err != nil {
+				return err
+			}
+			if err := na.AssembleValue().AssignNode(v); err != nil {
+				return err
+			}
+		}
+		return na.Finish()
+	case datamodel.Kind_List:
+		na, err := na.BeginList(v.Length())
+		if err != nil {
+			return err
+		}
+		itr := v.ListIterator()
+		for !itr.Done() {
+			_, v, err := itr.Next()
+			if err != nil {
+				return err
+			}
+			if err := na.AssembleValue().AssignNode(v); err != nil {
+				return err
+			}
+		}
+		return na.Finish()
+	case datamodel.Kind_Link:
+		v2, _ := v.AsLink()
+		return na.AssignLink(v2)
+	default:
+		panic("unreachable")
+	}
+}
+func (na *_UnionKinded__ReprAssembler) Prototype() datamodel.NodePrototype {
+	return _UnionKinded__ReprPrototype{}
+}
