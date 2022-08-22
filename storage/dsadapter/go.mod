@@ -2,7 +2,7 @@ module github.com/ipld/go-ipld-prime/storage/dsadapter
 
 go 1.17
 
-require github.com/ipfs/go-datastore v0.5.1
+require github.com/ipfs/go-datastore v0.6.0
 
 require (
 	github.com/google/uuid v1.3.0 // indirect
