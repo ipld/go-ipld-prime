@@ -1,6 +1,6 @@
 module github.com/ipld/go-ipld-prime/storage/bsrvadapter
 
-go 1.17
+go 1.18
 
 require (
 	github.com/ipfs/go-block-format v0.0.3
