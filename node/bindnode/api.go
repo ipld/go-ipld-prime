@@ -27,7 +27,7 @@ import (
 // When supplying a non-nil ptrType, Prototype only obtains the Go pointer type
 // from it, so its underlying value will typically be nil. For example:
 //
-//     proto := bindnode.Prototype((*goType)(nil), schemaType)
+//	proto := bindnode.Prototype((*goType)(nil), schemaType)
 func Prototype(ptrType interface{}, schemaType schema.Type, options ...Option) schema.TypedPrototype {
 	if ptrType == nil && schemaType == nil {
 		panic("bindnode: either ptrType or schemaType must not be nil")

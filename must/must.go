@@ -12,8 +12,7 @@
 // into arguments for another funtion of matching arity, most of the 'must'
 // functions can used smoothly in a pointfree/chainable form, like this:
 //
-//		must.Node(SomeNodeBuilder{}.CreateString("a"))
-//
+//	must.Node(SomeNodeBuilder{}.CreateString("a"))
 package must
 
 import (
@@ -36,8 +35,7 @@ func NotError(e error) {
 // Because golang supports implied destructuring of multiple-return functions
 // into arguments for another funtion of matching arity, it can be used like this:
 //
-//		must.Node(SomeNodeBuilder{}.CreateString("a"))
-//
+//	must.Node(SomeNodeBuilder{}.CreateString("a"))
 func Node(n datamodel.Node, e error) datamodel.Node {
 	if e != nil {
 		panic(e)
@@ -52,8 +50,7 @@ func Node(n datamodel.Node, e error) datamodel.Node {
 // Because golang supports implied destructuring of multiple-return functions
 // into arguments for another funtion of matching arity, it can be used like this:
 //
-//		must.TypedNode(SomeNodeBuilder{}.CreateString("a"))
-//
+//	must.TypedNode(SomeNodeBuilder{}.CreateString("a"))
 func TypedNode(n datamodel.Node, e error) schema.TypedNode {
 	if e != nil {
 		panic(e)

@@ -83,7 +83,6 @@ The diagnostic format emitted by printer is not formally specified,
 and is not necessarily language-agnostic.
 It may not even remain stable across releases of this library.
 It is intended to be used for diagnostics only.
-
 */
 package printer
 

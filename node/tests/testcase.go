@@ -23,47 +23,47 @@ import (
 //  Not everything can be tested this way (in particular, there's some fun details around maps with complex keys, and structs with absent fields), but it covers a lot.
 
 /*
-	testcase contains data for directing a sizable number of tests against a NodePrototype
-	(or more specifically, a pair of them -- one for the type-level node, one for the representation),
-	all of which are applied by calling the testcase.Test method:
+testcase contains data for directing a sizable number of tests against a NodePrototype
+(or more specifically, a pair of them -- one for the type-level node, one for the representation),
+all of which are applied by calling the testcase.Test method:
 
-		- Creation of values using the type-level builder is tested.
-			- This is done using a json input as a convenient shorthand.
-			- n.b. this is optional, because it won't work for maps with complex keys.
-			- In things that behave as maps: this tests the AssembleEntry path (rather than AssembleKey+AssembleValue; this is the case because this is implemented using unmarshal codepaths).
-			- If this is expected to fail, an expected error may be specified (which will also make all other tests after creation inapplicable to this testcase).
-		- Creation of values using the repr-level builder is tested.
-			- This is (again) done using a json input as a convenient shorthand.
-			- At least *one* of this or the json for type-level must be present.  If neither: the testcase spec is broken.
-			- As for the type-level test: in things that behave as maps, this tests the AssembleEntry path.
-			- If this is expected to fail, an expected error may be specified (which will also make all other tests after creation inapplicable to this testcase).
-		- If both forms of creation were exercised: check that the result nodes are deep-equal.
-		- A list of "point" observations may be provided, which can probe positions in the data tree for expected values (or just type kind, etc).
-			- This tests that direct lookups work.  (It doesn't test iterators; that'll come in another step, later.)
-			- Pathing (a la traversal.Get) is used for this this, so it's ready to inspect deep structures.
-			- The field for expected value is just `interface{}`; it handles nodes, some primitives, and will also allow asserting an error.
-		- The node is *copied*, and deep-equal checked again.
-			- The purpose of this is to exercise the AssembleKey+AssembleValue path (as opposed to AssembleEntry (which is already exercised by our creation tests, since they use unmarshal codepaths)).
-		- Access of type-level data via iterators is tested in one of two ways:
-			- A list of expected key+values expected of the iterator can be provided explicitly;
-			- If an explicit list isn't provided, but type-level json is provided, the type-level data will be marshalled and compared to the json fixture.
-			- Most things can use the json path -- those that can't (e.g. maps with complex keys; structs with absent values -- neither is marshallable) use the explicit key+value system instead.
-		- Access of the representation-level data via interators is tested via marshalling, and asserting it against the json fixture data (if present).
-			- There's no explicit key+value list alternative here -- it's not needed; there is no data that is unmarshallable, by design!
+  - Creation of values using the type-level builder is tested.
+  - This is done using a json input as a convenient shorthand.
+  - n.b. this is optional, because it won't work for maps with complex keys.
+  - In things that behave as maps: this tests the AssembleEntry path (rather than AssembleKey+AssembleValue; this is the case because this is implemented using unmarshal codepaths).
+  - If this is expected to fail, an expected error may be specified (which will also make all other tests after creation inapplicable to this testcase).
+  - Creation of values using the repr-level builder is tested.
+  - This is (again) done using a json input as a convenient shorthand.
+  - At least *one* of this or the json for type-level must be present.  If neither: the testcase spec is broken.
+  - As for the type-level test: in things that behave as maps, this tests the AssembleEntry path.
+  - If this is expected to fail, an expected error may be specified (which will also make all other tests after creation inapplicable to this testcase).
+  - If both forms of creation were exercised: check that the result nodes are deep-equal.
+  - A list of "point" observations may be provided, which can probe positions in the data tree for expected values (or just type kind, etc).
+  - This tests that direct lookups work.  (It doesn't test iterators; that'll come in another step, later.)
+  - Pathing (a la traversal.Get) is used for this this, so it's ready to inspect deep structures.
+  - The field for expected value is just `interface{}`; it handles nodes, some primitives, and will also allow asserting an error.
+  - The node is *copied*, and deep-equal checked again.
+  - The purpose of this is to exercise the AssembleKey+AssembleValue path (as opposed to AssembleEntry (which is already exercised by our creation tests, since they use unmarshal codepaths)).
+  - Access of type-level data via iterators is tested in one of two ways:
+  - A list of expected key+values expected of the iterator can be provided explicitly;
+  - If an explicit list isn't provided, but type-level json is provided, the type-level data will be marshalled and compared to the json fixture.
+  - Most things can use the json path -- those that can't (e.g. maps with complex keys; structs with absent values -- neither is marshallable) use the explicit key+value system instead.
+  - Access of the representation-level data via interators is tested via marshalling, and asserting it against the json fixture data (if present).
+  - There's no explicit key+value list alternative here -- it's not needed; there is no data that is unmarshallable, by design!
 
-	This system should cover a lot of things, but doesn't cover everything.
+This system should cover a lot of things, but doesn't cover everything.
 
-		- Good coverage for "reset" pathways is reached somewhat indirectly...
-			- Tests for recursive types containing nontrivial reset methods exercise both the child type's assembler reset method, and that the parent calls it correctly.
-		- Maps with complex keys are tricky to handle, as already noted above.
-			- But you should be able to do it, with some care.
-		- This whole system depends on json parsers and serializers already working.
-			- This is arguably an uncomfortably large and complex dependency for a test system.  However, the json systems are tested by using basicnode; there's no cycle here.
-		- "Unhappy paths" in creation are a bit tricky to test.
-			- It can be done, but for map-like things, only for the AssembleEntry path.
-			- PRs welcome if someone's got a clever idea for a good way to exercise AssembleKey+AssembleValue.  (A variant of unmarshaller implementation?  Would do it; just verbose.)
-		- No support yet for checking properties like Length.
-			- Future: we could add another type-hinted special case to the testcasePoint.expect for this, i suppose.
+  - Good coverage for "reset" pathways is reached somewhat indirectly...
+  - Tests for recursive types containing nontrivial reset methods exercise both the child type's assembler reset method, and that the parent calls it correctly.
+  - Maps with complex keys are tricky to handle, as already noted above.
+  - But you should be able to do it, with some care.
+  - This whole system depends on json parsers and serializers already working.
+  - This is arguably an uncomfortably large and complex dependency for a test system.  However, the json systems are tested by using basicnode; there's no cycle here.
+  - "Unhappy paths" in creation are a bit tricky to test.
+  - It can be done, but for map-like things, only for the AssembleEntry path.
+  - PRs welcome if someone's got a clever idea for a good way to exercise AssembleKey+AssembleValue.  (A variant of unmarshaller implementation?  Would do it; just verbose.)
+  - No support yet for checking properties like Length.
+  - Future: we could add another type-hinted special case to the testcasePoint.expect for this, i suppose.
 */
 type testcase struct {
 	name                string          // name for the testcase.

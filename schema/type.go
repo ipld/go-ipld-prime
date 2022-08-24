@@ -11,17 +11,17 @@ type TypeName = string
 //
 // Specifically,
 //
-// 	TypeBool
-// 	TypeString
-// 	TypeBytes
-// 	TypeInt
-// 	TypeFloat
-// 	TypeMap
-// 	TypeList
-// 	TypeLink
-// 	TypeUnion
-// 	TypeStruct
-// 	TypeEnum
+//	TypeBool
+//	TypeString
+//	TypeBytes
+//	TypeInt
+//	TypeFloat
+//	TypeMap
+//	TypeList
+//	TypeLink
+//	TypeUnion
+//	TypeStruct
+//	TypeEnum
 //
 // are all of the kinds of Type.
 //

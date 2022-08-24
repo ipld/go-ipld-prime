@@ -96,6 +96,7 @@ func SchemaTestMapsContainingMaybe(t *testing.T, engine Engine) {
 // TestMapsContainingMaps is probing *two* things:
 //   - that maps can nest, obviously
 //   - that representation semantics are held correctly when we recurse, both in builders and in reading
+//
 // To cover that latter situation, this depends on structs (so we can use rename directives on the representation to make it distinctive).
 func SchemaTestMapsContainingMaps(t *testing.T, engine Engine) {
 	ts := schema.TypeSystem{}

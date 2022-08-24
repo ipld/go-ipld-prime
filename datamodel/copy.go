@@ -19,7 +19,6 @@ import (
 // `AssignNode` method (that is, they call to this function after all other special
 // faster shortcuts they might prefer to employ, such as direct struct copying
 // if they share internal memory layouts, etc, have been tried already).
-//
 func Copy(n Node, na NodeAssembler) error {
 	switch n.Kind() {
 	case Kind_Null:

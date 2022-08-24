@@ -1,22 +1,22 @@
 /*
-	rot13adl is a demo ADL -- its purpose is to show what an ADL and its public interface can look like.
-	It implements a "rot13" string: when creating data through the ADL, the user gives it a regular string;
-	the ADL will create aninternal representation of it which has the characters altered in a reversable way.
+rot13adl is a demo ADL -- its purpose is to show what an ADL and its public interface can look like.
+It implements a "rot13" string: when creating data through the ADL, the user gives it a regular string;
+the ADL will create aninternal representation of it which has the characters altered in a reversable way.
 
-	It provides reference and example materal, but it's very unlikely you want to use it in real situations ;)
+It provides reference and example materal, but it's very unlikely you want to use it in real situations ;)
 
-	There are several ways to move data in and out of the ADL:
+There are several ways to move data in and out of the ADL:
 
-		- treat it like a regular IPLD map:
-			- using the exported NodePrototype can be used to get a NodeBuilder which can accept keys and values;
-			- using the resulting Node and doing lookup operations on it like a regular map;
-		- load up raw substrate data and `Reify()` it into the synthesized form, and *then* treat it like a regular map:
-			- this is handy if the raw data already parsed into Nodes.
-			- optionally, use `SubstrateRootPrototype` as the prototype for loading the raw substrate data;
-			  any kind of Node is a valid input to Reify, but this one will generally have optimal performance.
-		- take the synthesized form and inspect its substrate data:
-			- the `Substrate()` method will return another datamodel.Node which is the root of the raw substrate data,
-			  and can be walked normally like any other datamodel.Node.
+  - treat it like a regular IPLD map:
+  - using the exported NodePrototype can be used to get a NodeBuilder which can accept keys and values;
+  - using the resulting Node and doing lookup operations on it like a regular map;
+  - load up raw substrate data and `Reify()` it into the synthesized form, and *then* treat it like a regular map:
+  - this is handy if the raw data already parsed into Nodes.
+  - optionally, use `SubstrateRootPrototype` as the prototype for loading the raw substrate data;
+    any kind of Node is a valid input to Reify, but this one will generally have optimal performance.
+  - take the synthesized form and inspect its substrate data:
+  - the `Substrate()` method will return another datamodel.Node which is the root of the raw substrate data,
+    and can be walked normally like any other datamodel.Node.
 */
 package rot13adl
 

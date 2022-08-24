@@ -53,5 +53,4 @@
 // Therefore, attempts at generalization are not included here; handling these
 // issues in concrete cases is easy, so we call it an application logic concern.
 // However, exploring categorical recursion schemes as a library is encouraged!)
-//
 package traversal
