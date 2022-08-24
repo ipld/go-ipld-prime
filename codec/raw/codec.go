@@ -40,7 +40,7 @@ func init() {
 // To disable the shortcut above, hide the Bytes method by wrapping the buffer
 // with an io.Reader:
 //
-//     Decode([...], struct{io.Reader}{buf})
+//	Decode([...], struct{io.Reader}{buf})
 func Decode(am datamodel.NodeAssembler, r io.Reader) error {
 	var data []byte
 	if buf, ok := r.(interface{ Bytes() []byte }); ok {

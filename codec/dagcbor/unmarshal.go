@@ -121,7 +121,8 @@ func unmarshal1(na datamodel.NodeAssembler, tokSrc shared.TokenSource, gas *int6
 }
 
 // starts with the first token already primed.  Necessary to get recursion
-//  to flow right without a peek+unpeek system.
+//
+//	to flow right without a peek+unpeek system.
 func unmarshal2(na datamodel.NodeAssembler, tokSrc shared.TokenSource, tk *tok.Token, gas *int64, options DecodeOptions) error {
 	// FUTURE: check for schema.TypedNodeBuilder that's going to parse a Link (they can slurp any token kind they want).
 	switch tk.Type {

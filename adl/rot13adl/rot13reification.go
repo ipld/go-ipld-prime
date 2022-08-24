@@ -39,7 +39,6 @@ import (
 // Not all implementations might need it, as per previous paragraph; but some might.
 // Reification for multiblock ADLs might also need link loader systems as a parameter here
 // so they can capture them as config and hold them for use in future operations that do lazy loading.
-//
 func Reify(maybeSubstrateRoot datamodel.Node) (datamodel.Node, error) {
 	// Reify is often very easy to implement,
 	//  especially if you have an IPLD Schema that specifies the shape of the substrate data:

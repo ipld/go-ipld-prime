@@ -107,6 +107,7 @@ func SchemaTestListsContainingMaybe(t *testing.T, engine Engine) {
 // TestListsContainingLists is probing *two* things:
 //   - that lists can nest, obviously
 //   - that representation semantics are held correctly when we recurse, both in builders and in reading
+//
 // To cover that latter situation, this depends on structs (so we can use rename directives on the representation to make it distinctive).
 func SchemaTestListsContainingLists(t *testing.T, engine Engine) {
 	ts := schema.TypeSystem{}

@@ -1,24 +1,24 @@
 /*
-	This package contains several useful readymade sharding functions,
-	which should plug nicely into most storage implementations.
+This package contains several useful readymade sharding functions,
+which should plug nicely into most storage implementations.
 
-	The API contract for a sharding function is:
+The API contract for a sharding function is:
 
-		func(key string, shards *[]string)
+	func(key string, shards *[]string)
 
-	In other words, the return is actually by a pointer to a slice which will be mutated.
-	This API allows the calling code to hand in a slice with existing capacity,
-	and thus allows for sharding functions to work without allocations.
+In other words, the return is actually by a pointer to a slice which will be mutated.
+This API allows the calling code to hand in a slice with existing capacity,
+and thus allows for sharding functions to work without allocations.
 
-	There is not a named type for this contract, because we prefer that packages
-	implementing the storage APIs should be possible to write without
-	being required to import any code from the go-ipld-prime module.
-	However, the function type definition above can be seen in many packages.
+There is not a named type for this contract, because we prefer that packages
+implementing the storage APIs should be possible to write without
+being required to import any code from the go-ipld-prime module.
+However, the function type definition above can be seen in many packages.
 
-	Not all packages use this API convention.  The `fsstore` package does;
-	some other storage implementations don't use sharding functions because they don't need them;
-	most of the adapter packages which target older code do not,
-	because those modules have their own sharding APIs already.
+Not all packages use this API convention.  The `fsstore` package does;
+some other storage implementations don't use sharding functions because they don't need them;
+most of the adapter packages which target older code do not,
+because those modules have their own sharding APIs already.
 */
 package sharding
 

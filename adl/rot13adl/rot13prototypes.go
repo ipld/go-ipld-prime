@@ -7,12 +7,11 @@ package rot13adl
 //
 // You can use it like this:
 //
-// 		rot13adl.Prototype.Node.NewBuilder() //...
+//	rot13adl.Prototype.Node.NewBuilder() //...
 //
 // and:
 //
-// 		rot13adl.Prototype.SubstrateRoot.NewBuilder() // ...
-//
+//	rot13adl.Prototype.SubstrateRoot.NewBuilder() // ...
 var Prototype prototype
 
 // This may seem a tad mundane, but we do it for consistency with the way

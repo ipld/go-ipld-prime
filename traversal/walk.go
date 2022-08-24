@@ -76,7 +76,6 @@ func WalkTransforming(n datamodel.Node, s selector.Selector, fn TransformFn) (da
 // By using the traversal.Progress handed to the VisitFn,
 // the Path recorded of the traversal so far will continue to be extended,
 // and thus continued nested uses of Walk and Focus will see the fully contextualized Path.
-//
 func (prog Progress) WalkMatching(n datamodel.Node, s selector.Selector, fn VisitFn) error {
 	prog.init()
 	return prog.walkAdv(n, s, func(prog Progress, n datamodel.Node, tr VisitReason) error {
@@ -141,7 +140,6 @@ func (prog Progress) WalkLocal(n datamodel.Node, fn VisitFn) error {
 // WalkAdv is identical to WalkMatching, except it is called for *all* nodes
 // visited (not just matching nodes), together with the reason for the visit.
 // An AdvVisitFn is used instead of a VisitFn, so that the reason can be provided.
-//
 func (prog Progress) WalkAdv(n datamodel.Node, s selector.Selector, fn AdvVisitFn) error {
 	prog.init()
 	return prog.walkAdv(n, s, fn)

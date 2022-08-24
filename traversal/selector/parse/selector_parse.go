@@ -1,8 +1,8 @@
 /*
-	selectorparse package contains some helpful functions for parsing the serial form of Selectors.
+selectorparse package contains some helpful functions for parsing the serial form of Selectors.
 
-	Some common selectors are also exported as pre-compiled variables,
-	both for convenience of use and to be readable as examples.
+Some common selectors are also exported as pre-compiled variables,
+both for convenience of use and to be readable as examples.
 */
 package selectorparse
 
