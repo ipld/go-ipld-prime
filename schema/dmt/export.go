@@ -1,5 +1,4 @@
 //go:build schemadmtgen
-// +build schemadmtgen
 
 package schemadmt
 
