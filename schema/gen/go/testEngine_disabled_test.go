@@ -1,5 +1,4 @@
 //go:build skipgenbehavtests || windows
-// +build skipgenbehavtests windows
 
 package gengo
 
