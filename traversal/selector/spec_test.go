@@ -3,7 +3,6 @@ package selector_test
 import (
 	"bytes"
 	"io"
-	"io/ioutil"
 	"os"
 	"regexp"
 	"testing"
@@ -27,7 +26,7 @@ func TestSpecFixtures(t *testing.T) {
 }
 
 func testOneSpecFixtureFile(t *testing.T, filename string) {
-	data, err := ioutil.ReadFile(filename)
+	data, err := os.ReadFile(filename)
 	if os.IsNotExist(err) {
 		t.Skipf("not running spec suite: %s (did you clone the submodule with the data?)", err)
 	}

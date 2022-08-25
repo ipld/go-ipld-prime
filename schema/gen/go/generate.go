@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"go/format"
 	"io"
-	"io/ioutil"
+	"os"
 	"path/filepath"
 	"sort"
 
@@ -160,7 +160,7 @@ func withFile(filename string, fn func(io.Writer)) {
 		panic(err)
 	}
 
-	if err := ioutil.WriteFile(filename, src, 0666); err != nil {
+	if err := os.WriteFile(filename, src, 0666); err != nil {
 		panic(err)
 	}
 }

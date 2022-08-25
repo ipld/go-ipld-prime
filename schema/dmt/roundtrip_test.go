@@ -2,7 +2,7 @@ package schemadmt_test
 
 import (
 	"bytes"
-	"io/ioutil"
+	"os"
 	"regexp"
 	"strings"
 	"testing"
@@ -20,10 +20,10 @@ func TestRoundtripSchemaSchema(t *testing.T) {
 
 	input := "../../.ipld/specs/schemas/schema-schema.ipldsch.json"
 
-	src, err := ioutil.ReadFile(input)
+	src, err := os.ReadFile(input)
 	qt.Assert(t, err, qt.IsNil)
 	testRoundtrip(t, string(src), func(updated string) {
-		err := ioutil.WriteFile(input, []byte(updated), 0o777)
+		err := os.WriteFile(input, []byte(updated), 0o777)
 		qt.Assert(t, err, qt.IsNil)
 	})
 }

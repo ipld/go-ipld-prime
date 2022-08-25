@@ -3,7 +3,7 @@ package schemadsl_test
 import (
 	"bytes"
 	"flag"
-	"io/ioutil"
+	"os"
 	"path/filepath"
 	"regexp"
 	"strings"
@@ -27,14 +27,14 @@ func TestParseSchemaSchema(t *testing.T) {
 	inputSchema := "../../.ipld/specs/schemas/schema-schema.ipldsch"
 	inputJSON := "../../.ipld/specs/schemas/schema-schema.ipldsch.json"
 
-	src, err := ioutil.ReadFile(inputSchema)
+	src, err := os.ReadFile(inputSchema)
 	qt.Assert(t, err, qt.IsNil)
 
-	srcJSON, err := ioutil.ReadFile(inputJSON)
+	srcJSON, err := os.ReadFile(inputJSON)
 	qt.Assert(t, err, qt.IsNil)
 
 	testParse(t, string(src), string(srcJSON), func(updated string) {
-		err := ioutil.WriteFile(inputJSON, []byte(updated), 0o777)
+		err := os.WriteFile(inputJSON, []byte(updated), 0o777)
 		qt.Assert(t, err, qt.IsNil)
 	})
 }
@@ -70,7 +70,7 @@ func TestParse(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
-			data, err := ioutil.ReadFile(ymlPath)
+			data, err := os.ReadFile(ymlPath)
 			qt.Assert(t, err, qt.IsNil)
 
 			var fixt yamlFixture
@@ -86,7 +86,7 @@ func TestParse(t *testing.T) {
 
 				// Note that this will strip comments.
 				// Probably don't commit its changes straight away.
-				err = ioutil.WriteFile(ymlPath, data, 0777)
+				err = os.WriteFile(ymlPath, data, 0777)
 				qt.Assert(t, err, qt.IsNil)
 			})
 		})
