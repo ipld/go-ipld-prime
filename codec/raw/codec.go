@@ -9,7 +9,6 @@ package raw
 import (
 	"fmt"
 	"io"
-	"io/ioutil"
 
 	"github.com/ipld/go-ipld-prime/codec"
 	"github.com/ipld/go-ipld-prime/datamodel"
@@ -47,7 +46,7 @@ func Decode(am datamodel.NodeAssembler, r io.Reader) error {
 		data = buf.Bytes()
 	} else {
 		var err error
-		data, err = ioutil.ReadAll(r)
+		data, err = io.ReadAll(r)
 		if err != nil {
 			return fmt.Errorf("could not decode raw node: %v", err)
 		}

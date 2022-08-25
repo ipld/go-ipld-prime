@@ -7,7 +7,6 @@ import (
 	"encoding/hex"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -100,7 +99,7 @@ func (store *Store) Get(ctx context.Context, key string) ([]byte, error) {
 		return nil, err
 	}
 	defer f.(io.Closer).Close()
-	return ioutil.ReadAll(f)
+	return io.ReadAll(f)
 }
 
 // Put implements go-ipld-prime/storage.WritableStorage.Put.

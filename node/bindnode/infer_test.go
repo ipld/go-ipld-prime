@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
-	"io/ioutil"
+	"os"
 	"os/exec"
 	"path/filepath"
 	"reflect"
@@ -1042,7 +1042,7 @@ func TestProduceGoTypes(t *testing.T) {
 
 			// Ensure that the output builds, i.e. typechecks.
 			genPath := filepath.Join(t.TempDir(), "gen.go")
-			err = ioutil.WriteFile(genPath, buf.Bytes(), 0o666)
+			err = os.WriteFile(genPath, buf.Bytes(), 0o666)
 			qt.Assert(t, err, qt.IsNil)
 
 			out, err := exec.Command("go", "build", genPath).CombinedOutput()
