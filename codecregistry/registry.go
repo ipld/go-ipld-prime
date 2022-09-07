@@ -1,4 +1,4 @@
-package multicodec
+package codecregistry
 
 import (
 	"fmt"
