@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	github.com/frankban/quicktest v1.14.3
-	github.com/google/go-cmp v0.5.8
+	github.com/google/go-cmp v0.5.9
 	github.com/ipfs/go-cid v0.3.2
 	github.com/multiformats/go-multicodec v0.6.0
 	github.com/multiformats/go-multihash v0.2.1
