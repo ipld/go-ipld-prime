@@ -27,6 +27,28 @@ Here are some outlines of changes we intend to make that affect the public API:
 Released Changes
 ----------------
 
+### v0.19.0
+
+_2022 October 13_
+
+go-ipld-prime's release policy says that:
+
+> even numbers should be easy upgrades; odd numbers may change things
+
+The major change in this release is a bump to Go 1.18, and as such we're suggesting this should be an "easy upgrade".
+
+#### 🛠 Breaking Changes
+
+Update go.mod to Go 1.18.
+
+#### 🔦 Highlights
+
+* **Codecs**: [Correct JSON codec Bytes handling](https://github.com/ipld/go-ipld-prime/pull/472). This change does not impact DAG-JSON, which is the generally recommended codec for JSON output as the JSON codec cannot properly handle Bytes or Links.
+* **Dependencies**:
+  * Update to go-multihash@v0.2.1: https://github.com/multiformats/go-multihash/releases/tag/v0.2.1
+  * Update to go-multicodec@v0.6.0: https://github.com/multiformats/go-multicodec/releases/tag/v0.6.0
+  * Update to go-cid@v0.3.2: https://github.com/ipfs/go-cid/compare/v0.2.0...v0.3.2
+
 ### v0.18.0
 
 _2022 August 01_
