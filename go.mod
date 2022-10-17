@@ -6,7 +6,7 @@ require (
 	github.com/frankban/quicktest v1.14.3
 	github.com/google/go-cmp v0.5.9
 	github.com/ipfs/go-cid v0.3.2
-	github.com/multiformats/go-multicodec v0.6.0
+	github.com/multiformats/go-multicodec v0.7.0
 	github.com/multiformats/go-multihash v0.2.1
 	github.com/polydawn/refmt v0.0.0-20201211092308-30ac6d18308e
 	github.com/warpfork/go-testmark v0.10.0
