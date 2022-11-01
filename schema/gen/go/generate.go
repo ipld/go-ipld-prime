@@ -81,6 +81,8 @@ func Generate(pth string, pkgName string, ts schema.TypeSystem, adjCfg *AdjunctC
 				default:
 					panic("unrecognized union representation strategy")
 				}
+			case *schema.TypeAny:
+				fn(NewAnyReprAnyGenerator(pkgName, t2, adjCfg), f)
 			default:
 				panic(fmt.Sprintf("add more type switches here :), failed at type %s", tn))
 			}
