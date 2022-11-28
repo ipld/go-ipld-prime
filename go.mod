@@ -9,7 +9,7 @@ require (
 	github.com/multiformats/go-multicodec v0.7.0
 	github.com/multiformats/go-multihash v0.2.1
 	github.com/polydawn/refmt v0.0.0-20201211092308-30ac6d18308e
-	github.com/warpfork/go-testmark v0.10.0
+	github.com/warpfork/go-testmark v0.11.0
 	gopkg.in/yaml.v2 v2.4.0
 )
 
