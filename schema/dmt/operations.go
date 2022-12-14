@@ -16,11 +16,11 @@ func ConcatenateSchemas(a, b *Schema) *Schema {
 	// The joy of having an intermediate form that's just regular data model:
 	// we can implement this by simply using data model "copy" operations,
 	// and the result is correct.
-	nb := Type.Schema.NewBuilder()
-	if err := datamodel.Copy(bindnode.Wrap(a, Type.Schema.Type()), nb); err != nil {
+	nb := Prototypes.Schema.NewBuilder()
+	if err := datamodel.Copy(bindnode.Wrap(a, Prototypes.Schema.Type()), nb); err != nil {
 		panic(err)
 	}
-	if err := datamodel.Copy(bindnode.Wrap(b, Type.Schema.Type()), nb); err != nil {
+	if err := datamodel.Copy(bindnode.Wrap(b, Prototypes.Schema.Type()), nb); err != nil {
 		panic(err)
 	}
 	return bindnode.Unwrap(nb.Build()).(*Schema)

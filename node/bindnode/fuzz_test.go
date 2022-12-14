@@ -149,7 +149,7 @@ func FuzzBindnodeViaDagCBOR(f *testing.F) {
 		if err != nil {
 			f.Fatal(err)
 		}
-		schemaNode := bindnode.Wrap(schemaDMT, schemadmt.Type.Schema.Type())
+		schemaNode := bindnode.Wrap(schemaDMT, schemadmt.Prototypes.Schema.Type())
 		schemaDagCBOR := marshalDagCBOR(f, schemaNode.Representation())
 
 		nodeBuilder := basicnode.Prototype.Any.NewBuilder()
@@ -178,7 +178,7 @@ func FuzzBindnodeViaDagCBOR(f *testing.F) {
 		}
 	}
 	f.Fuzz(func(t *testing.T, schemaDagCBOR, nodeDagCBOR []byte) {
-		schemaBuilder := schemadmt.Type.Schema.Representation().NewBuilder()
+		schemaBuilder := schemadmt.Prototypes.Schema.Representation().NewBuilder()
 
 		if err := dagcbor.Decode(schemaBuilder, bytes.NewReader(schemaDagCBOR)); err != nil {
 			t.Skipf("invalid schema-schema dag-cbor: %v", err)

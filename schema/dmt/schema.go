@@ -10,7 +10,7 @@ import (
 
 // This schema follows https://ipld.io/specs/schemas/schema-schema.ipldsch.
 
-var Type struct {
+var Prototypes struct {
 	Schema schema.TypedPrototype
 }
 
@@ -435,7 +435,7 @@ func init() {
 
 	TypeSystem = ts
 
-	Type.Schema = bindnode.Prototype(
+	Prototypes.Schema = bindnode.Prototype(
 		(*Schema)(nil),
 		TypeSystem.TypeByName("Schema"),
 	)
