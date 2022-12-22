@@ -116,7 +116,7 @@ func testParse(t *testing.T, inSchema, inJSON string, updateFn func(string)) {
 	// Ensure we can encode the schema as the json codec,
 	// and that it results in the same bytes as the ipldsch.json file.
 	{
-		node := bindnode.Wrap(sch, schemadmt.Type.Schema.Type())
+		node := bindnode.Wrap(sch, schemadmt.Prototypes.Schema.Type())
 
 		var buf bytes.Buffer
 		err := ipldjson.Encode(node.Representation(), &buf)

@@ -10,13 +10,13 @@ import (
 
 // This schema follows https://ipld.io/specs/schemas/schema-schema.ipldsch.
 
-var Type struct {
+var Prototypes struct {
 	Schema schema.TypedPrototype
 }
 
 //go:generate go run -tags=schemadmtgen gen.go
 
-var schemaTypeSystem schema.TypeSystem
+var TypeSystem schema.TypeSystem
 
 func init() {
 	var ts schema.TypeSystem
@@ -433,10 +433,10 @@ func init() {
 		panic("not happening")
 	}
 
-	schemaTypeSystem = ts
+	TypeSystem = ts
 
-	Type.Schema = bindnode.Prototype(
+	Prototypes.Schema = bindnode.Prototype(
 		(*Schema)(nil),
-		schemaTypeSystem.TypeByName("Schema"),
+		TypeSystem.TypeByName("Schema"),
 	)
 }

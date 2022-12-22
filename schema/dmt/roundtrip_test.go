@@ -33,7 +33,7 @@ func testRoundtrip(t *testing.T, want string, updateFn func(string)) {
 
 	crre := regexp.MustCompile(`\r?\n`)
 	want = crre.ReplaceAllString(want, "\n")
-	nb := schemadmt.Type.Schema.Representation().NewBuilder()
+	nb := schemadmt.Prototypes.Schema.Representation().NewBuilder()
 	err := ipldjson.Decode(nb, strings.NewReader(want))
 	qt.Assert(t, err, qt.IsNil)
 	node := nb.Build().(schema.TypedNode)
