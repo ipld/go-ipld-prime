@@ -7,10 +7,25 @@ import (
 	"github.com/ipld/go-ipld-prime/schema"
 )
 
-// Compile transforms a schema in DMT form into a TypeSystem.
+// Compile transforms a description of a schema in raw data model ("dmt") form
+// into a compiled schema.TypeSystem, which is the ready-to-use form.
+//
+// The first parameter is mutated by this process,
+// and the second parameter is the data source.
+//
+// The compilation process includes first inserting the "prelude" types into the
+// schema.TypeSystem -- that is, the "type Bool bool" and "type String string", etc,
+// which are generally presumed to be present in any type system.
+//
+// The compilation process attempts to check the validity of the schema at a logical level as it goes.
+// For example, references to type names not present elsewhere in the same schema are now an error
+// (even though that has been easily representable in the dmt.Schema form up until this point).
 //
 // Note that this API is EXPERIMENTAL and will likely change.
-// It is also unfinished and buggy.
+// It supports many features of IPLD Schemas,
+// but it may yet not support all of them.
+// It supports several validations for logical coherency of schemas,
+// but may not yet successfully reject all invalid schemas.
 func Compile(ts *schema.TypeSystem, node *Schema) error {
 	// Prelude; probably belongs elsewhere.
 	{

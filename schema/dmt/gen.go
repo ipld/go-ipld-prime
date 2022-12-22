@@ -16,7 +16,7 @@ func main() {
 		panic(err)
 	}
 	fmt.Fprintf(f, "package schemadmt\n\n")
-	if err := bindnode.ProduceGoTypes(f, schemadmt.InternalTypeSystem()); err != nil {
+	if err := bindnode.ProduceGoTypes(f, schemadmt.TypeSystem); err != nil {
 		panic(err)
 	}
 	if err := f.Close(); err != nil {
