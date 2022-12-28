@@ -22,5 +22,9 @@ The `dmt.Prototype.Schema` value is a NodePrototype that can be used to handle I
 Typically this package is imported aliased as "schemadmt",
 since "dmt" is a fairly generic term in the IPLD ecosystem
 (see https://ipld.io/glossary/#dmt ).
+
+Many types in this package lack documentation directly on the type;
+generally, these are structs that match the IPLD schema-schema,
+and so you can find descriptions of them in documentation for the schema-schema.
 */
-package dmt
+package schemadmt
