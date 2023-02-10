@@ -27,6 +27,40 @@ Here are some outlines of changes we intend to make that affect the public API:
 Released Changes
 ----------------
 
+### v0.20.0
+
+go-ipld-prime's release policy says that:
+
+> even numbers should be easy upgrades; odd numbers may change things
+
+As such, v0.20.0 is a relatively minor release with a grab-bag of small improvements and fixes.
+
+_2023 February 11_
+
+Schema errors can now [`errors.Is`](https://pkg.go.dev/errors#Is):
+
+* \[[`61c9ab10d4`](https://github.com/ipld/go-ipld-prime/commit/61c9ab10d4)] - **feat**: support errors.Is for schema errors (Ian Davis) [#476](https://github.com/ipld/go-ipld-prime/pull/476)
+
+Schema DMT (schema/dmt) is now more usable from the outside and has a new `ConcatenateSchemas` function that can be used to combine two schemas into one:
+
+* \[[`db9d8a7512`](https://github.com/ipld/go-ipld-prime/commit/db9d8a7512)] - Export schema/dmt.TypeSystem. (Eric Myhre) [#483](https://github.com/ipld/go-ipld-prime/pull/483)
+* \[[`39818c169a`](https://github.com/ipld/go-ipld-prime/commit/39818c169a)] - Add a SchemaConcatenate operation. (Eric Myhre) [#483](https://github.com/ipld/go-ipld-prime/pull/483)
+* \[[`c68ba53c67`](https://github.com/ipld/go-ipld-prime/commit/c68ba53c67)] - More accurate name for structure that contains easy access to prototypes. (Eric Myhre) [#483](https://github.com/ipld/go-ipld-prime/pull/483)
+* \[[`2ecabf1217`](https://github.com/ipld/go-ipld-prime/commit/2ecabf1217)] - Add several pieces of docs to schema/dmt. (Eric Myhre)
+* \[[`33475f0448`](https://github.com/ipld/go-ipld-prime/commit/33475f0448)] - Fix mispatched package declaration. (Eric Myhre)
+
+The DAG-CBOR codec now has an `DontParseBeyondEnd` option (default `false`) that allows it to parse undelimited streamed objects. This matches the same functionality already in DAG-JSON and should only be used for specialised cases:
+
+* \[[`7b00b1490f`](https://github.com/ipld/go-ipld-prime/commit/7b00b1490f)] - feat(dagcbor): mode to allow parsing undelimited streamed objects (Rod Vagg) [#490](https://github.com/ipld/go-ipld-prime/pull/490)
+
+`datamodel.Copy` got some direct test coverage and will now complain if you try to copy a `nil` node:
+
+* \[[`f4bb2daa27`](https://github.com/ipld/go-ipld-prime/commit/f4bb2daa27)] - fix(datamodel): add tests to Copy, make it complain on nil (Rod Vagg) [#491](https://github.com/ipld/go-ipld-prime/pull/491)
+
+The LinkSystem data loading check will compare links (CIDs) to ensure it loaded what you wanted; this now properly supports the case where your link is a pointer:
+
+* \[[`1fc56b8e7a`](https://github.com/ipld/go-ipld-prime/commit/1fc56b8e7a)] - Fix hash mismatch error on matching link pointer (Masih H. Derkani) [#480](https://github.com/ipld/go-ipld-prime/pull/480)
+
 ### v0.19.0
 
 _2022 October 13_
@@ -35,7 +69,7 @@ go-ipld-prime's release policy says that:
 
 > even numbers should be easy upgrades; odd numbers may change things
 
-The major change in this release is a bump to Go 1.18, and as such we're suggesting this should be an "easy upgrade".
+The major change in this release is a bump to Go 1.18.
 
 #### 🛠 Breaking Changes
 
