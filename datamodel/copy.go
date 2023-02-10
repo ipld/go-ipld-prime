@@ -1,6 +1,7 @@
 package datamodel
 
 import (
+	"errors"
 	"fmt"
 )
 
@@ -20,10 +21,13 @@ import (
 // faster shortcuts they might prefer to employ, such as direct struct copying
 // if they share internal memory layouts, etc, have been tried already).
 func Copy(n Node, na NodeAssembler) error {
+	if n == nil {
+		return errors.New("cannot copy a nil node")
+	}
 	switch n.Kind() {
 	case Kind_Null:
 		if n.IsAbsent() {
-			return fmt.Errorf("copying an absent node makes no sense")
+			return errors.New("copying an absent node makes no sense")
 		}
 		return na.AssignNull()
 	case Kind_Bool:
