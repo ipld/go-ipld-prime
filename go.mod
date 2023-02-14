@@ -14,6 +14,12 @@ require (
 )
 
 require (
+	github.com/ipfs/go-block-format v0.0.2 // indirect
+	github.com/ipfs/go-ipfs-util v0.0.1 // indirect
+)
+
+require (
+	github.com/ipfs/go-ipld-format v0.4.0
 	github.com/klauspost/cpuid/v2 v2.0.9 // indirect
 	github.com/kr/pretty v0.3.1 // indirect
 	github.com/kr/text v0.2.0 // indirect
