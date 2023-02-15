@@ -3,8 +3,9 @@ package memstore
 import (
 	"bytes"
 	"context"
-	"fmt"
 	"io"
+
+	"github.com/ipld/go-ipld-prime/storage"
 )
 
 // Store is a simple in-memory storage.
@@ -56,7 +57,7 @@ func (store *Store) Get(ctx context.Context, key string) ([]byte, error) {
 	store.beInitialized()
 	content, exists := store.Bag[key]
 	if !exists {
-		return nil, fmt.Errorf("404") // FIXME this needs a standard error type
+		return nil, storage.ErrNotFound{Key: key}
 	}
 	cpy := make([]byte, len(content))
 	copy(cpy, content)
@@ -82,7 +83,7 @@ func (store *Store) Put(ctx context.Context, key string, content []byte) error {
 func (store *Store) GetStream(ctx context.Context, key string) (io.ReadCloser, error) {
 	content, exists := store.Bag[key]
 	if !exists {
-		return nil, fmt.Errorf("404") // FIXME this needs a standard error type
+		return nil, storage.ErrNotFound{Key: key}
 	}
 	return noopCloser{bytes.NewReader(content)}, nil
 }
@@ -91,7 +92,7 @@ func (store *Store) GetStream(ctx context.Context, key string) (io.ReadCloser, e
 func (store *Store) Peek(ctx context.Context, key string) ([]byte, io.Closer, error) {
 	content, exists := store.Bag[key]
 	if !exists {
-		return nil, nil, fmt.Errorf("404") // FIXME this needs a standard error type
+		return nil, nil, storage.ErrNotFound{Key: key}
 	}
 	return content, noopCloser{nil}, nil
 }
