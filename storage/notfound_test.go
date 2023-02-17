@@ -1,6 +1,8 @@
 package storage_test
 
 import (
+	"errors"
+	"fmt"
 	"testing"
 
 	"github.com/ipfs/go-cid"
@@ -12,6 +14,9 @@ func TestNotFound(t *testing.T) {
 	if !storage.IsNotFound(nf) {
 		t.Fatal("expected ErrNotFound to be a NotFound error")
 	}
+	if !errors.Is(nf, storage.ErrNotFound{}) {
+		t.Fatal("expected ErrNotFound to be a NotFound error")
+	}
 	if nf.Error() != "ipld: could not find foo" {
 		t.Fatal("unexpected error message")
 	}
@@ -20,19 +25,47 @@ func TestNotFound(t *testing.T) {
 	if !storage.IsNotFound(nf) {
 		t.Fatal("expected ErrNotFound to be a NotFound error")
 	}
+	if !errors.Is(nf, storage.ErrNotFound{}) {
+		t.Fatal("expected ErrNotFound to be a NotFound error")
+	}
 	if nf.Error() != "ipld: could not find bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi" {
 		t.Fatal("unexpected error message")
 	}
 
-	wnf := &weirdNotFoundError{}
+	wrappedNf := fmt.Errorf("wrapped outer: %w", fmt.Errorf("wrapped inner: %w", nf))
+	if !storage.IsNotFound(wrappedNf) {
+		t.Fatal("expected wrapped ErrNotFound to be a NotFound error")
+	}
+	if !errors.Is(wrappedNf, storage.ErrNotFound{}) {
+		t.Fatal("expected wrapped ErrNotFound to be a NotFound error")
+	}
+
+	fmt.Println("WeirdNotFoundErr")
+	wnf := weirdNotFoundError{}
 	if !storage.IsNotFound(wnf) {
 		t.Fatal("expected weirdNotFoundError to be a NotFound error")
 	}
+	if !errors.Is(wnf, storage.ErrNotFound{}) {
+		t.Fatal("expected weirdNotFoundError to be a NotFound error")
+	}
 
-	// a weirder case, this one implements `NotFound()` but it returns false, so
-	// this shouldn't be a NotFound error
-	wnnf := &weirdNotNotFoundError{}
+	// a weirder case, this one implements `NotFound()` but it returns false; but
+	// it also implements the same Is() that will claim it's a not-found, so
+	// it should work one way around, but not the other, when it's being asked
+	// whether an error is or not
+	wnnf := weirdNotNotFoundError{}
 	if storage.IsNotFound(wnnf) {
+		// this shouldn't be true because we test NotFound()==true
+		t.Fatal("expected weirdNotNotFoundError to NOT be a NotFound error")
+	}
+	if !errors.Is(wnnf, storage.ErrNotFound{}) {
+		// this should be true, because weirdNotNotFoundError.Is() performs the
+		// check on storage.ErrNotFound{}.NotFound() which does return true.
+		t.Fatal("expected weirdNotNotFoundError to be a NotFound error")
+	}
+	if errors.Is(nf, weirdNotNotFoundError{}) {
+		// switch them around and we get the same result as storage.IsNotFound, but
+		// won't work with wrapped weirdNotNotFoundError errors.
 		t.Fatal("expected weirdNotNotFoundError to NOT be a NotFound error")
 	}
 }
@@ -43,6 +76,13 @@ func (weirdNotFoundError) NotFound() bool {
 	return true
 }
 
+func (weirdNotFoundError) Is(err error) bool {
+	if v, ok := err.(interface{ NotFound() bool }); ok && v.NotFound() {
+		return v.NotFound()
+	}
+	return false
+}
+
 func (weirdNotFoundError) Error() string {
 	return "weird not found error"
 }
@@ -50,6 +90,13 @@ func (weirdNotFoundError) Error() string {
 type weirdNotNotFoundError struct{}
 
 func (weirdNotNotFoundError) NotFound() bool {
+	return false
+}
+
+func (weirdNotNotFoundError) Is(err error) bool {
+	if v, ok := err.(interface{ NotFound() bool }); ok && v.NotFound() {
+		return v.NotFound()
+	}
 	return false
 }
 
