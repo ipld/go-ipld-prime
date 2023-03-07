@@ -180,7 +180,7 @@ func (prog Progress) walkAdv(n datamodel.Node, s selector.Selector, fn AdvVisitF
 		n = rn
 	}
 
-	if prog.Path.Len() >= prog.Cfg.StartAtPath.Len() || !prog.PastStartAtPath {
+	if prog.Path.Len() >= prog.Cfg.StartAtPath.Len() || prog.PastStartAtPath {
 		// Decide if this node is matched -- do callbacks as appropriate.
 		if match, err := s.Match(n); match != nil {
 			if err := fn(prog, match, VisitReason_SelectionMatch); err != nil {
