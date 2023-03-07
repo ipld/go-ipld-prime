@@ -13,10 +13,6 @@ import (
 	"github.com/ipld/go-ipld-prime/linking"
 )
 
-type bytesLoader interface {
-	Bytes() []byte
-}
-
 type preloadingLink struct {
 	refCnt     uint64
 	loadSyncer sync.Once
@@ -45,12 +41,12 @@ type BufferedLoader struct {
 func NewBufferedLoader(loader linking.BlockReadOpener, allocationLimit uint64, avgBlockSize uint64, concurrency uint64) *BufferedLoader {
 	return &BufferedLoader{
 		allocationLimit: allocationLimit,
-		avgBlockSize: avgBlockSize,
-		concurrency: concurrency,
-		originalLoader: loader,
-		dealloc: make(chan struct{}, 1),
-		preloads: make(map[datamodel.Link]*preloadingLink),
-		requests: make(chan request),
+		avgBlockSize:    avgBlockSize,
+		concurrency:     concurrency,
+		originalLoader:  loader,
+		dealloc:         make(chan struct{}, 1),
+		preloads:        make(map[datamodel.Link]*preloadingLink),
+		requests:        make(chan request),
 	}
 }
 
