@@ -211,7 +211,6 @@ func (prog Progress) walkAdv(n datamodel.Node, s selector.Selector, fn AdvVisitF
 		return nil
 	}
 	return prog.walkAdv_iterateSelective(n, attn, s, fn)
-
 }
 
 func (prog Progress) iterateAll(n datamodel.Node, visit func(datamodel.PathSegment, datamodel.Node, bool) error) error {

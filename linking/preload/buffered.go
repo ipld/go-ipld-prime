@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"io"
-	"io/ioutil"
 	"sync"
 	"sync/atomic"
 
@@ -171,7 +170,7 @@ func (bl *BufferedLoader) preloadLink(pl *preloadingLink, lnkCtx linking.LinkCon
 			if br, ok := reader.(byteReader); ok {
 				pl.data = br.Bytes()
 			} else {
-				pl.data, pl.err = ioutil.ReadAll(reader)
+				pl.data, pl.err = io.ReadAll(reader)
 			}
 		}
 		atomic.AddUint64(&bl.allocated, uint64(len(pl.data)))
