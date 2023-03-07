@@ -9,6 +9,7 @@ import (
 
 	qt "github.com/frankban/quicktest"
 
+	"github.com/ipld/go-ipld-prime"
 	_ "github.com/ipld/go-ipld-prime/codec/dagjson"
 	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/fluent"
@@ -274,19 +275,29 @@ func TestWalkMatching(t *testing.T) {
 
 	t.Run("no visiting of nodes before start path", func(t *testing.T) {
 		ss := ssb.ExploreFields(func(efsb builder.ExploreFieldsSpecBuilder) {
-			efsb.Insert("linkedList", ssb.ExploreAll(ssb.Matcher()))
-			efsb.Insert("linkedMap", ssb.ExploreRecursive(selector.RecursionLimitDepth(3), ssb.ExploreFields(func(efsb builder.ExploreFieldsSpecBuilder) {
-				efsb.Insert("foo", ssb.Matcher())
-				efsb.Insert("nonlink", ssb.Matcher())
-				efsb.Insert("alink", ssb.Matcher())
-				efsb.Insert("nested", ssb.ExploreRecursiveEdge())
-			})))
+			efsb.Insert("linkedList", ssb.ExploreRecursive(
+				selector.RecursionLimitNone(),
+				ssb.ExploreUnion(ssb.Matcher(), ssb.ExploreAll(ssb.ExploreRecursiveEdge()))))
+			efsb.Insert("plain", ssb.ExploreAll(ssb.Matcher()))
+			efsb.Insert("linkedString", ssb.ExploreAll(ssb.Matcher()))
+			efsb.Insert("linkedMap", ssb.ExploreUnion(ssb.Matcher(),
+				ssb.ExploreRecursive(selector.RecursionLimitDepth(3), ssb.ExploreFields(func(efsb builder.ExploreFieldsSpecBuilder) {
+					efsb.Insert("foo", ssb.Matcher())
+					efsb.Insert("nonlink", ssb.Matcher())
+					efsb.Insert("alink", ssb.Matcher())
+					efsb.Insert("nested", ssb.ExploreRecursiveEdge())
+				}))))
 		})
 		s, err := ss.Selector()
 		qt.Check(t, err, qt.IsNil)
 		var order int
 		lsys := cidlink.DefaultLinkSystem()
 		lsys.SetReadStorage(&store)
+		visitedCids := make([]string, 0)
+		lsys.StorageReadOpener = func(lnkCtx ipld.LinkContext, lnk ipld.Link) (io.Reader, error) {
+			visitedCids = append(visitedCids, lnk.(cidlink.Link).Cid.String())
+			return store.GetStream(lnkCtx.Ctx, lnk.(cidlink.Link).Cid.KeyString())
+		}
 		err = traversal.Progress{
 			Cfg: &traversal.Config{
 				LinkSystem:                     lsys,
@@ -311,6 +322,44 @@ func TestWalkMatching(t *testing.T) {
 		})
 		qt.Check(t, err, qt.IsNil)
 		qt.Check(t, order, qt.Equals, 2)
+		// linkedMap=baguqeeyezhlahvq, alink=baguqeeyexkjwnfy
+		qt.Check(t, visitedCids, qt.DeepEquals, []string{"baguqeeyezhlahvq", "baguqeeyexkjwnfy"})
+	})
+
+	t.Run("no loading of unnecessary nodes before start path", func(t *testing.T) {
+		ss := ssb.ExploreFields(func(efsb builder.ExploreFieldsSpecBuilder) {
+			efsb.Insert("linkedList", ssb.ExploreRecursive(selector.RecursionLimitNone(), ssb.ExploreAll(ssb.ExploreRecursiveEdge())))
+			efsb.Insert("plain", ssb.ExploreRecursive(selector.RecursionLimitNone(), ssb.ExploreAll(ssb.ExploreRecursiveEdge())))
+			efsb.Insert("linkedString", ssb.ExploreRecursive(selector.RecursionLimitNone(), ssb.ExploreAll(ssb.ExploreRecursiveEdge())))
+			efsb.Insert("linkedMap",
+				ssb.ExploreRecursive(selector.RecursionLimitDepth(3), ssb.ExploreFields(func(efsb builder.ExploreFieldsSpecBuilder) {
+					efsb.Insert("foo", ssb.ExploreRecursive(selector.RecursionLimitNone(), ssb.ExploreAll(ssb.ExploreRecursiveEdge())))
+					efsb.Insert("nonlink", ssb.ExploreRecursive(selector.RecursionLimitNone(), ssb.ExploreAll(ssb.ExploreRecursiveEdge())))
+					efsb.Insert("alink", ssb.ExploreRecursive(selector.RecursionLimitNone(), ssb.ExploreAll(ssb.ExploreRecursiveEdge())))
+					efsb.Insert("nested", ssb.ExploreRecursiveEdge())
+				})))
+		})
+		s, err := ss.Selector()
+		qt.Check(t, err, qt.IsNil)
+		lsys := cidlink.DefaultLinkSystem()
+		lsys.SetReadStorage(&store)
+		visitedCids := make([]string, 0)
+		lsys.StorageReadOpener = func(lnkCtx ipld.LinkContext, lnk ipld.Link) (io.Reader, error) {
+			visitedCids = append(visitedCids, lnk.(cidlink.Link).Cid.String())
+			return store.GetStream(lnkCtx.Ctx, lnk.(cidlink.Link).Cid.KeyString())
+		}
+		err = traversal.Progress{
+			Cfg: &traversal.Config{
+				LinkSystem:                     lsys,
+				LinkTargetNodePrototypeChooser: basicnode.Chooser,
+				StartAtPath:                    datamodel.ParsePath("linkedMap/nested/nonlink"),
+			},
+		}.WalkMatching(rootNode, s, func(prog traversal.Progress, n datamodel.Node) error {
+			return nil
+		})
+		qt.Check(t, err, qt.IsNil)
+		// linkedMap=baguqeeyezhlahvq, alink=baguqeeyexkjwnfy
+		qt.Check(t, visitedCids, qt.DeepEquals, []string{"baguqeeyezhlahvq", "baguqeeyexkjwnfy"})
 	})
 }
 
