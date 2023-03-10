@@ -49,7 +49,7 @@ func NewBufferedLoader(loader linking.BlockReadOpener, allocationLimit uint64, a
 	}
 }
 
-func (bl *BufferedLoader) Preloader(ctx Context, links []Link) {
+func (bl *BufferedLoader) Preloader(ctx PreloadContext, links []Link) {
 	bl.preloadsLk.Lock()
 	defer bl.preloadsLk.Unlock()
 	for _, l := range links {
@@ -73,7 +73,6 @@ func (bl *BufferedLoader) Preloader(ctx Context, links []Link) {
 			lnk: l.Link,
 		}:
 		}
-
 	}
 }
 

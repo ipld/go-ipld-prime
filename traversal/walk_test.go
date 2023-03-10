@@ -541,7 +541,7 @@ func TestWalkBlockLoadOrder(t *testing.T) {
 			expectedLinks = append(expectedLinks, middleListNodePreloads)
 		}
 		preloadIndex := 0
-		preloader := func(_ preload.Context, links []preload.Link) {
+		preloader := func(_ preload.PreloadContext, links []preload.Link) {
 			if preloadIndex >= len(expectedLinks) {
 				t.Fatal("too many preloads")
 			}
