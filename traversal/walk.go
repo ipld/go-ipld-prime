@@ -241,7 +241,7 @@ func (prog Progress) iterateAll(n datamodel.Node, visit func(datamodel.PathSegme
 
 func (prog Progress) walkAdv_iterateAll(n datamodel.Node, s selector.Selector, fn AdvVisitFn) error {
 	nextSelectors := make([]selector.Selector, 0, n.Length())
-	preLoadLinks := make([]preload.Link, 0, n.Length())
+	preloadLinks := make([]preload.Link, 0, n.Length())
 	err := prog.iterateAll(n, func(ps datamodel.PathSegment, v datamodel.Node, pastStartAtPath bool) error {
 		sNext, err := s.Explore(n, ps)
 		if err != nil {
@@ -250,7 +250,7 @@ func (prog Progress) walkAdv_iterateAll(n datamodel.Node, s selector.Selector, f
 		nextSelectors = append(nextSelectors, sNext)
 		if sNext != nil && v.Kind() == datamodel.Kind_Link {
 			lnk, _ := v.AsLink()
-			preLoadLinks = append(preLoadLinks, preload.Link{
+			preloadLinks = append(preloadLinks, preload.Link{
 				Segment:  ps,
 				LinkNode: v,
 				Link:     lnk,
@@ -261,12 +261,12 @@ func (prog Progress) walkAdv_iterateAll(n datamodel.Node, s selector.Selector, f
 	if err != nil {
 		return err
 	}
-	if prog.Cfg.Preloader != nil && len(preLoadLinks) > 0 {
-		prog.Cfg.Preloader(preload.Context{
+	if prog.Cfg.Preloader != nil && len(preloadLinks) > 0 {
+		prog.Cfg.Preloader(preload.PreloadContext{
 			Ctx:        prog.Cfg.Ctx,
 			BasePath:   prog.Path,
 			ParentNode: n,
-		}, preLoadLinks)
+		}, preloadLinks)
 	}
 
 	index := 0
@@ -330,7 +330,7 @@ func (prog Progress) iterateSelective(n datamodel.Node, attn []datamodel.PathSeg
 
 func (prog Progress) walkAdv_iterateSelective(n datamodel.Node, attn []datamodel.PathSegment, s selector.Selector, fn AdvVisitFn) error {
 	nextSelectors := make([]selector.Selector, 0, len(attn))
-	preLoadLinks := make([]preload.Link, 0, len(attn))
+	preloadLinks := make([]preload.Link, 0, len(attn))
 	err := prog.iterateSelective(n, attn, func(ps datamodel.PathSegment, v datamodel.Node) error {
 		sNext, err := s.Explore(n, ps)
 		if err != nil {
@@ -339,7 +339,7 @@ func (prog Progress) walkAdv_iterateSelective(n datamodel.Node, attn []datamodel
 		nextSelectors = append(nextSelectors, sNext)
 		if sNext != nil && v.Kind() == datamodel.Kind_Link {
 			lnk, _ := v.AsLink()
-			preLoadLinks = append(preLoadLinks, preload.Link{
+			preloadLinks = append(preloadLinks, preload.Link{
 				Segment:  ps,
 				LinkNode: v,
 				Link:     lnk,
@@ -350,12 +350,12 @@ func (prog Progress) walkAdv_iterateSelective(n datamodel.Node, attn []datamodel
 	if err != nil {
 		return err
 	}
-	if prog.Cfg.Preloader != nil && len(preLoadLinks) > 0 {
-		prog.Cfg.Preloader(preload.Context{
+	if prog.Cfg.Preloader != nil && len(preloadLinks) > 0 {
+		prog.Cfg.Preloader(preload.PreloadContext{
 			Ctx:        prog.Cfg.Ctx,
 			BasePath:   prog.Path,
 			ParentNode: n,
-		}, preLoadLinks)
+		}, preloadLinks)
 	}
 
 	index := 0

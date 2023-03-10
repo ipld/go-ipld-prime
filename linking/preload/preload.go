@@ -7,8 +7,9 @@ import (
 	"github.com/ipld/go-ipld-prime/datamodel"
 )
 
-type Context struct {
-
+// PreloadContext carries information about the current state of a traversal
+// where a set of links that may be preloaded were encountered.
+type PreloadContext struct {
 	// Ctx is the familiar golang Context pattern.
 	// Use this for cancellation, or attaching additional info
 	// (for example, perhaps to pass auth tokens through to the storage functions).
@@ -31,4 +32,4 @@ type Link struct {
 	Link     ipld.Link
 }
 
-type Loader func(Context, []Link)
+type Loader func(PreloadContext, []Link)
