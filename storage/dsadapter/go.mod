@@ -1,6 +1,6 @@
 module github.com/ipld/go-ipld-prime/storage/dsadapter
 
-go 1.18
+go 1.19
 
 require github.com/ipfs/go-datastore v0.6.0
 
