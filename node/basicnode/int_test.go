@@ -1,10 +1,11 @@
 package basicnode_test
 
 import (
+	"testing"
+
 	qt "github.com/frankban/quicktest"
 	"github.com/ipld/go-ipld-prime/must"
 	"github.com/ipld/go-ipld-prime/node/basicnode"
-	"testing"
 )
 
 func TestBasicInt(t *testing.T) {
