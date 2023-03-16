@@ -67,6 +67,7 @@ var copyTests = []struct {
 
 func TestCopy(t *testing.T) {
 	for _, tt := range copyTests {
+		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			err := datamodel.Copy(tt.n, tt.na)
