@@ -5,7 +5,7 @@ go 1.19
 require (
 	github.com/frankban/quicktest v1.14.4
 	github.com/google/go-cmp v0.5.9
-	github.com/ipfs/go-cid v0.3.2
+	github.com/ipfs/go-cid v0.4.0
 	github.com/multiformats/go-multicodec v0.8.1
 	github.com/multiformats/go-multihash v0.2.1
 	github.com/polydawn/refmt v0.89.0
@@ -25,7 +25,7 @@ require (
 	github.com/multiformats/go-varint v0.0.6 // indirect
 	github.com/rogpeppe/go-internal v1.9.0 // indirect
 	github.com/spaolacci/murmur3 v1.1.0 // indirect
-	golang.org/x/crypto v0.0.0-20220525230936-793ad666bf5e // indirect
+	golang.org/x/crypto v0.1.0 // indirect
 	golang.org/x/sys v0.1.0 // indirect
 	lukechampine.com/blake3 v1.1.6 // indirect
 )
