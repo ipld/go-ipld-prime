@@ -1,6 +1,7 @@
 package traversal
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/ipld/go-ipld-prime/datamodel"
@@ -9,7 +10,8 @@ import (
 	"github.com/ipld/go-ipld-prime/traversal/selector"
 )
 
-type loadLinkFn func(prog Progress, ps datamodel.PathSegment, v datamodel.Node, parent datamodel.Node) (datamodel.Node, error)
+type loadLinkFn func(Progress, datamodel.PathSegment, datamodel.Node, datamodel.Node) (datamodel.Node, error)
+type canVisitLinkFn func(Progress, datamodel.Link) bool
 
 // WalkLocal walks a tree of Nodes, visiting each of them,
 // and calling the given VisitFn on all of them;
@@ -81,7 +83,7 @@ func WalkTransforming(n datamodel.Node, s selector.Selector, fn TransformFn) (da
 // and thus continued nested uses of Walk and Focus will see the fully contextualized Path.
 func (prog Progress) WalkMatching(n datamodel.Node, s selector.Selector, fn VisitFn) error {
 	prog.init()
-	return prog.walkAdv(nil, n, s, func(prog Progress, n datamodel.Node, tr VisitReason) error {
+	return prog.walkAdv(nil, nil, n, s, func(prog Progress, n datamodel.Node, tr VisitReason) error {
 		if tr != VisitReason_SelectionMatch {
 			return nil
 		}
@@ -145,10 +147,16 @@ func (prog Progress) WalkLocal(n datamodel.Node, fn VisitFn) error {
 // An AdvVisitFn is used instead of a VisitFn, so that the reason can be provided.
 func (prog Progress) WalkAdv(n datamodel.Node, s selector.Selector, fn AdvVisitFn) error {
 	prog.init()
-	return prog.walkAdv(nil, n, s, fn)
+	return prog.walkAdv(nil, nil, n, s, fn)
 }
 
-func (prog Progress) walkAdv(loadLink loadLinkFn, n datamodel.Node, s selector.Selector, fn AdvVisitFn) error {
+func (prog Progress) walkAdv(
+	loadLink loadLinkFn,
+	canVisitLink canVisitLinkFn,
+	n datamodel.Node,
+	s selector.Selector,
+	fn AdvVisitFn) error {
+
 	// Check the budget!
 	if prog.Budget != nil {
 		if prog.Budget.NodeBudget <= 0 {
@@ -214,17 +222,23 @@ func (prog Progress) walkAdv(loadLink loadLinkFn, n datamodel.Node, s selector.S
 	// the whole block if we have a preloader configured.
 	if loadLink == nil {
 		loadLink = loadLinkActual
+		canVisitLink = canVisitLinkActual
+
 		if prog.Cfg.Preloader != nil {
 			preProg := prog
-			// TODO: handle preProg.Budget .. somehow
-			// TODO: handle preProg.SeenLinks .. somehow
 			preloadLinks := make([]preload.Link, 0)
-			preProg.SeenLinks = make(map[datamodel.Link]struct{})
+			preProg.Budget = preProg.Budget.Clone()
 			// loadLink that doesn't actually load links, just collects them.
-			loadLinkCollect := func(prog Progress, ps datamodel.PathSegment, v datamodel.Node, parent datamodel.Node) (datamodel.Node, error) {
+			loadLinkPr := func(prog Progress, ps datamodel.PathSegment, v datamodel.Node, parent datamodel.Node) (datamodel.Node, error) {
 				lnk, err := v.AsLink()
 				if err != nil {
 					return nil, err
+				}
+				if prog.Budget != nil {
+					if prog.Budget.LinkBudget <= 0 {
+						return nil, SkipMe{}
+					}
+					prog.Budget.LinkBudget--
 				}
 				preloadLinks = append(preloadLinks, preload.Link{
 					Segment:  ps,
@@ -233,17 +247,27 @@ func (prog Progress) walkAdv(loadLink loadLinkFn, n datamodel.Node, s selector.S
 				})
 				return nil, SkipMe{}
 			}
+			// same as canVisitLinkActual, but doesn't mutate Progress.SeenLinks.
+			canVisitLinkPr := func(prog Progress, lnk datamodel.Link) bool {
+				if prog.Cfg.LinkVisitOnlyOnce {
+					if _, seen := prog.SeenLinks[lnk]; seen {
+						return false
+					}
+				}
+				return true
+			}
 
 			// traversal preload for the whole block
-			noopVisitor := func(prog Progress, n datamodel.Node, reason VisitReason) error { return nil }
+			visitorPr := func(prog Progress, n datamodel.Node, reason VisitReason) error { return nil }
+
+			var err error
 			if attn != nil {
-				if err := preProg.walkAdv_iterateSelective(loadLinkCollect, n, attn, s, noopVisitor); err != nil {
-					return err
-				}
+				err = preProg.walkAdv_iterateSelective(loadLinkPr, canVisitLinkPr, n, attn, s, visitorPr)
 			} else {
-				if err := preProg.walkAdv_iterateAll(loadLinkCollect, n, s, noopVisitor); err != nil {
-					return err
-				}
+				err = preProg.walkAdv_iterateAll(loadLinkPr, canVisitLinkPr, n, s, visitorPr)
+			}
+			if err != nil && !errors.Is(err, &ErrBudgetExceeded{}) {
+				return err
 			}
 			if len(preloadLinks) > 0 {
 				prog.Cfg.Preloader(preload.PreloadContext{
@@ -257,12 +281,12 @@ func (prog Progress) walkAdv(loadLink loadLinkFn, n datamodel.Node, s selector.S
 
 	// traversal actual
 	if attn != nil {
-		return prog.walkAdv_iterateSelective(loadLink, n, attn, s, fn)
+		return prog.walkAdv_iterateSelective(loadLink, canVisitLink, n, attn, s, fn)
 	}
-	return prog.walkAdv_iterateAll(loadLink, n, s, fn)
+	return prog.walkAdv_iterateAll(loadLink, canVisitLink, n, s, fn)
 }
 
-func (prog Progress) walkAdv_iterateAll(loadLink loadLinkFn, n datamodel.Node, s selector.Selector, fn AdvVisitFn) error {
+func (prog Progress) walkAdv_iterateAll(loadLink loadLinkFn, canVisitLink canVisitLinkFn, n datamodel.Node, s selector.Selector, fn AdvVisitFn) error {
 	var reachedStartAtPath bool
 	for itr := selector.NewSegmentIterator(n); !itr.Done(); {
 		if reachedStartAtPath {
@@ -289,11 +313,8 @@ func (prog Progress) walkAdv_iterateAll(loadLink loadLinkFn, n datamodel.Node, s
 			progNext.Path = prog.Path.AppendSegment(ps)
 			if v.Kind() == datamodel.Kind_Link {
 				lnk, _ := v.AsLink()
-				if prog.Cfg.LinkVisitOnlyOnce {
-					if _, seen := prog.SeenLinks[lnk]; seen {
-						continue
-					}
-					prog.SeenLinks[lnk] = struct{}{}
+				if !canVisitLink(prog, lnk) {
+					continue
 				}
 				progNext.LastBlock.Path = progNext.Path
 				progNext.LastBlock.Link = lnk
@@ -306,13 +327,13 @@ func (prog Progress) walkAdv_iterateAll(loadLink loadLinkFn, n datamodel.Node, s
 				}
 				// walkAdv in the new block, with a nil loadLink to signal that a new
 				// preload can be performed if necessary.
-				err = progNext.walkAdv(nil, v, sNext, fn)
+				err = progNext.walkAdv(nil, nil, v, sNext, fn)
 				if err != nil {
 					return err
 				}
 			} else {
 				// walkAdv in the same block.
-				err = progNext.walkAdv(loadLink, v, sNext, fn)
+				err = progNext.walkAdv(loadLink, canVisitLink, v, sNext, fn)
 				if err != nil {
 					return err
 				}
@@ -322,7 +343,7 @@ func (prog Progress) walkAdv_iterateAll(loadLink loadLinkFn, n datamodel.Node, s
 	return nil
 }
 
-func (prog Progress) walkAdv_iterateSelective(loadLink loadLinkFn, n datamodel.Node, attn []datamodel.PathSegment, s selector.Selector, fn AdvVisitFn) error {
+func (prog Progress) walkAdv_iterateSelective(loadLink loadLinkFn, canVisitLink canVisitLinkFn, n datamodel.Node, attn []datamodel.PathSegment, s selector.Selector, fn AdvVisitFn) error {
 	var reachedStartAtPath bool
 	for _, ps := range attn {
 		if prog.Path.Len() < prog.Cfg.StartAtPath.Len() {
@@ -346,11 +367,8 @@ func (prog Progress) walkAdv_iterateSelective(loadLink loadLinkFn, n datamodel.N
 			progNext.Path = prog.Path.AppendSegment(ps)
 			if v.Kind() == datamodel.Kind_Link {
 				lnk, _ := v.AsLink()
-				if prog.Cfg.LinkVisitOnlyOnce {
-					if _, seen := prog.SeenLinks[lnk]; seen {
-						continue
-					}
-					prog.SeenLinks[lnk] = struct{}{}
+				if !canVisitLink(prog, lnk) {
+					continue
 				}
 				progNext.LastBlock.Path = progNext.Path
 				progNext.LastBlock.Link = lnk
@@ -363,13 +381,13 @@ func (prog Progress) walkAdv_iterateSelective(loadLink loadLinkFn, n datamodel.N
 				}
 				// walkAdv in the new block, with a nil loadLink to signal that a new
 				// preload can be performed if necessary.
-				err = progNext.walkAdv(nil, v, sNext, fn)
+				err = progNext.walkAdv(nil, nil, v, sNext, fn)
 				if err != nil {
 					return err
 				}
 			} else {
 				// walkAdv in the same block.
-				err = progNext.walkAdv(loadLink, v, sNext, fn)
+				err = progNext.walkAdv(loadLink, canVisitLink, v, sNext, fn)
 				if err != nil {
 					return err
 				}
@@ -377,41 +395,6 @@ func (prog Progress) walkAdv_iterateSelective(loadLink loadLinkFn, n datamodel.N
 		}
 	}
 	return nil
-}
-
-func loadLinkActual(prog Progress, ps datamodel.PathSegment, v datamodel.Node, parent datamodel.Node) (datamodel.Node, error) {
-	lnk, err := v.AsLink()
-	if err != nil {
-		return nil, err
-	}
-	// Check the budget!
-	if prog.Budget != nil {
-		if prog.Budget.LinkBudget <= 0 {
-			return nil, &ErrBudgetExceeded{BudgetKind: "link", Path: prog.Path, Link: lnk}
-		}
-		prog.Budget.LinkBudget--
-	}
-	// Put together the context info we'll offer to the loader and prototypeChooser.
-	lnkCtx := linking.LinkContext{
-		Ctx:        prog.Cfg.Ctx,
-		LinkPath:   prog.Path,
-		LinkNode:   v,
-		ParentNode: parent,
-	}
-	// Pick what in-memory format we will build.
-	np, err := prog.Cfg.LinkTargetNodePrototypeChooser(lnk, lnkCtx)
-	if err != nil {
-		return nil, fmt.Errorf("error traversing node at %q: could not load link %q: %w", prog.Path, lnk, err)
-	}
-	// Load link!
-	n, err := prog.Cfg.LinkSystem.Load(lnkCtx, lnk, np)
-	if err != nil {
-		if _, ok := err.(SkipMe); ok {
-			return nil, err
-		}
-		return nil, fmt.Errorf("error traversing node at %q: could not load link %q: %w", prog.Path, lnk, err)
-	}
-	return n, nil
 }
 
 // WalkTransforming walks a graph of Nodes, deciding which to alter by applying a Selector,
@@ -484,9 +467,9 @@ func (prog Progress) walkTransforming(n datamodel.Node, s selector.Selector, fn 
 	nk := n.Kind()
 	switch nk {
 	case datamodel.Kind_List:
-		return prog.walk_transform_iterateList(loadLinkActual, n, s, fn, s.Interests())
+		return prog.walk_transform_iterateList(loadLinkActual, canVisitLinkActual, n, s, fn, s.Interests())
 	case datamodel.Kind_Map:
-		return prog.walk_transform_iterateMap(loadLinkActual, n, s, fn, s.Interests())
+		return prog.walk_transform_iterateMap(loadLinkActual, canVisitLinkActual, n, s, fn, s.Interests())
 	default:
 		return n, nil
 	}
@@ -501,7 +484,7 @@ func contains(interest []datamodel.PathSegment, candidate datamodel.PathSegment)
 	return false
 }
 
-func (prog Progress) walk_transform_iterateList(loadLink loadLinkFn, n datamodel.Node, s selector.Selector, fn TransformFn, attn []datamodel.PathSegment) (datamodel.Node, error) {
+func (prog Progress) walk_transform_iterateList(loadLink loadLinkFn, canVisitLink canVisitLinkFn, n datamodel.Node, s selector.Selector, fn TransformFn, attn []datamodel.PathSegment) (datamodel.Node, error) {
 	bldr := n.Prototype().NewBuilder()
 	lstBldr, err := bldr.BeginList(n.Length())
 	if err != nil {
@@ -522,11 +505,8 @@ func (prog Progress) walk_transform_iterateList(loadLink loadLinkFn, n datamodel
 				progNext.Path = prog.Path.AppendSegment(ps)
 				if v.Kind() == datamodel.Kind_Link {
 					lnk, _ := v.AsLink()
-					if prog.Cfg.LinkVisitOnlyOnce {
-						if _, seen := prog.SeenLinks[lnk]; seen {
-							continue
-						}
-						prog.SeenLinks[lnk] = struct{}{}
+					if !canVisitLink(prog, lnk) {
+						continue
 					}
 					progNext.LastBlock.Path = progNext.Path
 					progNext.LastBlock.Link = lnk
@@ -563,7 +543,7 @@ func (prog Progress) walk_transform_iterateList(loadLink loadLinkFn, n datamodel
 	return bldr.Build(), nil
 }
 
-func (prog Progress) walk_transform_iterateMap(loadLink loadLinkFn, n datamodel.Node, s selector.Selector, fn TransformFn, attn []datamodel.PathSegment) (datamodel.Node, error) {
+func (prog Progress) walk_transform_iterateMap(loadLink loadLinkFn, canVisitLink canVisitLinkFn, n datamodel.Node, s selector.Selector, fn TransformFn, attn []datamodel.PathSegment) (datamodel.Node, error) {
 	bldr := n.Prototype().NewBuilder()
 	mapBldr, err := bldr.BeginMap(n.Length())
 	if err != nil {
@@ -589,11 +569,8 @@ func (prog Progress) walk_transform_iterateMap(loadLink loadLinkFn, n datamodel.
 				progNext.Path = prog.Path.AppendSegment(ps)
 				if v.Kind() == datamodel.Kind_Link {
 					lnk, _ := v.AsLink()
-					if prog.Cfg.LinkVisitOnlyOnce {
-						if _, seen := prog.SeenLinks[lnk]; seen {
-							continue
-						}
-						prog.SeenLinks[lnk] = struct{}{}
+					if !canVisitLink(prog, lnk) {
+						continue
 					}
 					progNext.LastBlock.Path = progNext.Path
 					progNext.LastBlock.Link = lnk
@@ -628,4 +605,49 @@ func (prog Progress) walk_transform_iterateMap(loadLink loadLinkFn, n datamodel.
 		return nil, err
 	}
 	return bldr.Build(), nil
+}
+
+func loadLinkActual(prog Progress, ps datamodel.PathSegment, v datamodel.Node, parent datamodel.Node) (datamodel.Node, error) {
+	lnk, err := v.AsLink()
+	if err != nil {
+		return nil, err
+	}
+	// Check the budget!
+	if prog.Budget != nil {
+		if prog.Budget.LinkBudget <= 0 {
+			return nil, &ErrBudgetExceeded{BudgetKind: "link", Path: prog.Path, Link: lnk}
+		}
+		prog.Budget.LinkBudget--
+	}
+	// Put together the context info we'll offer to the loader and prototypeChooser.
+	lnkCtx := linking.LinkContext{
+		Ctx:        prog.Cfg.Ctx,
+		LinkPath:   prog.Path,
+		LinkNode:   v,
+		ParentNode: parent,
+	}
+	// Pick what in-memory format we will build.
+	np, err := prog.Cfg.LinkTargetNodePrototypeChooser(lnk, lnkCtx)
+	if err != nil {
+		return nil, fmt.Errorf("error traversing node at %q: could not load link %q: %w", prog.Path, lnk, err)
+	}
+	// Load link!
+	n, err := prog.Cfg.LinkSystem.Load(lnkCtx, lnk, np)
+	if err != nil {
+		if _, ok := err.(SkipMe); ok {
+			return nil, err
+		}
+		return nil, fmt.Errorf("error traversing node at %q: could not load link %q: %w", prog.Path, lnk, err)
+	}
+	return n, nil
+}
+
+func canVisitLinkActual(prog Progress, lnk datamodel.Link) bool {
+	if prog.Cfg.LinkVisitOnlyOnce {
+		if _, seen := prog.SeenLinks[lnk]; seen {
+			return false
+		}
+		prog.SeenLinks[lnk] = struct{}{}
+	}
+	return true
 }

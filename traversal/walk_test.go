@@ -365,67 +365,99 @@ func TestWalkMatching(t *testing.T) {
 }
 
 func TestWalkBudgets(t *testing.T) {
-	ssb := builder.NewSelectorSpecBuilder(basicnode.Prototype.Any)
-	t.Run("node-budget-halts", func(t *testing.T) {
-		ss := ssb.ExploreFields(func(efsb builder.ExploreFieldsSpecBuilder) {
-			efsb.Insert("foo", ssb.Matcher())
-			efsb.Insert("bar", ssb.Matcher())
+	for _, preloader := range []bool{false, true} {
+		t.Run(fmt.Sprintf("preloader=%v", preloader), func(t *testing.T) {
+			t.Run("node-budget-halts", func(t *testing.T) {
+				ssb := builder.NewSelectorSpecBuilder(basicnode.Prototype.Any)
+				ss := ssb.ExploreFields(func(efsb builder.ExploreFieldsSpecBuilder) {
+					efsb.Insert("foo", ssb.Matcher())
+					efsb.Insert("bar", ssb.Matcher())
+				})
+				s, err := ss.Selector()
+				qt.Assert(t, err, qt.Equals, nil)
+				var order int
+				prog := traversal.Progress{}
+				prog.Budget = &traversal.Budget{
+					NodeBudget: 2, // should reach root, then "foo", then stop.
+				}
+				preloadLinks := make([]preload.Link, 0)
+				if preloader {
+					// having a preloader shouldn't change budgeting
+					prog.Cfg = &traversal.Config{
+						Preloader: func(_ preload.PreloadContext, links []preload.Link) {
+							preloadLinks = append(preloadLinks, links...)
+						},
+					}
+				}
+				err = prog.WalkMatching(middleMapNode, s, func(prog traversal.Progress, n datamodel.Node) error {
+					switch order {
+					case 0:
+						qt.Assert(t, n, nodetests.NodeContentEquals, basicnode.NewBool(true))
+						qt.Assert(t, prog.Path.String(), qt.Equals, "foo")
+					}
+					order++
+					return nil
+				})
+				qt.Check(t, order, qt.Equals, 1) // because it should've stopped early
+				qt.Assert(t, err, qt.Not(qt.Equals), nil)
+				qt.Check(t, err.Error(), qt.Equals, `traversal budget exceeded: budget for nodes reached zero while on path "bar"`)
+				if preloader {
+					qt.Assert(t, preloadLinks, qt.HasLen, 0)
+				}
+			})
+
+			t.Run("link-budget-halts", func(t *testing.T) {
+				ssb := builder.NewSelectorSpecBuilder(basicnode.Prototype.Any)
+				ss := ssb.ExploreAll(ssb.Matcher())
+				s, err := ss.Selector()
+				qt.Assert(t, err, qt.Equals, nil)
+				var order int
+				lsys := cidlink.DefaultLinkSystem()
+				lsys.SetReadStorage(&store)
+				prog := traversal.Progress{
+					Cfg: &traversal.Config{
+						LinkSystem:                     lsys,
+						LinkTargetNodePrototypeChooser: basicnode.Chooser,
+					},
+					Budget: &traversal.Budget{
+						NodeBudget: 9000,
+						LinkBudget: 3,
+					},
+				}
+				preloadLinks := make([]preload.Link, 0)
+				if preloader {
+					// having a preloader shouldn't change budgeting
+					prog.Cfg.Preloader = func(_ preload.PreloadContext, links []preload.Link) {
+						preloadLinks = append(preloadLinks, links...)
+					}
+				}
+				err = prog.WalkMatching(middleListNode, s, func(prog traversal.Progress, n datamodel.Node) error {
+					switch order {
+					case 0:
+						qt.Assert(t, n, nodetests.NodeContentEquals, basicnode.NewString("alpha"))
+						qt.Assert(t, prog.Path.String(), qt.Equals, "0")
+					case 1:
+						qt.Assert(t, n, nodetests.NodeContentEquals, basicnode.NewString("alpha"))
+						qt.Assert(t, prog.Path.String(), qt.Equals, "1")
+					case 2:
+						qt.Assert(t, n, nodetests.NodeContentEquals, basicnode.NewString("beta"))
+						qt.Assert(t, prog.Path.String(), qt.Equals, "2")
+					}
+					order++
+					return nil
+				})
+				qt.Check(t, order, qt.Equals, 3)
+				qt.Assert(t, err, qt.Not(qt.Equals), nil)
+				qt.Check(t, err.Error(), qt.Equals, `traversal budget exceeded: budget for links reached zero while on path "3" (link: "baguqeeyexkjwnfy")`)
+				if preloader {
+					qt.Assert(t, preloadLinks, qt.HasLen, 3)
+					qt.Check(t, preloadLinks[0].Link, qt.Equals, leafAlphaLnk)
+					qt.Check(t, preloadLinks[1].Link, qt.Equals, leafAlphaLnk)
+					qt.Check(t, preloadLinks[2].Link, qt.Equals, leafBetaLnk)
+				}
+			})
 		})
-		s, err := ss.Selector()
-		qt.Assert(t, err, qt.Equals, nil)
-		var order int
-		prog := traversal.Progress{}
-		prog.Budget = &traversal.Budget{
-			NodeBudget: 2, // should reach root, then "foo", then stop.
-		}
-		err = prog.WalkMatching(middleMapNode, s, func(prog traversal.Progress, n datamodel.Node) error {
-			switch order {
-			case 0:
-				qt.Assert(t, n, nodetests.NodeContentEquals, basicnode.NewBool(true))
-				qt.Assert(t, prog.Path.String(), qt.Equals, "foo")
-			}
-			order++
-			return nil
-		})
-		qt.Check(t, order, qt.Equals, 1) // because it should've stopped early
-		qt.Assert(t, err, qt.Not(qt.Equals), nil)
-		qt.Check(t, err.Error(), qt.Equals, `traversal budget exceeded: budget for nodes reached zero while on path "bar"`)
-	})
-	t.Run("link-budget-halts", func(t *testing.T) {
-		ss := ssb.ExploreAll(ssb.Matcher())
-		s, err := ss.Selector()
-		qt.Assert(t, err, qt.Equals, nil)
-		var order int
-		lsys := cidlink.DefaultLinkSystem()
-		lsys.SetReadStorage(&store)
-		err = traversal.Progress{
-			Cfg: &traversal.Config{
-				LinkSystem:                     lsys,
-				LinkTargetNodePrototypeChooser: basicnode.Chooser,
-			},
-			Budget: &traversal.Budget{
-				NodeBudget: 9000,
-				LinkBudget: 3,
-			},
-		}.WalkMatching(middleListNode, s, func(prog traversal.Progress, n datamodel.Node) error {
-			switch order {
-			case 0:
-				qt.Assert(t, n, nodetests.NodeContentEquals, basicnode.NewString("alpha"))
-				qt.Assert(t, prog.Path.String(), qt.Equals, "0")
-			case 1:
-				qt.Assert(t, n, nodetests.NodeContentEquals, basicnode.NewString("alpha"))
-				qt.Assert(t, prog.Path.String(), qt.Equals, "1")
-			case 2:
-				qt.Assert(t, n, nodetests.NodeContentEquals, basicnode.NewString("beta"))
-				qt.Assert(t, prog.Path.String(), qt.Equals, "2")
-			}
-			order++
-			return nil
-		})
-		qt.Check(t, order, qt.Equals, 3)
-		qt.Assert(t, err, qt.Not(qt.Equals), nil)
-		qt.Check(t, err.Error(), qt.Equals, `traversal budget exceeded: budget for links reached zero while on path "3" (link: "baguqeeyexkjwnfy")`)
-	})
+	}
 }
 
 func TestWalkBlockLoadOrder(t *testing.T) {
@@ -451,7 +483,7 @@ func TestWalkBlockLoadOrder(t *testing.T) {
 	linkNames[leafAlphaLnk] = "leafAlphaLnk"
 	linkNames[leafBetaLnk] = "leafBetaLnk"
 	for v, n := range linkNames {
-		fmt.Printf("n:%v:%v\n", n, v)
+		t.Logf("n:%v:%v\n", n, v)
 	}
 	// the links that we expect from the root node, starting _at_ the root node itself
 	rootNodeExpectedLinks := []datamodel.Link{
@@ -637,6 +669,31 @@ func TestWalkBlockLoadOrder(t *testing.T) {
 			return storage.GetStream(lctx.Ctx, &store, lnk.Binary())
 		})
 	})
+
+	t.Run("explore-all with duplicate load and preloader skips via LinkVisitOnlyOnce:true", func(t *testing.T) {
+		// same as above but make sure the preloader doesn't get in the way
+		expectedLinkRevisitBlocks := []datamodel.Link{
+			rootNodeLnk,
+			middleListNodeLnk,
+			leafAlphaLnk,
+			leafBetaLnk,
+			middleMapNodeLnk,
+		}
+		s := selectorparse.CommonSelector_ExploreAllRecursively
+		preloadLinks := make(map[datamodel.Link]struct{})
+		preloader := func(_ preload.PreloadContext, links []preload.Link) {
+			for _, l := range links {
+				preloadLinks[l.Link] = struct{}{}
+			}
+		}
+		verifySelectorLoads(t, newRootNode, expectedLinkRevisitBlocks, s, true, datamodel.NewPath(nil), preloader, func(lctx linking.LinkContext, lnk datamodel.Link) (io.Reader, error) {
+			return storage.GetStream(lctx.Ctx, &store, lnk.Binary())
+		})
+		for _, l := range expectedLinkRevisitBlocks {
+			qt.Check(t, preloadLinks[l], qt.IsNotNil)
+		}
+	})
+
 	t.Run("explore-all with duplicate traversal skip via load at path", func(t *testing.T) {
 		// when using LinkRevisit:false to skip duplicate block loads, our loader
 		// doesn't even get to see the load attempts (unlike SkipMe, where the
