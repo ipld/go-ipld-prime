@@ -64,6 +64,17 @@ type Budget struct {
 	LinkBudget int64 // A monotonically-decrementing "budget" for how many more links we're willing to load before halting.  (This is not aware of any caching; it's purely in terms of links encountered and traversed.)
 }
 
+// Clone returns a copy of the budget.
+func (b *Budget) Clone() *Budget {
+	if b == nil {
+		return nil
+	}
+	return &Budget{
+		NodeBudget: b.NodeBudget,
+		LinkBudget: b.LinkBudget,
+	}
+}
+
 // LinkTargetNodePrototypeChooser is a function that returns a NodePrototype based on
 // the information in a Link and/or its LinkContext.
 //
@@ -100,4 +111,9 @@ func (e *ErrBudgetExceeded) Error() string {
 		msg += fmt.Sprintf(" (link: %q)", e.Link)
 	}
 	return msg
+}
+
+func (e *ErrBudgetExceeded) Is(target error) bool {
+	_, ok := target.(*ErrBudgetExceeded)
+	return ok
 }
