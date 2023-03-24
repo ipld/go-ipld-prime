@@ -3,8 +3,6 @@ package traversal_test
 import (
 	"fmt"
 	"io"
-	"log"
-	"strings"
 	"testing"
 
 	qt "github.com/frankban/quicktest"
@@ -384,8 +382,8 @@ func TestWalkBudgets(t *testing.T) {
 				if preloader {
 					// having a preloader shouldn't change budgeting
 					prog.Cfg = &traversal.Config{
-						Preloader: func(_ preload.PreloadContext, links []preload.Link) {
-							preloadLinks = append(preloadLinks, links...)
+						Preloader: func(_ preload.PreloadContext, link preload.Link) {
+							preloadLinks = append(preloadLinks, link)
 						},
 					}
 				}
@@ -398,12 +396,12 @@ func TestWalkBudgets(t *testing.T) {
 					order++
 					return nil
 				})
-				qt.Check(t, order, qt.Equals, 1) // because it should've stopped early
-				qt.Assert(t, err, qt.Not(qt.Equals), nil)
-				qt.Check(t, err.Error(), qt.Equals, `traversal budget exceeded: budget for nodes reached zero while on path "bar"`)
 				if preloader {
 					qt.Assert(t, preloadLinks, qt.HasLen, 0)
 				}
+				qt.Check(t, order, qt.Equals, 1) // because it should've stopped early
+				qt.Assert(t, err, qt.Not(qt.Equals), nil)
+				qt.Check(t, err.Error(), qt.Equals, `traversal budget exceeded: budget for nodes reached zero while on path "bar"`)
 			})
 
 			t.Run("link-budget-halts", func(t *testing.T) {
@@ -427,8 +425,8 @@ func TestWalkBudgets(t *testing.T) {
 				preloadLinks := make([]preload.Link, 0)
 				if preloader {
 					// having a preloader shouldn't change budgeting
-					prog.Cfg.Preloader = func(_ preload.PreloadContext, links []preload.Link) {
-						preloadLinks = append(preloadLinks, links...)
+					prog.Cfg.Preloader = func(_ preload.PreloadContext, link preload.Link) {
+						preloadLinks = append(preloadLinks, link)
 					}
 				}
 				err = prog.WalkMatching(middleListNode, s, func(prog traversal.Progress, n datamodel.Node) error {
@@ -482,9 +480,11 @@ func TestWalkBlockLoadOrder(t *testing.T) {
 	linkNames[middleListNodeLnk] = "middleListNodeLnk"
 	linkNames[leafAlphaLnk] = "leafAlphaLnk"
 	linkNames[leafBetaLnk] = "leafBetaLnk"
+	/* useful to know CIDs for these when debugging
 	for v, n := range linkNames {
 		t.Logf("n:%v:%v\n", n, v)
 	}
+	*/
 	// the links that we expect from the root node, starting _at_ the root node itself
 	rootNodeExpectedLinks := []datamodel.Link{
 		rootNodeLnk,
@@ -525,9 +525,9 @@ func TestWalkBlockLoadOrder(t *testing.T) {
 		var count int
 		lsys := cidlink.DefaultLinkSystem()
 		lsys.StorageReadOpener = func(lc linking.LinkContext, l datamodel.Link) (io.Reader, error) {
-			t.Logf("load %d: %v (%s) <> %v (%s) - %s", count, expected[count].String(), linkNames[expected[count]], l.String(), linkNames[l], lc.LinkPath)
+			// t.Logf("load %d: %v (%s) <> %v (%s) - %s", count, expected[count].String(), linkNames[expected[count]], l.String(), linkNames[l], lc.LinkPath)
+			// t.Logf("%v (%v) %s<> %v (%v)\n", l, linkNames[l], strings.Repeat(" ", 17-len(linkNames[l])), expected[count], linkNames[expected[count]])
 			qt.Check(t, l.String(), qt.Equals, expected[count].String())
-			log.Printf("%v (%v) %s<> %v (%v)\n", l, linkNames[l], strings.Repeat(" ", 17-len(linkNames[l])), expected[count], linkNames[expected[count]])
 			count++
 			return readFn(lc, l)
 		}
@@ -582,24 +582,24 @@ func TestWalkBlockLoadOrder(t *testing.T) {
 		middleListNodePreloads := []datamodel.Link{leafAlphaLnk, leafAlphaLnk, leafBetaLnk, leafAlphaLnk}
 		middleMapNodePreloads := []datamodel.Link{leafAlphaLnk}
 		rootNodePreloadsRecursive := [][]datamodel.Link{rootNodePreloads, middleListNodePreloads, middleMapNodePreloads}
-		expectedLinks := [][]datamodel.Link{
+		el := [][]datamodel.Link{
 			{rootNodeLnk, middleListNodeLnk, rootNodeLnk, middleListNodeLnk, rootNodeLnk, middleListNodeLnk},
 		}
 		for i := 0; i < 3; i++ {
-			expectedLinks = append(expectedLinks, rootNodePreloadsRecursive...)
-			expectedLinks = append(expectedLinks, middleListNodePreloads)
+			el = append(el, rootNodePreloadsRecursive...)
+			el = append(el, middleListNodePreloads)
+		}
+		expectedLinks := make([]datamodel.Link, 0)
+		for _, l := range el {
+			expectedLinks = append(expectedLinks, l...)
 		}
 		preloadIndex := 0
-		preloader := func(_ preload.PreloadContext, links []preload.Link) {
+		preloader := func(_ preload.PreloadContext, link preload.Link) {
 			if preloadIndex >= len(expectedLinks) {
 				t.Fatal("too many preloads")
 			}
-			expectedLinkRound := expectedLinks[preloadIndex]
+			qt.Check(t, link.Link, qt.Equals, expectedLinks[preloadIndex])
 			preloadIndex++
-			qt.Assert(t, len(links), qt.Equals, len(expectedLinkRound))
-			for i, l := range links {
-				qt.Check(t, l.Link, qt.Equals, expectedLinkRound[i])
-			}
 		}
 
 		verifySelectorLoads(t, newNestedRootNode, expectedAllBlocks, s, false, datamodel.NewPath(nil), preloader, func(lctx linking.LinkContext, lnk datamodel.Link) (io.Reader, error) {
@@ -644,7 +644,7 @@ func TestWalkBlockLoadOrder(t *testing.T) {
 		s := selectorparse.CommonSelector_ExploreAllRecursively
 		visited := make(map[datamodel.Link]bool)
 		verifySelectorLoads(t, newRootNode, expectedSkipMeBlocks, s, false, datamodel.NewPath(nil), nil, func(lc linking.LinkContext, l datamodel.Link) (io.Reader, error) {
-			log.Printf("load %v [%v]\n", l, visited[l])
+			// t.Logf("load %v [%v]\n", l, visited[l])
 			if visited[l] {
 				return nil, traversal.SkipMe{}
 			}
@@ -681,10 +681,8 @@ func TestWalkBlockLoadOrder(t *testing.T) {
 		}
 		s := selectorparse.CommonSelector_ExploreAllRecursively
 		preloadLinks := make(map[datamodel.Link]struct{})
-		preloader := func(_ preload.PreloadContext, links []preload.Link) {
-			for _, l := range links {
-				preloadLinks[l.Link] = struct{}{}
-			}
+		preloader := func(_ preload.PreloadContext, link preload.Link) {
+			preloadLinks[link.Link] = struct{}{}
 		}
 		verifySelectorLoads(t, newRootNode, expectedLinkRevisitBlocks, s, true, datamodel.NewPath(nil), preloader, func(lctx linking.LinkContext, lnk datamodel.Link) (io.Reader, error) {
 			return storage.GetStream(lctx.Ctx, &store, lnk.Binary())
