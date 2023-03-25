@@ -153,14 +153,15 @@ func (prog Progress) WalkAdv(n datamodel.Node, s selector.Selector, fn AdvVisitF
 	return prog.walkBlock(n, s, fn)
 }
 
-// walkBlock anchors a walk at the begining of the traversal and at the begining
-// of each new link traversed. This allows us to do a preload phase if we have
-// a preloader configured.
+// walkBlock anchors a walk at the beginning of the traversal and at the
+// beginning of each new link traversed. This allows us to do a preload phase if
+// we have a preloader configured.
 func (prog Progress) walkBlock(n datamodel.Node, s selector.Selector, visitFn AdvVisitFn) error {
-	ph := prog.initialPhase()
-
+	ph := phaseTraverse
 	var budget *Budget
-	if ph == phasePreload {
+
+	if prog.Cfg.Preloader != nil {
+		ph = phasePreload
 		budget = prog.Budget.Clone()
 	}
 
@@ -175,6 +176,7 @@ func (prog Progress) walkBlock(n datamodel.Node, s selector.Selector, visitFn Ad
 		prog.Budget = budget // reset
 		return prog.walkAdv(phaseTraverse, n, s, visitFn)
 	}
+
 	return nil
 }
 
@@ -261,14 +263,6 @@ func (prog Progress) walkAdv(ph phase, n datamodel.Node, s selector.Selector, vi
 	}
 
 	return nil
-}
-
-// initialPhase tells us which phase to start with.
-func (prog Progress) initialPhase() phase {
-	if prog.Cfg.Preloader != nil {
-		return phasePreload
-	}
-	return phaseTraverse
 }
 
 func (prog Progress) checkNodeBudget() error {
