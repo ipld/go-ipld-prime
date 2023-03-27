@@ -49,7 +49,7 @@ type Config struct {
 	LinkTargetNodePrototypeChooser LinkTargetNodePrototypeChooser // Chooser for Node implementations to produce during automatic link traversal.
 	LinkVisitOnlyOnce              bool                           // By default, we visit across links wherever we see them again, even if we've visited them before, because the reason for visiting might be different than it was before since we got to it via a different path.  If set to true, track links we've seen before in Progress.SeenLinks and do not visit them again.  Note that sufficiently complex selectors may require valid revisiting of some links, so setting this to true can change behavior noticably and should be done with care.
 	StartAtPath                    datamodel.Path                 // If set, causes a traversal to skip forward until passing this path, and only then begins calling visit functions.  Block loads will also be skipped wherever possible.
-	Preloader                      preload.Loader                 // Receives a list of links within each block prior to traversal.	This can be used to load blocks in parallel, or even to load blocks in a different order than the traversal would otherwise do.
+	Preloader                      preload.Loader                 // Receives a list of links within each block prior to traversal-proper.	This can be used to asynchronously load blocks that will be required at a later phase of the retrieval, or even to load blocks in a different order than the traversal would otherwise do. Preload calls are not de-duplicated, it is up to the receiver to do so if desired.
 }
 
 type Budget struct {
