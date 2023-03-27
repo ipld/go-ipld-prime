@@ -87,6 +87,13 @@ func WalkTransforming(n datamodel.Node, s selector.Selector, fn TransformFn) (da
 // By using the traversal.Progress handed to the VisitFn,
 // the Path recorded of the traversal so far will continue to be extended,
 // and thus continued nested uses of Walk and Focus will see the fully contextualized Path.
+//
+// WalkMatching can be configured to run with a Preloader.
+// When a Preloader is configured, the walk will first do a "preload" pass over the initial,
+// root tree up to link boundaries and report any links encountered to the preloader.
+// It will then perform a second pass over the tree, calling the VisitFn where necessary as per normal WalkMatching behavior.
+// This two-pass operation will continue for each block loaded, allowing the preloader to
+// potentially asynchronously preload any blocks that are going to be encountered at a future point in the walk.
 func (prog Progress) WalkMatching(n datamodel.Node, s selector.Selector, fn VisitFn) error {
 	prog.init()
 	return prog.walkBlock(n, s, func(prog Progress, n datamodel.Node, tr VisitReason) error {
