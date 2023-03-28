@@ -323,12 +323,21 @@ func TestPrototypePointerCombinations(t *testing.T) {
 		{"Link_Generic", "Link", (*datamodel.Link)(nil), `{"/": "bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi"}`},
 		{"List_String", "[String]", (*[]string)(nil), `["foo", "bar"]`},
 		{"Any_Node_Int", "Any", (*datamodel.Node)(nil), `23`},
-		// TODO: reenable once we don't require pointers for nullable
-		// {"Any_Pointer_Int", "{String: nullable Any}",
-		// 	(*struct {
-		// 		Keys   []string
-		// 		Values map[string]datamodel.Node
-		// 	})(nil), `{"x":3,"y":"bar","z":[2.3,4.5]}`},
+		{"Map_String_NullableAny", "{String: nullable Any}",
+			(*struct {
+				Keys   []string
+				Values map[string]datamodel.Node
+			})(nil), `{"n":null,"x":3,"y":"bar","z":[2.3,4.5]}`},
+		{"Map_String_NullableAnyPtr", "{String: nullable Any}",
+			(*struct {
+				Keys   []string
+				Values map[string]*datamodel.Node
+			})(nil), `{"n":null,"x":3,"y":"bar","z":[2.3,4.5]}`},
+		{"Map_String_Any", "{String: Any}",
+			(*struct {
+				Keys   []string
+				Values map[string]*datamodel.Node
+			})(nil), `{"x":3,"y":"bar","z":[2.3,4.5]}`},
 		{"Map_String_Int", "{String:Int}", (*struct {
 			Keys   []string
 			Values map[string]int64
@@ -425,10 +434,17 @@ func TestPrototypePointerCombinations(t *testing.T) {
 					node := nb.Build()
 					// The resulting node should be non-nil with a nil field.
 					nodeVal := reflect.ValueOf(bindnode.Unwrap(node))
-					if modifier.schemaField == "nullable" {
-						qt.Assert(t, nodeVal.Elem().FieldByName("Field").IsNil(), qt.IsTrue)
+					fv := nodeVal.Elem().FieldByName("Field")
+					if modifier.schemaField == "optional nullable" {
+						// **T
+						fv = fv.Elem()
+					}
+					if kindTest.schemaType == "Any" {
+						// datamodel.Node
+						fv = fv.Elem()
+						qt.Assert(t, fv.Interface(), qt.Equals, datamodel.Null)
 					} else {
-						qt.Assert(t, nodeVal.Elem().FieldByName("Field").Elem().IsNil(), qt.IsTrue)
+						qt.Assert(t, fv.IsNil(), qt.IsTrue)
 					}
 				default:
 					qt.Assert(t, err, qt.Not(qt.IsNil))

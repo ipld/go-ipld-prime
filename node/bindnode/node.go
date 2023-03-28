@@ -147,6 +147,16 @@ func actualKind(schemaType schema.Type) datamodel.Kind {
 	return schemaType.TypeKind().ActsLike()
 }
 
+var datamodelNodeIface = reflect.TypeOf((*datamodel.Node)(nil)).Elem()
+
+// for the Any values where we support either *datamodel.Node or datamodel.Node
+func nodeVal(val reflect.Value) datamodel.Node {
+	if !val.Type().Implements(datamodelNodeIface) {
+		val = nonPtrVal(val)
+	}
+	return val.Interface().(datamodel.Node)
+}
+
 func nonPtrVal(val reflect.Value) reflect.Value {
 	// TODO: support **T as well as *T?
 	if val.Kind() == reflect.Ptr {
@@ -220,7 +230,7 @@ func (w *_node) LookupByString(key string) (datamodel.Node, error) {
 				return customConverter.customToAny(ptrVal(fval).Interface())
 			}
 			// field is an Any, safely assume a Node in fval
-			return nonPtrVal(fval).Interface().(datamodel.Node), nil
+			return nodeVal(fval), nil
 		}
 		return newNode(w.cfg, field.Type(), fval), nil
 	case *schema.TypeMap:
@@ -265,7 +275,7 @@ func (w *_node) LookupByString(key string) (datamodel.Node, error) {
 				return customConverter.customToAny(ptrVal(fval).Interface())
 			}
 			// value is an Any, safely assume a Node in fval
-			return nonPtrVal(fval).Interface().(datamodel.Node), nil
+			return nodeVal(fval), nil
 		}
 		return newNode(w.cfg, typ.ValueType(), fval), nil
 	case *schema.TypeUnion:
@@ -350,7 +360,7 @@ func (w *_node) LookupByIndex(idx int64) (datamodel.Node, error) {
 		}
 		if isAny {
 			// Any always yields a plain datamodel.Node
-			return nonPtrVal(val).Interface().(datamodel.Node), nil
+			return nodeVal(val), nil
 		}
 		return newNode(w.cfg, typ.ValueType(), val), nil
 	}
@@ -785,15 +795,23 @@ func (w *_assembler) AssignNull() error {
 		}
 		w.createNonPtrVal().Set(matchSettable(typ, w.val))
 	} else {
-		if !w.nullable {
+		// if we have a "nullable", then an AssignNull should set the zero value
+		// for the underlying type, if we don't have a "nullable" but we have an
+		// "Any", then we should set the value to datamodel.Null. Otherwise, we
+		// should return an error.
+		if w.nullable {
+			if isAny {
+				w.createNonPtrVal().Set(reflect.ValueOf(datamodel.Null))
+			} else {
+				w.val.Set(reflect.Zero(w.val.Type()))
+			}
+		} else {
 			return datamodel.ErrWrongKind{
 				TypeName:   w.schemaType.Name(),
 				MethodName: "AssignNull",
 				// TODO
 			}
 		}
-		// set the zero value for the underlying type as a stand-in for Null
-		w.val.Set(reflect.Zero(w.val.Type()))
 	}
 	if w.finish != nil {
 		if err := w.finish(); err != nil {
@@ -1477,7 +1495,7 @@ func (w *_structIterator) Next() (key, value datamodel.Node, _ error) {
 	}
 	if isAny {
 		// field holds a datamodel.Node
-		return key, nonPtrVal(val).Interface().(datamodel.Node), nil
+		return key, nodeVal(val), nil
 	}
 	return key, newNode(w.cfg, field.Type(), val), nil
 }
@@ -1526,7 +1544,7 @@ func (w *_mapIterator) Next() (key, value datamodel.Node, _ error) {
 	}
 	if isAny {
 		// Values holds datamodel.Nodes
-		return key, nonPtrVal(val).Interface().(datamodel.Node), nil
+		return key, nodeVal(val), nil
 	}
 	return key, newNode(w.cfg, w.schemaType.ValueType(), val), nil
 }
@@ -1564,7 +1582,7 @@ func (w *_listIterator) Next() (index int64, value datamodel.Node, _ error) {
 			return idx, val, err
 		}
 		// values are Any, assume that they are datamodel.Nodes
-		return idx, nonPtrVal(val).Interface().(datamodel.Node), nil
+		return idx, nodeVal(val), nil
 	}
 	return idx, newNode(w.cfg, w.schemaType.ValueType(), val), nil
 }
