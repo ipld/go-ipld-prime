@@ -169,6 +169,10 @@ func (prog Progress) walkBlock(n datamodel.Node, s selector.Selector, visitFn Ad
 
 	if prog.Cfg.Preloader != nil {
 		ph = phasePreload
+		// preserve the budget so we can reset it for the second pass; it will
+		// likely not correctly apply during the preload phase because it
+		// doesn't descend into links first. But we'll use it anyway as a
+		// best-guess because we have nothing better
 		budget = prog.Budget.Clone()
 	}
 
