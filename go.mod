@@ -3,7 +3,7 @@ module github.com/ipld/go-ipld-prime
 go 1.19
 
 require (
-	github.com/frankban/quicktest v1.14.4
+	github.com/frankban/quicktest v1.14.5
 	github.com/google/go-cmp v0.5.9
 	github.com/ipfs/go-cid v0.4.0
 	github.com/multiformats/go-multicodec v0.8.1
