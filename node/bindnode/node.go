@@ -44,8 +44,10 @@ var (
 
 	_ datamodel.ListAssembler = (*_listAssembler)(nil)
 	_ datamodel.ListAssembler = (*_listAssemblerRepr)(nil)
+	_ datamodel.ListAssembler = (*_listStructAssemblerRepr)(nil)
 	_ datamodel.ListIterator  = (*_listIterator)(nil)
 	_ datamodel.ListIterator  = (*_tupleIteratorRepr)(nil)
+	_ datamodel.ListIterator  = (*_listpairsIteratorRepr)(nil)
 
 	_ datamodel.MapAssembler = (*_unionAssembler)(nil)
 	_ datamodel.MapAssembler = (*_unionAssemblerRepr)(nil)

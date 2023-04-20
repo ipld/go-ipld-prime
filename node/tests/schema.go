@@ -19,6 +19,7 @@ var allSchemaTests = []struct {
 	{"StructNesting", SchemaTestStructNesting},
 	{"StructReprStringjoin", SchemaTestStructReprStringjoin},
 	{"StructReprTuple", SchemaTestStructReprTuple},
+	{"StructReprListPairs", SchemaTestStructReprListPairs},
 	{"StructsContainingMaybe", SchemaTestStructsContainingMaybe},
 	{"UnionKeyed", SchemaTestUnionKeyed},
 	{"UnionKeyedComplexChildren", SchemaTestUnionKeyedComplexChildren},
