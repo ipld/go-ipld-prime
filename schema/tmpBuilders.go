@@ -122,6 +122,9 @@ func SpawnStructRepresentationMap2(renames map[string]string, implicits map[stri
 func SpawnStructRepresentationTuple() StructRepresentation_Tuple {
 	return StructRepresentation_Tuple{}
 }
+func SpawnStructRepresentationListPairs() StructRepresentation_ListPairs {
+	return StructRepresentation_ListPairs{}
+}
 func SpawnStructRepresentationStringjoin(delim string) StructRepresentation_Stringjoin {
 	return StructRepresentation_Stringjoin{delim}
 }

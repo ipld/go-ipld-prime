@@ -53,7 +53,7 @@ func (w *_nodeRepr) Kind() datamodel.Kind {
 		return datamodel.Kind_String
 	case schema.StructRepresentation_Map:
 		return datamodel.Kind_Map
-	case schema.StructRepresentation_Tuple:
+	case schema.StructRepresentation_Tuple, schema.StructRepresentation_ListPairs:
 		return datamodel.Kind_List
 	case schema.UnionRepresentation_Keyed:
 		return datamodel.Kind_Map
@@ -174,6 +174,31 @@ func (w *_nodeRepr) LookupByIndex(idx int64) (datamodel.Node, error) {
 			return nil, err
 		}
 		return reprNode(v), nil
+	case schema.StructRepresentation_ListPairs:
+		fields := w.schemaType.(*schema.TypeStruct).Fields()
+		if idx < 0 || int(idx) >= len(fields)*2 {
+			return nil, datamodel.ErrNotExists{Segment: datamodel.PathSegmentOfInt(idx)}
+		}
+		isName := idx%2 == 0
+		idx = idx / 2
+		var curField int64
+		for _, field := range fields {
+			value, err := (*_node)(w).LookupByString(field.Name())
+			if err != nil {
+				return nil, err
+			}
+			if value.IsAbsent() {
+				continue
+			}
+			if curField == idx {
+				if isName {
+					return basicnode.NewString(field.Name()), nil
+				}
+				return reprNode(value), nil
+			}
+			curField++
+		}
+		return nil, datamodel.ErrNotExists{Segment: datamodel.PathSegmentOfInt(idx)}
 	default:
 		v, err := (*_node)(w).LookupByIndex(idx)
 		if err != nil {
@@ -272,6 +297,11 @@ func (w *_nodeRepr) ListIterator() datamodel.ListIterator {
 		iter := _tupleIteratorRepr{cfg: w.cfg, schemaType: typ, fields: typ.Fields(), val: w.val}
 		iter.reprEnd = int(w.lengthMinusTrailingAbsents())
 		return &iter
+	case schema.StructRepresentation_ListPairs:
+		typ := w.schemaType.(*schema.TypeStruct)
+		iter := _listpairsIteratorRepr{cfg: w.cfg, schemaType: typ, fields: typ.Fields(), val: w.val}
+		iter.reprEnd = int(w.lengthMinusTrailingAbsents()) * 2
+		return &iter
 	default:
 		iter, _ := (*_node)(w).ListIterator().(*_listIterator)
 		if iter == nil {
@@ -320,6 +350,7 @@ type _tupleIteratorRepr struct {
 
 func (w *_tupleIteratorRepr) Next() (index int64, value datamodel.Node, _ error) {
 _skipAbsent:
+	idx := w.nextIndex
 	_, value, err := (*_structIterator)(w).Next()
 	if err != nil {
 		return 0, nil, err
@@ -327,10 +358,58 @@ _skipAbsent:
 	if w.nextIndex > w.reprEnd {
 		goto _skipAbsent
 	}
-	return int64(w.nextIndex), reprNode(value), nil
+	return int64(idx), reprNode(value), nil
 }
 
 func (w *_tupleIteratorRepr) Done() bool {
+	return w.nextIndex >= w.reprEnd
+}
+
+type _listpairsIteratorRepr struct {
+	cfg        config
+	schemaType *schema.TypeStruct
+	fields     []schema.StructField
+	val        reflect.Value // non-pointer
+	nextIndex  int
+
+	// these are only used in repr.go
+	reprEnd int
+}
+
+func (w *_listpairsIteratorRepr) Next() (index int64, value datamodel.Node, _ error) {
+_skipAbsent:
+	idx := w.nextIndex
+	if w.nextIndex%2 == 0 {
+		// field name
+		if w.Done() {
+			return 0, nil, datamodel.ErrIteratorOverread{}
+		}
+		field := w.fields[w.nextIndex/2]
+		w.nextIndex++
+		if field.IsOptional() {
+			val := w.val.Field(w.nextIndex)
+			if val.IsNil() {
+				goto _skipAbsent
+			}
+		}
+		key := basicnode.NewString(field.Name())
+		return int64(idx), key, nil
+	}
+	// field value
+	// set nextIndex to a value that will be correct for a _structIterator#Next() call.
+	w.nextIndex = (idx - 1) / 2
+	_, value, err := (*_structIterator)(w).Next()
+	w.nextIndex = idx + 1
+	if err != nil {
+		return 0, nil, err
+	}
+	if value.IsAbsent() || w.nextIndex > w.reprEnd {
+		goto _skipAbsent
+	}
+	return int64(idx), reprNode(value), nil
+}
+
+func (w *_listpairsIteratorRepr) Done() bool {
 	return w.nextIndex >= w.reprEnd
 }
 
@@ -353,6 +432,8 @@ func (w *_nodeRepr) Length() int64 {
 		return w.lengthMinusAbsents()
 	case schema.StructRepresentation_Tuple:
 		return w.lengthMinusTrailingAbsents()
+	case schema.StructRepresentation_ListPairs:
+		return w.lengthMinusAbsents() * 2
 	case schema.UnionRepresentation_Keyed:
 		return (*_node)(w).Length()
 	case schema.UnionRepresentation_Kinded:
@@ -625,7 +706,7 @@ func (w *_assemblerRepr) BeginList(sizeHint int64) (datamodel.ListAssembler, err
 	switch stg := reprStrategy(w.schemaType).(type) {
 	case schema.UnionRepresentation_Kinded:
 		return w.asKinded(stg, datamodel.Kind_List).BeginList(sizeHint)
-	case schema.StructRepresentation_Tuple:
+	case schema.StructRepresentation_Tuple, schema.StructRepresentation_ListPairs:
 		asm, err := (*_assembler)(w).BeginMap(sizeHint)
 		if err != nil {
 			return nil, err
@@ -860,7 +941,7 @@ func (w *_structAssemblerRepr) AssembleKey() datamodel.NodeAssembler {
 			AppropriateKind: datamodel.KindSet_JustMap,
 			ActualKind:      datamodel.Kind_String,
 		}}
-	case schema.StructRepresentation_Tuple:
+	case schema.StructRepresentation_Tuple, schema.StructRepresentation_ListPairs:
 		return _errorAssembler{datamodel.ErrWrongKind{
 			TypeName:        w.schemaType.Name() + ".Repr",
 			MethodName:      "AssembleKey",
@@ -974,6 +1055,16 @@ func (w *_listStructAssemblerRepr) AssembleValue() datamodel.NodeAssembler {
 		}
 		entryAsm = assemblerRepr(entryAsm)
 		return entryAsm
+	case schema.StructRepresentation_ListPairs:
+		idx := w.nextIndex
+		w.nextIndex++
+		if idx%2 == 0 {
+			asm := (*_structAssembler)(w).AssembleKey()
+			// ???
+			return (*_assemblerRepr)(asm.(*_assembler))
+		}
+		asm := (*_structAssembler)(w).AssembleValue()
+		return (*_assemblerRepr)(asm.(*_assembler))
 	default:
 		return _errorAssembler{fmt.Errorf("bindnode AssembleValue TODO: %T", stg)}
 	}
@@ -981,7 +1072,7 @@ func (w *_listStructAssemblerRepr) AssembleValue() datamodel.NodeAssembler {
 
 func (w *_listStructAssemblerRepr) Finish() error {
 	switch stg := reprStrategy(w.schemaType).(type) {
-	case schema.StructRepresentation_Tuple:
+	case schema.StructRepresentation_Tuple, schema.StructRepresentation_ListPairs:
 		return (*_structAssembler)(w).Finish()
 	default:
 		return fmt.Errorf("bindnode Finish TODO: %T", stg)
