@@ -759,3 +759,49 @@ func TestWalk_ADLs(t *testing.T) {
 	qt.Check(t, err, qt.IsNil)
 	qt.Check(t, order, qt.Equals, 1)
 }
+
+func TestWalkTransforming(t *testing.T) {
+	ssb := builder.NewSelectorSpecBuilder(basicnode.Prototype.Any)
+	t.Run("transform selecting true should transform the root", func(t *testing.T) {
+		n, err := traversal.WalkTransforming(basicnode.NewString("x"), selector.Matcher{}, func(prog traversal.Progress, n datamodel.Node) (datamodel.Node, error) {
+			qt.Check(t, n, nodetests.NodeContentEquals, basicnode.NewString("x"))
+			qt.Check(t, prog.Path.String(), qt.Equals, datamodel.Path{}.String())
+			return basicnode.NewString("replaced"), nil
+		})
+		qt.Check(t, err, qt.IsNil)
+		qt.Check(t, n, nodetests.NodeContentEquals, basicnode.NewString("replaced"))
+	})
+	t.Run("transforming selecting fields recursively should work", func(t *testing.T) {
+		ss := ssb.ExploreFields(func(efsb builder.ExploreFieldsSpecBuilder) {
+			efsb.Insert("foo", ssb.Matcher())
+			efsb.Insert("nested", ssb.ExploreFields(func(efsb builder.ExploreFieldsSpecBuilder) {
+				efsb.Insert("nonlink", ssb.Matcher())
+			}))
+		})
+		s, err := ss.Selector()
+		qt.Assert(t, err, qt.IsNil)
+		var order int
+		n, err := traversal.WalkTransforming(middleMapNode, s, func(prog traversal.Progress, n datamodel.Node) (datamodel.Node, error) {
+			switch order {
+			case 0:
+				qt.Check(t, n, nodetests.NodeContentEquals, basicnode.NewBool(true))
+				qt.Check(t, prog.Path.String(), qt.Equals, "foo")
+			case 1:
+				qt.Check(t, n, nodetests.NodeContentEquals, basicnode.NewString("zoo"))
+				qt.Check(t, prog.Path.String(), qt.Equals, "nested/nonlink")
+			}
+			order++
+			return basicnode.NewString("replaced"), nil
+		})
+		qt.Check(t, err, qt.IsNil)
+		qt.Check(t, order, qt.Equals, 2)
+		qt.Check(t, n, nodetests.NodeContentEquals, fluent.MustBuildMap(basicnode.Prototype.Map, 3, func(na fluent.MapAssembler) {
+			na.AssembleEntry("foo").AssignString("replaced")
+			na.AssembleEntry("bar").AssignBool(false)
+			na.AssembleEntry("nested").CreateMap(2, func(na fluent.MapAssembler) {
+				na.AssembleEntry("alink").AssignLink(leafAlphaLnk)
+				na.AssembleEntry("nonlink").AssignString("replaced")
+			})
+		}))
+	})
+}
