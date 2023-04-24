@@ -480,13 +480,15 @@ func (prog Progress) walkTransforming(n datamodel.Node, s selector.Selector, fn 
 	}
 
 	// Decide if this node is matched -- do callbacks as appropriate.
-	new_n, err := fn(prog, n)
-	if err != nil {
-		return nil, err
-	}
-	if new_n != n {
-		// don't continue on transformed subtrees
-		return new_n, nil
+	if s.Decide(n) {
+		new_n, err := fn(prog, n)
+		if err != nil {
+			return nil, err
+		}
+		if new_n != n {
+			// don't continue on transformed subtrees
+			return new_n, nil
+		}
 	}
 
 	// If we're handling scalars (e.g. not maps and lists) we can return now.
