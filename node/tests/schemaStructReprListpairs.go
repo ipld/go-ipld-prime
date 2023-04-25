@@ -15,6 +15,7 @@ func SchemaTestStructReprListPairs(t *testing.T, engine Engine) {
 	ts := schema.TypeSystem{}
 	ts.Init()
 	ts.Accumulate(schema.SpawnString("String"))
+	ts.Accumulate(schema.SpawnList("List__String", "String", false))
 	ts.Accumulate(schema.SpawnStruct("OneListPair",
 		[]schema.StructField{
 			schema.SpawnStructField("field", "String", false, false),
@@ -26,7 +27,7 @@ func SchemaTestStructReprListPairs(t *testing.T, engine Engine) {
 			schema.SpawnStructField("foo", "String", false, true),
 			schema.SpawnStructField("bar", "String", true, true),
 			schema.SpawnStructField("baz", "String", true, false),
-			schema.SpawnStructField("qux", "String", false, false),
+			schema.SpawnStructField("qux", "List__String", false, false),
 		},
 		schema.SpawnStructRepresentationListPairs(),
 	))
@@ -48,15 +49,20 @@ func SchemaTestStructReprListPairs(t *testing.T, engine Engine) {
 			t.Run("repr-read", func(t *testing.T) {
 				nr := n.Representation()
 				qt.Assert(t, nr.Kind(), qt.Equals, datamodel.Kind_List)
-				qt.Check(t, nr.Length(), qt.Equals, int64(2))
-				qt.Check(t, must.String(must.Node(nr.LookupByIndex(0))), qt.Equals, "field")
-				qt.Check(t, must.String(must.Node(nr.LookupByIndex(1))), qt.Equals, "valoo")
+				qt.Check(t, nr.Length(), qt.Equals, int64(1))
+				kv := must.Node(nr.LookupByIndex(0))
+				qt.Assert(t, nr.Kind(), qt.Equals, datamodel.Kind_List)
+				qt.Check(t, kv.Length(), qt.Equals, int64(2))
+				qt.Check(t, must.String(must.Node(kv.LookupByIndex(0))), qt.Equals, "field")
+				qt.Check(t, must.String(must.Node(kv.LookupByIndex(1))), qt.Equals, "valoo")
 			})
 		})
 		t.Run("repr-create", func(t *testing.T) {
-			nr := fluent.MustBuildList(nrp, 2, func(la fluent.ListAssembler) {
-				la.AssembleValue().AssignString("field")
-				la.AssembleValue().AssignString("valoo")
+			nr := fluent.MustBuildList(nrp, 1, func(la fluent.ListAssembler) {
+				la.AssembleValue().CreateList(2, func(la fluent.ListAssembler) {
+					la.AssembleValue().AssignString("field")
+					la.AssembleValue().AssignString("valoo")
+				})
 			})
 			qt.Check(t, n, NodeContentEquals, nr)
 		})
@@ -71,53 +77,99 @@ func SchemaTestStructReprListPairs(t *testing.T, engine Engine) {
 				ma.AssembleEntry("foo").AssignString("0")
 				ma.AssembleEntry("bar").AssignString("1")
 				ma.AssembleEntry("baz").AssignString("2")
-				ma.AssembleEntry("qux").AssignString("3")
+				ma.AssembleEntry("qux").CreateList(2, func(la fluent.ListAssembler) {
+					la.AssembleValue().AssignString("3")
+					la.AssembleValue().AssignString("4")
+				})
 			}).(schema.TypedNode)
+
 			t.Run("typed-read", func(t *testing.T) {
 				qt.Assert(t, n.Kind(), qt.Equals, datamodel.Kind_Map)
 				qt.Check(t, n.Length(), qt.Equals, int64(4))
 				qt.Check(t, must.String(must.Node(n.LookupByString("foo"))), qt.Equals, "0")
 				qt.Check(t, must.String(must.Node(n.LookupByString("bar"))), qt.Equals, "1")
 				qt.Check(t, must.String(must.Node(n.LookupByString("baz"))), qt.Equals, "2")
-				qt.Check(t, must.String(must.Node(n.LookupByString("qux"))), qt.Equals, "3")
+				qux := must.Node(n.LookupByString("qux"))
+				qt.Assert(t, qux.Kind(), qt.Equals, datamodel.Kind_List)
+				qt.Check(t, qux.Length(), qt.Equals, int64(2))
+				qt.Check(t, must.String(must.Node(qux.LookupByIndex(0))), qt.Equals, "3")
+				qt.Check(t, must.String(must.Node(qux.LookupByIndex(1))), qt.Equals, "4")
 			})
 			t.Run("repr-read", func(t *testing.T) {
 				nr := n.Representation()
 				qt.Assert(t, nr.Kind(), qt.Equals, datamodel.Kind_List)
-				qt.Check(t, nr.Length(), qt.Equals, int64(8))
-				qt.Check(t, must.String(must.Node(nr.LookupByIndex(0))), qt.Equals, "foo")
-				qt.Check(t, must.String(must.Node(nr.LookupByIndex(1))), qt.Equals, "0")
-				qt.Check(t, must.String(must.Node(nr.LookupByIndex(2))), qt.Equals, "bar")
-				qt.Check(t, must.String(must.Node(nr.LookupByIndex(3))), qt.Equals, "1")
-				qt.Check(t, must.String(must.Node(nr.LookupByIndex(4))), qt.Equals, "baz")
-				qt.Check(t, must.String(must.Node(nr.LookupByIndex(5))), qt.Equals, "2")
-				qt.Check(t, must.String(must.Node(nr.LookupByIndex(6))), qt.Equals, "qux")
-				qt.Check(t, must.String(must.Node(nr.LookupByIndex(7))), qt.Equals, "3")
+				qt.Check(t, nr.Length(), qt.Equals, int64(4))
+				kv := must.Node(nr.LookupByIndex(0))
+				qt.Assert(t, nr.Kind(), qt.Equals, datamodel.Kind_List)
+				qt.Check(t, kv.Length(), qt.Equals, int64(2))
+				qt.Check(t, must.String(must.Node(kv.LookupByIndex(0))), qt.Equals, "foo")
+				qt.Check(t, must.String(must.Node(kv.LookupByIndex(1))), qt.Equals, "0")
+				kv = must.Node(nr.LookupByIndex(1))
+				qt.Assert(t, nr.Kind(), qt.Equals, datamodel.Kind_List)
+				qt.Check(t, kv.Length(), qt.Equals, int64(2))
+				qt.Check(t, must.String(must.Node(kv.LookupByIndex(0))), qt.Equals, "bar")
+				qt.Check(t, must.String(must.Node(kv.LookupByIndex(1))), qt.Equals, "1")
+				kv = must.Node(nr.LookupByIndex(2))
+				qt.Assert(t, nr.Kind(), qt.Equals, datamodel.Kind_List)
+				qt.Check(t, kv.Length(), qt.Equals, int64(2))
+				qt.Check(t, must.String(must.Node(kv.LookupByIndex(0))), qt.Equals, "baz")
+				qt.Check(t, must.String(must.Node(kv.LookupByIndex(1))), qt.Equals, "2")
+				kv = must.Node(nr.LookupByIndex(3))
+				qt.Assert(t, nr.Kind(), qt.Equals, datamodel.Kind_List)
+				qt.Check(t, kv.Length(), qt.Equals, int64(2))
+				qt.Check(t, must.String(must.Node(kv.LookupByIndex(0))), qt.Equals, "qux")
+				qux := must.Node(kv.LookupByIndex(1))
+				qt.Assert(t, qux.Kind(), qt.Equals, datamodel.Kind_List)
+				qt.Check(t, qux.Length(), qt.Equals, int64(2))
+				qt.Check(t, must.String(must.Node(qux.LookupByIndex(0))), qt.Equals, "3")
+				qt.Check(t, must.String(must.Node(qux.LookupByIndex(1))), qt.Equals, "4")
 			})
 		})
 		t.Run("repr-create", func(t *testing.T) {
-			nr := fluent.MustBuildList(nrp, 8, func(la fluent.ListAssembler) {
-				la.AssembleValue().AssignString("foo")
-				la.AssembleValue().AssignString("0")
-				la.AssembleValue().AssignString("bar")
-				la.AssembleValue().AssignString("1")
-				la.AssembleValue().AssignString("baz")
-				la.AssembleValue().AssignString("2")
-				la.AssembleValue().AssignString("qux")
-				la.AssembleValue().AssignString("3")
+			nr := fluent.MustBuildList(nrp, 4, func(la fluent.ListAssembler) {
+				la.AssembleValue().CreateList(2, func(la fluent.ListAssembler) {
+					la.AssembleValue().AssignString("foo")
+					la.AssembleValue().AssignString("0")
+				})
+				la.AssembleValue().CreateList(2, func(la fluent.ListAssembler) {
+					la.AssembleValue().AssignString("bar")
+					la.AssembleValue().AssignString("1")
+				})
+				la.AssembleValue().CreateList(2, func(la fluent.ListAssembler) {
+					la.AssembleValue().AssignString("baz")
+					la.AssembleValue().AssignString("2")
+				})
+				la.AssembleValue().CreateList(2, func(la fluent.ListAssembler) {
+					la.AssembleValue().AssignString("qux")
+					la.AssembleValue().CreateList(2, func(la fluent.ListAssembler) {
+						la.AssembleValue().AssignString("3")
+						la.AssembleValue().AssignString("4")
+					})
+				})
 			})
 			qt.Check(t, n, NodeContentEquals, nr)
 		})
 		t.Run("repr-create out-of-order", func(t *testing.T) {
-			nr := fluent.MustBuildList(nrp, 8, func(la fluent.ListAssembler) {
-				la.AssembleValue().AssignString("bar")
-				la.AssembleValue().AssignString("1")
-				la.AssembleValue().AssignString("foo")
-				la.AssembleValue().AssignString("0")
-				la.AssembleValue().AssignString("qux")
-				la.AssembleValue().AssignString("3")
-				la.AssembleValue().AssignString("baz")
-				la.AssembleValue().AssignString("2")
+			nr := fluent.MustBuildList(nrp, 4, func(la fluent.ListAssembler) {
+				la.AssembleValue().CreateList(2, func(la fluent.ListAssembler) {
+					la.AssembleValue().AssignString("bar")
+					la.AssembleValue().AssignString("1")
+				})
+				la.AssembleValue().CreateList(2, func(la fluent.ListAssembler) {
+					la.AssembleValue().AssignString("foo")
+					la.AssembleValue().AssignString("0")
+				})
+				la.AssembleValue().CreateList(2, func(la fluent.ListAssembler) {
+					la.AssembleValue().AssignString("qux")
+					la.AssembleValue().CreateList(2, func(la fluent.ListAssembler) {
+						la.AssembleValue().AssignString("3")
+						la.AssembleValue().AssignString("4")
+					})
+				})
+				la.AssembleValue().CreateList(2, func(la fluent.ListAssembler) {
+					la.AssembleValue().AssignString("baz")
+					la.AssembleValue().AssignString("2")
+				})
 			})
 			qt.Check(t, n, NodeContentEquals, nr)
 		})
@@ -130,7 +182,10 @@ func SchemaTestStructReprListPairs(t *testing.T, engine Engine) {
 		t.Run("typed-create", func(t *testing.T) {
 			n = fluent.MustBuildMap(np, 2, func(ma fluent.MapAssembler) {
 				ma.AssembleEntry("foo").AssignNull()
-				ma.AssembleEntry("qux").AssignString("3")
+				ma.AssembleEntry("qux").CreateList(2, func(la fluent.ListAssembler) {
+					la.AssembleValue().AssignString("1")
+					la.AssembleValue().AssignString("2")
+				})
 			}).(schema.TypedNode)
 			t.Run("typed-read", func(t *testing.T) {
 				qt.Assert(t, n.Kind(), qt.Equals, datamodel.Kind_Map)
@@ -138,24 +193,45 @@ func SchemaTestStructReprListPairs(t *testing.T, engine Engine) {
 				qt.Check(t, must.Node(n.LookupByString("foo")), qt.Equals, datamodel.Null)
 				qt.Check(t, must.Node(n.LookupByString("bar")), qt.Equals, datamodel.Absent)
 				qt.Check(t, must.Node(n.LookupByString("baz")), qt.Equals, datamodel.Absent)
-				qt.Check(t, must.String(must.Node(n.LookupByString("qux"))), qt.Equals, "3")
+				qux := must.Node(n.LookupByString("qux"))
+				qt.Assert(t, qux.Kind(), qt.Equals, datamodel.Kind_List)
+				qt.Check(t, qux.Length(), qt.Equals, int64(2))
+				qt.Check(t, must.String(must.Node(qux.LookupByIndex(0))), qt.Equals, "1")
+				qt.Check(t, must.String(must.Node(qux.LookupByIndex(1))), qt.Equals, "2")
 			})
 			t.Run("repr-read", func(t *testing.T) {
 				nr := n.Representation()
 				qt.Assert(t, nr.Kind(), qt.Equals, datamodel.Kind_List)
-				qt.Check(t, nr.Length(), qt.Equals, int64(4))
-				qt.Check(t, must.String(must.Node(nr.LookupByIndex(0))), qt.Equals, "foo")
-				qt.Check(t, must.Node(nr.LookupByIndex(1)), qt.Equals, datamodel.Null)
-				qt.Check(t, must.String(must.Node(nr.LookupByIndex(2))), qt.Equals, "qux")
-				qt.Check(t, must.String(must.Node(nr.LookupByIndex(3))), qt.Equals, "3")
+				qt.Check(t, nr.Length(), qt.Equals, int64(2))
+				kv := must.Node(nr.LookupByIndex(0))
+				qt.Assert(t, nr.Kind(), qt.Equals, datamodel.Kind_List)
+				qt.Check(t, kv.Length(), qt.Equals, int64(2))
+				qt.Check(t, must.String(must.Node(kv.LookupByIndex(0))), qt.Equals, "foo")
+				qt.Check(t, must.Node(kv.LookupByIndex(1)), qt.Equals, datamodel.Null)
+				kv = must.Node(nr.LookupByIndex(1))
+				qt.Assert(t, nr.Kind(), qt.Equals, datamodel.Kind_List)
+				qt.Check(t, kv.Length(), qt.Equals, int64(2))
+				qt.Check(t, must.String(must.Node(kv.LookupByIndex(0))), qt.Equals, "qux")
+				qux := must.Node(kv.LookupByIndex(1))
+				qt.Assert(t, qux.Kind(), qt.Equals, datamodel.Kind_List)
+				qt.Check(t, qux.Length(), qt.Equals, int64(2))
+				qt.Check(t, must.String(must.Node(qux.LookupByIndex(0))), qt.Equals, "1")
+				qt.Check(t, must.String(must.Node(qux.LookupByIndex(1))), qt.Equals, "2")
 			})
 		})
 		t.Run("repr-create", func(t *testing.T) {
-			nr := fluent.MustBuildList(nrp, 4, func(la fluent.ListAssembler) {
-				la.AssembleValue().AssignString("foo")
-				la.AssembleValue().AssignNull()
-				la.AssembleValue().AssignString("qux")
-				la.AssembleValue().AssignString("3")
+			nr := fluent.MustBuildList(nrp, 2, func(la fluent.ListAssembler) {
+				la.AssembleValue().CreateList(2, func(la fluent.ListAssembler) {
+					la.AssembleValue().AssignString("foo")
+					la.AssembleValue().AssignNull()
+				})
+				la.AssembleValue().CreateList(2, func(la fluent.ListAssembler) {
+					la.AssembleValue().AssignString("qux")
+					la.AssembleValue().CreateList(2, func(la fluent.ListAssembler) {
+						la.AssembleValue().AssignString("1")
+						la.AssembleValue().AssignString("2")
+					})
+				})
 			})
 			qt.Check(t, n, NodeContentEquals, nr)
 		})

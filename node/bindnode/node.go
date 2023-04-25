@@ -36,6 +36,8 @@ var (
 	_ datamodel.NodeBuilder   = (*_builderRepr)(nil)
 	_ datamodel.NodeAssembler = (*_assembler)(nil)
 	_ datamodel.NodeAssembler = (*_assemblerRepr)(nil)
+	_ datamodel.NodeAssembler = (*_errorAssembler)(nil)
+	_ datamodel.NodeAssembler = (*_listpairsFieldAssemblerRepr)(nil)
 
 	_ datamodel.MapAssembler = (*_structAssembler)(nil)
 	_ datamodel.MapAssembler = (*_structAssemblerRepr)(nil)
@@ -45,6 +47,7 @@ var (
 	_ datamodel.ListAssembler = (*_listAssembler)(nil)
 	_ datamodel.ListAssembler = (*_listAssemblerRepr)(nil)
 	_ datamodel.ListAssembler = (*_listStructAssemblerRepr)(nil)
+	_ datamodel.ListAssembler = (*_listpairsFieldListAssemblerRepr)(nil)
 	_ datamodel.ListIterator  = (*_listIterator)(nil)
 	_ datamodel.ListIterator  = (*_tupleIteratorRepr)(nil)
 	_ datamodel.ListIterator  = (*_listpairsIteratorRepr)(nil)
