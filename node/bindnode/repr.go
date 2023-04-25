@@ -176,11 +176,9 @@ func (w *_nodeRepr) LookupByIndex(idx int64) (datamodel.Node, error) {
 		return reprNode(v), nil
 	case schema.StructRepresentation_ListPairs:
 		fields := w.schemaType.(*schema.TypeStruct).Fields()
-		if idx < 0 || int(idx) >= len(fields)*2 {
+		if idx < 0 || int(idx) >= len(fields) {
 			return nil, datamodel.ErrNotExists{Segment: datamodel.PathSegmentOfInt(idx)}
 		}
-		isName := idx%2 == 0
-		idx = idx / 2
 		var curField int64
 		for _, field := range fields {
 			value, err := (*_node)(w).LookupByString(field.Name())
@@ -191,10 +189,7 @@ func (w *_nodeRepr) LookupByIndex(idx int64) (datamodel.Node, error) {
 				continue
 			}
 			if curField == idx {
-				if isName {
-					return basicnode.NewString(field.Name()), nil
-				}
-				return reprNode(value), nil
+				return buildListpairsField(basicnode.NewString(field.Name()), value)
 			}
 			curField++
 		}
@@ -300,7 +295,7 @@ func (w *_nodeRepr) ListIterator() datamodel.ListIterator {
 	case schema.StructRepresentation_ListPairs:
 		typ := w.schemaType.(*schema.TypeStruct)
 		iter := _listpairsIteratorRepr{cfg: w.cfg, schemaType: typ, fields: typ.Fields(), val: w.val}
-		iter.reprEnd = int(w.lengthMinusTrailingAbsents()) * 2
+		iter.reprEnd = int(w.lengthMinusTrailingAbsents())
 		return &iter
 	default:
 		iter, _ := (*_node)(w).ListIterator().(*_listIterator)
@@ -378,39 +373,44 @@ type _listpairsIteratorRepr struct {
 
 func (w *_listpairsIteratorRepr) Next() (index int64, value datamodel.Node, _ error) {
 _skipAbsent:
-	idx := w.nextIndex
-	if w.nextIndex%2 == 0 {
-		// field name
-		if w.Done() {
-			return 0, nil, datamodel.ErrIteratorOverread{}
-		}
-		field := w.fields[w.nextIndex/2]
-		w.nextIndex++
-		if field.IsOptional() {
-			val := w.val.Field(w.nextIndex)
-			if val.IsNil() {
-				goto _skipAbsent
-			}
-		}
-		key := basicnode.NewString(field.Name())
-		return int64(idx), key, nil
+	if w.Done() {
+		return 0, nil, datamodel.ErrIteratorOverread{}
 	}
-	// field value
-	// set nextIndex to a value that will be correct for a _structIterator#Next() call.
-	w.nextIndex = (idx - 1) / 2
-	_, value, err := (*_structIterator)(w).Next()
-	w.nextIndex = idx + 1
+	idx := w.nextIndex
+	key, value, err := (*_structIterator)(w).Next()
 	if err != nil {
 		return 0, nil, err
 	}
 	if value.IsAbsent() || w.nextIndex > w.reprEnd {
 		goto _skipAbsent
 	}
-	return int64(idx), reprNode(value), nil
+	field, err := buildListpairsField(key, value)
+	if err != nil {
+		return 0, nil, err
+	}
+	return int64(idx), field, nil
 }
 
 func (w *_listpairsIteratorRepr) Done() bool {
 	return w.nextIndex >= w.reprEnd
+}
+
+func buildListpairsField(key, value datamodel.Node) (datamodel.Node, error) {
+	nb := basicnode.Prototype.List.NewBuilder()
+	la, err := nb.BeginList(2)
+	if err != nil {
+		return nil, err
+	}
+	if err := la.AssembleValue().AssignNode(key); err != nil {
+		return nil, err
+	}
+	if err := la.AssembleValue().AssignNode(value); err != nil {
+		return nil, err
+	}
+	if err := la.Finish(); err != nil {
+		return nil, err
+	}
+	return nb.Build(), nil
 }
 
 func (w *_nodeRepr) lengthMinusTrailingAbsents() int64 {
@@ -433,7 +433,7 @@ func (w *_nodeRepr) Length() int64 {
 	case schema.StructRepresentation_Tuple:
 		return w.lengthMinusTrailingAbsents()
 	case schema.StructRepresentation_ListPairs:
-		return w.lengthMinusAbsents() * 2
+		return w.lengthMinusAbsents()
 	case schema.UnionRepresentation_Keyed:
 		return (*_node)(w).Length()
 	case schema.UnionRepresentation_Kinded:
@@ -1056,15 +1056,7 @@ func (w *_listStructAssemblerRepr) AssembleValue() datamodel.NodeAssembler {
 		entryAsm = assemblerRepr(entryAsm)
 		return entryAsm
 	case schema.StructRepresentation_ListPairs:
-		idx := w.nextIndex
-		w.nextIndex++
-		if idx%2 == 0 {
-			asm := (*_structAssembler)(w).AssembleKey()
-			// ???
-			return (*_assemblerRepr)(asm.(*_assembler))
-		}
-		asm := (*_structAssembler)(w).AssembleValue()
-		return (*_assemblerRepr)(asm.(*_assembler))
+		return &_listpairsFieldAssemblerRepr{parent: (*_structAssembler)(w)}
 	default:
 		return _errorAssembler{fmt.Errorf("bindnode AssembleValue TODO: %T", stg)}
 	}
@@ -1081,6 +1073,116 @@ func (w *_listStructAssemblerRepr) Finish() error {
 
 func (w *_listStructAssemblerRepr) ValuePrototype(idx int64) datamodel.NodePrototype {
 	panic("bindnode TODO: list ValuePrototype")
+}
+
+type _listpairsFieldAssemblerRepr struct {
+	parent *_structAssembler
+}
+
+func (w _listpairsFieldAssemblerRepr) BeginMap(int64) (datamodel.MapAssembler, error) {
+	return nil, datamodel.ErrWrongKind{
+		TypeName:        w.parent.schemaType.Name(),
+		MethodName:      "BeginMap",
+		AppropriateKind: datamodel.KindSet_JustList,
+		ActualKind:      datamodel.Kind_Map,
+	}
+}
+func (w *_listpairsFieldAssemblerRepr) BeginList(int64) (datamodel.ListAssembler, error) {
+	return &_listpairsFieldListAssemblerRepr{parent: w.parent}, nil
+}
+func (w _listpairsFieldAssemblerRepr) AssignNull() error {
+	return datamodel.ErrWrongKind{
+		TypeName:        w.parent.schemaType.Name(),
+		MethodName:      "AssignNull",
+		AppropriateKind: datamodel.KindSet_JustList,
+		ActualKind:      datamodel.Kind_Map,
+	}
+}
+func (w _listpairsFieldAssemblerRepr) AssignBool(bool) error {
+	return datamodel.ErrWrongKind{
+		TypeName:        w.parent.schemaType.Name(),
+		MethodName:      "AssignBool",
+		AppropriateKind: datamodel.KindSet_JustList,
+		ActualKind:      datamodel.Kind_Map,
+	}
+}
+func (w _listpairsFieldAssemblerRepr) AssignInt(int64) error {
+	return datamodel.ErrWrongKind{
+		TypeName:        w.parent.schemaType.Name(),
+		MethodName:      "AssignInt",
+		AppropriateKind: datamodel.KindSet_JustList,
+		ActualKind:      datamodel.Kind_Map,
+	}
+}
+func (w _listpairsFieldAssemblerRepr) AssignFloat(float64) error {
+	return datamodel.ErrWrongKind{
+		TypeName:        w.parent.schemaType.Name(),
+		MethodName:      "AssignFloat",
+		AppropriateKind: datamodel.KindSet_JustList,
+		ActualKind:      datamodel.Kind_Map,
+	}
+}
+func (w _listpairsFieldAssemblerRepr) AssignString(string) error {
+	return datamodel.ErrWrongKind{
+		TypeName:        w.parent.schemaType.Name(),
+		MethodName:      "AssignString",
+		AppropriateKind: datamodel.KindSet_JustList,
+		ActualKind:      datamodel.Kind_Map,
+	}
+}
+func (w _listpairsFieldAssemblerRepr) AssignBytes([]byte) error {
+	return datamodel.ErrWrongKind{
+		TypeName:        w.parent.schemaType.Name(),
+		MethodName:      "AssignBytes",
+		AppropriateKind: datamodel.KindSet_JustList,
+		ActualKind:      datamodel.Kind_Map,
+	}
+}
+func (w _listpairsFieldAssemblerRepr) AssignLink(datamodel.Link) error {
+	return datamodel.ErrWrongKind{
+		TypeName:        w.parent.schemaType.Name(),
+		MethodName:      "AssignLink",
+		AppropriateKind: datamodel.KindSet_JustList,
+		ActualKind:      datamodel.Kind_Map,
+	}
+}
+
+// TODO: support this if it's a list?
+func (w _listpairsFieldAssemblerRepr) AssignNode(datamodel.Node) error {
+	return datamodel.ErrWrongKind{
+		TypeName:        w.parent.schemaType.Name(),
+		MethodName:      "AssignNode",
+		AppropriateKind: datamodel.KindSet_JustList,
+		ActualKind:      datamodel.Kind_Map,
+	}
+}
+func (w _listpairsFieldAssemblerRepr) Prototype() datamodel.NodePrototype {
+	panic("bindnode TODO: listpairs field Prototype")
+}
+
+type _listpairsFieldListAssemblerRepr struct {
+	parent *_structAssembler
+	idx    int
+}
+
+func (w *_listpairsFieldListAssemblerRepr) AssembleValue() datamodel.NodeAssembler {
+	w.idx++
+	switch w.idx {
+	case 1:
+		return w.parent.AssembleKey()
+	case 2:
+		return w.parent.AssembleValue()
+	default:
+		return _errorAssembler{fmt.Errorf("bindnode: too many values in listpairs field")}
+	}
+}
+
+func (w *_listpairsFieldListAssemblerRepr) Finish() error {
+	return nil
+}
+
+func (w *_listpairsFieldListAssemblerRepr) ValuePrototype(idx int64) datamodel.NodePrototype {
+	panic("bindnode TODO: listpairs field ValuePrototype")
 }
 
 // Note that lists do not have any representation strategy right now.
