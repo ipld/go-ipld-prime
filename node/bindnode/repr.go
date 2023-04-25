@@ -344,16 +344,16 @@ type _tupleIteratorRepr struct {
 }
 
 func (w *_tupleIteratorRepr) Next() (index int64, value datamodel.Node, _ error) {
-_skipAbsent:
-	idx := w.nextIndex
-	_, value, err := (*_structIterator)(w).Next()
-	if err != nil {
-		return 0, nil, err
+	for {
+		idx := w.nextIndex
+		_, value, err := (*_structIterator)(w).Next()
+		if err != nil {
+			return 0, nil, err
+		}
+		if w.nextIndex <= w.reprEnd {
+			return int64(idx), reprNode(value), nil
+		}
 	}
-	if w.nextIndex > w.reprEnd {
-		goto _skipAbsent
-	}
-	return int64(idx), reprNode(value), nil
 }
 
 func (w *_tupleIteratorRepr) Done() bool {
@@ -372,23 +372,24 @@ type _listpairsIteratorRepr struct {
 }
 
 func (w *_listpairsIteratorRepr) Next() (index int64, value datamodel.Node, _ error) {
-_skipAbsent:
-	if w.Done() {
-		return 0, nil, datamodel.ErrIteratorOverread{}
+	for {
+		if w.Done() {
+			return 0, nil, datamodel.ErrIteratorOverread{}
+		}
+		idx := w.nextIndex
+		key, value, err := (*_structIterator)(w).Next()
+		if err != nil {
+			return 0, nil, err
+		}
+		if value.IsAbsent() || w.nextIndex > w.reprEnd {
+			continue
+		}
+		field, err := buildListpairsField(key, value)
+		if err != nil {
+			return 0, nil, err
+		}
+		return int64(idx), field, nil
 	}
-	idx := w.nextIndex
-	key, value, err := (*_structIterator)(w).Next()
-	if err != nil {
-		return 0, nil, err
-	}
-	if value.IsAbsent() || w.nextIndex > w.reprEnd {
-		goto _skipAbsent
-	}
-	field, err := buildListpairsField(key, value)
-	if err != nil {
-		return 0, nil, err
-	}
-	return int64(idx), field, nil
 }
 
 func (w *_listpairsIteratorRepr) Done() bool {
@@ -1257,20 +1258,21 @@ type _structIteratorRepr _structIterator
 func (w *_structIteratorRepr) Next() (key, value datamodel.Node, _ error) {
 	switch stg := reprStrategy(w.schemaType).(type) {
 	case schema.StructRepresentation_Map:
-	_skipAbsent:
-		key, value, err := (*_structIterator)(w).Next()
-		if err != nil {
-			return nil, nil, err
+		for {
+			key, value, err := (*_structIterator)(w).Next()
+			if err != nil {
+				return nil, nil, err
+			}
+			if value.IsAbsent() {
+				continue
+			}
+			keyStr, _ := key.AsString()
+			mappedKey := outboundMappedKey(stg, keyStr)
+			if mappedKey != keyStr {
+				key = basicnode.NewString(mappedKey)
+			}
+			return key, reprNode(value), nil
 		}
-		if value.IsAbsent() {
-			goto _skipAbsent
-		}
-		keyStr, _ := key.AsString()
-		mappedKey := outboundMappedKey(stg, keyStr)
-		if mappedKey != keyStr {
-			key = basicnode.NewString(mappedKey)
-		}
-		return key, reprNode(value), nil
 	default:
 		return nil, nil, fmt.Errorf("bindnode Next TODO: %T", stg)
 	}
