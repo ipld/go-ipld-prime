@@ -467,6 +467,9 @@ func (p *parser) typeStruct() (*dmt.TypeDefnStruct, error) {
 			Join: join,
 		}
 		return defn, nil
+	case "listpairs":
+		defn.Representation.StructRepresentation_Listpairs = &dmt.StructRepresentation_Listpairs{}
+		return defn, nil
 	default:
 		return nil, p.errf("unknown struct repr: %q", reprName)
 	}

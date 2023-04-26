@@ -277,6 +277,8 @@ func spawnType(ts *schema.TypeSystem, name schema.TypeName, defn TypeDefn) (sche
 				return nil, fmt.Errorf("stringjoin has empty join value")
 			}
 			repr = schema.SpawnStructRepresentationStringjoin(join)
+		case typ.Representation.StructRepresentation_Listpairs != nil:
+			repr = schema.SpawnStructRepresentationListPairs()
 		default:
 			return nil, fmt.Errorf("TODO: support other struct repr in schema package")
 		}
