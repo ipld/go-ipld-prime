@@ -8,6 +8,7 @@ import (
 	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/fluent"
 	"github.com/ipld/go-ipld-prime/must"
+	"github.com/ipld/go-ipld-prime/node/basicnode"
 	"github.com/ipld/go-ipld-prime/schema"
 )
 
@@ -234,6 +235,26 @@ func SchemaTestStructReprListPairs(t *testing.T, engine Engine) {
 				})
 			})
 			qt.Check(t, n, NodeContentEquals, nr)
+		})
+		t.Run("repr-create with AssignNode", func(t *testing.T) {
+			nr := fluent.MustBuildList(basicnode.Prototype.Any, 2, func(la fluent.ListAssembler) {
+				la.AssembleValue().CreateList(2, func(la fluent.ListAssembler) {
+					la.AssembleValue().AssignString("foo")
+					la.AssembleValue().AssignNull()
+				})
+				la.AssembleValue().CreateList(2, func(la fluent.ListAssembler) {
+					la.AssembleValue().AssignString("qux")
+					la.AssembleValue().CreateList(2, func(la fluent.ListAssembler) {
+						la.AssembleValue().AssignString("1")
+						la.AssembleValue().AssignString("2")
+					})
+				})
+			})
+			builder := nrp.NewBuilder()
+			err := builder.AssignNode(nr)
+			qt.Assert(t, err, qt.IsNil)
+			anr := builder.Build()
+			qt.Check(t, n, NodeContentEquals, anr)
 		})
 	})
 }

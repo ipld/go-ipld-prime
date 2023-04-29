@@ -1148,15 +1148,10 @@ func (w _listpairsFieldAssemblerRepr) AssignLink(datamodel.Link) error {
 	}
 }
 
-// TODO: support this if it's a list?
-func (w _listpairsFieldAssemblerRepr) AssignNode(datamodel.Node) error {
-	return datamodel.ErrWrongKind{
-		TypeName:        w.parent.schemaType.Name(),
-		MethodName:      "AssignNode",
-		AppropriateKind: datamodel.KindSet_JustList,
-		ActualKind:      datamodel.Kind_Map,
-	}
+func (w *_listpairsFieldAssemblerRepr) AssignNode(n datamodel.Node) error {
+	return datamodel.Copy(n, w)
 }
+
 func (w _listpairsFieldAssemblerRepr) Prototype() datamodel.NodePrototype {
 	panic("bindnode TODO: listpairs field Prototype")
 }
