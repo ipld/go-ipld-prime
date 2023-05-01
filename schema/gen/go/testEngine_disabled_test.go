@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"testing"
 
 	"github.com/ipld/go-ipld-prime/datamodel"
@@ -24,6 +25,20 @@ func buildGennedCode(t *testing.T, prefix string, pkgName string) {
 			fmt.Fprintf(w, "package %s\n\n", pkgName)
 			fmt.Fprintf(w, "func main() {}\n")
 		})
+	}
+
+	// If windows, remove all files in tmpGenBuildDir with the .exe extension so we don't get a "already exists" error
+	// https://github.com/golang/go/issues/57039
+	if runtime.GOOS == "windows" {
+		files, err := filepath.Glob(filepath.Join(tmpGenBuildDir, prefix, "*.exe"))
+		if err != nil {
+			t.Fatal(err)
+		}
+		for _, file := range files {
+			if err := os.Remove(file); err != nil {
+				t.Fatal(err)
+			}
+		}
 	}
 
 	// Invoke 'go build' -- nothing fancy.
