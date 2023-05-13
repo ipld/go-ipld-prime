@@ -32,6 +32,13 @@ func SchemaTestStructReprListPairs(t *testing.T, engine Engine) {
 		},
 		schema.SpawnStructRepresentationListPairs(),
 	))
+	ts.Accumulate(schema.SpawnStruct("NestedListPairs",
+		[]schema.StructField{
+			schema.SpawnStructField("str", "String", false, false),
+			schema.SpawnStructField("lp", "OneListPair", false, false),
+		},
+		schema.SpawnStructRepresentationListPairs(),
+	))
 	engine.Init(t, ts)
 
 	t.Run("onelistpair works", func(t *testing.T) {
@@ -255,6 +262,66 @@ func SchemaTestStructReprListPairs(t *testing.T, engine Engine) {
 			qt.Assert(t, err, qt.IsNil)
 			anr := builder.Build()
 			qt.Check(t, n, NodeContentEquals, anr)
+		})
+	})
+
+	t.Run("nestedlistpairs works", func(t *testing.T) {
+		np := engine.PrototypeByName("NestedListPairs")
+		nrp := engine.PrototypeByName("NestedListPairs.Repr")
+		var n schema.TypedNode
+		t.Run("typed-create", func(t *testing.T) {
+			n = fluent.MustBuildMap(np, 1, func(ma fluent.MapAssembler) {
+				ma.AssembleEntry("str").AssignString("boop")
+				ma.AssembleEntry("lp").CreateMap(1, func(ma fluent.MapAssembler) {
+					ma.AssembleEntry("field").AssignString("valoo")
+				})
+			}).(schema.TypedNode)
+			t.Run("typed-read", func(t *testing.T) {
+				qt.Assert(t, n.Kind(), qt.Equals, datamodel.Kind_Map)
+				qt.Check(t, n.Length(), qt.Equals, int64(2))
+				qt.Check(t, must.String(must.Node(n.LookupByString("str"))), qt.Equals, "boop")
+				lp := must.Node(n.LookupByString("lp"))
+				qt.Check(t, lp.Kind(), qt.Equals, datamodel.Kind_Map)
+				qt.Check(t, must.String(must.Node(lp.LookupByString("field"))), qt.Equals, "valoo")
+			})
+			t.Run("repr-read", func(t *testing.T) {
+				nr := n.Representation()
+				qt.Assert(t, nr.Kind(), qt.Equals, datamodel.Kind_List)
+				qt.Check(t, nr.Length(), qt.Equals, int64(2))
+				kv := must.Node(nr.LookupByIndex(0))
+				qt.Assert(t, nr.Kind(), qt.Equals, datamodel.Kind_List)
+				qt.Check(t, kv.Length(), qt.Equals, int64(2))
+				qt.Check(t, must.String(must.Node(kv.LookupByIndex(0))), qt.Equals, "str")
+				qt.Check(t, must.String(must.Node(kv.LookupByIndex(1))), qt.Equals, "boop")
+				kv = must.Node(nr.LookupByIndex(1))
+				qt.Assert(t, nr.Kind(), qt.Equals, datamodel.Kind_List)
+				qt.Check(t, kv.Length(), qt.Equals, int64(2))
+				qt.Check(t, must.String(must.Node(kv.LookupByIndex(0))), qt.Equals, "lp")
+				lp := must.Node(kv.LookupByIndex(1))
+				qt.Check(t, lp.Kind(), qt.Equals, datamodel.Kind_List)
+				kv = must.Node(lp.LookupByIndex(0))
+				qt.Check(t, kv.Length(), qt.Equals, int64(2))
+				qt.Check(t, must.String(must.Node(kv.LookupByIndex(0))), qt.Equals, "field")
+				qt.Check(t, must.String(must.Node(kv.LookupByIndex(1))), qt.Equals, "valoo")
+			})
+		})
+		t.Run("repr-create", func(t *testing.T) {
+			nr := fluent.MustBuildList(nrp, 1, func(la fluent.ListAssembler) {
+				la.AssembleValue().CreateList(2, func(la fluent.ListAssembler) {
+					la.AssembleValue().AssignString("str")
+					la.AssembleValue().AssignString("boop")
+				})
+				la.AssembleValue().CreateList(2, func(la fluent.ListAssembler) {
+					la.AssembleValue().AssignString("lp")
+					la.AssembleValue().CreateList(2, func(la fluent.ListAssembler) {
+						la.AssembleValue().CreateList(2, func(la fluent.ListAssembler) {
+							la.AssembleValue().AssignString("field")
+							la.AssembleValue().AssignString("valoo")
+						})
+					})
+				})
+			})
+			qt.Check(t, n, NodeContentEquals, nr)
 		})
 	})
 }

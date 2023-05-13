@@ -189,7 +189,7 @@ func (w *_nodeRepr) LookupByIndex(idx int64) (datamodel.Node, error) {
 				continue
 			}
 			if curField == idx {
-				return buildListpairsField(basicnode.NewString(field.Name()), value)
+				return buildListpairsField(basicnode.NewString(field.Name()), reprNode(value))
 			}
 			curField++
 		}
@@ -384,7 +384,7 @@ func (w *_listpairsIteratorRepr) Next() (index int64, value datamodel.Node, _ er
 		if value.IsAbsent() || w.nextIndex > w.reprEnd {
 			continue
 		}
-		field, err := buildListpairsField(key, value)
+		field, err := buildListpairsField(key, reprNode(value))
 		if err != nil {
 			return 0, nil, err
 		}
@@ -1167,7 +1167,8 @@ func (w *_listpairsFieldListAssemblerRepr) AssembleValue() datamodel.NodeAssembl
 	case 1:
 		return w.parent.AssembleKey()
 	case 2:
-		return w.parent.AssembleValue()
+		asm := w.parent.AssembleValue()
+		return assemblerRepr(asm.(*_assembler))
 	default:
 		return _errorAssembler{fmt.Errorf("bindnode: too many values in listpairs field")}
 	}
