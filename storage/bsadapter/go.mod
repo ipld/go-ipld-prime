@@ -5,7 +5,7 @@ go 1.19
 require (
 	github.com/ipfs/go-block-format v0.0.3
 	github.com/ipfs/go-cid v0.4.1
-	github.com/ipfs/go-ipfs-blockstore v1.3.0
+	github.com/ipfs/go-ipfs-blockstore v1.3.1
 )
 
 require (
