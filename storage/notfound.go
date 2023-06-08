@@ -7,8 +7,9 @@ import (
 )
 
 // ErrNotFound is a 404, but for block storage systems. It is returned when
-// a block is not found. The Key is typically the binary form of a CID
-// (CID#KeyString()).
+// a block is not found. The Cid property may be cid.Undef if the NotFound error
+// was not created with a specific CID (e.g. when using a non-CID key in a
+// storage Get operation).
 //
 // ErrNotFound implements `interface{NotFound() bool}`, which makes it roughly
 // compatible with the legacy github.com/ipfs/go-ipld-format#ErrNotFound.
@@ -23,20 +24,30 @@ import (
 // matching function that should be able to determine whether an ErrNotFound,
 // either new or legacy, exists within a wrapped error chain.
 type ErrNotFound struct {
-	Key string
+	Cid cid.Cid
 }
 
 // NewErrNotFound is a convenience factory that creates a new ErrNotFound error
 // from a CID.
 func NewErrNotFound(c cid.Cid) ErrNotFound {
-	return ErrNotFound{Key: c.KeyString()}
+	return ErrNotFound{Cid: c}
+}
+
+// NewErrNotFound is a convenience factory that creates a new ErrNotFound error
+// from a key. If the key is a CID#KeyString(), then it will be cast to a CID,
+// otherwise the Cid of the ErrNotFound will be cid.Undef.
+func NewErrNotFoundForKey(key string) ErrNotFound {
+	if c, err := cid.Cast([]byte(key)); err == nil {
+		return ErrNotFound{Cid: c}
+	}
+	return ErrNotFound{Cid: cid.Undef}
 }
 
 func (e ErrNotFound) Error() string {
-	if c, err := cid.Cast([]byte(e.Key)); err == nil && c != cid.Undef {
-		return "ipld: could not find " + c.String()
+	if e.Cid == cid.Undef {
+		return "ipld: could not find node"
 	}
-	return "ipld: could not find " + e.Key
+	return "ipld: could not find " + e.Cid.String()
 }
 
 // NotFound always returns true, and is used to feature-test for ErrNotFound

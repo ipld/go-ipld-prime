@@ -57,7 +57,7 @@ func (store *Store) Get(ctx context.Context, key string) ([]byte, error) {
 	store.beInitialized()
 	content, exists := store.Bag[key]
 	if !exists {
-		return nil, storage.ErrNotFound{Key: key}
+		return nil, storage.NewErrNotFoundForKey(key)
 	}
 	cpy := make([]byte, len(content))
 	copy(cpy, content)
@@ -83,7 +83,7 @@ func (store *Store) Put(ctx context.Context, key string, content []byte) error {
 func (store *Store) GetStream(ctx context.Context, key string) (io.ReadCloser, error) {
 	content, exists := store.Bag[key]
 	if !exists {
-		return nil, storage.ErrNotFound{Key: key}
+		return nil, storage.NewErrNotFoundForKey(key)
 	}
 	return noopCloser{bytes.NewReader(content)}, nil
 }
@@ -92,7 +92,7 @@ func (store *Store) GetStream(ctx context.Context, key string) (io.ReadCloser, e
 func (store *Store) Peek(ctx context.Context, key string) ([]byte, io.Closer, error) {
 	content, exists := store.Bag[key]
 	if !exists {
-		return nil, nil, storage.ErrNotFound{Key: key}
+		return nil, nil, storage.NewErrNotFoundForKey(key)
 	}
 	return content, noopCloser{nil}, nil
 }

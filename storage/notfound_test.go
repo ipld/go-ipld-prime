@@ -10,14 +10,14 @@ import (
 )
 
 func TestNotFound(t *testing.T) {
-	nf := storage.ErrNotFound{Key: "foo"}
+	nf := storage.ErrNotFound{}
 	if !storage.IsNotFound(nf) {
 		t.Fatal("expected ErrNotFound to be a NotFound error")
 	}
 	if !errors.Is(nf, storage.ErrNotFound{}) {
 		t.Fatal("expected ErrNotFound to be a NotFound error")
 	}
-	if nf.Error() != "ipld: could not find foo" {
+	if nf.Error() != "ipld: could not find node" {
 		t.Fatal("unexpected error message")
 	}
 
