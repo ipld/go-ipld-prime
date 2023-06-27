@@ -334,11 +334,15 @@ func spawnType(ts *schema.TypeSystem, name schema.TypeName, defn TypeDefn) (sche
 				switch {
 				case member.TypeName != nil:
 					memberName := *member.TypeName
-					validMember(memberName)
+					if err := validMember(memberName); err != nil {
+						return nil, err
+					}
 					table[kind] = memberName
 				case member.UnionMemberInlineDefn != nil:
 					tname := anonLinkName(*member.UnionMemberInlineDefn.TypeDefnLink)
-					validMember(tname)
+					if err := validMember(tname); err != nil {
+						return nil, err
+					}
 					table[kind] = tname
 				}
 			}
@@ -351,11 +355,15 @@ func spawnType(ts *schema.TypeSystem, name schema.TypeName, defn TypeDefn) (sche
 				switch {
 				case member.TypeName != nil:
 					memberName := *member.TypeName
-					validMember(memberName)
+					if err := validMember(memberName); err != nil {
+						return nil, err
+					}
 					table[key] = memberName
 				case member.UnionMemberInlineDefn != nil:
 					tname := anonLinkName(*member.UnionMemberInlineDefn.TypeDefnLink)
-					validMember(tname)
+					if err := validMember(tname); err != nil {
+						return nil, err
+					}
 					table[key] = tname
 				}
 			}
@@ -363,9 +371,25 @@ func spawnType(ts *schema.TypeSystem, name schema.TypeName, defn TypeDefn) (sche
 		case typ.Representation.UnionRepresentation_StringPrefix != nil:
 			prefixes := typ.Representation.UnionRepresentation_StringPrefix.Prefixes
 			for _, key := range prefixes.Keys {
-				validMember(prefixes.Values[key])
+				if err := validMember(prefixes.Values[key]); err != nil {
+					return nil, err
+				}
 			}
 			repr = schema.SpawnUnionRepresentationStringprefix("", prefixes.Values)
+		case typ.Representation.UnionRepresentation_Inline != nil:
+			rp := typ.Representation.UnionRepresentation_Inline
+			if rp.DiscriminantKey == "" {
+				return nil, fmt.Errorf("inline union has empty discriminantKey value")
+			}
+			if rp.DiscriminantTable.Keys == nil || rp.DiscriminantTable.Values == nil {
+				return nil, fmt.Errorf("inline union has empty discriminantTable")
+			}
+			for _, key := range rp.DiscriminantTable.Keys {
+				if err := validMember(rp.DiscriminantTable.Values[key]); err != nil {
+					return nil, err
+				}
+			}
+			repr = schema.SpawnUnionRepresentationInline(rp.DiscriminantKey, rp.DiscriminantTable.Values)
 		default:
 			return nil, fmt.Errorf("TODO: support other union repr in schema package")
 		}
