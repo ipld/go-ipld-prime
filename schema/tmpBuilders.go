@@ -141,6 +141,9 @@ func SpawnUnionRepresentationKinded(table map[datamodel.Kind]TypeName) UnionRepr
 func SpawnUnionRepresentationStringprefix(delim string, table map[string]TypeName) UnionRepresentation_Stringprefix {
 	return UnionRepresentation_Stringprefix{delim, table}
 }
+func SpawnUnionRepresentationInline(discriminantKey string, table map[string]TypeName) UnionRepresentation_Inline {
+	return UnionRepresentation_Inline{discriminantKey, table}
+}
 
 func SpawnEnum(name TypeName, members []string, repr EnumRepresentation) *TypeEnum {
 	return &TypeEnum{typeBase{name, nil}, members, repr}
