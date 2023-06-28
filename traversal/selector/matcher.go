@@ -55,7 +55,7 @@ func (s Slice) Slice(n datamodel.Node) (datamodel.Node, error) {
 				return nil, err
 			}
 
-			sr := io.NewSectionReader(readerat{rdr}, s.From, s.To-s.From)
+			sr := io.NewSectionReader(&readerat{rdr, 0}, s.From, s.To-s.From)
 			return basicnode.NewBytesFromReader(sr), nil
 		}
 		bytes, err := n.AsBytes()
