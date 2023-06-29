@@ -73,7 +73,7 @@ func (s Slice) Slice(n datamodel.Node) (datamodel.Node, error) {
 
 		return basicnode.NewBytes(bytes[from:to]), nil
 	default:
-		return nil, fmt.Errorf("selector slice rejected on %s: subset match must be over string or bytes", n.Kind())
+		return nil, nil
 	}
 }
 
