@@ -30,6 +30,5 @@ func SpecTestBytes(t *testing.T, np datamodel.NodePrototype) {
 			qt.Check(t, err, qt.IsNil)
 			qt.Check(t, bytes, qt.DeepEquals, []byte("asdf"))
 		}
-
 	})
 }

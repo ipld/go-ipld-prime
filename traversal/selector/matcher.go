@@ -40,11 +40,11 @@ func (s Slice) Slice(n datamodel.Node) (datamodel.Node, error) {
 			return nil, err
 		}
 		to = s.To
-		if len(str) < int(to) {
+		if int64(len(str)) < to {
 			to = int64(len(str))
 		}
 		from = s.From
-		if len(str) < int(from) {
+		if int64(len(str)) < from {
 			from = int64(len(str))
 		}
 		return basicnode.NewString(str[from:to]), nil
@@ -54,7 +54,6 @@ func (s Slice) Slice(n datamodel.Node) (datamodel.Node, error) {
 			if err != nil {
 				return nil, err
 			}
-
 			sr := io.NewSectionReader(&readerat{rdr, 0}, s.From, s.To-s.From)
 			return basicnode.NewBytesFromReader(sr), nil
 		}
@@ -63,14 +62,13 @@ func (s Slice) Slice(n datamodel.Node) (datamodel.Node, error) {
 			return nil, err
 		}
 		to = s.To
-		if len(bytes) < int(to) {
+		if int64(len(bytes)) < to {
 			to = int64(len(bytes))
 		}
 		from = s.From
-		if len(bytes) < int(from) {
+		if int64(len(bytes)) < from {
 			from = int64(len(bytes))
 		}
-
 		return basicnode.NewBytes(bytes[from:to]), nil
 	default:
 		return nil, nil

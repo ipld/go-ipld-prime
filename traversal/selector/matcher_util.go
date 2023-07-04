@@ -13,8 +13,7 @@ type readerat struct {
 // current offset and seek if necessary.
 func (r *readerat) ReadAt(p []byte, off int64) (n int, err error) {
 	if off != r.off {
-		_, err = r.rs.Seek(off, 0)
-		if err != nil {
+		if _, err = r.rs.Seek(off, io.SeekStart); err != nil {
 			return 0, err
 		}
 		r.off = off
