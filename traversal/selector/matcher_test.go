@@ -10,7 +10,6 @@ import (
 	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/fluent/qp"
 	"github.com/ipld/go-ipld-prime/node/basicnode"
-	"github.com/ipld/go-ipld-prime/node/mixins"
 	"github.com/ipld/go-ipld-prime/testutil"
 	"github.com/ipld/go-ipld-prime/traversal"
 	"github.com/ipld/go-ipld-prime/traversal/selector"
@@ -23,7 +22,7 @@ func TestSubsetMatch(t *testing.T) {
 		node datamodel.Node
 	}{
 		{"stringNode", basicnode.NewString(expectedString)},
-		{"bytesNode", simpleBytes([]byte(expectedString))},
+		{"bytesNode", testutil.NewSimpleBytes([]byte(expectedString))},
 		{"largeBytesNode", testutil.NewMultiByteNode(
 			[]byte("foo"),
 			[]byte("bar"),
@@ -124,64 +123,4 @@ func TestSubsetMatch(t *testing.T) {
 			})
 		}
 	}
-}
-
-var _ datamodel.Node = simpleBytes{}
-
-// simpleBytes is like basicnode's plainBytes but it doesn't implement
-// LargeBytesNode so we can exercise the non-LBN case.
-type simpleBytes []byte
-
-// -- Node interface methods -->
-
-func (simpleBytes) Kind() datamodel.Kind {
-	return datamodel.Kind_Bytes
-}
-func (simpleBytes) LookupByString(string) (datamodel.Node, error) {
-	return mixins.Bytes{TypeName: "bytes"}.LookupByString("")
-}
-func (simpleBytes) LookupByNode(key datamodel.Node) (datamodel.Node, error) {
-	return mixins.Bytes{TypeName: "bytes"}.LookupByNode(nil)
-}
-func (simpleBytes) LookupByIndex(idx int64) (datamodel.Node, error) {
-	return mixins.Bytes{TypeName: "bytes"}.LookupByIndex(0)
-}
-func (simpleBytes) LookupBySegment(seg datamodel.PathSegment) (datamodel.Node, error) {
-	return mixins.Bytes{TypeName: "bytes"}.LookupBySegment(seg)
-}
-func (simpleBytes) MapIterator() datamodel.MapIterator {
-	return nil
-}
-func (simpleBytes) ListIterator() datamodel.ListIterator {
-	return nil
-}
-func (simpleBytes) Length() int64 {
-	return -1
-}
-func (simpleBytes) IsAbsent() bool {
-	return false
-}
-func (simpleBytes) IsNull() bool {
-	return false
-}
-func (simpleBytes) AsBool() (bool, error) {
-	return mixins.Bytes{TypeName: "bytes"}.AsBool()
-}
-func (simpleBytes) AsInt() (int64, error) {
-	return mixins.Bytes{TypeName: "bytes"}.AsInt()
-}
-func (simpleBytes) AsFloat() (float64, error) {
-	return mixins.Bytes{TypeName: "bytes"}.AsFloat()
-}
-func (simpleBytes) AsString() (string, error) {
-	return mixins.Bytes{TypeName: "bytes"}.AsString()
-}
-func (n simpleBytes) AsBytes() ([]byte, error) {
-	return []byte(n), nil
-}
-func (simpleBytes) AsLink() (datamodel.Link, error) {
-	return mixins.Bytes{TypeName: "bytes"}.AsLink()
-}
-func (simpleBytes) Prototype() datamodel.NodePrototype {
-	return basicnode.Prototype__Bytes{}
 }
