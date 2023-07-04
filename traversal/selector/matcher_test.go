@@ -2,7 +2,6 @@ package selector_test
 
 import (
 	"fmt"
-	"io"
 	"math"
 	"testing"
 
@@ -11,6 +10,7 @@ import (
 	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/fluent/qp"
 	"github.com/ipld/go-ipld-prime/node/basicnode"
+	"github.com/ipld/go-ipld-prime/testutil"
 	"github.com/ipld/go-ipld-prime/traversal"
 	"github.com/ipld/go-ipld-prime/traversal/selector"
 )
@@ -23,14 +23,12 @@ func TestSubsetMatch(t *testing.T) {
 	}{
 		{"stringNode", basicnode.NewString(expectedString)},
 		{"bytesNode", basicnode.NewBytes([]byte(expectedString))},
-		{"largeBytesNode", &MultiByteNode{
-			Bytes: [][]byte{
-				[]byte("foo"),
-				[]byte("bar"),
-				[]byte("baz"),
-				[]byte("!"),
-			},
-		}},
+		{"largeBytesNode", testutil.NewMultiByteNode(
+			[]byte("foo"),
+			[]byte("bar"),
+			[]byte("baz"),
+			[]byte("!"),
+		)},
 	}
 
 	// selector for a slice of the value of the "bipbop" field within a map
@@ -110,198 +108,4 @@ func TestSubsetMatch(t *testing.T) {
 			})
 		}
 	}
-}
-
-func TestMultiByteNode_Sanity(t *testing.T) {
-	mbn := &MultiByteNode{
-		Bytes: [][]byte{
-			[]byte("foo"),
-			[]byte("bar"),
-			[]byte("baz"),
-			[]byte("!"),
-		},
-	}
-	// Sanity check that the readseeker works.
-	// (This is a test of the test, not the code under test.)
-
-	for _, rl := range []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10} {
-		t.Run("readseeker works with read length "+qt.Format(rl), func(t *testing.T) {
-			rs, err := mbn.AsLargeBytes()
-			qt.Assert(t, err, qt.IsNil)
-			acc := make([]byte, 0, mbn.size())
-			buf := make([]byte, rl)
-			for {
-				n, err := rs.Read(buf)
-				if err == io.EOF {
-					qt.Check(t, n, qt.Equals, 0)
-					break
-				}
-				qt.Assert(t, err, qt.IsNil)
-				acc = append(acc, buf[0:n]...)
-			}
-			qt.Assert(t, string(acc), qt.DeepEquals, "foobarbaz!")
-		})
-	}
-
-	t.Run("readseeker can seek and read middle bytes", func(t *testing.T) {
-		rs, err := mbn.AsLargeBytes()
-		qt.Assert(t, err, qt.IsNil)
-		_, err = rs.Seek(2, io.SeekStart)
-		qt.Assert(t, err, qt.IsNil)
-		buf := make([]byte, 2)
-		acc := make([]byte, 0, 5)
-		for len(acc) < 5 {
-			n, err := rs.Read(buf)
-			qt.Assert(t, err, qt.IsNil)
-			acc = append(acc, buf[0:n]...)
-		}
-		qt.Assert(t, string(acc), qt.DeepEquals, "obarba")
-	})
-
-	t.Run("readseeker can seek and read last byte", func(t *testing.T) {
-		rs, err := mbn.AsLargeBytes()
-		qt.Assert(t, err, qt.IsNil)
-		_, err = rs.Seek(-1, io.SeekEnd)
-		qt.Assert(t, err, qt.IsNil)
-		buf := make([]byte, 1)
-		n, err := rs.Read(buf)
-		qt.Assert(t, err, qt.IsNil)
-		qt.Check(t, n, qt.Equals, 1)
-		qt.Check(t, string(buf[0]), qt.Equals, "!")
-	})
-}
-
-var _ datamodel.Node = (*MultiByteNode)(nil)
-var _ datamodel.LargeBytesNode = (*MultiByteNode)(nil)
-
-// MultiByteNode is a node that is a concatenation of multiple byte slices.
-// It's not particularly sophisticated but lets us exercise LargeBytesNode as a
-// path through the selectors. The novel behaviour of Read() and Seek() on the
-// AsLargeBytes is similar to that which would be expected from a LBN ADL, such
-// as UnixFS sharded files.
-type MultiByteNode struct {
-	Bytes [][]byte
-}
-
-func (mbn *MultiByteNode) Kind() datamodel.Kind {
-	return datamodel.Kind_Bytes
-}
-
-func (mbn *MultiByteNode) AsBytes() ([]byte, error) {
-	ret := make([]byte, 0, mbn.size())
-	for _, b := range mbn.Bytes {
-		ret = append(ret, b...)
-	}
-	return ret, nil
-}
-
-func (mbn *MultiByteNode) size() int {
-	var size int
-	for _, b := range mbn.Bytes {
-		size += len(b)
-	}
-	return size
-}
-
-func (mbn *MultiByteNode) AsLargeBytes() (io.ReadSeeker, error) {
-	return &mbnReadSeeker{node: mbn}, nil
-}
-
-func (mbn *MultiByteNode) AsBool() (bool, error) {
-	return false, datamodel.ErrWrongKind{TypeName: "bool", MethodName: "AsBool", AppropriateKind: datamodel.KindSet_JustBytes}
-}
-
-func (mbn *MultiByteNode) AsInt() (int64, error) {
-	return 0, datamodel.ErrWrongKind{TypeName: "int", MethodName: "AsInt", AppropriateKind: datamodel.KindSet_JustBytes}
-}
-
-func (mbn *MultiByteNode) AsFloat() (float64, error) {
-	return 0, datamodel.ErrWrongKind{TypeName: "float", MethodName: "AsFloat", AppropriateKind: datamodel.KindSet_JustBytes}
-}
-
-func (mbn *MultiByteNode) AsString() (string, error) {
-	return "", datamodel.ErrWrongKind{TypeName: "string", MethodName: "AsString", AppropriateKind: datamodel.KindSet_JustBytes}
-}
-
-func (mbn *MultiByteNode) AsLink() (datamodel.Link, error) {
-	return nil, datamodel.ErrWrongKind{TypeName: "link", MethodName: "AsLink", AppropriateKind: datamodel.KindSet_JustBytes}
-}
-
-func (mbn *MultiByteNode) AsNode() (datamodel.Node, error) {
-	return nil, nil
-}
-
-func (mbn *MultiByteNode) Size() int {
-	return 0
-}
-
-func (mbn *MultiByteNode) IsAbsent() bool {
-	return false
-}
-
-func (mbn *MultiByteNode) IsNull() bool {
-	return false
-}
-
-func (mbn *MultiByteNode) Length() int64 {
-	return 0
-}
-
-func (mbn *MultiByteNode) ListIterator() datamodel.ListIterator {
-	return nil
-}
-
-func (mbn *MultiByteNode) MapIterator() datamodel.MapIterator {
-	return nil
-}
-
-func (mbn *MultiByteNode) LookupByIndex(idx int64) (datamodel.Node, error) {
-	return nil, datamodel.ErrWrongKind{}
-}
-
-func (mbn *MultiByteNode) LookupByString(key string) (datamodel.Node, error) {
-	return nil, datamodel.ErrWrongKind{}
-}
-
-func (mbn *MultiByteNode) LookupByNode(key datamodel.Node) (datamodel.Node, error) {
-	return nil, datamodel.ErrWrongKind{}
-}
-
-func (mbn *MultiByteNode) LookupBySegment(seg datamodel.PathSegment) (datamodel.Node, error) {
-	return nil, datamodel.ErrWrongKind{}
-}
-
-func (mbn *MultiByteNode) Prototype() datamodel.NodePrototype {
-	return basicnode.Prototype.Bytes // not really ... but it'll do for this test
-}
-
-type mbnReadSeeker struct {
-	node   *MultiByteNode
-	offset int
-}
-
-func (mbnrs *mbnReadSeeker) Read(p []byte) (int, error) {
-	var acc int
-	for _, byts := range mbnrs.node.Bytes {
-		if mbnrs.offset-acc >= len(byts) {
-			acc += len(byts)
-			continue
-		}
-		n := copy(p, byts[mbnrs.offset-acc:])
-		mbnrs.offset += n
-		return n, nil
-	}
-	return 0, io.EOF
-}
-
-func (mbnrs *mbnReadSeeker) Seek(offset int64, whence int) (int64, error) {
-	switch whence {
-	case io.SeekStart:
-		mbnrs.offset = int(offset)
-	case io.SeekCurrent:
-		mbnrs.offset += int(offset)
-	case io.SeekEnd:
-		mbnrs.offset = mbnrs.node.size() + int(offset)
-	}
-	return int64(mbnrs.offset), nil
 }
