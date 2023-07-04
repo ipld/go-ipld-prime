@@ -10,6 +10,7 @@ import (
 	qt "github.com/frankban/quicktest"
 	"github.com/warpfork/go-testmark"
 
+	"github.com/ipld/go-ipld-prime"
 	"github.com/ipld/go-ipld-prime/codec/dagjson"
 	"github.com/ipld/go-ipld-prime/codec/json"
 	"github.com/ipld/go-ipld-prime/datamodel"
@@ -34,9 +35,7 @@ func testOneSpecFixtureFile(t *testing.T, filename string) {
 	data = []byte(crre.ReplaceAllString(string(data), "\n")) // fix windows carriage-return
 
 	doc, err := testmark.Parse(data)
-	if err != nil {
-		t.Fatalf("spec file parse failed?!: %s", err)
-	}
+	qt.Assert(t, err, qt.IsNil)
 
 	// Data hunk in this spec file are in "directories" of a test scenario each.
 	doc.BuildDirIndex()
@@ -51,18 +50,13 @@ func testOneSpecFixtureFile(t *testing.T, filename string) {
 			fixtureExpect := dir.Children["expect-visit"].Hunk.Body
 
 			// Parse data into DMT form.
-			nb := basicnode.Prototype.Any.NewBuilder()
-			if err := dagjson.Decode(nb, bytes.NewReader(fixtureData)); err != nil {
-				t.Errorf("failed to parse fixture data: %s", err)
-			}
-			dataDmt := nb.Build()
+			dataDmt, err := ipld.Decode(fixtureData, dagjson.Decode)
+			qt.Assert(t, err, qt.IsNil)
 
 			// Parse and compile Selector.
 			// (This is already arguably a test event on its own.
 			selector, err := selectorparse.ParseAndCompileJSONSelector(string(fixtureSelector))
-			if err != nil {
-				t.Errorf("failed to parse+compile selector: %s", err)
-			}
+			qt.Assert(t, err, qt.IsNil)
 
 			// Go!
 			//  We'll store the logs of our visit events as... ipld Nodes, actually.
@@ -113,18 +107,16 @@ func testOneSpecFixtureFile(t *testing.T, filename string) {
 				if len(line) == 0 {
 					continue
 				}
-				nb := basicnode.Prototype.Any.NewBuilder()
-				if err := json.Decode(nb, bytes.NewReader(line)); err != nil {
-					t.Errorf("failed to parse fixture visit descriptions: %s", err)
-				}
-				json.Encode(nb.Build(), &fixtureExpectNormBuf)
+				exp, err := ipld.Decode(line, json.Decode)
+				qt.Assert(t, err, qt.IsNil)
+				qt.Assert(t, ipld.EncodeStreaming(&fixtureExpectNormBuf, exp, json.Encode), qt.IsNil)
 				fixtureExpectNormBuf.WriteByte('\n')
 			}
 
 			// Serialize our own visit logs now too.
 			var visitLogString bytes.Buffer
 			for _, logEnt := range visitLogs {
-				json.Encode(logEnt, &visitLogString)
+				qt.Assert(t, ipld.EncodeStreaming(&visitLogString, logEnt, json.Encode), qt.IsNil)
 				visitLogString.WriteByte('\n')
 			}
 
