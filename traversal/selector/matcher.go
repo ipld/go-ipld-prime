@@ -32,6 +32,24 @@ type Slice struct {
 	To   int64
 }
 
+func sliceBounds(from, to, length int64) (bool, int64, int64) {
+	if to < 0 {
+		to = length + to
+	} else if length < to {
+		to = length
+	}
+	if from < 0 {
+		from = length + from
+		if from < 0 {
+			from = 0
+		}
+	}
+	if from > to || from >= length {
+		return false, 0, 0
+	}
+	return true, from, to
+}
+
 func (s Slice) Slice(n datamodel.Node) (datamodel.Node, error) {
 	var from, to int64
 	switch n.Kind() {
@@ -41,24 +59,11 @@ func (s Slice) Slice(n datamodel.Node) (datamodel.Node, error) {
 			return nil, err
 		}
 
-		to = s.To
-		from = s.From
-		length := int64(len(str))
-
-		if to < 0 {
-			to = length + to
-		} else if length < to {
-			to = length
-		}
-		if from < 0 {
-			from = length + from
-		} else if length < from {
-			from = length
-		}
-		if from < 0 || to < 0 || from > to || from >= length {
+		var match bool
+		match, from, to = sliceBounds(s.From, s.To, int64(len(str)))
+		if !match {
 			return nil, nil
 		}
-
 		return basicnode.NewString(str[from:to]), nil
 	case datamodel.Kind_Bytes:
 		to = s.To
@@ -91,21 +96,11 @@ func (s Slice) Slice(n datamodel.Node) (datamodel.Node, error) {
 			length = int64(len(bytes))
 		}
 
-		if to < 0 {
-			to = length + to
-		} else if length < to {
-			to = length
-		}
-		if from < 0 {
-			from = length + from
-		} else if length < from {
-			from = length
-		}
-
-		if from < 0 || to < 0 || from > to || from >= length {
+		var match bool
+		match, from, to = sliceBounds(from, to, length)
+		if !match {
 			return nil, nil
 		}
-
 		if rdr != nil {
 			sr := io.NewSectionReader(&readerat{rdr, 0}, from, to-from)
 			return basicnode.NewBytesFromReader(sr), nil

@@ -3,6 +3,7 @@ package selector_test
 import (
 	"fmt"
 	"math"
+	"regexp"
 	"testing"
 
 	qt "github.com/frankban/quicktest"
@@ -78,9 +79,11 @@ func TestSubsetMatch(t *testing.T) {
 		{-int64(len(expectedString)), math.MaxInt64, expectedString, true},
 		{math.MaxInt64 - 1, math.MaxInt64, "", false},
 		{int64(len(expectedString)), math.MaxInt64, "", false},
-		{-1000, -100, "", false},
-		{-1, -2, "", false},
-		{-1, -1, "", true}, // matches empty node
+		{-1, -2, "", false},                 // To < From, no match
+		{-1, -1, "", true},                  // To==From, match zero bytes
+		{-1000, -100, "", false},            // From undeflow, adjusted to 0, To underflow, not adjusted, To < From, no match
+		{-100, -1000, "", false},            // From undeflow, adjusted to 0, To underflow, adjusted to 0, To < From, no match
+		{-1000, 1000, expectedString, true}, // From undeflow, adjusted to 0, To overflow, adjusted to len, match all
 	} {
 		for _, variant := range nodes {
 			t.Run(fmt.Sprintf("%s[%d:%d]", variant.name, tc.from, tc.to), func(t *testing.T) {
@@ -123,4 +126,15 @@ func TestSubsetMatch(t *testing.T) {
 			})
 		}
 	}
+
+	// when both are positive, we can validate ranges up-front
+	t.Run("invalid range", func(t *testing.T) {
+		selNode, err := mkRangeSelector(1000, 100)
+		qt.Assert(t, err, qt.IsNil)
+		re, err := regexp.Compile("from.*less than or equal to.*to")
+		qt.Assert(t, err, qt.IsNil)
+		ss, err := selector.ParseSelector(selNode)
+		qt.Assert(t, ss, qt.IsNil)
+		qt.Assert(t, err, qt.ErrorMatches, re)
+	})
 }
