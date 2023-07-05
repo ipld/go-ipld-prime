@@ -209,7 +209,7 @@ func (nb *anyBuilder) Build() datamodel.Node {
 
 // -- NodeAmender -->
 
-func (nb *anyBuilder) Transform(path datamodel.Path, transform func(datamodel.Node) (datamodel.NodeAmender, error)) (datamodel.Node, error) {
+func (nb *anyBuilder) Transform(path datamodel.Path, transform datamodel.AmendFn) (datamodel.Node, error) {
 	// If `baseNode` is set and supports amendment, apply the transformation. If it doesn't, and the root is being
 	// replaced, replace it. If the transformation is for a nested node in a non-amendable recursive object, panic.
 	if nb.amender != nil {

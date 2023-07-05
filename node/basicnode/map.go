@@ -160,11 +160,11 @@ func (nb *plainMap__Builder) Reset() {
 
 // -- NodeAmender -->
 
-func (nb *plainMap__Builder) Transform(path datamodel.Path, transform func(datamodel.Node) (datamodel.NodeAmender, error)) (datamodel.Node, error) {
+func (nb *plainMap__Builder) Transform(path datamodel.Path, transform datamodel.AmendFn) (datamodel.Node, error) {
 	// Can only transform the root of the node or an immediate child.
-	if path.Len() > 2 {
+	if path.Len() > 1 {
 		panic("misuse")
-	} else
+	}
 	// Allow the root of the node to be replaced.
 	if path.Len() == 0 {
 		prevNode := nb.Build()

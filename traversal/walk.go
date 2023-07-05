@@ -7,6 +7,7 @@ import (
 	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/linking"
 	"github.com/ipld/go-ipld-prime/linking/preload"
+	"github.com/ipld/go-ipld-prime/node/basicnode"
 	"github.com/ipld/go-ipld-prime/traversal/selector"
 )
 
@@ -495,8 +496,14 @@ func (prog Progress) walkTransforming(n datamodel.Node, s selector.Selector, fn 
 	nk := n.Kind()
 	switch nk {
 	case datamodel.Kind_List:
+		if _, castOk := n.Prototype().(datamodel.NodePrototypeSupportingAmend); castOk {
+			return prog.walk_transform_iterateAmendableList(n, s, fn, s.Interests())
+		}
 		return prog.walk_transform_iterateList(n, s, fn, s.Interests())
 	case datamodel.Kind_Map:
+		if _, castOk := n.Prototype().(datamodel.NodePrototypeSupportingAmend); castOk {
+			return prog.walk_transform_iterateAmendableMap(n, s, fn, s.Interests())
+		}
 		return prog.walk_transform_iterateMap(n, s, fn, s.Interests())
 	default:
 		return n, nil
@@ -574,6 +581,69 @@ func (prog Progress) walk_transform_iterateList(n datamodel.Node, s selector.Sel
 	return bldr.Build(), nil
 }
 
+func (prog Progress) walk_transform_iterateAmendableList(n datamodel.Node, s selector.Selector, fn TransformFn, attn []datamodel.PathSegment) (datamodel.Node, error) {
+	amender := n.Prototype().(datamodel.NodePrototypeSupportingAmend).AmendingBuilder(n)
+
+	transform := func(ps datamodel.PathSegment, node datamodel.Node) error {
+		_, err := amender.Transform(datamodel.NewPath([]datamodel.PathSegment{ps}), func(_ datamodel.Node) (datamodel.NodeAmender, error) {
+			return basicnode.Prototype.Any.AmendingBuilder(node), nil
+		})
+		return err
+	}
+
+	for itr := selector.NewSegmentIterator(n); !itr.Done(); {
+		ps, v, err := itr.Next()
+		if err != nil {
+			return nil, err
+		}
+		if attn == nil || contains(attn, ps) {
+			sNext, err := s.Explore(n, ps)
+			if err != nil {
+				return nil, err
+			}
+			if sNext != nil {
+				progNext := prog
+				progNext.Path = prog.Path.AppendSegment(ps)
+				if v.Kind() == datamodel.Kind_Link {
+					lnk, _ := v.AsLink()
+					if prog.Cfg.LinkVisitOnlyOnce {
+						if _, seen := prog.SeenLinks[lnk]; seen {
+							continue
+						}
+						prog.SeenLinks[lnk] = struct{}{}
+					}
+					progNext.LastBlock.Path = progNext.Path
+					progNext.LastBlock.Link = lnk
+					v, err = progNext.loadLink(lnk, v, n)
+					if err != nil {
+						if _, ok := err.(SkipMe); ok {
+							continue
+						}
+						return nil, err
+					}
+				}
+
+				next, err := progNext.WalkTransforming(v, sNext, fn)
+				if err != nil {
+					return nil, err
+				}
+				if err := transform(ps, next); err != nil {
+					return nil, err
+				}
+			} else {
+				if err := transform(ps, v); err != nil {
+					return nil, err
+				}
+			}
+		} else {
+			if err := transform(ps, v); err != nil {
+				return nil, err
+			}
+		}
+	}
+	return amender.Build(), nil
+}
+
 func (prog Progress) walk_transform_iterateMap(n datamodel.Node, s selector.Selector, fn TransformFn, attn []datamodel.PathSegment) (datamodel.Node, error) {
 	bldr := n.Prototype().NewBuilder()
 	mapBldr, err := bldr.BeginMap(n.Length())
@@ -639,4 +709,68 @@ func (prog Progress) walk_transform_iterateMap(n datamodel.Node, s selector.Sele
 		return nil, err
 	}
 	return bldr.Build(), nil
+}
+
+func (prog Progress) walk_transform_iterateAmendableMap(n datamodel.Node, s selector.Selector, fn TransformFn, attn []datamodel.PathSegment) (datamodel.Node, error) {
+	amender := n.Prototype().(datamodel.NodePrototypeSupportingAmend).AmendingBuilder(n)
+
+	transform := func(ps datamodel.PathSegment, node datamodel.Node) error {
+		_, err := amender.Transform(datamodel.NewPath([]datamodel.PathSegment{ps}), func(_ datamodel.Node) (datamodel.NodeAmender, error) {
+			return basicnode.Prototype.Any.AmendingBuilder(node), nil
+		})
+		return err
+	}
+
+	for itr := selector.NewSegmentIterator(n); !itr.Done(); {
+		ps, v, err := itr.Next()
+		if err != nil {
+			return nil, err
+		}
+
+		if attn == nil || contains(attn, ps) {
+			sNext, err := s.Explore(n, ps)
+			if err != nil {
+				return nil, err
+			}
+			if sNext != nil {
+				progNext := prog
+				progNext.Path = prog.Path.AppendSegment(ps)
+				if v.Kind() == datamodel.Kind_Link {
+					lnk, _ := v.AsLink()
+					if prog.Cfg.LinkVisitOnlyOnce {
+						if _, seen := prog.SeenLinks[lnk]; seen {
+							continue
+						}
+						prog.SeenLinks[lnk] = struct{}{}
+					}
+					progNext.LastBlock.Path = progNext.Path
+					progNext.LastBlock.Link = lnk
+					v, err = progNext.loadLink(lnk, v, n)
+					if err != nil {
+						if _, ok := err.(SkipMe); ok {
+							continue
+						}
+						return nil, err
+					}
+				}
+
+				next, err := progNext.WalkTransforming(v, sNext, fn)
+				if err != nil {
+					return nil, err
+				}
+				if err := transform(ps, next); err != nil {
+					return nil, err
+				}
+			} else {
+				if err := transform(ps, v); err != nil {
+					return nil, err
+				}
+			}
+		} else {
+			if err := transform(ps, v); err != nil {
+				return nil, err
+			}
+		}
+	}
+	return amender.Build(), nil
 }
