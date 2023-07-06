@@ -246,6 +246,18 @@ type NodePrototypeSupportingAmend interface {
 	// FUTURE: consider putting this (and others like it) in a `feature` package, if there begin to be enough of them and docs get crowded.
 }
 
+// NodePrototypeSupportingMapAmend is a feature-detection interface that can be used on a NodePrototype to see if it's
+// possible to update existing map-like nodes of this style.
+type NodePrototypeSupportingMapAmend interface {
+	AmendingBuilder(base Node) MapAmender
+}
+
+// NodePrototypeSupportingListAmend is a feature-detection interface that can be used on a NodePrototype to see if it's
+// possible to update existing list-like nodes of this style.
+type NodePrototypeSupportingListAmend interface {
+	AmendingBuilder(base Node) ListAmender
+}
+
 // MapIterator is an interface for traversing map nodes.
 // Sequential calls to Next() will yield key-value pairs;
 // Done() describes whether iteration should continue.

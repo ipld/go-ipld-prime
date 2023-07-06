@@ -7,7 +7,6 @@ import (
 	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/linking"
 	"github.com/ipld/go-ipld-prime/linking/preload"
-	"github.com/ipld/go-ipld-prime/node/basicnode"
 	"github.com/ipld/go-ipld-prime/traversal/selector"
 )
 
@@ -496,12 +495,12 @@ func (prog Progress) walkTransforming(n datamodel.Node, s selector.Selector, fn 
 	nk := n.Kind()
 	switch nk {
 	case datamodel.Kind_List:
-		if _, castOk := n.Prototype().(datamodel.NodePrototypeSupportingAmend); castOk {
+		if _, castOk := n.Prototype().(datamodel.NodePrototypeSupportingListAmend); castOk {
 			return prog.walk_transform_iterateAmendableList(n, s, fn, s.Interests())
 		}
 		return prog.walk_transform_iterateList(n, s, fn, s.Interests())
 	case datamodel.Kind_Map:
-		if _, castOk := n.Prototype().(datamodel.NodePrototypeSupportingAmend); castOk {
+		if _, castOk := n.Prototype().(datamodel.NodePrototypeSupportingMapAmend); castOk {
 			return prog.walk_transform_iterateAmendableMap(n, s, fn, s.Interests())
 		}
 		return prog.walk_transform_iterateMap(n, s, fn, s.Interests())
@@ -582,17 +581,14 @@ func (prog Progress) walk_transform_iterateList(n datamodel.Node, s selector.Sel
 }
 
 func (prog Progress) walk_transform_iterateAmendableList(n datamodel.Node, s selector.Selector, fn TransformFn, attn []datamodel.PathSegment) (datamodel.Node, error) {
-	amender := n.Prototype().(datamodel.NodePrototypeSupportingAmend).AmendingBuilder(n)
-
-	transform := func(ps datamodel.PathSegment, node datamodel.Node) error {
-		_, err := amender.Transform(datamodel.NewPath([]datamodel.PathSegment{ps}), func(_ datamodel.Node) (datamodel.NodeAmender, error) {
-			return basicnode.Prototype.Any.AmendingBuilder(node), nil
-		})
-		return err
-	}
+	listAmender := n.Prototype().(datamodel.NodePrototypeSupportingListAmend).AmendingBuilder(n)
 
 	for itr := selector.NewSegmentIterator(n); !itr.Done(); {
 		ps, v, err := itr.Next()
+		if err != nil {
+			return nil, err
+		}
+		idx, err := ps.Index()
 		if err != nil {
 			return nil, err
 		}
@@ -627,21 +623,21 @@ func (prog Progress) walk_transform_iterateAmendableList(n datamodel.Node, s sel
 				if err != nil {
 					return nil, err
 				}
-				if err := transform(ps, next); err != nil {
+				if err := listAmender.Set(idx, next); err != nil {
 					return nil, err
 				}
 			} else {
-				if err := transform(ps, v); err != nil {
+				if err := listAmender.Set(idx, v); err != nil {
 					return nil, err
 				}
 			}
 		} else {
-			if err := transform(ps, v); err != nil {
+			if err := listAmender.Set(idx, v); err != nil {
 				return nil, err
 			}
 		}
 	}
-	return amender.Build(), nil
+	return listAmender.Build(), nil
 }
 
 func (prog Progress) walk_transform_iterateMap(n datamodel.Node, s selector.Selector, fn TransformFn, attn []datamodel.PathSegment) (datamodel.Node, error) {
@@ -712,14 +708,7 @@ func (prog Progress) walk_transform_iterateMap(n datamodel.Node, s selector.Sele
 }
 
 func (prog Progress) walk_transform_iterateAmendableMap(n datamodel.Node, s selector.Selector, fn TransformFn, attn []datamodel.PathSegment) (datamodel.Node, error) {
-	amender := n.Prototype().(datamodel.NodePrototypeSupportingAmend).AmendingBuilder(n)
-
-	transform := func(ps datamodel.PathSegment, node datamodel.Node) error {
-		_, err := amender.Transform(datamodel.NewPath([]datamodel.PathSegment{ps}), func(_ datamodel.Node) (datamodel.NodeAmender, error) {
-			return basicnode.Prototype.Any.AmendingBuilder(node), nil
-		})
-		return err
-	}
+	mapAmender := n.Prototype().(datamodel.NodePrototypeSupportingMapAmend).AmendingBuilder(n)
 
 	for itr := selector.NewSegmentIterator(n); !itr.Done(); {
 		ps, v, err := itr.Next()
@@ -758,19 +747,19 @@ func (prog Progress) walk_transform_iterateAmendableMap(n datamodel.Node, s sele
 				if err != nil {
 					return nil, err
 				}
-				if err := transform(ps, next); err != nil {
+				if _, err := mapAmender.Put(ps.String(), next); err != nil {
 					return nil, err
 				}
 			} else {
-				if err := transform(ps, v); err != nil {
+				if _, err := mapAmender.Put(ps.String(), v); err != nil {
 					return nil, err
 				}
 			}
 		} else {
-			if err := transform(ps, v); err != nil {
+			if _, err := mapAmender.Put(ps.String(), v); err != nil {
 				return nil, err
 			}
 		}
 	}
-	return amender.Build(), nil
+	return mapAmender.Build(), nil
 }

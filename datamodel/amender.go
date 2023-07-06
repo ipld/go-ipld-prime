@@ -14,3 +14,34 @@ type NodeAmender interface {
 	// Transform returns the previous state of the target Node.
 	Transform(path Path, transform AmendFn) (Node, error)
 }
+
+// containerAmender is an internal type for representing the interface for amendable containers (like maps and lists)
+type containerAmender interface {
+	Empty() bool
+	Length() int64
+	Clear()
+	Values() ([]Node, error)
+
+	NodeAmender
+}
+
+// MapAmender adds a map-like interface to NodeAmender
+type MapAmender interface {
+	Put(key string, value Node) (bool, error)
+	Get(key string) (Node, error)
+	Remove(key string) (bool, error)
+	Keys() ([]string, error)
+
+	containerAmender
+}
+
+// ListAmender adds a list-like interface to NodeAmender
+type ListAmender interface {
+	Get(idx int64) (Node, error)
+	Remove(idx int64) error
+	Append(values ...Node) error
+	Insert(idx int64, values ...Node) error
+	Set(idx int64, value Node) error
+
+	containerAmender
+}

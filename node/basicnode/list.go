@@ -9,11 +9,11 @@ import (
 )
 
 var (
-	_ datamodel.Node                         = &plainList{}
-	_ datamodel.NodePrototype                = Prototype__List{}
-	_ datamodel.NodePrototypeSupportingAmend = Prototype__List{}
-	_ datamodel.NodeBuilder                  = &plainList__Builder{}
-	_ datamodel.NodeAssembler                = &plainList__Assembler{}
+	_ datamodel.Node                             = &plainList{}
+	_ datamodel.NodePrototype                    = Prototype__List{}
+	_ datamodel.NodePrototypeSupportingListAmend = Prototype__List{}
+	_ datamodel.NodeBuilder                      = &plainList__Builder{}
+	_ datamodel.NodeAssembler                    = &plainList__Assembler{}
 )
 
 // plainList is a concrete type that provides a list-kind datamodel.Node.
@@ -124,9 +124,9 @@ func (p Prototype__List) NewBuilder() datamodel.NodeBuilder {
 	return p.AmendingBuilder(nil)
 }
 
-// -- NodePrototypeSupportingAmend -->
+// -- NodePrototypeSupportingListAmend -->
 
-func (p Prototype__List) AmendingBuilder(base datamodel.Node) datamodel.NodeAmender {
+func (p Prototype__List) AmendingBuilder(base datamodel.Node) datamodel.ListAmender {
 	var w *plainList
 	if base != nil {
 		if baseList, castOk := base.(*plainList); !castOk {
@@ -206,7 +206,7 @@ func (nb *plainList__Builder) Transform(path datamodel.Path, transform datamodel
 	//  - If an element is being appended to the end of the list.
 	//  - If the transformation of the target node results in a list of nodes, use the first node in the list to replace
 	//    the target node and then "add" the rest after. This is a bit of an ugly hack but is required for compatibility
-	//    with two conflicting sets of semantics - the current `FocusedTransform`, which (quite reasonably) does an
+	//    with two conflicting sets of semantics - the current `focus` and `walk`, which (quite reasonably) do an
 	//    in-place replacement of list elements, and JSON Patch (https://datatracker.ietf.org/doc/html/rfc6902), which
 	//    does not specify list element replacement. The only "compliant" way to do this today is to first "remove" the
 	//    target node and then "add" its replacement at the same index, which seems inefficient.
@@ -233,15 +233,15 @@ func (nb *plainList__Builder) storeChildAmender(childIdx int64, a datamodel.Node
 	if (n.Kind() == datamodel.Kind_List) && (n.Length() > 0) {
 		elems = make([]datamodel.NodeAmender, n.Length())
 		// The following logic uses a transformed list (if there is one) to perform both insertions (needed by JSON
-		// Patch) and replacements (needed by `FocusedTransform`), while also providing the flexibility to insert more
+		// Patch) and replacements (needed by `focus` and `walk`), while also providing the flexibility to insert more
 		// than one element at a particular index in the list.
 		//
 		// Rules:
-		//  - If appending to the end of the main list, all elements from the transformed list should be considered
-		//    "created" because they did not exist before.
-		//   - If updating at a particular index in the main list, however, use the first element from the transformed
-		//     list to replace the existing element at that index in the main list, then insert the rest of the
-		//     transformed list elements after.
+		//   - If appending to the end of the main list, all elements from the transformed list will be individually
+		//     appended to the end of the list.
+		//   - If updating at a particular index in the main list, use the first element from the transformed list to
+		//     replace the existing element at that index in the main list, then insert the rest of the transformed list
+		//     elements after.
 		//
 		// A special case to consider is that of a list element genuinely being a list itself. If that is the case, the
 		// transformation MUST wrap the element in another list so that, once unwrapped, the element can be replaced or
@@ -268,6 +268,84 @@ func (nb *plainList__Builder) storeChildAmender(childIdx int64, a datamodel.Node
 		nb.w.x = newX
 	}
 	return nil
+}
+
+func (nb *plainList__Builder) Get(idx int64) (datamodel.Node, error) {
+	return nb.w.LookupByIndex(idx)
+}
+
+func (nb *plainList__Builder) Remove(idx int64) error {
+	_, err := nb.Transform(
+		datamodel.NewPath([]datamodel.PathSegment{datamodel.PathSegmentOfInt(idx)}),
+		func(_ datamodel.Node) (datamodel.NodeAmender, error) {
+			return nil, nil
+		},
+	)
+	return err
+}
+
+func (nb *plainList__Builder) Append(values ...datamodel.Node) error {
+	// Passing an index equal to the length of the list will append the passed values to the end of the list
+	return nb.Insert(nb.Length(), values...)
+}
+
+func (nb *plainList__Builder) Insert(idx int64, values ...datamodel.Node) error {
+	var ps datamodel.PathSegment
+	if idx == nb.Length() {
+		ps = datamodel.PathSegmentOfString("-") // indicates appending to the end of the list
+	} else {
+		ps = datamodel.PathSegmentOfInt(idx)
+	}
+	_, err := nb.Transform(
+		datamodel.NewPath([]datamodel.PathSegment{ps}),
+		func(_ datamodel.Node) (datamodel.NodeAmender, error) {
+			// Put all the passed values into a new list. That will result in these values being expanded at the
+			// specified index.
+			na := nb.Prototype().NewBuilder()
+			la, err := na.BeginList(int64(len(values)))
+			if err != nil {
+				return nil, err
+			}
+			for _, v := range values {
+				if err := la.AssembleValue().AssignNode(v); err != nil {
+					return nil, err
+				}
+			}
+			if err := la.Finish(); err != nil {
+				return nil, err
+			}
+			return Prototype.Any.AmendingBuilder(na.Build()), nil
+		},
+	)
+	return err
+}
+
+func (nb *plainList__Builder) Set(idx int64, value datamodel.Node) error {
+	return nb.Insert(idx, value)
+}
+
+func (nb *plainList__Builder) Empty() bool {
+	return nb.Length() == 0
+}
+
+func (nb *plainList__Builder) Length() int64 {
+	return nb.w.Length()
+}
+
+func (nb *plainList__Builder) Clear() {
+	nb.Reset()
+}
+
+func (nb *plainList__Builder) Values() ([]datamodel.Node, error) {
+	values := make([]datamodel.Node, 0, nb.Length())
+	for itr := nb.w.ListIterator(); !itr.Done(); {
+		_, v, err := itr.Next()
+		if err != nil {
+			return nil, err
+		}
+		values = append(values, v)
+	}
+	return values, nil
 }
 
 // -- NodeAssembler -->

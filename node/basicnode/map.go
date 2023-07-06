@@ -9,11 +9,11 @@ import (
 )
 
 var (
-	_ datamodel.Node                         = &plainMap{}
-	_ datamodel.NodePrototype                = Prototype__Map{}
-	_ datamodel.NodePrototypeSupportingAmend = Prototype__Map{}
-	_ datamodel.NodeAmender                  = &plainMap__Builder{}
-	_ datamodel.NodeAssembler                = &plainMap__Assembler{}
+	_ datamodel.Node                            = &plainMap{}
+	_ datamodel.NodePrototype                   = Prototype__Map{}
+	_ datamodel.NodePrototypeSupportingMapAmend = Prototype__Map{}
+	_ datamodel.NodeAmender                     = &plainMap__Builder{}
+	_ datamodel.NodeAssembler                   = &plainMap__Assembler{}
 )
 
 // plainMap is a concrete type that provides a map-kind datamodel.Node.
@@ -125,9 +125,9 @@ func (p Prototype__Map) NewBuilder() datamodel.NodeBuilder {
 	return p.AmendingBuilder(nil)
 }
 
-// -- NodePrototypeSupportingAmend -->
+// -- NodePrototypeSupportingMapAmend -->
 
-func (p Prototype__Map) AmendingBuilder(base datamodel.Node) datamodel.NodeAmender {
+func (p Prototype__Map) AmendingBuilder(base datamodel.Node) datamodel.MapAmender {
 	var b *plainMap
 	if base != nil {
 		if baseMap, castOk := base.(*plainMap); !castOk {
@@ -158,7 +158,7 @@ func (nb *plainMap__Builder) Reset() {
 	nb.w = &plainMap{}
 }
 
-// -- NodeAmender -->
+// -- MapAmender -->
 
 func (nb *plainMap__Builder) Transform(path datamodel.Path, transform datamodel.AmendFn) (datamodel.Node, error) {
 	// Can only transform the root of the node or an immediate child.
@@ -217,6 +217,78 @@ func (nb *plainMap__Builder) Transform(path datamodel.Path, transform datamodel.
 		nb.w.m[childKey] = newChildAmender
 		return prevChildVal, nil
 	}
+}
+
+func (nb *plainMap__Builder) Put(key string, value datamodel.Node) (bool, error) {
+	if prevNode, err := nb.Transform(
+		datamodel.NewPath([]datamodel.PathSegment{datamodel.PathSegmentOfString(key)}),
+		func(_ datamodel.Node) (datamodel.NodeAmender, error) {
+			return Prototype.Any.AmendingBuilder(value), nil
+		},
+	); err != nil {
+		return false, err
+	} else {
+		// If there was no previous node, we just added a new node.
+		return prevNode == nil, nil
+	}
+}
+
+func (nb *plainMap__Builder) Get(key string) (datamodel.Node, error) {
+	return nb.w.LookupByString(key)
+}
+
+func (nb *plainMap__Builder) Remove(key string) (bool, error) {
+	if prevNode, err := nb.Transform(
+		datamodel.NewPath([]datamodel.PathSegment{datamodel.PathSegmentOfString(key)}),
+		func(_ datamodel.Node) (datamodel.NodeAmender, error) {
+			return nil, nil
+		},
+	); err != nil {
+		return false, err
+	} else {
+		// If there was a previous node, we just removed it.
+		return prevNode != nil, nil
+	}
+}
+
+func (nb *plainMap__Builder) Keys() ([]string, error) {
+	keys := make([]string, 0, nb.Length())
+	for itr := nb.w.MapIterator(); !itr.Done(); {
+		k, _, err := itr.Next()
+		if err != nil {
+			return nil, err
+		}
+		keyStr, err := k.AsString()
+		if err != nil {
+			return nil, err
+		}
+		keys = append(keys, keyStr)
+	}
+	return keys, nil
+}
+
+func (nb *plainMap__Builder) Empty() bool {
+	return nb.Length() == 0
+}
+
+func (nb *plainMap__Builder) Length() int64 {
+	return nb.w.Length()
+}
+
+func (nb *plainMap__Builder) Clear() {
+	nb.Reset()
+}
+
+func (nb *plainMap__Builder) Values() ([]datamodel.Node, error) {
+	values := make([]datamodel.Node, 0, nb.Length())
+	for itr := nb.w.MapIterator(); !itr.Done(); {
+		_, v, err := itr.Next()
+		if err != nil {
+			return nil, err
+		}
+		values = append(values, v)
+	}
+	return values, nil
 }
 
 // -- NodeAssembler -->
