@@ -514,7 +514,11 @@ func contains(interest []datamodel.PathSegment, candidate datamodel.PathSegment)
 
 func (prog Progress) walk_transform_iterateList(n datamodel.Node, s selector.Selector, fn TransformFn, attn []datamodel.PathSegment) (datamodel.Node, error) {
 	bldr := n.Prototype().NewBuilder()
-	lstBldr, err := bldr.BeginList(n.Length())
+	l, err := n.Length()
+	if err != nil {
+		return nil, err
+	}
+	lstBldr, err := bldr.BeginList(l)
 	if err != nil {
 		return nil, err
 	}
@@ -576,7 +580,11 @@ func (prog Progress) walk_transform_iterateList(n datamodel.Node, s selector.Sel
 
 func (prog Progress) walk_transform_iterateMap(n datamodel.Node, s selector.Selector, fn TransformFn, attn []datamodel.PathSegment) (datamodel.Node, error) {
 	bldr := n.Prototype().NewBuilder()
-	mapBldr, err := bldr.BeginMap(n.Length())
+	l, err := n.Length()
+	if err != nil {
+		return nil, err
+	}
+	mapBldr, err := bldr.BeginMap(l)
 	if err != nil {
 		return nil, err
 	}

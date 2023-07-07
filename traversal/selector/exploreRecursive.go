@@ -235,7 +235,11 @@ func parseLimit(n datamodel.Node) (RecursionLimit, error) {
 	if n.Kind() != datamodel.Kind_Map {
 		return RecursionLimit{}, fmt.Errorf("selector spec parse rejected: limit in ExploreRecursive is a keyed union and thus must be a map")
 	}
-	if n.Length() != 1 {
+	l, err := n.Length()
+	if err != nil {
+		return RecursionLimit{}, err
+	}
+	if l != 1 {
 		return RecursionLimit{}, fmt.Errorf("selector spec parse rejected: limit in ExploreRecursive is a keyed union and thus must be a single-entry map")
 	}
 	kn, v, _ := n.MapIterator().Next()

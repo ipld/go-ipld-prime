@@ -18,7 +18,9 @@ func SpecTestListString(t *testing.T, np datamodel.NodePrototype) {
 			la.AssembleValue().AssignString("three")
 		})
 		t.Run("reads back out", func(t *testing.T) {
-			qt.Check(t, n.Length(), qt.Equals, int64(3))
+			l, err := n.Length()
+			qt.Check(t, err, qt.IsNil)
+			qt.Check(t, l, qt.Equals, int64(3))
 
 			v, err := n.LookupByIndex(0)
 			qt.Check(t, err, qt.IsNil)

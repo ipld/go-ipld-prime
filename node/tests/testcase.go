@@ -208,7 +208,11 @@ func (tcase testcase) Test(t *testing.T, np, npr datamodel.NodePrototype) {
 
 func shallowCopyMap(np datamodel.NodePrototype, n datamodel.Node) (datamodel.Node, error) {
 	nb := np.NewBuilder()
-	ma, err := nb.BeginMap(n.Length())
+	l, err := n.Length()
+	if err != nil {
+		return nil, err
+	}
+	ma, err := nb.BeginMap(l)
 	if err != nil {
 		return nil, err
 	}

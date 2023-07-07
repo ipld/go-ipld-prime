@@ -450,21 +450,21 @@ func (w *_node) ListIterator() datamodel.ListIterator {
 	return nil
 }
 
-func (w *_node) Length() int64 {
+func (w *_node) Length() (int64, error) {
 	val := nonPtrVal(w.val)
 	switch w.Kind() {
 	case datamodel.Kind_Map:
 		switch typ := w.schemaType.(type) {
 		case *schema.TypeStruct:
-			return int64(len(typ.Fields()))
+			return int64(len(typ.Fields())), nil
 		case *schema.TypeUnion:
-			return 1
+			return 1, nil
 		}
-		return int64(val.FieldByName("Keys").Len())
+		return int64(val.FieldByName("Keys").Len()), nil
 	case datamodel.Kind_List:
-		return int64(val.Len())
+		return int64(val.Len()), nil
 	}
-	return -1
+	return -1, nil
 }
 
 // TODO: better story around pointers and absent/null
@@ -1647,8 +1647,8 @@ func (_uintNode) MapIterator() datamodel.MapIterator {
 func (_uintNode) ListIterator() datamodel.ListIterator {
 	return nil
 }
-func (_uintNode) Length() int64 {
-	return -1
+func (_uintNode) Length() (int64, error) {
+	return -1, nil
 }
 func (_uintNode) IsAbsent() bool {
 	return false
@@ -1705,8 +1705,8 @@ func (_uintNodeRepr) MapIterator() datamodel.MapIterator {
 func (_uintNodeRepr) ListIterator() datamodel.ListIterator {
 	return nil
 }
-func (_uintNodeRepr) Length() int64 {
-	return -1
+func (_uintNodeRepr) Length() (int64, error) {
+	return -1, nil
 }
 func (_uintNodeRepr) IsAbsent() bool {
 	return false

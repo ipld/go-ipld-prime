@@ -277,7 +277,9 @@ func TestFocusedTransform(t *testing.T) {
 		// updated value should be there
 		qt.Check(t, must.Node(n.LookupByIndex(2)), nodetests.NodeContentEquals, basicnode.NewString("new string!"))
 		// everything else should be there
-		qt.Check(t, n.Length(), qt.Equals, int64(4))
+		l, err := n.Length()
+		qt.Check(t, err, qt.IsNil)
+		qt.Check(t, l, qt.Equals, int64(4))
 		qt.Check(t, must.Node(n.LookupByIndex(0)), nodetests.NodeContentEquals, basicnode.NewLink(leafAlphaLnk))
 		qt.Check(t, must.Node(n.LookupByIndex(1)), nodetests.NodeContentEquals, basicnode.NewLink(leafAlphaLnk))
 		qt.Check(t, must.Node(n.LookupByIndex(3)), nodetests.NodeContentEquals, basicnode.NewLink(leafAlphaLnk))
@@ -293,7 +295,9 @@ func TestFocusedTransform(t *testing.T) {
 		// updated value should be there
 		qt.Check(t, must.Node(n.LookupByIndex(4)), nodetests.NodeContentEquals, basicnode.NewString("new string!"))
 		// everything else should be there
-		qt.Check(t, n.Length(), qt.Equals, int64(5))
+		l, err := n.Length()
+		qt.Check(t, err, qt.IsNil)
+		qt.Check(t, l, qt.Equals, int64(5))
 	})
 	t.Run("ListBounds", func(t *testing.T) {
 		_, err := traversal.FocusedTransform(middleListNode, datamodel.ParsePath("4"), func(progress traversal.Progress, prev datamodel.Node) (datamodel.Node, error) {
@@ -313,7 +317,9 @@ func TestFocusedTransform(t *testing.T) {
 		}, false)
 		qt.Check(t, err, qt.IsNil)
 		qt.Check(t, n.Kind(), qt.Equals, datamodel.Kind_List)
-		qt.Check(t, n.Length(), qt.Equals, int64(0))
+		l, err := n.Length()
+		qt.Check(t, err, qt.IsNil)
+		qt.Check(t, l, qt.Equals, int64(0))
 	})
 }
 
@@ -367,7 +373,11 @@ func TestFocusedTransformWithLinks(t *testing.T) {
 }
 
 func keys(n datamodel.Node) []string {
-	v := make([]string, 0, n.Length())
+	l, err := n.Length()
+	if err != nil {
+		panic(err)
+	}
+	v := make([]string, 0, l)
 	for itr := n.MapIterator(); !itr.Done(); {
 		k, _, _ := itr.Next()
 		v = append(v, must.String(k))

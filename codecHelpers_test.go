@@ -49,7 +49,8 @@ func Example_unmarshal_withSchema() {
 	n, err := ipld.Unmarshal(serial, json.Decode, &foobar, typesys.TypeByName("Foobar"))
 	fmt.Printf("error: %v\n", err)
 	fmt.Printf("go struct: %v\n", foobar)
-	fmt.Printf("node kind and length: %s, %d\n", n.Kind(), n.Length())
+	l, _ := n.Length()
+	fmt.Printf("node kind and length: %s, %d\n", n.Kind(), l)
 	fmt.Printf("node lookup 'foo': %q\n", must.String(must.Node(n.LookupByString("foo"))))
 
 	// Output:

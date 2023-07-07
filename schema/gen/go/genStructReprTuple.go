@@ -223,7 +223,7 @@ func (g structReprTupleReprGenerator) EmitNodeMethodListIterator(w io.Writer) {
 func (g structReprTupleReprGenerator) EmitNodeMethodLength(w io.Writer) {
 	// This is fun: it has to count down for any unset optional fields.
 	doTemplate(`
-		func (rn *_{{ .Type | TypeSymbol }}__Repr) Length() int64 {
+		func (rn *_{{ .Type | TypeSymbol }}__Repr) Length() (int64, error) {
 			l := {{ len .Type.Fields }}
 			{{- range $field := .Type.Fields }}
 			{{- if $field.IsOptional }}
@@ -232,7 +232,7 @@ func (g structReprTupleReprGenerator) EmitNodeMethodLength(w io.Writer) {
 			}
 			{{- end}}
 			{{- end}}
-			return int64(l)
+			return int64(l), nil
 		}
 	`, w, g.AdjCfg, g)
 }

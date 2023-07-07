@@ -67,7 +67,11 @@ func Copy(n Node, na NodeAssembler) error {
 		}
 		return na.AssignLink(v)
 	case Kind_Map:
-		ma, err := na.BeginMap(n.Length())
+		l, err := n.Length()
+		if err != nil {
+			return err
+		}
+		ma, err := na.BeginMap(l)
 		if err != nil {
 			return err
 		}
@@ -89,7 +93,11 @@ func Copy(n Node, na NodeAssembler) error {
 		}
 		return ma.Finish()
 	case Kind_List:
-		la, err := na.BeginList(n.Length())
+		l, err := n.Length()
+		if err != nil {
+			return err
+		}
+		la, err := na.BeginList(l)
 		if err != nil {
 			return err
 		}

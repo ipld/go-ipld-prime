@@ -51,8 +51,8 @@ func (*_Substrate) MapIterator() datamodel.MapIterator {
 func (*_Substrate) ListIterator() datamodel.ListIterator {
 	return nil
 }
-func (*_Substrate) Length() int64 {
-	return -1
+func (*_Substrate) Length() (int64, error) {
+	return -1, nil
 }
 func (*_Substrate) IsAbsent() bool {
 	return false

@@ -44,8 +44,8 @@ func (plainLink) MapIterator() datamodel.MapIterator {
 func (plainLink) ListIterator() datamodel.ListIterator {
 	return nil
 }
-func (plainLink) Length() int64 {
-	return -1
+func (plainLink) Length() (int64, error) {
+	return -1, nil
 }
 func (plainLink) IsAbsent() bool {
 	return false

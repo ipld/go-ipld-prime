@@ -126,7 +126,8 @@ func ExampleLinkSystem_Load() {
 	}
 
 	// Tada!  We have the data as node that we can traverse and use as desired.
-	fmt.Printf("we loaded a %s with %d entries\n", n.Kind(), n.Length())
+	l, _ := n.Length()
+	fmt.Printf("we loaded a %s with %d entries\n", n.Kind(), l)
 
 	// Output:
 	// we loaded a map with 1 entries

@@ -150,7 +150,11 @@ func (pc ParseContext) ParseSelector(n datamodel.Node) (Selector, error) {
 	if n.Kind() != datamodel.Kind_Map {
 		return nil, fmt.Errorf("selector spec parse rejected: selector is a keyed union and thus must be a map")
 	}
-	if n.Length() != 1 {
+	l, err := n.Length()
+	if err != nil {
+		return nil, err
+	}
+	if l != 1 {
 		return nil, fmt.Errorf("selector spec parse rejected: selector is a keyed union and thus must be single-entry map")
 	}
 	kn, v, _ := n.MapIterator().Next()

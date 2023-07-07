@@ -130,7 +130,7 @@ type Node interface {
 
 	// Length returns the length of a list, or the number of entries in a map,
 	// or -1 if the node is not of list nor map kind.
-	Length() int64
+	Length() (int64, error)
 
 	// Absent nodes are returned when traversing a struct field that is
 	// defined by a schema but unset in the data.  (Absent nodes are not

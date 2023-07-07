@@ -92,8 +92,12 @@ func (pc ParseContext) ParseExploreUnion(n datamodel.Node) (Selector, error) {
 	if n.Kind() != datamodel.Kind_List {
 		return nil, fmt.Errorf("selector spec parse rejected: explore union selector must be a list")
 	}
+	l, err := n.Length()
+	if err != nil {
+		return nil, err
+	}
 	x := ExploreUnion{
-		make([]Selector, 0, n.Length()),
+		make([]Selector, 0, l),
 	}
 	for itr := n.ListIterator(); !itr.Done(); {
 		_, v, err := itr.Next()

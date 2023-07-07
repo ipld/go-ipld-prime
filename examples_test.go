@@ -48,7 +48,8 @@ func Example_unmarshalData() {
 	n := nb.Build()               // Call 'Build' to get the resulting Node.  (It's immutable!)
 
 	fmt.Printf("the data decoded was a %s kind\n", n.Kind())
-	fmt.Printf("the length of the node is %d\n", n.Length())
+	l, _ := n.Length()
+	fmt.Printf("the length of the node is %d\n", l)
 
 	// Output:
 	// the data decoded was a map kind

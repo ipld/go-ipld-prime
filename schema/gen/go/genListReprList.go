@@ -120,8 +120,8 @@ func (g listReprListReprGenerator) EmitNodeMethodListIterator(w io.Writer) {
 
 func (g listReprListReprGenerator) EmitNodeMethodLength(w io.Writer) {
 	doTemplate(`
-		func (rn *_{{ .Type | TypeSymbol }}__Repr) Length() int64 {
-			return int64(len(rn.x))
+		func (rn *_{{ .Type | TypeSymbol }}__Repr) Length() (int64, error) {
+			return int64(len(rn.x)), nil
 		}
 	`, w, g.AdjCfg, g)
 }

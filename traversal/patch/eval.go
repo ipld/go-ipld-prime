@@ -64,7 +64,11 @@ func EvalOne(n datamodel.Node, op Operation) (datamodel.Node, error) {
 				}
 
 				nb := parent.Prototype().NewBuilder()
-				la, err := nb.BeginList(parent.Length() + 1)
+				pl, err := parent.Length()
+				if err != nil {
+					return nil, err
+				}
+				la, err := nb.BeginList(pl + 1)
 				if err != nil {
 					return nil, err
 				}

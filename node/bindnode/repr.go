@@ -425,16 +425,16 @@ func (w *_nodeRepr) lengthMinusTrailingAbsents() int64 {
 	return 0
 }
 
-func (w *_nodeRepr) Length() int64 {
+func (w *_nodeRepr) Length() (int64, error) {
 	switch stg := reprStrategy(w.schemaType).(type) {
 	case schema.StructRepresentation_Stringjoin:
-		return -1
+		return -1, nil
 	case schema.StructRepresentation_Map:
-		return w.lengthMinusAbsents()
+		return w.lengthMinusAbsents(), nil
 	case schema.StructRepresentation_Tuple:
-		return w.lengthMinusTrailingAbsents()
+		return w.lengthMinusTrailingAbsents(), nil
 	case schema.StructRepresentation_ListPairs:
-		return w.lengthMinusAbsents()
+		return w.lengthMinusAbsents(), nil
 	case schema.UnionRepresentation_Keyed:
 		return (*_node)(w).Length()
 	case schema.UnionRepresentation_Kinded:

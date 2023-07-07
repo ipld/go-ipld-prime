@@ -13,7 +13,9 @@ func SpecTestMapStrInt(t *testing.T, np datamodel.NodePrototype) {
 	t.Run("map<str,int>, 3 entries", func(t *testing.T) {
 		n := buildMapStrIntN3(np)
 		t.Run("reads back out", func(t *testing.T) {
-			qt.Check(t, n.Length(), qt.Equals, int64(3))
+			l, err := n.Length()
+			qt.Check(t, err, qt.IsNil)
+			qt.Check(t, l, qt.Equals, int64(3))
 
 			v, err := n.LookupByString("whee")
 			qt.Check(t, err, qt.IsNil)
@@ -124,7 +126,9 @@ func SpecTestMapStrInt(t *testing.T, np datamodel.NodePrototype) {
 		// ... and neither of these should've had visible effects!
 		qt.Check(t, ma.Finish(), qt.IsNil)
 		n := nb.Build()
-		qt.Check(t, n.Length(), qt.Equals, int64(1))
+		l, err := n.Length()
+		qt.Check(t, err, qt.IsNil)
+		qt.Check(t, l, qt.Equals, int64(1))
 		v, err := n.LookupByString("whee")
 		qt.Check(t, err, qt.IsNil)
 		v2, err := v.AsInt()
@@ -169,7 +173,9 @@ func SpecTestMapStrMapStrInt(t *testing.T, np datamodel.NodePrototype) {
 		n := nb.Build()
 
 		t.Run("reads back out", func(t *testing.T) {
-			qt.Check(t, n.Length(), qt.Equals, int64(3))
+			l, err := n.Length()
+			qt.Check(t, err, qt.IsNil)
+			qt.Check(t, l, qt.Equals, int64(3))
 
 			v, err := n.LookupByString("woot")
 			qt.Check(t, err, qt.IsNil)
@@ -214,7 +220,9 @@ func SpecTestMapStrListStr(t *testing.T, np datamodel.NodePrototype) {
 		n := nb.Build()
 
 		t.Run("reads back out", func(t *testing.T) {
-			qt.Check(t, n.Length(), qt.Equals, int64(3))
+			l, err := n.Length()
+			qt.Check(t, err, qt.IsNil)
+			qt.Check(t, l, qt.Equals, int64(3))
 
 			v, err := n.LookupByString("qwer")
 			qt.Check(t, err, qt.IsNil)

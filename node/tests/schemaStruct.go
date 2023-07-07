@@ -101,7 +101,9 @@ func SchemaTestStructNesting(t *testing.T, engine Engine) {
 		}).(schema.TypedNode)
 		t.Run("typed-read", func(t *testing.T) {
 			qt.Assert(t, n.Kind(), qt.Equals, datamodel.Kind_Map)
-			qt.Check(t, n.Length(), qt.Equals, int64(1))
+			l, err := n.Length()
+			qt.Check(t, err, qt.IsNil)
+			qt.Check(t, l, qt.Equals, int64(1))
 
 			n2 := must.Node(n.LookupByString("x"))
 			qt.Assert(t, n2.Kind(), qt.Equals, datamodel.Kind_Map)
@@ -117,7 +119,9 @@ func SchemaTestStructNesting(t *testing.T, engine Engine) {
 		t.Run("repr-read", func(t *testing.T) {
 			nr := n.Representation()
 			qt.Assert(t, nr.Kind(), qt.Equals, datamodel.Kind_Map)
-			qt.Check(t, nr.Length(), qt.Equals, int64(1))
+			l, err := nr.Length()
+			qt.Check(t, err, qt.IsNil)
+			qt.Check(t, l, qt.Equals, int64(1))
 
 			n2 := must.Node(nr.LookupByString("r"))
 			qt.Assert(t, n2.Kind(), qt.Equals, datamodel.Kind_Map)

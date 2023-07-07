@@ -70,7 +70,10 @@ func marshal(n datamodel.Node, tk *tok.Token, sink shared.TokenSink, options Enc
 	case datamodel.Kind_List:
 		// Emit start of list.
 		tk.Type = tok.TArrOpen
-		l := n.Length()
+		l, err := n.Length()
+		if err != nil {
+			return err
+		}
 		tk.Length = int(l) // TODO: overflow check
 		if _, err := sink.Step(tk); err != nil {
 			return err
@@ -87,7 +90,7 @@ func marshal(n datamodel.Node, tk *tok.Token, sink shared.TokenSink, options Enc
 		}
 		// Emit list close.
 		tk.Type = tok.TArrClose
-		_, err := sink.Step(tk)
+		_, err = sink.Step(tk)
 		return err
 	case datamodel.Kind_Bool:
 		v, err := n.AsBool()
@@ -174,8 +177,11 @@ func marshal(n datamodel.Node, tk *tok.Token, sink shared.TokenSink, options Enc
 func marshalMap(n datamodel.Node, tk *tok.Token, sink shared.TokenSink, options EncodeOptions) error {
 	// Emit start of map.
 	tk.Type = tok.TMapOpen
-	expectedLength := int(n.Length())
-	tk.Length = expectedLength // TODO: overflow check
+	expectedLength, err := n.Length()
+	if err != nil {
+		return err
+	}
+	tk.Length = int(expectedLength) // TODO: overflow check
 	if _, err := sink.Step(tk); err != nil {
 		return err
 	}
@@ -197,7 +203,7 @@ func marshalMap(n datamodel.Node, tk *tok.Token, sink shared.TokenSink, options 
 			}
 			entries = append(entries, entry{keyStr, v})
 		}
-		if len(entries) != expectedLength {
+		if len(entries) != int(expectedLength) {
 			return fmt.Errorf("map Length() does not match number of MapIterator() entries")
 		}
 		// Apply the desired sort function.
@@ -229,7 +235,7 @@ func marshalMap(n datamodel.Node, tk *tok.Token, sink shared.TokenSink, options 
 		}
 	} else { // no sorting
 		// Emit map contents (and recurse).
-		var entryCount int
+		var entryCount int64
 		for itr := n.MapIterator(); !itr.Done(); {
 			k, v, err := itr.Next()
 			if err != nil {
@@ -254,7 +260,7 @@ func marshalMap(n datamodel.Node, tk *tok.Token, sink shared.TokenSink, options 
 	}
 	// Emit map close.
 	tk.Type = tok.TMapClose
-	_, err := sink.Step(tk)
+	_, err = sink.Step(tk)
 	return err
 }
 
@@ -272,7 +278,11 @@ func EncodedLength(n datamodel.Node) (int64, error) {
 	case datamodel.Kind_Null:
 		return 1, nil // 0xf6
 	case datamodel.Kind_Map:
-		length := uintLength(uint64(n.Length())) // length prefixed major 5
+		l, err := n.Length()
+		if err != nil {
+			return 0, err
+		}
+		length := uintLength(uint64(l)) // length prefixed major 5
 		for itr := n.MapIterator(); !itr.Done(); {
 			k, v, err := itr.Next()
 			if err != nil {
@@ -291,7 +301,10 @@ func EncodedLength(n datamodel.Node) (int64, error) {
 		}
 		return length, nil
 	case datamodel.Kind_List:
-		nl := n.Length()
+		nl, err := n.Length()
+		if err != nil {
+			return 0, err
+		}
 		length := uintLength(uint64(nl)) // length prefixed major 4
 		for i := int64(0); i < nl; i++ {
 			v, err := n.LookupByIndex(i)

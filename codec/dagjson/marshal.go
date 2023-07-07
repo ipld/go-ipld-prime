@@ -61,8 +61,11 @@ func Marshal(n datamodel.Node, sink shared.TokenSink, options EncodeOptions) err
 	case datamodel.Kind_Map:
 		// Emit start of map.
 		tk.Type = tok.TMapOpen
-		expectedLength := int(n.Length())
-		tk.Length = expectedLength // TODO: overflow check
+		expectedLength, err := n.Length()
+		if err != nil {
+			return err
+		}
+		tk.Length = int(expectedLength) // TODO: overflow check
 		if _, err := sink.Step(&tk); err != nil {
 			return err
 		}
@@ -84,7 +87,7 @@ func Marshal(n datamodel.Node, sink shared.TokenSink, options EncodeOptions) err
 				}
 				entries = append(entries, entry{keyStr, v})
 			}
-			if len(entries) != expectedLength {
+			if len(entries) != int(expectedLength) {
 				return fmt.Errorf("map Length() does not match number of MapIterator() entries")
 			}
 			// Apply the desired sort function.
@@ -104,7 +107,7 @@ func Marshal(n datamodel.Node, sink shared.TokenSink, options EncodeOptions) err
 				})
 			}
 			// Emit map contents (and recurse).
-			var entryCount int
+			var entryCount int64
 			for _, e := range entries {
 				tk.Type = tok.TString
 				tk.Str = e.key
@@ -141,12 +144,15 @@ func Marshal(n datamodel.Node, sink shared.TokenSink, options EncodeOptions) err
 		}
 		// Emit map close.
 		tk.Type = tok.TMapClose
-		_, err := sink.Step(&tk)
+		_, err = sink.Step(&tk)
 		return err
 	case datamodel.Kind_List:
 		// Emit start of list.
 		tk.Type = tok.TArrOpen
-		l := n.Length()
+		l, err := n.Length()
+		if err != nil {
+			return err
+		}
 		tk.Length = int(l) // TODO: overflow check
 		if _, err := sink.Step(&tk); err != nil {
 			return err
@@ -163,7 +169,7 @@ func Marshal(n datamodel.Node, sink shared.TokenSink, options EncodeOptions) err
 		}
 		// Emit list close.
 		tk.Type = tok.TArrClose
-		_, err := sink.Step(&tk)
+		_, err = sink.Step(&tk)
 		return err
 	case datamodel.Kind_Bool:
 		v, err := n.AsBool()

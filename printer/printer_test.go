@@ -273,8 +273,8 @@ func (n nilTypedNode) ListIterator() datamodel.ListIterator {
 	return nil
 }
 
-func (n nilTypedNode) Length() int64 {
-	return 0
+func (n nilTypedNode) Length() (int64, error) {
+	return 0, nil
 }
 
 func (n nilTypedNode) IsAbsent() bool {

@@ -74,8 +74,8 @@ func (Bar) MapIterator() datamodel.MapIterator {
 func (Bar) ListIterator() datamodel.ListIterator {
 	return nil
 }
-func (Bar) Length() int64 {
-	return -1
+func (Bar) Length() (int64, error) {
+	return -1, nil
 }
 func (Bar) IsAbsent() bool {
 	return false
@@ -283,8 +283,8 @@ func (Baz) MapIterator() datamodel.MapIterator {
 func (Baz) ListIterator() datamodel.ListIterator {
 	return nil
 }
-func (Baz) Length() int64 {
-	return -1
+func (Baz) Length() (int64, error) {
+	return -1, nil
 }
 func (Baz) IsAbsent() bool {
 	return false
@@ -488,8 +488,8 @@ func (Foo) MapIterator() datamodel.MapIterator {
 func (Foo) ListIterator() datamodel.ListIterator {
 	return nil
 }
-func (Foo) Length() int64 {
-	return -1
+func (Foo) Length() (int64, error) {
+	return -1, nil
 }
 func (Foo) IsAbsent() bool {
 	return false
@@ -693,8 +693,8 @@ func (Int) MapIterator() datamodel.MapIterator {
 func (Int) ListIterator() datamodel.ListIterator {
 	return nil
 }
-func (Int) Length() int64 {
-	return -1
+func (Int) Length() (int64, error) {
+	return -1, nil
 }
 func (Int) IsAbsent() bool {
 	return false
@@ -970,8 +970,8 @@ func (itr *_Map__String__Msg3__MapItr) Done() bool {
 func (Map__String__Msg3) ListIterator() datamodel.ListIterator {
 	return nil
 }
-func (n Map__String__Msg3) Length() int64 {
-	return int64(len(n.t))
+func (n Map__String__Msg3) Length() (int64, error) {
+	return int64(len(n.t)), nil
 }
 func (Map__String__Msg3) IsAbsent() bool {
 	return false
@@ -1304,8 +1304,8 @@ func (itr *_Map__String__Msg3__ReprMapItr) Done() bool {
 func (_Map__String__Msg3__Repr) ListIterator() datamodel.ListIterator {
 	return nil
 }
-func (rn *_Map__String__Msg3__Repr) Length() int64 {
-	return int64(len(rn.t))
+func (rn *_Map__String__Msg3__Repr) Length() (int64, error) {
+	return int64(len(rn.t)), nil
 }
 func (_Map__String__Msg3__Repr) IsAbsent() bool {
 	return false
@@ -1701,8 +1701,8 @@ func (itr *_Msg3__MapItr) Done() bool {
 func (Msg3) ListIterator() datamodel.ListIterator {
 	return nil
 }
-func (Msg3) Length() int64 {
-	return 3
+func (Msg3) Length() (int64, error) {
+	return 3, nil
 }
 func (Msg3) IsAbsent() bool {
 	return false
@@ -2194,9 +2194,9 @@ func (itr *_Msg3__ReprMapItr) Done() bool {
 func (_Msg3__Repr) ListIterator() datamodel.ListIterator {
 	return nil
 }
-func (rn *_Msg3__Repr) Length() int64 {
+func (rn *_Msg3__Repr) Length() (int64, error) {
 	l := 3
-	return int64(l)
+	return int64(l), nil
 }
 func (_Msg3__Repr) IsAbsent() bool {
 	return false
@@ -2669,8 +2669,8 @@ func (String) MapIterator() datamodel.MapIterator {
 func (String) ListIterator() datamodel.ListIterator {
 	return nil
 }
-func (String) Length() int64 {
-	return -1
+func (String) Length() (int64, error) {
+	return -1, nil
 }
 func (String) IsAbsent() bool {
 	return false
@@ -2933,8 +2933,8 @@ func (itr *_UnionKinded__MapItr) Done() bool {
 func (UnionKinded) ListIterator() datamodel.ListIterator {
 	return nil
 }
-func (UnionKinded) Length() int64 {
-	return 1
+func (UnionKinded) Length() (int64, error) {
+	return 1, nil
 }
 func (UnionKinded) IsAbsent() bool {
 	return false
@@ -3352,8 +3352,8 @@ func (n *_UnionKinded__Repr) MapIterator() datamodel.MapIterator {
 func (n *_UnionKinded__Repr) ListIterator() datamodel.ListIterator {
 	return nil
 }
-func (n *_UnionKinded__Repr) Length() int64 {
-	return -1
+func (n *_UnionKinded__Repr) Length() (int64, error) {
+	return -1, nil
 }
 func (n *_UnionKinded__Repr) IsAbsent() bool {
 	return false
@@ -3585,7 +3585,11 @@ func (na *_UnionKinded__ReprAssembler) AssignNode(v datamodel.Node) error {
 		v2, _ := v.AsBytes()
 		return na.AssignBytes(v2)
 	case datamodel.Kind_Map:
-		na, err := na.BeginMap(v.Length())
+		l, err := v.Length()
+		if err != nil {
+			return err
+		}
+		na, err := na.BeginMap(l)
 		if err != nil {
 			return err
 		}
@@ -3604,7 +3608,11 @@ func (na *_UnionKinded__ReprAssembler) AssignNode(v datamodel.Node) error {
 		}
 		return na.Finish()
 	case datamodel.Kind_List:
-		na, err := na.BeginList(v.Length())
+		l, err := v.Length()
+		if err != nil {
+			return err
+		}
+		na, err := na.BeginList(l)
 		if err != nil {
 			return err
 		}

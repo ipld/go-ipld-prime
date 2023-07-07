@@ -259,8 +259,8 @@ func (g mapGenerator) EmitNodeMethodMapIterator(w io.Writer) {
 
 func (g mapGenerator) EmitNodeMethodLength(w io.Writer) {
 	doTemplate(`
-		func (n {{ .Type | TypeSymbol }}) Length() int64 {
-			return int64(len(n.t))
+		func (n {{ .Type | TypeSymbol }}) Length() (int64, error) {
+			return int64(len(n.t)), nil
 		}
 	`, w, g.AdjCfg, g)
 }

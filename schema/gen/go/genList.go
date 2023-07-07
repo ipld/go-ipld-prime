@@ -42,7 +42,9 @@ func (g listGenerator) EmitNativeAccessors(w io.Writer) {
 	//    and may additionally incur a memcpy if the maybe for the value type doesn't use pointers internally).
 	doTemplate(`
 		func (n *_{{ .Type | TypeSymbol }}) Lookup(idx int64) {{ .Type.ValueType | TypeSymbol }} {
-			if n.Length() <= idx {
+			if l, err := n.Length(); err != nil {
+				return nil
+			} else if l <= idx {
 				return nil
 			}
 			v := &n.x[idx]
@@ -56,7 +58,9 @@ func (g listGenerator) EmitNativeAccessors(w io.Writer) {
 			{{- end}}
 		}
 		func (n *_{{ .Type | TypeSymbol }}) LookupMaybe(idx int64) Maybe{{ .Type.ValueType | TypeSymbol }} {
-			if n.Length() <= idx {
+			if l, err := n.Length(); err != nil {
+				return nil
+			} else if l <= idx {
 				return nil
 			}
 			v := &n.x[idx]
@@ -145,7 +149,9 @@ func (g listGenerator) EmitNodeTypeAssertions(w io.Writer) {
 func (g listGenerator) EmitNodeMethodLookupByIndex(w io.Writer) {
 	doTemplate(`
 		func (n {{ .Type | TypeSymbol }}) LookupByIndex(idx int64) (datamodel.Node, error) {
-			if n.Length() <= idx {
+			if l, err := n.Length(); err != nil {
+				return nil, err
+			} else if l <= idx {
 				return nil, datamodel.ErrNotExists{Segment: datamodel.PathSegmentOfInt(idx)}
 			}
 			v := &n.x[idx]
@@ -214,8 +220,8 @@ func (g listGenerator) EmitNodeMethodListIterator(w io.Writer) {
 
 func (g listGenerator) EmitNodeMethodLength(w io.Writer) {
 	doTemplate(`
-		func (n {{ .Type | TypeSymbol }}) Length() int64 {
-			return int64(len(n.x))
+		func (n {{ .Type | TypeSymbol }}) Length() (int64, error) {
+			return int64(len(n.x)), nil
 		}
 	`, w, g.AdjCfg, g)
 }

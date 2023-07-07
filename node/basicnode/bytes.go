@@ -46,8 +46,8 @@ func (plainBytes) MapIterator() datamodel.MapIterator {
 func (plainBytes) ListIterator() datamodel.ListIterator {
 	return nil
 }
-func (plainBytes) Length() int64 {
-	return -1
+func (plainBytes) Length() (int64, error) {
+	return -1, nil
 }
 func (plainBytes) IsAbsent() bool {
 	return false

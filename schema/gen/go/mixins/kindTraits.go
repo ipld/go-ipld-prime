@@ -102,8 +102,8 @@ func (g kindTraitsGenerator) emitNodeMethodLength(w io.Writer) {
 		panic("gen internals error: you should've overriden this")
 	}
 	doTemplate(`
-		func ({{ .TypeSymbol }}) Length() int64 {
-			return -1
+		func ({{ .TypeSymbol }}) Length() (int64, error) {
+			return -1, nil
 		}
 	`, w, g)
 }

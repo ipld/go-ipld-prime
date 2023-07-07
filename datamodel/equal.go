@@ -106,7 +106,15 @@ func DeepEqual(x, y Node) bool {
 
 	// Recursive kinds.
 	case Kind_Map:
-		if x.Length() != y.Length() {
+		xl, err := x.Length()
+		if err != nil {
+			panic(err)
+		}
+		yl, err := y.Length()
+		if err != nil {
+			panic(err)
+		}
+		if xl != yl {
 			return false
 		}
 		xitr := x.MapIterator()
@@ -129,7 +137,15 @@ func DeepEqual(x, y Node) bool {
 		}
 		return true
 	case Kind_List:
-		if x.Length() != y.Length() {
+		xl, err := x.Length()
+		if err != nil {
+			panic(err)
+		}
+		yl, err := y.Length()
+		if err != nil {
+			panic(err)
+		}
+		if xl != yl {
 			return false
 		}
 		xitr := x.ListIterator()

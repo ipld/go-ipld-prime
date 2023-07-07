@@ -59,8 +59,8 @@ func (n *plainMap) MapIterator() datamodel.MapIterator {
 func (plainMap) ListIterator() datamodel.ListIterator {
 	return nil
 }
-func (n *plainMap) Length() int64 {
-	return int64(len(n.t))
+func (n *plainMap) Length() (int64, error) {
+	return int64(len(n.t)), nil
 }
 func (plainMap) IsAbsent() bool {
 	return false

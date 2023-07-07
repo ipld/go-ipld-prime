@@ -252,7 +252,11 @@ func (prog Progress) focusedTransform(n datamodel.Node, na datamodel.NodeAssembl
 	//   so we only get to this case if we were expecting to go deeper.
 	switch n.Kind() {
 	case datamodel.Kind_Map:
-		ma, err := na.BeginMap(n.Length())
+		l, err := n.Length()
+		if err != nil {
+			return err
+		}
+		ma, err := na.BeginMap(l)
 		if err != nil {
 			return err
 		}
@@ -332,7 +336,11 @@ func (prog Progress) focusedTransform(n datamodel.Node, na datamodel.NodeAssembl
 		}
 		return ma.Finish()
 	case datamodel.Kind_List:
-		la, err := na.BeginList(n.Length())
+		l, err := n.Length()
+		if err != nil {
+			return err
+		}
+		la, err := na.BeginList(l)
 		if err != nil {
 			return err
 		}
@@ -374,7 +382,11 @@ func (prog Progress) focusedTransform(n datamodel.Node, na datamodel.NodeAssembl
 		if ti >= 0 {
 			return fmt.Errorf("transform: cannot navigate path segment %q at %q because it is beyond the list bounds", seg, prog.Path)
 		}
-		prog.Path = prog.Path.AppendSegment(datamodel.PathSegmentOfInt(n.Length()))
+		nl, err := n.Length()
+		if err != nil {
+			return err
+		}
+		prog.Path = prog.Path.AppendSegment(datamodel.PathSegmentOfInt(nl))
 		if err := prog.focusedTransform(nil, la.AssembleValue(), p2, fn, createParents); err != nil {
 			return err
 		}

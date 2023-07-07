@@ -31,7 +31,11 @@ func (plainList) LookupByNode(datamodel.Node) (datamodel.Node, error) {
 	return mixins.List{TypeName: "list"}.LookupByNode(nil)
 }
 func (n *plainList) LookupByIndex(idx int64) (datamodel.Node, error) {
-	if n.Length() <= idx {
+	l, err := n.Length()
+	if err != nil {
+		return nil, err
+	}
+	if l <= idx {
 		return nil, datamodel.ErrNotExists{Segment: datamodel.PathSegmentOfInt(idx)}
 	}
 	return n.x[idx], nil
@@ -49,8 +53,8 @@ func (plainList) MapIterator() datamodel.MapIterator {
 func (n *plainList) ListIterator() datamodel.ListIterator {
 	return &plainList_ListIterator{n, 0}
 }
-func (n *plainList) Length() int64 {
-	return int64(len(n.x))
+func (n *plainList) Length() (int64, error) {
+	return int64(len(n.x)), nil
 }
 func (plainList) IsAbsent() bool {
 	return false

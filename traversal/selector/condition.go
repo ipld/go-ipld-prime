@@ -55,7 +55,11 @@ func (pc ParseContext) ParseCondition(n datamodel.Node) (Condition, error) {
 	if n.Kind() != datamodel.Kind_Map {
 		return Condition{}, fmt.Errorf("selector spec parse rejected: condition body must be a map")
 	}
-	if n.Length() != 1 {
+	l, err := n.Length()
+	if err != nil {
+		return Condition{}, err
+	}
+	if l != 1 {
 		return Condition{}, fmt.Errorf("selector spec parse rejected: condition is a keyed union and thus must be single-entry map")
 	}
 	kn, v, _ := n.MapIterator().Next()

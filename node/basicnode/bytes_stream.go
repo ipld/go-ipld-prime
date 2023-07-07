@@ -46,8 +46,8 @@ func (streamBytes) MapIterator() datamodel.MapIterator {
 func (streamBytes) ListIterator() datamodel.ListIterator {
 	return nil
 }
-func (streamBytes) Length() int64 {
-	return -1
+func (streamBytes) Length() (int64, error) {
+	return -1, nil
 }
 func (streamBytes) IsAbsent() bool {
 	return false

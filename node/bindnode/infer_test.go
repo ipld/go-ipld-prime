@@ -616,7 +616,11 @@ func useNodeAsKind(node datamodel.Node, asKind datamodel.Kind) error {
 			return err
 		}
 
-		switch l := node.Length(); l {
+		l, err := node.Length()
+		if err != nil {
+			return err
+		}
+		switch l {
 		case 2:
 		case -1:
 			// Return a dummy error to signal whether Length failed.
@@ -657,7 +661,11 @@ func useNodeAsKind(node datamodel.Node, asKind datamodel.Kind) error {
 			return err
 		}
 
-		switch l := node.Length(); l {
+		l, err := node.Length()
+		if err != nil {
+			return err
+		}
+		switch l {
 		case 2:
 		case -1:
 			// Return a dummy error to signal whether Length failed.

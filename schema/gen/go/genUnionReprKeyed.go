@@ -160,8 +160,8 @@ func (g unionReprKeyedReprGenerator) EmitNodeMethodMapIterator(w io.Writer) {
 
 func (g unionReprKeyedReprGenerator) EmitNodeMethodLength(w io.Writer) {
 	doTemplate(`
-		func (_{{ .Type | TypeSymbol }}__Repr) Length() int64 {
-			return 1
+		func (_{{ .Type | TypeSymbol }}__Repr) Length() (int64, error) {
+			return 1, nil
 		}
 	`, w, g.AdjCfg, g)
 }

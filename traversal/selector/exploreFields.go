@@ -56,9 +56,13 @@ func (pc ParseContext) ParseExploreFields(n datamodel.Node) (Selector, error) {
 	if fields.Kind() != datamodel.Kind_Map {
 		return nil, fmt.Errorf("selector spec parse rejected: fields in ExploreFields selector must be a map")
 	}
+	fl, err := fields.Length()
+	if err != nil {
+		return nil, err
+	}
 	x := ExploreFields{
-		make(map[string]Selector, fields.Length()),
-		make([]datamodel.PathSegment, 0, fields.Length()),
+		make(map[string]Selector, fl),
+		make([]datamodel.PathSegment, 0, fl),
 	}
 	for itr := fields.MapIterator(); !itr.Done(); {
 		kn, v, err := itr.Next()

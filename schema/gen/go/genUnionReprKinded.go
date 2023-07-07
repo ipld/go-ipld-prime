@@ -228,12 +228,12 @@ func (g unionKindedReprGenerator) EmitNodeMethodListIterator(w io.Writer) {
 func (g unionKindedReprGenerator) EmitNodeMethodLength(w io.Writer) {
 	doTemplate(kindedUnionNodeMethodTemplateMunge(
 		`Length`,
-		`Length() int64`,
+		`Length() (int64, error)`,
 		`{{- if or (.Type.RepresentationStrategy.GetMember (Kind "map")) (.Type.RepresentationStrategy.GetMember (Kind "list")) }}`,
 		`{{- if or (eq $member.RepresentationBehavior.String "map") (eq $member.RepresentationBehavior.String "list") }}`,
 		`.Length()`,
 		`datamodel.KindSet_Recursive`,
-		`-1`,
+		`-1, nil`,
 		true,
 	), w, g.AdjCfg, g)
 }
@@ -590,7 +590,11 @@ func (g unionKindedReprBuilderGenerator) EmitNodeAssemblerMethodAssignNode(w io.
 				v2, _ := v.AsBytes()
 				return na.AssignBytes(v2)
 			case datamodel.Kind_Map:
-				na, err := na.BeginMap(v.Length())
+				l, err := v.Length()
+				if err != nil {
+					return err
+				}
+				na, err := na.BeginMap(l)
 				if err != nil {
 					return err
 				}
@@ -609,7 +613,11 @@ func (g unionKindedReprBuilderGenerator) EmitNodeAssemblerMethodAssignNode(w io.
 				}
 				return na.Finish()
 			case datamodel.Kind_List:
-				na, err := na.BeginList(v.Length())
+				l, err := v.Length()
+				if err != nil {
+					return err
+				}
+				na, err := na.BeginList(l)
 				if err != nil {
 					return err
 				}

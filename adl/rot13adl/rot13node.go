@@ -58,8 +58,8 @@ func (*_R13String) MapIterator() datamodel.MapIterator {
 func (*_R13String) ListIterator() datamodel.ListIterator {
 	return nil
 }
-func (*_R13String) Length() int64 {
-	return -1
+func (*_R13String) Length() (int64, error) {
+	return -1, nil
 }
 func (*_R13String) IsAbsent() bool {
 	return false

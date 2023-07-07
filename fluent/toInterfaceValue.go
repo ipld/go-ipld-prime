@@ -34,7 +34,11 @@ func ToInterface(node datamodel.Node) (interface{}, error) {
 	case datamodel.Kind_Link:
 		return node.AsLink()
 	case datamodel.Kind_Map:
-		outMap := make(map[string]interface{}, node.Length())
+		l, err := node.Length()
+		if err != nil {
+			return nil, err
+		}
+		outMap := make(map[string]interface{}, l)
 		for mi := node.MapIterator(); !mi.Done(); {
 			k, v, err := mi.Next()
 			if err != nil {
@@ -52,7 +56,11 @@ func ToInterface(node datamodel.Node) (interface{}, error) {
 		}
 		return outMap, nil
 	case datamodel.Kind_List:
-		outList := make([]interface{}, 0, node.Length())
+		l, err := node.Length()
+		if err != nil {
+			return nil, err
+		}
+		outList := make([]interface{}, 0, l)
 		for li := node.ListIterator(); !li.Done(); {
 			_, v, err := li.Next()
 			if err != nil {

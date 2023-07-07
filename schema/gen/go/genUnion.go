@@ -231,8 +231,8 @@ func (g unionGenerator) EmitNodeMethodMapIterator(w io.Writer) {
 
 func (g unionGenerator) EmitNodeMethodLength(w io.Writer) {
 	doTemplate(`
-		func ({{ .Type | TypeSymbol }}) Length() int64 {
-			return 1
+		func ({{ .Type | TypeSymbol }}) Length() (int64, error) {
+			return 1, nil
 		}
 	`, w, g.AdjCfg, g)
 }

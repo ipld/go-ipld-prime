@@ -31,8 +31,8 @@ func (nullNode) MapIterator() MapIterator {
 func (nullNode) ListIterator() ListIterator {
 	return nil
 }
-func (nullNode) Length() int64 {
-	return -1
+func (nullNode) Length() (int64, error) {
+	return -1, nil
 }
 func (nullNode) IsAbsent() bool {
 	return false
@@ -110,8 +110,8 @@ func (absentNode) MapIterator() MapIterator {
 func (absentNode) ListIterator() ListIterator {
 	return nil
 }
-func (absentNode) Length() int64 {
-	return -1
+func (absentNode) Length() (int64, error) {
+	return -1, nil
 }
 func (absentNode) IsAbsent() bool {
 	return true
