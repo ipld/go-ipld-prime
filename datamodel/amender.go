@@ -20,17 +20,17 @@ type containerAmender interface {
 	Empty() bool
 	Length() int64
 	Clear()
-	Values() ([]Node, error)
+	Values() (Node, error) // returns a list node with the values
 
 	NodeAmender
 }
 
 // MapAmender adds a map-like interface to NodeAmender
 type MapAmender interface {
-	Put(key string, value Node) (bool, error)
-	Get(key string) (Node, error)
-	Remove(key string) (bool, error)
-	Keys() ([]string, error)
+	Put(key Node, value Node) error
+	Get(key Node) (Node, error)
+	Remove(key Node) (bool, error)
+	Keys() (Node, error) // returns a list node with the keys
 
 	containerAmender
 }
@@ -39,8 +39,8 @@ type MapAmender interface {
 type ListAmender interface {
 	Get(idx int64) (Node, error)
 	Remove(idx int64) error
-	Append(values ...Node) error
-	Insert(idx int64, values ...Node) error
+	Append(values Node) error            // accepts a list node
+	Insert(idx int64, values Node) error // accepts a list node
 	Set(idx int64, value Node) error
 
 	containerAmender

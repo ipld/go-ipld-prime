@@ -284,12 +284,12 @@ func (nb *plainList__Builder) Remove(idx int64) error {
 	return err
 }
 
-func (nb *plainList__Builder) Append(values ...datamodel.Node) error {
+func (nb *plainList__Builder) Append(values datamodel.Node) error {
 	// Passing an index equal to the length of the list will append the passed values to the end of the list
-	return nb.Insert(nb.Length(), values...)
+	return nb.Insert(nb.Length(), values)
 }
 
-func (nb *plainList__Builder) Insert(idx int64, values ...datamodel.Node) error {
+func (nb *plainList__Builder) Insert(idx int64, values datamodel.Node) error {
 	var ps datamodel.PathSegment
 	if idx == nb.Length() {
 		ps = datamodel.PathSegmentOfString("-") // indicates appending to the end of the list
@@ -299,22 +299,7 @@ func (nb *plainList__Builder) Insert(idx int64, values ...datamodel.Node) error 
 	_, err := nb.Transform(
 		datamodel.NewPath([]datamodel.PathSegment{ps}),
 		func(_ datamodel.Node) (datamodel.NodeAmender, error) {
-			// Put all the passed values into a new list. That will result in these values being expanded at the
-			// specified index.
-			na := nb.Prototype().NewBuilder()
-			la, err := na.BeginList(int64(len(values)))
-			if err != nil {
-				return nil, err
-			}
-			for _, v := range values {
-				if err := la.AssembleValue().AssignNode(v); err != nil {
-					return nil, err
-				}
-			}
-			if err := la.Finish(); err != nil {
-				return nil, err
-			}
-			return Prototype.Any.AmendingBuilder(na.Build()), nil
+			return Prototype.Any.AmendingBuilder(values), nil
 		},
 	)
 	return err
@@ -336,16 +321,8 @@ func (nb *plainList__Builder) Clear() {
 	nb.Reset()
 }
 
-func (nb *plainList__Builder) Values() ([]datamodel.Node, error) {
-	values := make([]datamodel.Node, 0, nb.Length())
-	for itr := nb.w.ListIterator(); !itr.Done(); {
-		_, v, err := itr.Next()
-		if err != nil {
-			return nil, err
-		}
-		values = append(values, v)
-	}
-	return values, nil
+func (nb *plainList__Builder) Values() (datamodel.Node, error) {
+	return nb.Build(), nil
 }
 
 // -- NodeAssembler -->

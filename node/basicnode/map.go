@@ -202,10 +202,7 @@ func (nb *plainMap__Builder) Transform(path datamodel.Path, transform datamodel.
 			if string(v.k) == childKey {
 				if newChildAmender == nil {
 					delete(nb.w.m, childKey)
-					newT := make([]plainMap__Entry, nb.w.Length()-1)
-					copy(newT, nb.w.t[:idx])
-					copy(newT[:idx], nb.w.t[idx+1:])
-					nb.w.t = newT
+					nb.w.t = append(nb.w.t[:idx], nb.w.t[idx+1:]...)
 				} else {
 					nb.w.t[idx].v = newChildAmender
 					nb.w.m[string(nb.w.t[idx].k)] = newChildAmender
@@ -219,27 +216,35 @@ func (nb *plainMap__Builder) Transform(path datamodel.Path, transform datamodel.
 	}
 }
 
-func (nb *plainMap__Builder) Put(key string, value datamodel.Node) (bool, error) {
-	if prevNode, err := nb.Transform(
-		datamodel.NewPath([]datamodel.PathSegment{datamodel.PathSegmentOfString(key)}),
+func (nb *plainMap__Builder) Put(key datamodel.Node, value datamodel.Node) error {
+	ks, err := key.AsString()
+	if err != nil {
+		return err
+	}
+	if _, err := nb.Transform(
+		datamodel.NewPath([]datamodel.PathSegment{datamodel.PathSegmentOfString(ks)}),
 		func(_ datamodel.Node) (datamodel.NodeAmender, error) {
 			return Prototype.Any.AmendingBuilder(value), nil
 		},
 	); err != nil {
-		return false, err
+		return err
 	} else {
 		// If there was no previous node, we just added a new node.
-		return prevNode == nil, nil
+		return nil
 	}
 }
 
-func (nb *plainMap__Builder) Get(key string) (datamodel.Node, error) {
-	return nb.w.LookupByString(key)
+func (nb *plainMap__Builder) Get(key datamodel.Node) (datamodel.Node, error) {
+	return nb.w.LookupByNode(key)
 }
 
-func (nb *plainMap__Builder) Remove(key string) (bool, error) {
+func (nb *plainMap__Builder) Remove(key datamodel.Node) (bool, error) {
+	ks, err := key.AsString()
+	if err != nil {
+		return false, err
+	}
 	if prevNode, err := nb.Transform(
-		datamodel.NewPath([]datamodel.PathSegment{datamodel.PathSegmentOfString(key)}),
+		datamodel.NewPath([]datamodel.PathSegment{datamodel.PathSegmentOfString(ks)}),
 		func(_ datamodel.Node) (datamodel.NodeAmender, error) {
 			return nil, nil
 		},
@@ -251,20 +256,35 @@ func (nb *plainMap__Builder) Remove(key string) (bool, error) {
 	}
 }
 
-func (nb *plainMap__Builder) Keys() ([]string, error) {
-	keys := make([]string, 0, nb.Length())
-	for itr := nb.w.MapIterator(); !itr.Done(); {
-		k, _, err := itr.Next()
-		if err != nil {
-			return nil, err
-		}
-		keyStr, err := k.AsString()
-		if err != nil {
-			return nil, err
-		}
-		keys = append(keys, keyStr)
+func (nb *plainMap__Builder) Keys() (datamodel.Node, error) {
+	return nb.toList(true)
+}
+
+func (nb *plainMap__Builder) toList(keysOrValues bool) (datamodel.Node, error) {
+	// Create a new List node and initialize its storage
+	lb := Prototype.List.AmendingBuilder(nil)
+	_, err := lb.BeginList(nb.Length())
+	if err != nil {
+		return nil, err
 	}
-	return keys, nil
+	var idx int64 = 0
+	for itr := nb.w.MapIterator(); !itr.Done(); {
+		k, v, err := itr.Next()
+		if err != nil {
+			return nil, err
+		}
+		var n datamodel.Node
+		if keysOrValues {
+			n = k
+		} else {
+			n = v
+		}
+		if err = lb.Set(idx, n); err != nil {
+			return nil, err
+		}
+		idx++
+	}
+	return lb.Build(), nil
 }
 
 func (nb *plainMap__Builder) Empty() bool {
@@ -279,16 +299,8 @@ func (nb *plainMap__Builder) Clear() {
 	nb.Reset()
 }
 
-func (nb *plainMap__Builder) Values() ([]datamodel.Node, error) {
-	values := make([]datamodel.Node, 0, nb.Length())
-	for itr := nb.w.MapIterator(); !itr.Done(); {
-		_, v, err := itr.Next()
-		if err != nil {
-			return nil, err
-		}
-		values = append(values, v)
-	}
-	return values, nil
+func (nb *plainMap__Builder) Values() (datamodel.Node, error) {
+	return nb.toList(false)
 }
 
 // -- NodeAssembler -->
