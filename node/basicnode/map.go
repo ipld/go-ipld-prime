@@ -259,7 +259,6 @@ func (nb *plainMap__Builder) toList(keysOrValues bool) (datamodel.Node, error) {
 	if err != nil {
 		return nil, err
 	}
-	var idx int64 = 0
 	for itr := nb.w.MapIterator(); !itr.Done(); {
 		k, v, err := itr.Next()
 		if err != nil {
@@ -271,10 +270,9 @@ func (nb *plainMap__Builder) toList(keysOrValues bool) (datamodel.Node, error) {
 		} else {
 			n = v
 		}
-		if err = lb.Set(idx, n); err != nil {
+		if err := lb.Append(n); err != nil {
 			return nil, err
 		}
-		idx++
 	}
 	return lb.Build(), nil
 }
