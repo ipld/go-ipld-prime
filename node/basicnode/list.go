@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"reflect"
 
+	"golang.org/x/exp/slices"
+
 	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/node/mixins"
 )
@@ -160,6 +162,10 @@ func (nb *plainList__Builder) Reset() {
 // -- NodeAmender -->
 
 func (nb *plainList__Builder) Transform(path datamodel.Path, transform datamodel.AmendFn) (datamodel.Node, error) {
+	return nb.transform(path, transform, true)
+}
+
+func (nb *plainList__Builder) transform(path datamodel.Path, transform datamodel.AmendFn, replace bool) (datamodel.Node, error) {
 	// Can only transform the root of the node or an immediate child.
 	if path.Len() > 1 {
 		panic("misuse")
@@ -217,20 +223,20 @@ func (nb *plainList__Builder) Transform(path datamodel.Path, transform datamodel
 	if newChildVal, err := transform(prevChildVal); err != nil {
 		return nil, err
 	} else if newChildVal == nil {
-		newX := make([]datamodel.NodeAmender, nb.w.Length()-1)
-		copy(newX, nb.w.x[:childIdx])
-		copy(newX[:childIdx], nb.w.x[childIdx+1:])
-		nb.w.x = newX
-	} else if err = nb.storeChildAmender(childIdx, newChildVal); err != nil {
+		// Ref: https://pkg.go.dev/golang.org/x/exp/slices#Delete
+		idx := int(childIdx)
+		nb.w.x[idx] = nil
+		nb.w.x = slices.Delete(nb.w.x, idx, idx+1)
+	} else if err = nb.storeChildAmender(childIdx, newChildVal, replace); err != nil {
 		return nil, err
 	}
 	return prevChildVal, nil
 }
 
-func (nb *plainList__Builder) storeChildAmender(childIdx int64, a datamodel.NodeAmender) error {
+func (nb *plainList__Builder) storeChildAmender(childIdx int64, a datamodel.NodeAmender, replace bool) error {
 	var elems []datamodel.NodeAmender
 	n := a.Build()
-	if (n.Kind() == datamodel.Kind_List) && (n.Length() > 0) {
+	if n.Kind() == datamodel.Kind_List {
 		elems = make([]datamodel.NodeAmender, n.Length())
 		// The following logic uses a transformed list (if there is one) to perform both insertions (needed by JSON
 		// Patch) and replacements (needed by `focus` and `walk`), while also providing the flexibility to insert more
@@ -258,14 +264,36 @@ func (nb *plainList__Builder) storeChildAmender(childIdx int64, a datamodel.Node
 		elems = []datamodel.NodeAmender{Prototype.Any.AmendingBuilder(n)}
 	}
 	if childIdx == nb.w.Length() {
+		// Operations at the end of the list are straightforward - just append, and we're done.
 		nb.w.x = append(nb.w.x, elems...)
-	} else {
-		numElems := int64(len(elems))
-		newX := make([]datamodel.NodeAmender, nb.w.Length()+numElems-1)
-		copy(newX, nb.w.x[:childIdx])
-		copy(newX[childIdx:], elems)
-		copy(newX[childIdx+numElems:], nb.w.x[childIdx+1:])
-		nb.w.x = newX
+		return nil
+	}
+	numElems := len(elems)
+	if numElems > 0 {
+		if nb.w.x == nil {
+			// Allocate storage space
+			nb.w.x = make([]datamodel.NodeAmender, numElems)
+		} else {
+			// Allocate storage space
+			numElemsToAdd := numElems
+			if replace {
+				// We'll be replacing an existing element and need one slot less than the total number of elements being
+				// added.
+				numElemsToAdd--
+			}
+			nb.w.x = slices.Grow(nb.w.x, numElemsToAdd)
+		}
+		copyStartIdx := 0
+		if replace {
+			// Use the first passed element to replace the element currently at the specified index
+			nb.w.x[childIdx] = elems[0]
+			copyStartIdx++
+		}
+		if !replace || (numElems > 1) {
+			// If more elements were specified, insert them after the specified index.
+			// Ref: https://pkg.go.dev/golang.org/x/exp/slices#Insert
+			nb.w.x = slices.Insert(nb.w.x, int(childIdx)+copyStartIdx, elems[copyStartIdx:]...)
+		}
 	}
 	return nil
 }
@@ -284,29 +312,33 @@ func (nb *plainList__Builder) Remove(idx int64) error {
 	return err
 }
 
-func (nb *plainList__Builder) Append(values datamodel.Node) error {
-	// Passing an index equal to the length of the list will append the passed values to the end of the list
-	return nb.Insert(nb.Length(), values)
+func (nb *plainList__Builder) Append(value datamodel.Node) error {
+	return nb.Set(nb.Length(), value)
 }
 
-func (nb *plainList__Builder) Insert(idx int64, values datamodel.Node) error {
+func (nb *plainList__Builder) Insert(idx int64, value datamodel.Node) error {
+	return nb.addElements(idx, value, false)
+}
+
+func (nb *plainList__Builder) Set(idx int64, value datamodel.Node) error {
+	return nb.addElements(idx, value, true)
+}
+
+func (nb *plainList__Builder) addElements(idx int64, value datamodel.Node, replaced bool) error {
 	var ps datamodel.PathSegment
 	if idx == nb.Length() {
 		ps = datamodel.PathSegmentOfString("-") // indicates appending to the end of the list
 	} else {
 		ps = datamodel.PathSegmentOfInt(idx)
 	}
-	_, err := nb.Transform(
+	_, err := nb.transform(
 		datamodel.NewPath([]datamodel.PathSegment{ps}),
 		func(_ datamodel.Node) (datamodel.NodeAmender, error) {
-			return Prototype.Any.AmendingBuilder(values), nil
+			return Prototype.Any.AmendingBuilder(value), nil
 		},
+		replaced,
 	)
 	return err
-}
-
-func (nb *plainList__Builder) Set(idx int64, value datamodel.Node) error {
-	return nb.Insert(idx, value)
 }
 
 func (nb *plainList__Builder) Empty() bool {

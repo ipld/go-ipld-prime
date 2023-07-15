@@ -216,13 +216,9 @@ func (nb *plainMap__Builder) Transform(path datamodel.Path, transform datamodel.
 	}
 }
 
-func (nb *plainMap__Builder) Put(key datamodel.Node, value datamodel.Node) error {
-	ks, err := key.AsString()
-	if err != nil {
-		return err
-	}
+func (nb *plainMap__Builder) Put(key string, value datamodel.Node) error {
 	if _, err := nb.Transform(
-		datamodel.NewPath([]datamodel.PathSegment{datamodel.PathSegmentOfString(ks)}),
+		datamodel.NewPath([]datamodel.PathSegment{datamodel.PathSegmentOfString(key)}),
 		func(_ datamodel.Node) (datamodel.NodeAmender, error) {
 			return Prototype.Any.AmendingBuilder(value), nil
 		},
@@ -234,17 +230,13 @@ func (nb *plainMap__Builder) Put(key datamodel.Node, value datamodel.Node) error
 	}
 }
 
-func (nb *plainMap__Builder) Get(key datamodel.Node) (datamodel.Node, error) {
-	return nb.w.LookupByNode(key)
+func (nb *plainMap__Builder) Get(key string) (datamodel.Node, error) {
+	return nb.w.LookupByString(key)
 }
 
-func (nb *plainMap__Builder) Remove(key datamodel.Node) (bool, error) {
-	ks, err := key.AsString()
-	if err != nil {
-		return false, err
-	}
+func (nb *plainMap__Builder) Remove(key string) (bool, error) {
 	if prevNode, err := nb.Transform(
-		datamodel.NewPath([]datamodel.PathSegment{datamodel.PathSegmentOfString(ks)}),
+		datamodel.NewPath([]datamodel.PathSegment{datamodel.PathSegmentOfString(key)}),
 		func(_ datamodel.Node) (datamodel.NodeAmender, error) {
 			return nil, nil
 		},

@@ -138,7 +138,7 @@ func TestMapBuilder(t *testing.T) {
 	anotherNode := c.Build()
 
 	actual = printer.Sprint(anotherNode)
-	qt.Assert(t, expect, qt.Equals, actual)
+	qt.Assert(t, actual, qt.Equals, expect)
 
 	// access values of map, using string
 	r, err := anotherNode.LookupByString("cat")
@@ -313,20 +313,20 @@ func TestMapAmendingBuilderNewNode(t *testing.T) {
 	// Create a map amender with an empty base node
 	amender := basicnode.Prototype.Map.AmendingBuilder(nil)
 
-	err := amender.Put(basicnode.NewString("cat"), basicnode.NewString("meow"))
+	err := amender.Put("cat", basicnode.NewString("meow"))
 	if err != nil {
 		t.Fatal(err)
 	}
 	// Retry adding the entry
-	err = amender.Put(basicnode.NewString("cat"), basicnode.NewString("meow"))
+	err = amender.Put("cat", basicnode.NewString("meow"))
 	if err != nil {
 		t.Fatal(err)
 	}
-	err = amender.Put(basicnode.NewString("dog"), basicnode.NewString("bark"))
+	err = amender.Put("dog", basicnode.NewString("bark"))
 	if err != nil {
 		t.Fatal(err)
 	}
-	err = amender.Put(basicnode.NewString("eel"), basicnode.NewString("zap"))
+	err = amender.Put("eel", basicnode.NewString("zap"))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -368,13 +368,13 @@ func TestMapAmendingBuilderNewNode(t *testing.T) {
 	qt.Check(t, fmt.Sprintf("%T", np), qt.Equals, "basicnode.Prototype__Map")
 
 	// Amend the map
-	err = amender.Put(basicnode.NewString("cat"), basicnode.NewString("purr"))
+	err = amender.Put("cat", basicnode.NewString("purr"))
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	// Access updated value of map, using get
-	r, err = amender.Get(basicnode.NewString("cat"))
+	r, err = amender.Get("cat")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -388,10 +388,10 @@ func TestMapAmendingBuilderNewNode(t *testing.T) {
 
 	// The original node should have been updated
 	actual = printer.Sprint(mapNode)
-	qt.Assert(t, expect, qt.Equals, actual)
+	qt.Assert(t, actual, qt.Equals, expect)
 
 	// Remove an entry
-	removed, err := amender.Remove(basicnode.NewString("cat"))
+	removed, err := amender.Remove("cat")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -404,10 +404,10 @@ func TestMapAmendingBuilderNewNode(t *testing.T) {
 
 	// The original node should have been updated
 	actual = printer.Sprint(mapNode)
-	qt.Assert(t, expect, qt.Equals, actual)
+	qt.Assert(t, actual, qt.Equals, expect)
 
 	// Should not find "cat"
-	r, err = amender.Get(basicnode.NewString("cat"))
+	r, err = amender.Get("cat")
 	if _, notFoundErr := err.(datamodel.ErrNotExists); !notFoundErr {
 		t.Fatal(err)
 	}
@@ -421,7 +421,7 @@ func TestMapAmendingBuilderNewNode(t *testing.T) {
 	1: string{"eel"}
 }`
 	actual = printer.Sprint(keys)
-	qt.Assert(t, expect, qt.Equals, actual)
+	qt.Assert(t, actual, qt.Equals, expect)
 
 	values, err := amender.Values()
 	if err != nil {
@@ -432,13 +432,12 @@ func TestMapAmendingBuilderNewNode(t *testing.T) {
 	1: string{"zap"}
 }`
 	actual = printer.Sprint(values)
-	qt.Assert(t, expect, qt.Equals, actual)
+	qt.Assert(t, actual, qt.Equals, expect)
 }
 
 func TestMapAmendingBuilderExistingNode(t *testing.T) {
 	b := basicnode.Prototype.Map.NewBuilder()
 
-	// construct a map of three keys, using the MapBuilder
 	ma, err := b.BeginMap(3)
 	if err != nil {
 		t.Fatal(err)
@@ -464,7 +463,7 @@ func TestMapAmendingBuilderExistingNode(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	// Wrap in an amending builder
+	// Wrap in an amending build
 	amender := basicnode.Prototype.Map.AmendingBuilder(b.Build())
 
 	// Compare the printed map
@@ -504,13 +503,13 @@ func TestMapAmendingBuilderExistingNode(t *testing.T) {
 	qt.Check(t, fmt.Sprintf("%T", np), qt.Equals, "basicnode.Prototype__Map")
 
 	// Amend the map
-	err = amender.Put(basicnode.NewString("cat"), basicnode.NewString("purr"))
+	err = amender.Put("cat", basicnode.NewString("purr"))
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	// Access updated value of map, using get
-	r, err = amender.Get(basicnode.NewString("cat"))
+	r, err = amender.Get("cat")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -524,10 +523,10 @@ func TestMapAmendingBuilderExistingNode(t *testing.T) {
 
 	// The original node should have been updated
 	actual = printer.Sprint(mapNode)
-	qt.Assert(t, expect, qt.Equals, actual)
+	qt.Assert(t, actual, qt.Equals, expect)
 
 	// Remove an entry
-	removed, err := amender.Remove(basicnode.NewString("cat"))
+	removed, err := amender.Remove("cat")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -540,10 +539,10 @@ func TestMapAmendingBuilderExistingNode(t *testing.T) {
 
 	// The original node should have been updated
 	actual = printer.Sprint(mapNode)
-	qt.Assert(t, expect, qt.Equals, actual)
+	qt.Assert(t, actual, qt.Equals, expect)
 
 	// Should not find "cat"
-	r, err = amender.Get(basicnode.NewString("cat"))
+	r, err = amender.Get("cat")
 	if _, notFoundErr := err.(datamodel.ErrNotExists); !notFoundErr {
 		t.Fatal(err)
 	}
@@ -557,7 +556,7 @@ func TestMapAmendingBuilderExistingNode(t *testing.T) {
 	1: string{"eel"}
 }`
 	actual = printer.Sprint(keys)
-	qt.Assert(t, expect, qt.Equals, actual)
+	qt.Assert(t, actual, qt.Equals, expect)
 
 	values, err := amender.Values()
 	if err != nil {
@@ -568,13 +567,12 @@ func TestMapAmendingBuilderExistingNode(t *testing.T) {
 	1: string{"zap"}
 }`
 	actual = printer.Sprint(values)
-	qt.Assert(t, expect, qt.Equals, actual)
+	qt.Assert(t, actual, qt.Equals, expect)
 }
 
 func TestMapAmendingBuilderCopiedNode(t *testing.T) {
 	b := basicnode.Prototype.Map.NewBuilder()
 
-	// Construct a map of three keys, using the MapBuilder
 	ma, err := b.BeginMap(3)
 	if err != nil {
 		t.Fatal(err)
@@ -600,21 +598,17 @@ func TestMapAmendingBuilderCopiedNode(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	origMapNode := b.Build()
+	mapNode := b.Build()
 	// Copy the map using datamodel.Copy. AssignNode will copy pointers to internal values and will not return a fully
 	// standalone copy.
-	origAmender := basicnode.Prototype.Map.AmendingBuilder(nil)
-	err = datamodel.Copy(origMapNode, origAmender)
+	amender := basicnode.Prototype.Map.AmendingBuilder(nil)
+	err = datamodel.Copy(mapNode, amender)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	// Wrap in an amending builder
-	newAmender := basicnode.Prototype.Map.AmendingBuilder(origAmender.Build())
-
-	// Compare the printed map
-	newMapNode := newAmender.Build()
-	actual := printer.Sprint(newMapNode)
+	copiedMapNode := amender.Build()
+	actual := printer.Sprint(copiedMapNode)
 
 	expect := `map{
 	string{"cat"}: string{"meow"}
@@ -624,7 +618,7 @@ func TestMapAmendingBuilderCopiedNode(t *testing.T) {
 	qt.Check(t, expect, qt.Equals, actual)
 
 	// Amend the copied map
-	err = newAmender.Put(basicnode.NewString("cat"), basicnode.NewString("purr"))
+	err = amender.Put("cat", basicnode.NewString("purr"))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -635,12 +629,12 @@ func TestMapAmendingBuilderCopiedNode(t *testing.T) {
 	string{"eel"}: string{"zap"}
 }`
 
-	// The new node should have been updated
-	actual = printer.Sprint(newMapNode)
-	qt.Assert(t, expect, qt.Equals, actual)
+	// The copied node should have been updated
+	actual = printer.Sprint(copiedMapNode)
+	qt.Assert(t, actual, qt.Equals, expect)
 
 	// Remove an entry
-	removed, err := newAmender.Remove(basicnode.NewString("cat"))
+	removed, err := amender.Remove("cat")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -651,12 +645,12 @@ func TestMapAmendingBuilderCopiedNode(t *testing.T) {
 	string{"eel"}: string{"zap"}
 }`
 
-	_, err = newAmender.Get(basicnode.NewString("cat"))
+	_, err = amender.Get("cat")
 	if _, notFoundErr := err.(datamodel.ErrNotExists); !notFoundErr {
 		t.Fatal(err)
 	}
 
-	keys, err := newAmender.Keys()
+	keys, err := amender.Keys()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -665,9 +659,9 @@ func TestMapAmendingBuilderCopiedNode(t *testing.T) {
 	1: string{"eel"}
 }`
 	actual = printer.Sprint(keys)
-	qt.Assert(t, expect, qt.Equals, actual)
+	qt.Assert(t, actual, qt.Equals, expect)
 
-	values, err := newAmender.Values()
+	values, err := amender.Values()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -676,7 +670,7 @@ func TestMapAmendingBuilderCopiedNode(t *testing.T) {
 	1: string{"zap"}
 }`
 	actual = printer.Sprint(values)
-	qt.Assert(t, expect, qt.Equals, actual)
+	qt.Assert(t, actual, qt.Equals, expect)
 
 	// The original node should not have been updated
 	expect = `map{
@@ -684,6 +678,6 @@ func TestMapAmendingBuilderCopiedNode(t *testing.T) {
 	string{"dog"}: string{"bark"}
 	string{"eel"}: string{"zap"}
 }`
-	actual = printer.Sprint(origMapNode)
-	qt.Assert(t, expect, qt.Equals, actual)
+	actual = printer.Sprint(mapNode)
+	qt.Assert(t, actual, qt.Equals, expect)
 }

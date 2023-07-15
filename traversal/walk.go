@@ -3,8 +3,6 @@ package traversal
 import (
 	"errors"
 	"fmt"
-	"github.com/ipld/go-ipld-prime/node/basicnode"
-
 	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/linking"
 	"github.com/ipld/go-ipld-prime/linking/preload"
@@ -748,16 +746,16 @@ func (prog Progress) walk_transform_iterateAmendableMap(n datamodel.Node, s sele
 				if err != nil {
 					return nil, err
 				}
-				if err := mapAmender.Put(basicnode.NewString(ps.String()), next); err != nil {
+				if err := mapAmender.Put(ps.String(), next); err != nil {
 					return nil, err
 				}
 			} else {
-				if err := mapAmender.Put(basicnode.NewString(ps.String()), v); err != nil {
+				if err := mapAmender.Put(ps.String(), v); err != nil {
 					return nil, err
 				}
 			}
 		} else {
-			if err := mapAmender.Put(basicnode.NewString(ps.String()), v); err != nil {
+			if err := mapAmender.Put(ps.String(), v); err != nil {
 				return nil, err
 			}
 		}

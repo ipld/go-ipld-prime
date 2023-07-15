@@ -20,17 +20,17 @@ type containerAmender interface {
 	Empty() bool
 	Length() int64
 	Clear()
-	Values() (Node, error) // returns a list node with the values
+	Values() (Node, error) // returns a list Node with the values
 
 	NodeAmender
 }
 
 // MapAmender adds a map-like interface to NodeAmender
 type MapAmender interface {
-	Put(key Node, value Node) error
-	Get(key Node) (Node, error)
-	Remove(key Node) (bool, error)
-	Keys() (Node, error) // returns a list node with the keys
+	Put(key string, value Node) error
+	Get(key string) (Node, error)
+	Remove(key string) (bool, error)
+	Keys() (Node, error) // returns a list Node with the keys
 
 	containerAmender
 }
@@ -39,8 +39,17 @@ type MapAmender interface {
 type ListAmender interface {
 	Get(idx int64) (Node, error)
 	Remove(idx int64) error
-	Append(values Node) error            // accepts a list node
-	Insert(idx int64, values Node) error // accepts a list node
+	// Append will add Node(s) to the end of the list. It can accept a list Node with multiple values to append.
+	Append(value Node) error
+	// Insert will add Node(s) at the specified index and shift subsequent elements to the right. It can accept a list
+	// Node with multiple values to insert.
+	// Passing an index equal to the length of the list will add Node(s) to the end of the list like Append.
+	Insert(idx int64, value Node) error
+	// Set will add Node(s) at the specified index and shift subsequent elements to the right. It can accept a list Node
+	// with multiple values to insert.
+	// Passing an index equal to the length of the list will add Node(s) to the end of the list like Append.
+	// Set is different from Insert in that it will start its insertion at the specified index, overwriting it in the
+	// process, while Insert will only add the Node(s).
 	Set(idx int64, value Node) error
 
 	containerAmender
