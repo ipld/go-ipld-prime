@@ -407,7 +407,7 @@ func TestMapAmendingBuilderNewNode(t *testing.T) {
 	qt.Assert(t, actual, qt.Equals, expect)
 
 	// Should not find "cat"
-	r, err = amender.Get("cat")
+	_, err = amender.Get("cat")
 	if _, notFoundErr := err.(datamodel.ErrNotExists); !notFoundErr {
 		t.Fatal(err)
 	}
@@ -542,7 +542,7 @@ func TestMapAmendingBuilderExistingNode(t *testing.T) {
 	qt.Assert(t, actual, qt.Equals, expect)
 
 	// Should not find "cat"
-	r, err = amender.Get("cat")
+	_, err = amender.Get("cat")
 	if _, notFoundErr := err.(datamodel.ErrNotExists); !notFoundErr {
 		t.Fatal(err)
 	}

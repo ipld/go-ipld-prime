@@ -371,6 +371,9 @@ func TestListAmendingBuilderCopiedNode(t *testing.T) {
 	appendElems, err = qp.BuildList(basicnode.Prototype.List, 1, func(am datamodel.ListAssembler) {
 		qp.ListEntry(am, qp.Node(nestedList))
 	})
+	if err != nil {
+		t.Fatal(err)
+	}
 	err = amender.Append(appendElems)
 	if err != nil {
 		t.Fatal(err)
