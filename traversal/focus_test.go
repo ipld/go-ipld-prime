@@ -335,8 +335,8 @@ func TestFocusedTransformWithLinks(t *testing.T) {
 		LinkSystem:                     lsys,
 		LinkTargetNodePrototypeChooser: basicnode.Chooser,
 	}
-	mapNode := duplicateMapNode(rootNode)
 	t.Run("UpdateMapBeyondLink", func(t *testing.T) {
+		mapNode := duplicateMapNode(rootNode)
 		n, err := traversal.Progress{
 			Cfg: &cfg,
 		}.FocusedTransform(mapNode, datamodel.ParsePath("linkedMap/nested/nonlink"), func(progress traversal.Progress, prev datamodel.Node) (datamodel.Node, error) {
