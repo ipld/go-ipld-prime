@@ -494,13 +494,21 @@ func (prog Progress) walkTransforming(n datamodel.Node, s selector.Selector, fn 
 	nk := n.Kind()
 	switch nk {
 	case datamodel.Kind_List:
-		if _, castOk := n.Prototype().(datamodel.NodePrototypeSupportingListAmend); castOk {
-			return prog.walk_transform_iterateAmendableList(n, s, fn, s.Interests())
+		if np, castOk := n.Prototype().(datamodel.NodePrototypeSupportingListAmend); castOk {
+			a := np.AmendingBuilder(nil)
+			if err := datamodel.Copy(n, a); err != nil {
+				return nil, err
+			}
+			return prog.walk_transform_iterateAmendableList(a, s, fn, s.Interests())
 		}
 		return prog.walk_transform_iterateList(n, s, fn, s.Interests())
 	case datamodel.Kind_Map:
-		if _, castOk := n.Prototype().(datamodel.NodePrototypeSupportingMapAmend); castOk {
-			return prog.walk_transform_iterateAmendableMap(n, s, fn, s.Interests())
+		if np, castOk := n.Prototype().(datamodel.NodePrototypeSupportingMapAmend); castOk {
+			a := np.AmendingBuilder(nil)
+			if err := datamodel.Copy(n, a); err != nil {
+				return nil, err
+			}
+			return prog.walk_transform_iterateAmendableMap(a, s, fn, s.Interests())
 		}
 		return prog.walk_transform_iterateMap(n, s, fn, s.Interests())
 	default:
@@ -579,9 +587,8 @@ func (prog Progress) walk_transform_iterateList(n datamodel.Node, s selector.Sel
 	return bldr.Build(), nil
 }
 
-func (prog Progress) walk_transform_iterateAmendableList(n datamodel.Node, s selector.Selector, fn TransformFn, attn []datamodel.PathSegment) (datamodel.Node, error) {
-	listAmender := n.Prototype().(datamodel.NodePrototypeSupportingListAmend).AmendingBuilder(n)
-
+func (prog Progress) walk_transform_iterateAmendableList(listAmender datamodel.ListAmender, s selector.Selector, fn TransformFn, attn []datamodel.PathSegment) (datamodel.Node, error) {
+	n := listAmender.Build()
 	for itr := selector.NewSegmentIterator(n); !itr.Done(); {
 		ps, v, err := itr.Next()
 		if err != nil {
@@ -706,9 +713,8 @@ func (prog Progress) walk_transform_iterateMap(n datamodel.Node, s selector.Sele
 	return bldr.Build(), nil
 }
 
-func (prog Progress) walk_transform_iterateAmendableMap(n datamodel.Node, s selector.Selector, fn TransformFn, attn []datamodel.PathSegment) (datamodel.Node, error) {
-	mapAmender := n.Prototype().(datamodel.NodePrototypeSupportingMapAmend).AmendingBuilder(n)
-
+func (prog Progress) walk_transform_iterateAmendableMap(mapAmender datamodel.MapAmender, s selector.Selector, fn TransformFn, attn []datamodel.PathSegment) (datamodel.Node, error) {
+	n := mapAmender.Build()
 	for itr := selector.NewSegmentIterator(n); !itr.Done(); {
 		ps, v, err := itr.Next()
 		if err != nil {
