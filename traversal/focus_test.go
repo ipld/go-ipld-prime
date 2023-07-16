@@ -192,7 +192,8 @@ func TestGetWithLinkLoading(t *testing.T) {
 
 func TestFocusedTransform(t *testing.T) {
 	t.Run("UpdateMapEntry", func(t *testing.T) {
-		n, err := traversal.FocusedTransform(rootNode, datamodel.ParsePath("plain"), func(progress traversal.Progress, prev datamodel.Node) (datamodel.Node, error) {
+		mapNode := duplicateMapNode(rootNode)
+		n, err := traversal.FocusedTransform(mapNode, datamodel.ParsePath("plain"), func(progress traversal.Progress, prev datamodel.Node) (datamodel.Node, error) {
 			qt.Check(t, progress.Path.String(), qt.Equals, "plain")
 			qt.Check(t, must.String(prev), qt.Equals, "olde string")
 			nb := prev.Prototype().NewBuilder()
@@ -204,14 +205,15 @@ func TestFocusedTransform(t *testing.T) {
 		// updated value should be there
 		qt.Check(t, must.Node(n.LookupByString("plain")), nodetests.NodeContentEquals, basicnode.NewString("new string!"))
 		// everything else should be there
-		qt.Check(t, must.Node(n.LookupByString("linkedString")), qt.Equals, must.Node(rootNode.LookupByString("linkedString")))
-		qt.Check(t, must.Node(n.LookupByString("linkedMap")), qt.Equals, must.Node(rootNode.LookupByString("linkedMap")))
-		qt.Check(t, must.Node(n.LookupByString("linkedList")), qt.Equals, must.Node(rootNode.LookupByString("linkedList")))
+		qt.Check(t, must.Node(n.LookupByString("linkedString")), qt.Equals, must.Node(mapNode.LookupByString("linkedString")))
+		qt.Check(t, must.Node(n.LookupByString("linkedMap")), qt.Equals, must.Node(mapNode.LookupByString("linkedMap")))
+		qt.Check(t, must.Node(n.LookupByString("linkedList")), qt.Equals, must.Node(mapNode.LookupByString("linkedList")))
 		// everything should still be in the same order
 		qt.Check(t, keys(n), qt.DeepEquals, []string{"plain", "linkedString", "linkedMap", "linkedList"})
 	})
 	t.Run("UpdateDeeperMap", func(t *testing.T) {
-		n, err := traversal.FocusedTransform(middleMapNode, datamodel.ParsePath("nested/alink"), func(progress traversal.Progress, prev datamodel.Node) (datamodel.Node, error) {
+		mapNode := duplicateMapNode(middleMapNode)
+		n, err := traversal.FocusedTransform(mapNode, datamodel.ParsePath("nested/alink"), func(progress traversal.Progress, prev datamodel.Node) (datamodel.Node, error) {
 			qt.Check(t, progress.Path.String(), qt.Equals, "nested/alink")
 			qt.Check(t, prev, nodetests.NodeContentEquals, basicnode.NewLink(leafAlphaLnk))
 			return basicnode.NewString("new string!"), nil
@@ -221,13 +223,14 @@ func TestFocusedTransform(t *testing.T) {
 		// updated value should be there
 		qt.Check(t, must.Node(must.Node(n.LookupByString("nested")).LookupByString("alink")), nodetests.NodeContentEquals, basicnode.NewString("new string!"))
 		// everything else in the parent map should should be there!
-		qt.Check(t, must.Node(n.LookupByString("foo")), qt.Equals, must.Node(middleMapNode.LookupByString("foo")))
-		qt.Check(t, must.Node(n.LookupByString("bar")), qt.Equals, must.Node(middleMapNode.LookupByString("bar")))
+		qt.Check(t, must.Node(n.LookupByString("foo")), qt.Equals, must.Node(mapNode.LookupByString("foo")))
+		qt.Check(t, must.Node(n.LookupByString("bar")), qt.Equals, must.Node(mapNode.LookupByString("bar")))
 		// everything should still be in the same order
 		qt.Check(t, keys(n), qt.DeepEquals, []string{"foo", "bar", "nested"})
 	})
 	t.Run("AppendIfNotExists", func(t *testing.T) {
-		n, err := traversal.FocusedTransform(rootNode, datamodel.ParsePath("newpart"), func(progress traversal.Progress, prev datamodel.Node) (datamodel.Node, error) {
+		mapNode := duplicateMapNode(rootNode)
+		n, err := traversal.FocusedTransform(mapNode, datamodel.ParsePath("newpart"), func(progress traversal.Progress, prev datamodel.Node) (datamodel.Node, error) {
 			qt.Check(t, progress.Path.String(), qt.Equals, "newpart")
 			qt.Check(t, prev, qt.IsNil) // REVIEW: should datamodel.Absent be used here?  I lean towards "no" but am unsure what's least surprising here.
 			// An interesting thing to note about inserting a value this way is that you have no `prev.Prototype().NewBuilder()` to use if you wanted to.
@@ -242,7 +245,8 @@ func TestFocusedTransform(t *testing.T) {
 		qt.Check(t, keys(n), qt.DeepEquals, []string{"plain", "linkedString", "linkedMap", "linkedList", "newpart"})
 	})
 	t.Run("CreateParents", func(t *testing.T) {
-		n, err := traversal.FocusedTransform(rootNode, datamodel.ParsePath("newsection/newpart"), func(progress traversal.Progress, prev datamodel.Node) (datamodel.Node, error) {
+		mapNode := duplicateMapNode(rootNode)
+		n, err := traversal.FocusedTransform(mapNode, datamodel.ParsePath("newsection/newpart"), func(progress traversal.Progress, prev datamodel.Node) (datamodel.Node, error) {
 			qt.Check(t, progress.Path.String(), qt.Equals, "newsection/newpart")
 			qt.Check(t, prev, qt.IsNil) // REVIEW: should datamodel.Absent be used here?  I lean towards "no" but am unsure what's least surprising here.
 			return basicnode.NewString("new string!"), nil
@@ -260,14 +264,16 @@ func TestFocusedTransform(t *testing.T) {
 		qt.Check(t, keys(n2), qt.DeepEquals, []string{"newpart"})
 	})
 	t.Run("CreateParentsRequiresPermission", func(t *testing.T) {
-		_, err := traversal.FocusedTransform(rootNode, datamodel.ParsePath("newsection/newpart"), func(progress traversal.Progress, prev datamodel.Node) (datamodel.Node, error) {
+		mapNode := duplicateMapNode(rootNode)
+		_, err := traversal.FocusedTransform(mapNode, datamodel.ParsePath("newsection/newpart"), func(progress traversal.Progress, prev datamodel.Node) (datamodel.Node, error) {
 			qt.Check(t, true, qt.IsFalse) // ought not be reached
 			return nil, nil
 		}, false)
 		qt.Check(t, err.Error(), qt.Equals, "transform: parent position at \"newsection\" did not exist (and createParents was false)")
 	})
 	t.Run("UpdateListEntry", func(t *testing.T) {
-		n, err := traversal.FocusedTransform(middleListNode, datamodel.ParsePath("2"), func(progress traversal.Progress, prev datamodel.Node) (datamodel.Node, error) {
+		listNode := duplicateListNode(middleListNode)
+		n, err := traversal.FocusedTransform(listNode, datamodel.ParsePath("2"), func(progress traversal.Progress, prev datamodel.Node) (datamodel.Node, error) {
 			qt.Check(t, progress.Path.String(), qt.Equals, "2")
 			qt.Check(t, prev, nodetests.NodeContentEquals, basicnode.NewLink(leafBetaLnk))
 			return basicnode.NewString("new string!"), nil
@@ -283,7 +289,8 @@ func TestFocusedTransform(t *testing.T) {
 		qt.Check(t, must.Node(n.LookupByIndex(3)), nodetests.NodeContentEquals, basicnode.NewLink(leafAlphaLnk))
 	})
 	t.Run("AppendToList", func(t *testing.T) {
-		n, err := traversal.FocusedTransform(middleListNode, datamodel.ParsePath("-"), func(progress traversal.Progress, prev datamodel.Node) (datamodel.Node, error) {
+		listNode := duplicateListNode(middleListNode)
+		n, err := traversal.FocusedTransform(listNode, datamodel.ParsePath("-"), func(progress traversal.Progress, prev datamodel.Node) (datamodel.Node, error) {
 			qt.Check(t, progress.Path.String(), qt.Equals, "4")
 			qt.Check(t, prev, qt.IsNil)
 			return basicnode.NewString("new string!"), nil
@@ -296,14 +303,16 @@ func TestFocusedTransform(t *testing.T) {
 		qt.Check(t, n.Length(), qt.Equals, int64(5))
 	})
 	t.Run("ListBounds", func(t *testing.T) {
-		_, err := traversal.FocusedTransform(middleListNode, datamodel.ParsePath("4"), func(progress traversal.Progress, prev datamodel.Node) (datamodel.Node, error) {
+		listNode := duplicateListNode(middleListNode)
+		_, err := traversal.FocusedTransform(listNode, datamodel.ParsePath("4"), func(progress traversal.Progress, prev datamodel.Node) (datamodel.Node, error) {
 			qt.Check(t, true, qt.IsFalse) // ought not be reached
 			return nil, nil
 		}, false)
 		qt.Check(t, err, qt.ErrorMatches, "transform: cannot navigate path segment \"4\" at \"\" because it is beyond the list bounds")
 	})
 	t.Run("ReplaceRoot", func(t *testing.T) { // a fairly degenerate case and no reason to do this, but should work.
-		n, err := traversal.FocusedTransform(middleListNode, datamodel.ParsePath(""), func(progress traversal.Progress, prev datamodel.Node) (datamodel.Node, error) {
+		listNode := duplicateListNode(middleListNode)
+		n, err := traversal.FocusedTransform(listNode, datamodel.ParsePath(""), func(progress traversal.Progress, prev datamodel.Node) (datamodel.Node, error) {
 			qt.Check(t, progress.Path.String(), qt.Equals, "")
 			qt.Check(t, prev, nodetests.NodeContentEquals, middleListNode)
 			nb := basicnode.Prototype.Any.NewBuilder()
@@ -326,10 +335,11 @@ func TestFocusedTransformWithLinks(t *testing.T) {
 		LinkSystem:                     lsys,
 		LinkTargetNodePrototypeChooser: basicnode.Chooser,
 	}
+	mapNode := duplicateMapNode(rootNode)
 	t.Run("UpdateMapBeyondLink", func(t *testing.T) {
 		n, err := traversal.Progress{
 			Cfg: &cfg,
-		}.FocusedTransform(rootNode, datamodel.ParsePath("linkedMap/nested/nonlink"), func(progress traversal.Progress, prev datamodel.Node) (datamodel.Node, error) {
+		}.FocusedTransform(mapNode, datamodel.ParsePath("linkedMap/nested/nonlink"), func(progress traversal.Progress, prev datamodel.Node) (datamodel.Node, error) {
 			qt.Check(t, progress.Path.String(), qt.Equals, "linkedMap/nested/nonlink")
 			qt.Check(t, must.String(prev), qt.Equals, "zoo")
 			qt.Check(t, progress.LastBlock.Path.String(), qt.Equals, "linkedMap")
@@ -346,10 +356,11 @@ func TestFocusedTransformWithLinks(t *testing.T) {
 		store2 = memstore.Store{}
 	})
 	t.Run("UpdateNotBeyondLink", func(t *testing.T) {
+		mapNode := duplicateMapNode(rootNode)
 		// This is replacing a link with a non-link.  Doing so shouldn't hit storage.
 		n, err := traversal.Progress{
 			Cfg: &cfg,
-		}.FocusedTransform(rootNode, datamodel.ParsePath("linkedMap"), func(progress traversal.Progress, prev datamodel.Node) (datamodel.Node, error) {
+		}.FocusedTransform(mapNode, datamodel.ParsePath("linkedMap"), func(progress traversal.Progress, prev datamodel.Node) (datamodel.Node, error) {
 			qt.Check(t, progress.Path.String(), qt.Equals, "linkedMap")
 			nb := prev.Prototype().NewBuilder()
 			nb.AssignString("new string!")
@@ -373,4 +384,18 @@ func keys(n datamodel.Node) []string {
 		v = append(v, must.String(k))
 	}
 	return v
+}
+
+func duplicateMapNode(n datamodel.Node) datamodel.Node {
+	amender := basicnode.Prototype.Map.AmendingBuilder(nil)
+	// Make a deep copy of the node
+	datamodel.Copy(n, amender)
+	return amender.Build()
+}
+
+func duplicateListNode(n datamodel.Node) datamodel.Node {
+	amender := basicnode.Prototype.List.AmendingBuilder(nil)
+	// Make a deep copy of the node
+	datamodel.Copy(n, amender)
+	return amender.Build()
 }

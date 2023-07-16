@@ -781,7 +781,8 @@ func TestWalkTransforming(t *testing.T) {
 		s, err := ss.Selector()
 		qt.Assert(t, err, qt.IsNil)
 		var order int
-		n, err := traversal.WalkTransforming(middleMapNode, s, func(prog traversal.Progress, n datamodel.Node) (datamodel.Node, error) {
+		mapNode := duplicateMapNode(middleMapNode)
+		n, err := traversal.WalkTransforming(mapNode, s, func(prog traversal.Progress, n datamodel.Node) (datamodel.Node, error) {
 			switch order {
 			case 0:
 				qt.Check(t, n, nodetests.NodeContentEquals, basicnode.NewBool(true))
