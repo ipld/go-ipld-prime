@@ -128,17 +128,16 @@ func (p Prototype__Map) NewBuilder() datamodel.NodeBuilder {
 // -- NodePrototypeSupportingMapAmend -->
 
 func (p Prototype__Map) AmendingBuilder(base datamodel.Node) datamodel.MapAmender {
-	var b *plainMap
+	nb := &plainMap__Builder{plainMap__Assembler{w: &plainMap{}}}
 	if base != nil {
 		if baseMap, castOk := base.(*plainMap); !castOk {
 			panic("misuse")
 		} else {
-			b = baseMap
+			// Make a deep copy of the base map
+			datamodel.Copy(baseMap, nb)
 		}
-	} else {
-		b = &plainMap{}
 	}
-	return &plainMap__Builder{plainMap__Assembler{w: b}}
+	return nb
 }
 
 // -- NodeBuilder -->

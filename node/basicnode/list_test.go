@@ -205,14 +205,14 @@ func TestListAmendingBuilderExistingNode(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	newListNode := amender.Build()
 	expect = `list{
 	0: string{"fox"}
 	1: string{"cow"}
 	2: string{"deer"}
 	3: string{"cat"}
 }`
-	// The original node should have been updated
-	actual = printer.Sprint(listNode)
+	actual = printer.Sprint(newListNode)
 	qt.Assert(t, actual, qt.Equals, expect)
 
 	insertElems, err := qp.BuildList(basicnode.Prototype.List, -1, func(am datamodel.ListAssembler) {
@@ -234,8 +234,7 @@ func TestListAmendingBuilderExistingNode(t *testing.T) {
 	4: string{"dog"}
 	5: string{"cat"}
 }`
-	// The original node should have been updated
-	actual = printer.Sprint(listNode)
+	actual = printer.Sprint(newListNode)
 	qt.Assert(t, actual, qt.Equals, expect)
 
 	err = amender.Append(basicnode.NewString("eel"))
@@ -251,7 +250,15 @@ func TestListAmendingBuilderExistingNode(t *testing.T) {
 	5: string{"cat"}
 	6: string{"eel"}
 }`
-	// The original node should have been updated
+	actual = printer.Sprint(newListNode)
+	qt.Assert(t, actual, qt.Equals, expect)
+
+	// The original node should not have been updated
+	expect = `list{
+	0: string{"fox"}
+	1: string{"cow"}
+	2: string{"deer"}
+}`
 	actual = printer.Sprint(listNode)
 	qt.Assert(t, actual, qt.Equals, expect)
 }
@@ -265,20 +272,14 @@ func TestListAmendingBuilderCopiedNode(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	amender := basicnode.Prototype.List.AmendingBuilder(listNode)
+	newListNode := amender.Build()
 	expect := `list{
 	0: string{"fox"}
 	1: string{"cow"}
 	2: string{"deer"}
 }`
-	amender := basicnode.Prototype.List.AmendingBuilder(nil)
-	// Copy the map using datamodel.Copy. AssignNode will copy pointers to internal values and will not return a fully
-	// standalone copy.
-	err = datamodel.Copy(listNode, amender)
-	if err != nil {
-		t.Fatal(err)
-	}
-	copiedNode := amender.Build()
-	actual := printer.Sprint(copiedNode)
+	actual := printer.Sprint(newListNode)
 	qt.Assert(t, actual, qt.Equals, expect)
 
 	setElems, err := qp.BuildList(basicnode.Prototype.List, -1, func(am datamodel.ListAssembler) {
@@ -298,8 +299,7 @@ func TestListAmendingBuilderCopiedNode(t *testing.T) {
 	2: string{"cow"}
 	3: string{"deer"}
 }`
-	// The new node should have been updated
-	actual = printer.Sprint(copiedNode)
+	actual = printer.Sprint(newListNode)
 	qt.Assert(t, actual, qt.Equals, expect)
 
 	insertElems, err := qp.BuildList(basicnode.Prototype.List, -1, func(am datamodel.ListAssembler) {
@@ -321,8 +321,7 @@ func TestListAmendingBuilderCopiedNode(t *testing.T) {
 	4: string{"cow"}
 	5: string{"deer"}
 }`
-	// The new node should have been updated
-	actual = printer.Sprint(copiedNode)
+	actual = printer.Sprint(newListNode)
 	qt.Assert(t, actual, qt.Equals, expect)
 
 	appendElems, err := qp.BuildList(basicnode.Prototype.List, -1, func(am datamodel.ListAssembler) {
@@ -344,8 +343,7 @@ func TestListAmendingBuilderCopiedNode(t *testing.T) {
 	5: string{"deer"}
 	6: string{"rat"}
 }`
-	// The new node should have been updated
-	actual = printer.Sprint(copiedNode)
+	actual = printer.Sprint(newListNode)
 	qt.Assert(t, actual, qt.Equals, expect)
 
 	// Pass through an empty list. This should have no effect.
@@ -357,8 +355,7 @@ func TestListAmendingBuilderCopiedNode(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	// The new node should not have been updated
-	actual = printer.Sprint(copiedNode)
+	actual = printer.Sprint(newListNode)
 	qt.Assert(t, actual, qt.Equals, expect)
 
 	// Pass through a list containing another list
@@ -378,6 +375,7 @@ func TestListAmendingBuilderCopiedNode(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	// The new node should have been updated to have a list node at the end
 	expect = `list{
 	0: string{"cat"}
 	1: string{"eel"}
@@ -390,16 +388,15 @@ func TestListAmendingBuilderCopiedNode(t *testing.T) {
 		0: string{"bat"}
 	}
 }`
-	// The new node should have been updated to have a list node at the end
-	actual = printer.Sprint(copiedNode)
+	actual = printer.Sprint(newListNode)
 	qt.Assert(t, actual, qt.Equals, expect)
 
+	// The original node should not have been updated
 	expect = `list{
 	0: string{"fox"}
 	1: string{"cow"}
 	2: string{"deer"}
 }`
-	// The original node should not have been updated
 	actual = printer.Sprint(listNode)
 	qt.Assert(t, actual, qt.Equals, expect)
 }

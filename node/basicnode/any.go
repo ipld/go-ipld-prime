@@ -1,6 +1,9 @@
 package basicnode
 
 import (
+	"fmt"
+	"reflect"
+
 	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/linking"
 )
@@ -210,8 +213,20 @@ func (nb *anyBuilder) Build() datamodel.Node {
 // -- NodeAmender -->
 
 func (nb *anyBuilder) Transform(path datamodel.Path, transform datamodel.AmendFn) (datamodel.Node, error) {
-	// If `baseNode` is set and supports amendment, apply the transformation. If it doesn't, and the root is being
-	// replaced, replace it. If the transformation is for a nested node in a non-amendable recursive object, panic.
+	// If the root is being replaced, replace it. If the transformation is for a nested node in a non-amendable
+	// recursive object, panic.
+	if path.Len() == 0 {
+		prevNode := nb.Build()
+		if newNode, err := transform(prevNode); err != nil {
+			return nil, err
+		} else if newAb, castOk := newNode.(*anyBuilder); !castOk {
+			return nil, fmt.Errorf("transform: cannot transform root into incompatible type: %v", reflect.TypeOf(newAb))
+		} else {
+			nb.amender = newAb.amender
+			nb.baseNode = newAb.baseNode
+			return prevNode, nil
+		}
+	}
 	if nb.amender != nil {
 		return nb.amender.Transform(path, transform)
 	}

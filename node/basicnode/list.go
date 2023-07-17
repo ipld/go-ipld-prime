@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"reflect"
 
-	"golang.org/x/exp/slices"
-
 	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/node/mixins"
 )
@@ -129,17 +127,16 @@ func (p Prototype__List) NewBuilder() datamodel.NodeBuilder {
 // -- NodePrototypeSupportingListAmend -->
 
 func (p Prototype__List) AmendingBuilder(base datamodel.Node) datamodel.ListAmender {
-	var w *plainList
+	nb := &plainList__Builder{plainList__Assembler{w: &plainList{}}}
 	if base != nil {
 		if baseList, castOk := base.(*plainList); !castOk {
 			panic("misuse")
 		} else {
-			w = baseList
+			// Make a deep copy of the base list
+			datamodel.Copy(baseList, nb)
 		}
-	} else {
-		w = &plainList{}
 	}
-	return &plainList__Builder{plainList__Assembler{w: w}}
+	return nb
 }
 
 // -- NodeBuilder -->
@@ -223,10 +220,10 @@ func (nb *plainList__Builder) transform(path datamodel.Path, transform datamodel
 	if newChildVal, err := transform(prevChildVal); err != nil {
 		return nil, err
 	} else if newChildVal == nil {
-		// Ref: https://pkg.go.dev/golang.org/x/exp/slices#Delete
 		idx := int(childIdx)
 		nb.w.x[idx] = nil
-		nb.w.x = slices.Delete(nb.w.x, idx, idx+1)
+		// Ref: https://pkg.go.dev/golang.org/x/exp/slices#Delete
+		nb.w.x = append(nb.w.x[:idx], nb.w.x[idx+1:]...)
 	} else if err = nb.storeChildAmender(childIdx, newChildVal, replace); err != nil {
 		return nil, err
 	}
@@ -273,15 +270,6 @@ func (nb *plainList__Builder) storeChildAmender(childIdx int64, a datamodel.Node
 		if nb.w.x == nil {
 			// Allocate storage space
 			nb.w.x = make([]datamodel.NodeAmender, numElems)
-		} else {
-			// Allocate storage space
-			numElemsToAdd := numElems
-			if replace {
-				// We'll be replacing an existing element and need one slot less than the total number of elements being
-				// added.
-				numElemsToAdd--
-			}
-			nb.w.x = slices.Grow(nb.w.x, numElemsToAdd)
 		}
 		copyStartIdx := 0
 		if replace {
@@ -291,11 +279,26 @@ func (nb *plainList__Builder) storeChildAmender(childIdx int64, a datamodel.Node
 		}
 		if !replace || (numElems > 1) {
 			// If more elements were specified, insert them after the specified index.
-			// Ref: https://pkg.go.dev/golang.org/x/exp/slices#Insert
-			nb.w.x = slices.Insert(nb.w.x, int(childIdx)+copyStartIdx, elems[copyStartIdx:]...)
+			nb.w.x = Insert(nb.w.x, int(childIdx)+copyStartIdx, elems[copyStartIdx:]...)
 		}
 	}
 	return nil
+}
+
+// Ref: https://pkg.go.dev/golang.org/x/exp/slices#Insert
+func Insert(x []datamodel.NodeAmender, idx int, elems ...datamodel.NodeAmender) []datamodel.NodeAmender {
+	tot := len(x) + len(elems)
+	if tot <= cap(x) {
+		x2 := x[:tot]
+		copy(x2[idx+len(elems):], x[idx:])
+		copy(x2[idx:], elems)
+		return x2
+	}
+	x2 := make([]datamodel.NodeAmender, tot)
+	copy(x2, x[:idx])
+	copy(x2[idx:], elems)
+	copy(x2[idx+len(elems):], x[idx:])
+	return x2
 }
 
 func (nb *plainList__Builder) Get(idx int64) (datamodel.Node, error) {

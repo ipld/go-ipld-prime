@@ -495,20 +495,12 @@ func (prog Progress) walkTransforming(n datamodel.Node, s selector.Selector, fn 
 	switch nk {
 	case datamodel.Kind_List:
 		if np, castOk := n.Prototype().(datamodel.NodePrototypeSupportingListAmend); castOk {
-			a := np.AmendingBuilder(nil)
-			if err := datamodel.Copy(n, a); err != nil {
-				return nil, err
-			}
-			return prog.walk_transform_iterateAmendableList(a, s, fn, s.Interests())
+			return prog.walk_transform_iterateAmendableList(np.AmendingBuilder(n), s, fn, s.Interests())
 		}
 		return prog.walk_transform_iterateList(n, s, fn, s.Interests())
 	case datamodel.Kind_Map:
 		if np, castOk := n.Prototype().(datamodel.NodePrototypeSupportingMapAmend); castOk {
-			a := np.AmendingBuilder(nil)
-			if err := datamodel.Copy(n, a); err != nil {
-				return nil, err
-			}
-			return prog.walk_transform_iterateAmendableMap(a, s, fn, s.Interests())
+			return prog.walk_transform_iterateAmendableMap(np.AmendingBuilder(n), s, fn, s.Interests())
 		}
 		return prog.walk_transform_iterateMap(n, s, fn, s.Interests())
 	default:
