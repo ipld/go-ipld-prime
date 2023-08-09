@@ -27,6 +27,44 @@ Here are some outlines of changes we intend to make that affect the public API:
 Released Changes
 ----------------
 
+### v0.21.0
+
+_2023 August 10_
+
+go-ipld-prime's release policy says that:
+
+> even numbers should be easy upgrades; odd numbers may change things
+
+This release is an odd number, and it does change some minor things.
+
+#### 🛠 Breaking
+
+* **Build**: The minimum version of Go has been bumped from 1.18 to **1.19**.
+* **Dependencies**: The go-cid dependency was upgraded from v0.3.2 to **v0.4.1**. This is a relatively minor change but the introduction of `ErrInvalidCid` wrapping may be breaking for some users.
+* **Selectors**: Remove hard error when a traversal encounters a slice matcher with a node that is not a string or bytes, by @rvagg [#529](https://github.com/ipld/go-ipld-prime/pull/529)
+
+#### 🔦 Features
+
+* **Traversal**: `Preloader` functionality, by @hannahhoward and @rvagg [#452](https://github.com/ipld/go-ipld-prime/pull/452)
+  * See the [traversal](https://pkg.go.dev/github.com/ipld/go-ipld-prime/traversal) package documentation for more information on how a `Preloader` can be used to introduce parallelism into a traversal. The [Lassie](https://github.com/filecoin-project/lassie) project is currently using this functionality to speed up Bitswap block fetching; future releases of go-ipld-prime may include additional functionality being prototyped in Lassie to manage parallelism and caching.
+* **Schemas**: Support `listpairs` struct representation in DSL parsing, by @rvagg [#514](https://github.com/ipld/go-ipld-prime/pull/514)
+* **Schemas**: Support `inline` union representation in DSL parsing, by @rvagg [#527](https://github.com/ipld/go-ipld-prime/pull/527)
+* **Bindnode**: Support `listpairs` struct representation, by @rvagg [#514](https://github.com/ipld/go-ipld-prime/pull/514)
+* **Selectors**: Support negative values for slice matcher's `From` and `To`, by @rvagg [#530](https://github.com/ipld/go-ipld-prime/pull/530)
+  * The slice matcher is currently being used to support byte-range fetching for the [IPFS Trustless Gateway](https://specs.ipfs.tech/http-gateways/trustless-gateway/) specification. Work is ongoing and can be seen in both the [Lassie](https://github.com/filecoin-project/lassie) and [Frisbii](https://github.com/filecoin-project/lassie) projects.
+  * _Please note that this feature is currently considered **experimental** and shoule be used with care and with the expectation that it may change in the near future. Expect a release or two before this feature is considered stable._
+
+#### 🩹 Fixes
+
+* **Traversal**: `StartAtPath` work properly for matching walks, by @rvagg [#500](https://github.com/ipld/go-ipld-prime/pull/500)
+* **Traversal**: `WalkTransforming()` work properly, by @EdSchouten [#516](https://github.com/ipld/go-ipld-prime/pull/516)
+* **Basicnode**: `basic.NewInt()` returns a pointer like other constructors, by @hacdias [#525](https://github.com/ipld/go-ipld-prime/pull/525)
+* **Selectors**: Cache offsets for sequential reads in slice matcher, by @rvagg [#529](https://github.com/ipld/go-ipld-prime/pull/529)
+
+#### 🌟 Thanks!
+
+Thanks to @hacdias and @EdSchouten for their first contributions to go-ipld-prime!
+
 ### v0.20.0
 
 go-ipld-prime's release policy says that:
