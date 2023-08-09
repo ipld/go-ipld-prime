@@ -27,6 +27,12 @@ type Matcher struct {
 // The returned node will be limited based on slicing the specified range of the
 // node into a new node, or making use of the `AsLargeBytes` io.ReadSeeker to
 // restrict response with a SectionReader.
+//
+// Slice supports [From,To) ranges, where From is inclusive and To is exclusive.
+// Negative values for From and To are interpreted as offsets from the end of
+// the node. If To is greater than the node length, it will be truncated to the
+// node length. If From is greater than the node length or greater than To, the
+// result will be a non-match.
 type Slice struct {
 	From int64
 	To   int64
