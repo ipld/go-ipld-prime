@@ -1376,11 +1376,12 @@ func (w *_unionAssembler) AssembleValue() datamodel.NodeAssembler {
 		}
 	}
 	if mtyp == nil {
-		return _errorAssembler{fmt.Errorf("bindnode TODO: missing member %s in %s", name, w.schemaType.Name())}
-		// return nil, datamodel.ErrInvalidKey{
-		// 	TypeName: w.schemaType.Name(),
-		// 	Key:      basicnode.NewString(name),
-		// }
+		return _errorAssembler{
+			schema.ErrNotUnionStructure{
+				TypeName: w.schemaType.Name(),
+				Detail:   fmt.Sprintf("no member named %q", name),
+			},
+		}
 	}
 
 	goType := w.val.Field(idx).Type().Elem()
