@@ -9,7 +9,8 @@ import (
 	// set themselves up in our multicodec registry so the LinkSystem can use
 	// them for encoding (when a LinkPrototype says so) and decoding (when a CID's
 	// codec code says so).
-	"github.com/ipld/go-ipld-prime/codec/dagcbor"
+
+	_ "github.com/ipld/go-ipld-prime/codec/dagcbor"
 	_ "github.com/ipld/go-ipld-prime/codec/dagjson"
 	_ "github.com/ipld/go-ipld-prime/codec/raw"
 
@@ -105,7 +106,13 @@ func ExampleSelectLinks() {
 	// load bytes of the block
 	byts := loadBytes(ccb)
 	// decode the block into Node form
-	n, err := ipld.Decode(byts, dagcbor.Decode)
+	decoder, err := cidlink.DefaultLinkSystem().DecoderChooser(cidlink.Link{Cid: ccb})
+	if err != nil {
+		panic(err)
+	}
+	// we could just use `dagcbor.Decode` here, but by using the DecoderChooser
+	// we make sure we get the right one for the CID.
+	n, err := ipld.Decode(byts, decoder)
 	if err != nil {
 		panic(err)
 	}
