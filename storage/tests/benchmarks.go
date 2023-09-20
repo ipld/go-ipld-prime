@@ -44,7 +44,7 @@ func BenchPut(b *testing.B, store storage.WritableStorage, gen Gen, scale int) {
 		//   in practice, starting and stopping this frequently causes:
 		//    - alloc count to be reported *correctly* (which is nice)
 		//    - but reported ns/op to become erratic, and inflated (not at all nice)
-		//    - and actuall wall-clock run time to increase drastically (~22x!) (not deadly, but certainly unpleasant)
+		//    - and actual wall-clock run time to increase drastically (~22x!) (not deadly, but certainly unpleasant)
 		//   It may be best to write a synthetic dummy benchmark to see how much the gen function costs, and subtract that from the other results.
 		//b.StopTimer()
 		key, content := gen()
