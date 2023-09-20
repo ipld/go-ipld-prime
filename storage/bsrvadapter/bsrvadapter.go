@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/ipfs/boxo/blockservice"
 	blocks "github.com/ipfs/go-block-format"
-	"github.com/ipfs/go-blockservice"
 	"github.com/ipfs/go-cid"
 )
 
