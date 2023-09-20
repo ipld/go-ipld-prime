@@ -1,4 +1,4 @@
-# Op represents the kind of operation to perfrom
+# Op represents the kind of operation to perform
 # The current set is based on the JSON Patch specification
 # We may end up adding more operations in the future
 type Op enum {
