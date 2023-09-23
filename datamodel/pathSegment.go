@@ -69,6 +69,12 @@ type PathSegment struct {
 	i int64
 }
 
+// EmptyPathSegment is the PathSegment with no value. This is not the same as
+// the zero value of PathSegment (PathSegment{}), which will be interpreted to
+// mean "0", as a list index. EmptyPathSegment is equivalent to
+// ParsePathSegment("") or PathSegmentOfString("").
+var EmptyPathSegment = PathSegment{i: -1}
+
 // ParsePathSegment parses a string into a PathSegment,
 // handling any escaping if present.
 // (Note: there is currently no escaping specified for PathSegments,

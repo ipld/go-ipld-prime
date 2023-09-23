@@ -36,4 +36,8 @@ func TestPathSegmentZeroValue(t *testing.T) {
 	i, err := PathSegment{}.Index()
 	qt.Check(t, err, qt.IsNil)
 	qt.Check(t, i, qt.Equals, int64(0))
+
+	qt.Check(t, EmptyPathSegment.String(), qt.Equals, "")
+	_, err = EmptyPathSegment.Index()
+	qt.Check(t, err, qt.IsNotNil)
 }
