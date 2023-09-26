@@ -134,7 +134,7 @@ func (g unionGenerator) EmitNodeType(w io.Writer) {
 	//  they'll make iterators able to work faster.  So let's emit those.
 	// These are a bit perplexing, because they're... type names.
 	//  However, oddly enough, we don't have type names available *as nodes* anywhere else centrally available,
-	//   so... we generate some values for them here with scoped identifers and get on with it.
+	//   so... we generate some values for them here with scoped identifiers and get on with it.
 	//    Maybe this could be elided with future work.
 	doTemplate(`
 		var (
@@ -315,7 +315,7 @@ func (g unionBuilderGenerator) EmitNodeAssemblerType(w io.Writer) {
 	// Reset methods for unions are a tad more involved than for most other assemblers:
 	//  we only want to bother to reset whichever child assembler (if any) we actually used last.
 	//  We *could* blithely reset *all* child assemblers every time; but, trading an extra bit of state in our assembler
-	//   for the privledge of trimming off a potentially sizable amount of unnecessary zeroing efforts seems preferrable.
+	//   for the privilege of trimming off a potentially sizable amount of unnecessary zeroing efforts seems preferable.
 	//  Also, although go syntax makes it not textually obvious here, note that it's possible for the child assemblers to be either pointers or embeds:
 	//   on consequence of this is that just zeroing this struct would be both unreliable and undesirable in the pointer case
 	//    (it would leave orphan child assemblers that might still have pointers into us, which could be guarded against but is nonetheless is considerably scary in complexity;
@@ -497,7 +497,7 @@ func (g unionBuilderGenerator) emitMapAssemblerMethods(w io.Writer) {
 	//  but we can't report it from this method: we have to sit on our tongue, slide to midKey state (even though we're doomed!),
 	//   and let the keyAssembler return the error later.
 	//    This sucks, but panicking wouldn't be correct (see remarks about error vs panic on the AssembleEntry method),
-	//     and we don't want to make this call unchainable for everyone everywhere, either, so it can't be rewritten to have an immmediate error return.
+	//     and we don't want to make this call unchainable for everyone everywhere, either, so it can't be rewritten to have an immediate error return.
 	//    The transition to midKey state is particularly irritating because it means this assembler will be perma-wedged; but I see no alternative.
 	doTemplate(`
 		func (ma *_{{ .Type | TypeSymbol }}__Assembler) AssembleKey() datamodel.NodeAssembler {

@@ -29,7 +29,7 @@ type AdjunctCfg struct {
 	CfgUnionMemlayout         map[schema.TypeName]string // "embedAll"|"interface"; maybe more options later, unclear for now.
 
 	// ... some of these fields have sprouted messy name prefixes so they don't collide with their matching method names.
-	//  this structure has reached the critical threshhold where it due to be cleaned up and taken seriously.
+	//  this structure has reached the critical threshold where it due to be cleaned up and taken seriously.
 
 	// note: PkgName doesn't appear in here, because it's...
 	//  not adjunct data.  it's a generation invocation parameter.
@@ -39,7 +39,7 @@ type AdjunctCfg struct {
 
 // TypeSymbol returns the symbol for a type;
 // by default, it's the same string as its name in the schema,
-// but it can be overriden.
+// but it can be overridden.
 //
 // This is the base, unembellished symbol.
 // It's frequently augmented:

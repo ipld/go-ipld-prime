@@ -195,7 +195,7 @@ it's probably not worth it".)
 The reason to desire this so there's less (admittedly quite duplicative) code
 in the package emitted by using codegen.
 
-However, there are *many* "cons" which outweight that single "pro":
+However, there are *many* "cons" which outweigh that single "pro":
 
 - This would require the untyped package to export their concrete implementation types.
 	- This is the *only* reason those implementation types would need to be exported, which is a concerning smell all by itself.
@@ -205,7 +205,7 @@ However, there are *many* "cons" which outweight that single "pro":
 		- Exporting those types allows unboxing by casting, which again exposes an API surface that's not conventional (nor necessarily even possible) for other packages, and will thus be likely to create confusion as well as create multiple ways of doing things which will make refactors harder.
 			- Since we're talking about scalars and they're essentially copy-by-value (except for bytes -- but we give up and rely on "lawful" code for those anyway, since defensive copies are completely nonviable in performance terms), this doesn't create incorrectness issues... but it's still not *good*.
 			- Note that while casting to concrete types exported by the output package of codegen is considered acceptable, this is a different beast: you still can't get the raw content out without using at least one more unboxing method; and, if you're casting or doing a type switch with type in a codegen package, it should already instantly be clear that your code is no longer general-purpose, and this will surprise no one.
-		- ...And while the above two are true only because the implmentation is by typedefs and they could be fixed by using a wrapper struct... that fix would have exactly the effect of making reuse impossible anyway, since the field in that wrapper struct would need to be unexported (otherwise, immutability would then in turn trivially shatter).
+		- ...And while the above two are true only because the implementation is by typedefs and they could be fixed by using a wrapper struct... that fix would have exactly the effect of making reuse impossible anyway, since the field in that wrapper struct would need to be unexported (otherwise, immutability would then in turn trivially shatter).
 		- The implementation of the scalar for link kinds can't be reused anyway (it *does* use a wrapper struct already, and needs to; type aliases on an interface don't permit adding methods), adding yet more inconsistency and jagged edges to the picture.
 		- The "more unnecessarily(-for-end-user-perspectives) exported symbols" code smell counts about 10x as hard for this package in particular, since it's often one of the first ones a newcomer to this library will see: there shouldn't be weird designs with elaborate and far away justifications poking up here.
 - Reusing concrete types between packages makes it more likely uncautious users could write code that uses native equality on scalars and get away with it *sometimes*.  Since this is still incorrect and would sometimes fail in fully general code, it's better if code like this flunks out as early as possible, which results in a better ecosystem overall.

@@ -75,7 +75,7 @@ get lots of information about the escape analysis the compiler performs.
 
 ### embed vs pointer
 
-Structs can be embeded -- e.g. `type Foo struct { field Otherstruct }` --
+Structs can be embedded -- e.g. `type Foo struct { field Otherstruct }` --
 or referenced by a pointer -- e.g. `type Foo struct { field *Otherstruct }`.
 
 The difference is substantial.
@@ -141,7 +141,7 @@ free pass (!), but in all other cases, allocation will occur.)
 Knowing this, you probably can conclude a general rule of thumb: if your
 application is going to put a value in an interface, and *especially* if it's
 going to do that more than once, you're probably best off explicitly handling
-it as a pointer rather than a value.  Any other approach wil be very likely to
+it as a pointer rather than a value.  Any other approach will be very likely to
 provoke unnecessary copy behavior and/or multiple unnecessary heap allocations
 as the value moves in and out of pointer form.
 
@@ -180,7 +180,7 @@ Function inlining is an important compiler optimization.
 
 Inlining optimizes in two regards: one, can remove some of the overhead of
 function calls; and two, it can enable *other* optimizations by getting the
-relevant instruction blocks to be located together and thus rearrangable.
+relevant instruction blocks to be located together and thus rearrangeable.
 (Inlining does increase the compiled binary size, so it's not all upside.)
 
 Calling a function has some fixed overhead -- shuffling arguments from registers
@@ -249,7 +249,7 @@ natively-typed methods provide more value in the form of compile-time type
 checking, autocompletion and other tooling assist opportunities, and
 less verbosity.
 
-Secondly, natively-typed funtions on concrete types can be higher performance:
+Secondly, natively-typed functions on concrete types can be higher performance:
 since they're not [virtual function calls](#virtual-function-calls), we
 can expect [inlining](#inlining-functions) to work.  We might expect this to
 be particularly consequential in builders and in accessor methods, since these
@@ -312,7 +312,7 @@ no matter how large and complex the structure is.
 ### nodeassemblers accumulate mutations
 
 The NodeBuilder type is only used at the root of construction of a value.
-After that, recursion works with an interface called NodeAssembler isntead.
+After that, recursion works with an interface called NodeAssembler instead.
 
 A NodeAssembler is essentially the same thing as a NodeBuilder, except
 _it doesn't return a Node_.
@@ -370,7 +370,7 @@ This has an interesting set of effects:
 
 - copy-by-value from outside the package becomes impossible;
 - creating zero values from outside the package becomes impossible;
-- and yet refering to the type for type assertions remains possible.
+- and yet referring to the type for type assertions remains possible.
 
 This addresses one downside to using [concrete implementations](#concrete-implementations):
 if the concrete implementation is an exported symbol, it means any code external

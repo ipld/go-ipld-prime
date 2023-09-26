@@ -17,7 +17,7 @@ Some things seem significantly redundant.
 That's probably because they are.
 In general, if there's a choice between apparent redundancy in the generator itself
 versus almost any other tradeoff which affects the outputs, we prioritize the outputs.
-(This may be especially noticable when it comes to error messages: we emit a lot
+(This may be especially noticeable when it comes to error messages: we emit a lot
 of them... while making sure they contain very specific references.  This leads
 to some seemingly redundant code, but good error messages are worth it.)
 

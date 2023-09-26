@@ -40,7 +40,7 @@ var (
 // Nodes produced are relatively small, averaging near the 1024 byte range when encoded
 // (very roughly, with a wide spread).
 //
-// Options can be used to adjust the average size and weights of occurances of different kinds
+// Options can be used to adjust the average size and weights of occurrences of different kinds
 // within the complete Node graph.
 //
 // Care should be taken when using a random source to generate garbage for testing purposes, that

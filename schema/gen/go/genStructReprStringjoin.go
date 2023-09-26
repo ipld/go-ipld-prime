@@ -147,7 +147,7 @@ func (g structReprStringjoinReprBuilderGenerator) EmitNodeBuilderMethods(w io.Wr
 	//  (for example, structs using stringjoin strategies that have one of this type as a field, etc).
 	// Since we're a representation of scalar kind, and can recurse,
 	//  we ourselves presume this plain construction method must also exist for all our members.
-	// REVIEW: We could make an immut-safe verion of this and export it on the NodePrototype too, as `FromString(string)`.
+	// REVIEW: We could make an immut-safe version of this and export it on the NodePrototype too, as `FromString(string)`.
 	// FUTURE: should engage validation flow.
 	doTemplate(`
 		func (_{{ .Type | TypeSymbol }}__ReprPrototype) fromString(w *_{{ .Type | TypeSymbol }}, v string) error {
