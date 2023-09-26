@@ -109,7 +109,7 @@ func (cfg DecodeOptions) Decode(na datamodel.NodeAssembler, r io.Reader) error {
 // Unmarshal is a deprecated function.
 // Please consider switching to DecodeOptions.Decode instead.
 func Unmarshal(na datamodel.NodeAssembler, tokSrc shared.TokenSource, options DecodeOptions) error {
-	// Have a gas budget, which will be decremented as we allocate memory, and an error returned when execeeded (or about to be exceeded).
+	// Have a gas budget, which will be decremented as we allocate memory, and an error returned when exceeded (or about to be exceeded).
 	//  This is a DoS defense mechanism.
 	//  It's *roughly* in units of bytes (but only very, VERY roughly) -- it also treats words as 1 in many cases.
 	// FUTURE: this ought be configurable somehow.  (How, and at what granularity though?)

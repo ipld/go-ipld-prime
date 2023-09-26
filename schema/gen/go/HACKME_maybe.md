@@ -141,7 +141,7 @@ And we'll consider one more fourth, bonus goal:
 ### there is only one type generated for each maybe
 
 For every type generated, there is one maybe type also generated.
-(At least this much is clearly necesary to satisfy the goals about "specific types".)
+(At least this much is clearly necessary to satisfy the goals about "specific types".)
 
 This means *we dropped the bonus goal* above.
 Making `(null|value)` vs `(absent|value)` vs `(absent|null|value)` distinguishable to the golang compiler
@@ -173,7 +173,7 @@ Arguments that went in favor of implementing `Node`:
 
 - generally "seem fine"
 - certainly makes sense to be able to 'IsNull' on it like any other Node.
-- if in practice the maybe is embeded, we can return an internal pointer to it just fine, so there's no obvious runtime perf reason not to.
+- if in practice the maybe is embedded, we can return an internal pointer to it just fine, so there's no obvious runtime perf reason not to.
 
 Arguments against:
 
@@ -381,7 +381,7 @@ concepts for describing the structure of data which has serial forms;
 how they map onto any particular programming language (such as Go) was a secondary concern.
 This design for a golang library is trying to do its best within that.
 
-### we could've done X with techinque Y
+### we could've done X with technique Y
 
 Probably, yes :)
 

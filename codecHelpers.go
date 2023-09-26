@@ -66,7 +66,7 @@ func DecodeStreaming(r io.Reader, decFn Decoder) (Node, error) {
 // and thus control over the memory layout, and ability to use advanced features like schemas.
 // (Decode is simply this function, but hardcoded to use basicnode.Prototype.Any.)
 //
-// DecodeUsingPrototype internally creates a NodeBuilder, and thows it away when done.
+// DecodeUsingPrototype internally creates a NodeBuilder, and throws it away when done.
 // If building a high performance system, and creating data of the same shape repeatedly,
 // you may wish to use NodeBuilder directly, so that you can control and avoid these allocations.
 //

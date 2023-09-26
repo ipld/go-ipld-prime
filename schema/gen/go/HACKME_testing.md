@@ -84,7 +84,7 @@ Not all of the hurdles are immediately obvious.
 ### Plugins are only used in testing
 
 This might not need a clarification statement, but just in case it does:
-**plugins** (and by extention, cgo) **are not necessary**
+**plugins** (and by extension, cgo) **are not necessary**
 for **doing** codegen nor for **using** the resulting generated code.
 They are _only_ used for our testing of the codegen tooling
 (and specifically, at that, for the behavioral tests).

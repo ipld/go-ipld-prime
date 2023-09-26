@@ -162,7 +162,7 @@ func (g listGenerator) EmitNodeMethodLookupByIndex(w io.Writer) {
 }
 
 func (g listGenerator) EmitNodeMethodLookupByNode(w io.Writer) {
-	// LookupByNode will procede by coercing to int64 if it can; or fail; those are really the only options.
+	// LookupByNode will proceed by coercing to int64 if it can; or fail; those are really the only options.
 	// REVIEW: how much coercion is done by other types varies quite wildly.  so we should figure out if that inconsistency is acceptable, and at least document it if so.
 	doTemplate(`
 		func (n {{ .Type | TypeSymbol }}) LookupByNode(k datamodel.Node) (datamodel.Node, error) {

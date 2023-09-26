@@ -16,7 +16,7 @@ var _ TypeGenerator = &unionKindedGenerator{}
 // This also means any error values can be a little weird:
 //  sometimes they'll have the union's type name, but sometimes they'll have the inhabitant's type name instead;
 //  this depends on whether the error is an ErrWrongKind that was found while checking the method for appropriateness on the union's inhabitant
-//  versus if the error came from the union inhabitant itself after delegation occured.
+//  versus if the error came from the union inhabitant itself after delegation occurred.
 
 func NewUnionReprKindedGenerator(pkgName string, typ *schema.TypeUnion, adjCfg *AdjunctCfg) TypeGenerator {
 	return unionKindedGenerator{
