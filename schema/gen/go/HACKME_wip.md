@@ -19,7 +19,7 @@ How we fix it is not entirely settled.
 - Option 3: become indifferent to absent assignment when it's valid
 - Option 4: don't yield values that are absent during iteration at all
 
-Option 3 seems the most preferrable (and least user-hostile).
+Option 3 seems the most preferable (and least user-hostile).
 (Options 1 and 2 create work for end users;
 Option 4 has questionable logical consistency.)
 
@@ -55,7 +55,7 @@ if it is to accept information streamingly from codecs, the NodeAssembler
 *also* has to be ready to do the buffering work...
 TODO ouch what are the ValueAssembler going to yield for dealing with children?
 TODO we have to hand out dummy ValueAssembler types that buffer... a crazy amount of stuff.  (Reinvent refmt.Tok??  argh.)  cannot avoid???
-TODO this means where errors arise from will be nuts: you cant say if anything is wrong until you figure out the discriminant.  then we replay everything?  your errors for deeper stuff will appear... uh... midway, from a random AssembleValue finishing that happens to be for the discriminant.  that is not pleasant.
+TODO this means where errors arise from will be nuts: you can't say if anything is wrong until you figure out the discriminant.  then we replay everything?  your errors for deeper stuff will appear... uh... midway, from a random AssembleValue finishing that happens to be for the discriminant.  that is not pleasant.
 
 ... let's leave that thought aside: suffice to say, some assemblers are *really*
 not happy or performant if they have to accept things in unpleasant orderings.

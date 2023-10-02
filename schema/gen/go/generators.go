@@ -159,7 +159,7 @@ func EmitTypeTable(pkgName string, ts schema.TypeSystem, adjCfg *AdjunctCfg, w i
 	// REVIEW: if "T__Repr" is how we want to expose this.  We could also put 'Repr' accessors on the type/prototype objects.
 	// FUTURE: types and prototypes are proposed to be the same.  Some of this text pretends they already are, but work is needed on this.
 	doTemplate(`
-		// Type is a struct embeding a NodePrototype/Type for every Node implementation in this package.
+		// Type is a struct embedding a NodePrototype/Type for every Node implementation in this package.
 		// One of its major uses is to start the construction of a value.
 		// You can use it like this:
 		//
