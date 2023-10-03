@@ -292,7 +292,7 @@ func (g unionBuilderGenerator) EmitNodeAssemblerType(w io.Writer) {
 	//     (This is subverted a bit by the 'ca' field, however... which effectively mirrors `na.w.tag`, and is only active in the resetting process, but is necessary because it outlives its twin inside 'w'.)
 	//
 	// - 'cm' is **c**hild **m**aybe and is used for the completion message from children.
-	// - 'ca*' fields embed **c**hild **a**ssemblers -- these are embedded so we can yield pointers to them during recusion into child value assembly without causing new allocations.
+	// - 'ca*' fields embed **c**hild **a**ssemblers -- these are embedded so we can yield pointers to them during recursion into child value assembly without causing new allocations.
 	//     In unions, only one of these will every be used!  However, we don't know *which one* in advance, so, we have to embed them all.
 	//     (It's ironic to note that if the golang compiler had an understanding of unions itself (either tagged or untagged would suffice), we could compile this down into *much* more minimal amounts of resident memory reservation.  Alas!)
 	//     The 'ca*' fields are pointers (and allocated on demand) instead of embeds for unions with memlayout=interface mode.  (Arguably, this is overloading that config; PRs for more granular configurability welcome.)

@@ -21,7 +21,7 @@ func (mapGenerator) IsRepr() bool { return false } // hint used in some generali
 func (g mapGenerator) EmitNativeType(w io.Writer) {
 	// Maps do double bookkeeping.
 	// - 'm' is used for quick lookup.
-	// - 't' is used for both for order maintainence, and for allocation amortization for both keys and values.
+	// - 't' is used for both for order maintenance, and for allocation amortization for both keys and values.
 	// Note that the key in 'm' is *not* a pointer.
 	// The value in 'm' is a pointer into 't' (except when it's a maybe; maybes are already pointers).
 	doTemplate(`
@@ -193,7 +193,7 @@ func (g mapGenerator) EmitNodeMethodLookupByString(w io.Writer) {
 }
 
 func (g mapGenerator) EmitNodeMethodLookupByNode(w io.Writer) {
-	// LookupByNode will procede by cast if it can; or simply error if that doesn't work.
+	// LookupByNode will proceed by cast if it can; or simply error if that doesn't work.
 	//  There's no attempt to turn the node (or its repr) into a string and then reify that into a key;
 	//   if you used a Node here, you should've meant it.
 	// REVIEW: by comparison structs will coerce anything stringish silently...!  so we should figure out if that inconsistency is acceptable, and at least document it if so.

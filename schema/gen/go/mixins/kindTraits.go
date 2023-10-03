@@ -12,7 +12,7 @@ import (
 // OVERRIDE THE METHODS THAT DO APPLY TO YOUR KIND;
 // the default method bodies produced by this mixin are those that return errors,
 // and that is not what you want for the methods that *are* interesting for your kind.
-// The kindTraitsGenerator methods will panic if called for a kind that should've overriden them.
+// The kindTraitsGenerator methods will panic if called for a kind that should've overridden them.
 //
 // If you're implementing something that can hold "any" kind,
 // probably none of these methods apply to you at all.
@@ -33,7 +33,7 @@ type kindTraitsGenerator struct {
 
 func (g kindTraitsGenerator) emitNodeMethodLookupByString(w io.Writer) {
 	if datamodel.KindSet_JustMap.Contains(g.Kind) {
-		panic("gen internals error: you should've overriden this")
+		panic("gen internals error: you should've overridden this")
 	}
 	doTemplate(`
 		func ({{ .TypeSymbol }}) LookupByString(string) (datamodel.Node, error) {
@@ -44,7 +44,7 @@ func (g kindTraitsGenerator) emitNodeMethodLookupByString(w io.Writer) {
 
 func (g kindTraitsGenerator) emitNodeMethodLookupByNode(w io.Writer) {
 	if datamodel.KindSet_JustMap.Contains(g.Kind) {
-		panic("gen internals error: you should've overriden this")
+		panic("gen internals error: you should've overridden this")
 	}
 	doTemplate(`
 		func ({{ .TypeSymbol }}) LookupByNode(datamodel.Node) (datamodel.Node, error) {
@@ -55,7 +55,7 @@ func (g kindTraitsGenerator) emitNodeMethodLookupByNode(w io.Writer) {
 
 func (g kindTraitsGenerator) emitNodeMethodLookupByIndex(w io.Writer) {
 	if datamodel.KindSet_JustList.Contains(g.Kind) {
-		panic("gen internals error: you should've overriden this")
+		panic("gen internals error: you should've overridden this")
 	}
 	doTemplate(`
 		func ({{ .TypeSymbol }}) LookupByIndex(idx int64) (datamodel.Node, error) {
@@ -66,7 +66,7 @@ func (g kindTraitsGenerator) emitNodeMethodLookupByIndex(w io.Writer) {
 
 func (g kindTraitsGenerator) emitNodeMethodLookupBySegment(w io.Writer) {
 	if datamodel.KindSet_Recursive.Contains(g.Kind) {
-		panic("gen internals error: you should've overriden this")
+		panic("gen internals error: you should've overridden this")
 	}
 	doTemplate(`
 		func ({{ .TypeSymbol }}) LookupBySegment(seg datamodel.PathSegment) (datamodel.Node, error) {
@@ -77,7 +77,7 @@ func (g kindTraitsGenerator) emitNodeMethodLookupBySegment(w io.Writer) {
 
 func (g kindTraitsGenerator) emitNodeMethodMapIterator(w io.Writer) {
 	if datamodel.KindSet_JustMap.Contains(g.Kind) {
-		panic("gen internals error: you should've overriden this")
+		panic("gen internals error: you should've overridden this")
 	}
 	doTemplate(`
 		func ({{ .TypeSymbol }}) MapIterator() datamodel.MapIterator {
@@ -88,7 +88,7 @@ func (g kindTraitsGenerator) emitNodeMethodMapIterator(w io.Writer) {
 
 func (g kindTraitsGenerator) emitNodeMethodListIterator(w io.Writer) {
 	if datamodel.KindSet_JustList.Contains(g.Kind) {
-		panic("gen internals error: you should've overriden this")
+		panic("gen internals error: you should've overridden this")
 	}
 	doTemplate(`
 		func ({{ .TypeSymbol }}) ListIterator() datamodel.ListIterator {
@@ -99,7 +99,7 @@ func (g kindTraitsGenerator) emitNodeMethodListIterator(w io.Writer) {
 
 func (g kindTraitsGenerator) emitNodeMethodLength(w io.Writer) {
 	if datamodel.KindSet_Recursive.Contains(g.Kind) {
-		panic("gen internals error: you should've overriden this")
+		panic("gen internals error: you should've overridden this")
 	}
 	doTemplate(`
 		func ({{ .TypeSymbol }}) Length() int64 {
@@ -126,7 +126,7 @@ func (g kindTraitsGenerator) emitNodeMethodIsNull(w io.Writer) {
 
 func (g kindTraitsGenerator) emitNodeMethodAsBool(w io.Writer) {
 	if datamodel.KindSet_JustBool.Contains(g.Kind) {
-		panic("gen internals error: you should've overriden this")
+		panic("gen internals error: you should've overridden this")
 	}
 	doTemplate(`
 		func ({{ .TypeSymbol }}) AsBool() (bool, error) {
@@ -137,7 +137,7 @@ func (g kindTraitsGenerator) emitNodeMethodAsBool(w io.Writer) {
 
 func (g kindTraitsGenerator) emitNodeMethodAsInt(w io.Writer) {
 	if datamodel.KindSet_JustInt.Contains(g.Kind) {
-		panic("gen internals error: you should've overriden this")
+		panic("gen internals error: you should've overridden this")
 	}
 	doTemplate(`
 		func ({{ .TypeSymbol }}) AsInt() (int64, error) {
@@ -148,7 +148,7 @@ func (g kindTraitsGenerator) emitNodeMethodAsInt(w io.Writer) {
 
 func (g kindTraitsGenerator) emitNodeMethodAsFloat(w io.Writer) {
 	if datamodel.KindSet_JustFloat.Contains(g.Kind) {
-		panic("gen internals error: you should've overriden this")
+		panic("gen internals error: you should've overridden this")
 	}
 	doTemplate(`
 		func ({{ .TypeSymbol }}) AsFloat() (float64, error) {
@@ -159,7 +159,7 @@ func (g kindTraitsGenerator) emitNodeMethodAsFloat(w io.Writer) {
 
 func (g kindTraitsGenerator) emitNodeMethodAsString(w io.Writer) {
 	if datamodel.KindSet_JustString.Contains(g.Kind) {
-		panic("gen internals error: you should've overriden this")
+		panic("gen internals error: you should've overridden this")
 	}
 	doTemplate(`
 		func ({{ .TypeSymbol }}) AsString() (string, error) {
@@ -170,7 +170,7 @@ func (g kindTraitsGenerator) emitNodeMethodAsString(w io.Writer) {
 
 func (g kindTraitsGenerator) emitNodeMethodAsBytes(w io.Writer) {
 	if datamodel.KindSet_JustBytes.Contains(g.Kind) {
-		panic("gen internals error: you should've overriden this")
+		panic("gen internals error: you should've overridden this")
 	}
 	doTemplate(`
 		func ({{ .TypeSymbol }}) AsBytes() ([]byte, error) {
@@ -181,7 +181,7 @@ func (g kindTraitsGenerator) emitNodeMethodAsBytes(w io.Writer) {
 
 func (g kindTraitsGenerator) emitNodeMethodAsLink(w io.Writer) {
 	if datamodel.KindSet_JustLink.Contains(g.Kind) {
-		panic("gen internals error: you should've overriden this")
+		panic("gen internals error: you should've overridden this")
 	}
 	doTemplate(`
 		func ({{ .TypeSymbol }}) AsLink() (datamodel.Link, error) {
@@ -209,7 +209,7 @@ type kindAssemblerTraitsGenerator struct {
 
 func (g kindAssemblerTraitsGenerator) emitNodeAssemblerMethodBeginMap(w io.Writer) {
 	if datamodel.KindSet_JustMap.Contains(g.Kind) {
-		panic("gen internals error: you should've overriden this")
+		panic("gen internals error: you should've overridden this")
 	}
 	doTemplate(`
 		func ({{ .AppliedPrefix }}Assembler) BeginMap(sizeHint int64) (datamodel.MapAssembler, error) {
@@ -220,7 +220,7 @@ func (g kindAssemblerTraitsGenerator) emitNodeAssemblerMethodBeginMap(w io.Write
 
 func (g kindAssemblerTraitsGenerator) emitNodeAssemblerMethodBeginList(w io.Writer) {
 	if datamodel.KindSet_JustList.Contains(g.Kind) {
-		panic("gen internals error: you should've overriden this")
+		panic("gen internals error: you should've overridden this")
 	}
 	doTemplate(`
 		func ({{ .AppliedPrefix }}Assembler) BeginList(sizeHint int64) (datamodel.ListAssembler, error) {
@@ -231,7 +231,7 @@ func (g kindAssemblerTraitsGenerator) emitNodeAssemblerMethodBeginList(w io.Writ
 
 func (g kindAssemblerTraitsGenerator) emitNodeAssemblerMethodAssignNull(w io.Writer) {
 	if datamodel.KindSet_JustNull.Contains(g.Kind) {
-		panic("gen internals error: you should've overriden this")
+		panic("gen internals error: you should've overridden this")
 	}
 	doTemplate(`
 		func (na *{{ .AppliedPrefix }}Assembler) AssignNull() error {
@@ -242,7 +242,7 @@ func (g kindAssemblerTraitsGenerator) emitNodeAssemblerMethodAssignNull(w io.Wri
 
 func (g kindAssemblerTraitsGenerator) emitNodeAssemblerMethodAssignBool(w io.Writer) {
 	if datamodel.KindSet_JustBool.Contains(g.Kind) {
-		panic("gen internals error: you should've overriden this")
+		panic("gen internals error: you should've overridden this")
 	}
 	doTemplate(`
 		func ({{ .AppliedPrefix }}Assembler) AssignBool(bool) error {
@@ -253,7 +253,7 @@ func (g kindAssemblerTraitsGenerator) emitNodeAssemblerMethodAssignBool(w io.Wri
 
 func (g kindAssemblerTraitsGenerator) emitNodeAssemblerMethodAssignInt(w io.Writer) {
 	if datamodel.KindSet_JustInt.Contains(g.Kind) {
-		panic("gen internals error: you should've overriden this")
+		panic("gen internals error: you should've overridden this")
 	}
 	doTemplate(`
 		func ({{ .AppliedPrefix }}Assembler) AssignInt(int64) error {
@@ -264,7 +264,7 @@ func (g kindAssemblerTraitsGenerator) emitNodeAssemblerMethodAssignInt(w io.Writ
 
 func (g kindAssemblerTraitsGenerator) emitNodeAssemblerMethodAssignFloat(w io.Writer) {
 	if datamodel.KindSet_JustFloat.Contains(g.Kind) {
-		panic("gen internals error: you should've overriden this")
+		panic("gen internals error: you should've overridden this")
 	}
 	doTemplate(`
 		func ({{ .AppliedPrefix }}Assembler) AssignFloat(float64) error {
@@ -275,7 +275,7 @@ func (g kindAssemblerTraitsGenerator) emitNodeAssemblerMethodAssignFloat(w io.Wr
 
 func (g kindAssemblerTraitsGenerator) emitNodeAssemblerMethodAssignString(w io.Writer) {
 	if datamodel.KindSet_JustString.Contains(g.Kind) {
-		panic("gen internals error: you should've overriden this")
+		panic("gen internals error: you should've overridden this")
 	}
 	doTemplate(`
 		func ({{ .AppliedPrefix }}Assembler) AssignString(string) error {
@@ -286,7 +286,7 @@ func (g kindAssemblerTraitsGenerator) emitNodeAssemblerMethodAssignString(w io.W
 
 func (g kindAssemblerTraitsGenerator) emitNodeAssemblerMethodAssignBytes(w io.Writer) {
 	if datamodel.KindSet_JustBytes.Contains(g.Kind) {
-		panic("gen internals error: you should've overriden this")
+		panic("gen internals error: you should've overridden this")
 	}
 	doTemplate(`
 		func ({{ .AppliedPrefix }}Assembler) AssignBytes([]byte) error {
@@ -297,7 +297,7 @@ func (g kindAssemblerTraitsGenerator) emitNodeAssemblerMethodAssignBytes(w io.Wr
 
 func (g kindAssemblerTraitsGenerator) emitNodeAssemblerMethodAssignLink(w io.Writer) {
 	if datamodel.KindSet_JustLink.Contains(g.Kind) {
-		panic("gen internals error: you should've overriden this")
+		panic("gen internals error: you should've overridden this")
 	}
 	doTemplate(`
 		func ({{ .AppliedPrefix }}Assembler) AssignLink(datamodel.Link) error {

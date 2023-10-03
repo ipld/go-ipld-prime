@@ -18,8 +18,8 @@ inside nodes:
 
 inside assemblers:
 
-- `va` -- **v**alue **a**ssembler -- an assembler for values in lists or maps (often embedded in the node asembler, e.g. `ma.va` and `la.va` are common strings).
-- `ka` -- **k**ey **a**ssembler -- an assembler for keys in maps (often embedded in the node asembler, e.g. `ma.ka` is a common string).
+- `va` -- **v**alue **a**ssembler -- an assembler for values in lists or maps (often embedded in the node assembler, e.g. `ma.va` and `la.va` are common strings).
+- `ka` -- **k**ey **a**ssembler -- an assembler for keys in maps (often embedded in the node assembler, e.g. `ma.ka` is a common string).
 - `ca_*` -- **c**hild **a**ssembler -- the same concept as `ka` and `va`, but appearing in structs and other types that have differentiated children.
 - `cm` -- **c**hild **m**aybe -- a piece of memory sometimes found in a node assembler for statekeeping for child assemblers.
 - `m` -- **m**aybe pointer -- a pointer to where an assembler should put a mark when it's finished.  (this is often a pointer to a parent structure's 'cm'!)

@@ -279,7 +279,7 @@ func (g structReprTupleReprBuilderGenerator) EmitNodeAssemblerType(w io.Writer) 
 	// - 'w' is the "**w**ip" pointer.
 	// - 'm' is the **m**aybe which communicates our completeness to the parent if we're a child assembler.
 	// - 'state' is what it says on the tin.  this is used for the list state (the broad transitions between null, start-list, and finish are handled by 'm' for consistency with other types).
-	// - contrasted to the map representation, there's no 's' bitfield for what's been **s**et -- because we know things must procede in order, it would be redundant with 'f'.
+	// - contrasted to the map representation, there's no 's' bitfield for what's been **s**et -- because we know things must proceed in order, it would be redundant with 'f'.
 	// - 'f' is the **f**ocused field that will be assembled next.
 	//
 	// - 'cm' is **c**hild **m**aybe and is used for the completion message from children that aren't allowed to be nullable (for those that are, their own maybe.m is used).

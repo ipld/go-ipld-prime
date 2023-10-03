@@ -23,7 +23,7 @@ Let's enumerate the things we can balance (and give them some short reference co
 - SP: execution speed, in seconds, especially of NodeBuilder in deserialization use
 - AC: allocations, in count, needed for operations (though in truth, this is just a proxy for SP due to its outsized impact there)
 - ERG: ergonomics, as an ineffable, ellusive-to-measurement sort of vibe of the thing, and how well it self-explains use and deters erroneous application
-- GLOC: generated lines of code, as a line count or in bytes, of interest because it may be of noticable cost in version control weight
+- GLOC: generated lines of code, as a line count or in bytes, of interest because it may be of noticeable cost in version control weight
 
 This list is in particular regarding concerns that come to light in considering performant deserialization operations...
 however, it's fairly representative of general use as well:
