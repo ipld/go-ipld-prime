@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	github.com/frankban/quicktest v1.14.6
-	github.com/google/go-cmp v0.5.9
+	github.com/google/go-cmp v0.6.0
 	github.com/ipfs/go-cid v0.4.1
 	github.com/multiformats/go-multicodec v0.9.0
 	github.com/multiformats/go-multihash v0.2.3
