@@ -1,7 +1,7 @@
 /*
 rot13adl is a demo ADL -- its purpose is to show what an ADL and its public interface can look like.
 It implements a "rot13" string: when creating data through the ADL, the user gives it a regular string;
-the ADL will create aninternal representation of it which has the characters altered in a reversable way.
+the ADL will create aninternal representation of it which has the characters altered in a reversible way.
 
 It provides reference and example materal, but it's very unlikely you want to use it in real situations ;)
 

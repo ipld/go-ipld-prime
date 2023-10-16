@@ -16,7 +16,7 @@ import (
 // A path segment of "123" will be used as a string when traversing a node of map kind;
 // and it will be converted to an integer when traversing a node of list kind.
 // (If a path segment string cannot be parsed to an int when traversing a node of list kind, then traversal will error.)
-// It is not possible to ask which kind (string or integer) a PathSegment is, because that is not defined -- this is *only* intepreted contextually.
+// It is not possible to ask which kind (string or integer) a PathSegment is, because that is not defined -- this is *only* interpreted contextually.
 //
 // Internally, PathSegment will store either a string or an integer,
 // depending on how it was constructed,

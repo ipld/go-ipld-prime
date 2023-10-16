@@ -95,12 +95,12 @@ func NewPathNocopy(segments []PathSegment) Path {
 // E.g., `"foo///bar"` will be treated equivalently to `"foo/bar"`.
 // Prefixed and suffixed extraneous "/" characters are also discarded.
 // This makes this constructor incapable of handling some possible Path values
-// (specifically: paths with empty segements cannot be created with this constructor).
+// (specifically: paths with empty segments cannot be created with this constructor).
 //
 // There is no escaping mechanism used by this function.
 // This makes this constructor incapable of handling some possible Path values
 // (specifically, a path segment containing "/" cannot be created, because it
-// will always be intepreted as a segment separator).
+// will always be interpreted as a segment separator).
 //
 // No other "cleaning" of the path occurs.  See the documentation of the Path struct;
 // in particular, note that ".." does not mean "go up", nor does "." mean "stay here" --

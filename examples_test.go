@@ -42,7 +42,7 @@ func Example_createDataAndMarshal() {
 func Example_unmarshalData() {
 	serial := strings.NewReader(`{"hey":"it works!","yes": true}`)
 
-	np := basicnode.Prototype.Any // Pick a stle for the in-memory data.
+	np := basicnode.Prototype.Any // Pick a style for the in-memory data.
 	nb := np.NewBuilder()         // Create a builder.
 	dagjson.Decode(nb, serial)    // Hand the builder to decoding -- decoding will fill it in!
 	n := nb.Build()               // Call 'Build' to get the resulting Node.  (It's immutable!)

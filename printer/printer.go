@@ -81,11 +81,11 @@ type Config struct {
 
 	// Set to true if you want maps to use "complex"-style printouts:
 	// meaning they will print their keys on separate lines than their values,
-	// and keys may spread across mutiple lines if appropriate.
+	// and keys may spread across multiple lines if appropriate.
 	//
 	// If not set, a heuristic will be used based on if the map is known to
 	// have keys that are complex enough that rendering them as oneline seems likely to overload.
-	// See Config.useCmplxKeys for exactly how that's deteremined.
+	// See Config.useCmplxKeys for exactly how that's determined.
 	UseMapComplexStyleAlways bool
 
 	// For maps to use "complex"-style printouts (or not) per type.
