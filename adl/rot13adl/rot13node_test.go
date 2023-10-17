@@ -27,7 +27,7 @@ func TestNodeInternal(t *testing.T) {
 	err := nb.AssignString("abcd")
 	qt.Assert(t, err, qt.IsNil)
 	n := nb.Build()
-	// Poke its insides directly to see that the transformation occured.
+	// Poke its insides directly to see that the transformation occurred.
 	qt.Check(t, n.(*_R13String).synthesized, qt.Equals, "abcd")
 	qt.Check(t, n.(*_R13String).raw, qt.Equals, "nopq")
 }

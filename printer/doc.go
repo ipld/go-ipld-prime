@@ -63,10 +63,10 @@ In addition to the example above, you can check out the tests for a few more exa
 
 Some configuration options are available to elide some information.
 For example, some configuration can reduce the amount of annotational weight around strings
-(which is possible to do without getting completely vague because the quotation markings for strings already are syntatically distinctive).
+(which is possible to do without getting completely vague because the quotation markings for strings already are syntactically distinctive).
 Not all things can be configured for elision, however.
 For example, for the various number kinds, the kind preambles are always required.  (Number parsers are otherwise often an annoying lookahead problem.)
-Similarly, for bytes, the kind preamble is always required.  (Among other things, the hexidecimal up until the first letter could be confused with an integer, if we didn't label both of them.)
+Similarly, for bytes, the kind preamble is always required.  (Among other things, the hexadecimal up until the first letter could be confused with an integer, if we didn't label both of them.)
 Anything that's typed also gets a preamble with the type and kind information, even if its kind is something we'd otherwise elide, like string.
 
 Notice that struct fields aren't quoted.  (It's not necessary, because field names are already constrained.)
