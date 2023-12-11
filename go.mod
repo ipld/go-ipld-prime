@@ -2,15 +2,13 @@ module github.com/ipld/go-ipld-prime
 
 go 1.20
 
-replace github.com/polydawn/refmt => github.com/rvagg/refmt v0.0.0-20230926105543-d4821d99e868
-
 require (
 	github.com/frankban/quicktest v1.14.6
 	github.com/google/go-cmp v0.6.0
 	github.com/ipfs/go-cid v0.4.1
 	github.com/multiformats/go-multicodec v0.9.0
 	github.com/multiformats/go-multihash v0.2.3
-	github.com/polydawn/refmt v0.89.0
+	github.com/polydawn/refmt v0.89.1-0.20231129105047-37766d95467a
 	github.com/warpfork/go-testmark v0.12.1
 	gopkg.in/yaml.v2 v2.4.0
 )
