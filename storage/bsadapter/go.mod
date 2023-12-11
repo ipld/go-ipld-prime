@@ -3,7 +3,7 @@ module github.com/ipld/go-ipld-prime/storage/bsadapter
 go 1.20
 
 require (
-	github.com/ipfs/boxo v0.15.0
+	github.com/ipfs/boxo v0.16.0
 	github.com/ipfs/go-block-format v0.2.0
 	github.com/ipfs/go-cid v0.4.1
 )
