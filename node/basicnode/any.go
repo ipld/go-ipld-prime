@@ -1,14 +1,18 @@
 package basicnode
 
 import (
+	"fmt"
+	"reflect"
+
 	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/linking"
 )
 
 var (
 	//_ datamodel.Node          = &anyNode{}
-	_ datamodel.NodePrototype = Prototype__Any{}
-	_ datamodel.NodeBuilder   = &anyBuilder{}
+	_ datamodel.NodePrototype                = Prototype__Any{}
+	_ datamodel.NodePrototypeSupportingAmend = Prototype__Any{}
+	_ datamodel.NodeBuilder                  = &anyBuilder{}
 	//_ datamodel.NodeAssembler = &anyAssembler{}
 )
 
@@ -34,8 +38,24 @@ func Chooser(_ datamodel.Link, _ linking.LinkContext) (datamodel.NodePrototype, 
 
 type Prototype__Any struct{}
 
-func (Prototype__Any) NewBuilder() datamodel.NodeBuilder {
-	return &anyBuilder{}
+func (p Prototype__Any) NewBuilder() datamodel.NodeBuilder {
+	return p.AmendingBuilder(nil)
+}
+
+// -- NodePrototypeSupportingAmend -->
+
+func (p Prototype__Any) AmendingBuilder(base datamodel.Node) datamodel.NodeAmender {
+	ab := &anyBuilder{}
+	if base != nil {
+		ab.kind = base.Kind()
+		if npa, castOk := base.Prototype().(datamodel.NodePrototypeSupportingAmend); castOk {
+			ab.amender = npa.AmendingBuilder(base)
+		} else {
+			// This node could be either scalar or recursive
+			ab.baseNode = base
+		}
+	}
+	return ab
 }
 
 // -- NodeBuilder -->
@@ -57,17 +77,16 @@ type anyBuilder struct {
 	kind datamodel.Kind
 
 	// Only one of the following ends up being used...
-	//  but we don't know in advance which one, so all are embeded here.
+	//  but we don't know in advance which one, so both are embedded here.
 	//   This uses excessive space, but amortizes allocations, and all will be
 	//    freed as soon as the builder is done.
-	// Builders are only used for recursives;
-	//  scalars are simple enough we just do them directly.
-	// 'scalarNode' may also hold another Node of unknown prototype (possibly not even from this package),
+	// An amender is only used for amendable nodes, while all non-amendable nodes (both recursives and scalars) are
+	//  stored directly.
+	// 'baseNode' may also hold another Node of unknown prototype (possibly not even from this package),
 	//  in which case this is indicated by 'kind==99'.
 
-	mapBuilder  plainMap__Builder
-	listBuilder plainList__Builder
-	scalarNode  datamodel.Node
+	amender  datamodel.NodeAmender
+	baseNode datamodel.Node
 }
 
 func (nb *anyBuilder) Reset() {
@@ -79,16 +98,18 @@ func (nb *anyBuilder) BeginMap(sizeHint int64) (datamodel.MapAssembler, error) {
 		panic("misuse")
 	}
 	nb.kind = datamodel.Kind_Map
-	nb.mapBuilder.w = &plainMap{}
-	return nb.mapBuilder.BeginMap(sizeHint)
+	mapBuilder := Prototype.Map.NewBuilder().(*plainMap__Builder)
+	nb.amender = mapBuilder
+	return mapBuilder.BeginMap(sizeHint)
 }
 func (nb *anyBuilder) BeginList(sizeHint int64) (datamodel.ListAssembler, error) {
 	if nb.kind != datamodel.Kind_Invalid {
 		panic("misuse")
 	}
 	nb.kind = datamodel.Kind_List
-	nb.listBuilder.w = &plainList{}
-	return nb.listBuilder.BeginList(sizeHint)
+	listBuilder := Prototype.List.NewBuilder().(*plainList__Builder)
+	nb.amender = listBuilder
+	return listBuilder.BeginList(sizeHint)
 }
 func (nb *anyBuilder) AssignNull() error {
 	if nb.kind != datamodel.Kind_Invalid {
@@ -102,7 +123,7 @@ func (nb *anyBuilder) AssignBool(v bool) error {
 		panic("misuse")
 	}
 	nb.kind = datamodel.Kind_Bool
-	nb.scalarNode = NewBool(v)
+	nb.baseNode = NewBool(v)
 	return nil
 }
 func (nb *anyBuilder) AssignInt(v int64) error {
@@ -110,7 +131,7 @@ func (nb *anyBuilder) AssignInt(v int64) error {
 		panic("misuse")
 	}
 	nb.kind = datamodel.Kind_Int
-	nb.scalarNode = NewInt(v)
+	nb.baseNode = NewInt(v)
 	return nil
 }
 func (nb *anyBuilder) AssignFloat(v float64) error {
@@ -118,7 +139,7 @@ func (nb *anyBuilder) AssignFloat(v float64) error {
 		panic("misuse")
 	}
 	nb.kind = datamodel.Kind_Float
-	nb.scalarNode = NewFloat(v)
+	nb.baseNode = NewFloat(v)
 	return nil
 }
 func (nb *anyBuilder) AssignString(v string) error {
@@ -126,7 +147,7 @@ func (nb *anyBuilder) AssignString(v string) error {
 		panic("misuse")
 	}
 	nb.kind = datamodel.Kind_String
-	nb.scalarNode = NewString(v)
+	nb.baseNode = NewString(v)
 	return nil
 }
 func (nb *anyBuilder) AssignBytes(v []byte) error {
@@ -134,7 +155,7 @@ func (nb *anyBuilder) AssignBytes(v []byte) error {
 		panic("misuse")
 	}
 	nb.kind = datamodel.Kind_Bytes
-	nb.scalarNode = NewBytes(v)
+	nb.baseNode = NewBytes(v)
 	return nil
 }
 func (nb *anyBuilder) AssignLink(v datamodel.Link) error {
@@ -142,7 +163,7 @@ func (nb *anyBuilder) AssignLink(v datamodel.Link) error {
 		panic("misuse")
 	}
 	nb.kind = datamodel.Kind_Link
-	nb.scalarNode = NewLink(v)
+	nb.baseNode = NewLink(v)
 	return nil
 }
 func (nb *anyBuilder) AssignNode(v datamodel.Node) error {
@@ -150,7 +171,7 @@ func (nb *anyBuilder) AssignNode(v datamodel.Node) error {
 		panic("misuse")
 	}
 	nb.kind = 99
-	nb.scalarNode = v
+	nb.baseNode = v
 	return nil
 }
 func (anyBuilder) Prototype() datamodel.NodePrototype {
@@ -158,32 +179,59 @@ func (anyBuilder) Prototype() datamodel.NodePrototype {
 }
 
 func (nb *anyBuilder) Build() datamodel.Node {
+	if nb.amender != nil {
+		return nb.amender.Build()
+	}
 	switch nb.kind {
 	case datamodel.Kind_Invalid:
 		panic("misuse")
 	case datamodel.Kind_Map:
-		return nb.mapBuilder.Build()
+		return nb.baseNode
 	case datamodel.Kind_List:
-		return nb.listBuilder.Build()
+		return nb.baseNode
 	case datamodel.Kind_Null:
 		return datamodel.Null
 	case datamodel.Kind_Bool:
-		return nb.scalarNode
+		return nb.baseNode
 	case datamodel.Kind_Int:
-		return nb.scalarNode
+		return nb.baseNode
 	case datamodel.Kind_Float:
-		return nb.scalarNode
+		return nb.baseNode
 	case datamodel.Kind_String:
-		return nb.scalarNode
+		return nb.baseNode
 	case datamodel.Kind_Bytes:
-		return nb.scalarNode
+		return nb.baseNode
 	case datamodel.Kind_Link:
-		return nb.scalarNode
+		return nb.baseNode
 	case 99:
-		return nb.scalarNode
+		return nb.baseNode
 	default:
 		panic("unreachable")
 	}
+}
+
+// -- NodeAmender -->
+
+func (nb *anyBuilder) Transform(path datamodel.Path, transform datamodel.AmendFn) (datamodel.Node, error) {
+	// If the root is being replaced, replace it. If the transformation is for a nested node in a non-amendable
+	// recursive object, panic.
+	if path.Len() == 0 {
+		prevNode := nb.Build()
+		if newNode, err := transform(prevNode); err != nil {
+			return nil, err
+		} else if newAb, castOk := newNode.(*anyBuilder); !castOk {
+			return nil, fmt.Errorf("transform: cannot transform root into incompatible type: %v", reflect.TypeOf(newAb))
+		} else {
+			nb.amender = newAb.amender
+			nb.baseNode = newAb.baseNode
+			return prevNode, nil
+		}
+	}
+	if nb.amender != nil {
+		return nb.amender.Transform(path, transform)
+	}
+	// `Transform` should never be called for a non-amendable node
+	panic("misuse")
 }
 
 // -- NodeAssembler -->

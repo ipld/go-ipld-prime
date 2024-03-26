@@ -238,12 +238,24 @@ type NodePrototype interface {
 // volumes of data, detecting and using this feature can result in significant
 // performance savings.
 type NodePrototypeSupportingAmend interface {
-	AmendingBuilder(base Node) NodeBuilder
+	AmendingBuilder(base Node) NodeAmender
 	// FUTURE: probably also needs a `AmendingWithout(base Node, filter func(k,v) bool) NodeBuilder`, or similar.
 	//  ("deletion" based APIs are also possible but both more complicated in interfaces added, and prone to accidentally quadratic usage.)
 	// FUTURE: there should be some stdlib `Copy` (?) methods that automatically look for this feature, and fallback if absent.
 	//  Might include a wide range of point `Transform`, etc, methods.
 	// FUTURE: consider putting this (and others like it) in a `feature` package, if there begin to be enough of them and docs get crowded.
+}
+
+// NodePrototypeSupportingMapAmend is a feature-detection interface that can be used on a NodePrototype to see if it's
+// possible to update existing map-like nodes of this style.
+type NodePrototypeSupportingMapAmend interface {
+	AmendingBuilder(base Node) MapAmender
+}
+
+// NodePrototypeSupportingListAmend is a feature-detection interface that can be used on a NodePrototype to see if it's
+// possible to update existing list-like nodes of this style.
+type NodePrototypeSupportingListAmend interface {
+	AmendingBuilder(base Node) ListAmender
 }
 
 // MapIterator is an interface for traversing map nodes.
