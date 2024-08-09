@@ -1,22 +1,26 @@
 package basicnode
 
 import (
+	"fmt"
+	"reflect"
+
 	"github.com/ipld/go-ipld-prime/datamodel"
 	"github.com/ipld/go-ipld-prime/node/mixins"
 )
 
 var (
-	_ datamodel.Node          = &plainList{}
-	_ datamodel.NodePrototype = Prototype__List{}
-	_ datamodel.NodeBuilder   = &plainList__Builder{}
-	_ datamodel.NodeAssembler = &plainList__Assembler{}
+	_ datamodel.Node                             = &plainList{}
+	_ datamodel.NodePrototype                    = Prototype__List{}
+	_ datamodel.NodePrototypeSupportingListAmend = Prototype__List{}
+	_ datamodel.NodeBuilder                      = &plainList__Builder{}
+	_ datamodel.NodeAssembler                    = &plainList__Assembler{}
 )
 
 // plainList is a concrete type that provides a list-kind datamodel.Node.
 // It can contain any kind of value.
 // plainList is also embedded in the 'any' struct and usable from there.
 type plainList struct {
-	x []datamodel.Node
+	x []datamodel.NodeAmender
 }
 
 // -- Node interface methods -->
@@ -31,17 +35,31 @@ func (plainList) LookupByNode(datamodel.Node) (datamodel.Node, error) {
 	return mixins.List{TypeName: "list"}.LookupByNode(nil)
 }
 func (n *plainList) LookupByIndex(idx int64) (datamodel.Node, error) {
+	if v, err := n.lookupAmenderByIndex(idx); err != nil {
+		return nil, err
+	} else {
+		return v.Build(), nil
+	}
+}
+func (n *plainList) lookupAmenderByIndex(idx int64) (datamodel.NodeAmender, error) {
 	if n.Length() <= idx {
 		return nil, datamodel.ErrNotExists{Segment: datamodel.PathSegmentOfInt(idx)}
 	}
 	return n.x[idx], nil
 }
 func (n *plainList) LookupBySegment(seg datamodel.PathSegment) (datamodel.Node, error) {
+	if v, err := n.lookupAmenderBySegment(seg); err != nil {
+		return nil, err
+	} else {
+		return v.Build(), nil
+	}
+}
+func (n *plainList) lookupAmenderBySegment(seg datamodel.PathSegment) (datamodel.NodeAmender, error) {
 	idx, err := seg.Index()
 	if err != nil {
 		return nil, datamodel.ErrInvalidSegmentForList{TroubleSegment: seg, Reason: err}
 	}
-	return n.LookupByIndex(idx)
+	return n.lookupAmenderByIndex(idx)
 }
 func (plainList) MapIterator() datamodel.MapIterator {
 	return nil
@@ -89,7 +107,7 @@ func (itr *plainList_ListIterator) Next() (idx int64, v datamodel.Node, _ error)
 	if itr.Done() {
 		return -1, nil, datamodel.ErrIteratorOverread{}
 	}
-	v = itr.n.x[itr.idx]
+	v = itr.n.x[itr.idx].Build()
 	idx = int64(itr.idx)
 	itr.idx++
 	return
@@ -102,8 +120,23 @@ func (itr *plainList_ListIterator) Done() bool {
 
 type Prototype__List struct{}
 
-func (Prototype__List) NewBuilder() datamodel.NodeBuilder {
-	return &plainList__Builder{plainList__Assembler{w: &plainList{}}}
+func (p Prototype__List) NewBuilder() datamodel.NodeBuilder {
+	return p.AmendingBuilder(nil)
+}
+
+// -- NodePrototypeSupportingListAmend -->
+
+func (p Prototype__List) AmendingBuilder(base datamodel.Node) datamodel.ListAmender {
+	nb := &plainList__Builder{plainList__Assembler{w: &plainList{}}}
+	if base != nil {
+		if baseList, castOk := base.(*plainList); !castOk {
+			panic("misuse")
+		} else {
+			// Make a deep copy of the base list
+			datamodel.Copy(baseList, nb)
+		}
+	}
+	return nb
 }
 
 // -- NodeBuilder -->
@@ -113,14 +146,218 @@ type plainList__Builder struct {
 }
 
 func (nb *plainList__Builder) Build() datamodel.Node {
-	if nb.state != laState_finished {
-		panic("invalid state: assembler must be 'finished' before Build can be called!")
+	if (nb.state != laState_initial) && (nb.state != laState_finished) {
+		panic("invalid state: assembly in progress must be 'finished' before Build can be called!")
 	}
 	return nb.w
 }
 func (nb *plainList__Builder) Reset() {
 	*nb = plainList__Builder{}
 	nb.w = &plainList{}
+}
+
+// -- NodeAmender -->
+
+func (nb *plainList__Builder) Transform(path datamodel.Path, transform datamodel.AmendFn) (datamodel.Node, error) {
+	return nb.transform(path, transform, true)
+}
+
+func (nb *plainList__Builder) transform(path datamodel.Path, transform datamodel.AmendFn, replace bool) (datamodel.Node, error) {
+	// Can only transform the root of the node or an immediate child.
+	if path.Len() > 1 {
+		panic("misuse")
+	}
+	// Allow the root of the node to be replaced.
+	if path.Len() == 0 {
+		prevNode := nb.Build()
+		if newNode, err := transform(prevNode); err != nil {
+			return nil, err
+		} else if newLb, castOk := newNode.(*plainList__Builder); !castOk {
+			return nil, fmt.Errorf("transform: cannot transform root into incompatible type: %v", reflect.TypeOf(newLb))
+		} else {
+			*nb.w = *newLb.w
+			return prevNode, nil
+		}
+	}
+	childSeg, _ := path.Shift()
+	childIdx, err := childSeg.Index()
+	var childAmender datamodel.NodeAmender
+	if err != nil {
+		if childSeg.String() == "-" {
+			// "-" indicates appending a new element to the end of the list.
+			childIdx = nb.w.Length()
+		} else {
+			return nil, datamodel.ErrInvalidSegmentForList{TroubleSegment: childSeg, Reason: err}
+		}
+	} else {
+		// Don't allow the index to be equal to the length if the segment was not "-".
+		if childIdx >= nb.w.Length() {
+			return nil, fmt.Errorf("transform: cannot navigate path segment %q at %q because it is beyond the list bounds", childSeg, path)
+		}
+		// Only lookup the segment if it was within range of the list elements. If `childIdx` is equal to the length of
+		// the list, then we fall-through and append an element to the end of the list.
+		childAmender, err = nb.w.lookupAmenderByIndex(childIdx)
+		if err != nil {
+			// Return any error other than "not exists"
+			if _, notFoundErr := err.(datamodel.ErrNotExists); !notFoundErr {
+				return nil, fmt.Errorf("transform: child at %q did not exist)", path)
+			}
+		}
+	}
+	// The default behaviour will be to update the element at the specified index (if it exists). New list elements can
+	// be added in two cases:
+	//  - If an element is being appended to the end of the list.
+	//  - If the transformation of the target node results in a list of nodes, use the first node in the list to replace
+	//    the target node and then "add" the rest after. This is a bit of an ugly hack but is required for compatibility
+	//    with two conflicting sets of semantics - the current `focus` and `walk`, which (quite reasonably) do an
+	//    in-place replacement of list elements, and JSON Patch (https://datatracker.ietf.org/doc/html/rfc6902), which
+	//    does not specify list element replacement. The only "compliant" way to do this today is to first "remove" the
+	//    target node and then "add" its replacement at the same index, which seems inefficient.
+	var prevChildVal datamodel.Node = nil
+	if childAmender != nil {
+		prevChildVal = childAmender.Build()
+	}
+	if newChildVal, err := transform(prevChildVal); err != nil {
+		return nil, err
+	} else if newChildVal == nil {
+		idx := int(childIdx)
+		nb.w.x[idx] = nil
+		// Ref: https://pkg.go.dev/golang.org/x/exp/slices#Delete
+		nb.w.x = append(nb.w.x[:idx], nb.w.x[idx+1:]...)
+	} else if err = nb.storeChildAmender(childIdx, newChildVal, replace); err != nil {
+		return nil, err
+	}
+	return prevChildVal, nil
+}
+
+func (nb *plainList__Builder) storeChildAmender(childIdx int64, a datamodel.NodeAmender, replace bool) error {
+	var elems []datamodel.NodeAmender
+	n := a.Build()
+	if n.Kind() == datamodel.Kind_List {
+		elems = make([]datamodel.NodeAmender, n.Length())
+		// The following logic uses a transformed list (if there is one) to perform both insertions (needed by JSON
+		// Patch) and replacements (needed by `focus` and `walk`), while also providing the flexibility to insert more
+		// than one element at a particular index in the list.
+		//
+		// Rules:
+		//   - If appending to the end of the main list, all elements from the transformed list will be individually
+		//     appended to the end of the list.
+		//   - If updating at a particular index in the main list, use the first element from the transformed list to
+		//     replace the existing element at that index in the main list, then insert the rest of the transformed list
+		//     elements after.
+		//
+		// A special case to consider is that of a list element genuinely being a list itself. If that is the case, the
+		// transformation MUST wrap the element in another list so that, once unwrapped, the element can be replaced or
+		// inserted without affecting its semantics. Otherwise, the sub-list's elements will get expanded onto that
+		// index in the main list.
+		for i := range elems {
+			elem, err := n.LookupByIndex(int64(i))
+			if err != nil {
+				return err
+			}
+			elems[i] = Prototype.Any.AmendingBuilder(elem)
+		}
+	} else {
+		elems = []datamodel.NodeAmender{Prototype.Any.AmendingBuilder(n)}
+	}
+	if childIdx == nb.w.Length() {
+		// Operations at the end of the list are straightforward - just append, and we're done.
+		nb.w.x = append(nb.w.x, elems...)
+		return nil
+	}
+	numElems := len(elems)
+	if numElems > 0 {
+		if nb.w.x == nil {
+			// Allocate storage space
+			nb.w.x = make([]datamodel.NodeAmender, numElems)
+		}
+		copyStartIdx := 0
+		if replace {
+			// Use the first passed element to replace the element currently at the specified index
+			nb.w.x[childIdx] = elems[0]
+			copyStartIdx++
+		}
+		if !replace || (numElems > 1) {
+			// If more elements were specified, insert them after the specified index.
+			nb.w.x = Insert(nb.w.x, int(childIdx)+copyStartIdx, elems[copyStartIdx:]...)
+		}
+	}
+	return nil
+}
+
+// Ref: https://pkg.go.dev/golang.org/x/exp/slices#Insert
+func Insert(x []datamodel.NodeAmender, idx int, elems ...datamodel.NodeAmender) []datamodel.NodeAmender {
+	tot := len(x) + len(elems)
+	if tot <= cap(x) {
+		x2 := x[:tot]
+		copy(x2[idx+len(elems):], x[idx:])
+		copy(x2[idx:], elems)
+		return x2
+	}
+	x2 := make([]datamodel.NodeAmender, tot)
+	copy(x2, x[:idx])
+	copy(x2[idx:], elems)
+	copy(x2[idx+len(elems):], x[idx:])
+	return x2
+}
+
+func (nb *plainList__Builder) Get(idx int64) (datamodel.Node, error) {
+	return nb.w.LookupByIndex(idx)
+}
+
+func (nb *plainList__Builder) Remove(idx int64) error {
+	_, err := nb.Transform(
+		datamodel.NewPath([]datamodel.PathSegment{datamodel.PathSegmentOfInt(idx)}),
+		func(_ datamodel.Node) (datamodel.NodeAmender, error) {
+			return nil, nil
+		},
+	)
+	return err
+}
+
+func (nb *plainList__Builder) Append(value datamodel.Node) error {
+	return nb.Set(nb.Length(), value)
+}
+
+func (nb *plainList__Builder) Insert(idx int64, value datamodel.Node) error {
+	return nb.addElements(idx, value, false)
+}
+
+func (nb *plainList__Builder) Set(idx int64, value datamodel.Node) error {
+	return nb.addElements(idx, value, true)
+}
+
+func (nb *plainList__Builder) addElements(idx int64, value datamodel.Node, replaced bool) error {
+	var ps datamodel.PathSegment
+	if idx == nb.Length() {
+		ps = datamodel.PathSegmentOfString("-") // indicates appending to the end of the list
+	} else {
+		ps = datamodel.PathSegmentOfInt(idx)
+	}
+	_, err := nb.transform(
+		datamodel.NewPath([]datamodel.PathSegment{ps}),
+		func(_ datamodel.Node) (datamodel.NodeAmender, error) {
+			return Prototype.Any.AmendingBuilder(value), nil
+		},
+		replaced,
+	)
+	return err
+}
+
+func (nb *plainList__Builder) Empty() bool {
+	return nb.Length() == 0
+}
+
+func (nb *plainList__Builder) Length() int64 {
+	return nb.w.Length()
+}
+
+func (nb *plainList__Builder) Clear() {
+	nb.Reset()
+}
+
+func (nb *plainList__Builder) Values() (datamodel.Node, error) {
+	return nb.Build(), nil
 }
 
 // -- NodeAssembler -->
@@ -155,7 +392,7 @@ func (na *plainList__Assembler) BeginList(sizeHint int64) (datamodel.ListAssembl
 		sizeHint = 0
 	}
 	// Allocate storage space.
-	na.w.x = make([]datamodel.Node, 0, sizeHint)
+	na.w.x = make([]datamodel.NodeAmender, 0, sizeHint)
 	// That's it; return self as the ListAssembler.  We already have all the right methods on this structure.
 	return na, nil
 }
@@ -291,7 +528,7 @@ func (lva *plainList__ValueAssembler) AssignLink(v datamodel.Link) error {
 	return lva.AssignNode(&vb)
 }
 func (lva *plainList__ValueAssembler) AssignNode(v datamodel.Node) error {
-	lva.la.w.x = append(lva.la.w.x, v)
+	lva.la.w.x = append(lva.la.w.x, Prototype.Any.AmendingBuilder(v))
 	lva.la.state = laState_initial
 	lva.la = nil // invalidate self to prevent further incorrect use.
 	return nil
