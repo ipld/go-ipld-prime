@@ -1,6 +1,6 @@
 module github.com/ipld/go-ipld-prime/storage/bsadapter
 
-go 1.21
+go 1.22
 
 require (
 	github.com/ipfs/boxo v0.16.0
