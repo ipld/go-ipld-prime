@@ -1,6 +1,6 @@
 module github.com/ipld/go-ipld-prime
 
-go 1.21
+go 1.22
 
 require (
 	github.com/frankban/quicktest v1.14.6
