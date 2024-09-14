@@ -108,14 +108,14 @@ func DecodeStreamingUsingPrototype(r io.Reader, decFn Decoder, np NodePrototype)
 // Note that not all features of IPLD Schemas can be inferred from golang types alone.
 // For example, to use union types, the schema parameter will be required.
 // Similarly, to use most kinds of non-default representation strategy, the schema parameter is needed in order to convey that intention.
-func Marshal(encFn Encoder, bind interface{}, typ schema.Type) ([]byte, error) {
-	n := bindnode.Wrap(bind, typ)
+func Marshal(encFn Encoder, bind interface{}, typ schema.Type, opts ...bindnode.Option) ([]byte, error) {
+	n := bindnode.Wrap(bind, typ, opts...)
 	return Encode(n.Representation(), encFn)
 }
 
 // MarshalStreaming is like Marshal, but emits output to an io.Writer.
-func MarshalStreaming(wr io.Writer, encFn Encoder, bind interface{}, typ schema.Type) error {
-	n := bindnode.Wrap(bind, typ)
+func MarshalStreaming(wr io.Writer, encFn Encoder, bind interface{}, typ schema.Type, opts ...bindnode.Option) error {
+	n := bindnode.Wrap(bind, typ, opts...)
 	return EncodeStreaming(wr, n.Representation(), encFn)
 }
 
@@ -146,14 +146,14 @@ func MarshalStreaming(wr io.Writer, encFn Encoder, bind interface{}, typ schema.
 // and a Node will still be returned based on that type.
 // bindnode.Unwrap can be used on that Node and will still return something
 // of the same golang type as the typed nil that was given as the 'bind' parameter.
-func Unmarshal(b []byte, decFn Decoder, bind interface{}, typ schema.Type) (Node, error) {
-	return UnmarshalStreaming(bytes.NewReader(b), decFn, bind, typ)
+func Unmarshal(b []byte, decFn Decoder, bind interface{}, typ schema.Type, opts ...bindnode.Option) (Node, error) {
+	return UnmarshalStreaming(bytes.NewReader(b), decFn, bind, typ, opts...)
 }
 
 // UnmarshalStreaming is like Unmarshal, but works on an io.Reader for input.
-func UnmarshalStreaming(r io.Reader, decFn Decoder, bind interface{}, typ schema.Type) (Node, error) {
+func UnmarshalStreaming(r io.Reader, decFn Decoder, bind interface{}, typ schema.Type, opts ...bindnode.Option) (Node, error) {
 	// Decode is fairly straightforward.
-	np := bindnode.Prototype(bind, typ)
+	np := bindnode.Prototype(bind, typ, opts...)
 	n, err := DecodeStreamingUsingPrototype(r, decFn, np.Representation())
 	if err != nil {
 		return nil, err
@@ -165,6 +165,6 @@ func UnmarshalStreaming(r io.Reader, decFn Decoder, bind interface{}, typ schema
 	}
 	// ... and we also have to re-bind a new node to the 'bind' value,
 	// because probably the user will be surprised if mutating 'bind' doesn't affect the Node later.
-	n = bindnode.Wrap(bind, typ)
+	n = bindnode.Wrap(bind, typ, opts...)
 	return n, err
 }
