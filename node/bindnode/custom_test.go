@@ -3,6 +3,7 @@ package bindnode_test
 import (
 	"bytes"
 	"encoding/hex"
+	"errors"
 	"fmt"
 	"math/big"
 	"strings"
@@ -25,6 +26,8 @@ import (
 
 type BoolSubst int
 
+var errorDefault = errors.New("something went wrong")
+
 const (
 	BoolSubst_Yes = 100
 	BoolSubst_No  = -100
@@ -35,6 +38,10 @@ func BoolSubstFromBool(b bool) (interface{}, error) {
 		return BoolSubst_Yes, nil
 	}
 	return BoolSubst_No, nil
+}
+
+func BoolSubstFromBoolError(b bool) (interface{}, error) {
+	return BoolSubst_No, errorDefault
 }
 
 func BoolToBoolSubst(b interface{}) (bool, error) {
@@ -51,6 +58,9 @@ func BoolToBoolSubst(b interface{}) (bool, error) {
 		return true, fmt.Errorf("bad BoolSubst")
 	}
 }
+func BoolToBoolSubstError(b interface{}) (bool, error) {
+	return false, errorDefault
+}
 
 type IntSubst string
 
@@ -61,6 +71,10 @@ func IntSubstFromInt(i int64) (interface{}, error) {
 		return "two thousand", nil
 	}
 	return nil, fmt.Errorf("unexpected value of IntSubst")
+}
+
+func IntSubstFromIntError(i int64) (interface{}, error) {
+	return nil, errorDefault
 }
 
 func IntToIntSubst(i interface{}) (int64, error) {
@@ -78,11 +92,19 @@ func IntToIntSubst(i interface{}) (int64, error) {
 	}
 }
 
+func IntToIntSubstError(i interface{}) (int64, error) {
+	return 0, errorDefault
+}
+
 type BigFloat struct{ *big.Float }
 
 func BigFloatFromFloat(f float64) (interface{}, error) {
 	bf := big.NewFloat(f)
 	return &BigFloat{bf}, nil
+}
+
+func BigFloatFromFloatError(f float64) (interface{}, error) {
+	return nil, errorDefault
 }
 
 func FloatFromBigFloat(f interface{}) (float64, error) {
@@ -94,6 +116,10 @@ func FloatFromBigFloat(f interface{}) (float64, error) {
 	return f64, nil
 }
 
+func FloatFromBigFloatError(f interface{}) (float64, error) {
+	return 0, errorDefault
+}
+
 type ByteArray [][]byte
 
 func ByteArrayFromString(s string) (interface{}, error) {
@@ -103,6 +129,10 @@ func ByteArrayFromString(s string) (interface{}, error) {
 		ba = append(ba, []byte(a))
 	}
 	return ba, nil
+}
+
+func ByteArrayFromStringError(s string) (interface{}, error) {
+	return nil, errorDefault
 }
 
 func StringFromByteArray(b interface{}) (string, error) {
@@ -118,6 +148,10 @@ func StringFromByteArray(b interface{}) (string, error) {
 		}
 	}
 	return sb.String(), nil
+}
+
+func StringFromByteArrayError(b interface{}) (string, error) {
+	return "", errorDefault
 }
 
 // similar to cid/Cid, go-address/Address, go-graphsync/RequestID
@@ -177,6 +211,10 @@ func BoopFromBytes(b []byte) (interface{}, error) {
 	return NewBoop(b), nil
 }
 
+func BoopFromBytesError(b []byte) (interface{}, error) {
+	return nil, errorDefault
+}
+
 func BoopToBytes(iface interface{}) ([]byte, error) {
 	if boop, ok := iface.(*Boop); ok {
 		return boop.Bytes(), nil
@@ -184,8 +222,16 @@ func BoopToBytes(iface interface{}) ([]byte, error) {
 	return nil, fmt.Errorf("did not get expected type")
 }
 
+func BoopToBytesError(iface interface{}) ([]byte, error) {
+	return nil, errorDefault
+}
+
 func FropFromBytes(b []byte) (interface{}, error) {
 	return NewFropFromBytes(b), nil
+}
+
+func FropFromBytesError(b []byte) (interface{}, error) {
+	return nil, errorDefault
 }
 
 func FropToBytes(iface interface{}) ([]byte, error) {
@@ -193,6 +239,10 @@ func FropToBytes(iface interface{}) ([]byte, error) {
 		return frop.Bytes(), nil
 	}
 	return nil, fmt.Errorf("did not get expected type")
+}
+
+func FropToBytesError(iface interface{}) ([]byte, error) {
+	return nil, errorDefault
 }
 
 // Bitcoin's version of "links" is a hex form of the dbl-sha2-256 digest reversed
@@ -212,6 +262,10 @@ func FromCidToBtcId(c cid.Cid) (interface{}, error) {
 		hid = append(hid, dig.Digest[i])
 	}
 	return BtcId(hex.EncodeToString(hid)), nil
+}
+
+func FromCidToBtcIdError(c cid.Cid) (interface{}, error) {
+	return BtcId(""), errorDefault
 }
 
 func FromBtcIdToCid(iface interface{}) (cid.Cid, error) {
@@ -234,6 +288,10 @@ func FromBtcIdToCid(iface interface{}) (cid.Cid, error) {
 	return cid.NewCidV1(cid.BitcoinBlock, mh), nil
 }
 
+func FromBtcIdToCidError(iface interface{}) (cid.Cid, error) {
+	return cid.Undef, errorDefault
+}
+
 type Boom struct {
 	S    string
 	St   ByteArray
@@ -248,17 +306,25 @@ type Boom struct {
 }
 
 const boomSchema = `
+type ByteArray string
+type Boop bytes
+type BoolSubst bool
+type Frop bytes
+type BigFloat float
+type IntSubst int
+type BtcId &Any
+
 type Boom struct {
 	S String
-	St String
-	B Bytes
-	Bo Bool
-	Bptr nullable Bytes
-	F Bytes
-	Fl Float
-	I Int
-	In Int
-	L &Any
+	St   ByteArray
+	B    Boop
+	Bo   BoolSubst
+	Bptr nullable Boop
+	F    Frop
+	Fl   BigFloat
+	I    Int
+	In   IntSubst
+	L    BtcId
 } representation map
 `
 
@@ -286,6 +352,53 @@ func TestCustom(t *testing.T) {
 		bindnode.TypedFloatConverter(&BigFloat{}, BigFloatFromFloat, FloatFromBigFloat),
 		bindnode.TypedStringConverter(&ByteArray{}, ByteArrayFromString, StringFromByteArray),
 		bindnode.TypedLinkConverter(BtcId(""), FromCidToBtcId, FromBtcIdToCid),
+	}
+
+	typeSystem, err := ipld.LoadSchemaBytes([]byte(boomSchema))
+	qt.Assert(t, err, qt.IsNil)
+	schemaType := typeSystem.TypeByName("Boom")
+	proto := bindnode.Prototype(&Boom{}, schemaType, opts...)
+
+	builder := proto.Representation().NewBuilder()
+	err = dagjson.Decode(builder, bytes.NewReader([]byte(boomFixtureDagJson)))
+	qt.Assert(t, err, qt.IsNil)
+
+	typ := bindnode.Unwrap(builder.Build())
+	inst, ok := typ.(*Boom)
+	qt.Assert(t, ok, qt.IsTrue)
+
+	cmpr := qt.CmpEquals(
+		cmp.Comparer(func(x, y Boop) bool { return x.String() == y.String() }),
+		cmp.Comparer(func(x, y Frop) bool { return x.String() == y.String() }),
+		cmp.Comparer(func(x, y BigFloat) bool { return x.String() == y.String() }),
+	)
+	qt.Assert(t, *inst, cmpr, boomFixtureInstance)
+
+	tn := bindnode.Wrap(inst, schemaType, opts...)
+	var buf bytes.Buffer
+	err = dagjson.Encode(tn.Representation(), &buf)
+	qt.Assert(t, err, qt.IsNil)
+
+	qt.Assert(t, buf.String(), qt.Equals, boomFixtureDagJson)
+}
+
+func TestCustomNamed(t *testing.T) {
+	opts := []bindnode.Option{
+		bindnode.NamedBytesConverter("Boop", BoopFromBytes, BoopToBytes),
+		bindnode.NamedBytesConverter("Frop", FropFromBytes, FropToBytes),
+		bindnode.NamedBoolConverter("BoolSubst", BoolSubstFromBool, BoolToBoolSubst),
+		bindnode.NamedIntConverter("IntSubst", IntSubstFromInt, IntToIntSubst),
+		bindnode.NamedFloatConverter("BigFloat", BigFloatFromFloat, FloatFromBigFloat),
+		bindnode.NamedStringConverter("ByteArray", ByteArrayFromString, StringFromByteArray),
+		bindnode.NamedLinkConverter("BtcId", FromCidToBtcId, FromBtcIdToCid),
+		// these will error, but shouldn't get called cause the named converters take precedence
+		bindnode.TypedBytesConverter(&Boop{}, BoopFromBytesError, BoopToBytesError),
+		bindnode.TypedBytesConverter(&Frop{}, FropFromBytesError, FropToBytesError),
+		bindnode.TypedBoolConverter(BoolSubst(0), BoolSubstFromBoolError, BoolToBoolSubstError),
+		bindnode.TypedIntConverter(IntSubst(""), IntSubstFromIntError, IntToIntSubstError),
+		bindnode.TypedFloatConverter(&BigFloat{}, BigFloatFromFloatError, FloatFromBigFloatError),
+		bindnode.TypedStringConverter(&ByteArray{}, ByteArrayFromStringError, StringFromByteArrayError),
+		bindnode.TypedLinkConverter(BtcId(""), FromCidToBtcIdError, FromBtcIdToCidError),
 	}
 
 	typeSystem, err := ipld.LoadSchemaBytes([]byte(boomSchema))
@@ -532,4 +645,114 @@ func mustFromHex(hexStr string) []byte {
 		panic(err)
 	}
 	return byt
+}
+
+type ClosedUnion interface {
+	isClosedUnion()
+}
+
+type intUnion uint64
+
+func (intUnion) isClosedUnion() {}
+
+type stringUnion string
+
+func (stringUnion) isClosedUnion() {}
+
+func ClosedUnionFromNode(node datamodel.Node) (interface{}, error) {
+	asInt, err := node.AsInt()
+	if err == nil {
+		return intUnion(asInt), nil
+	}
+	asString, err := node.AsString()
+	if err == nil {
+		return stringUnion(asString), nil
+	}
+	return nil, errors.New("unrecognized type")
+}
+
+func ClosedUnionToNode(val interface{}) (datamodel.Node, error) {
+	cu, ok := val.(*ClosedUnion)
+	if !ok {
+		return nil, errors.New("should be a ClosedUnion")
+	}
+	switch concrete := (*cu).(type) {
+	case intUnion:
+		return basicnode.NewInt(int64(concrete)), nil
+	case stringUnion:
+		return basicnode.NewString(string(concrete)), nil
+	default:
+		return nil, errors.New("unexpected union type")
+	}
+}
+
+type StructWithUnion struct {
+	Cu ClosedUnion
+}
+
+const closedUnionSchema = `
+type ClosedUnion any
+
+type StructWithUnion struct {
+  cu ClosedUnion
+}
+`
+
+const closedUnionFixtureIntDagJson = `{"cu":8}`
+const closedUnionFixtureStringDagJson = `{"cu":"happy"}`
+
+var closedUnionIntInst = StructWithUnion{
+	Cu: intUnion(8),
+}
+var closedUnionStringInst = StructWithUnion{
+	Cu: stringUnion("happy"),
+}
+
+func TestCustomAnyWithInterface(t *testing.T) {
+	opts := []bindnode.Option{
+		bindnode.NamedAnyConverter("ClosedUnion", ClosedUnionFromNode, ClosedUnionToNode),
+	}
+
+	typeSystem, err := ipld.LoadSchemaBytes([]byte(closedUnionSchema))
+	qt.Assert(t, err, qt.IsNil)
+	schemaType := typeSystem.TypeByName("StructWithUnion")
+	proto := bindnode.Prototype(&StructWithUnion{}, schemaType, opts...)
+
+	// test one union variant
+	builder := proto.Representation().NewBuilder()
+	err = dagjson.Decode(builder, bytes.NewReader([]byte(closedUnionFixtureIntDagJson)))
+	qt.Assert(t, err, qt.IsNil)
+
+	typ := bindnode.Unwrap(builder.Build())
+	inst, ok := typ.(*StructWithUnion)
+	qt.Assert(t, ok, qt.IsTrue)
+
+	cmpr := qt.CmpEquals()
+	qt.Assert(t, *inst, cmpr, closedUnionIntInst)
+
+	tn := bindnode.Wrap(inst, schemaType, opts...)
+	var buf bytes.Buffer
+	err = dagjson.Encode(tn.Representation(), &buf)
+	qt.Assert(t, err, qt.IsNil)
+
+	qt.Assert(t, buf.String(), qt.Equals, closedUnionFixtureIntDagJson)
+
+	// test other union variant
+	builder = proto.Representation().NewBuilder()
+	err = dagjson.Decode(builder, bytes.NewReader([]byte(closedUnionFixtureStringDagJson)))
+	qt.Assert(t, err, qt.IsNil)
+
+	typ = bindnode.Unwrap(builder.Build())
+	inst, ok = typ.(*StructWithUnion)
+	qt.Assert(t, ok, qt.IsTrue)
+
+	cmpr = qt.CmpEquals()
+	qt.Assert(t, *inst, cmpr, closedUnionStringInst)
+
+	tn = bindnode.Wrap(inst, schemaType, opts...)
+	buf = bytes.Buffer{}
+	err = dagjson.Encode(tn.Representation(), &buf)
+	qt.Assert(t, err, qt.IsNil)
+
+	qt.Assert(t, buf.String(), qt.Equals, closedUnionFixtureStringDagJson)
 }
