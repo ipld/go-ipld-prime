@@ -39,21 +39,62 @@ func TestSimpleData(t *testing.T) {
 		})
 		qt.Check(t, Sprint(n), qt.CmpEquals(), testutil.Dedent(`
 		map{
-			string{"some key"}: string{"some value"},
-			string{"another key"}: string{"another value"},
-			string{"nested map"}: map{
-				string{"deeper entries"}: string{"deeper values"},
-				string{"more deeper entries"}: string{"more deeper values"}
+			string{"some key"}:string{"some value"},
+			string{"another key"}:string{"another value"},
+			string{"nested map"}:map{
+				string{"deeper entries"}:string{"deeper values"},
+				string{"more deeper entries"}:string{"more deeper values"}
 			},
-			string{"nested list"}: list{
-				0: int{1},
-				1: int{2}
+			string{"nested list"}:list{
+				0:int{1},
+				1:int{2}
 			},
-			string{"list with float"}: list{
-				0: float{3.4}
+			string{"list with float"}:list{
+				0:float{3.4}
 			}
 		}`,
 		))
+		t.Run("compact-form", func(t *testing.T) {
+			qt.Check(t, Config{}.Sprint(n), qt.CmpEquals(), `map{string{"some key"}:string{"some value"},string{"another key"}:string{"another value"},string{"nested map"}:map{string{"deeper entries"}:string{"deeper values"},string{"more deeper entries"}:string{"more deeper values"}},string{"nested list"}:list{0:int{1},1:int{2}},string{"list with float"}:list{0:float{3.4}}}`)
+		})
+		t.Run("custom-indentation", func(t *testing.T) {
+			qt.Check(t, Config{Indentation: []byte("==>")}.Sprint(n), qt.CmpEquals(), testutil.Dedent(`
+			map{
+			==>string{"some key"}:string{"some value"},
+			==>string{"another key"}:string{"another value"},
+			==>string{"nested map"}:map{
+			==>==>string{"deeper entries"}:string{"deeper values"},
+			==>==>string{"more deeper entries"}:string{"more deeper values"}
+			==>},
+			==>string{"nested list"}:list{
+			==>==>0:int{1},
+			==>==>1:int{2}
+			==>},
+			==>string{"list with float"}:list{
+			==>==>0:float{3.4}
+			==>}
+			}`,
+			))
+		})
+		t.Run("line-prefix-indentation", func(t *testing.T) {
+			qt.Check(t, Config{StartingIndent: []byte("->"), Indentation: []byte{'*'}}.Sprint(n), qt.CmpEquals(), testutil.Dedent(`
+				->map{
+				->*string{"some key"}:string{"some value"},
+				->*string{"another key"}:string{"another value"},
+				->*string{"nested map"}:map{
+				->**string{"deeper entries"}:string{"deeper values"},
+				->**string{"more deeper entries"}:string{"more deeper values"}
+				->*},
+				->*string{"nested list"}:list{
+				->**0:int{1},
+				->**1:int{2}
+				->*},
+				->*string{"list with float"}:list{
+				->**0:float{3.4}
+				->*}
+				->}`,
+			))
+		})
 	})
 
 	t.Run("map-with-link-and-bytes", func(t *testing.T) {
@@ -73,17 +114,17 @@ func TestSimpleData(t *testing.T) {
 		})
 		qt.Check(t, Sprint(n), qt.CmpEquals(), testutil.Dedent(`
 		map{
-			string{"some key"}: link{bafkqabiaaebagba},
-			string{"another key"}: string{"another value"},
-			string{"nested map"}: map{
-				string{"deeper entries"}: string{"deeper values"},
-				string{"more deeper entries"}: link{bafkqabiaaebagba},
-				string{"yet another deeper entries"}: bytes{66697368}
+			string{"some key"}:link{bafkqabiaaebagba},
+			string{"another key"}:string{"another value"},
+			string{"nested map"}:map{
+				string{"deeper entries"}:string{"deeper values"},
+				string{"more deeper entries"}:link{bafkqabiaaebagba},
+				string{"yet another deeper entries"}:bytes{66697368}
 			},
-			string{"nested list"}: list{
-				0: bytes{67686f7469},
-				1: int{1},
-				2: link{bafkqabiaaebagba}
+			string{"nested list"}:list{
+				0:bytes{67686f7469},
+				1:int{1},
+				2:link{bafkqabiaaebagba}
 			}
 		}`,
 		))
@@ -112,10 +153,10 @@ func TestTypedData(t *testing.T) {
 		n := bindnode.Wrap(&FooBar{"x", "y", []byte("zed"), testLink}, ts.TypeByName("FooBar"))
 		qt.Check(t, Sprint(n), qt.CmpEquals(), testutil.Dedent(`
 			struct<FooBar>{
-				foo: string<String>{"x"},
-				bar: string<String>{"y"},
-				baz: bytes<Bytes>{7a6564},
-				jazz: link<Link>{bafkqabiaaebagba}
+				foo:string<String>{"x"},
+				bar:string<String>{"y"},
+				baz:bytes<Bytes>{7a6564},
+				jazz:link<Link>{bafkqabiaaebagba}
 			}`,
 		))
 	})
@@ -145,8 +186,8 @@ func TestTypedData(t *testing.T) {
 		}, ts.TypeByName("WowMap"))
 		qt.Check(t, Sprint(n), qt.CmpEquals(), testutil.Dedent(`
 			map<WowMap>{
-				struct<FooBar>{foo: string<String>{"x"}, bar: string<String>{"y"}}: string<String>{"a"},
-				struct<FooBar>{foo: string<String>{"z"}, bar: string<String>{"z"}}: string<String>{"b"}
+				struct<FooBar>{foo:string<String>{"x"},bar:string<String>{"y"}}:string<String>{"a"},
+				struct<FooBar>{foo:string<String>{"z"},bar:string<String>{"z"}}:string<String>{"b"}
 			}`,
 		))
 	})
@@ -184,48 +225,50 @@ func TestTypedData(t *testing.T) {
 		}, ts.TypeByName("WowMap"))
 		t.Run("complex-keys-in-effect", func(t *testing.T) {
 			cfg := Config{
+				Indentation:              []byte{'\t'},
 				UseMapComplexStyleAlways: true,
 			}
 			qt.Check(t, cfg.Sprint(n), qt.CmpEquals(), testutil.Dedent(`
 				map<WowMap>{
 					struct<FooBar>{
-							foo: string<String>{"x"},
-							bar: struct<Baz>{
-								baz: string<String>{"y"}
+							foo:string<String>{"x"},
+							bar:struct<Baz>{
+								baz:string<String>{"y"}
 							},
-							baz: struct<Baz>{
-								baz: string<String>{"y"}
+							baz:struct<Baz>{
+								baz:string<String>{"y"}
 							}
-					}: struct<Baz>{
-						baz: string<String>{"a"}
+					}:struct<Baz>{
+						baz:string<String>{"a"}
 					},
 					struct<FooBar>{
-							foo: string<String>{"z"},
-							bar: struct<Baz>{
-								baz: string<String>{"z"}
+							foo:string<String>{"z"},
+							bar:struct<Baz>{
+								baz:string<String>{"z"}
 							},
-							baz: struct<Baz>{
-								baz: string<String>{"z"}
+							baz:struct<Baz>{
+								baz:string<String>{"z"}
 							}
-					}: struct<Baz>{
-						baz: string<String>{"b"}
+					}:struct<Baz>{
+						baz:string<String>{"b"}
 					}
 				}`,
 			))
 		})
 		t.Run("complex-keys-in-disabled", func(t *testing.T) {
 			cfg := Config{
+				Indentation: []byte{'\t'},
 				UseMapComplexStyleOnType: map[schema.TypeName]bool{
 					"WowMap": false,
 				},
 			}
 			qt.Check(t, cfg.Sprint(n), qt.CmpEquals(), testutil.Dedent(`
 				map<WowMap>{
-					struct<FooBar>{foo: string<String>{"x"}, bar: struct<Baz>{baz: string<String>{"y"}}, baz: struct<Baz>{baz: string<String>{"y"}}}: struct<Baz>{
-						baz: string<String>{"a"}
+					struct<FooBar>{foo:string<String>{"x"},bar:struct<Baz>{baz:string<String>{"y"}},baz:struct<Baz>{baz:string<String>{"y"}}}:struct<Baz>{
+						baz:string<String>{"a"}
 					},
-					struct<FooBar>{foo: string<String>{"z"}, bar: struct<Baz>{baz: string<String>{"z"}}, baz: struct<Baz>{baz: string<String>{"z"}}}: struct<Baz>{
-						baz: string<String>{"b"}
+					struct<FooBar>{foo:string<String>{"z"},bar:struct<Baz>{baz:string<String>{"z"}},baz:struct<Baz>{baz:string<String>{"z"}}}:struct<Baz>{
+						baz:string<String>{"b"}
 					}
 				}`,
 			))

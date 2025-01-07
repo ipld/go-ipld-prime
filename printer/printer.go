@@ -15,21 +15,21 @@ import (
 // All printer configuration will be the default;
 // links will be printed, and will not be traversed.
 func Print(n datamodel.Node) {
-	Config{}.Print(n)
+	Config{Indentation: []byte{'\t'}}.Print(n)
 }
 
 // Sprint returns a textual description of the node tree.
 // All printer configuration will be the default;
 // links will be printed, and will not be traversed.
 func Sprint(n datamodel.Node) string {
-	return Config{}.Sprint(n)
+	return Config{Indentation: []byte{'\t'}}.Sprint(n)
 }
 
 // Fprint accepts an io.Writer to which a textual description of the node tree will be written.
 // All printer configuration will be the default;
 // links will be printed, and will not be traversed.
 func Fprint(w io.Writer, n datamodel.Node) {
-	Config{}.Fprint(w, n)
+	Config{Indentation: []byte{'\t'}}.Fprint(w, n)
 }
 
 // Print emits a textual description of the node tree straight to stdout.
@@ -50,7 +50,6 @@ func (cfg Config) Sprint(n datamodel.Node) string {
 // The configuration structure this method is attached to can be used to specified details for how the printout will be formatted.
 func (cfg Config) Fprint(w io.Writer, n datamodel.Node) {
 	pr := printBuf{w, cfg}
-	pr.Config.init()
 	pr.doString(0, printState_normal, n)
 }
 
@@ -61,10 +60,11 @@ type Config struct {
 	Abbreviate bool
 
 	// If set, the indentation to use.
-	// If nil, it will be treated as a default "\t".
+	// If nil, no indentation will be used and newlines will be omitted. If set to an empty slice,
+	// newlines will be used but no indentation. Setting to `[]byte{'\t'}` is a common choice.
 	Indentation []byte
 
-	// Probably does exactly what you think it does.
+	// If set, the string to use for the start of each line.
 	StartingIndent []byte
 
 	// Set to true if you like verbosity, I guess.
@@ -91,12 +91,6 @@ type Config struct {
 	// For maps to use "complex"-style printouts (or not) per type.
 	// See docs on UseMapComplexStyleAlways for the overview of what "complex"-style means.
 	UseMapComplexStyleOnType map[schema.TypeName]bool
-}
-
-func (cfg *Config) init() {
-	if cfg.Indentation == nil {
-		cfg.Indentation = []byte{'\t'}
-	}
 }
 
 // oneline decides if a value should be flatted into printing on a single,
@@ -160,6 +154,12 @@ func (z *printBuf) doIndent(indentLevel int) {
 	z.wr.Write(z.Config.StartingIndent)
 	for i := 0; i < indentLevel; i++ {
 		z.wr.Write(z.Config.Indentation)
+	}
+}
+
+func (z *printBuf) doNewline() {
+	if z.Config.StartingIndent != nil || z.Config.Indentation != nil {
+		z.wr.Write([]byte{'\n'})
 	}
 }
 
@@ -233,7 +233,7 @@ func (z *printBuf) doString(indentLevel int, printState uint8, n datamodel.Node)
 			}
 			z.writeString("{")
 			if !oneline && n.Length() > 0 {
-				z.writeString("\n")
+				z.doNewline()
 			}
 			for itr := n.MapIterator(); !itr.Done(); {
 				k, v, _ := itr.Next()
@@ -242,16 +242,13 @@ func (z *printBuf) doString(indentLevel int, printState uint8, n datamodel.Node)
 				}
 				fn, _ := k.AsString()
 				z.writeString(fn)
-				z.writeString(": ")
+				z.writeString(":")
 				z.doString(indentLevel+deepen, childState, v)
 				if !itr.Done() {
 					z.writeString(",")
-					if oneline {
-						z.writeString(" ")
-					}
 				}
 				if !oneline {
-					z.writeString("\n")
+					z.doNewline()
 				}
 			}
 			if !oneline {
@@ -296,7 +293,7 @@ func (z *printBuf) doString(indentLevel int, printState uint8, n datamodel.Node)
 		}
 		z.writeString("{")
 		if n.Length() > 0 {
-			z.writeString("\n")
+			z.doNewline()
 		} else {
 			z.writeString("}")
 			return
@@ -307,23 +304,23 @@ func (z *printBuf) doString(indentLevel int, printState uint8, n datamodel.Node)
 				z.doIndent(indentLevel + 1)
 				z.writeString("!! map iteration step yielded error: ")
 				z.writeString(err.Error())
-				z.writeString("\n")
+				z.doNewline()
 				break
 			}
 			z.doString(indentLevel+1, childKeyState, k)
-			z.writeString(": ")
+			z.writeString(":")
 			z.doString(indentLevel+1, printState_isValue, v)
 			if !itr.Done() {
 				z.writeString(",")
 			}
-			z.writeString("\n")
+			z.doNewline()
 		}
 		z.doIndent(indentLevel)
 		z.writeString("}")
 	case datamodel.Kind_List:
 		z.writeString("{")
 		if n.Length() > 0 {
-			z.writeString("\n")
+			z.doNewline()
 		} else {
 			z.writeString("}")
 			return
@@ -334,17 +331,17 @@ func (z *printBuf) doString(indentLevel int, printState uint8, n datamodel.Node)
 				z.doIndent(indentLevel + 1)
 				z.writeString("!! list iteration step yielded error: ")
 				z.writeString(err.Error())
-				z.writeString("\n")
+				z.doNewline()
 				break
 			}
 			z.doIndent(indentLevel + 1)
 			z.writeString(strconv.FormatInt(idx, 10))
-			z.writeString(": ")
+			z.writeString(":")
 			z.doString(indentLevel+1, printState_isValue, v)
 			if !itr.Done() {
 				z.writeString(",")
 			}
-			z.writeString("\n")
+			z.doNewline()
 		}
 		z.doIndent(indentLevel)
 		z.writeString("}")
