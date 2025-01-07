@@ -221,9 +221,8 @@ func (z *printBuf) doString(indentLevel int, printState uint8, n datamodel.Node)
 			// Also, because it's possible for structs to be keys in a map themselves, they potentially need oneline emission.
 			// Or, to customize emission in another direction if being a key in a map that's printing in "complex" mode.
 			// FUTURE: there should also probably be some way to configure instructions to use their representation form instead.
-			oneline :=
-				printState == printState_isCmplxValue ||
-					printState != printState_isCmplxKey && z.Config.oneline(tn.Type(), printState == printState_isKey)
+			oneline := printState == printState_isCmplxValue ||
+				printState != printState_isCmplxKey && z.Config.oneline(tn.Type(), printState == printState_isKey)
 			deepen := 1
 			if printState == printState_isCmplxKey {
 				deepen = 2
@@ -245,11 +244,13 @@ func (z *printBuf) doString(indentLevel int, printState uint8, n datamodel.Node)
 				z.writeString(fn)
 				z.writeString(": ")
 				z.doString(indentLevel+deepen, childState, v)
-				if oneline {
-					if !itr.Done() {
-						z.writeString(", ")
+				if !itr.Done() {
+					z.writeString(",")
+					if oneline {
+						z.writeString(" ")
 					}
-				} else {
+				}
+				if !oneline {
 					z.writeString("\n")
 				}
 			}
@@ -312,6 +313,9 @@ func (z *printBuf) doString(indentLevel int, printState uint8, n datamodel.Node)
 			z.doString(indentLevel+1, childKeyState, k)
 			z.writeString(": ")
 			z.doString(indentLevel+1, printState_isValue, v)
+			if !itr.Done() {
+				z.writeString(",")
+			}
 			z.writeString("\n")
 		}
 		z.doIndent(indentLevel)
@@ -337,6 +341,9 @@ func (z *printBuf) doString(indentLevel int, printState uint8, n datamodel.Node)
 			z.writeString(strconv.FormatInt(idx, 10))
 			z.writeString(": ")
 			z.doString(indentLevel+1, printState_isValue, v)
+			if !itr.Done() {
+				z.writeString(",")
+			}
 			z.writeString("\n")
 		}
 		z.doIndent(indentLevel)
