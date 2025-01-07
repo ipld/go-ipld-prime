@@ -67,17 +67,9 @@ type Config struct {
 	// If set, the string to use for the start of each line.
 	StartingIndent []byte
 
-	// Set to true if you like verbosity, I guess.
-	// If false, strings will only have kind+type markings if they're typed.
-	//
-	// Not yet supported.
-	AlwaysMarkStrings bool
-
-	// Set to true if you want type info to be skipped for any type that's in the Prelude
-	// (e.g. instead of `string<String>{` seeing only `string{` is preferred, etc).
-	//
-	// Not yet supported.
-	ElidePreludeTypeInfo bool
+	// If set to true, scalar values will be omitted from the output. This is useful for representing
+	// the structure of a graph without the data.
+	OmitScalarValues bool
 
 	// Set to true if you want maps to use "complex"-style printouts:
 	// meaning they will print their keys on separate lines than their values,
@@ -356,31 +348,41 @@ func (z *printBuf) doString(indentLevel int, printState uint8, n datamodel.Node)
 		}
 		z.writeString("}")
 	case datamodel.Kind_Int:
-		x, _ := n.AsInt()
-		z.writeString("{")
-		z.writeString(strconv.FormatInt(x, 10))
-		z.writeString("}")
+		if !z.Config.OmitScalarValues {
+			x, _ := n.AsInt()
+			z.writeString("{")
+			z.writeString(strconv.FormatInt(x, 10))
+			z.writeString("}")
+		}
 	case datamodel.Kind_Float:
-		x, _ := n.AsFloat()
-		z.writeString("{")
-		z.writeString(strconv.FormatFloat(x, 'f', -1, 64))
-		z.writeString("}")
+		if !z.Config.OmitScalarValues {
+			x, _ := n.AsFloat()
+			z.writeString("{")
+			z.writeString(strconv.FormatFloat(x, 'f', -1, 64))
+			z.writeString("}")
+		}
 	case datamodel.Kind_String:
-		x, _ := n.AsString()
-		z.writeString("{")
-		z.writeString(strconv.QuoteToGraphic(x))
-		z.writeString("}")
+		if !z.Config.OmitScalarValues {
+			x, _ := n.AsString()
+			z.writeString("{")
+			z.writeString(strconv.QuoteToGraphic(x))
+			z.writeString("}")
+		}
 	case datamodel.Kind_Bytes:
-		x, _ := n.AsBytes()
-		z.writeString("{")
-		dst := make([]byte, hex.EncodedLen(len(x)))
-		hex.Encode(dst, x)
-		z.writeString(string(dst))
-		z.writeString("}")
+		if !z.Config.OmitScalarValues {
+			x, _ := n.AsBytes()
+			z.writeString("{")
+			dst := make([]byte, hex.EncodedLen(len(x)))
+			hex.Encode(dst, x)
+			z.writeString(string(dst))
+			z.writeString("}")
+		}
 	case datamodel.Kind_Link:
-		x, _ := n.AsLink()
-		z.writeString("{")
-		z.writeString(x.String())
-		z.writeString("}")
+		if !z.Config.OmitScalarValues {
+			x, _ := n.AsLink()
+			z.writeString("{")
+			z.writeString(x.String())
+			z.writeString("}")
+		}
 	}
 }

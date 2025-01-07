@@ -95,6 +95,10 @@ func TestSimpleData(t *testing.T) {
 				->}`,
 			))
 		})
+
+		t.Run("omit-scalars", func(t *testing.T) {
+			qt.Check(t, Config{OmitScalarValues: true}.Sprint(n), qt.CmpEquals(), `map{string:string,string:string,string:map{string:string,string:string},string:list{0:int,1:int},string:list{0:float}}`)
+		})
 	})
 
 	t.Run("map-with-link-and-bytes", func(t *testing.T) {
