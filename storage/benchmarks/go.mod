@@ -1,6 +1,6 @@
 module github.com/ipld/go-ipld-prime/storage/benchmarks
 
-go 1.22
+go 1.23
 
 replace github.com/ipld/go-ipld-prime => ../..
 
