@@ -1,6 +1,7 @@
 package registry
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"reflect"
@@ -70,7 +71,7 @@ func (br BindnodeRegistry) RegisterType(ptrType interface{}, schema string, type
 		if rec := recover(); rec != nil {
 			switch v := rec.(type) {
 			case string:
-				err = fmt.Errorf(v)
+				err = errors.New(v)
 			case error:
 				err = v
 			default:
