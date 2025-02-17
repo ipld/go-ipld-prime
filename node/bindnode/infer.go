@@ -311,10 +311,10 @@ func inferGoType(typ schema.Type, status map[schema.TypeName]inferredStatus, lev
 		for i, field := range fields {
 			ftypGo := inferGoType(field.Type(), status, level+1)
 			if field.IsNullable() {
-				ftypGo = reflect.PtrTo(ftypGo)
+				ftypGo = reflect.PointerTo(ftypGo)
 			}
 			if field.IsOptional() {
-				ftypGo = reflect.PtrTo(ftypGo)
+				ftypGo = reflect.PointerTo(ftypGo)
 			}
 			fieldsGo[i] = reflect.StructField{
 				Name: fieldNameFromSchema(field.Name()),
@@ -326,7 +326,7 @@ func inferGoType(typ schema.Type, status map[schema.TypeName]inferredStatus, lev
 		ktyp := inferGoType(typ.KeyType(), status, level+1)
 		vtyp := inferGoType(typ.ValueType(), status, level+1)
 		if typ.ValueIsNullable() {
-			vtyp = reflect.PtrTo(vtyp)
+			vtyp = reflect.PointerTo(vtyp)
 		}
 		// We need an extra field to keep the map ordered,
 		// since IPLD maps must have stable iteration order.
@@ -351,7 +351,7 @@ func inferGoType(typ schema.Type, status map[schema.TypeName]inferredStatus, lev
 	case *schema.TypeList:
 		etyp := inferGoType(typ.ValueType(), status, level+1)
 		if typ.ValueIsNullable() {
-			etyp = reflect.PtrTo(etyp)
+			etyp = reflect.PointerTo(etyp)
 		}
 		return reflect.SliceOf(etyp)
 	case *schema.TypeUnion:
@@ -366,7 +366,7 @@ func inferGoType(typ schema.Type, status map[schema.TypeName]inferredStatus, lev
 			ftypGo := inferGoType(ftyp, status, level+1)
 			fieldsGo[i] = reflect.StructField{
 				Name: fieldNameFromSchema(ftyp.Name()),
-				Type: reflect.PtrTo(ftypGo),
+				Type: reflect.PointerTo(ftypGo),
 			}
 		}
 		return reflect.StructOf(fieldsGo)

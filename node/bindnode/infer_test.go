@@ -361,7 +361,7 @@ func TestPrototypePointerCombinations(t *testing.T) {
 			case 1:
 				// fieldPtrType already uses one pointer
 			case 2:
-				goFieldType = reflect.PtrTo(goFieldType) // dereference fieldPtrType
+				goFieldType = reflect.PointerTo(goFieldType) // dereference fieldPtrType
 			}
 			if modifier.schemaField != "" && !nilable(goFieldType.Kind()) {
 				continue
@@ -382,7 +382,7 @@ func TestPrototypePointerCombinations(t *testing.T) {
 				t.Logf("IPLD schema: %s", schemaSrc)
 
 				// *struct { Field {{.goFieldType}} }
-				goType := reflect.Zero(reflect.PtrTo(reflect.StructOf([]reflect.StructField{
+				goType := reflect.Zero(reflect.PointerTo(reflect.StructOf([]reflect.StructField{
 					{Name: "Field", Type: goFieldType},
 				}))).Interface()
 				t.Logf("Go type: %T", goType)

@@ -86,7 +86,7 @@ func TestParse(t *testing.T) {
 
 				// Note that this will strip comments.
 				// Probably don't commit its changes straight away.
-				err = os.WriteFile(ymlPath, data, 0777)
+				err = os.WriteFile(ymlPath, data, 0o777)
 				qt.Assert(t, err, qt.IsNil)
 			})
 		})
