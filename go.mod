@@ -1,6 +1,7 @@
 module github.com/ipld/go-ipld-prime
 
 go 1.23
+toolchain go1.24.1
 
 require (
 	github.com/frankban/quicktest v1.14.6
@@ -25,7 +26,7 @@ require (
 	github.com/multiformats/go-varint v0.0.7 // indirect
 	github.com/rogpeppe/go-internal v1.9.0 // indirect
 	github.com/spaolacci/murmur3 v1.1.0 // indirect
-	golang.org/x/crypto v0.31.0 // indirect
-	golang.org/x/sys v0.28.0 // indirect
+	golang.org/x/crypto v0.35.0 // indirect
+	golang.org/x/sys v0.30.0 // indirect
 	lukechampine.com/blake3 v1.1.6 // indirect
 )
