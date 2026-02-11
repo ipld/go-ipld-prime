@@ -1,9 +1,9 @@
 module github.com/ipld/go-ipld-prime/storage/bsadapter
 
-go 1.24.0
+go 1.24.6
 
 require (
-	github.com/ipfs/boxo v0.35.0
+	github.com/ipfs/boxo v0.36.0
 	github.com/ipfs/go-block-format v0.2.3
 	github.com/ipfs/go-cid v0.6.0
 )
