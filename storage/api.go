@@ -155,6 +155,13 @@ type PeekableStorage interface {
 	Peek(ctx context.Context, key string) ([]byte, io.Closer, error)
 }
 
+// FinalizableStorage is a future-detection interface in which a storage implementation can be finalized,
+// indicating any addition reads, writes, or function calls will fale. FinalizableStorage is analogous
+// IPLD concept to io.Closer in the stdlib.
+type FinalizableStorage interface {
+	Finalize() error
+}
+
 // the following are all hypothetical additional future interfaces (in varying degress of speculativeness):
 
 // FUTURE: an EnumerableStorage API, that lets you list all keys present?
