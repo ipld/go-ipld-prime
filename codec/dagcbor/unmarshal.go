@@ -63,7 +63,7 @@ type DecodeOptions struct {
 	// extraneous data after the end of the object.
 	DontParseBeyondEnd bool
 
-	// AllowBudget sets the maximum budget for the decoder. The budget is
+	// AllocationBudget sets the maximum budget for the decoder. The budget is
 	// decremented as the decoder allocates resources (nodes, map entries, list
 	// elements, string/bytes content). If the budget is exhausted, the decoder
 	// returns ErrAllocationBudgetExceeded.
