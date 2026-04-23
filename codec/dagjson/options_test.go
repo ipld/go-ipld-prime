@@ -84,5 +84,13 @@ func TestDecodeOptions_MaxDepth(t *testing.T) {
 		nb := basicnode.Prototype.Any.NewBuilder()
 		err := DecodeOptions{ParseLinks: true}.Decode(nb, bytes.NewReader([]byte(buf)))
 		qt.Assert(t, err, qt.IsNil)
+
+		n := nb.Build()
+		for i := 0; i < 5; i++ {
+			qt.Assert(t, n.Kind(), qt.Equals, datamodel.Kind_List)
+			n, err = n.LookupByIndex(0)
+			qt.Assert(t, err, qt.IsNil)
+		}
+		qt.Assert(t, n.Kind(), qt.Equals, datamodel.Kind_Link)
 	})
 }

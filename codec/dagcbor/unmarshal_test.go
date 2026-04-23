@@ -350,12 +350,12 @@ func TestDecoderBoundaries(t *testing.T) {
 	t.Run("indefinite collection exceeding budget rejected", func(t *testing.T) {
 		// Indefinite-length arrays have no declared size, but per-entry
 		// budget still applies as entries are read.
+		const entries = 3_000_000
 		var buf bytes.Buffer
-		buf.WriteByte(0x9F) // indefinite array
-		for i := 0; i < 3_000_000; i++ {
-			buf.WriteByte(0x00)
-		}
-		buf.WriteByte(0xFF) // break
+		buf.Grow(1 + entries + 1)
+		buf.WriteByte(0x9F)              // indefinite array
+		buf.Write(make([]byte, entries)) // entries zero-valued uints
+		buf.WriteByte(0xFF)              // break
 
 		nb := basicnode.Prototype.Any.NewBuilder()
 		err := Decode(nb, bytes.NewReader(buf.Bytes()))
