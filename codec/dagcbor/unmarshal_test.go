@@ -230,3 +230,135 @@ func TestDecodeOptions_MaxCollectionPrealloc(t *testing.T) {
 		qt.Assert(t, node.Length(), qt.Equals, int64(numEntries))
 	})
 }
+
+// TestDecodeOptions_MaxDepth verifies that the configurable nesting-depth
+// limit is respected, both with defaults and custom values.
+func TestDecodeOptions_MaxDepth(t *testing.T) {
+	// buildNestedArrays returns depth `0x81` bytes (array(1)) followed by a
+	// single `0xF6` null, forming `depth` levels of nested single-element
+	// arrays.
+	buildNestedArrays := func(depth int) []byte {
+		buf := make([]byte, 0, depth+1)
+		for i := 0; i < depth; i++ {
+			buf = append(buf, 0x81)
+		}
+		buf = append(buf, 0xF6)
+		return buf
+	}
+
+	t.Run("default depth rejects deeply nested structure", func(t *testing.T) {
+		payload := buildNestedArrays(2000)
+		nb := basicnode.Prototype.Any.NewBuilder()
+		err := Decode(nb, bytes.NewReader(payload))
+		qt.Assert(t, err, qt.Equals, ErrDecodeDepthExceeded)
+	})
+
+	t.Run("structure at default depth decodes", func(t *testing.T) {
+		payload := buildNestedArrays(1024)
+		nb := basicnode.Prototype.Any.NewBuilder()
+		err := Decode(nb, bytes.NewReader(payload))
+		qt.Assert(t, err, qt.IsNil)
+		qt.Assert(t, nb.Build().Kind(), qt.Equals, datamodel.Kind_List)
+	})
+
+	t.Run("custom depth rejects when exceeded", func(t *testing.T) {
+		payload := buildNestedArrays(10)
+		nb := basicnode.Prototype.Any.NewBuilder()
+		err := DecodeOptions{MaxDepth: 5}.Decode(nb, bytes.NewReader(payload))
+		qt.Assert(t, err, qt.Equals, ErrDecodeDepthExceeded)
+	})
+
+	t.Run("custom depth accepts within limit", func(t *testing.T) {
+		payload := buildNestedArrays(5)
+		nb := basicnode.Prototype.Any.NewBuilder()
+		err := DecodeOptions{MaxDepth: 10}.Decode(nb, bytes.NewReader(payload))
+		qt.Assert(t, err, qt.IsNil)
+		qt.Assert(t, nb.Build().Kind(), qt.Equals, datamodel.Kind_List)
+	})
+
+	t.Run("nested maps also limited", func(t *testing.T) {
+		// Build N nested single-entry maps each with key "x" wrapping a null.
+		const depth = 2000
+		buf := make([]byte, 0, 3*depth+1)
+		for i := 0; i < depth; i++ {
+			buf = append(buf, 0xA1) // map(1)
+			buf = append(buf, 0x61) // text(1)
+			buf = append(buf, 'x')
+		}
+		buf = append(buf, 0xF6) // null
+
+		nb := basicnode.Prototype.Any.NewBuilder()
+		err := Decode(nb, bytes.NewReader(buf))
+		qt.Assert(t, err, qt.Equals, ErrDecodeDepthExceeded)
+	})
+
+	t.Run("zero MaxDepth resolves to default", func(t *testing.T) {
+		payload := buildNestedArrays(2000)
+		nb := basicnode.Prototype.Any.NewBuilder()
+		err := DecodeOptions{MaxDepth: 0}.Decode(nb, bytes.NewReader(payload))
+		qt.Assert(t, err, qt.Equals, ErrDecodeDepthExceeded)
+	})
+
+	t.Run("indefinite-length collections also limited", func(t *testing.T) {
+		// Stream of 0x9F (indefinite list open) markers then a null, then
+		// matching 0xFF break bytes. Exercises the indefinite-length branch
+		// of the decoder which has a separate code path to the definite one.
+		const depth = 2000
+		buf := make([]byte, 0, 2*depth+1)
+		for i := 0; i < depth; i++ {
+			buf = append(buf, 0x9F)
+		}
+		buf = append(buf, 0xF6)
+		for i := 0; i < depth; i++ {
+			buf = append(buf, 0xFF)
+		}
+		nb := basicnode.Prototype.Any.NewBuilder()
+		err := Decode(nb, bytes.NewReader(buf))
+		qt.Assert(t, err, qt.Equals, ErrDecodeDepthExceeded)
+	})
+}
+
+// TestDecoderBoundaries asserts that decoder-layer and tokenizer-layer limits
+// behave as expected for unusual or malformed inputs. These are sanity tests
+// around boundaries that callers sometimes need to reason about.
+func TestDecoderBoundaries(t *testing.T) {
+	t.Run("oversized string declaration rejected by tokenizer", func(t *testing.T) {
+		// Text header declaring 1 TiB; no following bytes. The underlying
+		// refmt tokenizer caps string/bytes length before attempting to read.
+		var buf bytes.Buffer
+		buf.WriteByte(0x7B) // text(uint64 length)
+		binary.Write(&buf, binary.BigEndian, uint64(1<<40))
+
+		nb := basicnode.Prototype.Any.NewBuilder()
+		err := Decode(nb, bytes.NewReader(buf.Bytes()))
+		qt.Assert(t, err, qt.Not(qt.IsNil))
+	})
+
+	t.Run("stacked CBOR tags rejected", func(t *testing.T) {
+		// CBOR permits tagging a value, but the tokenizer refuses to stack
+		// multiple tags on a single item. Link handling relies on this.
+		payload := []byte{
+			0xD8, 42, // tag(42)
+			0xD8, 42, // tag(42)
+			0x42, 0x00, 0x01,
+		}
+		nb := basicnode.Prototype.Any.NewBuilder()
+		err := DecodeOptions{AllowLinks: true}.Decode(nb, bytes.NewReader(payload))
+		qt.Assert(t, err, qt.Not(qt.IsNil))
+	})
+
+	t.Run("indefinite collection exceeding budget rejected", func(t *testing.T) {
+		// Indefinite-length arrays have no declared size, but per-entry
+		// budget still applies as entries are read.
+		const entries = 3_000_000
+		var buf bytes.Buffer
+		buf.Grow(1 + entries + 1)
+		buf.WriteByte(0x9F)              // indefinite array
+		buf.Write(make([]byte, entries)) // entries zero-valued uints
+		buf.WriteByte(0xFF)              // break
+
+		nb := basicnode.Prototype.Any.NewBuilder()
+		err := Decode(nb, bytes.NewReader(buf.Bytes()))
+		qt.Assert(t, err, qt.Equals, ErrAllocationBudgetExceeded)
+	})
+}
