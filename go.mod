@@ -8,7 +8,7 @@ require (
 	github.com/ipfs/go-cid v0.6.1
 	github.com/multiformats/go-multicodec v0.10.0
 	github.com/multiformats/go-multihash v0.2.3
-	github.com/polydawn/refmt v0.89.1-0.20231129105047-37766d95467a
+	github.com/polydawn/refmt v0.90.0
 	github.com/warpfork/go-testmark v0.12.1
 	gopkg.in/yaml.v2 v2.4.0
 )
