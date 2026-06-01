@@ -178,9 +178,10 @@ func FuzzBindnodeViaDagCBOR(f *testing.F) {
 		}
 	}
 	f.Fuzz(func(t *testing.T, schemaDagCBOR, nodeDagCBOR []byte) {
+		relaxedDecoder := dagcbor.DecodeOptions{AllowLinks: true, RelaxedDecode: true}
 		schemaBuilder := schemadmt.Prototypes.Schema.Representation().NewBuilder()
 
-		if err := dagcbor.Decode(schemaBuilder, bytes.NewReader(schemaDagCBOR)); err != nil {
+		if err := relaxedDecoder.Decode(schemaBuilder, bytes.NewReader(schemaDagCBOR)); err != nil {
 			t.Skipf("invalid schema-schema dag-cbor: %v", err)
 		}
 
@@ -194,7 +195,7 @@ func FuzzBindnodeViaDagCBOR(f *testing.F) {
 		t.Logf("schema in dag-json: %s", marshalDagJSON(t, schemaNode.Representation()))
 		{
 			nodeBuilder := basicnode.Prototype.Any.NewBuilder()
-			if err := dagcbor.Decode(nodeBuilder, bytes.NewReader(nodeDagCBOR)); err != nil {
+			if err := relaxedDecoder.Decode(nodeBuilder, bytes.NewReader(nodeDagCBOR)); err != nil {
 				// If some dag-cbor bytes don't decode into the Any prototype,
 				// then they're just not valid dag-cbor at all.
 				t.Skipf("invalid node dag-cbor: %v", err)
@@ -205,11 +206,12 @@ func FuzzBindnodeViaDagCBOR(f *testing.F) {
 
 		// Is nodeDagCBOR canonically encoded, i.e. strictly deterministic as
 		// per the DAG-CBOR spec? This matters for the re-encode checks below.
-		// Note that we want to use the non-strict decoder for fuzzing,
-		// as that default is what the vast majority users will use.
 		canonicalNodeDagCBOR := true
-		canonicalDecoder := dagcbor.DecodeOptions{AllowLinks: true, ExperimentalDeterminism: true}
-		if err := canonicalDecoder.Decode(basicnode.Prototype.Any.NewBuilder(), bytes.NewReader(nodeDagCBOR)); err != nil {
+		canonicalBuilder := basicnode.Prototype.Any.NewBuilder()
+		if err := relaxedDecoder.Decode(canonicalBuilder, bytes.NewReader(nodeDagCBOR)); err != nil {
+			canonicalNodeDagCBOR = false
+			t.Logf("note that this node dag-cbor isn't canonical!")
+		} else if canonical := marshalDagCBOR(t, canonicalBuilder.Build()); !bytes.Equal(canonical, nodeDagCBOR) {
 			canonicalNodeDagCBOR = false
 			t.Logf("note that this node dag-cbor isn't canonical!")
 		}
@@ -261,7 +263,7 @@ func FuzzBindnodeViaDagCBOR(f *testing.F) {
 			} else {
 				nodeBuilder = proto.Representation().NewBuilder()
 			}
-			if err := dagcbor.Decode(nodeBuilder, bytes.NewReader(nodeDagCBOR)); err != nil {
+			if err := relaxedDecoder.Decode(nodeBuilder, bytes.NewReader(nodeDagCBOR)); err != nil {
 				// The dag-cbor isn't valid for this node. Nothing else to do.
 				// We don't use t.Skip, because a dag-cbor might only be valid
 				// at the repr level, but not at the type level.
