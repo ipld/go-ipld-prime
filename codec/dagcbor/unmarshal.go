@@ -43,8 +43,8 @@ type DecodeOptions struct {
 	// Infinity values.
 	//
 	// Indefinite-length CBOR is always rejected, even in relaxed mode.
-	// Undefined values are coerced to null for compatibility with existing
-	// IPLD data. Non-64-bit floats and unsorted map keys are accepted for now.
+	// Undefined values are coerced to null for compatibility with existing IPLD
+	// data. Non-64-bit floats, unsorted map keys, and duplicate map keys are accepted.
 	RelaxedDecode bool
 
 	// If true, the decoder stops reading from the stream at the end of a full,
