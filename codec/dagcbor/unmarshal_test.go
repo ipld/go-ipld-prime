@@ -3,6 +3,7 @@ package dagcbor
 import (
 	"bytes"
 	"encoding/binary"
+	"errors"
 	"fmt"
 	"runtime"
 	"strings"
@@ -11,6 +12,7 @@ import (
 	"github.com/ipld/go-ipld-prime/datamodel"
 
 	qt "github.com/frankban/quicktest"
+	"github.com/polydawn/refmt/cbor"
 
 	"github.com/ipld/go-ipld-prime/node/basicnode"
 )
@@ -40,24 +42,14 @@ func TestFunBlocks(t *testing.T) {
 		buf := strings.NewReader("\x9f\x9f\x9f\x9f\x9f\x9f\x9f\x9f\x9f\x9f\x9f\x9f\x9f\x9f\x9f\x9f\x9f\x9f\x9f\x9f\x9a\xff000")
 		nb := basicnode.Prototype.Any.NewBuilder()
 		err := Decode(nb, buf)
-		if runtime.GOARCH == "386" {
-			// TODO: fix refmt to properly handle 64-bit ints on 32-bit
-			qt.Assert(t, err.Error(), qt.Equals, "cbor: positive integer is out of length")
-		} else {
-			qt.Assert(t, err, qt.Equals, ErrAllocationBudgetExceeded)
-		}
+		qt.Assert(t, errors.Is(err, cbor.ErrIndefiniteLength), qt.IsTrue, qt.Commentf("got %v", err))
 	})
 	t.Run("fuzz003", func(t *testing.T) {
 		// This fixture might cause an overly large allocation if you aren't careful to have resource budgets.
 		buf := strings.NewReader("\x9f\x9f\x9f\x9f\x9f\x9f\x9f\xbb00000000")
 		nb := basicnode.Prototype.Any.NewBuilder()
 		err := Decode(nb, buf)
-		if runtime.GOARCH == "386" {
-			// TODO: fix refmt to properly handle 64-bit ints on 32-bit
-			qt.Assert(t, err.Error(), qt.Equals, "cbor: positive integer is out of length")
-		} else {
-			qt.Assert(t, err, qt.Equals, ErrAllocationBudgetExceeded)
-		}
+		qt.Assert(t, errors.Is(err, cbor.ErrIndefiniteLength), qt.IsTrue, qt.Commentf("got %v", err))
 	})
 	t.Run("undef", func(t *testing.T) {
 		// This fixture tests that we tolerate cbor's "undefined" token (even though it's noncanonical and you shouldn't use it),
@@ -77,16 +69,28 @@ func TestFunBlocks(t *testing.T) {
 }
 
 func cborMapHeader(length uint32) []byte {
-	var buf bytes.Buffer
-	buf.WriteByte(0xBA)
-	binary.Write(&buf, binary.BigEndian, length)
-	return buf.Bytes()
+	return cborMajorLen(0xA0, length)
 }
 
 func cborArrayHeader(length uint32) []byte {
+	return cborMajorLen(0x80, length)
+}
+
+func cborMajorLen(major byte, length uint32) []byte {
 	var buf bytes.Buffer
-	buf.WriteByte(0x9A)
-	binary.Write(&buf, binary.BigEndian, length)
+	switch {
+	case length < 24:
+		buf.WriteByte(major | byte(length))
+	case length <= 0xFF:
+		buf.WriteByte(major | 24)
+		buf.WriteByte(byte(length))
+	case length <= 0xFFFF:
+		buf.WriteByte(major | 25)
+		_ = binary.Write(&buf, binary.BigEndian, uint16(length))
+	default:
+		buf.WriteByte(major | 26)
+		_ = binary.Write(&buf, binary.BigEndian, length)
+	}
 	return buf.Bytes()
 }
 
@@ -299,10 +303,9 @@ func TestDecodeOptions_MaxDepth(t *testing.T) {
 		qt.Assert(t, err, qt.Equals, ErrDecodeDepthExceeded)
 	})
 
-	t.Run("indefinite-length collections also limited", func(t *testing.T) {
+	t.Run("indefinite-length collections rejected", func(t *testing.T) {
 		// Stream of 0x9F (indefinite list open) markers then a null, then
-		// matching 0xFF break bytes. Exercises the indefinite-length branch
-		// of the decoder which has a separate code path to the definite one.
+		// matching 0xFF break bytes.
 		const depth = 2000
 		buf := make([]byte, 0, 2*depth+1)
 		for i := 0; i < depth; i++ {
@@ -314,7 +317,118 @@ func TestDecodeOptions_MaxDepth(t *testing.T) {
 		}
 		nb := basicnode.Prototype.Any.NewBuilder()
 		err := Decode(nb, bytes.NewReader(buf))
-		qt.Assert(t, err, qt.Equals, ErrDecodeDepthExceeded)
+		qt.Assert(t, errors.Is(err, cbor.ErrIndefiniteLength), qt.IsTrue, qt.Commentf("got %v", err))
+	})
+}
+
+func TestDecodeOptions_RejectsNonCanonicalCBOR(t *testing.T) {
+	tests := []struct {
+		name    string
+		payload []byte
+		err     error
+	}{
+		{
+			name:    "indefinite array",
+			payload: []byte{0x9F, 0xF6, 0xFF},
+			err:     cbor.ErrIndefiniteLength,
+		},
+		{
+			name:    "non-minimal integer",
+			payload: []byte{0x18, 0x17},
+			err:     cbor.ErrNonMinimalInteger,
+		},
+		{
+			name:    "non-minimal string length",
+			payload: []byte{0x78, 0x01, 'a'},
+			err:     cbor.ErrNonMinimalInteger,
+		},
+		{
+			name:    "float nan",
+			payload: []byte{0xFB, 0x7F, 0xF8, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
+			err:     cbor.ErrFloatNaN,
+		},
+		{
+			name:    "float infinity",
+			payload: []byte{0xFB, 0x7F, 0xF0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
+			err:     cbor.ErrFloatInfinity,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			nb := basicnode.Prototype.Any.NewBuilder()
+			err := DecodeOptions{}.Decode(nb, bytes.NewReader(test.payload))
+			qt.Assert(t, errors.Is(err, test.err), qt.IsTrue, qt.Commentf("got %v", err))
+		})
+	}
+}
+
+func TestDecodeOptions_RejectsDuplicateMapKeys(t *testing.T) {
+	payload := []byte{0xA3, 0x63, 'b', 'a', 'r', 0x03, 0x63, 'f', 'o', 'o', 0x01, 0x63, 'f', 'o', 'o', 0x02}
+	nb := basicnode.Prototype.Any.NewBuilder()
+	err := DecodeOptions{}.Decode(nb, bytes.NewReader(payload))
+	qt.Assert(t, err, qt.ErrorMatches, `duplicate map key "foo"`)
+}
+
+func TestDecodeOptions_KnownStrictnessGaps(t *testing.T) {
+	tests := []struct {
+		name    string
+		payload []byte
+	}{
+		{
+			name:    "narrow float",
+			payload: []byte{0xF9, 0x3C, 0x00},
+		},
+		{
+			name:    "unsorted map keys",
+			payload: []byte{0xA2, 0x61, 'b', 0x01, 0x61, 'a', 0x02},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			nb := basicnode.Prototype.Any.NewBuilder()
+			err := DecodeOptions{}.Decode(nb, bytes.NewReader(test.payload))
+			qt.Assert(t, err, qt.IsNil)
+		})
+	}
+}
+
+func TestDecodeOptions_RelaxedDecode(t *testing.T) {
+	tests := []struct {
+		name    string
+		payload []byte
+	}{
+		{
+			name:    "non-minimal integer",
+			payload: []byte{0x18, 0x17},
+		},
+		{
+			name:    "non-minimal string length",
+			payload: []byte{0x78, 0x01, 'a'},
+		},
+		{
+			name:    "narrow float",
+			payload: []byte{0xF9, 0x3C, 0x00},
+		},
+		{
+			name:    "unsorted map keys",
+			payload: []byte{0xA2, 0x61, 'b', 0x01, 0x61, 'a', 0x02},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			nb := basicnode.Prototype.Any.NewBuilder()
+			err := DecodeOptions{RelaxedDecode: true}.Decode(nb, bytes.NewReader(test.payload))
+			qt.Assert(t, err, qt.IsNil)
+		})
+	}
+
+	t.Run("indefinite array still rejected", func(t *testing.T) {
+		nb := basicnode.Prototype.Any.NewBuilder()
+		err := DecodeOptions{RelaxedDecode: true}.Decode(nb, bytes.NewReader([]byte{0x9F, 0xF6, 0xFF}))
+		qt.Assert(t, errors.Is(err, cbor.ErrIndefiniteLength), qt.IsTrue, qt.Commentf("got %v", err))
 	})
 }
 
@@ -347,9 +461,7 @@ func TestDecoderBoundaries(t *testing.T) {
 		qt.Assert(t, err, qt.Not(qt.IsNil))
 	})
 
-	t.Run("indefinite collection exceeding budget rejected", func(t *testing.T) {
-		// Indefinite-length arrays have no declared size, but per-entry
-		// budget still applies as entries are read.
+	t.Run("indefinite collection rejected before budget accounting", func(t *testing.T) {
 		const entries = 3_000_000
 		var buf bytes.Buffer
 		buf.Grow(1 + entries + 1)
@@ -359,6 +471,6 @@ func TestDecoderBoundaries(t *testing.T) {
 
 		nb := basicnode.Prototype.Any.NewBuilder()
 		err := Decode(nb, bytes.NewReader(buf.Bytes()))
-		qt.Assert(t, err, qt.Equals, ErrAllocationBudgetExceeded)
+		qt.Assert(t, errors.Is(err, cbor.ErrIndefiniteLength), qt.IsTrue, qt.Commentf("got %v", err))
 	})
 }
