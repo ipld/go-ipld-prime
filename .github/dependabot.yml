@@ -1,22 +1,16 @@
 version: 2
 updates:
   - package-ecosystem: "gomod"
-    directory: "/"
+    directories:
+      - "/"
+      - "/storage/dsadapter/"
+      - "/storage/benchmarks/"
+      - "/storage/bsadapter/"
+      - "/storage/bsrvadapter/"
     schedule:
-      interval: "weekly"
-  - package-ecosystem: "gomod"
-    directory: "/storage/dsadapter/"
-    schedule:
-      interval: "weekly"
-  - package-ecosystem: "gomod"
-    directory: "/storage/benchmarks/"
-    schedule:
-      interval: "weekly"
-  - package-ecosystem: "gomod"
-    directory: "/storage/bsadapter/"
-    schedule:
-      interval: "weekly"
-  - package-ecosystem: "gomod"
-    directory: "/storage/bsrvadapter/"
-    schedule:
-      interval: "weekly"
+      interval: "monthly"
+    cooldown:
+      default-days: 5
+    groups:
+      shared-dependencies:
+        group-by: "dependency-name"
