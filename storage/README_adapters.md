@@ -23,10 +23,6 @@ but are not considered "adapters" -- these just implement the storage APIs direc
   (comparable to, and compatible with [flatfs](https://pkg.go.dev/github.com/ipfs/go-ds-flatfs),
   if you're familiar with that -- but higher efficiency).
 
-Finally, note that there are some shared benchmarks across all this:
-
-- check out `go-ipld-prime/storage/benchmarks`!
-
 
 Why structured like this?
 -------------------------

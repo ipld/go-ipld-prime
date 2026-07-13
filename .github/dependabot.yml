@@ -4,7 +4,6 @@ updates:
     directories:
       - "/"
       - "/storage/dsadapter/"
-      - "/storage/benchmarks/"
       - "/storage/bsadapter/"
       - "/storage/bsrvadapter/"
     schedule:
