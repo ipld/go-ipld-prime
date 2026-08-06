@@ -21,9 +21,11 @@ func TestMap(t *testing.T) {
 func BenchmarkMapStrInt_3n_AssembleStandard(b *testing.B) {
 	tests.SpecBenchmarkMapStrInt_3n_AssembleStandard(b, basicnode.Prototype.Map)
 }
+
 func BenchmarkMapStrInt_3n_AssembleEntry(b *testing.B) {
 	tests.SpecBenchmarkMapStrInt_3n_AssembleEntry(b, basicnode.Prototype.Map)
 }
+
 func BenchmarkMapStrInt_3n_Iteration(b *testing.B) {
 	tests.SpecBenchmarkMapStrInt_3n_Iteration(b, basicnode.Prototype.Map)
 }
@@ -31,9 +33,11 @@ func BenchmarkMapStrInt_3n_Iteration(b *testing.B) {
 func BenchmarkMapStrInt_25n_AssembleStandard(b *testing.B) {
 	tests.SpecBenchmarkMapStrInt_25n_AssembleStandard(b, basicnode.Prototype.Map)
 }
+
 func BenchmarkMapStrInt_25n_AssembleEntry(b *testing.B) {
 	tests.SpecBenchmarkMapStrInt_25n_AssembleEntry(b, basicnode.Prototype.Map)
 }
+
 func BenchmarkMapStrInt_25n_Iteration(b *testing.B) {
 	tests.SpecBenchmarkMapStrInt_25n_Iteration(b, basicnode.Prototype.Map)
 }
@@ -41,6 +45,7 @@ func BenchmarkMapStrInt_25n_Iteration(b *testing.B) {
 func BenchmarkSpec_Marshal_Map3StrInt(b *testing.B) {
 	tests.BenchmarkSpec_Marshal_Map3StrInt(b, basicnode.Prototype.Map)
 }
+
 func BenchmarkSpec_Marshal_MapNStrMap3StrInt(b *testing.B) {
 	tests.BenchmarkSpec_Marshal_MapNStrMap3StrInt(b, basicnode.Prototype.Map)
 }
@@ -48,6 +53,7 @@ func BenchmarkSpec_Marshal_MapNStrMap3StrInt(b *testing.B) {
 func BenchmarkSpec_Unmarshal_Map3StrInt(b *testing.B) {
 	tests.BenchmarkSpec_Unmarshal_Map3StrInt(b, basicnode.Prototype.Map)
 }
+
 func BenchmarkSpec_Unmarshal_MapNStrMap3StrInt(b *testing.B) {
 	tests.BenchmarkSpec_Unmarshal_MapNStrMap3StrInt(b, basicnode.Prototype.Map)
 }
@@ -123,9 +129,9 @@ func TestMapBuilder(t *testing.T) {
 	actual := printer.Sprint(mapNode)
 
 	expect := `map{
-	string{"cat"}: string{"meow"}
-	string{"dog"}: string{"bark"}
-	string{"eel"}: string{"zap"}
+	string{"cat"}:string{"meow"},
+	string{"dog"}:string{"bark"},
+	string{"eel"}:string{"zap"}
 }`
 	qt.Check(t, expect, qt.Equals, actual)
 
