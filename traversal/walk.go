@@ -267,7 +267,7 @@ func (prog Progress) walkAdv(ph phase, n datamodel.Node, s selector.Selector, vi
 	// specific interests, recurse on those.
 	for _, ps := range attn {
 		if v, err := n.LookupBySegment(ps); err != nil {
-			continue
+			return err
 		} else if err := recurse(v, ps); err != nil {
 			return err
 		}
