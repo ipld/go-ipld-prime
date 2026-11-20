@@ -1,10 +1,12 @@
 package dagjson
 
 import (
+	"bytes"
 	"encoding/base64"
 	"fmt"
 	"io"
 	"sort"
+	"strconv"
 
 	"github.com/polydawn/refmt/json"
 	"github.com/polydawn/refmt/shared"
@@ -39,7 +41,59 @@ type EncodeOptions struct {
 //
 // The behavior of the encoder can be customized by setting fields in the EncodeOptions struct before calling this method.
 func (cfg EncodeOptions) Encode(n datamodel.Node, w io.Writer) error {
-	return Marshal(n, json.NewEncoder(w, json.EncodeOptions{}), cfg)
+	enc := &floatEncoder{w: w}
+	enc.Encoder = json.NewEncoder(enc, json.EncodeOptions{})
+	return Marshal(n, enc, cfg)
+}
+
+// floatEncoder preserves the distinction between floats and integers in DAG-JSON.
+// refmt emits a float as a single numeric write, but may omit its decimal point.
+// Keep its formatting, adding a decimal point only when that write would look
+// like an integer. The token type keeps integer values and numeric strings intact.
+type floatEncoder struct {
+	*json.Encoder
+	w       io.Writer
+	isFloat bool
+	value   float64
+	buffer  [64]byte
+}
+
+func (enc *floatEncoder) Step(tk *tok.Token) (bool, error) {
+	enc.isFloat = tk.Type == tok.TFloat64
+	enc.value = tk.Float64
+	return enc.Encoder.Step(tk)
+}
+
+func (enc *floatEncoder) Write(p []byte) (int, error) {
+	size := len(p)
+	// A float's Step can also write array separators and whitespace.
+	if enc.isFloat && size > 0 && (p[0] == '-' || p[0] >= '0' && p[0] <= '9') &&
+		!bytes.ContainsAny(p, ".eE") {
+		p = append(enc.buffer[:0], p...)
+		if enc.value >= 1<<63 || enc.value < -(1<<63) {
+			// refmt tries ParseInt before ParseFloat and can reject a large
+			// integer prefix even when it is followed by a decimal point.
+			p = strconv.AppendFloat(p[:0], enc.value, 'e', -1, 64)
+			if bytes.IndexByte(p, '.') < 0 {
+				i := bytes.IndexByte(p, 'e')
+				p = append(p, 0, 0)
+				copy(p[i+2:], p[i:len(p)-2])
+				p[i], p[i+1] = '.', '0'
+			}
+		} else {
+			p = append(p, '.', '0')
+		}
+	}
+	n, err := enc.w.Write(p)
+	if n < len(p) && err == nil {
+		err = io.ErrShortWrite
+	}
+	if n == len(p) {
+		n = size
+	} else if n > size {
+		n = size
+	}
+	return n, err
 }
 
 // Future work: we would like to remove the Marshal function,
